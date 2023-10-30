@@ -1,20 +1,20 @@
 [Unit]
-Description=Intercom syslog service for Akuvox
+Description=Intercom syslog service for Rubetek
 Documentation=https://github.com/rosteleset/SmartYard-Server/tree/main/install
 After=network.target
 
 [Service]
 Type=simple
 WorkingDirectory=/opt/rbt/server/syslog/
-ExecStart=/usr/bin/node /opt/rbt/services/event/index.js akuvox
+ExecStart=/usr/bin/node /opt/rbt/services/event/index.js rubetek
 RestartSec=10
 Restart=always
 User=isyslog
 Group=isyslog
 LimitCORE=infinity
 KillMode=process
-StandardOutput=file:/var/log/syslog_intercom/syslog_intercom_akuvox.log
-StandardError=file:/var/log/syslog_intercom/syslog_intercom_akuvox.error.log
+StandardOutput=file:/var/log/syslog_intercom/syslog_intercom_rubetek.log
+StandardError=file:/var/log/syslog_intercom/syslog_intercom_rubetek.error.log
 
 [Install]
 WantedBy=multi-user.target
