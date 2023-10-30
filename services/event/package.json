@@ -1,7 +1,7 @@
 {
     "name": "event-service",
     "version": "1.0.0",
-    "description": "Intercom event service",
+    "description": "Event service for intercom and ip camera",
     "type": "commonjs",
     "scripts": {
         "dev": "concurrently -k \"npm run dev:beward\" \"npm run dev:beward_ds\" \"npm run dev:qtech\" \"npm run dev:is\" \"npm run dev:akuvox\" \"npm run dev:rubetek\"",
@@ -12,7 +12,7 @@
         "start:is": "node index.js is",
         "start:sputnik": "node index.js sputnik",
         "start:akuvox": "node index.js akuvox",
-        "start:rubetek": "node rubetek.js",
+        "start:rubetek": "node index.js rubetek",
         "dev:beward": "nodemon index.js beward",
         "dev:beward_ds": "nodemon index.js beward_ds",
         "dev:qtech": "nodemon index.js qtech",
