@@ -75,4 +75,8 @@
 
         $response["version"] = @$config["mobile"]["version"] ?: 0;
 
+        if (@$config["mobile"]["cctv_view"]) {
+            $response["cctvView"] = $config["mobile"]["cctv_view"];
+        }
+
     response(200, $response);

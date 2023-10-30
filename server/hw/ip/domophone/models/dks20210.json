@@ -1,0 +1,15 @@
+{
+    "title": "BEWARD DKS20210 (DKS966972)",
+    "vendor": "BEWARD",
+    "model": "DKS20210 (DKS966972)",
+    "class": "dks20210",
+    "eventServer": "beward",
+    "outputs": 3,
+    "camera": "beward",
+    "useSmartConfigurator": true,
+    "cmses": [
+        "kad2501",
+        "kkm-100s2",
+        "kkm-105"
+    ]
+}

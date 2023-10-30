@@ -7,6 +7,6 @@ CREATE TABLE companies
     contacts character varying,
     comment character varying
 );
-CREATE INDEX company_uid on companies(uid);
+CREATE INDEX IF NOT EXISTS company_uid on companies(uid);
 
 ALTER TABLE addresses_houses ADD COLUMN company integer;

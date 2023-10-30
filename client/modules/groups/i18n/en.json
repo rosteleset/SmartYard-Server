@@ -1,0 +1,17 @@
+{
+    "gid": "#",
+    "acronym": "Label",
+    "name": "Group Name",
+    "add": "Add Group",
+    "groups": "Groups",
+    "group": "Group",
+    "edit": "Edit Group",
+    "groupWasChanged": "Changes saved successfully",
+    "groupWasAdded": "Group added",
+    "groupWasDeleted": "Group deleted",
+    "usersCount": "Users",
+    "users": "Group Users",
+    "confirmDelete": "Delete group \"#%s\"?",
+    "delete": "Delete Group",
+    "admin": "Group Administrator"
+}

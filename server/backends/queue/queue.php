@@ -19,16 +19,16 @@
              * @param $objectId
              * @return mixed
              */
-            abstract function changed($objectType, $objectId);
+            abstract public function changed($objectType, $objectId);
 
             /**
              * @return mixed
              */
-            abstract function autoconfigureDomophones();
+            abstract public function autoconfigureDevices();
 
             /**
              * @return mixed
              */
-            abstract function wait();
+            abstract public function wait();
         }
     }

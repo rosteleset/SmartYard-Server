@@ -1,0 +1,18 @@
+{
+    "title": "IS ISCOM X1",
+    "vendor": "IS",
+    "model": "ISCOM X1",
+    "class": "iscomx1",
+    "eventServer": "is",
+    "outputs": 1,
+    "camera": "is",
+    "useSmartConfigurator": true,
+    "cmses": [
+        "bk-100",
+        "com-100u",
+        "com-220u",
+        "factorial_8x8",
+        "km100-7.1",
+        "kmg-100"
+    ]
+}

@@ -1,0 +1,9 @@
+{
+    "title": "HIKVISION DOMOPHONE CAMERA (RTSP)",
+    "vendor": "HIKVISION",
+    "model": false,
+    "version": false,
+    "eventServer": "hikvision",
+    "class": "hikvisionRtsp",
+    "useSmartConfigurator": false
+}

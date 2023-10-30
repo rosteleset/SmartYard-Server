@@ -1,0 +1,11 @@
+{
+    "methods": {
+        "geo": {
+            "_title": "Geocoder",
+            "suggestions": {
+                "_title": "Geotips",
+                "GET": "Usage"
+            }
+        }
+    }
+}

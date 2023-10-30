@@ -35,5 +35,23 @@
     ],
     "9": [
         "v9_tt.sql"
+    ],
+    "10": [
+        "v10_houses.sql"
+    ],
+    "11": [
+        "v11_tt.sql"
+    ],
+    "12": [
+        "v12_core.sql"
+    ],
+    "13": [
+        "v13_cameras.sql"
+    ],
+    "14": [
+        "v14_houses.sql"
+    ],
+    "15": [
+        "v15_core.sql"
     ]
 }

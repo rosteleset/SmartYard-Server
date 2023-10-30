@@ -1,0 +1,15 @@
+{
+    "title": "BEWARD DKS850230",
+    "vendor": "BEWARD",
+    "model": "DKS850230",
+    "class": "dks850230",
+    "eventServer": "beward",
+    "outputs": 2,
+    "camera": "beward",
+    "useSmartConfigurator": true,
+    "cmses": [
+        "kad2501",
+        "kkm-100s2",
+        "kkm-105"
+    ]
+}

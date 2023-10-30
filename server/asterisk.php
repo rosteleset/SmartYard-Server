@@ -403,9 +403,9 @@
                             $cameras = $households->getCameras("id", $entrances[0]["cameraId"]);
 
                             if ($cameras && $cameras[0]) {
-                                $model = loadCamera($cameras[0]["model"], $cameras[0]["url"], $cameras[0]["credentials"]);
+                                $model = loadDevice('camera', $cameras[0]["model"], $cameras[0]["url"], $cameras[0]["credentials"]);
 
-                                $redis->setex("shot_" . $params["hash"], 3 * 60, $model->camshot());
+                                $redis->setex("shot_" . $params["hash"], 3 * 60, $model->getCamshot());
                                 $redis->setex("live_" . $params["hash"], 3 * 60, json_encode([
                                     "model" => $cameras[0]["model"],
                                     "url" => $cameras[0]["url"],
@@ -416,7 +416,7 @@
                             }
                         }
                     } else {
-                        $redis->setex("shot_" . $params["hash"], 3 * 60, file_get_contents(__DIR__ . "/hw/cameras/fake/img/callcenter.jpg"));
+                        $redis->setex("shot_" . $params["hash"], 3 * 60, file_get_contents(__DIR__ . "/hw/ip/camera/fake/img/callcenter.jpg"));
                         $redis->setex("live_" . $params["hash"], 3 * 60, json_encode([
                             "model" => "fake.json",
                             "url" => "callcenter.jpg",

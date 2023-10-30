@@ -54,8 +54,8 @@
         $domophone = $households->getDomophone($domophone_id);
 
         try {
-            $model = loadDomophone($domophone["model"], $domophone["url"], $domophone["credentials"]);
-            $model->open_door($door_id);
+            $model = loadDevice('domophone', $domophone["model"], $domophone["url"], $domophone["credentials"]);
+            $model->openLock($door_id);
             $plog = loadBackend("plog");
             if ($plog) {
                 $plog->addDoorOpenDataById(time(), $domophone_id, $plog::EVENT_OPENED_BY_APP, $door_id, $subscriber['mobile']);
