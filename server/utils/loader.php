@@ -41,65 +41,51 @@
     }
 
     /**
-     * loads domophone class, returns false if .json or class not found
-     *
-     * @param string $model .json
-     * @param string $url
-     * @param string $password
-     * @param boolean $first_time
-     * @return false|object
-     */
+    * Loads a device class and returns an instance of the class, or false if not found.
+    *
+    * This function is used to load and initialize hardware device classes dynamically
+    * based on the device type and model specified in a JSON file.
+    *
+    * @param string $type Device type (e.g., "domophone" or "camera").
+    * @param string $model The filename of the JSON model configuration.
+    * @param string $url The URL for the device.
+    * @param string $password The password for the device.
+    * @param bool $firstTime Indicates if it's the first time using the device. Default is false.
+    *
+    * @return false|object Returns an object instance of the device class if found and loaded successfully,
+    * or false if there was an error loading the class.
+    */
+    function loadDevice(string $type, string $model, string $url, string $password, bool $firstTime = false) {
+        require_once __DIR__ . '/../hw/autoload.php';
 
-    function loadDomophone($model, $url, $password, $first_time = false) {
-        $path_to_model = __DIR__ . "/../hw/domophones/models/$model";
+        $availableTypes = ['camera', 'domophone'];
 
-        if (file_exists($path_to_model)) {
-            $class = @json_decode(file_get_contents($path_to_model), true)['class'];
+        if (!in_array($type, $availableTypes)) {
+            $availableTypesString = implode(', ', array_map(fn($type) => "'$type'", $availableTypes));
+            throw new ValueError("Invalid device type: '$type'. Available types: $availableTypesString");
+        }
 
-            $directory = new RecursiveDirectoryIterator(__DIR__ . "/../hw/domophones/");
-            $iterator = new RecursiveIteratorIterator($directory);
+        $pathToModel = __DIR__ . "/../hw/ip/$type/models/$model";
 
-            foreach($iterator as $file) {
-                if ($file->getFilename() == "$class.php") {
-                    $path_to_class = $file->getPath() . "/" . $class . ".php";
-                    require_once $path_to_class;
-                    $className = "hw\\domophones\\$class";
-                    return new $className($url, $password, $first_time);
-                }
+        if (!file_exists($pathToModel)) {
+            throw new Error("Model '$model' not found for type '$type'");
+        }
+
+        $data = json_decode(file_get_contents($pathToModel), true);
+        $class = $data['class'];
+        $vendor = strtolower($data['vendor']);
+
+        $directory = new RecursiveDirectoryIterator(__DIR__ . "/../hw/ip/$type/");
+        $iterator = new RecursiveIteratorIterator($directory);
+
+        foreach ($iterator as $file) {
+            if ($file->getFilename() == "$class.php") {
+                $pathToClass = $file->getPath() . '/' . $class . '.php';
+                require_once $pathToClass;
+                $className = "hw\\ip\\$type\\$vendor\\$class";
+                return new $className($url, $password, $firstTime);
             }
         }
 
         return false;
     }
-
-/**
- * loads camera class, returns false if .json or class not found
- *
- * @param string $model .json
- * @param string $url
- * @param string $password
- * @param boolean $first_time
- * @return false|object
- */
-
-function loadCamera($model, $url, $password, $first_time = false) {
-    $path_to_model = __DIR__ . "/../hw/cameras/models/$model";
-
-    if (file_exists($path_to_model)) {
-        $class = @json_decode(file_get_contents($path_to_model), true)['class'];
-
-        $directory = new RecursiveDirectoryIterator(__DIR__ . "/../hw/cameras/");
-        $iterator = new RecursiveIteratorIterator($directory);
-
-        foreach($iterator as $file) {
-            if ($file->getFilename() == "$class.php") {
-                $path_to_class = $file->getPath() . "/" . $class . ".php";
-                require_once $path_to_class;
-                $className = "hw\\cameras\\$class";
-                return new $className($url, $password, $first_time);
-            }
-        }
-    }
-
-    return false;
-}

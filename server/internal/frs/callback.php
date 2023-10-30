@@ -30,14 +30,23 @@ foreach ($entrances as $entrance) {
     if (!$flats)
         continue;
 
-    // TODO: check if FRS is allowed for flats
+    $is_blocked = true;
+    foreach ($flats as $flat_id) {
+        $flatDetail = $households->getFlat($flat_id);
+        if (isset($flatDetail) && $flatDetail['autoBlock'] === 0 && $flatDetail['manualBlock'] === 0 && $flatDetail['adminBlock'] === 0) {
+            $is_blocked = false;
+            break;
+        }
+    }
+    if ($is_blocked)
+        continue;
 
     $domophone_id = $entrance["domophoneId"];
     $domophone_output = $entrance["domophoneOutput"];
     $domophone = $households->getDomophone($domophone_id);
     try {
-        $model = loadDomophone($domophone["model"], $domophone["url"], $domophone["credentials"]);
-        $model->open_door($domophone_output);
+        $model = loadDevice('domophone', $domophone["model"], $domophone["url"], $domophone["credentials"]);
+        $model->openLock($domophone_output);
         if (!$has_event) {
             $has_event = true;
             $redis->set($frs_key, 1, $config["backends"]["frs"]["open_door_timeout"]);

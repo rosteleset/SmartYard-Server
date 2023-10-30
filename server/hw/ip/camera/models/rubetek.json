@@ -1,0 +1,9 @@
+{
+    "title": "RUBETEK DOMOPHONE CAMERA",
+    "vendor": "RUBETEK",
+    "model": false,
+    "version": false,
+    "eventServer": "rubetek",
+    "class": "rubetek",
+    "useSmartConfigurator": false
+}

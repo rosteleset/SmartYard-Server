@@ -1,0 +1,9 @@
+{
+    "title": "HIKVISION DOMOPHONE CAMERA",
+    "vendor": "HIKVISION",
+    "model": false,
+    "version": false,
+    "eventServer": "hikvision",
+    "class": "hikvision",
+    "useSmartConfigurator": false
+}

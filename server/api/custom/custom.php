@@ -63,12 +63,18 @@
             }
 
             public static function index() {
-                return [
-                    "GET",
-                    "POST",
-                    "PUT",
-                    "DELETE",
-                ];
+                $custom = loadBackend("custom");
+
+                if ($custom) {
+                    return [
+                        "GET",
+                        "POST",
+                        "PUT",
+                        "DELETE",
+                    ];
+                } else {
+                    return false;
+                }
             }
         }
     }

@@ -1,0 +1,13 @@
+{
+    "title": "AKUVOX E12*",
+    "vendor": "AKUVOX",
+    "model": "E12*",
+    "class": "e12",
+    "eventServer": "akuvox",
+    "outputs": 1,
+    "camera": "akuvox",
+    "useSmartConfigurator": false,
+    "cmses": [
+
+    ]
+}

@@ -1,0 +1,21 @@
+{
+    "title": "SPUTNIK CLOUD",
+    "vendor": "SPUTNIK",
+    "model": "SPUTNIK",
+    "class": "sputnik",
+    "eventServer": "sputnik",
+    "outputs": 2,
+    "camera": "sputnik",
+    "useSmartConfigurator": false,
+    "cmses": [
+        "bk-100",
+        "com-25u",
+        "com-100u",
+        "com-220u",
+        "km100-7.1",
+        "km100-7.2",
+        "km100-7.3",
+        "km100-7.5",
+        "kmg-100"
+    ]
+}

@@ -37,7 +37,10 @@
                         sip_enabled, 
                         sip_password,
                         last_opened,
-                        cms_enabled
+                        cms_enabled,
+                        contract,
+                        login,
+                        password
                     from
                         houses_flats
                     where
@@ -58,6 +61,9 @@
                     "sip_password" => "sipPassword",
                     "last_opened" => "lastOpened",
                     "cms_enabled" => "cmsEnabled",
+                    "contract" => "contract",
+                    "login" => "login",
+                    "password" => "password",
                 ],
                 [
                     "singlify"
@@ -253,6 +259,14 @@
                         $q = "select house_flat_id from houses_flats left join houses_entrances_flats using (house_flat_id) left join houses_entrances using (house_entrance_id) where house_domophone_id = :house_domophone_id group by house_flat_id order by flat";
                         $p = [
                             "house_domophone_id" => $params,
+                        ];
+                        break;
+
+                    case "credentials":
+                        $q = "select house_flat_id from houses_flats where login = :login and password = :password";
+                        $p = [
+                            "login" => $params["login"],
+                            "password" => $params["password"],
                         ];
                         break;
                 }
@@ -553,6 +567,30 @@
                         $params["openCode"] = 11000 + rand(0, 88999);
                     }
 
+                    if (array_key_exists("contract", $params) && !checkStr($params["contract"])) {
+                        setLastError("invalidParams");
+                        return false;
+                    }
+
+                    if (array_key_exists("login", $params) && !checkStr($params["login"])) {
+                        setLastError("invalidParams");
+                        return false;
+                    }
+
+                    if (array_key_exists("password", $params) && !checkStr($params["password"])) {
+                        setLastError("invalidParams");
+                        return false;
+                    }
+
+                    if (!$params["login"] || !$params["password"]) {
+                        $params["login"] = null;
+                        $params["password"] = null;
+                    }
+    
+                    if (!$params["contract"]) {
+                        $params["contract"] = null;
+                    }
+                    
                     $params["floor"] = (int)@$params["floor"];
 
                     $mod = $this->db->modifyEx("update houses_flats set %s = :%s where house_flat_id = $flatId", [
@@ -568,12 +606,22 @@
                         "white_rabbit" => "whiteRabbit",
                         "sip_enabled" => "sipEnabled",
                         "sip_password" => "sipPassword",
-                        "cms_enabled" => "cmsEnabled"
+                        "cms_enabled" => "cmsEnabled",
+                        "contract" => "contract",
+                        "login" => "login",
+                        "password" => "password",
                     ], $params);
 
                     if ($mod !== false && array_key_exists("flat", $params) && array_key_exists("entrances", $params) && array_key_exists("apartmentsAndLevels", $params) && is_array($params["entrances"]) && is_array($params["apartmentsAndLevels"])) {
                         $entrances = $params["entrances"];
                         $apartmentsAndLevels = $params["apartmentsAndLevels"];
+
+                        // TODO: we need to do something about this
+                        $queue = loadBackend("queue");
+                        if ($queue) {
+                            $queue->changed("flat", $flatId);
+                        }
+
                         if ($this->db->modify("delete from houses_entrances_flats where house_flat_id = $flatId") === false) {
                             return false;
                         }
@@ -600,10 +648,11 @@
                                 }
                             }
                         }
-                        $queue = loadBackend("queue");
+
                         if ($queue) {
                             $queue->changed("flat", $flatId);
                         }
+
                         return true;
                     }
                 } else {
@@ -810,6 +859,18 @@
                                 select house_domophone_id from houses_entrances where house_entrance_id in (
                                   select house_entrance_id from houses_entrances_flats where house_flat_id in (
                                     select house_flat_id from houses_flats_subscribers where house_subscriber_id = $query
+                                  )
+                                ) group by house_domophone_id
+                              ) order by house_domophone_id";
+                        break;
+
+                    case "key":
+                        $query = (int)$query;
+
+                        $q = "select * from houses_domophones where house_domophone_id in (
+                                select house_domophone_id from houses_entrances where house_entrance_id in (
+                                  select house_entrance_id from houses_entrances_flats where house_flat_id in (
+                                    select access_to from houses_rfids where house_rfid_id = $query
                                   )
                                 ) group by house_domophone_id
                               ) order by house_domophone_id";
@@ -1033,7 +1094,7 @@
                         $domophone["status"] = $monitoring->deviceStatus("domophone", $domophone["domophoneId"]);
                     }
 
-                    $domophone["json"] = json_decode(file_get_contents(__DIR__ . "/../../../hw/domophones/models/" . $domophone["model"]), true);
+                    $domophone["json"] = json_decode(file_get_contents(__DIR__ . "/../../../hw/ip/domophone/models/" . $domophone["model"]), true);
                 }
 
                 return $domophone;
@@ -1435,7 +1496,7 @@
 
                 $queue = loadBackend("queue");
                 if ($queue) {
-                    $queue->changed($accessType, $accessTo);
+                    $queue->changed("key", $r);
                 }
 
                 return $r;

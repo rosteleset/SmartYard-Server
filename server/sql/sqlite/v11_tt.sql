@@ -1,0 +1,1 @@
+ALTER TABLE tt_issue_custom_fields_options ADD COLUMN option_display text;

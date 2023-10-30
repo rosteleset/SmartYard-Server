@@ -15,6 +15,7 @@
  * @apiSuccess {String} -.token токен
  * @apiSuccess {String="t","f"} -.frs подключен FRS
  * @apiSuccess {String="nimble","flussonic", "macroscop", "trassir"} [-.serverType] тип видео-сервера ('flussonic' by default)
+ * @apiSuccess {String = "fmp4", "mpegts"} [-.hlsMode] режим HLS (used for flussonic only): "fmp4" (default for hevc support), "mpegts" (for flussonic below 21.02 version)
  */
 auth();
 
@@ -68,13 +69,17 @@ foreach($cams as $entrance_id => $cam) {
         $vstream = $cameras->getCamera($e['cameraId']);
         $frs = strlen($vstream["frs"]) > 1 ? 't' : 'f';
     }
-    $ret[] = [
+    $item = [
         'id' => strval($e['domophoneId']),
         'url' => $cam['dvrStream'],
         'token' => loadBackend("dvr")->getDVRTokenForCam($cam, $subscriber['subscriberId']),
         'frs' => $frs,
         'serverType' => $dvr['type']
     ];
+    if (array_key_exists("hlsMode", $dvr)) {
+        $item["hlsMode"] = $dvr["hlsMode"];
+    }
+    $ret[] = $item;
 }
 
 if (count($ret)) {

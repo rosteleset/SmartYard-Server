@@ -14,11 +14,11 @@ $cam = $cameras->getCamera($camera_id);
 if (!$cam)
     response(404);
 
-$model = loadCamera($cam["model"], $cam["url"], $cam["credentials"]);
+$model = loadDevice('camera', $cam["model"], $cam["url"], $cam["credentials"]);
 if (!$model)
     response(404);
 
 header('Content-Type: image/jpeg');
-echo $model->camshot();
+echo $model->getCamshot();
 
 exit;

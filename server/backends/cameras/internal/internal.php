@@ -69,11 +69,15 @@ namespace backends\cameras
 
             $cams = $this->getCameras("id", $cameraId);
 
-            if (count($cams) === 1) {
-                return $cams[0];
-            } else {
+            if (count($cams) !== 1) {
                 return false;
             }
+
+            $camera = $cams[0];
+            $modelFilePath = __DIR__ . "/../../../hw/ip/camera/models/" . $camera["model"];
+            $camera["json"] = json_decode(file_get_contents($modelFilePath), true);
+
+            return $camera;
         }
 
         /**
@@ -100,7 +104,7 @@ namespace backends\cameras
                 return false;
             }
 
-            return $this->db->insert("insert into cameras (enabled, model, url, stream, credentials, name, dvr_stream, timezone, lat, lon, direction, angle, distance, frs, md_left, md_top, md_width, md_height, common, comment) values (:enabled, :model, :url, :stream, :credentials, :name, :dvr_stream, :timezone, :lat, :lon, :direction, :angle, :distance, :frs, :md_left, :md_top, :md_width, :md_height, :common, :comment)", [
+            $cameraId = $this->db->insert("insert into cameras (enabled, model, url, stream, credentials, name, dvr_stream, timezone, lat, lon, direction, angle, distance, frs, md_left, md_top, md_width, md_height, common, comment) values (:enabled, :model, :url, :stream, :credentials, :name, :dvr_stream, :timezone, :lat, :lon, :direction, :angle, :distance, :frs, :md_left, :md_top, :md_width, :md_height, :common, :comment)", [
                 "enabled" => (int)$enabled,
                 "model" => $model,
                 "url" => $url,
@@ -122,6 +126,13 @@ namespace backends\cameras
                 "common" => $common,
                 "comment" => $comment,
             ]);
+
+            $queue = loadBackend("queue");
+            if ($queue) {
+                $queue->changed("camera", $cameraId);
+            }
+
+            return $cameraId;
         }
 
         /**
@@ -151,7 +162,7 @@ namespace backends\cameras
                 return false;
             }
 
-            return $this->db->modify("update cameras set enabled = :enabled, model = :model, url = :url, stream = :stream, credentials = :credentials, name = :name, dvr_stream = :dvr_stream, timezone = :timezone, lat = :lat, lon = :lon, direction = :direction, angle = :angle, distance = :distance, frs = :frs, md_left = :md_left, md_top = :md_top, md_width = :md_width, md_height = :md_height, common = :common, comment = :comment where camera_id = $cameraId", [
+            $r = $this->db->modify("update cameras set enabled = :enabled, model = :model, url = :url, stream = :stream, credentials = :credentials, name = :name, dvr_stream = :dvr_stream, timezone = :timezone, lat = :lat, lon = :lon, direction = :direction, angle = :angle, distance = :distance, frs = :frs, md_left = :md_left, md_top = :md_top, md_width = :md_width, md_height = :md_height, common = :common, comment = :comment where camera_id = $cameraId", [
                 "enabled" => (int)$enabled,
                 "model" => $model,
                 "url" => $url,
@@ -173,6 +184,15 @@ namespace backends\cameras
                 "common" => $common,
                 "comment" => $comment,
             ]);
+
+            if ($r) {
+                $queue = loadBackend("queue");
+                if ($queue) {
+                    $queue->changed("camera", $cameraId);
+                }
+            }
+
+            return $r;
         }
 
         /**
@@ -183,6 +203,11 @@ namespace backends\cameras
             if (!checkInt($cameraId)) {
                 setLastError("noId");
                 return false;
+            }
+
+            $queue = loadBackend("queue");
+            if ($queue) {
+                $queue->changed("camera", $cameraId);
             }
 
             return $this->db->modify("delete from cameras where camera_id = $cameraId");

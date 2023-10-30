@@ -1,0 +1,16 @@
+{
+    "title": "BEWARD DKS15122_rev5.2.6.8.3",
+    "vendor": "BEWARD",
+    "model": "DKS15122_rev5.2.6.8.3",
+    "class": "dks15122_52683",
+    "eventServer": "beward",
+    "outputs": 2,
+    "camera": "beward",
+    "useSmartConfigurator": true,
+    "cmses": [
+        "kad2501",
+        "kkm-100s2",
+        "kkm-105",
+        "kkm-108"
+    ]
+}

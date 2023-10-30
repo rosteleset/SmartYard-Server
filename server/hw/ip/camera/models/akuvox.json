@@ -1,0 +1,9 @@
+{
+    "title": "AKUVOX DOMOPHONE CAMERA",
+    "vendor": "AKUVOX",
+    "model": false,
+    "version": false,
+    "eventServer": "akuvox",
+    "class": "akuvox",
+    "useSmartConfigurator": false
+}

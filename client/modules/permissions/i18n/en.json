@@ -1,0 +1,25 @@
+{
+    "permissions": "Permissions",
+    "api": "Section",
+    "method": "Method",
+    "action": "Action",
+    "mode": "Mode",
+    "allowNone": "Default",
+    "allowYes": "Allowed",
+    "allowNo": "Forbidden",
+    "add": "Add",
+    "edit": "Edit",
+    "users": "Users",
+    "groups": "Groups",
+    "addRights": "Add the rule",
+    "methods": {
+        "authorization": {
+            "_title": "Authorization",
+            "rights": {
+                "_title": "Privilege",
+                "POST": "Assignment",
+                "GET": "View"
+            }
+        }
+    }
+}

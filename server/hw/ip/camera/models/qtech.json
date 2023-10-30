@@ -1,0 +1,9 @@
+{
+    "title": "QTECH DOMOPHONE CAMERA",
+    "vendor": "QTECH",
+    "model": false,
+    "version": false,
+    "eventServer": "qtech",
+    "class": "qtech",
+    "useSmartConfigurator": false
+}
