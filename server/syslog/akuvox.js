@@ -1,10 +1,10 @@
 const syslog = new (require("syslog-server"))();
-const { hw: { akuvox: _akuvox } } = require("../config.json");
-const { getTimestamp } = require("../utils/getTimestamp");
-const { urlParser } = require("../utils/urlParser");
-const API = require("../utils/API");
-const { mdTimer } = require("../utils/mdTimer");
-const { port } = urlParser(_akuvox);
+const { hw: { akuvox } } = require("./config.json");
+const { getTimestamp } = require("./utils/getTimestamp");
+const { urlParser } = require("./utils/urlParser");
+const API = require("./utils/api");
+const { mdTimer } = require("./utils/mdTimer");
+const { port } = urlParser(akuvox);
 
 syslog.on("message", async ({ date, host, message }) => {
     const now = getTimestamp(date);
@@ -38,7 +38,7 @@ syslog.on("message", async ({ date, host, message }) => {
     console.log(`${now} || ${host} || ${msg}`);
 
     // Send message to syslog storage
-    await API.sendLog({ date: now, ip: host, unit: "_akuvox", msg: msg });
+    await API.sendLog({ date: now, ip: host, unit: "akuvox", msg: msg });
 
     // Motion detection: start
     if (msg.indexOf("Requst SnapShot") >= 0) {

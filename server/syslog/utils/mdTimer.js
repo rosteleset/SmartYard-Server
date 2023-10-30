@@ -1,20 +1,15 @@
-const API = require("./API");
+const API = require("./api");
 const {getTimestamp} = require("./getTimestamp");
 
 const mdStorage = {};
 
 const mdStop = async (host) => {
     const now = getTimestamp(new Date());
-    await API.motionDetection({date: now, ip: host, motionActive: false});
+    await API.motionDetection({ date: now, ip: host, motionActive: false });
     delete mdStorage[host];
 }
 
-/**
- * Used for devices that do not have a “Stop motion detection” event, default is 5 seconds
- * @param host
- * @param delay
- */
-const mdTimer = (host, delay = 5000) => {
+const mdTimer = (host, delay) => {
     if (mdStorage[host]) {
         clearTimeout(mdStorage[host]);
     }
@@ -22,4 +17,4 @@ const mdTimer = (host, delay = 5000) => {
     mdStorage[host] = setTimeout(mdStop, delay, host);
 }
 
-module.exports = {mdTimer};
+module.exports = { mdTimer };

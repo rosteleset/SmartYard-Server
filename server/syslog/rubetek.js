@@ -1,10 +1,10 @@
 const syslog = new (require("syslog-server"))();
-const { hw: { rubetek: _rubetek } } = require("../config.json");
-const { getTimestamp } = require("../utils/getTimestamp");
-const { urlParser } = require("../utils/urlParser");
-const API = require("../utils/API");
-const { mdTimer } = require("../utils/mdTimer");
-const { port } = urlParser(_rubetek);
+const { hw: { rubetek } } = require("./config.json");
+const { getTimestamp } = require("./utils/getTimestamp");
+const { urlParser } = require("./utils/urlParser");
+const API = require("./utils/api");
+const { mdTimer } = require("./utils/mdTimer");
+const { port } = urlParser(rubetek);
 
 const gateRabbits = [];
 
@@ -16,7 +16,7 @@ syslog.on("message", async ({ date, host, message }) => {
     console.log(`${now} || ${host} || ${msg}`);
 
     // Send message to syslog storage
-    await API.sendLog({ date: now, ip: host, unit: "_rubetek", msg: msg });
+    await API.sendLog({ date: now, ip: host, unit: "rubetek", msg: msg });
 
     // Motion detection (face detection): start
     if (msgParts[2] === 'The face was detected and sent to the server') {

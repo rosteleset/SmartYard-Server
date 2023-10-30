@@ -1,9 +1,9 @@
 const http = require("http");
 const url = require("url");
-const {hw: {sputnik}} = require("../config.json");
-const {getTimestamp} = require("../utils/getTimestamp");
-const API = require("../utils/API");
-const {mdTimer} = require("../utils/mdTimer");
+const {hw: {sputnik}} = require("./config.json");
+const {getTimestamp} = require("./utils/getTimestamp");
+const API = require("./utils/api");
+const {mdTimer} = require("./utils/mdTimer");
 
 const port = new url.URL(sputnik).port;
 

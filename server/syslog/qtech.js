@@ -1,11 +1,11 @@
 const syslog = new (require("syslog-server"))();
 const net = require("net");
-const { hw: { qtech: _qtech } } = require("../config.json");
-const { getTimestamp } = require("../utils/getTimestamp");
-const { urlParser } = require("../utils/urlParser");
-const API = require("../utils/API");
-const { mdTimer } = require("../utils/mdTimer");
-const { port } = urlParser(_qtech);
+const { hw: { qtech } } = require("./config.json");
+const { getTimestamp } = require("./utils/getTimestamp");
+const { urlParser } = require("./utils/urlParser");
+const API = require("./utils/api");
+const { mdTimer } = require("./utils/mdTimer");
+const { port } = urlParser(qtech);
 
 const debugPort = +port + 1000;
 
@@ -33,7 +33,7 @@ syslog.on("message", async ({ date, host, message }) => {
     console.log(`${now} || ${host} || ${qtMsg}`);
 
     // Send message to syslog storage
-    await API.sendLog({ date: now, ip: host, unit: "_qtech", msg: qtMsg });
+    await API.sendLog({ date: now, ip: host, unit: "qtech", msg: qtMsg });
 
     // Motion detection: start
     if (qtMsgParts[1] === "Send Photo") {
