@@ -582,13 +582,9 @@
                         return false;
                     }
 
-                    if (!$params["login"] || !$params["password"]) {
+                    if ((array_key_exists("login", $params) || array_key_exists("password", $params)) && (!$params["login"] || !$params["password"])) {
                         $params["login"] = null;
                         $params["password"] = null;
-                    }
-    
-                    if (!$params["contract"]) {
-                        $params["contract"] = null;
                     }
                     
                     $params["floor"] = (int)@$params["floor"];

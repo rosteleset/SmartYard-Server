@@ -22,7 +22,7 @@ class DomophoneConfigurationBuilder extends ConfigurationBuilder
             'rfids' => [],
             'gateLinks' => [],
             'cmsLevels' => [],
-            'cmsModel' => [],
+            'cmsModel' => '',
             'matrix' => [],
             'ntp' => [],
             'tickerText' => '',

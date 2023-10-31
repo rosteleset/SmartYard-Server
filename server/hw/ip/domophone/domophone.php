@@ -94,6 +94,7 @@ abstract class domophone extends ip
         $this->setCallTimeout(45);
         $this->setTalkTimeout(90);
         $this->setUnlockTime(5);
+        $this->setPublicCode();
     }
 
     /**
@@ -188,9 +189,9 @@ abstract class domophone extends ip
     abstract public function addRfid(string $code, int $apartment = 0);
 
     /**
-     * Adds RFID keys.
+     * Add RFID keys.
      *
-     * @param array $rfids An array of RFIDs to be added.
+     * @param string[] $rfids An array of RFIDs to be added.
      *
      * @return void
      */

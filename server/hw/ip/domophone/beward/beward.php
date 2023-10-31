@@ -312,7 +312,7 @@ abstract class beward extends domophone
         ];
     }
 
-    public function getLineDiagnostics(int $apartment)
+    public function getLineDiagnostics(int $apartment): int
     {
         return (int)trim($this->apiCall('cgi-bin/intercom_cgi', [
             'action' => 'linelevel',
@@ -681,7 +681,7 @@ abstract class beward extends domophone
      *
      * @return array
      */
-    protected function getZeroMatrix()
+    protected function getZeroMatrix(): array
     {
         for ($i = 0; $i <= 8; $i++) {
             for ($u = 0; $u <= 9; $u++) {

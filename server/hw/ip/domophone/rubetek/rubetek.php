@@ -484,7 +484,7 @@ abstract class rubetek extends domophone
      *
      * @return array Door IDs and locks status.
      */
-    protected function getDoors()
+    protected function getDoors(): array
     {
         return array_slice($this->apiCall('/doors'), 0, -1);
     }

@@ -481,7 +481,7 @@ class sputnik extends domophone
         return $intercom['data']['intercom']['configShadow']['commutator']['commutatorType'];
     }
 
-    protected function getCodeByApartment(int $apartment)
+    protected function getCodeByApartment(int $apartment): array
     {
         $intercom = $this->apiCall('query', 'intercom', ['uuid' => $this->uuid], [
             'configShadow' => ['keys' => ['digitalKeys' => ['edges' => ['description', 'node' => ['uuid', 'value']]]]]

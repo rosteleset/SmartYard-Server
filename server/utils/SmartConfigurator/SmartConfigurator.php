@@ -137,7 +137,7 @@ class SmartConfigurator
         }
     }
 
-    private function hasStringKeys($array)
+    private function hasStringKeys($array): bool
     {
         return count(array_filter(array_keys($array), 'is_string')) > 0;
     }

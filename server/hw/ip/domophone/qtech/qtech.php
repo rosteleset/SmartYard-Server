@@ -12,9 +12,21 @@ abstract class qtech extends domophone
 
     use \hw\ip\common\qtech\qtech;
 
+    /**
+     * @var array|null $dialplans An array that holds dialplan information,
+     * which may be null if not loaded.
+     */
+    protected ?array $dialplans = null;
+
+    /**
+     * @var array|null $personalCodes An array that holds personal access codes information,
+     * which may be null if not loaded.
+     */
+    protected ?array $personalCodes = null;
+
     public function addRfid(string $code, int $apartment = 0)
     {
-        $data = [
+        $this->apiCall('rfkey', 'add', [
             'name' => '',
             'code' => $code,
             'mon' => 1,
@@ -27,8 +39,7 @@ abstract class qtech extends domophone
             'door_num' => 1,
             'door_wiegand_num' => 2,
             'device_name' => '',
-        ];
-        $this->apiCall('rfkey', 'add', $data);
+        ]);
     }
 
     public function addRfids(array $rfids)
@@ -46,14 +57,31 @@ abstract class qtech extends domophone
         array $cmsLevels = []
     )
     {
-        $this->configureDialplan($apartment, null, $sipNumbers, $cmsEnabled);
-        $this->configureApartmentCode($apartment, $code);
+        $this->loadDialplans();
+        $this->loadPersonalCodes();
+
+        $dialplan = $this->dialplans[$apartment] ?? ['id' => null, 'replace1' => '0'];
+        $personalCode = $this->personalCodes[$apartment] ?? ['id' => null];
+
+        $this->updateDialplan(
+            $dialplan['id'],
+            $apartment,
+            $dialplan['replace1'],
+            $sipNumbers[0],
+            $cmsEnabled ? 0 : 2,
+        );
+
+        if ($code === 0) {
+            $this->deletePersonalCode($apartment);
+        } else {
+            $this->updatePersonalCode($personalCode['id'], $apartment, $code);
+        }
     }
 
     public function configureEncoding()
     {
         // Works incorrectly when passing parameters in one call
-        $mainParams = $this->paramsToString([
+        $this->setParams([
             'Config.DoorSetting.RTSP.Enable' => 1,
             'Config.DoorSetting.RTSP.Authroization' => 1,
             'Config.DoorSetting.RTSP.Audio' => 1,
@@ -63,7 +91,7 @@ abstract class qtech extends domophone
             'Config.DoorSetting.RTSP.Codec' => 0, // H.264
         ]);
 
-        $firstStream = $this->paramsToString([
+        $this->setParams([
             'Config.DoorSetting.RTSP.H264Resolution' => 5, // 720P
             'Config.DoorSetting.RTSP.H264FrameRate' => 15, // 15fps
             'Config.DoorSetting.RTSP.H264RateControl' => 1, // VBR
@@ -71,34 +99,30 @@ abstract class qtech extends domophone
             'Config.DoorSetting.RTSP.H264VideoProfile' => 0, // Baseline profile
         ]);
 
-        $secondStream = $this->paramsToString([
+        $this->setParams([
             'Config.DoorSetting.RTSP.H264Resolution2' => 3, // 480P
             'Config.DoorSetting.RTSP.H264FrameRate2' => 30, // 30fps
             'Config.DoorSetting.RTSP.H264RateControl2' => 1, // VBR
             'Config.DoorSetting.RTSP.H264BitRate2' => 512, // Bitrate
             'Config.DoorSetting.RTSP.H264VideoProfile2' => 0, // Baseline profile
         ]);
-
-        $this->setParams($mainParams);
-        $this->setParams($firstStream);
-        $this->setParams($secondStream);
     }
 
     public function configureGate(array $links = [])
     {
-        if (count($links)) {
-            $this->setPanelMode('GATE');
-            $this->clearGateDialplan();
+        $this->clearGateDialplan();
 
-            for ($i = 0; $i < count($links); $i++) {
-                $data = [
-                    'prefix' => (string)$links[$i]['prefix'],
-                    'Start' => (string)$links[$i]['begin'],
-                    'End' => (string)$links[$i]['end'],
-                    'Account' => 1,
+        if ($links) {
+            $this->setPanelMode('GATE');
+
+            foreach ($links as $link) {
+                $this->apiCall('dialreplacemp', 'add', [
+                    'prefix' => (string)$link['prefix'],
+                    'Start' => (string)$link['firstFlat'],
+                    'End' => (string)$link['lastFlat'], // there will be an error if lastFlat === firstFlat
+                    'Account' => 0,
                     'Address' => '',
-                ];
-                $this->apiCall('dialreplacemp', 'add', $data);
+                ]);
             }
         } else {
             $this->setPanelMode('NORMAL');
@@ -107,7 +131,41 @@ abstract class qtech extends domophone
 
     public function configureMatrix(array $matrix)
     {
-        // TODO: Implement configureMatrix() method.
+        $this->loadDialplans();
+        $this->cleanMatrix();
+        $nowCms = $this->getCmsModel();
+
+        foreach ($matrix as $matrixCell) {
+            ['hundreds' => $hundreds, 'tens' => $tens, 'units' => $units, 'apartment' => $apartment] = $matrixCell;
+
+            if ($units === 10) {
+                $units = 0;
+                $tens += 1;
+
+                if ($tens === 10) {
+                    $tens = 0;
+                    $hundreds += 1;
+                }
+            }
+
+            $analogNumber = $hundreds * 100 + $tens * 10 + $units;
+
+            if ($nowCms === 'ELTIS' && $analogNumber % 100 === 0) {
+                $analogNumber += 100;
+            }
+
+            $analogReplace = str_pad($analogNumber, 2, '0', STR_PAD_LEFT);
+
+            $dialplan = $this->dialplans[$apartment] ?? ['id' => null, 'replace2' => '', 'tags' => 0];
+
+            $this->updateDialplan(
+                $dialplan['id'],
+                $apartment,
+                $analogReplace,
+                $dialplan['replace2'],
+                $dialplan['tags'],
+            );
+        }
     }
 
     public function configureSip(
@@ -141,29 +199,38 @@ abstract class qtech extends domophone
             'SipServer1' => $sipServer,
         ];
 
-        $params = $this->paramsToString([
-            'Config.Account1.STUN.Enable' => $stunEnabled,
+        $this->apiCall('sip', 'set', $sipData);
+
+        $this->setParams([
+            'Config.Account1.STUN.Enable' => (int)$stunEnabled,
             'Config.Account1.STUN.Server' => $stunServer,
             'Config.Account1.STUN.Port' => $stunPort,
             'Config.Account1.AUTO_ANSWER.Enable' => 0,
         ]);
-
-        $this->apiCall('sip', 'set', $sipData);
-        $this->setParams($params);
     }
 
     public function configureUserAccount(string $password)
     {
-        $params = $this->paramsToString([
-            'Config.Settings.WEB_LOGIN.Password02' => $password,
-        ]);
-        $this->setParams($params);
+        $this->setParams(['Config.Settings.WEB_LOGIN.Password02' => $password]);
     }
 
     public function deleteApartment(int $apartment = 0)
     {
-        $this->removePersonalCode($apartment);
-        $this->removeApartmentDialplan($apartment);
+        $this->loadDialplans();
+
+        $this->deletePersonalCode($apartment);
+
+        $dialplan = $this->dialplans[$apartment] ?? null;
+
+        if ($dialplan) {
+            $analogReplace = $dialplan['replace1'];
+
+            if ($analogReplace === '0') {
+                $this->deleteDialplan($apartment);
+            } else {
+                $this->updateDialplan($dialplan['id'], $apartment, $analogReplace, '', 0);
+            }
+        }
     }
 
     public function deleteRfid(string $code = '')
@@ -179,10 +246,10 @@ abstract class qtech extends domophone
 
     public function getAudioLevels(): array
     {
-        $micVol = $this->getParam('Config.Settings.HANDFREE.MicVol');
-        $micVolMp = $this->getParam('Config.Settings.HANDFREE.MicVolByMp');
-        $spkVol = $this->getParam('Config.Settings.HANDFREE.SpkVol');
-        $kpdVol = $this->getParam('Config.Settings.HANDFREE.KeypadVol');
+        $micVol = (int)$this->getParam('Config.Settings.HANDFREE.MicVol');
+        $micVolMp = (int)$this->getParam('Config.Settings.HANDFREE.MicVolByMp');
+        $spkVol = (int)$this->getParam('Config.Settings.HANDFREE.SpkVol');
+        $kpdVol = (int)$this->getParam('Config.Settings.HANDFREE.KeypadVol');
 
         return [$micVol, $micVolMp, $spkVol, $kpdVol];
     }
@@ -194,7 +261,9 @@ abstract class qtech extends domophone
 
     public function getLineDiagnostics(int $apartment): string
     {
-        $analogReplace = @$this->getApartmentDialplan($apartment)['replace1'];
+        $this->loadDialplans();
+
+        $analogReplace = $this->dialplans[$apartment]['replace1'] ?? null;
         $data = $this->apiCall('rs485', 'status', ['num' => "$analogReplace"])['data'];
 
         if (!$data['result']) {
@@ -213,13 +282,15 @@ abstract class qtech extends domophone
     public function getRfids(): array
     {
         $rfidKeys = [];
-        $rawKeys = @$this->apiCall('rfkey', 'get')['data'];
+        $rawKeys = $this->apiCall('rfkey', 'get')['data'] ?? [];
 
-        if ($rawKeys) {
-            array_pop($rawKeys);
-            foreach ($rawKeys as $value) {
-                $rfidKeys[] = $value['code'];
+        foreach ($rawKeys as $key => $value) {
+            if ($key === 'num') {
+                continue;
             }
+
+            $code = $value['code'];
+            $rfidKeys[$code] = $code;
         }
 
         return $rfidKeys;
@@ -227,14 +298,12 @@ abstract class qtech extends domophone
 
     public function openLock(int $lockNumber = 0)
     {
-        $data = [
+        $this->apiCall('relay', 'trig', [
             'mode' => 0,
             'relay_num' => $lockNumber,
             'level' => 0,
             'delay' => 3,
-        ];
-
-        $this->apiCall('relay', 'trig', $data);
+        ]);
     }
 
     public function prepare()
@@ -252,23 +321,23 @@ abstract class qtech extends domophone
 
     public function setAudioLevels(array $levels)
     {
-        $params = $this->paramsToString([
-            'Config.Settings.HANDFREE.MicVol' => @$levels[0] ?: 8,
-            'Config.Settings.HANDFREE.MicVolByMp' => @$levels[1] ?: 1,
-            'Config.Settings.HANDFREE.SpkVol' => @$levels[2] ?: 8,
-            'Config.Settings.HANDFREE.KeypadVol' => @$levels[3] ?: 8,
-        ]);
-        $this->setParams($params);
+        if (count($levels) === 4) {
+            $this->setParams([
+                'Config.Settings.HANDFREE.MicVol' => $levels[0],
+                'Config.Settings.HANDFREE.MicVolByMp' => $levels[1],
+                'Config.Settings.HANDFREE.SpkVol' => $levels[2],
+                'Config.Settings.HANDFREE.KeypadVol' => $levels[3],
+            ]);
+        }
     }
 
     public function setCallTimeout(int $timeout)
     {
-        $params = $this->paramsToString([
+        $this->setParams([
             'Config.Settings.CALLTIMEOUT.DialIn' => $timeout,
             'Config.Settings.CALLTIMEOUT.DialOut' => $timeout,
             'Config.Settings.CALLTIMEOUT.DialOut485' => $timeout,
         ]);
-        $this->setParams($params);
     }
 
     public function setCmsLevels(array $levels)
@@ -278,108 +347,77 @@ abstract class qtech extends domophone
 
     public function setCmsModel(string $model = '')
     {
-        switch ($model) {
-            case 'BK-100':
-                $id = 1; // VIZIT
-                break;
-            case 'KMG-100':
-                $id = 2; // CYFRAL
-                break;
-            case 'KM100-7.1':
-            case 'KM100-7.5':
-                $id = 3; // ELTIS
-                break;
-            case 'COM-100U':
-            case 'COM-220U':
-                $id = 4; // METAKOM
-                break;
-            case 'QAD-100':
-                $id = 5; // Digital
-                break;
-            default:
-                $id = 0; // Disabled
-        }
+        $modelMapping = [
+            'BK-100' => 1,       // VIZIT
+            'KMG-100' => 2,      // CYFRAL
+            'KM100-7.1' => 3,    // ELTIS
+            'KM100-7.5' => 3,    // ELTIS (same ID)
+            'COM-100U' => 4,     // METAKOM
+            'COM-220U' => 4,     // METAKOM (same ID)
+            'QAD-100' => 5,      // Digital
+        ];
 
-        $params = $this->paramsToString([
+        $id = $modelMapping[$model] ?? 0; // Default to 0 if not found
+
+        $this->setParams([
             'Config.DoorSetting.GENERAL.Basip485' => $id,
             'Config.DoorSetting.GENERAL.Basip485OpenRelayA' => 1,
             'Config.DoorSetting.GENERAL.Basip485OpenRelayB' => 0,
             'Config.DoorSetting.GENERAL.Basip485OpenRelayC' => 0,
         ]);
-        $this->setParams($params);
     }
 
     public function setConciergeNumber(int $sipNumber)
     {
-        $params = $this->paramsToString([
-            'Config.Programable.SOFTKEY01.Param1' => $sipNumber,
-        ]);
-        $this->setParams($params);
+        $this->setParams(['Config.Programable.SOFTKEY01.Param1' => $sipNumber]);
     }
 
     public function setDtmfCodes(string $code1 = '1', string $code2 = '2', string $code3 = '3', string $codeCms = '1')
     {
-        $params = $this->paramsToString([
+        $this->setParams([
             'Config.DoorSetting.DTMF.Option' => 0,
             'Config.DoorSetting.DTMF.Code1' => $code1,
             'Config.DoorSetting.DTMF.Code2' => $code2,
             'Config.DoorSetting.DTMF.Code3' => $code3,
         ]);
-        $this->setParams($params);
     }
 
     public function setLanguage(string $language = 'ru')
     {
-        switch ($language) {
-            case 'ru':
-                $webLang = 3;
-                break;
-            default:
-                $webLang = 0;
-                break;
-        }
-
-        $params = $this->paramsToString([
-            'Config.Settings.LANGUAGE.WebLang' => $webLang,
-        ]);
-        $this->setParams($params);
+        $this->setParams(['Config.Settings.LANGUAGE.WebLang' => ($language === 'ru') ? 3 : 0]);
     }
 
     public function setPublicCode(int $code = 0)
     {
-        $params = $this->paramsToString([
+        $this->setParams([
             'Config.DoorSetting.PASSWORD.PublicKeyEnable' => $code ? 1 : 0,
             'Config.DoorSetting.PASSWORD.PublicKey' => $code,
 
-            // Отключение кода для реле B и C
+            // Disable code for relays B and C
             'Config.DoorSetting.PASSWORD.PublicKeyRelayB' => 0,
             'Config.DoorSetting.PASSWORD.PublicKeyRelayC' => 0,
         ]);
-        $this->setParams($params);
     }
 
     public function setSosNumber(int $sipNumber)
     {
-        $params = $this->paramsToString([
-            'Config.Features.SPEEDDIAL.Num01' => $sipNumber,
-        ]);
-        $this->setParams($params);
+        $this->setParams(['Config.Features.SPEEDDIAL.Num01' => $sipNumber]);
     }
 
     public function setTalkTimeout(int $timeout)
     {
         $timeout = round($timeout / 60);
 
-        $params = $this->paramsToString([
+        $this->setParams([
             'Config.Features.DOORPHONE.MaxCallTime' => $timeout,
             'Config.Features.DOORPHONE.Max485CallTime' => $timeout,
         ]);
-        $this->setParams($params);
     }
 
     public function setTickerText(string $text = '')
     {
-        $params = $this->paramsToString([
+        // TODO: translation into other languages
+        $this->setParams([
             'Config.Settings.OTHERS.AccountStatusEnable' => 2,
             'Config.Settings.OTHERS.GreetMsg' => $text,
             'Config.Settings.OTHERS.SendingMsg' => 'Вызываю...',
@@ -388,27 +426,24 @@ abstract class qtech extends domophone
             'Config.Settings.OTHERS.OpenDoorFaiMsg' => 'Ошибка!',
             'Config.DoorSetting.GENERAL.DisplayNumber' => 1,
         ]);
-        $this->setParams($params);
     }
 
     public function setUnlockTime(int $time = 3)
     {
-        $params = $this->paramsToString([
+        $this->setParams([
             'Config.DoorSetting.RELAY.RelayADelay' => $time,
             'Config.DoorSetting.RELAY.RelayBDelay' => $time,
             'Config.DoorSetting.RELAY.RelayCDelay' => $time,
         ]);
-        $this->setParams($params);
     }
 
     public function setUnlocked(bool $unlocked = true)
     {
-        $params = $this->paramsToString([
+        $this->setParams([
             'Config.DoorSetting.RELAY.RelayATrigAlways' => (int)$unlocked,
             'Config.DoorSetting.RELAY.RelayBTrigAlways' => (int)$unlocked,
             'Config.DoorSetting.RELAY.RelayCTrigAlways' => (int)$unlocked,
         ]);
-        $this->setParams($params);
 
         // Pull relays immediately
         $this->openLock();
@@ -418,37 +453,555 @@ abstract class qtech extends domophone
 
     public function transformDbConfig(array $dbConfig): array
     {
+        $dbConfig['cmsLevels'] = [];
+        $dbConfig['cmsModel'] = $this->getCmsVendorByModel($dbConfig['cmsModel']);
+        $dbConfig['dtmf']['codeCms'] = '0';
+        $dbConfig['ntp']['timezone'] = $this->getOffsetByTimezone($dbConfig['ntp']['timezone']);
+
+        foreach ($dbConfig['apartments'] as &$apartment) {
+            $apartment['cmsLevels'] = [];
+        }
+
+        foreach ($dbConfig['gateLinks'] as &$gateLink) {
+            $gateLink['address'] = '';
+        }
+
         return $dbConfig;
     }
 
-    /** Привязать входы к реле (0:отключен, 1:A, 2:B, 3:C, 4:SOS, 5:МГН) */
-    protected function bindInputs(int $inpA = 1, int $inpB = 2, int $inpC = 1)
+    /**
+     * Bind inputs to relays.
+     *
+     * This function is needed to bind discrete inputs to specified relays or SIP numbers
+     *
+     * - 0 = Disabled
+     * - 1 = Relay A
+     * - 2 = Relay B
+     * - 3 = Relay C
+     * - 4 = Call SOS
+     * - 5 = Call for low-mobility groups
+     *
+     * @param int $inputA (Optional) What should be bound to input A (default is 1).
+     * @param int $inputB (Optional) What should be bound to input B (default is 2).
+     * @param int $inputC (Optional) What should be bound to input C (default is 1).
+     *
+     * @return void
+     */
+    protected function bindInputs(int $inputA = 1, int $inputB = 2, int $inputC = 1)
     {
-        $params = $this->paramsToString([
+        $this->setParams([
             'Config.DoorSetting.INPUT.InputEnable' => 1,
             'Config.DoorSetting.INPUT.InputBEnable' => 1,
             'Config.DoorSetting.INPUT.InputCEnable' => 1,
 
-            'Config.DoorSetting.INPUT.InputRelay' => $inpA,
-            'Config.DoorSetting.INPUT.InputBRelay' => $inpB,
-            'Config.DoorSetting.INPUT.InputCRelay' => $inpC,
+            'Config.DoorSetting.INPUT.InputRelay' => $inputA,
+            'Config.DoorSetting.INPUT.InputBRelay' => $inputB,
+            'Config.DoorSetting.INPUT.InputCRelay' => $inputC,
 
-            'Config.DoorSetting.INPUT.InputCTrigger' => 1, // Высокий триггер для АСТРЫ-5
+            'Config.DoorSetting.INPUT.InputCTrigger' => 1, // Trigger on the falling edge (for motion sensors)
         ]);
-        $this->setParams($params);
     }
 
-    /** Clear gate dialplan */
+    /**
+     * Clean the matrix by removing or updating dialplans.
+     *
+     * @return void
+     */
+    protected function cleanMatrix()
+    {
+        $this->loadDialplans();
+
+        foreach ($this->dialplans as $dialplan) {
+            if ($dialplan['replace2'] === '') {
+                // If 'replace2' (SIP number) is empty, delete the dialplan
+                $this->deleteDialplan($dialplan['prefix']);
+            } else {
+                // If 'replace2' (SIP number) is not empty, update the dialplan by setting the analog number to 0
+                $this->updateDialplan(
+                    $dialplan['id'],
+                    $dialplan['prefix'],
+                    '0',
+                    $dialplan['replace2'],
+                    $dialplan['tags']
+                );
+            }
+        }
+    }
+
+    /**
+     * Clear gate dialplan.
+     *
+     * @return void
+     */
     protected function clearGateDialplan()
     {
-        $this->apiCall('dialreplacemp', 'del', ['id' => "-1"]);
+        $this->apiCall('dialreplacemp', 'del', ['id' => '-1']);
     }
 
-    /** Configure personal access code for apartment */
-    protected function configureApartmentCode(int $apartment, int $code, bool $enabled = true)
+    /**
+     * Configure the RFID reader mode.
+     *
+     * @param int $internalMode (Optional) The internal RFID reader mode. Default is 3 (8HN).
+     * @param int $externalMode (Optional) The external RFID reader mode. Default is 3 (8HN).
+     *
+     * @return void
+     */
+    protected function configureRfidMode(int $internalMode = 3, int $externalMode = 3)
     {
+        $this->setParams([
+            'Config.DoorSetting.RFCARDDISPLAY.RfidDisplayMode' => $internalMode,
+            'Config.DoorSetting.RFCARDDISPLAY.WiegandDisplayMode' => $externalMode,
+            'Config.DoorSetting.Card.CardMatchMode' => 1, // Partial match mode
+            'Config.DoorSetting.Card.IDEnable' => 0,
+        ]);
+    }
+
+    /**
+     * Delete a dialplan based on the provided prefix (apartment).
+     *
+     * @param int $prefix (Optional) The prefix of the dialplan to be deleted.
+     * If 0, then all dialplans will be deleted. Default is 0.
+     *
+     * @return void
+     */
+    protected function deleteDialplan(int $prefix = 0)
+    {
+        $this->loadDialplans();
+
+        if ($prefix === 0) {
+            $this->apiCall('dialreplace', 'del', ['id' => '-1']);
+            $this->dialplans = [];
+        } elseif (isset($this->dialplans[$prefix])) {
+            $dialplanId = $this->dialplans[$prefix]['id'];
+            $this->apiCall('dialreplace', 'del', ['id' => "$dialplanId"]);
+            unset($this->dialplans[$prefix]);
+            $this->dialplans = $this->reindex($this->dialplans, $dialplanId);
+        }
+    }
+
+    /**
+     * Delete a personal access code based on the specified name (apartment).
+     *
+     * @param int $name (Optional) The name of the personal code that needs to be deleted.
+     * If 0, then all codes will be deleted. Default is 0.
+     *
+     * @return void
+     */
+    protected function deletePersonalCode(int $name = 0)
+    {
+        $this->loadPersonalCodes();
+
+        if ($name === 0) {
+            $this->apiCall('privatekey', 'del', ['id' => '-1']);
+            $this->personalCodes = [];
+        } elseif (isset($this->personalCodes[$name])) {
+            $codeId = $this->personalCodes[$name]['id'];
+            $this->apiCall('privatekey', 'del', ['id' => "$codeId"]);
+            unset($this->personalCodes[$name]);
+            $this->personalCodes = $this->reindex($this->personalCodes, $codeId);
+        }
+    }
+
+    /**
+     * Enable dialplan-only use.
+     * If the called apartment isn't included to the dialplan, then the call is dropped immediately.
+     *
+     * @param bool $enabled (Optional) Whether to enable dialplan-only mode. Default is true.
+     *
+     * @return void
+     */
+    protected function enableDialplanOnly(bool $enabled = true)
+    {
+        $this->setParams(['Config.DoorSetting.GENERAL.UseDialPlanOnly' => (int)$enabled]);
+    }
+
+    /**
+     * Enable or disable display heating.
+     *
+     * @param bool $enabled (Optional) Whether to enable display heating. Default is true.
+     * @param int $temperatureThreshold (Optional) The temperature threshold for heating. Default is 0°C.
+     *
+     * @return void
+     */
+    protected function enableDisplayHeat(bool $enabled = true, int $temperatureThreshold = 0)
+    {
+        $this->setParams([
+            'Config.DoorSetting.HEAT.Enable' => (int)$enabled,
+            'Config.DoorSetting.HEAT.Threshold' => $temperatureThreshold,
+        ]);
+    }
+
+    /**
+     * Enable sending photos to FTP.
+     *
+     * @param bool $enabled (Optional) Whether to enable sending photos to FTP. Default is true.
+     *
+     * @return void
+     */
+    protected function enableFtp(bool $enabled = true)
+    {
+        $this->setParams([
+            // When opening the door
+            'Config.DoorSetting.GENERAL.WebAndAPIEnable' => (int)$enabled,
+            'Config.DoorSetting.GENERAL.AnalogHandsetEnable' => (int)$enabled,
+            'Config.DoorSetting.GENERAL.SIPEquipmentEnable' => (int)$enabled,
+        ]);
+    }
+
+    /**
+     * Enable or disable built-in face recognition.
+     *
+     * @param bool $enabled (Optional) Whether to enable built-in face recognition. Default is true.
+     *
+     * @return void
+     */
+    protected function enableInternalFrs(bool $enabled = true)
+    {
+        $this->setParams(['Config.DoorSetting.FACEDETECT.Enable' => (int)$enabled]);
+    }
+
+    /**
+     * Enable PNP.
+     *
+     * @param bool $enabled (Optional) Whether to enable PNP service. Default is true.
+     *
+     * @return void
+     */
+    protected function enablePnp(bool $enabled = true)
+    {
+        $this->setParams(['Config.Autoprovision.PNP.Enable' => (int)$enabled]);
+    }
+
+    protected function getApartments(): array
+    {
+        $apartments = [];
+
+        $this->loadDialplans();
+        $this->loadPersonalCodes();
+
+        foreach ($this->dialplans as $dialplan) {
+            [
+                'prefix' => $apartmentNumber,
+                'replace2' => $sipNumber1,
+                'replace3' => $sipNumber2,
+                'replace4' => $sipNumber3,
+                'replace5' => $sipNumber4,
+                'tags' => $tags,
+            ] = $dialplan;
+
+            if ($sipNumber1) {
+                $apartments[$apartmentNumber] = [
+                    'apartment' => $apartmentNumber,
+                    'code' => $this->personalCodes[$apartmentNumber]['code'] ?? 0,
+                    'sipNumbers' => [$sipNumber1, $sipNumber2, $sipNumber3, $sipNumber4],
+                    'cmsEnabled' => !in_array($tags, [2, 3]),
+                    'cmsLevels' => [],
+                ];
+            }
+        }
+
+        return $apartments;
+    }
+
+    protected function getCmsModel(): string
+    {
+        $cmsModelId = $this->getParam('Config.DoorSetting.GENERAL.Basip485');
+
+        $modelMapping = [
+            '1' => 'VIZIT',
+            '2' => 'CYFRAL',
+            '3' => 'ELTIS',
+            '4' => 'METAKOM',
+            '5' => 'DIGITAL',
+        ];
+
+        return $modelMapping[$cmsModelId] ?? '';
+    }
+
+    /**
+     * Get the CMS vendor name based on the given CMS model.
+     *
+     * @param string $cmsModel The CMS model for which the vendor name is needed.
+     *
+     * @return string The vendor name corresponding to the CMS model, or an empty string if not found.
+     */
+    protected function getCmsVendorByModel(string $cmsModel): string
+    {
+        $modelMapping = [
+            'BK-100' => 'VIZIT',
+            'KMG-100' => 'CYFRAL',
+            'KM100-7.1' => 'ELTIS',
+            'KM100-7.5' => 'ELTIS',
+            'COM-100U' => 'METAKOM',
+            'COM-220U' => 'METAKOM',
+            'QAD-100' => 'DIGITAL',
+        ];
+
+        return $modelMapping[$cmsModel] ?? '';
+    }
+
+    protected function getDtmfConfig(): array
+    {
+        return [
+            'code1' => $this->getParam('Config.DoorSetting.DTMF.Code1'),
+            'code2' => $this->getParam('Config.DoorSetting.DTMF.Code2'),
+            'code3' => $this->getParam('Config.DoorSetting.DTMF.Code3'),
+            'codeCms' => '0',
+        ];
+    }
+
+    protected function getGateConfig(): array
+    {
+        $gateConfig = [];
+        $links = $this->apiCall('dialreplacemp', 'get')['data'] ?? [];
+
+        if (!$links || $links['num'] === 0) {
+            return $gateConfig;
+        }
+
+        unset($links['num']);
+
+        foreach ($links as $link) {
+            $gateConfig[] = [
+                'address' => '',
+                'prefix' => $link['prefix'],
+                'firstFlat' => $link['start'],
+                'lastFlat' => $link['end']
+            ];
+        }
+
+        return $gateConfig;
+    }
+
+    protected function getMatrix(): array
+    {
+        $this->loadDialplans();
+        $nowCms = $this->getCmsModel();
+        $matrix = [];
+
+        foreach ($this->dialplans as $dialplan) {
+            $analogReplace = $dialplan['replace1'];
+
+            if ($analogReplace === '0') {
+                continue;
+            }
+
+            [$hundreds, $tens, $units] = array_map('intval', str_split(str_pad($analogReplace, 3, '0', STR_PAD_LEFT)));
+
+            if ($nowCms === 'ELTIS' && $hundreds > 0 && $tens === 0 && $units === 0) {
+                $hundreds -= 1;
+            }
+
+            if (($nowCms === 'METAKOM' || $nowCms === 'DIGITAL') && $units === 0) {
+                $units = 10;
+                $tens -= 1;
+
+                if ($tens < 0) {
+                    $tens = 9;
+                    $hundreds -= 1;
+                }
+            }
+
+            if ($nowCms === 'DIGITAL' && $hundreds !== 0) {
+                $tens += $hundreds * 10;
+                $hundreds = 0;
+            }
+
+            $matrix[$hundreds . $tens . $units] = [
+                'hundreds' => $hundreds,
+                'tens' => $tens,
+                'units' => $units,
+                'apartment' => $dialplan['prefix'],
+            ];
+        }
+
+        return $matrix;
+    }
+
+    /**
+     * Get the next available ID based on the maximum ID in the given data array.
+     *
+     * @param array $data The data array to search for the maximum ID.
+     *
+     * @return int The next available ID.
+     */
+    protected function getNextId(array $data): int
+    {
+        $maxId = 0;
+
+        foreach ($data as $entry) {
+            if (isset($entry['id']) && $entry['id'] > $maxId) {
+                $maxId = $entry['id'];
+            }
+        }
+
+        return $maxId + 1;
+    }
+
+    protected function getSipConfig(): array
+    {
+        return [
+            'server' => $this->getParam('Config.Account1.SIP.Server'),
+            'port' => $this->getParam('Config.Account1.SIP.Port'),
+            'login' => $this->getParam('Config.Account1.GENERAL.UserName'),
+            'password' => $this->getParam('Config.Account1.GENERAL.Pwd'),
+            'stunEnabled' => (bool)$this->getParam('Config.Account1.STUN.Enable'),
+            'stunServer' => $this->getParam('Config.Account1.STUN.Server'),
+            'stunPort' => $this->getParam('Config.Account1.STUN.Port'),
+        ];
+    }
+
+    protected function getTickerText(): string
+    {
+        return $this->getParam('Config.Settings.OTHERS.GreetMsg');
+    }
+
+    protected function getUnlocked(): bool
+    {
+        $relayA = $this->getParam('Config.DoorSetting.RELAY.RelayATrigAlways');
+        $relayB = $this->getParam('Config.DoorSetting.RELAY.RelayBTrigAlways');
+        $relayC = $this->getParam('Config.DoorSetting.RELAY.RelayCTrigAlways');
+
+        return $relayA && $relayB && $relayC;
+    }
+
+    /**
+     * Load and cache dialplans from the API if they haven't been loaded already.
+     *
+     * @return void
+     */
+    protected function loadDialplans()
+    {
+        if ($this->dialplans === null) {
+            $rawDialplans = $this->apiCall('dialreplace', 'get')['data'] ?? [];
+            unset($rawDialplans['num']);
+            $this->dialplans = array_column($rawDialplans, null, 'prefix');
+        }
+    }
+
+    /**
+     * Load and cache personal codes from the API if they haven't been loaded already.
+     *
+     * @return void
+     */
+    protected function loadPersonalCodes()
+    {
+        if ($this->personalCodes === null) {
+            $rawCodes = $this->apiCall('privatekey', 'get')['data'] ?? [];
+            unset($rawCodes['num']);
+            $this->personalCodes = array_column($rawCodes, null, 'name');
+        }
+    }
+
+    /**
+     * Reindex the data array after an element with a specific ID is removed.
+     *
+     * @param array $data The original data array.
+     * @param int $deletedId The ID of the deleted element.
+     *
+     * @return array New data array.
+     */
+    protected function reindex(array $data, int $deletedId): array
+    {
+        return array_map(function ($newData) use ($deletedId) {
+            if ($newData['id'] > $deletedId) {
+                $newData['id'] -= 1;
+            }
+            return $newData;
+        }, $data);
+    }
+
+    /**
+     * Set panel mode.
+     *
+     * @param string $mode (Optional) The panel mode to set. Use 'GATE' to set the system in gate mode.
+     * Any other value will put the panel into NORMAL mode.
+     *
+     * @return void
+     */
+    protected function setPanelMode(string $mode = '')
+    {
+        $this->setParams(['Config.DoorSetting.GENERAL.Basip485DeviceMode' => ($mode === 'GATE') ? 0 : 1]);
+    }
+
+    /**
+     * Set personal code length.
+     *
+     * @param int $length (Optional) The length of personal access codes. Default is 5.
+     *
+     * @return void
+     */
+    protected function setPersonalCodeLength(int $length = 5)
+    {
+        $this->setParams(['Config.DoorSetting.PrivateKey.Length' => $length]);
+    }
+
+    /**
+     * Update or add a dialplan with the provided parameters.
+     *
+     * @param int|null $id The ID of the dialplan (if updating an existing dialplan), or null if adding a new dialplan.
+     * @param string $prefix The prefix (apartment number) of the dialplan.
+     * @param string $replace1 The first replacement value (analog number).
+     * @param string $replace2 The second replacement value (SIP number).
+     * @param int $tags Dialplan tags.
+     *
+     * @return void
+     */
+    protected function updateDialplan(
+        ?int   $id,
+        string $prefix,
+        string $replace1,
+        string $replace2,
+        int    $tags
+    )
+    {
+        $this->loadDialplans();
+
         $data = [
-            'name' => "$apartment",
+            'line' => 0,
+            'prefix' => $prefix,
+            'Replace1' => $replace1,
+            'DelayTime1' => '0',
+            'Replace2' => $replace2,
+            'DelayTime2' => '0',
+            'Replace3' => '',
+            'DelayTime3' => '0',
+            'Replace4' => '',
+            'DelayTime4' => '0',
+            'Replace5' => '',
+            'DelayTime5' => '0',
+            'tags' => $tags,
+        ];
+
+        if ($id !== null) {
+            $data['id'] = $id;
+        }
+
+        $this->apiCall('dialreplace', $id !== null ? 'set' : 'add', $data);
+
+        if (!isset($data['id'])) {
+            $data['id'] = $this->getNextId($this->dialplans);
+        }
+
+        $this->dialplans[$prefix] = array_change_key_case($data);
+    }
+
+    /**
+     * Update or add a personal code with the provided parameters.
+     *
+     * @param int|null $id The ID of the personal code (if updating an existing code), or null if adding a new code.
+     * @param int $name Name associated with the access code (usually apartment number).
+     * @param int $code The access code to configure.
+     * @param bool $enabled (Optional) Whether the access code is enabled. Default is true.
+     *
+     * @return void
+     */
+    protected function updatePersonalCode(?int $id, int $name, int $code, bool $enabled = true)
+    {
+        $this->loadPersonalCodes();
+
+        $data = [
+            'name' => "$name",
             'code' => "$code",
             'mon' => (int)$enabled,
             'tue' => (int)$enabled,
@@ -460,283 +1013,19 @@ abstract class qtech extends domophone
             'door_num' => 1,
             'time_start' => '00:00',
             'time_end' => '23:59',
-            'device_name' => "$apartment",
+            'device_name' => "$name",
         ];
 
-        $code = $this->getApartmentCode($apartment);
-        if ($code) { // Edit existing code
-            $data['id'] = $code['id'];
-            $this->apiCall('privatekey', 'set', $data);
-        } else { // Add new code
-            $this->apiCall('privatekey', 'add', $data);
-        }
-    }
-
-    /** Configure dialplan */
-    protected function configureDialplan(
-        int   $apartment,
-        int   $analogReplace = null,
-        array $numbers = null,
-        bool  $cmsEnabled = null
-    )
-    {
-        if ($analogReplace >= 0 && $analogReplace < 10 && $analogReplace !== null) {
-            $analogReplace = "0$analogReplace";
+        if ($id !== null) {
+            $data['id'] = $id;
         }
 
-        $existingDialplan = $this->getApartmentDialplan($apartment);
+        $this->apiCall('privatekey', $id !== null ? 'set' : 'add', $data);
 
-        $data = [];
-
-        if ($existingDialplan) {
-            $data['id'] = $existingDialplan['id'];
-            $action = 'set';
-            $analogReplace = ($analogReplace !== null) ? $analogReplace : $existingDialplan['replace1'];
-            $numbers = ($numbers !== null) ? $numbers : [
-                $existingDialplan['replace2'],
-                $existingDialplan['replace3'],
-                $existingDialplan['replace4'],
-                $existingDialplan['replace5'],
-            ];
-            $cmsEnabled = ($cmsEnabled !== null) ? $cmsEnabled : !($existingDialplan['tags']);
-        } else {
-            $action = 'add';
+        if (!isset($data['id'])) {
+            $data['id'] = $this->getNextId($this->personalCodes);
         }
 
-        $data['line'] = 1;
-        $data['prefix'] = "$apartment";
-        $data['Replace1'] = "$analogReplace";
-        $data['DelayTime1'] = '0';
-        $data['Replace2'] = @"$numbers[0]";
-        $data['DelayTime2'] = '0';
-        $data['Replace3'] = @"$numbers[1]";
-        $data['DelayTime3'] = '0';
-        $data['Replace4'] = @"$numbers[2]";
-        $data['DelayTime4'] = '0';
-        $data['Replace5'] = @"$numbers[3]";
-        $data['DelayTime5'] = '0';
-        $data['tags'] = $cmsEnabled ? 0 : 2;
-
-        $this->apiCall('dialreplace', $action, $data);
-    }
-
-    /** Configure RFID mode */
-    protected function configureRfidMode(int $intMode = 4, int $extMode = 3)
-    {
-        $params = $this->paramsToString([
-            'Config.DoorSetting.RFCARDDISPLAY.RfidDisplayMode' => $intMode,
-            'Config.DoorSetting.RFCARDDISPLAY.WiegandDisplayMode' => $extMode,
-            'Config.DoorSetting.Card.CardMatchMode' => 1, // Частичный режим поиска для Wiegand
-            'Config.DoorSetting.Card.IDEnable' => 0, // ID карта
-        ]);
-        $this->setParams($params);
-    }
-
-    /**
-     * Enable dialplan-only use.
-     * If the called apartment isn't included to the dialplan, then the call is dropped immediately.
-     */
-    protected function enableDialplanOnly(bool $enabled = true)
-    {
-        $params = $this->paramsToString([
-            'Config.DoorSetting.GENERAL.UseDialPlanOnly' => (int)$enabled,
-        ]);
-        $this->setParams($params);
-    }
-
-    /** Enable display heating */
-    protected function enableDisplayHeat(bool $enabled = true)
-    {
-        $params = $this->paramsToString([
-            'Config.DoorSetting.HEAT.Enable' => (int)$enabled,
-            'Config.DoorSetting.HEAT.Threshold' => 0,
-        ]);
-        $this->setParams($params);
-    }
-
-    /** Enable sending photos to FTP */
-    protected function enableFtp(bool $enabled = true)
-    {
-        $params = $this->paramsToString([
-            // When opening the door
-            'Config.DoorSetting.GENERAL.WebAndAPIEnable' => (int)$enabled,
-            'Config.DoorSetting.GENERAL.AnalogHandsetEnable' => (int)$enabled,
-            'Config.DoorSetting.GENERAL.SIPEquipmentEnable' => (int)$enabled,
-        ]);
-        $this->setParams($params);
-    }
-
-    /** Enable built-in FRS */
-    protected function enableInternalFrs(bool $enabled = true)
-    {
-        $params = $this->paramsToString([
-            'Config.DoorSetting.FACEDETECT.Enable' => (int)$enabled,
-        ]);
-        $this->setParams($params);
-    }
-
-    /** Enable PNP */
-    protected function enablePnp(bool $enabled = true)
-    {
-        $params = $this->paramsToString([
-            'Config.Autoprovision.PNP.Enable' => (int)$enabled,
-        ]);
-        $this->setParams($params);
-    }
-
-    /** Get apartment personal code */
-    protected function getApartmentCode(int $apartment)
-    {
-        return @$this->getPersonalCodes()["$apartment"];
-    }
-
-    /** Get apartment dialplan */
-    protected function getApartmentDialplan(int $apartment)
-    {
-        return @$this->getDialplan()["$apartment"];
-    }
-
-    protected function getApartments(): array
-    {
-        // TODO: Implement getApartments() method.
-        return [];
-    }
-
-    protected function getCmsModel(): string
-    {
-        // TODO: Implement getCmsModel() method.
-        return '';
-    }
-
-    /** Get dialplan */
-    protected function getDialplan(): array
-    {
-        $rawDialplans = @$this->apiCall('dialreplace', 'get')['data'];
-        unset($rawDialplans['num']);
-
-        $dialplans = [];
-
-        if ($rawDialplans) {
-            foreach ($rawDialplans as $value) {
-                $dialplans[$value['prefix']] = [
-                    'id' => $value['id'],
-                    'replace1' => $value['replace1'],
-                    'replace2' => $value['replace2'],
-                    'replace3' => $value['replace3'],
-                    'replace4' => $value['replace4'],
-                    'replace5' => $value['replace5'],
-                    'tags' => $value['tags'],
-                ];
-            }
-        }
-
-        return $dialplans;
-    }
-
-    protected function getDtmfConfig(): array
-    {
-        // TODO: Implement getDtmfConfig() method.
-        return [];
-    }
-
-    protected function getGateConfig(): array
-    {
-        // TODO: Implement getGateConfig() method.
-        return [];
-    }
-
-    protected function getMatrix(): array
-    {
-        // TODO: Implement getMatrix() method.
-        return [];
-    }
-
-    /** Get parameter from config section */
-    protected function getParam(string $path)
-    {
-        $req = $this->apiCall('config', 'get', ['config_key' => $path]);
-        return $req['data'][$path];
-    }
-
-    /** Get personal codes */
-    protected function getPersonalCodes(bool $codesOnly = false): array
-    {
-        $rawCodes = $this->apiCall('privatekey', 'get')['data'];
-        unset($rawCodes['num']);
-
-        $codes = [];
-
-        foreach ($rawCodes as $value) {
-            if ($codesOnly) {
-                $codes[] = $value['code'];
-            } else {
-                $codes[$value['name']] = [
-                    'id' => $value['id'],
-                    'code' => $value['code'],
-                ];
-            }
-        }
-
-        return $codes;
-    }
-
-    protected function getSipConfig(): array
-    {
-        // TODO: Implement getSipConfig() method.
-        return [];
-    }
-
-    protected function getTickerText(): string
-    {
-        // TODO: Implement getTickerText() method.
-        return '';
-    }
-
-    protected function getUnlocked(): bool
-    {
-        // TODO: Implement getUnlocked() method.
-        return false;
-    }
-
-    /** Remove apartment from dialplan */
-    protected function removeApartmentDialplan(int $apartment = 0)
-    {
-        $dialplanId = -1;
-
-        if ($apartment !== 0) {
-            $dialplanId = $this->getApartmentDialplan($apartment)['id'];
-        }
-
-        $this->apiCall('dialreplace', 'del', ['id' => "$dialplanId"]);
-    }
-
-    /** Remove apartment personal code */
-    protected function removePersonalCode(int $apartment = 0)
-    {
-        $codeId = -1;
-
-        if ($apartment !== 0) {
-            $codeId = @$this->getApartmentCode($apartment)['id'];
-        }
-
-        $this->apiCall('privatekey', 'del', ['id' => "$codeId"]);
-    }
-
-    /** Set panel mode */
-    protected function setPanelMode($mode = '')
-    {
-        $params = $this->paramsToString([
-            'Config.DoorSetting.GENERAL.Basip485DeviceMode' => ($mode === 'GATE') ? 0 : 1,
-        ]);
-        $this->setParams($params);
-    }
-
-    /** Set personal code length */
-    protected function setPersonalCodeLength(int $length = 5)
-    {
-        $params = $this->paramsToString([
-            'Config.DoorSetting.PrivateKey.Length' => $length,
-        ]);
-        $this->setParams($params);
+        $this->personalCodes[$name] = $data;
     }
 }

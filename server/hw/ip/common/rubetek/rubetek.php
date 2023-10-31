@@ -52,7 +52,7 @@ trait rubetek
 
     public function setAdminPassword(string $password)
     {
-        // TODO: without sleep() the following calls can response "access is forbidden" or "account not found"
+        // TODO: without sleep() the following calls can respond "access is forbidden" or "account not found"
         $this->apiCall('/settings/account/password', 'PATCH', [
             'account' => 'admin',
             'current_password' => $this->defaultWebPassword,
@@ -77,7 +77,7 @@ trait rubetek
      *
      * @return array|string API response.
      */
-    protected function apiCall($resource, $method = 'GET', $payload = [])
+    protected function apiCall(string $resource, string $method = 'GET', array $payload = [])
     {
         $req = $this->url . $this->apiPrefix . $resource;
 
@@ -113,7 +113,7 @@ trait rubetek
      *
      * @return array Device configuration.
      */
-    protected function getConfig()
+    protected function getConfig(): array
     {
         return $this->apiCall('/configuration');
     }
@@ -152,7 +152,7 @@ trait rubetek
      *
      * @return string GMT offset without zeros (GMT+3 for example).
      */
-    protected function getOffsetByTimezone(string $timezone)
+    protected function getOffsetByTimezone(string $timezone): string
     {
         try {
             $time = new DateTime('now', new DateTimeZone($timezone));
