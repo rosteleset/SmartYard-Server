@@ -24,7 +24,8 @@ class AkuvoxService extends SyslogService {
             "Sending",
             "don't support play dtmf kecode",
             "Upload Server is empty",
-            "spk not enable now!"
+            "spk not enable now!",
+            "msg_handle"
         ];
 
         return akuvoxSpamKeywords.some(keyword => msg.includes(keyword));

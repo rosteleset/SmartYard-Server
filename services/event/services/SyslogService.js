@@ -35,12 +35,23 @@ class SyslogService {
         const syslog = new syslogServer();
 
         syslog.on("message", async ({ date, host, message }) => {
+            // console.log(message)
             const now = getTimestamp(date);// Get server timestamp
             let { hostname: addressFromMessageBody, message: msg } = parseSyslogMessage(message);
 
             //  Check hostname from syslog message body
             if (topology?.nat && isIpAddress(addressFromMessageBody)) {
                 host = addressFromMessageBody;
+            }
+
+            /**
+             * TODO:
+             *      - refactor syslog parser for BSD syslog messages.
+             *      - temporarily use handler
+             */
+            if(!msg){
+                console.error("Parse message failed: "+message);
+                return
             }
 
             // Filtering spam syslog messages
