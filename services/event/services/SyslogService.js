@@ -35,7 +35,6 @@ class SyslogService {
         const syslog = new syslogServer();
 
         syslog.on("message", async ({ date, host, message }) => {
-            // console.log(message)
             const now = getTimestamp(date);// Get server timestamp
             let { hostname: addressFromMessageBody, message: msg } = parseSyslogMessage(message);
 
