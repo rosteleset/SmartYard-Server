@@ -1,7 +1,24 @@
 <?php
-    /*Store events to db plog_door_open.
-     "freeze motion detection" request for SRS
+    /*
+     * Store events to db plog_door_open.
+     * "freeze motion detection" request for SRS
     */
+
+    /*
+     * TODO: refactor events code ?!
+     * Define Events
+     */
+    $events = [
+        "NOT_ANSWERED" => 1,
+        "ANSWERED" => 2,
+        "OPEN_BY_KEY" => 3,
+        "OPEN_BY_APP" => 4,
+        "OPEN_BY_FACE_ID" => 5,
+        "OPEN_BY_CODE" => 6,
+        "OPEN_BY_CALL" => 7,
+        "OPEN_BY_BUTTON" => 8
+    ];
+
     if (!isset(
         $postdata["date"],
         $postdata["ip"],
@@ -26,15 +43,6 @@
         exit();
     }
 
-    //TODO: refactor events code ?!
-    try {
-        $events = @json_decode(file_get_contents(__DIR__ . "/../../syslog/utils/events.json"), true);
-    } catch (Exception $e) {
-        error_log(print_r($e, true));
-        response(555, [
-            "error" => "events config is missing",
-        ]);
-    }
     $plog = loadBackend('plog');
 
     switch ($event) {
