@@ -157,4 +157,4 @@ class QtechService extends SyslogService {
 
 }
 
-module.exports = {QtechService}
+module.exports = { QtechService }

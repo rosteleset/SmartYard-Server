@@ -1,5 +1,5 @@
-const {BewardService} = require("./BewardService");
-const {API} = require("../utils");
+const { BewardService } = require("./BewardService");
+const { API } = require("../utils");
 
 class BewardServiceDS extends BewardService {
     constructor(unit, config) {
@@ -20,4 +20,4 @@ class BewardServiceDS extends BewardService {
     }
 }
 
-module.exports = {BewardServiceDS}
+module.exports = { BewardServiceDS }

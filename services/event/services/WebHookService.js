@@ -58,4 +58,4 @@ class WebHookService {
     }
 }
 
-module.exports = {WebHookService}
+module.exports = { WebHookService }

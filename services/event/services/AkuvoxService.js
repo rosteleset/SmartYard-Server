@@ -65,4 +65,4 @@ class AkuvoxService extends SyslogService {
     }
 }
 
-module.exports = {AkuvoxService}
+module.exports = { AkuvoxService }

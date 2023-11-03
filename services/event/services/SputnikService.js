@@ -1,7 +1,7 @@
-const {WebHookService} = require("./WebHookService");
-const {getTimestamp} = require("../utils/getTimestamp");
+const { WebHookService } = require("./WebHookService");
+const { getTimestamp } = require("../utils/getTimestamp");
 const API = require("../utils/API");
-const {mdTimer} = require("../utils/mdTimer");
+const { mdTimer } = require("../utils");
 
 class SputnikService extends WebHookService {
     constructor(unit, config) {
@@ -65,4 +65,4 @@ class SputnikService extends WebHookService {
     }
 }
 
-module.exports = {SputnikService}
+module.exports = { SputnikService }

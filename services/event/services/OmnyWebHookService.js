@@ -1,6 +1,6 @@
-const {WebHookService} = require("./WebHookService");
-const {parseString} = require('xml2js');
-const {API, getTimestamp} = require("../utils");
+const { WebHookService } = require("./WebHookService");
+const { parseString} = require('xml2js');
+const { API, getTimestamp} = require("../utils");
 
 class OmnyWebHookService extends WebHookService {
     constructor(unit, config) {
@@ -77,4 +77,4 @@ class OmnyWebHookService extends WebHookService {
 
 }
 
-module.exports = {OmnyWebHookService}
+module.exports = { OmnyWebHookService }

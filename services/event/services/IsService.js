@@ -1,5 +1,5 @@
-const {SyslogService} = require("./SyslogService");
-const {API, mdTimer} = require("../utils");
+const { SyslogService } = require("./SyslogService");
+const { API, mdTimer} = require("../utils");
 
 class IsService extends SyslogService {
     constructor(unit, config) {

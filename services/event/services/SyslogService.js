@@ -1,6 +1,6 @@
 const syslogServer = require("syslog-server");
-const {API, getTimestamp, parseSyslogMessage, isIpAddress} = require("../utils");
-const {topology} = require("../config.json");
+const { API, getTimestamp, parseSyslogMessage, isIpAddress} = require("../utils");
+const { topology } = require("../config.json");
 class SyslogService {
     constructor(unit, config) {
         this.unit = unit;
@@ -80,4 +80,4 @@ class SyslogService {
     }
 }
 
-module.exports = {SyslogService};
+module.exports = { SyslogService };

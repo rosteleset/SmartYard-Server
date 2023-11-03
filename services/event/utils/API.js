@@ -96,7 +96,7 @@ class API {
      *
      * @param {number} date event date in timestamp format
      * @param {string} ip device IP address
-     * @param {number:{0,1,2}} door door ID (lock ID)
+     * @param {number:{0,1,2}} door door ID (lock ID)xS
      * @param {string|number|null} detail RFID key number or personal code number
      * @param {"rfid"|"code"|"dtmf"|"button"} by event type
      */

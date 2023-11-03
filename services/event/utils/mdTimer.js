@@ -1,5 +1,5 @@
 const API = require("./API");
-const {getTimestamp} = require("./getTimestamp");
+const { getTimestamp } = require("./getTimestamp");
 
 const mdStorage = {};
 
@@ -22,4 +22,4 @@ const mdTimer = (host, delay = 5000) => {
     mdStorage[host] = setTimeout(mdStop, delay, host);
 }
 
-module.exports = {mdTimer};
+module.exports = { mdTimer };
