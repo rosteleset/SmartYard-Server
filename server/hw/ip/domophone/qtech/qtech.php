@@ -218,18 +218,24 @@ abstract class qtech extends domophone
     {
         $this->loadDialplans();
 
-        $this->deletePersonalCode($apartment);
-
-        $dialplan = $this->dialplans[$apartment] ?? null;
-
-        if ($dialplan) {
-            $analogReplace = $dialplan['replace1'];
-
-            if ($analogReplace === '0') {
-                $this->deleteDialplan($apartment);
-            } else {
-                $this->updateDialplan($dialplan['id'], $apartment, $analogReplace, '', 0);
+        if ($apartment === 0) {
+            foreach ($this->dialplans as $apartment => $dialplan) {
+                $this->deleteApartment($apartment);
             }
+        } else {
+            $dialplan = $this->dialplans[$apartment] ?? null;
+
+            if ($dialplan) {
+                $analogReplace = $dialplan['replace1'];
+
+                if ($analogReplace === '0') {
+                    $this->deleteDialplan($apartment);
+                } else {
+                    $this->updateDialplan($dialplan['id'], $apartment, $analogReplace, '', 0);
+                }
+            }
+
+            $this->deletePersonalCode($apartment);
         }
     }
 
