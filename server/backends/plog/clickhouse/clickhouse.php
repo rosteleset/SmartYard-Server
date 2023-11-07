@@ -908,14 +908,7 @@
                                         } elseif ($number_len < 9 && $number_len > 4) { // Get prefix and flat number
                                             $prefix = substr($number, 0, 4);
                                             $now_flat_number = substr($number, 4);
-                                        } else { // Get flat number
-                                            $now_flat_number = $number;
                                         }
-                                    }
-
-                                    // Get flat number from CMS door open event
-                                    if ($msg_parts[1] === "Open Door By Intercom") {
-                                        $now_flat_number = $msg_parts[0];
                                     }
 
                                     // Get flat number from DTMF door open event

@@ -526,7 +526,7 @@ abstract class qtech extends domophone
                 $this->updateDialplan(
                     $dialplan['id'],
                     $dialplan['prefix'],
-                    '0',
+                    '',
                     $dialplan['replace2'],
                     $dialplan['tags']
                 );
@@ -788,7 +788,7 @@ abstract class qtech extends domophone
         foreach ($this->dialplans as $dialplan) {
             $analogReplace = $dialplan['replace1'];
 
-            if ($analogReplace === '0') {
+            if ($analogReplace === '') {
                 continue;
             }
 
