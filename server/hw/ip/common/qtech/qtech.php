@@ -21,7 +21,7 @@ trait qtech
             'Config.DoorSetting.SysLog.SysLogServerHeartBeat' => 5,
         ]);
 
-        $this->configureDebugServer($server, $port);
+        // $this->configureDebugServer($server, $port);
     }
 
     public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow')
