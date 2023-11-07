@@ -323,6 +323,7 @@ abstract class qtech extends domophone
         $this->enablePnp(false);
         $this->setPersonalCodeLength();
         $this->configureRfidMode();
+        $this->generateCodes();
     }
 
     public function setAudioLevels(array $levels)
@@ -676,6 +677,25 @@ abstract class qtech extends domophone
     protected function enablePnp(bool $enabled = true)
     {
         $this->setParams(['Config.Autoprovision.PNP.Enable' => (int)$enabled]);
+    }
+
+    /**
+     * Generate and set security access codes.
+     * These codes are used to access the service menu from the front panel of the device.
+     *
+     * @return void
+     */
+    protected function generateCodes()
+    {
+        $projectKey = str_pad(mt_rand(0, 9999), 4, '0', STR_PAD_LEFT);
+        $userSettingKey = str_pad(mt_rand(0, 9999), 4, '0', STR_PAD_LEFT);
+        $systemSettingKey = str_pad(mt_rand(0, 9999), 4, '0', STR_PAD_LEFT);
+
+        $this->setParams([
+            'Config.DoorSetting.PASSWORD.ProjectKey' => $projectKey,
+            'Config.DoorSetting.PASSWORD.UserSettingKey' => $userSettingKey,
+            'Config.DoorSetting.PASSWORD.SystemSettingKey' => $systemSettingKey,
+        ]);
     }
 
     protected function getApartments(): array
