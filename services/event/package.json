@@ -4,8 +4,9 @@
     "description": "Event service for intercom and ip camera",
     "type": "commonjs",
     "scripts": {
-        "dev": "concurrently -k \"npm run dev:beward\" \"npm run dev:beward_ds\" \"npm run dev:qtech\" \"npm run dev:is\" \"npm run dev:akuvox\" \"npm run dev:rubetek\"",
-        "start": "concurrently -k \"npm run start:beward\" \"npm run start:beward_ds\" \"npm run start:qtech\" \"npm run start:is\" \"npm run start:akuvox\" \"npm run start:rubetek\"",
+        "start": "concurrently -k \"npm run start:beward\" \"npm run start:beward_ds\" \"npm run start:qtech\" \"npm run start:is\" \"npm run start:akuvox\" \"npm run start:rubetek\"  \"npm run start:sputnik\"",
+        "dev": "concurrently -k \"npm run dev:beward\" \"npm run dev:beward_ds\" \"npm run dev:qtech\" \"npm run dev:is\" \"npm run dev:akuvox\" \"npm run dev:rubetek\" \"npm run dev:sputnik\"",
+        "dev:debug": "NODE_ENV=development concurrently -k \"npm run dev:beward\" \"npm run dev:beward_ds\" \"npm run dev:qtech\" \"npm run dev:is\" \"npm run dev:akuvox\" \"npm run dev:rubetek\" \"npm run dev:sputnik\"",
         "start:beward": "node index.js beward",
         "start:beward_ds": "node index.js beward_ds",
         "start:qtech": "node index.js qtech",
@@ -18,7 +19,8 @@
         "dev:qtech": "nodemon index.js qtech",
         "dev:is": "nodemon index.js is",
         "dev:akuvox": "nodemon index.js akuvox",
-        "dev:rubetek": "nodemon index.js rubetek"
+        "dev:rubetek": "nodemon index.js rubetek",
+        "dev:sputnik": "nodemon index.js sputnik"
     },
     "keywords": [],
     "author": "",

@@ -1,14 +1,14 @@
 const { SyslogService } = require("./SyslogService")
 const { SERVICE_QTECH } = require("../constants");
-const { API, getTimestamp, mdTimer } = require("../utils");
-const net = require("net");
+const { API, mdTimer } = require("../utils");
+const net= require("net");
 
 // TODO: check feature
 class QtechService extends SyslogService {
     constructor(unit, config) {
         super(unit, config);
         this.gateRabbits = [];
-        this.callDoneFlow = {}
+        this.cmsCalls = []
     }
 
     filterSpamMessages(message) {
@@ -26,23 +26,32 @@ class QtechService extends SyslogService {
         // TODO:
         //      - check white rabbit feature, open by DTMF
         //      - modify sequence message handlers
+
+        /**
+         * Split message into parts
+         */
         const qtMsgParts = msg.split(/EVENT:[0-9]+:/)[1].trim().split(/[,:]/).filter(Boolean).map(part => part.trim());
 
-        // DONE:
-        // Motion detect handler
+        /**
+         *  Motion detection start
+         */
         if (qtMsgParts[1] === "Send Photo") {
             await API.motionDetection({ date: now, ip: host, motionActive: true });
             await mdTimer(host);
         }
 
-        // TODO: check!
-        // "Call start" handler
-        // example msg: "EVENT:700:Prefix:12,Replace Number:1000000001, Status:0"
-        if (qtMsgParts[2] === "Replace Number") {
-            delete (this.callDoneFlow)[host]; // Cleanup broken call (if exist)
+        /**
+         * Call to CMS
+         */
+        if (qtMsgParts[2] === "Analog Number") {
+            this.cmsCalls[host] = qtMsgParts[1];
+        }
 
-            // Call in gate mode with prefix: potential white rabbit
-            if (qtMsgParts[3].length === 6) { // TODO: wtf??? check
+        /**
+         * Call in gate mode with prefix: potential white rabbit
+         * example msg: "EVENT:700:Prefix:12,Replace Number:1000000001, Status:0"
+         */
+        if (qtMsgParts[2] === "Replace Number" && qtMsgParts[1].length === 6) {
                 const number = qtMsgParts[3];
 
                 (this.gateRabbits)[host] = {
@@ -50,17 +59,26 @@ class QtechService extends SyslogService {
                     prefix: parseInt(number.substring(0, 4)),
                     apartmentNumber: parseInt(number.substring(4)),
                 };
-            }
         }
 
-        // TODO: check!
-        // Open door by DTMF handler
-        // Incoming DTMF for white rabbit: sending rabbit gate update
+        /**
+         * Opening door by CMS handset
+         */
+        if (qtMsgParts[2] === "Open Door By Intercom" && this.cmsCalls[host]) {
+            await API.setRabbitGates({ date: now, ip: host, apartmentNumber: this.cmsCalls[host] });
+        }
+
+        /**
+         * Opening door by DTMF
+         */
         if (qtMsgParts[2] === "Open Door By DTMF") {
-            console.log("DEBUG || Handler open door by DTMF");
-            if ((this.gateRabbits)[host]) {
+            const number = qtMsgParts[1];
+
+            if (number.length === 6 && this.gateRabbits[host]) { // Gate with prefix mode
                 const { ip, prefix, apartmentNumber } = this.gateRabbits[host];
-                await API.setRabbitGates({ date: now, ip, prefix, apartmentNumber });
+                await API.setRabbitGates({ date: now, ip, prefix, apartmentNumber: apartmentNumber });
+            } else { // Normal mode
+                await API.setRabbitGates({ date: now, ip: host, apartmentNumber: number });
             }
         }
 
@@ -73,61 +91,53 @@ class QtechService extends SyslogService {
                 door = 1;
             }
 
-            await API.openDoor({ date: now, ip: host, door: door, detail: rfid, by: "rfid" });
+            await API.openDoor({ date: now, ip: host, door, detail: rfid, by: "rfid" });
         }
 
-        // Open door by code
+        /**
+         * Opening door by personal code
+         */
         if (qtMsgParts[2] === "Open Door By Code") {
             const code = parseInt(qtMsgParts[4]);
             await API.openDoor({ date: now, ip: host, detail: code, by: "code" });
         }
 
-        // Open door by button pressed
+        /**
+         *  Open door by exit button pressed
+         */
         if (qtMsgParts[1] === "Exit button pressed") {
-            let door = 0;
-            let detail = "main";
+            let door = "";
+            let detail = "";
 
-            // TODO: make default case "door=0", tests
             switch (qtMsgParts[2]) {
                 case "INPUTB":
                     door = 1;
                     detail = "second";
                     break;
+
                 case "INPUTC":
                     door = 2;
                     detail = "third";
                     break;
+
+                default:
+                    door = 0;
+                    detail = "main"
             }
 
-            await API.openDoor({ date: now, ip: host, door: door, detail: detail, by: "button" });
+            await API.openDoor({ date: now, ip: host, door, detail, by: "button" });
         }
 
-        /** TODO:
-         *      - check! and refactor to map
+        /**
+         * All calls are done
          */
-        const checkCallDone = async (host) => {
-            if ((this.callDoneFlow)[host].sipDone && ((this.callDoneFlow)[host].cmsDone || !(this.callDoneFlow)[host].cmsEnabled)) {
-                await API.callFinished({ date: getTimestamp(new Date()), ip: host });
-                delete (this.callDoneFlow)[host];
-            }
-        }
-
-        //  Check if СMS calls enabled
-        if (qtMsgParts[2] === "Analog Number") {
-            (this.callDoneFlow)[host] = { ...this.callDoneFlow[host], cmsEnabled: true };
-            await checkCallDone(host);
-        }
-    }
-
-    async checkCallDone(host){
-        if ((this.callDoneFlow)[host].sipDone && ((this.callDoneFlow)[host].cmsDone || !(this.callDoneFlow)[host].cmsEnabled)) {
-            await API.callFinished({ date: getTimestamp(new Date()), ip: host });
-            delete (this.callDoneFlow)[host];
+        if (qtMsgParts[0] === 'Finished Call') {
+            await API.callFinished({ date: now, ip: host });
         }
     }
 
     /**
-     * SIP or CMS  call completion handler
+     * Qtech debug server
      * @returns {Promise<void>}
      */
     async startDebugServer()  {
@@ -136,17 +146,7 @@ class QtechService extends SyslogService {
                 const msg = data.toString();
                 const host = socket.remoteAddress.split('f:')[1];
 
-                // Handle SIP call completion for Qtech
-                if (msg.includes("OnFinishedCall")) {
-                    (this.callDoneFlow)[host] = {...(this.callDoneFlow)[host], sipDone: true};
-                    await this.checkCallDone(host);
-                }
-
-                // Handle CMS call completion for Qtech
-                if (msg.includes("Exit Get Adapter Status Thread!")) {
-                    (this.callDoneFlow)[host] = {...(this.callDoneFlow)[host], cmsDone: true};
-                    await this.checkCallDone(host);
-                }
+                // implement debug logic
             });
         });
 

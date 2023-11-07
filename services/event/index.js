@@ -1,4 +1,4 @@
-const {hw} = require("./config.json");
+const { hw } = require("./config.json");
 const {
     BewardService,
     BewardServiceDS,
@@ -50,7 +50,7 @@ switch (serviceParam) {
     case SERVICE_QTECH:
         const qtechService = new QtechService(SERVICE_QTECH, serviceConfig);
         qtechService.createSyslogServer();
-        qtechService.startDebugServer(); // Use to handle call completion events
+        //qtechService.startDebugServer(); // Use to handle call completion events
         break;  // SERVICE_QTECH: need tests!
 
     case SERVICE_AKUVOX:
@@ -83,8 +83,8 @@ switch (serviceParam) {
             console.error(`Unit: "${serviceParam}" not defined apiEndpoint in config file: config.json`)
             process.exit(1);
         }
-        const sputnikSErvice = new SputnikService(SERVICE_SPUTNIK, serviceConfig)
-        sputnikSErvice.start();
+        const sputnikService = new SputnikService(SERVICE_SPUTNIK, serviceConfig)
+        sputnikService.start();
         break;
 
     default:

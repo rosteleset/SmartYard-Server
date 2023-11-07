@@ -1,12 +1,19 @@
 const syslogServer = require("syslog-server");
 const { API, getTimestamp, parseSyslogMessage, isIpAddress} = require("../utils");
 const { topology } = require("../config.json");
+const mode = process.env.NODE_ENV || "";
+
 class SyslogService {
     constructor(unit, config) {
         this.unit = unit;
         this.config = config;
     }
 
+    /**
+     * Filter messages that do not carry semantic load. Only production
+     * @param message
+     * @returns {boolean}
+     */
     filterSpamMessages(message) {
         return false;
     }
@@ -22,6 +29,7 @@ class SyslogService {
     }
 
     /**
+     * Send  event message to remote storage
      * @param now
      * @param host
      * @param msg
@@ -53,8 +61,10 @@ class SyslogService {
                 return
             }
 
-            // Filtering spam syslog messages
-            if (this.filterSpamMessages(msg)) {
+            /**
+             * Filtering spam syslog messages in production mode
+             */
+            if (mode !== "development" && this.filterSpamMessages(msg)) {
                 return;
             }
 
@@ -71,7 +81,7 @@ class SyslogService {
         });
 
         syslog.start({ port: this.config.port }).then(() => {
-            console.log(`${this.unit.toUpperCase()} syslog server running on UDP port ${this.config.port} || NAT is ${topology?.nat || false}`);
+            console.log(`${this.unit.toUpperCase()} syslog server running on UDP port ${this.config.port} || NAT is ${topology?.nat || false} || mode: ${mode}`);
         });
     }
 
