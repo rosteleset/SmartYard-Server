@@ -1064,7 +1064,12 @@
                             $event_data[self::COLUMN_IMAGE_UUID] = $image_data[self::COLUMN_IMAGE_UUID];
                         }
                         $event_data[self::COLUMN_PREVIEW] = $image_data[self::COLUMN_PREVIEW];
-                        // TODO: доделать для случая наличия инфы о лице
+                        if (isset($image_data[self::COLUMN_FACE])) {
+                            $event_data[self::COLUMN_FACE] = $image_data[self::COLUMN_FACE];
+                            if (isset($face_id)) {
+                                $event_data[self::COLUMN_FACE][frs::P_FACE_ID] = $face_id;
+                            }
+                        }
                     }
 
                     //сохраняем событие
