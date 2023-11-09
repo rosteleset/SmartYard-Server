@@ -385,11 +385,25 @@
 
                     $entrances = $households->getEntrances("domophoneId", [ "domophoneId" => (int)$params, "output" => "0" ]);
 
-                    if ($entrances) {
-                        echo json_encode($entrances[0]);
-                    } else {
-                        echo json_encode(false);
+                    $entrance = false;
+                    if ($entrances && $entrances[0]) {
+                        $entrance = $entrances[0];
+
+                        switch ($entrance["video"]) {
+                            case "webrtc":
+                                $cameras = loadBackend("cameras");
+
+                                if ($cameras) {
+                                    $camera = $cameras->getCamera($entrance["cameraId"]);
+                                    if ($camera && $camera["dvrStream"]) {
+                                        $entrance["videoUrl"] = "webrtc+" . $camera["dvrStream"];
+                                    }
+                                }
+                                break;
+                        }
                     }
+
+                    echo json_encode($entrance);
 
                     break;
 
@@ -442,7 +456,7 @@
                     $sip = loadBackend("sip");
                     $server = $sip->server("extension", $params["extension"]);
 
-                    $params = [
+                    $_params = [
                         "token" => $params["token"],
                         "type" => $params["tokenType"],
                         "hash" => $params["hash"],
@@ -460,13 +474,17 @@
                         "title" => i18n("sip.incomingTitle"),
                     ];
 
-                    $stun = $sip->stun($params["extension"]);
-                    if ($stun) {
-                        $params["stun"] = $stun;
-                        $params["stunTransport"] = "udp";
+                    if (@$params["videoUrl"]) {
+                        $_params["videoUrl"] = $params["videoUrl"];
                     }
 
-                    $isdn->push($params);
+                    $stun = $sip->stun($_params["extension"]);
+                    if ($stun) {
+                        $_params["stun"] = $stun;
+                        $_params["stunTransport"] = "udp";
+                    }
+
+                    $isdn->push($_params);
 
                     break;
             }
