@@ -357,7 +357,7 @@ extensions = {
 
             channel.CALLERID("name"):set("Support")
 
-            local dest = mobile_intercom(flatId, -1, -1)
+            local dest = mobile_intercom(flatId, -1, -1, false)
 
             if dest ~= "" then
                 log_debug("dialing: " .. dest)
