@@ -449,6 +449,21 @@
                                 options: cameras,
                             },
                             {
+                                id: "video",
+                                type: "select2",
+                                title: i18n("addresses.video"),
+                                options: [
+                                    {
+                                        id: "inband",
+                                        text: i18n("addresses.inband"),
+                                    },
+                                    {
+                                        id: "webrtc",
+                                        text: i18n("addresses.webrtc"),
+                                    },
+                                ],
+                            },
+                            {
                                 id: "domophoneId",
                                 type: "select2",
                                 title: i18n("addresses.domophone"),
@@ -1018,6 +1033,22 @@
                                 title: i18n("addresses.cameraId"),
                                 value: entrance.cameraId,
                                 options: cameras,
+                            },
+                            {
+                                id: "video",
+                                type: "select2",
+                                title: i18n("addresses.video"),
+                                options: [
+                                    {
+                                        id: "inband",
+                                        text: i18n("addresses.inband"),
+                                    },
+                                    {
+                                        id: "webrtc",
+                                        text: i18n("addresses.webrtc"),
+                                    },
+                                ],
+                                value: entrance.video,
                             },
                             {
                                 id: "domophoneId",
