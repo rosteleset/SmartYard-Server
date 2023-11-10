@@ -462,8 +462,6 @@
                         "title" => i18n("sip.incomingTitle"),
                     ];
 
-                    file_put_contents("/tmp/test", print_r($_params, true));
-
                     $entrance = @loadBackend("households")->getEntrances("domophoneId", [ "domophoneId" => (int)$params["domophoneId"], "output" => "0" ])[0];
                     if ($entrance && $entrance["video"] && $entrance["video"] != "inband") {
                         $camera = @$loadBackend("cameras")->getCamera($entrance["cameraId"]);
