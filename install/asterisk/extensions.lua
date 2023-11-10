@@ -168,8 +168,6 @@ function mobile_intercom(flatId, flatNumber, domophoneId)
     local res = ""
     local callerId
 
-    log_debug("domophone id: " .. domophoneId)
-
     local subscribers = dm("subscribers", flatId)
 
     local dtmf = '1'
