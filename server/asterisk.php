@@ -464,14 +464,18 @@
 
                     $entrance = @loadBackend("households")->getEntrances("domophoneId", [ "domophoneId" => (int)$params["domophoneId"], "output" => "0" ])[0];
                     if ($entrance && $entrance["video"] && $entrance["video"] != "inband") {
-                        $camera = @loadBackend("cameras")->getCamera($entrance["cameraId"]);
-                        $dvr = @loadBackend("dvr")->getDVRServerByStream($camera["dvrStream"]);
-                        if ($camera && $dvr) {
-                            $params["video"] = [];
-                            $_params["video"]["server"] = $dvr["type"];
-                            $_params["video"]["token"] = $dvr->getDVRTokenForCam($camera, $subscriber["subscriberId"]);
-                            $_params["video"]["type"] = $entrance["video"];
-                            $_params["video"]["stream"] = $camera["dvrStream"];
+                        $cameras = @loadBackend("cameras"); 
+                        $dvrs = @loadBackend("dvr");
+                        if ($cameras && $dvrs) {
+                            $camera = $cameras->getCamera($entrance["cameraId"]);
+                            $dvr = $dvrs->getDVRServerByStream($camera["dvrStream"]);
+                            if ($camera && $dvr) {
+                                $params["video"] = [];
+                                $_params["video"]["server"] = $dvr["type"];
+                                $_params["video"]["token"] = $dvrs->getDVRTokenForCam($camera, $subscriber["subscriberId"]);
+                                $_params["video"]["type"] = $entrance["video"];
+                                $_params["video"]["stream"] = $camera["dvrStream"];
+                            }
                         }
                     }
 
