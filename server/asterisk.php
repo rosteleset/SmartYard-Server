@@ -385,11 +385,12 @@
 
                     $entrances = $households->getEntrances("domophoneId", [ "domophoneId" => (int)$params, "output" => "0" ]);
 
-                    if ($entrances) {
-                        echo json_encode($entrances[0]);
-                    } else {
-                        echo json_encode(false);
+                    $entrance = false;
+                    if ($entrances && $entrances[0]) {
+                        $entrance = $entrances[0];
                     }
+
+                    echo json_encode($entrance);
 
                     break;
 
@@ -442,7 +443,7 @@
                     $sip = loadBackend("sip");
                     $server = $sip->server("extension", $params["extension"]);
 
-                    $params = [
+                    $_params = [
                         "token" => $params["token"],
                         "type" => $params["tokenType"],
                         "hash" => $params["hash"],
@@ -456,17 +457,34 @@
                         "platform" => (int)$params["platform"]?"ios":"android",
                         "callerId" => $params["callerId"],
                         "flatId" => $params["flatId"],
+                        "domophoneId" => $params["domophoneId"],
                         "flatNumber" => $params["flatNumber"],
                         "title" => i18n("sip.incomingTitle"),
                     ];
 
-                    $stun = $sip->stun($params["extension"]);
-                    if ($stun) {
-                        $params["stun"] = $stun;
-                        $params["stunTransport"] = "udp";
+                    $entrance = @loadBackend("households")->getEntrances("domophoneId", [ "domophoneId" => (int)$params["domophoneId"], "output" => "0" ])[0];
+                    if ($entrance && $entrance["video"] && $entrance["video"] != "inband") {
+                        $cameras = @loadBackend("cameras"); 
+                        $dvrs = @loadBackend("dvr");
+                        if ($cameras && $dvrs) {
+                            $camera = $cameras->getCamera($entrance["cameraId"]);
+                            $dvr = $dvrs->getDVRServerByStream($camera["dvrStream"]);
+                            if ($camera && $dvr) {
+                                $_params["videoServer"] = $dvr["type"];
+                                $_params["videoToken"] = $dvrs->getDVRTokenForCam($camera, $subscriber["subscriberId"]);
+                                $_params["videoType"] = $entrance["video"];
+                                $_params["videoStream"] = $camera["dvrStream"];
+                            }
+                        }
                     }
 
-                    $isdn->push($params);
+                    $stun = $sip->stun($_params["extension"]);
+                    if ($stun) {
+                        $_params["stun"] = $stun;
+                        $_params["stunTransport"] = "udp";
+                    }
+
+                    $isdn->push($_params);
 
                     break;
             }

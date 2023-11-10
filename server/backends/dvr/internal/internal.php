@@ -142,9 +142,8 @@
                         parse_str($parsed_url['query'], $parsed_query);
                         $channel_id = isset($parsed_query['channelid']) ? $parsed_query['channelid'] : '';
                     }
-                    date_default_timezone_set('UTC');
-                    $from_time = urlencode(date("d.m.Y H:i:s", $start));
-                    $to_time = urlencode(date("d.m.Y H:i:s", $finish));
+                    $from_time = urlencode(gmdate("d.m.Y H:i:s", $start));
+                    $to_time = urlencode(gmdate("d.m.Y H:i:s", $finish));
 
                     $request_url = "$scheme$user$pass$host$port/exportarchive$query&fromtime=$from_time&totime=$to_time";
                     break;
@@ -177,9 +176,8 @@
                         parse_str($parsed_url['query'], $parsed_query);
                         $guid = isset($parsed_query['channel']) ? $parsed_query['channel'] : '';
                     }
-                    date_default_timezone_set('UTC');
-                    $from_time = urlencode(date("d.m.Y H:i:s", $start));
-                    $to_time = urlencode(date("d.m.Y H:i:s", $finish));
+                    $from_time = urlencode(gmdate("d.m.Y H:i:s", $start));
+                    $to_time = urlencode(gmdate("d.m.Y H:i:s", $finish));
 
                     $request_url = "$scheme$user$pass$host$port/login?$token";
                     $arrContextOptions=array(
@@ -355,16 +353,17 @@
             /**
              * @inheritDoc
              */
-            public function getUrlOfScreenshot($cam, $time = false) {
+            public function getUrlOfScreenshot($cam, $time = null) {
                 $prefix = $cam['dvrStream'];
-                if (!$time) $time = now();
+                if ($time === null)
+                    $time = now();
                 $dvr = loadBackend("dvr")->getDVRServerByStream($prefix);
                 $type = $dvr['type'];
                 
                 switch($type) {
                 case 'nimble':
                     return "$prefix/dvr_thumbnail_$time.mp4";
-                    break;
+
                 case 'macroscop':
                     $parsed_url = parse_url($cam['dvrStream']);
                     
@@ -382,13 +381,12 @@
                         $query = $query . "&$token";
                     }
 
-                    date_default_timezone_set('UTC');
-                    $start_time = urlencode(date("d.m.Y H:i:s", $time));
+                    $start_time = urlencode(gmdate("d.m.Y H:i:s", $time));
 
                     $request_url = "$scheme$user$pass$host$port/site$query&withcontenttype=true&mode=archive&starttime=$start_time&resolutionx=480&resolutiony=270&streamtype=mainvideo";
                     
                     return $request_url;
-                    break;
+
                 case 'trassir':
                     // Example: 
                     // 1. Получить sid
@@ -418,9 +416,8 @@
                         parse_str($parsed_url['query'], $parsed_query);
                         $guid = isset($parsed_query['channel']) ? $parsed_query['channel'] : '';
                     }
-                    date_default_timezone_set('UTC');
-                    $from_time = urlencode(date("d.m.Y H:i:s", $start));
-                    $to_time = urlencode(date("d.m.Y H:i:s", $finish));
+                    $from_time = urlencode(gmdate("d.m.Y H:i:s", $start));
+                    $to_time = urlencode(gmdate("d.m.Y H:i:s", $finish));
 
                     $request_url = "$scheme$user$pass$host$port/login?$token";
                     $arrContextOptions=array(

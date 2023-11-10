@@ -287,7 +287,7 @@
             /**
              * @inheritDoc
              */
-            function createEntrance($houseId, $entranceType, $entrance, $lat, $lon, $shared, $plog, $prefix, $callerId, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $cmsLevels)
+            function createEntrance($houseId, $entranceType, $entrance, $lat, $lon, $shared, $plog, $prefix, $callerId, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $cmsLevels, $video)
             {
                 if (!checkInt($houseId) || !trim($entranceType) || !trim($entrance) || !checkInt($cmsType) || !checkInt($plog)) {
                     return false;
@@ -305,7 +305,11 @@
                     return false;
                 }
 
-                $entranceId = $this->db->insert("insert into houses_entrances (entrance_type, entrance, lat, lon, shared, plog, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, cms_levels) values (:entrance_type, :entrance, :lat, :lon, :shared, :plog, :caller_id, :house_domophone_id, :domophone_output, :cms, :cms_type, :camera_id, :cms_levels)", [
+                if (!checkStr($video)) {
+                    return false;
+                }
+
+                $entranceId = $this->db->insert("insert into houses_entrances (entrance_type, entrance, lat, lon, shared, plog, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, cms_levels, video) values (:entrance_type, :entrance, :lat, :lon, :shared, :plog, :caller_id, :house_domophone_id, :domophone_output, :cms, :cms_type, :camera_id, :cms_levels, :video)", [
                     ":entrance_type" => $entranceType,
                     ":entrance" => $entrance,
                     ":lat" => (float)$lat,
@@ -319,6 +323,7 @@
                     ":cms_type" => $cmsType,
                     ":camera_id" => $cameraId ? : null,
                     ":cms_levels" => $cmsLevels,
+                    ":video" => $video,
                 ]);
 
                 if (!$entranceId) {
@@ -363,7 +368,7 @@
             /**
              * @inheritDoc
              */
-            function modifyEntrance($entranceId, $houseId, $entranceType, $entrance, $lat, $lon, $shared, $plog, $prefix, $callerId, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $cmsLevels)
+            function modifyEntrance($entranceId, $houseId, $entranceType, $entrance, $lat, $lon, $shared, $plog, $prefix, $callerId, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $cmsLevels, $video)
             {
                 if (!checkInt($entranceId) || !trim($entranceType) || !trim($entrance) || !checkInt($cmsType) || !checkInt($plog)) {
                     return false;
@@ -380,6 +385,10 @@
                     return false;
                 }
 
+                if (!checkStr($video)) {
+                    return false;
+                }
+
                 if (!$shared) {
                     if ($this->db->modify("delete from houses_houses_entrances where house_entrance_id = $entranceId and address_house_id != $houseId") === false) {
                         return false;
@@ -391,7 +400,7 @@
                     ":prefix" => $prefix,
                 ]) !== false;
 
-                $r2 = $this->db->modify("update houses_entrances set entrance_type = :entrance_type, entrance = :entrance, lat = :lat, lon = :lon, shared = :shared, plog = :plog, caller_id = :caller_id, house_domophone_id = :house_domophone_id, domophone_output = :domophone_output, cms = :cms, cms_type = :cms_type, camera_id = :camera_id, cms_levels = :cms_levels where house_entrance_id = $entranceId", [
+                $r2 = $this->db->modify("update houses_entrances set entrance_type = :entrance_type, entrance = :entrance, lat = :lat, lon = :lon, shared = :shared, plog = :plog, caller_id = :caller_id, house_domophone_id = :house_domophone_id, domophone_output = :domophone_output, cms = :cms, cms_type = :cms_type, camera_id = :camera_id, cms_levels = :cms_levels, video = :video where house_entrance_id = $entranceId", [
                     ":entrance_type" => $entranceType,
                     ":entrance" => $entrance,
                     ":lat" => (float)$lat,
@@ -405,6 +414,7 @@
                     ":cms_type" => $cmsType,
                     ":camera_id" => (int)$cameraId ? : null,
                     ":cms_levels" => $cmsLevels,
+                    ":video" => $video,
                 ]) !== false;
 
                 $queue = loadBackend("queue");
@@ -582,13 +592,9 @@
                         return false;
                     }
 
-                    if (!$params["login"] || !$params["password"]) {
+                    if ((array_key_exists("login", $params) || array_key_exists("password", $params)) && (!$params["login"] || !$params["password"])) {
                         $params["login"] = null;
                         $params["password"] = null;
-                    }
-    
-                    if (!$params["contract"]) {
-                        $params["contract"] = null;
                     }
                     
                     $params["floor"] = (int)@$params["floor"];
@@ -1559,7 +1565,7 @@
                     return false;
                 }
 
-                return $this->db->get("select house_entrance_id, entrance_type, entrance, lat, lon, shared, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, coalesce(cms_levels, '') as cms_levels, plog from houses_entrances where house_entrance_id = $entranceId order by entrance_type, entrance",
+                return $this->db->get("select house_entrance_id, entrance_type, entrance, lat, lon, shared, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, coalesce(cms_levels, '') as cms_levels, plog, video from houses_entrances where house_entrance_id = $entranceId order by entrance_type, entrance",
                     false,
                     [
                         "house_entrance_id" => "entranceId",
@@ -1576,6 +1582,7 @@
                         "cms_type" => "cmsType",
                         "camera_id" => "cameraId",
                         "cms_levels" => "cmsLevels",
+                        "video" => "video",
                     ],
                     [ "singlify" ]
                 );
@@ -1633,7 +1640,7 @@
                 }
 
                 if (!$q) {
-                    $q = "select address_house_id, prefix, house_entrance_id, entrance_type, entrance, lat, lon, shared, plog, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, coalesce(cms_levels, '') as cms_levels from houses_entrances left join houses_houses_entrances using (house_entrance_id) where $where order by entrance_type, entrance";
+                    $q = "select address_house_id, prefix, house_entrance_id, entrance_type, entrance, lat, lon, shared, plog, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, coalesce(cms_levels, '') as cms_levels, video from houses_entrances left join houses_houses_entrances using (house_entrance_id) where $where order by entrance_type, entrance";
                 }
 
                 return $this->db->get($q,
@@ -1655,6 +1662,7 @@
                         "cms_type" => "cmsType",
                         "camera_id" => "cameraId",
                         "cms_levels" => "cmsLevels",
+                        "video" => "video",
                     ]
                 );
             }

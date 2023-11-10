@@ -908,14 +908,7 @@
                                         } elseif ($number_len < 9 && $number_len > 4) { // Get prefix and flat number
                                             $prefix = substr($number, 0, 4);
                                             $now_flat_number = substr($number, 4);
-                                        } else { // Get flat number
-                                            $now_flat_number = $number;
                                         }
-                                    }
-
-                                    // Get flat number from CMS door open event
-                                    if ($msg_parts[1] === "Open Door By Intercom") {
-                                        $now_flat_number = $msg_parts[0];
                                     }
 
                                     // Get flat number from DTMF door open event
@@ -1071,7 +1064,12 @@
                             $event_data[self::COLUMN_IMAGE_UUID] = $image_data[self::COLUMN_IMAGE_UUID];
                         }
                         $event_data[self::COLUMN_PREVIEW] = $image_data[self::COLUMN_PREVIEW];
-                        // TODO: доделать для случая наличия инфы о лице
+                        if (isset($image_data[self::COLUMN_FACE])) {
+                            $event_data[self::COLUMN_FACE] = $image_data[self::COLUMN_FACE];
+                            if (isset($face_id)) {
+                                $event_data[self::COLUMN_FACE][frs::P_FACE_ID] = $face_id;
+                            }
+                        }
                     }
 
                     //сохраняем событие

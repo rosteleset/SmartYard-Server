@@ -95,7 +95,7 @@ trait sputnik
         return json_decode(file_get_contents($this->url, false, $context), true);
     }
 
-    protected function buildFields($fields)
+    protected function buildFields($fields): string
     {
         $result = '';
         $addSpace = count($fields) > 1;
@@ -163,7 +163,7 @@ trait sputnik
      *
      * @return string Offset without zeros (+3 for example).
      */
-    protected function getOffsetByTimezone(string $timezone)
+    protected function getOffsetByTimezone(string $timezone): string
     {
         try {
             $time = new DateTime('now', new DateTimeZone($timezone));

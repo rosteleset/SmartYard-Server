@@ -20,11 +20,14 @@
             {
                 $query = "";
                 foreach ($push as $param => $value) {
-                    if ($param != "action" && $param != "secret") {
+                    if ($param != "action" && $param != "secret" && $param != "video") {
                         $query = $query . $param . "=" . urlencode($value) . "&";
                     }
                     if ($param == "action") {
                         $query = $query . "pushAction=" . urlencode($value) . "&";
+                    }
+                    if ($param == "video") {
+                        $query = $query . "video=" . urlencode(json_encode($value)) . "&";
                     }
                 }
                 if ($query) {
