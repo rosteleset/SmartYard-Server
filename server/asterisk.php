@@ -470,11 +470,10 @@
                             $camera = $cameras->getCamera($entrance["cameraId"]);
                             $dvr = $dvrs->getDVRServerByStream($camera["dvrStream"]);
                             if ($camera && $dvr) {
-                                $params["video"] = [];
-                                $_params["video"]["server"] = $dvr["type"];
-                                $_params["video"]["token"] = $dvrs->getDVRTokenForCam($camera, $subscriber["subscriberId"]);
-                                $_params["video"]["type"] = $entrance["video"];
-                                $_params["video"]["stream"] = $camera["dvrStream"];
+                                $_params["videoServer"] = $dvr["type"];
+                                $_params["videoToken"] = $dvrs->getDVRTokenForCam($camera, $subscriber["subscriberId"]);
+                                $_params["videoType"] = $entrance["video"];
+                                $_params["videoStream"] = $camera["dvrStream"];
                             }
                         }
                     }
