@@ -457,12 +457,10 @@
                         "platform" => (int)$params["platform"]?"ios":"android",
                         "callerId" => $params["callerId"],
                         "flatId" => $params["flatId"],
-                        "domophioneId" => $params["domophioneId"],
+                        "domophoneId" => $params["domophoneId"],
                         "flatNumber" => $params["flatNumber"],
                         "title" => i18n("sip.incomingTitle"),
                     ];
-
-                    file_put_contents("/tmp/test", print_r($params, true));
 
                     $entrance = @loadBackend("households")->getEntrances("domophoneId", [ "domophoneId" => (int)$params["domophoneId"], "output" => "0" ])[0];
                     if ($entrance && $entrance["video"] && $entrance["video"] != "inband") {
