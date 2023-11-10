@@ -464,7 +464,7 @@
 
                     $entrance = @loadBackend("households")->getEntrances("domophoneId", [ "domophoneId" => (int)$params["domophoneId"], "output" => "0" ])[0];
                     if ($entrance && $entrance["video"] && $entrance["video"] != "inband") {
-                        $camera = @$loadBackend("cameras")->getCamera($entrance["cameraId"]);
+                        $camera = @loadBackend("cameras")->getCamera($entrance["cameraId"]);
                         $dvr = @loadBackend("dvr")->getDVRServerByStream($camera["dvrStream"]);
                         if ($camera && $dvr) {
                             $params["video"] = [];
