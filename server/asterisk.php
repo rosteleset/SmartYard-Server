@@ -388,19 +388,6 @@
                     $entrance = false;
                     if ($entrances && $entrances[0]) {
                         $entrance = $entrances[0];
-
-                        switch ($entrance["video"]) {
-                            case "webrtc":
-                                $cameras = loadBackend("cameras");
-
-                                if ($cameras) {
-                                    $camera = $cameras->getCamera($entrance["cameraId"]);
-                                    if ($camera && $camera["dvrStream"]) {
-                                        $entrance["videoUrl"] = "webrtc+" . $camera["dvrStream"];
-                                    }
-                                }
-                                break;
-                        }
                     }
 
                     echo json_encode($entrance);
@@ -470,12 +457,22 @@
                         "platform" => (int)$params["platform"]?"ios":"android",
                         "callerId" => $params["callerId"],
                         "flatId" => $params["flatId"],
+                        "domophoneId" => $params["domophoneId"],
                         "flatNumber" => $params["flatNumber"],
                         "title" => i18n("sip.incomingTitle"),
                     ];
 
-                    if (@$params["videoUrl"]) {
-                        $_params["videoUrl"] = $params["videoUrl"];
+                    $entrance = @loadBackend("households")->getEntrances("domophoneId", [ "domophoneId" => (int)$params["domophoneId"], "output" => "0" ])[0];
+                    if ($entrance && $entrance["video"] && $entrance["video"] != "inband") {
+                        $camera = @$loadBackend("cameras")->getCamera($entrance["cameraId"]);
+                        $dvr = @loadBackend("dvr")->getDVRServerByStream($camera["dvrStream"]);
+                        if ($camera && $dvr) {
+                            $params["video"] = [];
+                            $_params["video"]["server"] = $dvr["type"];
+                            $_params["video"]["token"] = $dvr->getDVRTokenForCam($camera, $subscriber["subscriberId"]);
+                            $_params["video"]["type"] = $entrance["video"];
+                            $_params["video"]["stream"] = $camera["dvrStream"];
+                        }
                     }
 
                     $stun = $sip->stun($_params["extension"]);

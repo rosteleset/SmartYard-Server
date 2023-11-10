@@ -127,12 +127,8 @@ function blacklist(flatId)
     return false
 end
 
-function push(token, tokenType, platform, extension, hash, callerId, flatId, dtmf, mobile, flatNumber, videoUrl)
-    log_debug("sending push for: " .. extension .. " [" .. mobile .. "] (" .. tokenType .. ", " .. platform .. ")")
-
-    if videoUrl then
-        log_debug("video URL: " .. videoUrl)
-    end
+function push(token, tokenType, platform, extension, hash, callerId, flatId, dtmf, mobile, flatNumber, domophioneId)
+    log_debug("sending push for: " .. extension .. " [" .. mobile .. "] (" .. tokenType .. ", " .. platform .. ", " .. domophioneId .. ")")
 
     dm("push", {
         token = token,
@@ -146,7 +142,7 @@ function push(token, tokenType, platform, extension, hash, callerId, flatId, dtm
         mobile = mobile,
         uniq = channel.CDR("uniqueid"):get(),
         flatNumber = flatNumber,
-        videoUrl = videoUrl,
+        domophioneId = domophioneId,
     })
 end
 
@@ -167,7 +163,7 @@ function camshow(domophoneId)
     return hash
 end
 
-function mobile_intercom(flatId, flatNumber, domophoneId, videoUrl)
+function mobile_intercom(flatId, flatNumber, domophoneId)
     local extension
     local res = ""
     local callerId
@@ -220,10 +216,10 @@ function mobile_intercom(flatId, flatNumber, domophoneId, videoUrl)
                         dtmf = dtmf,
                         mobile = s.mobile,
                         flatNumber = flatNumber,
-                        videoUrl = videoUrl,
+                        domophoneId = domophoneId,
                     }))
                 end
-                push(token, s.tokenType, s.platform, extension, hash, callerId, flatId, dtmf, s.mobile, flatNumber, videoUrl)
+                push(token, s.tokenType, s.platform, extension, hash, callerId, flatId, dtmf, s.mobile, flatNumber, domophoneId)
                 res = res .. "&Local/" .. extension
             end
         end
@@ -295,7 +291,7 @@ extensions = {
                     app.Wait(0.5)
                     if voip_crutch then
                         if voip_crutch['cycle'] % 10 == 0 then
-                            push(voip_crutch['token'], '0', voip_crutch['platform'], extension, voip_crutch['hash'], channel.CALLERID("name"):get(), voip_crutch['flatId'], voip_crutch['dtmf'], voip_crutch['mobile'] .. '*', voip_crutch['flatNumber'], voip_crutch['videoUrl'])
+                            push(voip_crutch['token'], '0', voip_crutch['platform'], extension, voip_crutch['hash'], channel.CALLERID("name"):get(), voip_crutch['flatId'], voip_crutch['dtmf'], voip_crutch['mobile'] .. '*', voip_crutch['flatNumber'], voip_crutch['domophoneId'])
                         end
                         voip_crutch['cycle'] = voip_crutch['cycle'] + 1
                     end
@@ -357,7 +353,7 @@ extensions = {
 
             channel.CALLERID("name"):set("Support")
 
-            local dest = mobile_intercom(flatId, -1, -1, false)
+            local dest = mobile_intercom(flatId, -1, -1)
 
             if dest ~= "" then
                 log_debug("dialing: " .. dest)
@@ -465,11 +461,6 @@ extensions = {
                 local entrance = dm("entrance", domophoneId)
                 log_debug("entrance: " .. inspect(entrance))
 
-                local videoUrl = false
-                if entrance.videoUrl then
-                    videoUrl = entrance.videoUrl
-                end
-
                 channel.CALLERID("name"):set(entrance.callerId .. ", " .. math.floor(flatNumber))
 
                 if not blacklist(flatId) and not autoopen(flatId, domophoneId) then
@@ -492,7 +483,7 @@ extensions = {
                     end
 
                     -- application(s) (mobile intercom(s))
-                    local mi = mobile_intercom(flatId, flatNumber, domophoneId, videoUrl)
+                    local mi = mobile_intercom(flatId, flatNumber, domophoneId)
                     if mi then
                         dest = dest .. "&" .. mi
                     end
