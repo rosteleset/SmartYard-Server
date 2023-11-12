@@ -1,5 +1,8 @@
 <?php
-    //Kamailio AUTH API
+    /**
+     * Kamailio AUTH API
+     * Generate Hash Authentication 1 (HA1) for kamailio auth module
+     */
     mb_internal_encoding("UTF-8");
     require_once "utils/error.php";
     require_once "utils/loader.php";
@@ -118,7 +121,11 @@
     if ($_SERVER['REQUEST_METHOD'] == 'POST' && $path == 'subscribers') {
         $postData = json_decode(file_get_contents("php://input"), associative:  true);
 
-        //TODO: verification endpoint and payload, check domain
+        /**
+         *  TODO:
+         *      -   verification endpoint and payload
+         *      -   check domain
+         */
         [$subscriber, $sipDomain] = explode('@', explode(':', $postData['from_uri'])[1]);
 
         if ($sipDomain !== $kamailioConfig['ip']){
@@ -155,3 +162,16 @@
     //TODO: make response
     http_response_code(400);
     echo json_encode(['status' => 'Bad Request', 'message' => null]);
+
+
+   /**
+    *  Example cURL Request for Kamailio API
+    *
+    * @example
+    *  curl --location 'http://smart-yard.server:8876/kamailio/subscribers' \
+    *  --header 'Content-Type: application/json' \
+    *  --header 'Authorization: Bearer example_token_from config' \
+    *  --data-raw '{
+    *      "from_uri":"sip:4000000019@kamailio.smart-yard.server"
+    *  }'
+    */
