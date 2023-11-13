@@ -132,6 +132,8 @@ namespace backends\cameras
                 $queue->changed("camera", $cameraId);
             }
 
+            $this->updateDeviceIds($cameraId, $model, $url, $credentials);
+
             return $cameraId;
         }
 
@@ -190,6 +192,8 @@ namespace backends\cameras
                 if ($queue) {
                     $queue->changed("camera", $cameraId);
                 }
+
+                $this->updateDeviceIds($cameraId, $model, $url, $credentials);
             }
 
             return $r;
@@ -218,19 +222,46 @@ namespace backends\cameras
          */
         public function cron($part) {
             if ($part === "hourly") {
-                $cameras = $this->db->get("select camera_id, url from cameras");
+                $this->updateDevicesIds();
+            }
 
-                foreach ($cameras as $camera) {
-                    $ip = gethostbyname(parse_url($camera['url'], PHP_URL_HOST));
+            return true;
+        }
 
-                    if (filter_var($ip, FILTER_VALIDATE_IP) !== false) {
-                        $this->db->modify("update cameras set ip = :ip where camera_id = " . $camera['camera_id'], [
-                            "ip" => $ip,
-                        ]);
-                    }
+        protected function updateDevicesIds() {
+            $query = "select camera_id, model, url, credentials from cameras";
+            $devices = $this->db->get($query);
+
+            foreach ($devices as $device) {
+                [
+                    'camera_id' => $deviceId,
+                    'model' => $model,
+                    'url' => $url,
+                    'credentials' => $credentials
+                ] = $device;
+
+                $this->updateDeviceIds($deviceId, $model, $url, $credentials);
+            }
+        }
+
+        protected function updateDeviceIds($deviceId, $model, $url, $credentials) {
+            if ($model === 'sputnik.json') {
+                $device = loadDevice('camera', $model, $url, $credentials);
+
+                if ($device) {
+                    $query = "update cameras
+                              set sub_id = :sub_id
+                              where camera_id = " . $deviceId;
+                    $this->db->modify($query, ["sub_id" => $device->uuid]);
+                }
+            } else {
+                $ip = gethostbyname(parse_url($url, PHP_URL_HOST));
+
+                if (filter_var($ip, FILTER_VALIDATE_IP) !== false) {
+                    $query = "update cameras set ip = :ip where camera_id = " . $deviceId;
+                    $this->db->modify($query, ["ip" => $ip]);
                 }
             }
-            return true;
         }
     }
 }

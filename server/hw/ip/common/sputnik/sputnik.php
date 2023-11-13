@@ -15,18 +15,11 @@ trait sputnik
     public string $motherboardID;
     public string $uuid;
 
-    public function configureEventServer(string $server, int $port)
+    public function configureEventServer(string $url)
     {
         foreach ($this->getWebhookUUIDs() as $webhookUUID) { // removing existing webhooks
             $this->apiCall('mutation', 'deleteWebhook', ['uuid' => $webhookUUID]);
         }
-
-        $urlComponents = parse_url($server);
-        $scheme = $urlComponents['scheme'];
-        $host = $urlComponents['host'];
-        $path = $urlComponents['path'] ?? '';
-
-        $url = $scheme . '://' . $host . ':' . $port . $path;
 
         $this->apiCall('mutation', 'createWebhook', [
             'event' => '*', // catch all events
@@ -115,30 +108,10 @@ trait sputnik
         return trim($result);
     }
 
-    protected function getEventServerConfig(): array
+    protected function getEventServer(): string
     {
         $webhooks = $this->apiCall('query', 'webhooks', [], ['url'])['data']['webhooks'];
-
-        if (empty($webhooks)) {
-            return [
-                'server' => '',
-                'port' => 0,
-            ];
-        }
-
-        $url = $webhooks[0]['url'];
-        $urlComponents = parse_url($url);
-        $scheme = $urlComponents['scheme'];
-        $host = $urlComponents['host'];
-        $path = $urlComponents['path'] ?? '';
-
-        $server = $scheme . '://' . $host . $path;
-        $port = $urlComponents['port'] ?? ($urlComponents['scheme'] === 'http' ? 80 : 443);
-
-        return [
-            'server' => $server,
-            'port' => $port,
-        ];
+        return $webhooks[0]['url'] ?? 'http://127.0.0.1';
     }
 
     protected function getNtpConfig(): array

@@ -8,7 +8,6 @@
     {
 
         use backends\frs\frs;
-        use http\Exception\InvalidArgumentException;
         use PDO;
 
         /**
@@ -199,14 +198,17 @@
             /**
              * @inheritDoc
              */
-            public function addCallDoneData($date, $ip, $call_id = null)
+            public function addCallDoneData($date, $ip = null, $sub_id = null, $call_id = null)
             {
                 $expire = $date + $this->ttl_temp_record;
 
-                $query = "insert into plog_call_done(date, ip, call_id, expire) values(:date, :ip, :call_id, :expire)";
+                $query = "insert into plog_call_done(date, ip, sub_id, call_id, expire)
+                          values(:date, :ip, :sub_id, :call_id, :expire)";
+
                 return $this->db->insert($query, [
                     ":date" => $date,
                     ":ip" => $ip,
+                    ":sub_id" => $sub_id,
                     ":call_id" => $call_id,
                     ":expire" => $expire,
                 ]);
@@ -215,14 +217,17 @@
             /**
              * @inheritDoc
              */
-            public function addDoorOpenData($date, $ip, $event_type, $door, $detail)
+            public function addDoorOpenData($date, $ip, $sub_id, $event_type, $door, $detail)
             {
                 $expire = time() + $this->ttl_temp_record;
 
-                $query = "insert into plog_door_open(date, ip, event, door, detail, expire) values(:date, :ip, :event, :door, :detail, :expire)";
+                $query = "insert into plog_door_open(date, ip, sub_id, event, door, detail, expire)
+                          values(:date, :ip, :sub_id, :event, :door, :detail, :expire)";
+
                 return $this->db->insert($query, [
                     ":date" => $date,
                     ":ip" => $ip,
+                    ":sub_id" => $sub_id,
                     ":event" => $event_type,
                     ":door" => $door,
                     ":detail" => $detail,
@@ -236,9 +241,9 @@
             public function addDoorOpenDataById($date, $domophone_id, $event_type, $door, $detail)
             {
                 $households = loadBackend('households');
-                $ip = $households->getDomophone($domophone_id)['ip'];
+                ['ip' => $ip, 'sub_id' => $sub_id] = $households->getDomophone($domophone_id);
 
-                return $this->addDoorOpenData($date, $ip, $event_type, $door, $detail);
+                return $this->addDoorOpenData($date, $ip, $sub_id, $event_type, $door, $detail);
             }
 
             /**
@@ -352,7 +357,7 @@
                 return $this->clickhouse->select($query)[0];
             }
 
-            public function getDomophoneId($ip)
+            public function getDomophoneIdByIp($ip)
             {
                 $households = loadBackend('households');
                 $result = $households->getDomophones('ip', $ip);
@@ -360,7 +365,18 @@
                     return $result[0]['domophoneId'];
                 }
 
-                return false;
+                return null;
+            }
+
+            public function getDomophoneIdBySubId($sub_id)
+            {
+                $households = loadBackend('households');
+                $result = $households->getDomophones('subId', $sub_id);
+                if ($result && $result[0]) {
+                    return $result[0]['domophoneId'];
+                }
+
+                return null;
             }
 
             private function getDomophoneDescription($domophone_id, $domophone_output)
@@ -499,8 +515,9 @@
                     $flat_list = [];
                     unset($face_id);
 
-                    $plog_date = $row['date'];
-                    $domophone_id = $this->getDomophoneId($row["ip"]);
+                    ['date' => $plog_date, 'ip' => $ip, 'sub_id' => $sub_id] = $row;
+
+                    $domophone_id = $this->getDomophoneIdByIp($ip) ?? $this->getDomophoneIdBySubId($sub_id);
                     $event_type = (int)$row['event'];
 
                     $event_data[self::COLUMN_DATE] = $plog_date;
@@ -602,7 +619,9 @@
                 $result = $this->db->query($query, PDO::FETCH_ASSOC)->fetchAll();
                 foreach ($result as $row) {
                     $ip = $row['ip'];
-                    $domophone_id = $this->getDomophoneId($row["ip"]);
+                    $sub_id = $row['sub_id'];
+
+                    $domophone_id = $this->getDomophoneIdByIp($ip) ?? $this->getDomophoneIdBySubId($sub_id);
 
                     $event_data = [];
                     $event_data[self::COLUMN_DATE] = $row['date'];
@@ -637,7 +656,7 @@
                         from
                             syslog s
                         where
-                            IPv4NumToString(s.ip) = '$ip'
+                            IPv4NumToString(s.ip) = '$ip' or s.sub_id = '$sub_id'
                             and s.date > $query_start_date
                             and s.date <= $query_end_date
                         order by
@@ -1002,6 +1021,70 @@
                                     }
                                     if (isset($now_flat_id) && !isset($flat_id)) {
                                         $flat_id = $now_flat_id;
+                                    }
+                                    if ($flag_talk_started) {
+                                        $event_data[self::COLUMN_EVENT] = self::EVENT_ANSWERED_CALL;
+                                    }
+                                    if ($flag_door_opened) {
+                                        $event_data[self::COLUMN_OPENED] = 1;
+                                    }
+                                    if ($flag_start) {
+                                        $call_start_found = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
+                        if ($unit === 'sputnik_cloud') {
+                            $patterns_call = [
+                                // pattern         start  talk  open   call_from_panel
+                                ["/action: 'call_log', flat: '(\d+)', module: 'talking', step: 'ring'/", true, false, false, 1],
+                                ["/cid: '0x', com_flat: '(\d+)', flat: '(\d+)', module: 'talking', step: 'ring_handset'/", true, false, false, 1],
+                                ["/cid: '0x', com_flat: '(\d+)', flat: '(\d+)', module: 'talking', step: 'ring_cloud'/", true, false, false, 1],
+                                ["/action: 'start_talking', call_id: '([a-zA-Z0-9]+)', type: 'SIP'/", false, true, false, 1],
+                                ["/cid: '0x', com_flat: '(\d+)', flat: '(\d+)', module: 'talking', step: 'speak_cloud'/", false, true, false, 1],
+                                ["/cid: '0x', com_flat: '(\d+)', flat: '(\d+)', module: 'talking', step: 'speak_handset'/", false, true, false, 1],
+                                ["/cid: '0x', com_flat: '(\d+)', flat: '(\d+)', module: 'talking', step: 'open_door_handset'/", false, false, true, 1],
+                                ["/action: 'intercom_log', flat: '(\d+)', level: 'info', module: 'talking', state: 'success', step: 'open_door', type: 'phone'/", false, false, true, 1],
+                                ["/cid: '0x', com_flat: '(\d+)', flat: '(\d+)', module: 'talking', step: 'finish_handset/", false, false, false, 1],
+                                ["/cid: '0x', com_flat: '(\d+)', flat: '(\d+)', module: 'talking', step: 'finish_cloud'/", false, false, false, 1],
+                                ["/action: 'call_stop', call_id: '([a-zA-Z0-9]+)', detail: 'Panel stopped call', flat: '(\d+)', reason: 'cancel_panel'/", false, false, false, 1],
+                            ];
+
+                            foreach ($patterns_call as [$pattern, $flag_start, $flag_talk_started, $flag_door_opened, $now_call_from_panel]) {
+                                unset($now_flat_id);
+                                unset($now_flat_number);
+                                unset($now_call_id);
+                                unset($now_sip_call_id);
+
+                                if (preg_match($pattern, $msg) !== 0) {
+                                    // Check if call started from this panel
+                                    if ($now_call_from_panel > 0) {
+                                        $call_from_panel = 1;
+                                    }
+
+                                    // Get message parts separated by ","
+                                    $msg_parts = array_map('trim', explode(',', $msg));
+
+                                    // Search for apartment number
+                                    foreach ($msg_parts as $part) {
+                                        if (substr($part, 0, 4 ) === 'flat') {
+                                            $str_number = explode(':', $part)[1] ?? null;
+                                            $now_flat_number = trim(str_replace('\'', '', $str_number));
+                                        }
+                                    }
+
+                                    $call_start_lost = isset($now_flat_number) && isset($flat_number) && $now_flat_number != $flat_number;
+
+                                    if ($call_start_lost) {
+                                        break;
+                                    }
+
+                                    $event_data[self::COLUMN_DATE] = $item["date"];
+
+                                    if (isset($now_flat_number) && !isset($flat_number)) {
+                                        $flat_number = $now_flat_number;
                                     }
                                     if ($flag_talk_started) {
                                         $event_data[self::COLUMN_EVENT] = self::EVENT_ANSWERED_CALL;

@@ -100,9 +100,9 @@ abstract class ip extends hw
     /**
      * Get event server configuration.
      *
-     * @return array An array containing syslog server params configured on the device.
+     * @return string A string containing the URL of the syslog server configured on the device.
      */
-    abstract protected function getEventServerConfig(): array;
+    abstract protected function getEventServer(): string;
 
     /**
      * Get NTP configuration.
@@ -121,12 +121,11 @@ abstract class ip extends hw
     /**
      * Configure a remote event server.
      *
-     * @param string $server Remote event server address.
-     * @param int $port Remote event server port.
+     * @param string $url Remote event server URL.
      *
      * @return void
      */
-    abstract public function configureEventServer(string $server, int $port);
+    abstract public function configureEventServer(string $url);
 
     /**
      * Configure NTP.

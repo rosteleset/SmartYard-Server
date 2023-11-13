@@ -8,8 +8,10 @@ namespace hw\ip\common\hikvision;
 trait hikvision
 {
 
-    public function configureEventServer(string $server, int $port)
+    public function configureEventServer(string $url)
     {
+        ['host' => $server, 'port' => $port] = parse_url_ext($url);
+
         $this->apiCall(
             '/Event/notification/httpHosts',
             'PUT',
@@ -130,10 +132,10 @@ trait hikvision
         return json_decode($res, true);
     }
 
-    protected function getEventServerConfig(): array
+    protected function getEventServer(): string
     {
         // TODO: Implement getSyslogConfig() method.
-        return [];
+        return '';
     }
 
     protected function getNtpConfig(): array

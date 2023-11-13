@@ -12,8 +12,10 @@ use Exception;
 trait qtech
 {
 
-    public function configureEventServer(string $server, int $port)
+    public function configureEventServer(string $url)
     {
+        ['host' => $server, 'port' => $port] = parse_url_ext($url);
+
         $this->setParams([
             'Config.DoorSetting.SysLog.SysLogServer' => $server,
             'Config.DoorSetting.SysLog.SysLogServerPort' => $port,
@@ -124,12 +126,12 @@ trait qtech
         ]);
     }
 
-    protected function getEventServerConfig(): array
+    protected function getEventServer(): string
     {
-        return [
-            'server' => $this->getParam('Config.DoorSetting.SysLog.SysLogServer'),
-            'port' => (int)$this->getParam('Config.DoorSetting.SysLog.SysLogServerPort'),
-        ];
+        $server = $this->getParam('Config.DoorSetting.SysLog.SysLogServer');
+        $port = $this->getParam('Config.DoorSetting.SysLog.SysLogServerPort');
+
+        return 'syslog.udp' . ':' . $server . ':' . $port;
     }
 
     protected function getNtpConfig(): array
