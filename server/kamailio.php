@@ -9,8 +9,11 @@
     require_once "utils/checkint.php";
     require_once "utils/db_ext.php";
     require_once "backends/backend.php";
+    require_once "utils/api_exec.php";
 
     header('Content-Type: application/json');
+
+    $KAMAILIO_RPC_URL = false;
 
     /**
      * Get header Authorization
@@ -96,6 +99,9 @@
         exit(1);
     }
 
+    // example: http://example-host.com:8080/RPC';
+    $KAMAILIO_RPC_URL = 'http://'.$kamailioConfig['ip'].':'.$kamailioConfig['json_rpc_port'].'/'.$kamailioConfig['json_rpc_path'];
+
     // check BEARER TOKEN if enable
     if (isset($kamailioConfig['auth_token'])){
         $token = getBearerToken();
@@ -108,6 +114,7 @@
     }
 
     $path = $_SERVER["REQUEST_URI"];
+
     $server = parse_url($config["api"]["kamailio"]);
 
     if ($server && $server['path']) {
@@ -118,7 +125,7 @@
         $path = substr($path, 1);
     }
 
-    if ($_SERVER['REQUEST_METHOD'] == 'POST' && $path == 'subscribers') {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && $path === 'subscriber/hash') {
         $postData = json_decode(file_get_contents("php://input"), associative:  true);
 
         /**
@@ -159,7 +166,51 @@
         exit(1);
     }
 
-    //TODO: make response
+    /**
+     * TODO:
+     *      - get subscriber registration information per contact
+     *      - get all active subscribers
+     *      - remove registration
+     */
+    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+        $path = explode('/', $path);
+        if ( sizeof($path)===2
+            && $path[0] === 'subscriber'
+            && (strlen((int)$path[1])===10)
+        ){
+            $subscriber = $path[1];
+            $postData = array(
+                "jsonrpc" => "2.0",
+                "method" => "ul.lookup",
+                "params" => ["location", $subscriber],
+                "id" => 1
+            );
+
+            $response = apiExec('POST', $KAMAILIO_RPC_URL, $postData, false, false);
+            echo ($response);
+            exit(1);
+        }
+
+        //  get all active subscribers
+        if ($path[0] == 'subscribers'){
+
+
+            $postData = array(
+                "jsonrpc" => "2.0",
+                "method" => "ul.dump",
+                "params" => [],
+                "id" => 1
+            );
+
+            $response = apiExec('POST', $KAMAILIO_RPC_URL, $postData, false, false);
+
+            echo ($response);
+            exit(1);
+        }
+
+    }
+
+    //TODO: make response handler
     http_response_code(400);
     echo json_encode(['status' => 'Bad Request', 'message' => null]);
 
