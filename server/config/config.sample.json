@@ -149,6 +149,8 @@
                     "title": "SBC server | Kamailio",
                     "type": "kamailio",
                     "ip": "<!-- set your kamailio domain or external ip address --!>",
+                    "json_rpc_path": "set path, default is 'RPC'",
+                    "json_rpc_port": "<!-- set your kamailio json_rpc port here --!>",
                     "sip_tcp_port": "<!-- set your kamailio tcp port here --!>",
                     "sip_udp_port": "<!-- set your kamailio udp port here --!>",
                     "sip_tls_port": "<!-- set your kamailio tls port here --!>",
