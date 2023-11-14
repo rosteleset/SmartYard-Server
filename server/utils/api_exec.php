@@ -5,46 +5,41 @@
  * @param string $method API method name
  * @param string $url base API URL
  * @param object|false $payload API payload
- * @param string $contentType API content type
+ * @param string|false $contentType API content type
  * @param string|false $token Bearer Token
  * @return false|object
  */
-function apiExec(string $method, $url, $payload = false, $contentType = false, $token = false) {
+function apiExec(string $method, string $url, $payload = false, $contentType = false, $token = false) {
     $curl = curl_init();
 
     switch ($method) {
         case "POST":
             curl_setopt($curl, CURLOPT_POST, 1);
             if ($payload) {
-                if ($contentType) {
-                    curl_setopt($curl, CURLOPT_HTTPHEADER, array(
-                        'Content-Type: ' . $contentType
-                    ));
-                } else {
-                    curl_setopt($curl, CURLOPT_HTTPHEADER, array(
-                        'Content-Type: appplication/json'
-                    ));
-                }
-
+                $contentType = $contentType ?: 'application/json';
+                curl_setopt($curl, CURLOPT_HTTPHEADER, ['Content-Type: ' . $contentType]);
                 curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($payload));
             }
             break;
         case "PUT":
-            curl_setopt($curl, CURLOPT_PUT, 1);
+            curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
+            if ($payload) {
+                curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($payload));
+            }
             break;
         case "DELETE":
             curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "DELETE");
             break;
         default:
-            if ($payload)
+            if ($payload) {
                 $url = sprintf("%s?%s", $url, http_build_query($payload));
+            }
     }
 
-    //Add Bearer Token header in the request
+    // Add Bearer Token header in the request
     if ($token) {
-        curl_setopt($curl, CURLOPT_HTTPHEADER, array(
-            'Authorization: ' . $token
-        ));
+        $headers[] = 'Authorization: Bearer ' . $token;
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
     }
 
     curl_setopt($curl, CURLOPT_URL, $url);
