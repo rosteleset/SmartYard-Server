@@ -355,6 +355,7 @@ abstract class beward extends domophone
     {
         parent::prepare();
         $this->enableUpnp(false);
+        $this->enableServiceCodes(false);
         $this->setAlarm('SOSCallActive', 'on');
         $this->setIntercom('AlertNoUSBDisk', 'off');
         $this->setIntercom('ExtReaderNotify', 'off');
@@ -496,6 +497,32 @@ abstract class beward extends domophone
             'paramreserved' => '0',
         ]);
         $this->setIntercom('DoorOpenMode', $unlocked ? 'on' : 'off');
+    }
+
+    /**
+     * Enable service codes.
+     * These codes are used to perform service operations from the front panel of the device.
+     *
+     * @param bool $enabled (Optional) True if enabled, false otherwise. Default is true.
+     *
+     * @return void
+     */
+    public function enableServiceCodes(bool $enabled = true)
+    {
+        $state = $enabled ? 'open' : 'close';
+
+        $this->apiCall('cgi-bin/srvcodes_cgi', [
+            'action' => 'set',
+            'RfidScanActive' => $state,
+            'NetInfoActive' => $state,
+            'StaticIpActive' => $state,
+            'NetResetActive' => $state,
+            'AdminResetActive' => $state,
+            'FullResetActive' => $state,
+            'SaveNetCfgActive' => $state,
+            'SaveAptCfgActive' => $state,
+            'DoorCodeAddActive' => $state,
+        ]);
     }
 
     /**
