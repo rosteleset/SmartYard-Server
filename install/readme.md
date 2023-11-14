@@ -1,0 +1,17 @@
+## Install
+
+01. [Ubuntu Jammy](00.jammy.md)
+02. [ACME](01.acme.md)
+03. [PostgreSQL](02.postresql.md)
+04. [PgBouncer](03.bouncer.md)
+05. [NodeJS](04.nodejs.md)
+06. [RBT](05.install.md)
+07. [Nginx](06.nginx.md)
+08. [Asterisk](07.asterisk.md)
+09. [MongoDB](08.mongo.md)
+10. [ClickHouse](09.clickhouse.md)
+11. [Wetty](10.wetty.md)
+12. [FRS](11.frs.md)
+13. [Syslog](12.syslog.md)
+14. [Mosquitto](13.mosquitto.md)
+99. [Post install](99.post_install.md)
