@@ -60,8 +60,7 @@
     }
 
     if (!$config) {
-        http_response_code(500);
-        echo "config is empty\n";
+        response(500, null, null, 'Config is empty');
         exit(1);
     }
 
@@ -72,8 +71,7 @@
     }
 
     if (!$config["api"]["kamailio"]) {
-        http_response_code(500);
-        echo "no kamailio api defined\n";
+        response(500, null, null, 'No kamailio api defined');
         exit(1);
     }
 
@@ -159,8 +157,7 @@
             response(200, ['ha1' => $ha1] );
         } else {
             //sip disabled
-            http_response_code(403);
-            echo json_encode(['status' => 'Forbidden', 'message' => 'SIP Not Enabled']);
+            response(403, false, false, 'SIP Not Enabled');
         }
         exit(1);
     }

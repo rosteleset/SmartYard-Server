@@ -1,6 +1,14 @@
 <?php
 
     // response wrapper
+
+    /**
+     * @param $code
+     * @param $data
+     * @param $name
+     * @param $message
+     * @return void
+     */
     function response($code = 204, $data = false, $name = false, $message = false) {
         global $response_data_source, $response_cache_req, $response_cache_ttl;
         $response_codes = [
