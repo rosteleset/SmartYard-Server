@@ -45,6 +45,7 @@
             449 => [ 'name' => 'Retry With', 'message' => 'Повторить с' ],
             451 => [ 'name' => 'Unavailable For Legal Reasons', 'message' => 'Недоступно по юридическим причинам' ],
             499 => [ 'name' => 'Client Closed Request', 'message' => 'Клиент закрыл соединение' ],
+            498 => [ 'name' => 'Invalid Token', 'message' => 'Неверный токен или отсутствует'],
             503 => [ 'name' => 'Service Unavailable', 'message' => 'Сервис недоступен' ],
         ];
         header('Content-Type: application/json');

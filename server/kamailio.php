@@ -8,15 +8,17 @@
     require_once "utils/loader.php";
     require_once "utils/checkint.php";
     require_once "utils/db_ext.php";
-    require_once "backends/backend.php";
     require_once "utils/api_exec.php";
+    require_once "utils/api_respone.php";
+    require_once "backends/backend.php";
 
+    // Set response header
     header('Content-Type: application/json');
 
     $KAMAILIO_RPC_URL = false;
 
     /**
-     * Get header Authorization
+     * Get Authorization Header
      * */
     function getAuthorizationHeader(): ?string
     {
@@ -36,10 +38,8 @@
     function getBearerToken(): ?string
     {
         $headers = getAuthorizationHeader();
-        if (!empty($headers)) {
-            if (preg_match('/Bearer\s(\S+)/', $headers, $matches)) {
-                return $matches[1];
-            }
+        if (!empty($headers) && preg_match('/Bearer\s(\S+)/', $headers, $matches)) {
+            return $matches[1];
         }
         return null;
     }
@@ -107,8 +107,7 @@
         $token = getBearerToken();
 
         if(!$token || $token !== $kamailioConfig['auth_token']){
-            http_response_code(498);
-            echo json_encode(['status' => 'Invalid Token', 'message' => 'Invalid token or empty']);
+            response(498, null, null, 'Invalid token or empty');
             exit(1);
         }
     }
@@ -125,6 +124,7 @@
         $path = substr($path, 1);
     }
 
+    // ----- routes
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && $path === 'subscriber/hash') {
         $postData = json_decode(file_get_contents("php://input"), associative:  true);
 
@@ -136,14 +136,12 @@
         [$subscriber, $sipDomain] = explode('@', explode(':', $postData['from_uri'])[1]);
 
         if ($sipDomain !== $kamailioConfig['ip']){
-            http_response_code(400);
-            echo json_encode(['status' => 'Bad Request', 'message' => 'Invalid Sip Domain']);
+            response(400, null, null, 'Invalid Sip Domain');
             exit(1);
         }
 
         if (strlen((int)$subscriber) !== 10 ) {
-            http_response_code(400);
-            echo json_encode(['status' => 'Bad Request', 'message' => 'Invalid Username']);
+            response(400, null, null, 'Invalid Username');
             exit(1);
         }
 
@@ -157,7 +155,8 @@
             $sipPassword = $flat['sipPassword'];
             //md5(username:realm:password)
             $ha1 = md5($subscriber .':'. $kamailioConfig['ip'] .':'. $sipPassword );
-            echo json_encode(['ha1' => $ha1]);
+//            echo json_encode(['ha1' => $ha1]);
+            response(200, ['ha1' => $ha1] );
         } else {
             //sip disabled
             http_response_code(403);
@@ -168,15 +167,15 @@
 
     /**
      * TODO:
-     *      - get subscriber registration information per contact
-     *      - get all active subscribers
-     *      - remove registration
+     *      - remove registration ?
+     *      - refactor api response
+     *      - add SIP PING 'kamctl ping sip:4000000013@192.168.13.84'
      */
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $path = explode('/', $path);
-        if ( sizeof($path)===2
+        if ( sizeof($path) === 2
             && $path[0] === 'subscriber'
-            && (strlen((int)$path[1])===10)
+            && (strlen((int)$path[1]) === 10)
         ){
             $subscriber = $path[1];
             $postData = array(
@@ -186,8 +185,9 @@
                 "id" => 1
             );
 
-            $response = apiExec('POST', $KAMAILIO_RPC_URL, $postData, false, false);
-            echo ($response);
+            $subscriber_info = apiExec('POST', $KAMAILIO_RPC_URL, $postData, false, false);
+
+            response(200, json_decode($subscriber_info));
             exit(1);
         }
 
@@ -210,9 +210,7 @@
 
     }
 
-    //TODO: make response handler
-    http_response_code(400);
-    echo json_encode(['status' => 'Bad Request', 'message' => null]);
+    response(400);
 
 
    /**
