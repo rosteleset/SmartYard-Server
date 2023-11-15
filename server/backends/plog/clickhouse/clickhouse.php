@@ -419,7 +419,7 @@
                     return $result[0]['flatId'];
                 }
 
-                return false;
+                return null;
             }
 
             //получение flat_id по префиксу калитки и номеру квартиры
@@ -435,7 +435,7 @@
                     return $result[0]['flatId'];
                 }
 
-                return false;
+                return null;
             }
 
             // Get flat ID by domophone ID
@@ -449,7 +449,7 @@
                     return $result[0]['flatId'];
                 }
 
-                return false;
+                return null;
             }
 
             private function getEntranceCount($flat_id)
