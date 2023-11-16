@@ -9,7 +9,7 @@
             if ($b) {
                 $n = $b->cleanup();
 
-                if ($n !== false) {
+                if ($n !== false && $n !== true) {
                     echo "$backend: $n items cleaned\n";
                 }
             } else {

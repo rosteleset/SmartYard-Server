@@ -1062,7 +1062,7 @@
                 $n += $this->db->modify("delete from addresses_areas where address_region_id is null");
 
                 if (!$n) {
-                    return false;                    
+                    return true;                    
                 } else {
                     return $n + $this->cleanup();
                 }
