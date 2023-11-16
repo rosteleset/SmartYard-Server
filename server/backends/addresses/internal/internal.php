@@ -121,7 +121,7 @@
                     return false;
                 }
 
-                return $this->db->modify("delete from addresses_regions where address_region_id = $regionId");
+                return $this->db->modify("delete from addresses_regions where address_region_id = $regionId") && $this->cleanup();
             }
 
             /**
@@ -244,7 +244,7 @@
                     return false;
                 }
 
-                return $this->db->modify("delete from addresses_areas where address_area_id = $areaId");
+                return $this->db->modify("delete from addresses_areas where address_area_id = $areaId") && $this->cleanup();
             }
 
             /**
@@ -408,7 +408,7 @@
                     return false;
                 }
 
-                return $this->db->modify("delete from addresses_cities where address_city_id = $cityId");
+                return $this->db->modify("delete from addresses_cities where address_city_id = $cityId") && $this->cleanup();
             }
 
             /**
@@ -560,7 +560,7 @@
                     return false;
                 }
 
-                return $this->db->modify("delete from addresses_settlements where address_settlement_id = $settlementId");
+                return $this->db->modify("delete from addresses_settlements where address_settlement_id = $settlementId") && $this->cleanup();
             }
 
             /**
@@ -711,7 +711,7 @@
                     return false;
                 }
 
-                return $this->db->modify("delete from addresses_streets where address_street_id = $streetId");
+                return $this->db->modify("delete from addresses_streets where address_street_id = $streetId") && $this->cleanup();
             }
 
             /**
@@ -863,7 +863,7 @@
                     return false;
                 }
 
-                return $this->db->modify("delete from addresses_houses where address_house_id = $houseId");
+                return $this->db->modify("delete from addresses_houses where address_house_id = $houseId") && $this->cleanup();
             }
 
             /**
