@@ -32,6 +32,8 @@
                         "cmses" => $configs->getCMSes(),
                     ];
 
+                    file_put_contents("/tmp/house", print_r($house, true));
+
                     $house = ($house["flats"] !== false && $house["entrances"] !== false && $house["domophoneModels"] !== false && $house["cmses"] !== false)?$house:false;
 
                     return api::ANSWER($house, "house");
