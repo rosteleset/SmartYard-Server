@@ -44,58 +44,58 @@
         return null;
     }
 
-    // Check config
-    try {
+    function loadConfiguration()
+    {
         $config = @json_decode(file_get_contents(__DIR__ . "/config/config.json"), true);
-    } catch (Exception $e) {
-        $config = false;
-    }
-
-    if (!$config) {
-        try {
+        if (!$config) {
             $config = @json_decode(json_encode(yaml_parse_file(__DIR__ . "/config/config.yml")), true);
-        } catch (Exception $e) {
-            $config = false;
         }
+
+        if (!$config) {
+            response(500, null, null, "config is empty");
+            exec(1);
+        }
+
+        return $config;
     }
 
-    if (!$config) {
-        response(500, null, null, 'Config is empty');
+    // Check and return configuration
+    function getKamailioConfig($config)
+    {
+        // Check if Kamailio API defined
+        if (!$config["api"]["kamailio"]) {
+            response(500, null, null, 'No kamailio API defined in configuration');
+            exit(1);
+        }
+
+        foreach ($config['backends']['sip']['servers'] as $server) {
+            if ($server['type'] === 'kamailio') {
+                return $server;
+            }
+        }
+        response(500, null, null, "No Kamailio configuration");
         exit(1);
     }
 
+
+    $config = loadConfiguration();
+
+    // Check if backend are defined
     if (@!$config["backends"]) {
-        http_response_code(500);
-        echo "no backends defined\n";
+        response(500, null, null, 'no backends defined' );
         exit(1);
     }
 
-    if (!$config["api"]["kamailio"]) {
-        response(500, null, null, 'No kamailio api defined');
-        exit(1);
-    }
-
+    // DB connection
     try {
         $db = new PDO_EXT(@$config["db"]["dsn"], @$config["db"]["username"], @$config["db"]["password"], @$config["db"]["options"]);
-    } catch (Exception $e) {
-        echo "can't open database " . $config["db"]["dsn"] . "\n";
-        echo $e->getMessage() . "\n";
+    } catch (Exception $err) {
+        response(500, ["can't open database " . $config["db"]["dsn"], $err->getMessage()]);
         exit(1);
     }
 
     // Check Kamailio config
-    $kamailioConfig = false;
-    foreach ($config['backends']['sip']['servers'] as $server){
-          if ($server['type'] === 'kamailio') {
-              $kamailioConfig = $server;
-              break;
-          }
-    }
-    if (@!$kamailioConfig){
-        http_response_code(500);
-        echo "No Kamailio config";
-        exit(1);
-    }
+    $kamailioConfig = getKamailioConfig($config);
 
     // example: http://example-host.com:8080/RPC';
     $KAMAILIO_RPC_URL = 'http://'.$kamailioConfig['ip'].':'.$kamailioConfig['json_rpc_port'].'/'.$kamailioConfig['json_rpc_path'];
@@ -122,7 +122,7 @@
         $path = substr($path, 1);
     }
 
-    // ----- routes
+    // ----- Handle POST request
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && $path === 'subscriber/hash') {
         $postData = json_decode(file_get_contents("php://input"), associative:  true);
 
@@ -162,6 +162,7 @@
         exit(1);
     }
 
+    // ----- Handle GET request
     /**
      * TODO:
      *      - remove registration ?
@@ -170,21 +171,23 @@
      */
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $path = explode('/', $path);
-        if ( sizeof($path) === 2
-            && $path[0] === 'subscriber'
-            && (strlen((int)$path[1]) === 10)
-        ){
+        if (sizeof($path) === 2 && $path[0] === 'subscriber' && (strlen((int)$path[1]) === 10)){
             $subscriber = $path[1];
-            $postData = array(
+            $postData = [
                 "jsonrpc" => "2.0",
                 "method" => "ul.lookup",
                 "params" => ["location", $subscriber],
                 "id" => 1
-            );
+            ];
 
-            $subscriber_info = apiExec('POST', $KAMAILIO_RPC_URL, $postData, false, false);
+            try {
+                $get_subscriber_info = apiExec('POST', $KAMAILIO_RPC_URL, $postData, false, false);
+                echo $get_subscriber_info;
+                response(200, json_decode($get_subscriber_info));
+            } catch (Exception $err) {
+                response(500, [$err->getMessage()]);
+            }
 
-            response(200, json_decode($subscriber_info));
             exit(1);
         }
 
