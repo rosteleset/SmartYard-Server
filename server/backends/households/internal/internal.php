@@ -1629,8 +1629,6 @@
                     $q = "select address_house_id, prefix, house_entrance_id, entrance_type, entrance, lat, lon, shared, plog, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, coalesce(cms_levels, '') as cms_levels, video from houses_entrances left join houses_houses_entrances using (house_entrance_id) where $where order by entrance_type, entrance";
                 }
 
-                file_put_contents("/tmp/entrances", $q);
-
                 return $this->db->get($q,
                     $p,
                     [
