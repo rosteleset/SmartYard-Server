@@ -48,16 +48,16 @@
      * Load app config
      * @return mixed
      */
-    function loadConfiguration()
+    function loadConfiguration(): mixed
     {
         $config = @json_decode(file_get_contents(__DIR__ . "/config/config.json"), true);
         if (!$config) {
             $config = @json_decode(json_encode(yaml_parse_file(__DIR__ . "/config/config.yml")), true);
         }
 
-        if (!$config) {
+        if ($config) {
             response(500, null, null, "config is empty");
-            exec(1);
+            exit(1);
         }
 
         return $config;
@@ -116,10 +116,15 @@
         exit(1);
     }
 
-    $kamailioConfig = getKamailioConfig($config);
+    [
+        'address' => $kamailio_address,
+        'json_rpc_path' => $kamailio_rpc_path,
+        'json_rpc_port' => $kamailio_rpc_port,
+        'auth_token' => $kamailio_token,
+    ] = getKamailioConfig($config);
 
     // make kamailio JSON RPC url example: http://example-host.com:8080/RPC';
-    $KAMAILIO_RPC_URL = 'http://'.$kamailioConfig['address'].':'.$kamailioConfig['json_rpc_port'].'/'.$kamailioConfig['json_rpc_path'];
+    $KAMAILIO_RPC_URL = 'http://'.$kamailio_address.':'.$kamailio_rpc_port.'/'.$kamailio_rpc_path;
 
     $request_method = $_SERVER['REQUEST_METHOD'];
     $path = $_SERVER["REQUEST_URI"];
@@ -148,7 +153,7 @@
         [$subscriber, $sipDomain] = explode('@', explode(':', $postData['from_uri'])[1]);
 
         // validate 'sip domain' field extension@your-sip-domain
-        if ($sipDomain !== $kamailioConfig['address']){
+        if ($sipDomain !== $kamailio_address){
             response(400, null, null, 'Invalid Received Sip Domain');
             exit(1);
         }
@@ -167,8 +172,7 @@
         if ($flat && $flat['sipEnabled']) {
             $sipPassword = $flat['sipPassword'];
             //md5(username:realm:password)
-            $ha1 = md5($subscriber .':'. $kamailioConfig['address'] .':'. $sipPassword);
-    //            echo json_encode(['ha1' => $ha1]);
+            $ha1 = md5($subscriber .':'. $kamailio_address .':'. $sipPassword);
             response(200, ['ha1' => $ha1] );
         } else {
             //sip disabled
@@ -206,8 +210,7 @@
         }
 
         //  get all active subscribers
-        if ($path[0] == 'subscribers'){
-
+        if ($path[0] === 'subscribers'){
 
             $postData = array(
                 "jsonrpc" => "2.0",
