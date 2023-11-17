@@ -15,9 +15,7 @@
     // Set response header
     header('Content-Type: application/json');
 
-    //$KAMAILIO_RPC_URL = false;
-    //$config = false;
-    //$kamailioConfig = false;
+    $SIP_SUBSCRIBER_LENGTH = 10;
 
     /**
      * Get Authorization Header
@@ -151,17 +149,17 @@
 
         // validate 'sip domain' field extension@your-sip-domain
         if ($sipDomain !== $kamailioConfig['address']){
-            response(400, null, null, 'Invalid Sip Domain');
+            response(400, null, null, 'Invalid Received Sip Domain');
             exit(1);
         }
 
-        if (strlen((int)$subscriber) !== 10 ) {
-            response(400, null, null, 'Invalid Username');
+        if (strlen((int)$subscriber) !== $SIP_SUBSCRIBER_LENGTH ) {
+            response(400, null, null, 'Invalid Received Subscriber UserName');
             exit(1);
         }
 
         //Get subscriber and validate
-        $flat_id = (int)substr( $subscriber, 1);
+        $flat_id = (int)substr($subscriber, 1);
         $households = loadBackend("households");
 
         $flat = $households->getFlat($flat_id);
@@ -169,7 +167,7 @@
         if ($flat && $flat['sipEnabled']) {
             $sipPassword = $flat['sipPassword'];
             //md5(username:realm:password)
-            $ha1 = md5($subscriber .':'. $kamailioConfig['ip'] .':'. $sipPassword );
+            $ha1 = md5($subscriber .':'. $kamailioConfig['address'] .':'. $sipPassword);
     //            echo json_encode(['ha1' => $ha1]);
             response(200, ['ha1' => $ha1] );
         } else {
