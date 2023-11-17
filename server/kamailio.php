@@ -15,7 +15,9 @@
     // Set response header
     header('Content-Type: application/json');
 
-    $KAMAILIO_RPC_URL = false;
+    //$KAMAILIO_RPC_URL = false;
+    //$config = false;
+    //$kamailioConfig = false;
 
     /**
      * Get Authorization Header
@@ -44,6 +46,10 @@
         return null;
     }
 
+    /**
+     * Load app config
+     * @return mixed
+     */
     function loadConfiguration()
     {
         $config = @json_decode(file_get_contents(__DIR__ . "/config/config.json"), true);
@@ -59,7 +65,7 @@
         return $config;
     }
 
-    // Check and return configuration
+    // Check and return Kamailio configuration
     function getKamailioConfig($config)
     {
         // Check if Kamailio API defined
@@ -77,10 +83,25 @@
         exit(1);
     }
 
+    //Auth
+    (function (){
+        $conf = loadConfiguration();
+        $kamailioConf = getKamailioConfig($conf);
 
+        $currentToken = getBearerToken();
+
+        if(!$currentToken || $currentToken !== $kamailioConf['auth_token']){
+            response(498, null, null, 'Invalid token or empty');
+            exit(1);
+        }
+
+        return null;
+    })();
+
+    // ----
     $config = loadConfiguration();
 
-    // Check if backend are defined
+    // Check if backend is defined
     if (@!$config["backends"]) {
         response(500, null, null, 'no backends defined' );
         exit(1);
@@ -90,32 +111,27 @@
     try {
         $db = new PDO_EXT(@$config["db"]["dsn"], @$config["db"]["username"], @$config["db"]["password"], @$config["db"]["options"]);
     } catch (Exception $err) {
-        response(500, ["can't open database " . $config["db"]["dsn"], $err->getMessage()]);
+        response(500, [
+            "can't open database " . $config["db"]["dsn"],
+            $err->getMessage()],
+        );
         exit(1);
     }
 
-    // Check Kamailio config
     $kamailioConfig = getKamailioConfig($config);
 
-    // example: http://example-host.com:8080/RPC';
-    $KAMAILIO_RPC_URL = 'http://'.$kamailioConfig['ip'].':'.$kamailioConfig['json_rpc_port'].'/'.$kamailioConfig['json_rpc_path'];
+    // make kamailio JSON RPC url example: http://example-host.com:8080/RPC';
+    $KAMAILIO_RPC_URL = 'http://'.$kamailioConfig['address'].':'.$kamailioConfig['json_rpc_port'].'/'.$kamailioConfig['json_rpc_path'];
 
-    // check BEARER TOKEN if enable
-    if (isset($kamailioConfig['auth_token'])){
-        $token = getBearerToken();
-
-        if(!$token || $token !== $kamailioConfig['auth_token']){
-            response(498, null, null, 'Invalid token or empty');
-            exit(1);
-        }
-    }
-
+    $request_method = $_SERVER['REQUEST_METHOD'];
     $path = $_SERVER["REQUEST_URI"];
 
-    $server = parse_url($config["api"]["kamailio"]);
+    // parse Kamailio API path from config
+    $kamailioApi = parse_url($config["api"]["kamailio"]);
 
-    if ($server && $server['path']) {
-        $path = substr($path, strlen($server['path']));
+    // update a patch process
+    if ($kamailioApi && $kamailioApi['path']) {
+        $path = substr($path, strlen($kamailioApi['path']));
     }
 
     if ($path && $path[0] == '/') {
@@ -123,7 +139,7 @@
     }
 
     // ----- Handle POST request
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && $path === 'subscriber/hash') {
+    if ($request_method === 'POST' && $path === 'subscriber/hash') {
         $postData = json_decode(file_get_contents("php://input"), associative:  true);
 
         /**
@@ -133,7 +149,8 @@
          */
         [$subscriber, $sipDomain] = explode('@', explode(':', $postData['from_uri'])[1]);
 
-        if ($sipDomain !== $kamailioConfig['ip']){
+        // validate 'sip domain' field extension@your-sip-domain
+        if ($sipDomain !== $kamailioConfig['address']){
             response(400, null, null, 'Invalid Sip Domain');
             exit(1);
         }
@@ -153,7 +170,7 @@
             $sipPassword = $flat['sipPassword'];
             //md5(username:realm:password)
             $ha1 = md5($subscriber .':'. $kamailioConfig['ip'] .':'. $sipPassword );
-//            echo json_encode(['ha1' => $ha1]);
+    //            echo json_encode(['ha1' => $ha1]);
             response(200, ['ha1' => $ha1] );
         } else {
             //sip disabled
@@ -169,7 +186,7 @@
      *      - refactor api response
      *      - add SIP PING 'kamctl ping sip:4000000013@192.168.13.84'
      */
-    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    if ($request_method=== 'GET') {
         $path = explode('/', $path);
         if (sizeof($path) === 2 && $path[0] === 'subscriber' && (strlen((int)$path[1]) === 10)){
             $subscriber = $path[1];
@@ -182,7 +199,6 @@
 
             try {
                 $get_subscriber_info = apiExec('POST', $KAMAILIO_RPC_URL, $postData, false, false);
-                echo $get_subscriber_info;
                 response(200, json_decode($get_subscriber_info));
             } catch (Exception $err) {
                 response(500, [$err->getMessage()]);
@@ -212,15 +228,14 @@
 
     response(400);
 
-
-   /**
-    *  Example cURL Request for Kamailio API
-    *
-    * @example
-    *  curl --location 'http://smart-yard.server:8876/kamailio/subscribers' \
-    *  --header 'Content-Type: application/json' \
-    *  --header 'Authorization: Bearer example_token_from config' \
-    *  --data-raw '{
-    *      "from_uri":"sip:4000000019@kamailio.smart-yard.server"
-    *  }'
-    */
+    /**
+     *  Example cURL Request for Kamailio API
+     *
+     * @example
+     *  curl --location 'http://smart-yard.server:8876/kamailio/subscribers' \
+     *  --header 'Content-Type: application/json' \
+     *  --header 'Authorization: Bearer example_token_from config' \
+     *  --data-raw '{
+     *      "from_uri":"sip:4000000019@kamailio.smart-yard.server"
+     *  }'
+     */
