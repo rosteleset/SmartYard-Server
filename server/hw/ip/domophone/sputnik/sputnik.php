@@ -255,7 +255,7 @@ class sputnik extends domophone
 
     public function setCmsLevels(array $levels)
     {
-        $this->apiCall('mutation', 'updateIntercomFlatV2Config', [
+        $this->apiCall('mutation', 'updateIntercomFlatConfig', [
             'intercomID' => $this->uuid,
             'defaultThresholdCall' => (float)$levels[0],
             'defaultThresholdDoor' => (float)$levels[1],
@@ -336,9 +336,15 @@ class sputnik extends domophone
     {
         $dbConfig['tickerText'] = '';
         $dbConfig['unlocked'] = false;
-        $dbConfig['sip']['stunServer'] = '127.0.0.1';
-        $dbConfig['sip']['stunPort'] = 3478;
         $dbConfig['cmsModel'] = $this->cmsModelType[$dbConfig['cmsModel']];
+
+        $dbConfig['sip']['stunServer'] = '';
+        $dbConfig['sip']['stunPort'] = 3478;
+
+        $dbConfig['ntp']['server'] = '';
+        $dbConfig['ntp']['port'] = 123;
+        $dbConfig['ntp']['timezone'] = $this->getOffsetByTimezone($dbConfig['ntp']['timezone']);
+
         return $dbConfig;
     }
 
@@ -469,7 +475,7 @@ class sputnik extends domophone
             'defaultThresholdDoor' => $thresholdDoor,
         ] = $rawCmsLevels['data']['intercom']['configShadow']['flats'];
 
-        return ["$thresholdCall", "$thresholdDoor"];
+        return [$thresholdCall, $thresholdDoor];
     }
 
     protected function getCmsModel(): string

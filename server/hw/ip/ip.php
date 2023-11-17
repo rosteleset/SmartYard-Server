@@ -40,7 +40,7 @@ abstract class ip extends hw
      * @param string $password Password for authentication.
      * This may be a desired but not yet valid password.
      * In such a case, the password will be applied on the device if the $firstTime is set to true,
-     * otherwise there will be an exception.
+     * otherwise, there will be an exception.
      * @param bool $firstTime (Optional) Indicates if it's the first time using the device. Default is false.
      *
      * @throws Exception if the device is unavailable.
@@ -50,21 +50,16 @@ abstract class ip extends hw
         parent::__construct($url);
         $this->initializeProperties();
 
-        if ($firstTime) {
-            $this->password = $this->defaultPassword;
-
-            if (!$this->ping()) {
-                throw new Exception("$this->url is unavailable");
-            }
-
-            $this->prepare();
-            $this->setAdminPassword($password);
-        }
-
-        $this->password = $password;
+        $this->password = $firstTime ? ($this->defaultPassword ?? $password) : $password;
 
         if (!$this->ping()) {
-            throw new Exception("$this->url is unavailable");
+            throw new Exception("Device at $this->url is unavailable");
+        }
+
+        if ($firstTime) {
+            $this->prepare();
+            $this->setAdminPassword($password);
+            $this->password = $password;
         }
     }
 
