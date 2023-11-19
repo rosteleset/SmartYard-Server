@@ -1,3 +1,27 @@
+/*
+<ul class="nav nav-tabs" id="custom-content-below-tab" role="tablist">
+    <li class="nav-item">
+        <a class="nav-link active" id="custom-content-below-home-tab" data-toggle="pill" href="#custom-content-below-home" role="tab" aria-controls="custom-content-below-home" aria-selected="true">Home</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="custom-content-below-profile-tab" data-toggle="pill" href="#custom-content-below-profile" role="tab" aria-controls="custom-content-below-profile" aria-selected="false">Profile</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="custom-content-below-messages-tab" data-toggle="pill" href="#custom-content-below-messages" role="tab" aria-controls="custom-content-below-messages" aria-selected="false">Messages</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="custom-content-below-settings-tab" data-toggle="pill" href="#custom-content-below-settings" role="tab" aria-controls="custom-content-below-settings" aria-selected="false">Settings</a>
+    </li>
+</ul>
+
+<div class="tab-content" id="custom-content-below-tabContent">
+    <div class="tab-pane fade" id="custom-content-below-home" role="tabpanel" aria-labelledby="custom-content-below-home-tab">home</div>
+    <div class="tab-pane fade" id="custom-content-below-profile" role="tabpanel" aria-labelledby="custom-content-below-profile-tab">profile</div>
+    <div class="tab-pane fade" id="custom-content-below-messages" role="tabpanel" aria-labelledby="custom-content-below-messages-tab">messages</div>
+    <div class="tab-pane fade" id="custom-content-below-settings" role="tabpanel" aria-labelledby="custom-content-below-settings-tab">settings</div>
+</div>
+*/
+
 function cardForm(params) {
     let _prefix = "modalForm-" + md5(guid()) + "-";
     let h = `<form id="${_prefix}form" autocomplete="off" onsubmit="return false;" action="">`;
