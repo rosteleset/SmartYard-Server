@@ -1,27 +1,3 @@
-/*
-<ul class="nav nav-tabs" id="custom-content-below-tab" role="tablist">
-    <li class="nav-item">
-        <a class="nav-link active" id="custom-content-below-home-tab" data-toggle="pill" href="#custom-content-below-home" role="tab" aria-controls="custom-content-below-home" aria-selected="true">Home</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" id="custom-content-below-profile-tab" data-toggle="pill" href="#custom-content-below-profile" role="tab" aria-controls="custom-content-below-profile" aria-selected="false">Profile</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" id="custom-content-below-messages-tab" data-toggle="pill" href="#custom-content-below-messages" role="tab" aria-controls="custom-content-below-messages" aria-selected="false">Messages</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" id="custom-content-below-settings-tab" data-toggle="pill" href="#custom-content-below-settings" role="tab" aria-controls="custom-content-below-settings" aria-selected="false">Settings</a>
-    </li>
-</ul>
-
-<div class="tab-content" id="custom-content-below-tabContent">
-    <div class="tab-pane fade" id="custom-content-below-home" role="tabpanel" aria-labelledby="custom-content-below-home-tab">home</div>
-    <div class="tab-pane fade" id="custom-content-below-profile" role="tabpanel" aria-labelledby="custom-content-below-profile-tab">profile</div>
-    <div class="tab-pane fade" id="custom-content-below-messages" role="tabpanel" aria-labelledby="custom-content-below-messages-tab">messages</div>
-    <div class="tab-pane fade" id="custom-content-below-settings" role="tabpanel" aria-labelledby="custom-content-below-settings-tab">settings</div>
-</div>
-*/
-
 function cardForm(params) {
     let _prefix = "modalForm-" + md5(guid()) + "-";
     let h = `<form id="${_prefix}form" autocomplete="off" onsubmit="return false;" action="">`;
@@ -71,7 +47,7 @@ function cardForm(params) {
     h += `<tbody>`;
 
     if (params.delete) {
-        params.fields.push({
+        let d = {
             id: "delete",
             type: "select",
             value: "",
@@ -85,11 +61,52 @@ function cardForm(params) {
                     value: "yes",
                     text: i18n("yes"),
                 },
-            ]
-        });
+            ],
+        }
+        if (params.deleteTab) {
+            d.tab = params.deleteTab;
+        }
+        params.fields.push(d);
     }
 
     let first = " no-border-top";
+
+    let tabs = [];
+    let others = false;
+    for (let i in params.fields) {
+        if (params.fields[i].tab && tabs.indexOf(params.fields[i].tab) < 0) {
+            tabs.push(params.fields[i].tab);
+        }
+        if (!params.fields[i].tab) {
+            others = true;
+        }
+    }
+
+    if (others && tabs.length && tabs.indexOf(i18n("other"))) {
+        tabs.push(i18n("other"));
+    }
+
+    if (tabs.length > 1) {
+        h += `<ul class="nav nav-tabs mt-1 ml-1" id="jsform-content-tab" role="tablist">`;
+        for (let i in tabs) {
+            h += `<li class="nav-item">`;
+            h += `<a class="nav-link jsform-nav-link ${(i == 0)?"active text-bold":""} jsform-tab-link" id="jsform-content-tab-${md5(tabs[i])}" data-toggle="pill" href="#" role="tab" aria-selected="${(i == 0)?"true":"false"}" aria-controls="jsform-content-${md5(tabs[i])}" data-tab-index="${i}">${tabs[i]}</a>`;
+            h += `</li>`;
+        }
+        h += `</ul>`;
+
+        for (let i in params.fields) {
+            if (!params.fields[i].tab) {
+                params.fields[i].tab = i18n("other");
+            }
+        }
+
+        for (let i in params.fields) {
+            params.fields[i].tab_hidden = tabs.indexOf(params.fields[i].tab) > 0;
+        }
+    } else {
+        tabs = [];
+    }
 
     for (let i in params.fields) {
         if (params.fields[i].type === "yesno") {
@@ -121,7 +138,7 @@ function cardForm(params) {
         }
 
         if (params.fields[i].id === "-") {
-            h += "<tr class='mt-0 mb-0 pt-0 pb-0'>";
+            h += `<tr class='mt-0 mb-0 pt-0 pb-0 jsform-tabbed-item' data-tab-index='${tabs.indexOf(params.fields[i].tab)}'>`;
             if (params.singleColumn) {
                 h += "<td class='mt-0 mb-0 pt-0 pb-0'>";
             } else {
@@ -139,10 +156,10 @@ function cardForm(params) {
                 }
             }
         }
-        if (params.fields[i].hidden) {
-            h += `<tr style="display: none;">`;
+        if (params.fields[i].hidden || params.fields[i].tab_hidden) {
+            h += `<tr style="display: none;" class="jsform-tabbed-item" data-tab-index='${tabs.indexOf(params.fields[i].tab)}'>`;
         } else {
-            h += `<tr>`;
+            h += `<tr class="jsform-tabbed-item" data-tab-index='${tabs.indexOf(params.fields[i].tab)}'>`;
         }
         params.fields[i].type = params.fields[i].type?params.fields[i].type:"text";
 
@@ -754,6 +771,14 @@ function cardForm(params) {
     if (typeof params.done == "function") {
         params.done(_prefix);
     }
+
+    $(".jsform-tab-link").off("click").on("click", function () {
+        let i = parseInt($(this).attr("data-tab-index"));
+        $(`.jsform-tabbed-item`).hide();
+        $(`.jsform-tabbed-item[data-tab-index="${i}"]`).show();
+        $(`.jsform-nav-link`).removeClass("text-bold");
+        $(`.jsform-nav-link[data-tab-index="${i}"]`).addClass("text-bold");
+    });
 
     return target;
 }
