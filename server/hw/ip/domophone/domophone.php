@@ -467,4 +467,12 @@ abstract class domophone extends ip
      * @return void
      */
     abstract public function setUnlocked(bool $unlocked = true);
+
+    /**
+     * Synchronize data with device.
+     * Used for devices with the ability to mass add keys, apartments, access codes, etc.
+     *
+     * @return void
+     */
+    abstract public function syncData();
 }

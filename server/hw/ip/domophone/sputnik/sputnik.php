@@ -29,28 +29,13 @@ class sputnik extends domophone
         'KMG-100' => 'CYFRAL',
     ];
 
-    public function __destruct()
-    {
-        if ($this->rfidKeysToBeDeleted) {
-            $this->deleteIntercomKeys($this->rfidKeysToBeDeleted);
-        }
-
-        if ($this->matrixToBeAdded) {
-            $this->updateIntercomFlats($this->matrixToBeAdded);
-        }
-
-        if ($this->codesToBeAdded) {
-            $this->createDigitalKeys($this->codesToBeAdded);
-        }
-
-        if ($this->flatsToBeAdded) {
-            $this->updateIntercomFlats($this->flatsToBeAdded);
-        }
-    }
-
     public function addRfid(string $code, int $apartment = 0)
     {
-        // TODO
+        $this->apiCall('mutation', 'addIntercomKey', [
+            'intercomID' => $this->uuid,
+            'key' => substr(implode(array_reverse(str_split($code, 2))), 0, 8), // invert and remove zeros
+            'description' => '',
+        ]);
     }
 
     public function addRfids(array $rfids)
@@ -332,6 +317,25 @@ class sputnik extends domophone
         // Empty implementation
     }
 
+    public function syncData()
+    {
+        if ($this->rfidKeysToBeDeleted) {
+            $this->deleteIntercomKeys($this->rfidKeysToBeDeleted);
+        }
+
+        if ($this->matrixToBeAdded) {
+            $this->updateIntercomFlats($this->matrixToBeAdded);
+        }
+
+        if ($this->codesToBeAdded) {
+            $this->createDigitalKeys($this->codesToBeAdded);
+        }
+
+        if ($this->flatsToBeAdded) {
+            $this->updateIntercomFlats($this->flatsToBeAdded);
+        }
+    }
+
     public function transformDbConfig(array $dbConfig): array
     {
         $dbConfig['tickerText'] = '';
@@ -426,7 +430,7 @@ class sputnik extends domophone
                 'analogSettings' => $analogSettings,
             ] = $rawFlat['node'];
 
-            if ($apartment === 9999) {
+            if ($apartment === 9999 || !$sipNumber) {
                 continue;
             }
 

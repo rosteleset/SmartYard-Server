@@ -178,6 +178,7 @@ function autoconfigure_domophone($domophoneId, $firstTime = false)
     }
 
     $panel->setTickerText($tickerText);
+    $panel->syncData();
     $panel->setUnlocked($domophone['locksAreOpen']);
 
     $camera->configureMotionDetection();

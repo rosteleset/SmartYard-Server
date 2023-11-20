@@ -394,6 +394,11 @@ abstract class rubetek extends domophone
         }
     }
 
+    public function syncData()
+    {
+        // Empty implementation
+    }
+
     public function transformDbConfig(array $dbConfig): array
     {
         $stunEnabled = $dbConfig['sip']['stunEnabled'];
