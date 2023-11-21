@@ -43,7 +43,7 @@ syslog.on("message", async ({ date, host, message }) => {
     // Motion detection: start
     if (msg.indexOf("Requst SnapShot") >= 0) {
         await API.motionDetection({ date: now, ip: host, motionActive: true });
-        await mdTimer(host, 5000);
+        await mdTimer({ ip: host });
     }
 
     // Opening door by DTMF
