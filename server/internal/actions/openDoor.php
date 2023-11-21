@@ -71,7 +71,7 @@
                         WHERE camera_id = (
                         SELECT camera_id FROM houses_domophones 
                         LEFT JOIN houses_entrances USING (house_domophone_id)
-                        WHERE (ip = :ip OR id = :sub_id) AND domophone_output = :door)',
+                        WHERE (ip = :ip OR sub_id = :sub_id) AND domophone_output = :door)',
                 ["ip" => $ip, "sub_id" => $subId, "door" => $door]);
 
             if (isset($frsUrl)){
