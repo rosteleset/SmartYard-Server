@@ -30,7 +30,7 @@
     }
 
     $backends = [];
-    $redis_cache_ttl = $config["redis"]["cache_ttl"] ? : 3600;
+    $redis_cache_ttl = $config["redis"]["cache_ttl"] ?? 3600;
 
     try {
         $redis = new Redis();
