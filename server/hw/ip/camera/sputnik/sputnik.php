@@ -31,7 +31,7 @@ class sputnik extends camera
 
     public function setOsdText(string $text = '')
     {
-        // TODO: wait for implementation (September 2023)
+        // TODO: wait for implementation
     }
 
     public function syncData()
@@ -41,18 +41,30 @@ class sputnik extends camera
 
     public function transformDbConfig(array $dbConfig): array
     {
-        $dbConfig['osdText'] = ''; // TODO: wait for implementation (September 2023)
+        $dbConfig['osdText'] = ''; // TODO: wait for implementation
 
         $dbConfig['ntp']['server'] = '';
         $dbConfig['ntp']['port'] = 123;
         $dbConfig['ntp']['timezone'] = $this->getOffsetByTimezone($dbConfig['ntp']['timezone']);
+
+        $dbConfig['motionDetection'] = [
+            'left' => 0,
+            'top' => 0,
+            'width' => 0,
+            'height' => 0,
+        ];
 
         return $dbConfig;
     }
 
     protected function getMotionDetectionConfig(): array
     {
-        return [];
+        return [
+            'left' => 0,
+            'top' => 0,
+            'width' => 0,
+            'height' => 0,
+        ];
     }
 
     protected function getOsdText(): string
