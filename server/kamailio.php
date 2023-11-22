@@ -55,7 +55,7 @@
             $config = @json_decode(json_encode(yaml_parse_file(__DIR__ . "/config/config.yml")), true);
         }
 
-        if ($config) {
+        if (!$config) {
             response(500, null, null, "config is empty");
             exit(1);
         }
