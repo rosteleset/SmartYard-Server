@@ -40,7 +40,7 @@ abstract class ip extends hw
      * @param string $password Password for authentication.
      * This may be a desired but not yet valid password.
      * In such a case, the password will be applied on the device if the $firstTime is set to true,
-     * otherwise there will be an exception.
+     * otherwise, there will be an exception.
      * @param bool $firstTime (Optional) Indicates if it's the first time using the device. Default is false.
      *
      * @throws Exception if the device is unavailable.
@@ -50,21 +50,16 @@ abstract class ip extends hw
         parent::__construct($url);
         $this->initializeProperties();
 
-        if ($firstTime) {
-            $this->password = $this->defaultPassword;
-
-            if (!$this->ping()) {
-                throw new Exception("$this->url is unavailable");
-            }
-
-            $this->prepare();
-            $this->setAdminPassword($password);
-        }
-
-        $this->password = $password;
+        $this->password = $firstTime ? ($this->defaultPassword ?? $password) : $password;
 
         if (!$this->ping()) {
-            throw new Exception("$this->url is unavailable");
+            throw new Exception("Device at $this->url is unavailable");
+        }
+
+        if ($firstTime) {
+            $this->prepare();
+            $this->setAdminPassword($password);
+            $this->password = $password;
         }
     }
 
@@ -105,9 +100,9 @@ abstract class ip extends hw
     /**
      * Get event server configuration.
      *
-     * @return array An array containing syslog server params configured on the device.
+     * @return string A string containing the URL of the syslog server configured on the device.
      */
-    abstract protected function getEventServerConfig(): array;
+    abstract protected function getEventServer(): string;
 
     /**
      * Get NTP configuration.
@@ -126,12 +121,11 @@ abstract class ip extends hw
     /**
      * Configure a remote event server.
      *
-     * @param string $server Remote event server address.
-     * @param int $port Remote event server port.
+     * @param string $url Remote event server URL.
      *
      * @return void
      */
-    abstract public function configureEventServer(string $server, int $port);
+    abstract public function configureEventServer(string $url);
 
     /**
      * Configure NTP.

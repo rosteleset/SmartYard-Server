@@ -29,28 +29,13 @@ class sputnik extends domophone
         'KMG-100' => 'CYFRAL',
     ];
 
-    public function __destruct()
-    {
-        if ($this->rfidKeysToBeDeleted) {
-            $this->deleteIntercomKeys($this->rfidKeysToBeDeleted);
-        }
-
-        if ($this->matrixToBeAdded) {
-            $this->updateIntercomFlats($this->matrixToBeAdded);
-        }
-
-        if ($this->codesToBeAdded) {
-            $this->createDigitalKeys($this->codesToBeAdded);
-        }
-
-        if ($this->flatsToBeAdded) {
-            $this->updateIntercomFlats($this->flatsToBeAdded);
-        }
-    }
-
     public function addRfid(string $code, int $apartment = 0)
     {
-        // TODO
+        $this->apiCall('mutation', 'addIntercomKey', [
+            'intercomID' => $this->uuid,
+            'key' => substr(implode(array_reverse(str_split($code, 2))), 0, 8), // invert and remove zeros
+            'description' => '',
+        ]);
     }
 
     public function addRfids(array $rfids)
@@ -255,7 +240,7 @@ class sputnik extends domophone
 
     public function setCmsLevels(array $levels)
     {
-        $this->apiCall('mutation', 'updateIntercomFlatV2Config', [
+        $this->apiCall('mutation', 'updateIntercomFlatConfig', [
             'intercomID' => $this->uuid,
             'defaultThresholdCall' => (float)$levels[0],
             'defaultThresholdDoor' => (float)$levels[1],
@@ -332,13 +317,38 @@ class sputnik extends domophone
         // Empty implementation
     }
 
+    public function syncData()
+    {
+        if ($this->rfidKeysToBeDeleted) {
+            $this->deleteIntercomKeys($this->rfidKeysToBeDeleted);
+        }
+
+        if ($this->matrixToBeAdded) {
+            $this->updateIntercomFlats($this->matrixToBeAdded);
+        }
+
+        if ($this->codesToBeAdded) {
+            $this->createDigitalKeys($this->codesToBeAdded);
+        }
+
+        if ($this->flatsToBeAdded) {
+            $this->updateIntercomFlats($this->flatsToBeAdded);
+        }
+    }
+
     public function transformDbConfig(array $dbConfig): array
     {
         $dbConfig['tickerText'] = '';
         $dbConfig['unlocked'] = false;
-        $dbConfig['sip']['stunServer'] = '127.0.0.1';
-        $dbConfig['sip']['stunPort'] = 3478;
         $dbConfig['cmsModel'] = $this->cmsModelType[$dbConfig['cmsModel']];
+
+        $dbConfig['sip']['stunServer'] = '';
+        $dbConfig['sip']['stunPort'] = 3478;
+
+        $dbConfig['ntp']['server'] = '';
+        $dbConfig['ntp']['port'] = 123;
+        $dbConfig['ntp']['timezone'] = $this->getOffsetByTimezone($dbConfig['ntp']['timezone']);
+
         return $dbConfig;
     }
 
@@ -420,7 +430,7 @@ class sputnik extends domophone
                 'analogSettings' => $analogSettings,
             ] = $rawFlat['node'];
 
-            if ($apartment === 9999) {
+            if ($apartment === 9999 || !$sipNumber) {
                 continue;
             }
 
@@ -469,7 +479,7 @@ class sputnik extends domophone
             'defaultThresholdDoor' => $thresholdDoor,
         ] = $rawCmsLevels['data']['intercom']['configShadow']['flats'];
 
-        return ["$thresholdCall", "$thresholdDoor"];
+        return [$thresholdCall, $thresholdDoor];
     }
 
     protected function getCmsModel(): string

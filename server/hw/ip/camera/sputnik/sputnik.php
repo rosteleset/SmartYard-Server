@@ -37,9 +37,11 @@ class sputnik extends camera
     public function transformDbConfig(array $dbConfig): array
     {
         $dbConfig['osdText'] = ''; // TODO: wait for implementation (September 2023)
-        $dbConfig['ntp']['server'] = '127.0.0.1';
+
+        $dbConfig['ntp']['server'] = '';
         $dbConfig['ntp']['port'] = 123;
         $dbConfig['ntp']['timezone'] = $this->getOffsetByTimezone($dbConfig['ntp']['timezone']);
+
         return $dbConfig;
     }
 

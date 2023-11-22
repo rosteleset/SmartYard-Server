@@ -234,7 +234,7 @@
             "syslog.udp:127.0.0.1:45456"
         ],
         "sputnik": [
-            "https://your-https-server/events/sputnik:45457"
+            "https://your-http(s)-server:45457/events/sputnik"
         ]
     },
 

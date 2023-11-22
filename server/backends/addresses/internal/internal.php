@@ -121,7 +121,7 @@
                     return false;
                 }
 
-                return $this->db->modify("delete from addresses_regions where address_region_id = $regionId");
+                return $this->db->modify("delete from addresses_regions where address_region_id = $regionId") && $this->cleanup();
             }
 
             /**
@@ -244,7 +244,7 @@
                     return false;
                 }
 
-                return $this->db->modify("delete from addresses_areas where address_area_id = $areaId");
+                return $this->db->modify("delete from addresses_areas where address_area_id = $areaId") && $this->cleanup();
             }
 
             /**
@@ -408,7 +408,7 @@
                     return false;
                 }
 
-                return $this->db->modify("delete from addresses_cities where address_city_id = $cityId");
+                return $this->db->modify("delete from addresses_cities where address_city_id = $cityId") && $this->cleanup();
             }
 
             /**
@@ -560,7 +560,7 @@
                     return false;
                 }
 
-                return $this->db->modify("delete from addresses_settlements where address_settlement_id = $settlementId");
+                return $this->db->modify("delete from addresses_settlements where address_settlement_id = $settlementId") && $this->cleanup();
             }
 
             /**
@@ -711,7 +711,7 @@
                     return false;
                 }
 
-                return $this->db->modify("delete from addresses_streets where address_street_id = $streetId");
+                return $this->db->modify("delete from addresses_streets where address_street_id = $streetId") && $this->cleanup();
             }
 
             /**
@@ -863,7 +863,7 @@
                     return false;
                 }
 
-                return $this->db->modify("delete from addresses_houses where address_house_id = $houseId");
+                return $this->db->modify("delete from addresses_houses where address_house_id = $houseId") && $this->cleanup();
             }
 
             /**
@@ -1061,7 +1061,11 @@
                 $n += $this->db->modify("delete from addresses_areas where address_region_id is not null and address_region_id not in (select address_region_id from addresses_regions)");
                 $n += $this->db->modify("delete from addresses_areas where address_region_id is null");
 
-                return $n;
+                if (!$n) {
+                    return true;                    
+                } else {
+                    return $n + $this->cleanup();
+                }
             }
 
             /**

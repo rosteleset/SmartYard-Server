@@ -58,10 +58,7 @@ function autoconfigure_domophone($domophoneId, $firstTime = false)
     $ntpServer = $ntp['host'];
     $ntpPort = $ntp['port'] ?? 123;
 
-    $syslogs = $config['syslog_servers'][$domophone['json']['eventServer']];
-    $syslog = parse_url_ext($syslogs[array_rand($syslogs)]);
-    $syslogServer = $syslog['host'];
-    $syslogPort = $syslog['port'] ?? 514;
+    $syslogServerUrl = $config['syslog_servers'][$domophone['json']['eventServer']][0];
 
     $sipUsername = sprintf('1%05d', $domophone['domophoneId']);
     $sipServer = $asteriskServer['ip'];
@@ -84,11 +81,10 @@ function autoconfigure_domophone($domophoneId, $firstTime = false)
     $panel->clean(
         $sipServer,
         $ntpServer,
-        $syslogServer,
+        $syslogServerUrl,
         $sipUsername,
         $sipPort,
         $ntpPort,
-        $syslogPort,
         $mainDoorDtmf,
         $audioLevels,
         $cmsLevels,
@@ -178,6 +174,7 @@ function autoconfigure_domophone($domophoneId, $firstTime = false)
     }
 
     $panel->setTickerText($tickerText);
+    $panel->syncData();
     $panel->setUnlocked($domophone['locksAreOpen']);
 
     $camera->configureMotionDetection();

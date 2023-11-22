@@ -1,0 +1,1 @@
+ALTER TABLE cameras ADD IF NOT EXISTS sub_id character varying;

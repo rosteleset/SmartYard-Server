@@ -18,11 +18,10 @@ abstract class domophone extends ip
     public function clean(
         $sipServer,
         $ntpServer,
-        $syslogServer,
+        $syslogServerUrl,
         $sipUsername,
         $sipPort,
         $ntpPort,
-        $syslogPort,
         $mainDoorDtmf,
         $audioLevels,
         $cmsLevels,
@@ -33,7 +32,7 @@ abstract class domophone extends ip
     )
     {
         $this->setUnlocked();
-        $this->configureEventServer($syslogServer, $syslogPort);
+        $this->configureEventServer($syslogServerUrl);
         $this->setUnlockTime(5);
         $this->setPublicCode();
         $this->setCallTimeout(45);
@@ -58,7 +57,7 @@ abstract class domophone extends ip
 
         $builder
             ->addDtmf(...$this->getDtmfConfig())
-            ->addEventServer(...$this->getEventServerConfig())
+            ->addEventServer($this->getEventServer())
             ->addSip(...$this->getSipConfig())
             ->addUnlocked($this->getUnlocked())
             ->addCmsLevels($this->getCmsLevels())
@@ -467,4 +466,12 @@ abstract class domophone extends ip
      * @return void
      */
     abstract public function setUnlocked(bool $unlocked = true);
+
+    /**
+     * Synchronize data with device.
+     * Used for devices with the ability to mass add keys, apartments, access codes, etc.
+     *
+     * @return void
+     */
+    abstract public function syncData();
 }

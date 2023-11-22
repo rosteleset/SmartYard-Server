@@ -39,7 +39,7 @@ syslog.on("message", async ({ date, host, message }) => {
     // Motion detection: start
     if (isMsg.includes("EVENT: Detected motion")) {
         await API.motionDetection({ date: now, ip: host, motionActive: true });
-        await mdTimer(host, 5000);
+        await mdTimer({ ip: host });
     }
 
     // Call to apartment

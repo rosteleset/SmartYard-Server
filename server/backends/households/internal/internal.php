@@ -159,32 +159,18 @@
                             from
                                 houses_entrances_flats
                             where
-                                house_flat_id in (
-                                    select
-                                        house_flat_id
-                                    from
-                                        houses_flats
-                                    where
-                                            address_house_id in (
-                                            select
-                                                address_house_id
-                                            from
-                                                houses_houses_entrances
-                                            where
-                                                    house_entrance_id in (
-                                                    select
-                                                        house_entrance_id
-                                                    from
-                                                        houses_entrances
-                                                    where
-                                                        house_domophone_id = :house_domophone_id
-                                                )
-                                        )
-                                )
-                                and
                                 apartment = :apartment
-                                group by
-                                    house_flat_id
+                                and
+                                house_entrance_id in (
+                                    select
+                                        house_entrance_id
+                                    from
+                                        houses_entrances
+                                    where
+                                        house_domophone_id = :house_domophone_id
+                                )
+                            group by
+                                house_flat_id
                         ";
                         $p = [
                             "house_domophone_id" => $params["domophoneId"],
@@ -821,6 +807,7 @@
                     "locks_are_open" => "locksAreOpen",
                     "comment" => "comment",
                     "ip" => "ip",
+                    "sub_id" => "sub_id",
                 ];
 
                 switch ($by) {
@@ -856,6 +843,10 @@
                         $query = long2ip(ip2long($query));
 
                         $q = "select * from houses_domophones where ip = '$query'";
+                        break;
+
+                    case "subId":
+                        $q = "select * from houses_domophones where sub_id = '$query'";
                         break;
 
                     case "subscriber":
@@ -951,6 +942,8 @@
                     $queue->changed("domophone", $domophoneId);
                 }
 
+                $this->updateDeviceIds($domophoneId, $model, $url, $credentials);
+
                 return $domophoneId;
             }
 
@@ -1025,6 +1018,8 @@
                     if ($queue) {
                         $queue->changed("domophone", $domophoneId);
                     }
+
+                    $this->updateDeviceIds($domophoneId, $model, $url, $credentials);
                 }
 
                 return $r;
@@ -1088,7 +1083,8 @@
                     "nat" => "nat",
                     "locks_are_open" => "locksAreOpen",
                     "comment" => "comment",
-                    "ip" => "ip"
+                    "ip" => "ip",
+                    "sub_id" => "sub_id",
                 ], [
                     "singlify"
                 ]);
@@ -1890,17 +1886,7 @@
              */
             public function cron($part) {
                 if ($part === "hourly") {
-                    $domophones = $this->db->get("select house_domophone_id, url from houses_domophones");
-
-                    foreach ($domophones as $domophone) {
-                        $ip = gethostbyname(parse_url($domophone['url'], PHP_URL_HOST));
-
-                        if (filter_var($ip, FILTER_VALIDATE_IP) !== false) {
-                            $this->db->modify("update houses_domophones set ip = :ip where house_domophone_id = " . $domophone['house_domophone_id'], [
-                                "ip" => $ip,
-                            ]);
-                        }
-                    }
+                    $this->updateDevicesIds();
                 }
 
                 if ($part === "5min") {
@@ -1908,6 +1894,42 @@
                 }
 
                 return true;
+            }
+
+            protected function updateDevicesIds() {
+                $query = "select house_domophone_id, model, url, credentials from houses_domophones";
+                $devices = $this->db->get($query);
+
+                foreach ($devices as $device) {
+                    [
+                        'house_domophone_id' => $deviceId,
+                        'model' => $model,
+                        'url' => $url,
+                        'credentials' => $credentials
+                    ] = $device;
+
+                    $this->updateDeviceIds($deviceId, $model, $url, $credentials);
+                }
+            }
+
+            protected function updateDeviceIds($deviceId, $model, $url, $credentials) {
+                if ($model === 'sputnik.json') {
+                    $device = loadDevice('domophone', $model, $url, $credentials);
+
+                    if ($device) {
+                        $query = "update houses_domophones
+                                  set sub_id = :sub_id
+                                  where house_domophone_id = " . $deviceId;
+                        $this->db->modify($query, ["sub_id" => $device->uuid]);
+                    }
+                } else {
+                    $ip = gethostbyname(parse_url($url, PHP_URL_HOST));
+
+                    if (filter_var($ip, FILTER_VALIDATE_IP) !== false) {
+                        $query = "update houses_domophones set ip = :ip where house_domophone_id = " . $deviceId;
+                        $this->db->modify($query, ["ip" => $ip]);
+                    }
+                }
             }
         }
     }

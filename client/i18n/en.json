@@ -51,6 +51,7 @@
     "dblClickToRemove": "Double click for \"removal\"",
     "fileAlreadyExists": "This file is already uploaded",
     "addModify": "Add (change)",
+    "other": "Other",
     "errors": {
         "404caption": "Oh! Page not found.",
         "404message": "It seems that we cannot find the page you need. <br /> Try to switch to <a href=\"?#\"> the initial page </a>.",

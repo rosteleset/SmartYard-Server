@@ -74,6 +74,8 @@ class SmartConfigurator
             echo 'Done!' . PHP_EOL;
         }
 
+        $this->device->syncData();
+
         $this->loadDeviceConfig();
         $nowDifference = $this->getDifference();
 
