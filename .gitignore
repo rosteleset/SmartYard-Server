@@ -98,6 +98,11 @@ package-lock.json
 /install/asterisk/config.lua
 /install/asterisk/extconfig.conf
 /install/asterisk/http.conf
+
 #Kamailio
-kamailio/kamailio-api/.env
-!kamailio/kamailio-api/package.json
+/install/kamailio/kamailio-local.cfg
+/install/kamailio/kamctlrc
+/server/kamailio_.php
+
+#rtpengine
+/install/rtpengine/rtpengine.conf
