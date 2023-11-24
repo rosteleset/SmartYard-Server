@@ -89,3 +89,19 @@
 
         return false;
     }
+
+function loadConfiguration()
+{
+    try {
+        $config = @json_decode(file_get_contents(__DIR__ . "/../config/config.json"), true);
+
+        if (!$config) {
+            $yamlConfig = @yaml_parse_file(__DIR__ . "/../config/config.yml");
+            $config = json_decode(json_encode($yamlConfig), true);
+        }
+    } catch (Exception $e) {
+        $config = false;
+    }
+
+    return $config;
+}

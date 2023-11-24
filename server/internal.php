@@ -8,21 +8,7 @@
     require_once "utils/i18n.php";
     require_once "utils/api_exec.php";
 
-    $config = false;
-
-    try {
-        $config = @json_decode(file_get_contents(__DIR__ . "/config/config.json"), true);
-    } catch (Exception $e) {
-        $config = false;
-    }
-
-    if (!$config) {
-        try {
-            $config = @json_decode(json_encode(yaml_parse_file(__DIR__ . "/config/config.yml")), true);
-        } catch (Exception $e) {
-            $config = false;
-        }
-    }
+    $config = loadConfiguration();
 
     if (!$config) {
         response(555, [
@@ -31,21 +17,6 @@
     }
 
     $backends = [];
-    $redis_cache_ttl = $config["redis"]["cache_ttl"] ?? 3600;
-
-    try {
-        $redis = new Redis();
-        $redis->connect($config["redis"]["host"], $config["redis"]["port"]);
-        if (@$config["redis"]["password"]) {
-            $redis->auth($config["redis"]["password"]);
-        }
-        $redis->setex("iAmOk", 1, "1");
-    } catch (Exception $e) {
-        error_log(print_r($e, true));
-        response(555, [
-            "error" => "redis",
-        ]);
-    }
 
     try {
         $db = new PDO_EXT(@$config["db"]["dsn"], @$config["db"]["username"], @$config["db"]["password"], @$config["db"]["options"]);
