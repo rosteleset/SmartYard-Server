@@ -19,9 +19,9 @@
         $db = new PDO_EXT(@$config["db"]["dsn"], @$config["db"]["username"], @$config["db"]["password"], @$config["db"]["options"]);
     } catch (Exception $err) {
         response(500, [
-            "Can't open database " . $config["db"]["dsn"],
-            $err->getMessage(),
-        ],
+                "Can't open database " . $config["db"]["dsn"],
+                $err->getMessage(),
+            ],
         );
         exit(1);
     }

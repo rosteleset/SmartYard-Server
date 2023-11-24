@@ -128,25 +128,16 @@
             if ($request_method==='GET'){
                 $this->make_kamailio_rpc_url();
                 $path = explode('/', $path);
+
+                // getSubscriberStatus
                 if (sizeof($path) === 2 && $path[0] === 'subscriber' && (strlen((int)$path[1]) === 10)){
-
                     $subscriber = $path[1];
-                    $postData = [
-                        "jsonrpc" => "2.0",
-                        "method" => "ul.lookup",
-                        "params" => ["location", $subscriber],
-                        "id" => 1
-                    ];
-                    try {
-                        $get_subscriber_info = apiExec('POST', $this->kamailio_rpc_url, $postData, false, false);
-                        response(200, json_decode($get_subscriber_info));
-                    } catch (Exception $err) {
-                        response(500, [$err->getMessage()]);
-                    }
-
-                    exit(1);
+                    $this->getSubscriberStatus($subscriber);
                }
 
+                if ($path[0] === 'subscribers'){
+                    $this->getAllSubscriberStatus();
+                }
             }
 
 
@@ -189,18 +180,54 @@
             }
         }
 
-        public function getSubscriberStatus($subscriber) {
+        /**
+         * @example
+         * curl --location 'http://172.28.0.2/kamailio/subscriber/4000000001' \
+         * --header 'Authorization: Bearer EXAMPLETOKEN'
+         */
+        public function getSubscriberStatus($subscriber): void
+        {
             /**
              *  TODO:
              *      - implement API call,  get active subscriber from kamailio sip server per AOR
              */
+            $postData = [
+                "jsonrpc" => "2.0",
+                "method" => "ul.lookup",
+                "params" => ["location", $subscriber],
+                "id" => 1
+            ];
+            try {
+                $get_subscriber_info = apiExec('POST', $this->kamailio_rpc_url, $postData, false, false);
+                response(200, json_decode($get_subscriber_info));
+            } catch (Exception $err) {
+                response(500, [$err->getMessage()]);
+            }
+
+            exit(1);
         }
 
-        public function getAllSubscriberStatus() {
+        /**
+         * @example
+         * curl --location 'http://172.28.0.2/kamailio/subscribers' \
+         * --header 'Authorization: Bearer EXAMPLETOKEN'
+         */
+        public function getAllSubscriberStatus(): void {
             /**
              *  TODO:
              *      - implement API call,  get all active subscriber from kamailio sip server
              */
+            $postData = array(
+                "jsonrpc" => "2.0",
+                "method" => "ul.dump",
+                "params" => [],
+                "id" => 1
+            );
+
+            $res = apiExec('POST', $this->kamailio_rpc_url, $postData, false, false);
+
+            response(200, json_decode($res));
+            exit(1);
         }
 
         public function removeRegistration($subscriber) {
