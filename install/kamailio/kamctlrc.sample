@@ -1,1 +1,18 @@
-.placeholder
+SIP_DOMAIN=rbt-sbc-example.com
+
+DBENGINE=PGSQL
+DBHOST=172.28.0.6
+DBPORT=5432
+DBNAME=kamailio
+
+# read-write user
+DBRWUSER="kamailio"
+DBRWPW="kamailio"
+
+# Read user
+DBROUSER="kamailioro"
+DBROPW="kamailioro"
+
+# admin db user
+DBROOTUSER="rbt"
+DBROOTPW="rbt"
