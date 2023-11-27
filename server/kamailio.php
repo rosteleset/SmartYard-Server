@@ -27,5 +27,10 @@
     }
 
     // Usage
-    $kamailioAuthHandler = new Kamailio();
-    $kamailioAuthHandler->handleRequest();
+    try {
+        $kamailioAuthHandler = new Kamailio();
+        $kamailioAuthHandler->handleRequest();
+    } catch (Exception $err) {
+        response(500, false, false, "Failed to handle request");
+        exit(1);
+    }
