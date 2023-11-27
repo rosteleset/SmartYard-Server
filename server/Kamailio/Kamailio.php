@@ -225,8 +225,11 @@
             );
 
             $res = apiExec('POST', $this->kamailio_rpc_url, $postData, false, false);
+            $res = json_decode($res, true);
+            header('Content-Type: application/json');
+            echo response(200,$res['result']);
 
-            response(200, json_decode($res));
+//            response(200, $res[0]['result']);
             exit(1);
         }
 
