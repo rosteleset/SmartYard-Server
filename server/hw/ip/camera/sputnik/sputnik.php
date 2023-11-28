@@ -34,6 +34,11 @@ class sputnik extends camera
         // TODO: wait for implementation (September 2023)
     }
 
+    public function syncData()
+    {
+        // Empty implementation
+    }
+
     public function transformDbConfig(array $dbConfig): array
     {
         $dbConfig['osdText'] = ''; // TODO: wait for implementation (September 2023)

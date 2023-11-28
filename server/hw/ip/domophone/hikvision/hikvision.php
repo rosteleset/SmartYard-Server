@@ -481,11 +481,6 @@ abstract class hikvision extends domophone
         );
     }
 
-    public function syncData()
-    {
-        // Empty implementation
-    }
-
     public function transformDbConfig(array $dbConfig): array
     {
         return $dbConfig;

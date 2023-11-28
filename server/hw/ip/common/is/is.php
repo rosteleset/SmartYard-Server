@@ -58,6 +58,11 @@ trait is
         $this->apiCall('/user/change_password', 'PUT', ['newPassword' => $password]);
     }
 
+    public function syncData()
+    {
+        // Empty implementation
+    }
+
     /**
      * Make an API call.
      *

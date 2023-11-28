@@ -94,6 +94,11 @@ trait hikvision
         );
     }
 
+    public function syncData()
+    {
+        // Empty implementation
+    }
+
     protected function apiCall($resource, $method = 'GET', $params = [], $payload = null)
     {
         $req = $this->url . $this->apiPrefix . $resource;

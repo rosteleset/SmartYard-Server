@@ -71,6 +71,11 @@ trait akuvox
         sleep(1);
     }
 
+    public function syncData()
+    {
+        // Empty implementation
+    }
+
     /**
      * Make an API call.
      *
