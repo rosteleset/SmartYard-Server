@@ -72,8 +72,7 @@
         "geocoder": {
             "backend": "dadata",
             "token": "<!-- your dadata token here --!>"
-        },
-
+        }
         "files": {
             "backend": "mongo"
         },
