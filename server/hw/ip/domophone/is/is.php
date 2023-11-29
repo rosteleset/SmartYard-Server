@@ -323,11 +323,6 @@ abstract class is extends domophone
         }
     }
 
-    public function syncData()
-    {
-        // Empty implementation
-    }
-
     public function transformDbConfig(array $dbConfig): array
     {
         $dbConfig['tickerText'] = '';

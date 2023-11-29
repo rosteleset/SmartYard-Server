@@ -70,6 +70,11 @@ trait rubetek
         sleep(10);
     }
 
+    public function syncData()
+    {
+        // Empty implementation
+    }
+
     /**
      * Make an API call.
      *

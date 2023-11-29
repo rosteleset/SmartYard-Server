@@ -66,6 +66,11 @@ class fake extends camera
         // Empty implementation
     }
 
+    public function syncData()
+    {
+        // Empty implementation
+    }
+
     public function transformDbConfig(array $dbConfig): array
     {
         return $dbConfig;

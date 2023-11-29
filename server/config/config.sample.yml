@@ -5,7 +5,7 @@ api:
   asterisk: http://127.0.0.1/asterisk
   internal: http://127.0.0.1/internal
   mobile: https://example.com/mobile
-  kamailio: https://example.com/kamailio
+  kamailio: http://example.com/kamailio
 mobile:
   web_server_base_path: https://example.com/static/
   payments: true
@@ -85,44 +85,43 @@ backends:
   dvr:
     backend: internal
     servers:
-      - title: Local server
-        type: nimble or flussonic or  or trassir
-        url: https://video.server.hostname:8443
-        token: "<!-- mediaserver security token here (only if you use it) --!>"
-        management_ip: 127.0.0.1
-        management_port: '8086'
-        management_token: "<!-- management token --!>"
+    - title: Local server
+      type: nimble or flussonic or  or trassir
+      url: https://video.server.hostname:8443
+      token: "<!-- mediaserver security token here (only if you use it) --!>"
+      management_ip: 127.0.0.1
+      management_port: '8086'
+      management_token: "<!-- management token --!>"
   dvr_exports:
     backend: mongo
     dvr_files_ttl: 259200
   sip:
     backend: internal
     servers:
-      - title: First server
-        type: asterisk
-        trunk: first
-        ip: "<!-- your asterisk server external ip here --!>"
-        sip_tcp_port: "<!-- set your asterisk tcp port here --!>"
-        sip_udp_port: "<!-- set your asterisk udp port here --!>"
-      - title: SBC server | Kamailio
-        type: kamailio
-        "ip": "<!-- set your kamailio domain or external ip address --!>"
-        "json_rpc_path": "set path, default is 'RPC'"
-        "json_rpc_port": "<!-- set your kamailio json_rpc port here --!>"
-        sip_tcp_port: "<!-- set your kamailio tcp port here --!>"
-        sip_udp_port: "<!-- set your kamailio udp port here --!>"
-        sip_tls_port: "<!-- set your kamailio tls port here --!>"
-        auth_token: "<!-- id use bearer token for auth set token or remove this key --!>"
-
+    - title: First server
+      type: asterisk
+      trunk: first
+      ip: "<!-- your asterisk server external ip here --!>"
+      sip_tcp_port: 5060
+      sip_udp_port: 5060
+    - title: SBC server | Kamailio
+      type: kamailio
+      "ip": "<!-- set your kamailio domain or external ip address --!>"
+      "json_rpc_path": "set path, default is 'RPC'"
+      "json_rpc_port": "<!-- set your kamailio json_rpc port here --!>"
+      sip_tcp_port: "<!-- set your kamailio tcp port here --!>"
+      sip_udp_port: "<!-- set your kamailio udp port here --!>"
+      sip_tls_port: "<!-- set your kamailio tls port here --!>"
+      auth_token: "<!-- id use bearer token for auth set token or remove this key --!>"
     stuns:
-      - stun:stun.l.google.com:19302
+    - stun:stun.l.google.com:19302
   frs:
     backend: internal
     open_door_timeout: 10
     cron_sync_data_scheduler: 5min
     servers:
-      - title: First server
-        url: http://127.0.0.1:9051
+    - title: First server
+      url: http://127.0.0.1:9051
   cs:
     backend: internal
   mqtt:
@@ -142,20 +141,20 @@ telegram:
   bot: "<!-- your telegram bot token here --!>"
 syslog_servers:
   beward:
-    - syslog.udp:127.0.0.1:45450
+  - syslog.udp:127.0.0.1:45450
   beward_ds:
-    - syslog.udp:127.0.0.1:45451
+  - syslog.udp:127.0.0.1:45451
   qtech:
-    - syslog.udp:127.0.0.1:45452
+  - syslog.udp:127.0.0.1:45452
   is:
-    - syslog.udp:127.0.0.1:45453
+  - syslog.udp:127.0.0.1:45453
   hikvision:
-    - syslog.udp:127.0.0.1:45454
+  - syslog.udp:127.0.0.1:45454
   akuvox:
-    - syslog.udp:127.0.0.1:45455
+  - syslog.udp:127.0.0.1:45455
   rubetek:
-    - syslog.udp:127.0.0.1:45456
+  - syslog.udp:127.0.0.1:45456
   sputnik:
-    - https://your-https-server/events/sputnik:45457
+  - https://your-https-server/events/sputnik:45457
 ntp_servers:
-  - ntp:<-- your ntp server ip here -->:123
+- ntp:<-- your ntp server ip here -->:123

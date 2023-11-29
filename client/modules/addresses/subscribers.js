@@ -592,7 +592,7 @@
                 }
                 cameras.push({
                     id: response.cameras.cameras[i].cameraId,
-                    text:  url.host,
+                    text:  url.host + " [" + response.cameras.cameras[i].name + "]",
                 })
             }
 

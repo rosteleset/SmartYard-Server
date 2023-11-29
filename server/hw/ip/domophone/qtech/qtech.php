@@ -458,11 +458,6 @@ abstract class qtech extends domophone
         $this->openLock(2);
     }
 
-    public function syncData()
-    {
-        // Empty implementation
-    }
-
     public function transformDbConfig(array $dbConfig): array
     {
         $dbConfig['cmsLevels'] = [];

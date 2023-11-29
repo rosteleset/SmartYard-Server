@@ -70,6 +70,11 @@ trait qtech
         ]);
     }
 
+    public function syncData()
+    {
+        // Empty implementation
+    }
+
     /**
      * Make an API call.
      *

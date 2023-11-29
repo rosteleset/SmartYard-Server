@@ -147,6 +147,12 @@ trait sputnik
         }
     }
 
+    protected function getWebhookUUIDs(): array
+    {
+        $webhooks = $this->apiCall('query', 'webhooks', [], ['uuid']);
+        return array_column($webhooks['data']['webhooks'], 'uuid');
+    }
+
     protected function initializeProperties()
     {
         $urlParts = explode('/', $this->url);

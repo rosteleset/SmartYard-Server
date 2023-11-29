@@ -499,11 +499,6 @@ abstract class beward extends domophone
         $this->setIntercom('DoorOpenMode', $unlocked ? 'on' : 'off');
     }
 
-    public function syncData()
-    {
-        // Empty implementation
-    }
-
     /**
      * Enable service codes.
      * These codes are used to perform service operations from the front panel of the device.

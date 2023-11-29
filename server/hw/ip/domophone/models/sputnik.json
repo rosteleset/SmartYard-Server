@@ -6,7 +6,7 @@
     "eventServer": "sputnik",
     "outputs": 2,
     "camera": "sputnik",
-    "useSmartConfigurator": false,
+    "useSmartConfigurator": true,
     "cmses": [
         "bk-100",
         "com-25u",
@@ -16,6 +16,7 @@
         "km100-7.2",
         "km100-7.3",
         "km100-7.5",
-        "kmg-100"
+        "kmg-100",
+        "qad-100"
     ]
 }

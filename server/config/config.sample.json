@@ -6,7 +6,7 @@
         "asterisk": "http://127.0.0.1/asterisk",
         "internal": "http://127.0.0.1/internal",
         "mobile": "https://example.com/mobile",
-        "kamailio": "https://example.com/kamailio"
+        "kamailio": "http://example.com/kamailio"
     },
 
     "mobile": {
@@ -142,8 +142,8 @@
                     "type": "asterisk",
                     "trunk": "first",
                     "ip": "<!-- your asterisk server external ip here --!>",
-                    "sip_tcp_port": "<!-- set your asterisk tcp port here --!>",
-                    "sip_udp_port": "<!-- set your asterisk udp port here --!>"
+                    "sip_tcp_port": 5060,
+                    "sip_udp_port": 5060
                 },
                 {
                     "title": "SBC server | Kamailio",

@@ -13,9 +13,18 @@ class sputnik extends domophone
     use \hw\ip\common\sputnik\sputnik;
 
     protected array $rfidKeysToBeDeleted = [];
-    protected array $matrixToBeAdded = [];
-    protected array $codesToBeAdded = [];
-    protected array $flatsToBeAdded = [];
+
+    /**
+     * @var array|null $flats An array that holds flats information,
+     * which may be null if not loaded.
+     */
+    protected ?array $flats = null;
+
+    /**
+     * @var array|null $personalCodes An array that holds personal access codes information,
+     * which may be null if not loaded.
+     */
+    protected ?array $personalCodes = null;
 
     protected array $cmsModelType = [
         'BK-100' => 'VIZIT',
@@ -27,6 +36,7 @@ class sputnik extends domophone
         'KM100-7.3' => 'ELTIS',
         'KM100-7.5' => 'ELTIS',
         'KMG-100' => 'CYFRAL',
+        'QAD-100' => 'DAXIS',
     ];
 
     public function addRfid(string $code, int $apartment = 0)
@@ -63,43 +73,22 @@ class sputnik extends domophone
         array $cmsLevels = []
     )
     {
-        $this->flatsToBeAdded[] = [
-            'flatNum' => $apartment,
-            'parameters' => [
-                'blocked' => false,
-                'redirection' => true,
-                'sipAccountContact' => "$sipNumbers[0]" ?? '',
-                'soundVol' => 100,
-                'analogSettings' => [
-                    // 'alias' => null,
-                    'blocked' => !$cmsEnabled,
-                    'thresholdCall' => $cmsLevels[0] ?? null,
-                    'thresholdDoor' => $cmsLevels[1] ?? null,
-                ],
-            ],
+        $this->loadFlats();
+        $this->loadPersonalCodes();
+
+        $flat = &$this->flats[$apartment];
+
+        $flat['num'] = $apartment;
+        $flat['sipAccountContact'] = "$sipNumbers[0]" ?? '';
+        $flat['analogSettings']['alias'] = $flat['analogSettings']['alias'] ?? 0;
+        $flat['analogSettings']['blocked'] = !$cmsEnabled;
+        $flat['analogSettings']['thresholdCall'] = $cmsLevels[0] ?? 9.99;
+        $flat['analogSettings']['thresholdDoor'] = $cmsLevels[1] ?? 9.99;
+
+        $this->personalCodes[$apartment] = [
+            'uuid' => null,
+            'value' => $code,
         ];
-
-        // Check if the code of this apartment exists in the intercom
-        [$codeUUID, $intercomCode] = $this->getCodeByApartment($apartment) ?: [null, null];
-
-        // If the code exists and needs to be deleted or the code for this apartment has changed,
-        // then it needs to be deleted
-        if ($codeUUID && (!$code || $code !== $intercomCode)) {
-            $this->apiCall('mutation', 'deleteDigitalKey', [
-                'intercomID' => $this->uuid,
-                'digitalKeyUUID' => $codeUUID,
-            ]);
-        }
-
-        // If the code in the panel and the code to be configured differ, then add a new code
-        if ($code && $code !== $intercomCode) {
-            $this->codesToBeAdded[] = [
-                'description' => "$apartment",
-                'digitalKeyUUID' => null,
-                'expTime' => null,
-                'value' => "$code",
-            ];
-        }
     }
 
     public function configureEncoding()
@@ -109,7 +98,6 @@ class sputnik extends domophone
 
     public function configureGate(array $links = [])
     {
-        // TODO: ???
 //        $this->apiCall('mutation', 'removeAllClusterPrefix', ['uuid' => $this->uuid]);
 //
 //        $clusterPrefixes = array_map(function ($link) {
@@ -129,6 +117,15 @@ class sputnik extends domophone
 
     public function configureMatrix(array $matrix)
     {
+        $this->loadFlats();
+        $flatTemplate = $this->getFlatTemplate();
+
+        // Clear all aliases (analog numbers)
+        foreach ($this->flats as &$flat) {
+            $flat['analogSettings']['alias'] = 0;
+        }
+
+        // Configure the necessary aliases
         foreach ($matrix as $cell) {
             [
                 'hundreds' => $hundreds,
@@ -137,14 +134,15 @@ class sputnik extends domophone
                 'apartment' => $apartment
             ] = $cell;
 
-            $this->matrixToBeAdded[] = [
-                'flatNum' => $apartment,
-                'parameters' => [
-                    'analogSettings' => [
-                        'alias' => intval($hundreds . $tens . $units),
-                    ],
-                ],
-            ];
+            $alias = $hundreds * 100 + $tens * 10 + $units;
+
+            if ($alias % 100 === 0) {
+                $alias += 100;
+            }
+
+            $this->flats[$apartment] = $this->flats[$apartment] ?? $flatTemplate;
+            $this->flats[$apartment]['num'] = $apartment;
+            $this->flats[$apartment]['analogSettings']['alias'] = $alias;
         }
     }
 
@@ -178,16 +176,12 @@ class sputnik extends domophone
 
     public function deleteApartment(int $apartment = 0)
     {
+        $this->loadFlats();
+        $this->loadPersonalCodes();
+
         if ($apartment !== 0) {
-            $this->apiCall('mutation', 'deleteFlat', [
-                'intercom' => [
-                    'motherboardID' => $this->motherboardID,
-                    'uuid' => $this->uuid,
-                ],
-                'num' => $apartment,
-            ]);
-        } else {
-            // TODO: deleting all apartments
+            $this->flats[$apartment]['sipAccountContact'] = '';
+            unset($this->personalCodes[$apartment]);
         }
     }
 
@@ -209,12 +203,6 @@ class sputnik extends domophone
     public function openLock(int $lockNumber = 0)
     {
         $this->apiCall('mutation', $lockNumber ? 'openSecondDoor' : 'openDoor', ['intercomID' => $this->uuid]);
-    }
-
-    public function prepare()
-    {
-        parent::prepare();
-        $this->clearDefaultCMSRange();
     }
 
     public function setAudioLevels(array $levels)
@@ -257,7 +245,8 @@ class sputnik extends domophone
 
     public function setConciergeNumber(int $sipNumber)
     {
-        $this->configureApartment($sipNumber, 0, [$sipNumber], false);
+        // Empty implementation
+        // $this->configureApartment($sipNumber, 0, [$sipNumber], false);
     }
 
     public function setDtmfCodes(string $code1 = '1', string $code2 = '2', string $code3 = '3', string $codeCms = '1')
@@ -275,7 +264,7 @@ class sputnik extends domophone
 
     public function setPublicCode(int $code = 0)
     {
-        // TODO: Implement setPublicCode() method.
+        // Empty implementation
     }
 
     public function setSosNumber(int $sipNumber)
@@ -319,20 +308,11 @@ class sputnik extends domophone
 
     public function syncData()
     {
+        $this->uploadFlats();
+        $this->uploadPersonalCodes();
+
         if ($this->rfidKeysToBeDeleted) {
             $this->deleteIntercomKeys($this->rfidKeysToBeDeleted);
-        }
-
-        if ($this->matrixToBeAdded) {
-            $this->updateIntercomFlats($this->matrixToBeAdded);
-        }
-
-        if ($this->codesToBeAdded) {
-            $this->createDigitalKeys($this->codesToBeAdded);
-        }
-
-        if ($this->flatsToBeAdded) {
-            $this->updateIntercomFlats($this->flatsToBeAdded);
         }
     }
 
@@ -350,24 +330,6 @@ class sputnik extends domophone
         $dbConfig['ntp']['timezone'] = $this->getOffsetByTimezone($dbConfig['ntp']['timezone']);
 
         return $dbConfig;
-    }
-
-    protected function clearDefaultCMSRange()
-    {
-        $this->apiCall('mutation', 'updateIntercomFlatConfig', [
-            'intercomID' => $this->uuid,
-            'firstFlat' => 1,
-            'lastFlat' => 1,
-            'flatOffset' => 0,
-        ]);
-    }
-
-    protected function createDigitalKeys($digitalKeys)
-    {
-        $this->apiCall('mutation', 'createDigitalKeys', [
-            'intercomID' => $this->uuid,
-            'digitalKeys' => $digitalKeys,
-        ]);
     }
 
     protected function deleteIntercomKeys($keys)
@@ -430,12 +392,13 @@ class sputnik extends domophone
                 'analogSettings' => $analogSettings,
             ] = $rawFlat['node'];
 
-            if ($apartment === 9999 || !$sipNumber) {
+            // Generated automatically due to range, not required
+            if (!$sipNumber) {
                 continue;
             }
 
             [
-                'blocked' => $blocked,
+                'blocked' => $cmsBlocked,
                 'thresholdCall' => $thresholdCall,
                 'thresholdDoor' => $thresholdDoor,
             ] = $analogSettings;
@@ -444,7 +407,7 @@ class sputnik extends domophone
                 'apartment' => $apartment,
                 'code' => $codes[$apartment] ?? 0,
                 'sipNumbers' => [$sipNumber],
-                'cmsEnabled' => !$blocked,
+                'cmsEnabled' => !$cmsBlocked,
                 'cmsLevels' => [$thresholdCall, $thresholdDoor]
             ];
         }
@@ -491,24 +454,6 @@ class sputnik extends domophone
         return $intercom['data']['intercom']['configShadow']['commutator']['commutatorType'];
     }
 
-    protected function getCodeByApartment(int $apartment): array
-    {
-        $intercom = $this->apiCall('query', 'intercom', ['uuid' => $this->uuid], [
-            'configShadow' => ['keys' => ['digitalKeys' => ['edges' => ['description', 'node' => ['uuid', 'value']]]]]
-        ]);
-
-        $rawCodes = $intercom['data']['intercom']['configShadow']['keys']['digitalKeys']['edges'];
-
-        foreach ($rawCodes as $rawCode) {
-            if ($apartment == $rawCode['description']) {
-                ['uuid' => $uuid, 'value' => $code] = $rawCode['node'];
-                return [$uuid, intval($code)];
-            }
-        }
-
-        return [];
-    }
-
     protected function getDtmfConfig(): array
     {
         $intercom = $this->apiCall('query', 'intercom', ['uuid' => $this->uuid], [
@@ -525,9 +470,22 @@ class sputnik extends domophone
         ];
     }
 
+    protected function getFlatTemplate()
+    {
+        return [
+            'num' => 0,
+            'sipAccountContact' => '',
+            'analogSettings' => [
+                'alias' => 0,
+                'blocked' => false,
+                'thresholdCall' => 9.99,
+                'thresholdDoor' => 9.99,
+            ],
+        ];
+    }
+
     protected function getGateConfig(): array
     {
-        // TODO: ???
         return [];
     }
 
@@ -553,14 +511,20 @@ class sputnik extends domophone
         $rawMatrix = $intercom['data']['intercom']['configShadow']['flats']['flats']['edges'];
 
         foreach ($rawMatrix as $cell) {
-            $apartmentNumber = $cell['node']['num'];
+            $alias = $cell['node']['analogSettings']['alias'];
 
-            if ($apartmentNumber === 9999) {
+            // No analog line forwarding, skip
+            if (!$alias) {
                 continue;
             }
 
-            $alias = $cell['node']['analogSettings']['alias'];
+            if ($alias % 100 === 0) {
+                $alias -= 100;
+            }
+
+            $apartmentNumber = $cell['node']['num'];
             [$cms, $dozen, $unit] = str_split(str_pad($alias, 3, '0', STR_PAD_LEFT));
+
             $matrix[$cms . $dozen . $unit] = [
                 'hundreds' => $cms,
                 'tens' => $dozen,
@@ -622,17 +586,176 @@ class sputnik extends domophone
         return false;
     }
 
-    protected function getWebhookUUIDs(): array
+    /**
+     * Load and cache flats from the API if they haven't been loaded already.
+     *
+     * @return void
+     */
+    protected function loadFlats()
     {
-        $webhooks = $this->apiCall('query', 'webhooks', [], ['uuid']);
-        return array_column($webhooks['data']['webhooks'], 'uuid');
+        if ($this->flats !== null) {
+            return;
+        }
+
+        $intercom = $this->apiCall('query', 'intercom', ['uuid' => $this->uuid], [
+            'configShadow' => [
+                'flats' => [
+                    'firstFlat',
+                    'lastFlat',
+                    'flats(limit: 9999)' => [
+                        'edges' => [
+                            'node' => [
+                                'num',                  // Flat number
+                                'sipAccountContact',    // SIP number
+                                'analogSettings' => [
+                                    'alias',            // Analog number
+                                    'blocked',          // CMS blocked
+                                    'thresholdCall',    // Handset up level
+                                    'thresholdDoor',    // Door opening level
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]);
+
+        $rawFlats = $intercom['data']['intercom']['configShadow']['flats']['flats']['edges'];
+
+        $flats = array_map(function ($item) {
+            return $item['node'];
+        }, $rawFlats);
+
+        $this->flats = array_column($flats, null, 'num');
     }
 
-    protected function updateIntercomFlats($flats)
+    /**
+     * Load and cache personal codes from the API if they haven't been loaded already.
+     *
+     * @return void
+     */
+    protected function loadPersonalCodes()
     {
+        if ($this->personalCodes !== null) {
+            return;
+        }
+
+        $intercom = $this->apiCall('query', 'intercom', ['uuid' => $this->uuid], [
+            'configShadow' => [
+                'keys' => [
+                    'digitalKeys' => [
+                        'edges' => [
+                            'description',
+                            'node' => [
+                                'uuid',
+                                'value'
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]);
+
+        $rawCodes = $intercom['data']['intercom']['configShadow']['keys']['digitalKeys']['edges'];
+
+        $this->personalCodes = array_reduce($rawCodes, function ($result, $item) {
+            $description = $item['description'];
+
+            $result[$description] = [
+                'uuid' => $item['node']['uuid'],
+                'value' => $item['node']['value'],
+            ];
+
+            return $result;
+        }, []);
+    }
+
+    protected function uploadFlats()
+    {
+        if ($this->flats === null) {
+            return;
+        }
+
+        $firstFlat = null;
+        $lastFlat = null;
+
+        // Finding the first and last non-empty flats
+        foreach ($this->flats as $flat) {
+            if (!empty($flat['sipAccountContact']) || !empty($flat['analogSettings']['alias'])) {
+                if ($firstFlat === null || $flat['num'] < $firstFlat['num']) {
+                    $firstFlat = $flat;
+                }
+
+                if ($lastFlat === null || $flat['num'] > $lastFlat['num']) {
+                    $lastFlat = $flat;
+                }
+            }
+        }
+
+        // Cutting off empty flats outside the range
+        $filteredFlats = array_filter($this->flats, function ($flat) use ($firstFlat, $lastFlat) {
+            return !empty($flat['num']) && $flat['num'] >= $firstFlat['num'] && $flat['num'] <= $lastFlat['num'];
+        });
+
+        $flatNumbers = array_keys($filteredFlats);
+        $firstFlatNum = min($flatNumbers);
+        $lastFlatNum = max($flatNumbers);
+
+        // Upload flat range
+        $this->apiCall('mutation', 'updateIntercomFlatConfig', [
+            'intercomID' => $this->uuid,
+            'firstFlat' => $firstFlatNum,
+            'lastFlat' => $lastFlatNum,
+        ]);
+
+        sleep(5); // Without this, with a large range of flats, the last flat is duplicated
+
+        $flats = array_map(function ($flat) {
+            return [
+                'flatNum' => $flat['num'],
+                'parameters' => [
+                    'blocked' => false,
+                    'redirection' => true,
+                    'sipAccountContact' => $flat['sipAccountContact'],
+                    'soundVol' => 100,
+                    'analogSettings' => [
+                        'alias' => $flat['analogSettings']['alias'],
+                        'blocked' => $flat['analogSettings']['blocked'],
+                        'thresholdCall' => $flat['analogSettings']['thresholdCall'],
+                        'thresholdDoor' => $flat['analogSettings']['thresholdDoor'],
+                    ],
+                ],
+            ];
+        }, array_values($filteredFlats));
+
+        // Upload flats
         $this->apiCall('mutation', 'updateIntercomFlats', [
             'intercomID' => $this->uuid,
-            'flats' => $flats,
+            'flats' => $flats
+        ]);
+    }
+
+    protected function uploadPersonalCodes()
+    {
+        if ($this->personalCodes === null) {
+            return;
+        }
+
+        // Clear all existing digital keys
+        $this->apiCall('mutation', 'deleteAllDigitalKeys', ['intercomID' => $this->uuid]);
+
+        $codesToBeCreated = [];
+
+        foreach ($this->personalCodes as $flatNumber => $personalCode) {
+            $codesToBeCreated[] = [
+                'description' => "$flatNumber",
+                'value' => "{$personalCode['value']}",
+            ];
+        }
+
+        $this->apiCall('mutation', 'createDigitalKeys', [
+            'intercomID' => $this->uuid,
+            'digitalKeys' => $codesToBeCreated,
         ]);
     }
 }

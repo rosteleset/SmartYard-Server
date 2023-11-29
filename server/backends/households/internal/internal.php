@@ -1854,7 +1854,7 @@
                     foreach ($el as $ei) {
                         if (!in_array($ei["address_house_id"], $hi)) {
                             $this->db->modify("delete from houses_houses_entrances where address_house_id = :address_house_id", [
-                                "house_flat_id" => $ei["address_house_id"],
+                                "address_house_id" => $ei["address_house_id"],
                             ]);
                             $n++;
                         }
