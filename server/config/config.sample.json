@@ -101,11 +101,22 @@
 
         "plog": {
             "backend": "clickhouse",
-            "time_shift": "<!-- your time shift in seconds from current time as the end timepoint for processing plog_* tables (hint 60) --!>",
-            "max_call_length": "<!-- your max call length in seconds for backward processing call events (hint 120) --!>",
-            "ttl_temp_record": "<!-- your time to live in seconds for temporary data in plog_* tables (hint 86400 - one day) --!>",
-            "ttl_camshot_days": "<!-- your time to live in days for camshots (hint 180 - approx. half year) --!>",
-            "back_time_shift_video_shot": "<!-- your back time shift in seconds for receiving video shot from media server (hint 3) --!>",
+
+            "_comment_time_shift": "<!-- your time shift in seconds from current time as the end timepoint for processing plog_* tables (hint 60) --!>",
+            "time_shift": 60,
+
+            "_comment_max_call_length": "<!-- your max call length in seconds for backward processing call events (hint 120) --!>",
+            "max_call_length": 120,
+
+            "_comment_ttl_temp_record": "<!-- your time to live in seconds for temporary data in plog_* tables (hint 86400 - one day) --!>",
+            "ttl_temp_record": 86400,
+
+            "_comment_ttl_camshot_days": "<!-- your time to live in days for camshots (hint 180 - approx. half year) --!>",
+            "ttl_camshot_days": 180,
+
+            "_comment_back_time_shift_video_shot": "<!-- your back time shift in seconds for receiving video shot from media server (hint 3) --!>",
+            "back_time_shift_video_shot": 3,
+
             "cron_process_events_scheduler": "minutely"
         },
 
