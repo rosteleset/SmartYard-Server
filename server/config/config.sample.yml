@@ -23,6 +23,11 @@ mobile:
   tt_user: mobile
   time_zone: Europe/Moscow
   guest_access: turnOnOnly
+  cctv_view: map
+
+  # Active app's tab at start. One of: addresses, notifications, chat, pay, menu. The default value is addresses
+  active_tab: addresses
+
 db:
   dsn: pgsql:host=127.0.0.1;port=5433;dbname=rbt
   username: rbt
