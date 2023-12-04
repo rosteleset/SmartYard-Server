@@ -142,6 +142,11 @@ app.get('/push', function (req, res) {
             "pass",
             "live",
             "image",
+            "domophoneId",
+            "videoServer",
+            "videoToken",
+            "videoType",
+            "videoStream",
         ];
 
         for (let i = 0; i < fields.length; i++) {
