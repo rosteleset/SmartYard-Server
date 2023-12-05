@@ -47,7 +47,6 @@
                 response(498, null, null, 'Invalid token or empty');
                 exit(1);
             }
-
         }
 
         /**
@@ -78,7 +77,7 @@
             }
         }
 
-        private function make_kamailio_rpc_url(): void
+        private function makeKamailioRpcUrl(): void
         {
             // make kamailio JSON RPC url example: http://example-host.com:8080/RPC';
             [
@@ -98,17 +97,17 @@
             $path = $_SERVER["REQUEST_URI"];
 
             // TODO: rename var
-            $kamailioAuthApi = parse_url($config["api"]["kamailio"]);
+            $authApi = parse_url($config["api"]["kamailio"]);
             // update a patch process
-            if ($kamailioAuthApi && $kamailioAuthApi['path']) {
-                $path = substr($path, strlen($kamailioAuthApi['path']));
+            if ($authApi && $authApi['path']) {
+                $path = substr($path, strlen($authApi['path']));
             }
 
             if ($path && $path[0] == '/') {
                 $path = substr($path, 1);
             }
 
-            // Handler kamailio sip server REGISTER request
+            // Handler Kamailio sip server REGISTER request
             if ($request_method === 'POST' && $path === 'subscriber/hash') {
                 $this->auth();
                 [$subscriber, $sipDomain] = explode('@', explode(':', $postData['from_uri'])[1]);
@@ -117,7 +116,8 @@
             }
 
             /**
-             *   TODO:
+             *  remove GET handler after test methods
+             *  TODO:
              *      -   error handlers
              *      -   test kamailio JSONRPC API methods
              *      -   getSubscriberStatus($subscriber)
@@ -126,7 +126,7 @@
              *      -   pingSubscriber()
              */
             if ($request_method==='GET'){
-                $this->make_kamailio_rpc_url();
+                $this->makeKamailioRpcUrl();
                 $path = explode('/', $path);
 
                 // getSubscriberStatus
