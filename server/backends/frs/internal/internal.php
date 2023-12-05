@@ -98,10 +98,11 @@
                 $response = curl_exec($curl);
                 $response_code = curl_getinfo($curl, CURLINFO_RESPONSE_CODE);
                 curl_close($curl);
-                if ($response_code > self::R_CODE_OK && !$response)
-                    return ["code" => $response_code];
-                else
+                if ($response_code == 0 || $response_code >= 204) {
+                    return [self::P_CODE => $response_code > 0 ? $response_code : 500];
+                } else {
                     return json_decode($response, true);
+                }
             }
 
             /**
