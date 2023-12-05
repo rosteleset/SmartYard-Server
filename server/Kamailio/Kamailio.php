@@ -5,7 +5,7 @@
     {
         private  mixed $backend;
         private mixed $kamailioConf;
-        private string $kamailio_rpc_url;
+        private string $kamailioRpcUrl;
 
         public function __construct()
         {
@@ -54,9 +54,9 @@
          * Load backend 'households'
          * @return void
          */
-        private function loadBackend(): void
+        private function loadBackend($backend = 'households'): void
         {
-            $this->backend = loadBackend('households');
+            $this->backend = loadBackend($backend);
 
             if (!$this->backend) {
                 response(555, 'No backend loaded');
@@ -87,7 +87,7 @@
                 'rpc_path' => $kamailio_rpc_path,
             ] = $this->kamailioConf;
 
-            $this->kamailio_rpc_url = 'http://'.$kamailio_address.':'.$kamailio_rpc_port.'/'.$kamailio_rpc_path;
+            $this->kamailioRpcUrl = 'http://'.$kamailio_address.':'.$kamailio_rpc_port.'/'.$kamailio_rpc_path;
         }
 
         public function handleRequest(): void
@@ -198,7 +198,7 @@
                 "id" => 1
             ];
             try {
-                $get_subscriber_info = apiExec('POST', $this->kamailio_rpc_url, $postData, false, false);
+                $get_subscriber_info = apiExec('POST', $this->kamailioRpcUrl, $postData, false, false);
                 response(200, json_decode($get_subscriber_info));
             } catch (Exception $err) {
                 response(500, [$err->getMessage()]);
@@ -224,7 +224,7 @@
                 "id" => 1
             );
 
-            $res = apiExec('POST', $this->kamailio_rpc_url, $postData, false, false);
+            $res = apiExec('POST', $this->kamailioRpcUrl, $postData, false, false);
             $res = json_decode($res, true);
             header('Content-Type: application/json');
             echo response(200,$res['result']);
