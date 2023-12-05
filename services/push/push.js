@@ -1,16 +1,20 @@
-#!/usr/bin/node
+// Load environment variables based on NODE_ENV
+require("dotenv").config({
+    path: `${process.env.NODE_ENV === "development" ? ".env_development" : ".env_production"}`
+});
+const path = require('path');
+const app = require('express')();
+const admin = require('firebase-admin');
+const cert = path.join(__dirname, './assets/certificate-and-privatekey.pem');
+const { Curl } = require('node-libcurl');
 
-var app_bundle_id = 'bla-bla-bla';
-var app_user_agent = 'bla-bla-bla';
-var database = 'bla-bla-bla';
+const PORT = process.env.APP_PORT || 8080;
+const HOST = process.env.APP_HOST || "127.0.0.1";
+const app_bundle_id = process.env.APP_BUNDLE_ID || "example_app_bundle_id";
+const app_user_agent = process.env.APP_USER_AGENT || 'example_app_user_agent';
+const database = process.env.APP_DATABASE_NAME || 'example_database';
 
-var path = require('path');
-var app = require('express')();
-var admin = require('firebase-admin');
-var cert = path.join(__dirname, 'bla-bla-bla');
-var { Curl } = require('node-libcurl');
-
-function pushOk(token, result, res) {
+const pushOk = (token, result, res) => {
     if (result && result.successCount && parseInt(result.successCount)) {
         console.log((new Date()).toLocaleString() + " ok: " + token);
         if (result.results && result.results[0] && result.results[0].messageId) {
@@ -23,15 +27,16 @@ function pushOk(token, result, res) {
     }
 }
 
-function pushFail(token, error, res) {
+const pushFail = (token, error, res) => {
     console.log((new Date()).toLocaleString() + " err: " + token);
 
     let broken = false;
 
     console.log(error);
 
-    if (error && error.results && error.results.length && error.results[0] && error.results[0].error && error.results[0].error.code) {
-        if (error.results[0].error.code == 'messaging/registration-token-not-registered') {
+    if (error && error.results && error.results.length && error.results[0]
+        && error.results[0].error && error.results[0].error.code) {
+        if (error.results[0].error.code === 'messaging/registration-token-not-registered') {
             broken = true;
         }
     }
@@ -49,7 +54,7 @@ function pushFail(token, error, res) {
     }
 }
 
-function realPush(msg, data, options, token, type, res) {
+const realPush = (msg, data, options, token, type, res) => {
     switch (parseInt(type)) {
         case 0:
         case 3:
@@ -74,7 +79,7 @@ function realPush(msg, data, options, token, type, res) {
             break;
         case 1:
         case 2:
-            let http2_server = (parseInt(type) == 2)?'https://api.sandbox.push.apple.com':'https://api.push.apple.com';
+            let http2_server = (parseInt(type) === 2)?'https://api.sandbox.push.apple.com':'https://api.push.apple.com';
 
             console.log(http2_server);
 
@@ -121,14 +126,14 @@ function realPush(msg, data, options, token, type, res) {
 
 app.get('/push', function (req, res) {
     console.log((new Date()).toLocaleString(), req.query);
-    
+
     let pushed = false;
-    
+
     if (req.query.hash || req.query.pass) {
         let data = {
             timestamp: Math.round((new Date()).getTime()/1000).toString(),
         };
-        
+
         let fields = [
             "server",
             "port",
@@ -142,11 +147,6 @@ app.get('/push', function (req, res) {
             "pass",
             "live",
             "image",
-            "domophoneId",
-            "videoServer",
-            "videoToken",
-            "videoType",
-            "videoStream",
         ];
 
         for (let i = 0; i < fields.length; i++) {
@@ -181,7 +181,7 @@ app.get('/push', function (req, res) {
 
         console.log((new Date()).toLocaleString(), data);
 
-        if (req.query.platform == 'ios') {
+        if (req.query.platform === 'ios') {
             realPush({
                 title: req.query.title?req.query.title:"Incoming call",
                 body: req.query.callerId?req.query.callerId:"Unknown",
@@ -194,7 +194,7 @@ app.get('/push', function (req, res) {
             pushed = true;
         }
 
-        if (req.query.platform == 'android') {
+        if (req.query.platform === 'android') {
             realPush({}, data, {
                 priority: 'high',
                 mutableContent: false,
@@ -226,11 +226,11 @@ app.get('/push', function (req, res) {
 });
 
 // runIt!
-
 app.use(require('body-parser').urlencoded({ extended: true }));
-app.listen(8080, '127.0.0.1');
-
-admin.initializeApp({
-    credential: admin.credential.cert(require(path.join(__dirname, 'pushServiceAccountKey.json'))),
-    databaseURL: database,
-});
+app.listen(PORT, HOST, () => console.log(`Push server started >> http://${HOST}:${PORT}`))
+    .on("listening", () =>{
+        admin.initializeApp({
+            credential: admin.credential.cert(require(path.join(__dirname, './assets/pushServiceAccountKey.json'))),
+            databaseURL: database,
+        });
+    })

@@ -99,10 +99,17 @@ package-lock.json
 /install/asterisk/extconfig.conf
 /install/asterisk/http.conf
 
-#Kamailio
+# ----- push service
+/services/push/assets/pushServiceAccountKey.json
+/services/push/assets/certificate-and-privatekey.pem
+/services/push/.env_production
+/services/push/.env_development
+!/services/push/package.json
+
+# ----- Kamailio
 /install/kamailio/kamailio-local.cfg
 /install/kamailio/kamctlrc
 /server/kamailio_.php
 
-#rtpengine
+# ----- rtpengine
 /install/rtpengine/rtpengine.conf
