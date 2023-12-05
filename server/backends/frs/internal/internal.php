@@ -83,7 +83,10 @@
                     $method = substr($method, 1);
                 $api_url = $base_url . "api/" . $method;
                 $curl = curl_init();
-                $data = json_encode($params);
+                if ($params)
+                    $data = json_encode($params);
+                else
+                    $data = "";
                 $options = [
                     CURLOPT_URL => $api_url,
                     CURLOPT_POST => 1,
@@ -249,6 +252,8 @@
                 $frs_all_faces = [];
                 foreach ($this->servers() as $frs_server) {
                     $all_faces = $this->apiCall($frs_server[self::FRS_BASE_URL], self::M_LIST_ALL_FACES, null);
+                    if ($all_faces[self::P_CODE] > 204)
+                        return;
                     if ($all_faces && array_key_exists(self::P_DATA, $all_faces)) {
                         $frs_all_faces = array_merge($frs_all_faces, $all_faces[self::P_DATA]);
                     }
@@ -287,6 +292,8 @@
                 foreach ($this->servers() as $frs_server) {
                     $frs_all_data[$frs_server[self::FRS_BASE_URL]] = [];
                     $streams = $this->apiCall($frs_server[self::FRS_BASE_URL], self::M_LIST_STREAMS, null);
+                    if ($streams[self::P_CODE] > 204)
+                        return;
                     if ($streams && isset($streams[self::P_DATA]) && is_array($streams[self::P_DATA]))
                         foreach ($streams[self::P_DATA] as $item)
                         {
@@ -349,7 +356,7 @@
                         if ($face_uuid === null) {
                             //face image doesn't exist in th RBT, so delete it everywhere
                             $this->deleteFaceId($face_id);
-                            $this->apiCall($frs_base_url, self::M_DELETE_FACES, [$face_id]);
+                            $this->apiCall($frs_base_url, self::M_DELETE_FACES, [self::P_FACE_IDS => [$face_id]]);
                         } else {
                             $rbt_all_data[$frs_base_url][$stream_id][] = $face_id;
                         }
