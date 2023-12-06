@@ -18,7 +18,6 @@
  * @apiSuccess {String} -.token token авторизации
  */
 
-// TODO: add hlsMode
 auth();
 
 $cameras = loadBackend("cameras");
@@ -28,6 +27,7 @@ $common_cameras = $cameras->getCameras("common");
 $resp = [];
 
 foreach ($common_cameras as $camera) {
+    $hlsMode = $dvr->getDVRServerByStream($camera['dvrStream'])["hlsMode"];
     $item = [
         "id" => $camera["cameraId"],
         "name" => $camera["name"],
@@ -35,6 +35,8 @@ foreach ($common_cameras as $camera) {
         "lon" => strval($camera['lon']),
         "url" => $camera['dvrStream'],
         "token" => $dvr->getDVRTokenForCam($camera, $subscriber['subscriberId']),
+        "serverType" => $dvr->getDVRServerByStream($camera['dvrStream'])["type"],
+        "hlsMode" => $hlsMode ?? false
     ];
     $resp=[... $resp, $item];
 }
