@@ -16,10 +16,12 @@
  * @apiSuccess {Number} -.lon долгота
  * @apiSuccess {String} -.url базовый url потока
  * @apiSuccess {String} -.token token авторизации
+ * @apiSuccess {String} [-.serverType] тип DVR сервера: "flussonic" (default), "nimble", "trassir", "macroscop", "forpost"
+ * @apiSuccess {String} [-.hlsMode] режим HLS (used for flussonic only): "fmp4" (default for hevc support), "mpegts" (for flussonic below 21.02 version)
  */
 
 auth();
-
+$allowedMods = ["fmp4", "mpegts"];
 $cameras = loadBackend("cameras");
 $dvr = loadBackend("dvr");
 
@@ -36,8 +38,12 @@ foreach ($common_cameras as $camera) {
         "url" => $camera['dvrStream'],
         "token" => $dvr->getDVRTokenForCam($camera, $subscriber['subscriberId']),
         "serverType" => $dvr->getDVRServerByStream($camera['dvrStream'])["type"],
-        "hlsMode" => $hlsMode ?? false
     ];
+
+    if ($hlsMode && in_array($hlsMode, $allowedMods)){
+        $item["hlsMode"] = $hlsMode;
+    }
+
     $resp=[... $resp, $item];
 }
 
