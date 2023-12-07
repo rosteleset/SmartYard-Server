@@ -446,6 +446,11 @@ abstract class qtech extends domophone
 
     public function setUnlocked(bool $unlocked = true)
     {
+        // Skip if the locks are currently already in the required state
+        if ($unlocked === $this->getUnlocked()) {
+            return;
+        }
+
         $this->setParams([
             'Config.DoorSetting.RELAY.RelayATrigAlways' => (int)$unlocked,
             'Config.DoorSetting.RELAY.RelayBTrigAlways' => (int)$unlocked,

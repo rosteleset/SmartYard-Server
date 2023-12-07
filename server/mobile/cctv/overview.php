@@ -16,29 +16,35 @@
  * @apiSuccess {Number} -.lon долгота
  * @apiSuccess {String} -.url базовый url потока
  * @apiSuccess {String} -.token token авторизации
+ * @apiSuccess {String} [-.serverType] тип DVR сервера: "flussonic" (default), "nimble", "trassir", "macroscop", "forpost"
+ * @apiSuccess {String} [-.hlsMode] режим HLS (used for flussonic only): "fmp4" (default for hevc support), "mpegts" (for flussonic below 21.02 version)
  */
 
 auth();
-response();
+$allowedMods = ["fmp4", "mpegts"];
+$cameras = loadBackend("cameras");
+$dvr = loadBackend("dvr");
 
-/*
-$ret = [];
+$common_cameras = $cameras->getCameras("common");
+$resp = [];
 
-$ocams = demo('overviewCams');
+foreach ($common_cameras as $camera) {
+    $hlsMode = $dvr->getDVRServerByStream($camera['dvrStream'])["hlsMode"];
+    $item = [
+        "id" => $camera["cameraId"],
+        "name" => $camera["name"],
+        "lat" => strval($camera['lat']),
+        "lon" => strval($camera['lon']),
+        "url" => $camera['dvrStream'],
+        "token" => $dvr->getDVRTokenForCam($camera, $subscriber['subscriberId']),
+        "serverType" => $dvr->getDVRServerByStream($camera['dvrStream'])["type"],
+    ];
 
-if ($ocams) {
-    foreach ($ocams as $cam) {
-        $cam['lon'] = $cam['lng'];
-        unset($cam['lng']);
-        unset($cam['clientId']);
-        unset($cam['houseId']);
-        $ret[] = $cam;
+    if ($hlsMode && in_array($hlsMode, $allowedMods)){
+        $item["hlsMode"] = $hlsMode;
     }
+
+    $resp=[... $resp, $item];
 }
 
-if (count($ret)) {
-    response(200, $ret);
-} else {
-    response();
-}
-*/
+response(200, $resp);
