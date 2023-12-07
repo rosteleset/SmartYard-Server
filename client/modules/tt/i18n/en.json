@@ -139,6 +139,7 @@
     "customFieldEditorVirtual": "None",
     "addWorkflow": "Add workflow",
     "statusWasChanged": "Status changed",
+    "statusWasAdded": "Status added",
     "resolutionWasChanged": "Resolution changed",
     "roleWasChanged": "Role changed",
     "projectWasAdded": "Project added",
