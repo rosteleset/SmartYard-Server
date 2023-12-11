@@ -113,6 +113,8 @@ function createIssue(issue)
     -- заявка всегда создается в статусе "Открыта"
     issue["status"] = "Открыта"
     issue["resolution"] = "Созвон"
+    
+    issue["_cf_debt_services"] = trimArray(issue["_cf_debt_services"])
 
     return tt.createIssue(issue)
 end
@@ -150,7 +152,7 @@ function getAvailableActions(issue)
             "Передача приставам",
             "Ответ от приставов",
             "-",
-            "Поступление дс",
+            "Поступление ДС",
             "-",
             "!saAddComment",
             "saAddFile",
@@ -165,6 +167,7 @@ function getAvailableActions(issue)
             ["Ожидание суда"] = "Обращение в суд",
             ["Получено решение суда"] = "Решение суда",
             ["Ожидание ответа приставов"] = "Передача приставам",
+            ["Ожидание поступления ДС"] = "Ответ от приставов",
         }
 
         actions = removeValue(actions, issue["resolution"])
@@ -264,6 +267,10 @@ function getActionTemplate(issue, action)
             "_cf_order",
         }
     end
+    
+    if action == "Поступление ДС" then
+        return "incomingMoney"
+    end
 
     -- закрываем заявку
     if action == "Закрыть" then
@@ -287,7 +294,7 @@ end
 --------------------------------------------------------------------------------
 
 function action(issue, action, original)
-    local available = stripActions(getAvailableActions(issue))
+    local available = stripActions(getAvailableActions(original))
 
     if not hasValue(available, action) then
         return false
@@ -317,6 +324,8 @@ function action(issue, action, original)
 
         -- заполняем поля связанные с идентификатором объекта
         issue = updateObjectId(issue, nil)
+    
+        issue["_cf_debt_services"] = trimArray(issue["_cf_debt_services"])
     end
 
     if action == "Созвон" then
@@ -342,6 +351,10 @@ function action(issue, action, original)
     if action == "Передача приставам" then
         issue["resolution"] = "Ожидание ответа приставов"
     end
+    
+    if action == "Ответ от приставов" then
+        issue["resolution"] = "Ожидание поступления ДС"
+    end
 
     return tt.modifyIssue(issue, action)
 end
@@ -358,34 +371,38 @@ function viewIssue(issue)
     }
 
     local fields = {
-        "*subject",
+        "*workflow",
         "*catalog",
         "*status",
+        "*resolution",
         "*created",
         "*updated",
         "*assigned",
-        "*resolution",
         "*_cf_worker",
         "*_cf_work_start",
         "*_cf_closed_by",
         "*_cf_close_date",
         "*watchers",
-        "*_cf_sheet_date",
-        "*_cf_sheet",
-        "*_cf_install_done",
-        "*_cf_installers",
-        "*_cf_can_change",
-        "*_cf_call_before_visit",
-        "*_cf_calls_count",
         "*_cf_delay",
+        "*_cf_ct_debt",
+        "*_cf_ct_payments",
+        "*_cf_hw_debt",
+        "*_cf_hw_payments",
+        "*_cf_sv_debt",
+        "*_cf_sv_payments",
+        "*_cf_claim_date",
+        "*_cf_court_date",
+        "*_cf_bailiff_date",
         "_cf_phone",
         "_cf_amount",
         "_cf_bank_details",
         "_cf_object_id",
         "_cf_debt_date",
         "_cf_debt_services",
-        "_cf_clients",
-        "_cf_linked_issue",
+        "_cf_decree",
+        "_cf_order",
+        "_cf_payments",
+        "_cf_linked_issue", -- (?)
     }
 
     if not isOpened(issue) then
