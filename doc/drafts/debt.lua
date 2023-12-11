@@ -150,12 +150,14 @@ function getAvailableActions(issue)
             "Передача приставам",
             "Ответ от приставов",
             "-",
+            "Поступление дс",
+            "-",
             "!saAddComment",
             "saAddFile",
             "-",
             "Закрыть",
         }
-        
+
         local actionMap = {
             ["Созвон"] = "Созвон",
             ["Начало работы"] = "Начало работы",
@@ -170,7 +172,7 @@ function getAvailableActions(issue)
         if actionMap[issue["resolution"]] then
             actions = removeValue(actions, actionMap[issue["resolution"]])
         end
-        
+
         return actions
     else
         -- если заявка закрыта, то можно только переоткрыть и удалить
@@ -187,10 +189,15 @@ end
 --------------------------------------------------------------------------------
 
 function getActionTemplate(issue, action)
-    local available = getAvailableActions(issue)
+    local available = stripActions(getAvailableActions(issue))
 
     if not hasValue(available, action) then
         return false
+    end
+    
+    -- взять в работу
+    if action == "Взять в работу" then
+        return true;
     end
 
     -- изменить список наблюдающих
@@ -240,10 +247,9 @@ function getActionTemplate(issue, action)
         }
     end
 
-    if action == "Решения суда" then
+    if action == "Решение суда" then
         return {
             "_cf_decree",
-            "_cf_order",
         }
     end
 
@@ -254,7 +260,9 @@ function getActionTemplate(issue, action)
     end
 
     if action == "Ответ от приставов" then
-        return "bailiff_answer";
+        return {
+            "_cf_order",
+        }
     end
 
     -- закрываем заявку
@@ -279,7 +287,7 @@ end
 --------------------------------------------------------------------------------
 
 function action(issue, action, original)
-    local available = getAvailableActions(original)
+    local available = stripActions(getAvailableActions(issue))
 
     if not hasValue(available, action) then
         return false
@@ -288,6 +296,12 @@ function action(issue, action, original)
     -- специальное поле, когда заявка создается или обрабатывается сотрудником
     if tt.login() ~= "abonent" and tt.login() ~= "wx" then
         issue["_cf_updated"] = utils.time()
+    end
+
+    if action == "Взять в работу" then
+        issue["_cf_worker"] = tt.login()
+        issue["_cf_work_start"] = utils.time()
+        issue["_cf_delay"] = "%%unset"
     end
 
     if action == "Закрыть" then
@@ -300,7 +314,7 @@ function action(issue, action, original)
         if tonumber(issue["_cf_object_id"]) < 100000000 then
             issue["_cf_object_id"] = tonumber(issue["_cf_object_id"]) + 500000000
         end
-    
+
         -- заполняем поля связанные с идентификатором объекта
         issue = updateObjectId(issue, nil)
     end
@@ -316,15 +330,15 @@ function action(issue, action, original)
     if action == "Досудебное урегулирование" then
         issue["resolution"] = "Досудебное урегулирование"
     end
-    
+
     if action == "Обращение в суд" then
         issue["resolution"] = "Ожидание суда"
     end
-    
+
     if action == "Решение суда" then
         issue["resolution"] = "Получено решение суда"
     end
-    
+
     if action == "Передача приставам" then
         issue["resolution"] = "Ожидание ответа приставов"
     end
