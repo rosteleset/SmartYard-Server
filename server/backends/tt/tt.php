@@ -110,7 +110,7 @@
                         },
                         "strtotime" => function (...$args) {
                             return [ strtotime(...$args) ];
-                        }
+                        },
                     ]);
 
                     $sandbox->registerLibrary("rbt", [
@@ -244,6 +244,9 @@
                         "substr" => function (...$args) {
                             return [ mb_substr(...$args) ];
                         },
+                        "trim" => function (...$args) {
+                            return [ preg_replace('~^\s+|\s+$~u', '', ...$args) ];
+                        }
                     ]);
 
                     $sandbox->registerLibrary("mqtt", [
