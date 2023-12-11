@@ -56,6 +56,8 @@ function updateObjectId(issue, original)
                 }
             }
         end
+
+        issue["_cf_client_name"] = client_info["common"]["client_name"]
     end
 
     return issue
@@ -141,10 +143,10 @@ function getAvailableActions(issue)
             "Задолженность",
             "-",
             "Созвон",
+            "Начало работы",
             "Досудебное урегулирование",
-            "Отстойник №1",
             "Обращение в суд",
-            "Отстойник №2",
+            "Решение суда",
             "Передача приставам",
             "Ответ от приставов",
             "-",
@@ -154,8 +156,21 @@ function getAvailableActions(issue)
             "Закрыть",
         }
         
+        local actionMap = {
+            ["Созвон"] = "Созвон",
+            ["Начало работы"] = "Начало работы",
+            ["Досудебное урегулирование"] = "Досудебное урегулирование",
+            ["Ожидание суда"] = "Обращение в суд",
+            ["Получено решение суда"] = "Решение суда",
+            ["Ожидание ответа приставов"] = "Передача приставам",
+        }
+
         actions = removeValue(actions, issue["resolution"])
 
+        if actionMap[issue["resolution"]] then
+            actions = removeValue(actions, actionMap[issue["resolution"]])
+        end
+        
         return actions
     else
         -- если заявка закрыта, то можно только переоткрыть и удалить
@@ -178,12 +193,6 @@ function getActionTemplate(issue, action)
         return false
     end
 
-    -- передать заявку в другой отдел
-    -- кастомная функция
-    if action == "Передать" then
-        return "assign";
-    end
-
     -- изменить список наблюдающих
     if action == "Наблюдатели" then
         return {
@@ -202,6 +211,7 @@ function getActionTemplate(issue, action)
     -- меняем (если нужно) дату образования задолженности и список услуг
     if action == "Задолженность" then
         return {
+            "_cf_object_id",
             "_cf_debt_date",
             "_cf_debt_services",
         }
@@ -210,16 +220,42 @@ function getActionTemplate(issue, action)
     if action == "Созвон" then
         return true
     end
-    
-    if action == "Досудебное урегулирование" then
+
+    if action == "Начало работы" then
         return true
     end
 
-    if action == "Отстойник №1" then
+    if action == "Досудебное урегулирование" then
         return {
             "_cf_claim_date",
         }
-    end        
+    end
+
+    if action == "Обращение в суд" then
+        return {
+            "_cf_court_date",
+            "_cf_ct_debt",
+            "_cf_hw_debt",
+            "_cf_sv_debt",
+        }
+    end
+
+    if action == "Решения суда" then
+        return {
+            "_cf_decree",
+            "_cf_order",
+        }
+    end
+
+    if action == "Передача приставам" then
+        return {
+            "_cf_bailiff_date",
+        }
+    end
+
+    if action == "Ответ от приставов" then
+        return "bailiff_answer";
+    end
 
     -- закрываем заявку
     if action == "Закрыть" then
@@ -261,20 +297,37 @@ function action(issue, action, original)
     end
 
     if action == "Задолженность" then
-        -- только то что есть в диалоге
+        if tonumber(issue["_cf_object_id"]) < 100000000 then
+            issue["_cf_object_id"] = tonumber(issue["_cf_object_id"]) + 500000000
+        end
+    
+        -- заполняем поля связанные с идентификатором объекта
+        issue = updateObjectId(issue, nil)
     end
 
     if action == "Созвон" then
         issue["resolution"] = "Созвон"
     end
-    
+
+    if action == "Начало работы" then
+        issue["resolution"] = "Начало работы"
+    end
+
     if action == "Досудебное урегулирование" then
         issue["resolution"] = "Досудебное урегулирование"
     end
-
-    if action == "Отстойник №1" then
-        issue["resolution"] = "Отстойник №1"
-    end        
+    
+    if action == "Обращение в суд" then
+        issue["resolution"] = "Ожидание суда"
+    end
+    
+    if action == "Решение суда" then
+        issue["resolution"] = "Получено решение суда"
+    end
+    
+    if action == "Передача приставам" then
+        issue["resolution"] = "Ожидание ответа приставов"
+    end
 
     return tt.modifyIssue(issue, action)
 end
