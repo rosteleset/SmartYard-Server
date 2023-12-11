@@ -244,8 +244,8 @@
                         "substr" => function (...$args) {
                             return [ mb_substr(...$args) ];
                         },
-                        "trim" => function (...$args) {
-                            return [ preg_replace('~^\s+|\s+$~u', '', ...$args) ];
+                        "trim" => function ($str) {
+                            return [ preg_replace('~^\s+|\s+$~u', '', ...$str) ];
                         }
                     ]);
 
