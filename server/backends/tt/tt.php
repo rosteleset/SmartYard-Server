@@ -97,7 +97,7 @@
                             return [ array_key_exists(...$args) ];
                         },
                         "explode" => function (...$args) {
-                            return [ explode(...$args) ];
+                            return [ array_values(explode(...$args)) ];
                         },
                         "implode" => function (...$args) {
                             return [ implode(...$args) ];
