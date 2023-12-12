@@ -1,5 +1,5 @@
-const {SyslogService} = require("./SyslogService")
-const {API, mdTimer} = require("../utils");
+const { SyslogService } = require("./SyslogService")
+const { API, mdTimer } = require("../utils");
 
 class AkuvoxService extends SyslogService {
     constructor(unit, config) {
@@ -35,16 +35,16 @@ class AkuvoxService extends SyslogService {
         //  Motion detection: start
         if (msg.indexOf("Requst SnapShot") >= 0) {
             await API.motionDetection({date: now, ip: host, motionActive: true});
-            await mdTimer(host);
+            await mdTimer({ ip: host });
         }
 
-        //  Opening door by DTMF
+        //  Opening a door by DTMF
         if (msg.indexOf("DTMF_LOG:From") >= 0) {
             const apartmentId = parseInt(msg.split(" ")[1].substring(1));
             await API.setRabbitGates({date: now, ip: host, apartmentId});
         }
 
-        // Opening door by RFID key
+        // Opening a door by RFID key
         if (msg.indexOf("OPENDOOR_LOG:Type:RF") >= 0) {
             const [_, rfid, status] = msg.match(/KeyCode:(\w+)\s*(?:Relay:\d\s*)?Status:(\w+)/);
             if (status === "Successful") {
@@ -52,7 +52,7 @@ class AkuvoxService extends SyslogService {
             }
         }
 
-        // Opening door by button pressed
+        // Opening a door by button pressed
         if (msg.indexOf("OPENDOOR_LOG:Type:INPUT") >= 0) {
             await API.openDoor({date: now, ip: host, door: 0, detail: "main", by: "button"});
         }

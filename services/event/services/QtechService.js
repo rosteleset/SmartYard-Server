@@ -37,7 +37,7 @@ class QtechService extends SyslogService {
          */
         if (qtMsgParts[1] === "Send Photo") {
             await API.motionDetection({ date: now, ip: host, motionActive: true });
-            await mdTimer(host);
+            await mdTimer({ ip: host });
         }
 
         /**

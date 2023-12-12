@@ -29,10 +29,10 @@ class IsService extends SyslogService {
         // Motion detection: start
         if (msg.includes("EVENT: Detected motion")) {
             await API.motionDetection({ date: now, ip: host, motionActive: true });
-            await mdTimer(host);
+            await mdTimer({ ip: host });
         }
 
-        // Call to apartment
+        // Call to an apartment
         if (msg.includes("Calling to")) {
             const match = msg.match(/^Calling to (\d+)(?: house (\d+))? flat/);
             if (match) {

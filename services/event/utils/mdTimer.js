@@ -6,8 +6,8 @@ const mdStorage = {};
 /**
  * Stop-motion detection for a device.
  * @param {string} deviceId - unique identifier for the device.
- * @param {string} ip - IP address of the device.
- * @param {string} subId - Sub-identifier of the device.
+ * @param {string|null} ip - IP address of the device.
+ * @param {string|null} subId - Sub-identifier of the device.
  * @returns {Promise<void>} - A promise that resolves when motion detection is stopped.
  */
 const mdStop = async (deviceId, ip, subId) => {
@@ -23,7 +23,7 @@ const mdStop = async (deviceId, ip, subId) => {
  * @param {string|null} options.subId - Sub-identifier of the device.
  * @param {number} options.delay - Delay in milliseconds before stopping motion detection.
  */
-const mdTimer = ({ip = null, subId = null, delay = 5000}) => {
+const mdTimer = ({ ip = null, subId = null, delay = 5000 }) => {
     const deviceId = ip || subId;
     if (deviceId && mdStorage[deviceId]) {
         clearTimeout(mdStorage[deviceId]);

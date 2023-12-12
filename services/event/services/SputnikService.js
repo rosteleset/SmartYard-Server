@@ -54,7 +54,7 @@ class SputnikService extends WebHookService {
 
                     if (payload?.msg === 'C pressed') { // Start face recognition (by cancellation button)
                         await API.motionDetection({date: now, ip: deviceId, motionActive: true});
-                        await mdTimer(deviceId, 10000);
+                        await mdTimer({ subId: deviceId, delay: 10000 });
                     }
 
                     break;

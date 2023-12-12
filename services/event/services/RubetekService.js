@@ -16,7 +16,7 @@ class RubetekService extends SyslogService {
         // Motion detection (face detection): start
         if (msgParts[2] === 'The face was detected and sent to the server') {
             await API.motionDetection({date: now, ip: host, motionActive: true});
-            await mdTimer(host);
+            await mdTimer({ ip: host });
         }
 
         // Call start
