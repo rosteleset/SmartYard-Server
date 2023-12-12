@@ -56,5 +56,10 @@
     ],
     "16": [
         "v16_houses.sql"
+    ],
+    "17": [
+        "v17_cameras.sql",
+        "v17_houses.sql",
+        "v17_plog.sql"
     ]
 }

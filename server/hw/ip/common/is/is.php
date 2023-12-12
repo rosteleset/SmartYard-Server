@@ -8,9 +8,11 @@ namespace hw\ip\common\is;
 trait is
 {
 
-    public function configureEventServer(string $server, int $port)
+    public function configureEventServer(string $url)
     {
         // TODO: API!
+        ['host' => $server, 'port' => $port] = parse_url_ext($url);
+
         $template = file_get_contents(__DIR__ . '/templates/custom.conf');
         $template .= "*.*;cron.none     @$server:$port;ProxyForwardFormat";
         $host = parse_url($this->url)['host'];
@@ -56,6 +58,11 @@ trait is
         $this->apiCall('/user/change_password', 'PUT', ['newPassword' => $password]);
     }
 
+    public function syncData()
+    {
+        // Empty implementation
+    }
+
     /**
      * Make an API call.
      *
@@ -99,17 +106,14 @@ trait is
         return $array_res;
     }
 
-    protected function getEventServerConfig(): array
+    protected function getEventServer(): string
     {
         // TODO: API!
         $host = parse_url($this->url)['host'];
         exec(__DIR__ . "/scripts/get_syslog_conf $host $this->login $this->password", $output);
         [$server, $port] = explode(':', explode(';', explode('@', $output[7])[1])[0]);
 
-        return [
-            'server' => $server,
-            'port' => $port,
-        ];
+        return 'syslog.udp' . ':' . $server . ':' . $port;
     }
 
     protected function getNtpConfig(): array

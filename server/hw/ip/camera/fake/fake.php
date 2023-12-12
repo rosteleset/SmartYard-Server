@@ -10,7 +10,7 @@ use hw\ip\camera\camera;
 class fake extends camera
 {
 
-    public function configureEventServer(string $server, int $port)
+    public function configureEventServer(string $url)
     {
         // Empty implementation
     }
@@ -66,14 +66,19 @@ class fake extends camera
         // Empty implementation
     }
 
+    public function syncData()
+    {
+        // Empty implementation
+    }
+
     public function transformDbConfig(array $dbConfig): array
     {
         return $dbConfig;
     }
 
-    protected function getEventServerConfig(): array
+    protected function getEventServer(): string
     {
-        return [];
+        return '';
     }
 
     protected function getMotionDetectionConfig(): array

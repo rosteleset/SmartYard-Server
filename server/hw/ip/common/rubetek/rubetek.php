@@ -12,8 +12,10 @@ use Exception;
 trait rubetek
 {
 
-    public function configureEventServer(string $server, int $port)
+    public function configureEventServer(string $url)
     {
+        ['host' => $server, 'port' => $port] = parse_url_ext($url);
+
         $this->apiCall('/settings/syslog', 'PATCH', [
             'address' => "$server:$port",
             'protocol' => 'udp',
@@ -68,6 +70,11 @@ trait rubetek
         sleep(10);
     }
 
+    public function syncData()
+    {
+        // Empty implementation
+    }
+
     /**
      * Make an API call.
      *
@@ -118,15 +125,12 @@ trait rubetek
         return $this->apiCall('/configuration');
     }
 
-    protected function getEventServerConfig(): array
+    protected function getEventServer(): string
     {
         $syslogUrl = $this->getConfig()['syslog']['address'];
         [$server, $port] = array_pad(explode(':', $syslogUrl), 2, 514);
 
-        return [
-            'server' => $server,
-            'port' => $port,
-        ];
+        return 'syslog.udp' . ':' . $server . ':' . $port;
     }
 
     protected function getNtpConfig(): array

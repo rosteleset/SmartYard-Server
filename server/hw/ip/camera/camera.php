@@ -16,7 +16,7 @@ abstract class camera extends ip
         $builder = new CameraConfigurationBuilder();
 
         $builder
-            ->addEventServer(...$this->getEventServerConfig())
+            ->addEventServer($this->getEventServer())
             ->addMotionDetection(...$this->getMotionDetectionConfig())
             ->addNtp(...$this->getNtpConfig())
             ->addOsdText($this->getOsdText())

@@ -16,14 +16,13 @@ abstract class ConfigurationBuilder
     /**
      * Add an event server to the configuration.
      *
-     * @param string $server The event server's address.
-     * @param int $port The event server's port number.
+     * @param string $url Event server URL.
      *
      * @return self
      */
-    public function addEventServer(string $server, int $port): self
+    public function addEventServer(string $url): self
     {
-        $this->config['eventServer'] = compact('server', 'port');
+        $this->config['eventServer'] = $url;
 
         return $this;
     }

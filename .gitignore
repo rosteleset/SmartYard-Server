@@ -100,3 +100,11 @@ package-lock.json
 /server/mqtt/package-lock.json
 /install/asterisk/config.lua
 /install/asterisk/extconfig.conf
+
+# ----- push service
+/services/push/assets/pushServiceAccountKey.json
+/services/push/assets/certificate-and-privatekey.pem
+/services/push/.env_production
+/services/push/.env_development
+!/services/push/package.json
+

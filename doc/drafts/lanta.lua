@@ -430,7 +430,7 @@ function getActionTemplate(issue, action)
     -- передать заявку в другой отдел
     -- кастомная функция
     if action == "Передать" then
-        return "assign";
+        return "assign"
     end
 
     -- изменить список наблюдающих

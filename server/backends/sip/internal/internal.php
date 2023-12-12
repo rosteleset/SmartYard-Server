@@ -18,7 +18,14 @@
                     case "all":
                         return $this->config["backends"]["sip"]["servers"];
 //                  case "extension":
-//                  case "ip":
+                    case "ip":
+                        foreach ($this->config["backends"]["sip"]["servers"] as $server) {
+                            if ($server["ip"] === $query) {
+                                return $server;
+                            }
+                        }
+
+                        return null;
                     default:
                         return $this->config["backends"]["sip"]["servers"][0];
                 }

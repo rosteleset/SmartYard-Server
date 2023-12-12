@@ -12,7 +12,6 @@
  * @apiParam {String} login логин
  * @apiParam {String} password пароль
  * @apiParam {String} [comment] комментарий
- * @apiParam {String="t","f"} [notification="t"] использовать для уведомлений (главный номер, владелец договора)
  *
  * @apiErrorExample Ошибки
  * 403 требуется авторизация
@@ -24,7 +23,60 @@
  */
 
 auth();
-response(404, false, 'Не найден', "Не найден договор с указанными логином и паролем");
+
+$login = trim(@$postdata['login']);
+if (!$login) {
+    response(404);
+}
+
+$password = trim(@$postdata['password']);
+if (!$password) {
+    response(404);
+}
+
+$households = loadBackend("households");
+$flats = $households->getFlats("credentials", ["login" => $login, "password" => $password]);
+if (!$flats) {
+    response(400, "Не найден", "Не найден договор с указанным логином и паролем");
+}
+
+$already_count = 0;
+foreach ($flats as $flat) {
+    $flat_id = (int)$flat["flatId"];
+
+    //проверка регистрации пользователя в квартире
+    $already = false;
+    foreach($subscriber['flats'] as $item) {
+        if ((int)$item['flatId'] === $flat_id) {
+            $already = true;
+            break;
+        }
+    }
+    if ($already) {
+        ++$already_count;
+        continue;
+    }
+
+    if ($households->addSubscriber($subscriber["mobile"], null, null, $flat_id,
+        [
+            'title' => 'Новый адрес',
+            'msg' => 'В вашу учётную запись добавлен новый адрес',
+        ])) {
+        $f_list = [];
+        foreach ($subscriber['flats'] as $item) {
+            $f_id = (int)$item['flatId'];
+            $f_role = (int)$item['role'];
+            $f_list[$f_id] = ($f_role === 0);
+        }
+        $f_list[$flat_id] = true;  //делаем пользователя владельцем квартиры
+        $households->setSubscriberFlats($subscriber['subscriberId'], $f_list);
+    }
+}
+if ($already_count > 0) {
+    response(404, "Сообщение", "Некоторые адреса уже были доступны вам в приложении");
+}
+
+response();
 
 /*
 $password = pg_escape_string(trim(@$postdata['password']));

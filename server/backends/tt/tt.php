@@ -97,7 +97,7 @@
                             return [ array_key_exists(...$args) ];
                         },
                         "explode" => function (...$args) {
-                            return [ explode(...$args) ];
+                            return [ array_values(explode(...$args)) ];
                         },
                         "implode" => function (...$args) {
                             return [ implode(...$args) ];
@@ -110,7 +110,7 @@
                         },
                         "strtotime" => function (...$args) {
                             return [ strtotime(...$args) ];
-                        }
+                        },
                     ]);
 
                     $sandbox->registerLibrary("rbt", [
@@ -244,6 +244,9 @@
                         "substr" => function (...$args) {
                             return [ mb_substr(...$args) ];
                         },
+                        "trim" => function ($str) {
+                            return [ trim(preg_replace('~^\s+|\s+$~u', '', $str)) ];
+                        }
                     ]);
 
                     $sandbox->registerLibrary("mqtt", [

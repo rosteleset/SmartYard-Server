@@ -12,13 +12,16 @@ use Exception;
 trait akuvox
 {
 
-    public function configureEventServer(string $server, int $port) // Need to reboot after that
+    public function configureEventServer(string $url) // Need to reboot after that
     {
+        ['host' => $server, 'port' => $port] = parse_url_ext($url);
+
         $this->setConfigParams([
             'Config.Settings.LOGLEVEL.RemoteSyslog' => '1',
             'Config.Settings.LOGLEVEL.RemoteServer' => $server,
             'Config.Settings.LOGLEVEL.RemoteServerPort' => "$port",
         ]);
+
         $this->reboot();
         $this->wait();
     }
@@ -66,6 +69,11 @@ trait akuvox
         ]);
 
         sleep(1);
+    }
+
+    public function syncData()
+    {
+        // Empty implementation
     }
 
     /**
@@ -125,17 +133,14 @@ trait akuvox
         return array_values($res['data']);
     }
 
-    protected function getEventServerConfig(): array
+    protected function getEventServer(): string
     {
         [$server, $port] = $this->getConfigParams([
             'Config.Settings.LOGLEVEL.RemoteServer',
             'Config.Settings.LOGLEVEL.RemoteServerPort',
         ]);
 
-        return [
-            'server' => $server,
-            'port' => $port,
-        ];
+        return 'syslog.udp' . ':' . $server . ':' . $port;
     }
 
     protected function getNtpConfig(): array

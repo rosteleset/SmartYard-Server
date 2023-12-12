@@ -23,6 +23,11 @@ mobile:
   tt_user: mobile
   time_zone: Europe/Moscow
   guest_access: turnOnOnly
+  cctv_view: map
+
+  # Active app's tab at start. One of: addresses, notifications, chat, pay, menu. The default value is addresses
+  active_tab: addresses
+
 db:
   dsn: pgsql:host=127.0.0.1;port=5433;dbname=rbt
   username: rbt
@@ -88,6 +93,7 @@ backends:
       type: nimble or flussonic or  or trassir
       url: https://video.server.hostname:8443
       token: "<!-- mediaserver security token here (only if you use it) --!>"
+      hlsMode: mpegts
       management_ip: 127.0.0.1
       management_port: '8086'
       management_token: "<!-- management token --!>"
@@ -101,6 +107,8 @@ backends:
       type: asterisk
       trunk: first
       ip: "<!-- your asterisk server external ip here --!>"
+      sip_tcp_port: 5060
+      sip_udp_port: 5060
     stuns:
     - stun:stun.l.google.com:19302
   frs:

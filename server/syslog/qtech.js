@@ -29,7 +29,7 @@ syslog.on("message", async ({ date, host, message }) => {
     // Motion detection: start
     if (qtMsgParts[1] === "Send Photo") {
         await API.motionDetection({ date: now, ip: host, motionActive: true });
-        await mdTimer(host, 5000);
+        await mdTimer({ ip: host });
     }
 
     // Call to CMS

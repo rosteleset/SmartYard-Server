@@ -1,0 +1,17 @@
+[Unit]
+Description=Face Recognition System
+Wants=network.target
+After=syslog.target network-online.target mysql.service
+
+[Service]
+Type=simple
+ExecStart=/opt/frs/frs --frs-config /opt/frs/sample.config
+Restart=on-failure
+RestartSec=10
+KillMode=control-group
+User=frs
+Group=frs
+StandardError=file:/var/log/frs/error.log
+
+[Install]
+WantedBy=multi-user.target

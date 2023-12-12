@@ -60,8 +60,7 @@ class CameraDbConfigCollector implements IDbConfigCollector
     private function addEventServer(): self
     {
         $url = $this->appConfig['syslog_servers'][$this->cameraData['json']['eventServer']][0];
-        $urlParts = parse_url_ext($url);
-        $this->builder->addEventServer($urlParts['host'], $urlParts['port']);
+        $this->builder->addEventServer($url);
         return $this;
     }
 

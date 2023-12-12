@@ -81,6 +81,7 @@
                     type: "yesno",
                     title: i18n("addresses.enabled"),
                     value: "1",
+                    tab: i18n("addresses.primary"),
                 },
                 {
                     id: "model",
@@ -88,6 +89,7 @@
                     title: i18n("addresses.model"),
                     placeholder: i18n("addresses.model"),
                     options: models,
+                    tab: i18n("addresses.primary")
                 },
                 {
                     id: "url",
@@ -102,6 +104,7 @@
                             return false;
                         }
                     },
+                    tab: i18n("addresses.primary"),
                 },
                 {
                     id: "stream",
@@ -120,6 +123,7 @@
                             return true;
                         }
                     },
+                    tab: i18n("addresses.primary"),
                 },
                 {
                     id: "credentials",
@@ -128,7 +132,8 @@
                     placeholder: i18n("addresses.credentials"),
                     validate: v => {
                         return $.trim(v) !== "";
-                    }
+                    },
+                    tab: i18n("addresses.primary"),
                 },
                 {
                     id: "name",
@@ -138,6 +143,7 @@
                     validate: v => {
                         return $.trim(v) !== "";
                     },
+                    tab: i18n("addresses.primary"),
                 },
                 {
                     id: "dvrStream",
@@ -156,6 +162,7 @@
                             return true;
                         }
                     },
+                    tab: i18n("addresses.primary"),
                 },
                 {
                     id: "timezone",
@@ -167,6 +174,7 @@
                         return $.trim(v) !== "";
                     },
                     value: "-",
+                    tab: i18n("addresses.secondary"),
                 },
                 {
                     id: "frs",
@@ -174,6 +182,7 @@
                     title: i18n("addresses.frs"),
                     value: "-",
                     options: frss,
+                    tab: i18n("addresses.primary"),
                 },
                 {
                     id: "geo",
@@ -187,6 +196,7 @@
 
                         return regex.exec(v) !== null;
                     },
+                    tab: i18n("addresses.secondary"),
                 },
                 {
                     id: "position",
@@ -200,6 +210,7 @@
 
                         return regex.exec(v) !== null;
                     },
+                    tab: i18n("addresses.secondary"),
                 },
                 {
                     id: "md",
@@ -213,12 +224,14 @@
 
                         return regex.exec(v) !== null;
                     },
+                    tab: i18n("addresses.secondary"),
                 },
                 {
                     id: "common",
-                    type: "yesno",
+                    type: "noyes",
                     title: i18n("addresses.common"),
                     placeholder: i18n("addresses.common"),
+                    tab: i18n("addresses.secondary"),
                 },
                 {
                     id: "comment",
@@ -228,6 +241,7 @@
                     validate: v => {
                         return $.trim(v).length <= 64;
                     },
+                    tab: i18n("addresses.secondary"),
                 },
             ],
             callback: result => {
@@ -294,6 +308,7 @@
                 size: "lg",
                 apply: i18n("edit"),
                 delete: i18n("addresses.deleteCamera"),
+                deleteTab: i18n("addresses.secondary"),
                 fields: [
                     {
                         id: "cameraId",
@@ -301,12 +316,14 @@
                         title: i18n("addresses.cameraId"),
                         value: cameraId,
                         readonly: true,
+                        tab: i18n("addresses.primary"),
                     },
                     {
                         id: "enabled",
                         type: "yesno",
                         title: i18n("addresses.enabled"),
                         value: camera.enabled,
+                        tab: i18n("addresses.primary"),
                     },
                     {
                         id: "model",
@@ -315,6 +332,7 @@
                         placeholder: i18n("addresses.model"),
                         options: models,
                         value: camera.model,
+                        tab: i18n("addresses.primary"),
                     },
                     {
                         id: "url",
@@ -330,6 +348,7 @@
                                 return false;
                             }
                         },
+                        tab: i18n("addresses.primary"),
                     },
                     {
                         id: "stream",
@@ -349,6 +368,7 @@
                                 return true;
                             }
                         },
+                        tab: i18n("addresses.primary"),
                     },
                     {
                         id: "credentials",
@@ -358,7 +378,8 @@
                         value: camera.credentials,
                         validate: v => {
                             return $.trim(v) !== "";
-                        }
+                        },
+                        tab: i18n("addresses.primary"),
                     },
                     {
                         id: "name",
@@ -369,6 +390,7 @@
                         validate: v => {
                             return $.trim(v) !== "";
                         },
+                        tab: i18n("addresses.primary"),
                     },
                     {
                         id: "dvrStream",
@@ -388,6 +410,7 @@
                                 return true;
                             }
                         },
+                        tab: i18n("addresses.primary"),
                     },
                     {
                         id: "timezone",
@@ -399,6 +422,7 @@
                             return $.trim(v) !== "";
                         },
                         value: camera.timezone,
+                        tab: i18n("addresses.secondary"),
                     },
                     {
                         id: "frs",
@@ -406,6 +430,7 @@
                         title: i18n("addresses.frs"),
                         value: camera.frs,
                         options: frss,
+                        tab: i18n("addresses.primary"),
                     },
                     {
                         id: "geo",
@@ -419,6 +444,7 @@
 
                             return regex.exec(v) !== null;
                         },
+                        tab: i18n("addresses.secondary"),
                     },
                     {
                         id: "position",
@@ -432,6 +458,7 @@
 
                             return regex.exec(v) !== null;
                         },
+                        tab: i18n("addresses.secondary"),
                     },
                     {
                         id: "md",
@@ -442,9 +469,9 @@
                         value: camera.mdLeft + "," + camera.mdTop + "," + camera.mdWidth + "," + camera.mdHeight,
                         validate: v => {
                             const regex = new RegExp('^\\d+,\\d+,\\d+,\\d+$', 'gm');
-
                             return regex.exec(v) !== null;
                         },
+                        tab: i18n("addresses.secondary"),
                     },
                     {
                         id: "common",
@@ -452,6 +479,7 @@
                         title: i18n("addresses.common"),
                         placeholder: i18n("addresses.common"),
                         value: camera.common,
+                        tab: i18n("addresses.secondary"),
                     },
                     {
                         id: "comment",
@@ -462,6 +490,7 @@
                         validate: v => {
                             return $.trim(v).length <= 64;
                         },
+                        tab: i18n("addresses.secondary"),
                     },
                 ],
                 callback: result => {

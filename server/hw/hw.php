@@ -76,6 +76,16 @@ abstract class hw
     abstract public function reset();
 
     /**
+     * Synchronize data with device.
+     *
+     * Used for devices with the ability to upload the full configuration
+     * or with the ability to mass add keys, apartments, access codes, etc.
+     *
+     * @return void
+     */
+    abstract public function syncData();
+
+    /**
      * Transforms a configuration from a database for use with a specific device.
      *
      * @param array $dbConfig Database configuration

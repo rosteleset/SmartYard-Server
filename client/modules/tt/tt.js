@@ -1334,12 +1334,14 @@
                 }
             }
     
-            if (md5(md5($.trim(modules.tt.meta.filters[x])) + "-" + md5(lStore("_login"))) == x && fp == myself.uid) {
-                filters += '<span class="ml-4 hoverable customFilterEdit text-info" data-filter="' + x + '"><i class="far fa-fw fa-edit"></i></span><span class="ml-1 hoverable customFilterEdit text-info" data-filter="' + x + '">' + i18n("tt.customFilterEdit") + '</span>';
-                filters += '<span class="ml-2 hoverable customFilterDelete text-danger" data-filter="' + x + '"><i class="far fa-fw fa-trash-alt"></i></span><span class="ml-1 hoverable customFilterDelete text-danger" data-filter="' + x + '">' + i18n("tt.customFilterDelete") + '</span>';
-            } else {
-                if (AVAIL("tt", "customFilter") && x) {
+            if (x != "#search") {
+                if (md5(md5($.trim(modules.tt.meta.filters[x])) + "-" + md5(lStore("_login"))) == x && fp == myself.uid) {
                     filters += '<span class="ml-4 hoverable customFilterEdit text-info" data-filter="' + x + '"><i class="far fa-fw fa-edit"></i></span><span class="ml-1 hoverable customFilterEdit text-info" data-filter="' + x + '">' + i18n("tt.customFilterEdit") + '</span>';
+                    filters += '<span class="ml-2 hoverable customFilterDelete text-danger" data-filter="' + x + '"><i class="far fa-fw fa-trash-alt"></i></span><span class="ml-1 hoverable customFilterDelete text-danger" data-filter="' + x + '">' + i18n("tt.customFilterDelete") + '</span>';
+                } else {
+                    if (AVAIL("tt", "customFilter") && x) {
+                        filters += '<span class="ml-4 hoverable customFilterEdit text-info" data-filter="' + x + '"><i class="far fa-fw fa-edit"></i></span><span class="ml-1 hoverable customFilterEdit text-info" data-filter="' + x + '">' + i18n("tt.customFilterEdit") + '</span>';
+                    }
                 }
             }
     

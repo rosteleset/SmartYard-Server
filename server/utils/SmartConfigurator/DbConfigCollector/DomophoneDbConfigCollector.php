@@ -237,8 +237,7 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
     private function addEventServer(): self
     {
         $url = $this->appConfig['syslog_servers'][$this->domophoneData['json']['eventServer']][0];
-        $urlParts = parse_url_ext($url);
-        $this->builder->addEventServer($urlParts['host'], $urlParts['port']);
+        $this->builder->addEventServer($url);
         return $this;
     }
 
@@ -292,7 +291,7 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
             'nat' => $natEnabled
         ] = $this->domophoneData;
 
-        $port = 5060;
+        $port = $sip->server('ip', $server)['sip_udp_port'] ?? 5060;
         $login = sprintf("1%05d", $domophoneId);
 
         $stun = parse_url_ext($sip->stun(null));

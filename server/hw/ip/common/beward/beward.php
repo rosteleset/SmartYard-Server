@@ -12,8 +12,10 @@ use Exception;
 trait beward
 {
 
-    public function configureEventServer(string $server, int $port)
+    public function configureEventServer(string $url)
     {
+        ['host' => $server, 'port' => $port] = parse_url_ext($url);
+
         $this->apiCall('cgi-bin/rsyslog_cgi', [
             'action' => 'set',
             'Enable' => 'on',
@@ -77,6 +79,11 @@ trait beward
             'password' => $password,
             'blockdoors' => 1,
         ]);
+    }
+
+    public function syncData()
+    {
+        // Empty implementation
     }
 
     public function transformDbConfig(array $dbConfig): array
@@ -143,14 +150,10 @@ trait beward
         return $r;
     }
 
-    protected function getEventServerConfig(): array
+    protected function getEventServer(): string
     {
-        $syslog = $this->getParams('rsyslog_cgi');
-
-        return [
-            'server' => $syslog['ServerAddress'],
-            'port' => $syslog['ServerPort'],
-        ];
+        ['ServerAddress' => $server, 'ServerPort' => $port] = $this->getParams('rsyslog_cgi');
+        return 'syslog.udp' . ':' . $server . ':' . $port;
     }
 
     /**

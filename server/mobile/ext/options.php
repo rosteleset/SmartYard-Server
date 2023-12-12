@@ -79,4 +79,8 @@
             $response["cctvView"] = $config["mobile"]["cctv_view"];
         }
 
+        if (@$config["mobile"]["active_tab"]) {
+            $response["activeTab"] = $config["mobile"]["active_tab"];
+        }
+
     response(200, $response);
