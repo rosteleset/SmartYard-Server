@@ -308,6 +308,16 @@
         always(modules.tt.settings.renderResolutions);
     },
 
+    doDeleteStatus: function (statusId) {
+        loadingStart();
+        DELETE("tt", "status", statusId).
+        fail(FAIL).
+        done(() => {
+            message(i18n("tt.statusWasDeleted"));
+        }).
+        always(modules.tt.settings.renderStatuses);
+    },
+
     doProjectDeleteRole: function (projectRoleId, projectId, user) {
         loadingStart();
         DELETE("tt", "role", projectRoleId).

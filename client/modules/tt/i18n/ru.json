@@ -140,6 +140,7 @@
     "addWorkflow": "Добавить рабочий процесс",
     "statusWasChanged": "Статус изменен",
     "statusWasAdded": "Статус добавлен",
+    "statusWasDeleted": "Статус удален",
     "resolutionWasChanged": "Резолюция изменена",
     "roleWasChanged": "Роль изменена",
     "projectWasAdded": "Проект добавлен",
