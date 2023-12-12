@@ -3,10 +3,10 @@ const { getTimestamp } = require("./getTimestamp");
 
 const mdStorage = {};
 
-const mdStop = async (host) => {
+const mdStop = async (deviceId, ip, subId) => {
     const now = getTimestamp(new Date());
-    await API.motionDetection({date: now, ip: host, motionActive: false});
-    delete mdStorage[host];
+    await API.motionDetection({date: now, ip, subId, motionActive: false});
+    delete mdStorage[deviceId];
 }
 
 /**
@@ -14,12 +14,13 @@ const mdStop = async (host) => {
  * @param host
  * @param delay
  */
-const mdTimer = (host, delay = 5000) => {
-    if (mdStorage[host]) {
-        clearTimeout(mdStorage[host]);
-    }
+const mdTimer = ({ip = null, subId = null, delay = 5000}) => {
+    const deviceId = ip || subId;
+    if (deviceId && mdStorage[deviceId]) {
+        clearTimeout(mdStorage[deviceId]);
+        mdStorage[deviceId] = setTimeout(mdStop, delay, deviceId, ip, subId);
 
-    mdStorage[host] = setTimeout(mdStop, delay, host);
+    }
 }
 
 module.exports = { mdTimer };
