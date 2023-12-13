@@ -95,7 +95,7 @@
      *
      * @return array|false The configuration array, or false if the configuration files are not found or invalid.
      */
-    function loadConfiguration(): false|array
+    function loadConfiguration()
     {
         try {
             $config = false;
@@ -115,10 +115,9 @@
                 throw new Exception('Configuration files not found or invalid.');
             }
 
+            return $config;
         } catch (Exception $e) {
             error_log($e->getMessage(), 0);
-            $config = false;
+            return $e;
         }
-
-        return $config;
     }
