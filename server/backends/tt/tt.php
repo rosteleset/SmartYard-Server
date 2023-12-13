@@ -1512,8 +1512,8 @@
                     }, $params);
                 }
 
-                error_log(var_export($query, true));
-                
+                error_log(json_encode($query));
+
                 return $query;
             }
 
