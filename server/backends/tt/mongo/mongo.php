@@ -304,6 +304,8 @@
                     }
                 }
 
+                error_log(print_r($query, true));
+
                 $issues = $this->mongo->$db->$collection->find($query, [
                     "projection" => $projection,
                     "skip" => (int)$skip,
