@@ -3,7 +3,7 @@
 
     class Kamailio
     {
-        private  mixed $backend;
+        private mixed $backend;
         private mixed $kamailioConf;
         private string $kamailioRpcUrl;
 
@@ -58,7 +58,7 @@
             $this->backend = loadBackend($backend);
 
             if (!$this->backend) {
-                response(555, 'No backend loaded');
+                response(555, false, false, 'No backend loaded');
                 exit(1);
             }
         }
@@ -125,7 +125,7 @@
              *      -   removeRegistration()
              *      -   pingSubscriber()
              */
-            if ($request_method==='GET'){
+            if ($request_method === 'GET'){
                 $this->makeKamailioRpcUrl();
                 $path = explode('/', $path);
 
@@ -157,24 +157,25 @@
             define("KAMAILIO_DOMAIN", $this->kamailioConf['domain']);
             // validate 'sip domain' field extension@your-sip-domain
             if ($sipDomain !== KAMAILIO_DOMAIN) {
-                response(400, null, null, 'Invalid Received Sip Domain');
+                response(400, false, false, 'Invalid Received Sip Domain');
                 exit(1);
             }
 
-            // validate subscriber extension length, make constant
+            // validate subscriber extension mask
+            //TODO: add regexp for check extension
             if (strlen((int)$subscriber) !== 10 ) {
-                response(400, null, null, 'Invalid Received Subscriber UserName');
+                response(400, false, false, 'Invalid Received Subscriber UserName');
                 exit(1);
             }
 
             $flat_id = (int)substr($subscriber, 1);
             ['sipEnabled' => $sipEnabled, 'sipPassword' => $sipPassword] = $this->backend->getFlat($flat_id);
 
+            // validate in enable SIP service for flat
             if ($sipEnabled) {
                 $ha1 = md5($subscriber .':'. KAMAILIO_DOMAIN .':'. $sipPassword);//md5(username:realm:password)
                 response(200, ['ha1'=>$ha1]);
             } else {
-                //sip disabled
                 response(403, false, false, 'SIP Not Enabled');
             }
         }
@@ -200,7 +201,7 @@
                 $get_subscriber_info = apiExec('POST', $this->kamailioRpcUrl, $postData, false, false);
                 response(200, json_decode($get_subscriber_info));
             } catch (Exception $err) {
-                response(500, [$err->getMessage()]);
+                response(500, false, false, [$err->getMessage()]);
             }
 
             exit(1);
@@ -226,9 +227,7 @@
             $res = apiExec('POST', $this->kamailioRpcUrl, $postData, false, false);
             $res = json_decode($res, true);
             header('Content-Type: application/json');
-            echo response(200,$res['result']);
-
-//            response(200, $res[0]['result']);
+            echo response(200, $res['result']);
             exit(1);
         }
 

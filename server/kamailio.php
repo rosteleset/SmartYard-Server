@@ -6,19 +6,26 @@
     require_once "utils/checkint.php";
     require_once "utils/db_ext.php";
     require_once "utils/api_exec.php";
-    require_once "utils/api_respone.php";
+    require_once "utils/api_response.php";
     require_once "backends/backend.php";
 
     use Kamailio\Kamailio;
 
     // get global configuration
-    $config = loadConfiguration();
-
-    // DB connection
     try {
+        $config = loadConfiguration();
+        if ($config instanceof Exception){
+            throw new Exception ($config->getMessage());
+        }
+    } catch (Exception $err) {
+        response(555, false, false, $err->getMessage());
+        exit(1);
+    }
+
+     try {
         $db = new PDO_EXT(@$config["db"]["dsn"], @$config["db"]["username"], @$config["db"]["password"], @$config["db"]["options"]);
     } catch (Exception $err) {
-        response(500, [
+        response(500, false, false,[
                 "Can't open database " . $config["db"]["dsn"],
                 $err->getMessage(),
             ],
