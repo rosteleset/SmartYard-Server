@@ -1499,9 +1499,14 @@
                 if ($query) {
                     array_walk_recursive($query, function (&$item, $key, $params) {
                         if (array_key_exists($item, $params)) {
-                            $item = $params[$item];
                             if ($types[$item]) {
-                                settype($item, $types[$item]);
+                                $cast = $types[$item];
+                            } else {
+                                $cast = false;
+                            }
+                            $item = $params[$item];
+                            if ($cast) {
+                                settype($item, $cast);
                             }
                         }
                     }, $params);
