@@ -1506,6 +1506,7 @@
                             }
                             $item = $params[$item];
                             if ($cast) {
+                                error_log("$item  $cast");
                                 settype($item, $cast);
                             }
                         }
