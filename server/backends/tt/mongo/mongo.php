@@ -239,7 +239,7 @@
             /**
              * @inheritDoc
              */
-            public function getIssues($collection, $query, $fields = [], $sort = [ "created" => 1 ], $skip = 0, $limit = 100, $preprocess = [])
+            public function getIssues($collection, $query, $fields = [], $sort = [ "created" => 1 ], $skip = 0, $limit = 100, $preprocess = [], $types = [])
             {
                 $db = $this->dbName;
 
@@ -260,7 +260,10 @@
                 $preprocess["%%strToday-1day"] = date("Y-m-d", strtotime("-1 day"));
 
                 $preprocess["%%timestamp"] = time();
+                $types["%%timestamp"] = "int";
+
                 $preprocess["%%timestampToday"] = strtotime(date("Y-m-d"));
+                $types["%%timestampToday"] = "int";
 
                 $preprocess["%%timestamp+1hour"] = strtotime(date("Y-m-d", strtotime("+1 hour")));
                 $preprocess["%%timestamp+2hours"] = strtotime(date("Y-m-d", strtotime("+2 hour")));
@@ -288,7 +291,7 @@
                 $preprocess["%%timestamp-2years"] = strtotime(date("Y-m-d", strtotime("-2 year")));
                 $preprocess["%%timestamp-3years"] = strtotime(date("Y-m-d", strtotime("-3 year")));
                 
-                $query = $this->preprocessFilter($query, $preprocess);
+                $query = $this->preprocessFilter($query, $preprocess, $types);
 
                 $projection = [];
 
