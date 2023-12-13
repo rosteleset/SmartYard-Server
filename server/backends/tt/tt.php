@@ -1512,8 +1512,6 @@
                     }, $params);
                 }
 
-                error_log(json_encode($query));
-
                 return $query;
             }
 
