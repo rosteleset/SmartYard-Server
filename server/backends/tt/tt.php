@@ -1498,7 +1498,6 @@
             {
                 if ($query) {
                     array_walk_recursive($query, function (&$item, $key, $params) use ($types) {
-                        error_log(print_r($types, true));
                         if (array_key_exists($item, $params)) {
                             if ($types[$item]) {
                                 $cast = $types[$item];
@@ -1506,6 +1505,7 @@
                                 $cast = false;
                             }
                             $item = $params[$item];
+                            error_log("$item -> $cast");
                             if ($cast) {
                                 settype($item, $cast);
                             }
