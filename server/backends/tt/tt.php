@@ -1505,13 +1505,15 @@
                                 $cast = false;
                             }
                             $item = $params[$item];
-                            error_log("$item -> $cast");
                             if ($cast) {
                                 settype($item, $cast);
                             }
                         }
                     }, $params);
                 }
+
+                error_log(var_export($query, true));
+                
                 return $query;
             }
 
