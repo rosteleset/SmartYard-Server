@@ -52,6 +52,29 @@ class WebHookService {
     async getEventHandler (request, data = null) {
     }
 
+    /**
+     * Local logging, used server timestamp
+     * @param now timestamp
+     * @param host IP address
+     * @param subId unique device identifier if required
+     * @param msg event message
+     */
+    logToConsole(now, host = null, subId = null, msg) {
+        console.log(`${now} || ${host} || ${msg}`);
+    }
+
+    /**
+     * Send an event message to remote storage
+     * @param now timestamp
+     * @param host IP address
+     * @param subId unique device identifier if required
+     * @param msg event message
+     * @returns {Promise<void>}
+     */
+    async sendToSyslogStorage(now, host = null, subId = null, msg) {
+        await API.sendLog({ date: now, ip: host, unit: this.unit, msg });
+    }
+
     start() {
         this.server.listen(this.config.port, () => {
             console.log(`${this.unit.toUpperCase()} Webhook server is listening on port ${this.config.port}`);
