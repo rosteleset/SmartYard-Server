@@ -46,14 +46,15 @@ class API {
      * Send motion detection info
      *
      * @param {number} date event date in timestamp format
-     * @param {string} ip device IP address
+     * @param {string|null} ip device IP address if exists
+     * @param {string|null} subId unique device identifier if required
      * @param {boolean} motionActive is motion active now
      */
-    async motionDetection({date, ip, motionActive}) {
+    async motionDetection({ date, ip = null, subId = null, motionActive }) {
         try {
-            return await internalAPI.post("/actions/motionDetection", {date, ip, motionActive});
+            return await internalAPI.post("/actions/motionDetection", {date, ip, subId, motionActive});
         } catch (error) {
-            console.error(getTimestamp(new Date()), "||", ip, "|| motionDetection error: ", error.message);
+            console.error(getTimestamp(new Date()), "||", ip ? ip : subId, "|| motionDetection error: ", error.message);
         }
     }
 
@@ -61,14 +62,15 @@ class API {
      * Send call done info
      *
      * @param {number} date event date in timestamp format
-     * @param {string} ip device IP address
+     * @param {string|null} ip device IP address if exists
+     * @param {string|null} subId unique device identifier if required
      * @param {number|null} callId unique callId if exists
      */
-    async callFinished({date, ip, callId = null}) {
+    async callFinished({ date, ip, subId = null, callId = null }) {
         try {
-            return await internalAPI.post("/actions/callFinished", {date, ip, callId});
+            return await internalAPI.post("/actions/callFinished", {date, ip, subId, callId});
         } catch (error) {
-            console.error(getTimestamp(new Date()), "||", ip, "|| callFinished error: ", error.message);
+            console.error(getTimestamp(new Date()), "||", ip ? ip : subId, "|| callFinished error: ", error.message);
         }
     }
 
@@ -76,18 +78,33 @@ class API {
      * Send white rabbit info
      *
      * @param {number} date event date in timestamp format
-     * @param {string} ip device IP address
+     * @param {string|null} ip device IP address if exists
+     * @param {string|null} subId unique device identifier if required
      * @param {number} prefix house prefix
      * @param {number} apartmentNumber apartment number
      * @param {number} apartmentId apartment ID
      */
-    async setRabbitGates({date, ip, prefix = 0, apartmentNumber = 0, apartmentId = 0}) {
+    async setRabbitGates(
+        {
+            date,
+            ip,
+            subId = null,
+            prefix = 0,
+            apartmentNumber = 0,
+            apartmentId = 0,
+        },
+        ) {
         try {
             return await internalAPI.post("/actions/setRabbitGates", {
-                date, ip, prefix, apartmentNumber, apartmentId
+                date,
+                ip,
+                subId,
+                prefix,
+                apartmentNumber,
+                apartmentId,
             });
         } catch (error) {
-            console.error(getTimestamp(new Date()), "||", ip, "|| setRabbitGates error: ", error.message);
+            console.error(getTimestamp(new Date()), "||", ip ? ip : subId, "|| setRabbitGates error: ", error.message);
         }
     }
 
@@ -95,13 +112,14 @@ class API {
      * Send open door info
      *
      * @param {number} date event date in timestamp format
-     * @param {string} ip device IP address
-     * @param {number:{0,1,2}} door door ID (lock ID)xS
+     * @param {string|null} ip device IP address if exists
+     * @param {string|null} subId unique device identifier if required
+     * @param {number:{0,1,2}} door door ID (lock ID)
      * @param {string|number|null} detail RFID key number or personal code number
      * @param {"rfid"|"code"|"dtmf"|"button"} by event type
      */
-    async openDoor({date, ip, door = 0, detail, by}) {
-        const payload = {date, ip, door, event: null, detail};
+    async openDoor({ date, ip = null, subId = null, door = 0, detail, by }) {
+        const payload = { date, ip, subId, door, event: null, detail };
 
         try {
             switch (by) {
@@ -117,7 +135,7 @@ class API {
             }
             return await internalAPI.post("/actions/openDoor", payload);
         } catch (error) {
-            console.error(getTimestamp(new Date()), "||", ip, "|| openDoor error: ", error.message);
+            console.error(getTimestamp(new Date()), "||", ip ? ip : subId, "|| openDoor error: ", error.message);
         }
     }
 }
