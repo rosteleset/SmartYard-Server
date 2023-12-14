@@ -1,5 +1,6 @@
 const http = require("http");
 
+// TODO: create logging received messages
 class WebHookService {
     constructor(unit, config) {
         this.unit = unit;

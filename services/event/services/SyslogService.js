@@ -10,7 +10,7 @@ class SyslogService {
     }
 
     /**
-     * Filter messages that do not carry semantic load. Only production
+     * Filter messages that do not carry a semantic load. Only production
      * @param message
      * @returns {boolean}
      */
@@ -29,10 +29,10 @@ class SyslogService {
     }
 
     /**
-     * Send  event message to remote storage
-     * @param now
-     * @param host
-     * @param msg
+     * Send an event message to remote storage
+     * @param now timestamp
+     * @param host IP address
+     * @param msg event message
      * @returns {Promise<void>}
      */
     async sendToSyslogStorage(now, host, msg) {

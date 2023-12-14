@@ -1,8 +1,8 @@
 const axios = require("axios");
 const https = require("https");
-const {getTimestamp} = require("./getTimestamp");
+const { getTimestamp } = require("./getTimestamp");
 const events = require("./events.json");
-const {api: {internal}, clickhouse} = require("../config.json");
+const { api: {internal}, clickhouse } = require("../config.json");
 const agent = new https.Agent({rejectUnauthorized: false});
 
 const internalAPI = axios.create({
@@ -19,26 +19,38 @@ class API {
      * Send syslog message to ClickHouse
      *
      * @param {number} date event date in timestamp format
-     * @param {string} ip device IP address
+     * @param {string|null} ip device IP address
+     * @param {string|null} subId unique device identifier if required
      * @param {"beward"|"qtech"|"is"|"akuvox"|"rubetek"|"sputnik"} unit device vendor
      * @param {string} msg syslog message
      */
-    async sendLog({date, ip, unit, msg}) {
+    async sendLog({ date, ip = null, subId = null, unit, msg }) {
         try {
             const processedMsg = msg.replace(/'/g, "\\'"); // escape single quotes
-            const query = `INSERT INTO syslog (date, ip, unit, msg)
-                           VALUES ('${date}', '${ip}', '${unit}', '${processedMsg}');`;
+            const query = `
+                INSERT INTO syslog (date, ip, sub_id, unit, msg)
+                VALUES (
+                               '${date}',
+                               ${ip !== null ? `'${ip}'` : 'NULL'},
+                               ${subId !== null ? `'${subId}'` : 'NULL'},
+                               '${unit}',
+                               '${processedMsg}'
+                       );
+            `;
             const config = {
-                method: "post", url: `http://${clickhouse.host}:${clickhouse.port}`, headers: {
+                method: "post",
+                url: `http://${clickhouse.host}:${clickhouse.port}`,
+                headers: {
                     'Authorization': `Basic ${Buffer.from(`${clickhouse.username}:${clickhouse.password}`).toString('base64')}`,
                     'Content-Type': 'text/plain;charset=UTF-8',
                     'X-ClickHouse-Database': `${clickhouse.database}`
-                }, data: query
+                },
+                data: query,
             };
 
             return await axios(config);
         } catch (error) {
-            console.error(getTimestamp(new Date()), "||", ip, "|| sendLog error: ", error.message);
+            console.error(getTimestamp(new Date()), "||", ip ? ip : subId, "|| sendLog error: ", error.message);
         }
     }
 
