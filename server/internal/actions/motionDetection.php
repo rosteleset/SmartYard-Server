@@ -1,15 +1,17 @@
 <?php
-    /** Get ip motion detection device, find stream_id and frs url.
+    /**
+     * Get motion detection device IP, find stream_id, and FRS URL.
      * Send POST request to FRS.
      */
-    if (!isset($postdata["date"], $postdata["motionActive"])) {
-        response(406, "Invalid payload");
-        exit();
-    }
 
-    if (!isset($postdata["ip"]) && !isset($postdata["subId"])) {
-        response(406, "Invalid payload");
-        exit();
+    $requiredKeys = ["date", "motionActive", "ip", "subId"];
+
+    // TODO: make validate payload utils. Use optional params
+    foreach ($requiredKeys as $key) {
+        if (!isset($postdata[$key])){
+            response(406, false, false, "Invalid payload: missing '$key'");
+            exit();
+        }
     }
 
     [
@@ -19,20 +21,25 @@
         "motionActive" => $motionActive,
     ] = $postdata;
 
+    // Validate IP or subId presence
+    if (!($ip || $subId)) {
+        response(406, false, false, "Invalid payload: not valid 'ip' or 'subId'");
+        exit();
+    }
+
     $query = 'SELECT camera_id, frs FROM cameras WHERE frs != :frs AND (ip = :ip OR sub_id = :sub_id)';
     $params = ["ip" => $ip, "sub_id" => $subId, "frs" => "-"];
     $result = $db->get($query, $params);
 
     if (!$result) {
-        response(200, "FRS not enabled on this stream");
+        response(200, false, false, "FRS not enabled on this stream");
         exit();
     }
 
-    [0 => [
-        "camera_id" => $streamId,
-        "frs" => $frsUrl
-    ]] = $result;
+    // Extract streamId and frsUrl using an associative array destructuring
+    ["camera_id" => $streamId, "frs" => $frsUrl] = $result[0];
 
+    // prepare payload for API request
     $payload = ["streamId" => $streamId, "start" => $motionActive ? "t" : "f"];
 
     $apiResponse = apiExec("POST", $frsUrl . "/api/motionDetection", $payload);

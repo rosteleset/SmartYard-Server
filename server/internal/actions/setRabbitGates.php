@@ -6,12 +6,12 @@
         $postdata["apartmentId"],
         $postdata["date"],
     )) {
-        response(406, "Invalid payload");
+        response(406, false, false, "Invalid payload");
         exit();
     }
 
     if (!isset($postdata["ip"]) && !isset($postdata["subId"])) {
-        response(406, "Invalid payload");
+        response(406, false, false, "Invalid payload: not valid 'ip' or 'subId'");
         exit();
     }
 

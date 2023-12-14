@@ -20,7 +20,7 @@
     ];
 
     if (!isset($postdata["ip"]) && !isset($postdata["subId"])) {
-        response(406, "Invalid payload");
+        response(406, false, false, "Invalid payload");
         exit();
     }
 
@@ -31,7 +31,7 @@
         $postdata["door"],
         $postdata["detail"],
       )) {
-        response(406, "Invalid payload");
+        response(406, false, false, "Invalid payload");
         exit();
     }
 
@@ -43,6 +43,12 @@
         "door" => $door,
         "detail" => $detail,
     ] = $postdata;
+
+    // Validate IP or subId presence
+    if (!($ip || $subId)) {
+        response(406, false, false, "Invalid payload: not valid 'ip' or 'subId'");
+        exit();
+    }
 
     $plog = loadBackend('plog');
 
@@ -58,7 +64,7 @@
             /* not used
             example event: "[49704] Opening door by DTMF command for apartment 1"
              */
-            response(200);
+            response(204);
             break;
 
         case $events['OPEN_BY_BUTTON']:
@@ -81,7 +87,7 @@
                 response(201, $apiResponse);
             }
 
-            response(200);
+            response(204);
             break;
     }
 
