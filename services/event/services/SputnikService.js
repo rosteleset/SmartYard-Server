@@ -13,6 +13,9 @@ class SputnikService extends WebHookService {
             const {device_id: deviceId, date_time: datetime, event, Data: payload} = data;
             const now = getTimestamp(new Date(datetime));
 
+            //TODO: refactor sendToSyslogStorage, send this message from cloud
+            // await this.sendToSyslogStorage(now, null, deviceId, 'sputnik', "message_body" );
+
             console.table(data)
             switch (event) {
                 case 'intercom.talking':
@@ -24,19 +27,21 @@ class SputnikService extends WebHookService {
                         case 'cancel': // The call ended by pressing the cancel button or by timeout
                         case 'finish_handset': // CMS call ended
                         case 'finish_cloud': // SIP call ended
-                            await API.callFinished({date: now, subId: deviceId});
+                            await API.callFinished({date: now, ip: null, subId: deviceId});
+
                             break;
 
                         case 'open_door_handset': // Opening the door by CMS handset
                             await API.setRabbitGates({
-                                date: now, subId: deviceId, apartmentNumber: parseInt(payload?.flat)
+                                date: now, ip: null, subId: deviceId, apartmentNumber: parseInt(payload?.flat)
                             });
+
                             break;
                     }
                     break;
                 // FIXME: currently triggered when the door is opened using the API
                 case 'intercom.open_door': // Opening a door by DTMF code
-                    await API.setRabbitGates({date: now, subId: deviceId, apartmentNumber: parseInt(payload?.flat)});
+                    await API.setRabbitGates({date: now, ip: null, subId: deviceId, apartmentNumber: parseInt(payload?.flat)});
                     break;
 
                 case 'intercom.key': // Opening a door by RFID key
@@ -70,13 +75,13 @@ class SputnikService extends WebHookService {
                 default:
                     if (payload?.action === 'digital_key') { // Opening a door by personal code
                         await API.openDoor(
-                            {date: now, subId: deviceId, detail: payload.num, by: 'code'});
+                            {date: now, ip: null, subId: deviceId, detail: payload.num, by: 'code'});
                     }
 
                     if (payload?.msg === 'C pressed') { // Start face recognition (by cancellation button)
                         await API.motionDetection(
                             {date: now, subId: deviceId, motionActive: true});
-                        await mdTimer({subId: deviceId, delay: 10000});
+                        await mdTimer({subId: deviceId, ip: null, delay: 10000});
                     }
 
                     break;
@@ -87,4 +92,4 @@ class SputnikService extends WebHookService {
     }
 }
 
-module.exports = {SputnikService}
+module.exports = { SputnikService }

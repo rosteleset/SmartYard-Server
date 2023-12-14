@@ -1,4 +1,5 @@
 const http = require("http");
+const { getTimestamp, API } = require("../utils");
 
 // TODO: create logging received messages
 class WebHookService {
@@ -9,7 +10,7 @@ class WebHookService {
     }
 
     async requestListener(request, response) {
-        if (request.url === this.config?.apiEndpoint && request.method == "GET") {
+        if (request.url === this.config?.apiEndpoint && request.method === "GET") {
             response.writeHead(202, {'Content-Type': 'application/json'})
             response.end(JSON.stringify({ message: "GET request received." }));
             await this.getEventHandler(request, response)
@@ -25,8 +26,7 @@ class WebHookService {
                     if (!data) {
                         response.writeHead(400, {'Content-Type': 'application/json'})
                         response.end(JSON.stringify({ message: "Request body is empty." }));
-                        // TODO: make logger
-                        console.error(`${new Date().toLocaleString("RU")} || ${request.connection.remoteAddress} || Request body is empty.`)
+                        this.logToConsole(getTimestamp(new Date()), request.connection.remoteAddress, null, 'Request body is empty'   );
                         return;
                     }
                     const jsonData = JSON.parse(data);
@@ -60,7 +60,7 @@ class WebHookService {
      * @param msg event message
      */
     logToConsole(now, host = null, subId = null, msg) {
-        console.log(`${now} || ${host} || ${msg}`);
+        console.log(`${now} || ${host ? host : subId} || ${msg}`);
     }
 
     /**
@@ -68,10 +68,11 @@ class WebHookService {
      * @param now timestamp
      * @param host IP address
      * @param subId unique device identifier if required
+     * @param unit device name
      * @param msg event message
      * @returns {Promise<void>}
      */
-    async sendToSyslogStorage(now, host = null, subId = null, msg) {
+    async sendToSyslogStorage(now, host = null, subId = null, unit = 'noName', msg) {
         await API.sendLog({ date: now, ip: host, unit: this.unit, msg });
     }
 
