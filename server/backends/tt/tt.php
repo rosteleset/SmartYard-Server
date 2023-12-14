@@ -1499,7 +1499,7 @@
                 if ($query) {
                     array_walk_recursive($query, function (&$item, $key, $params) use ($types) {
                         if (array_key_exists($item, $params)) {
-                            if ($types[$item]) {
+                            if (@$types[$item]) {
                                 $cast = $types[$item];
                             } else {
                                 $cast = false;
