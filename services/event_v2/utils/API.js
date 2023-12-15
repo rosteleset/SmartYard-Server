@@ -1,10 +1,11 @@
 import axios from "axios";
 import https from "https";
-import { getTimestamp } from "./getTimestamp";
-import events from "./events.json";
-import { config} from "./getConfig.js"; //FIXME: update config import
-const { api: { internal }, clickhouse} =  config ;
-const agent = new https.Agent({rejectUnauthorized: false});
+import { getTimestamp } from "./getTimestamp.js";
+import { events } from "./events.js";
+import { config } from "../config.js"; //FIXME: update config import
+const {api:{internal}, clickhouse} = config;
+
+const agent = new https.Agent({ rejectUnauthorized: false });
 
 const internalAPI = axios.create({
     baseURL: internal, withCredentials: true, responseType: "json", httpsAgent: agent

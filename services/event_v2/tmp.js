@@ -1,4 +1,2 @@
-// import  config from "./config.json" assert { type: 'json' };
-import {SputnikService} from "./services/SputnikService.js"
-
-console.log("config")
+import {config} from "./utils/index.js"
+console.log(config)

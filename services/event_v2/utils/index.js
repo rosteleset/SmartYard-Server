@@ -1,8 +1,8 @@
-import API from './API';
-import { getTimestamp } from './getTimestamp';
-import { parseSyslogMessage } from './parseSyslogMessage';
-import { isIpAddress } from './isIpAddress';
-import { mdTimer } from './mdTimer';
+import API from './API.js';
+import { getTimestamp } from './getTimestamp.js';
+import { parseSyslogMessage } from './parseSyslogMessage.js';
+import { isIpAddress } from './isIpAddress.js';
+import { mdTimer } from './mdTimer.js';
 import { config } from './getConfig.js';
 
 

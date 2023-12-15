@@ -1,5 +1,5 @@
 // IETF (RFC 5424) message, with structured data and chained hostnames
-import { getTimestamp } from "./getTimestamp";
+import { getTimestamp } from "./getTimestamp.js";
 const parseSyslogMessage = (str) => {
     if (!str) return false;
     str = str.trim();

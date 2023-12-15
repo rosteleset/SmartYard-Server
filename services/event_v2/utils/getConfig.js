@@ -1,5 +1,3 @@
-const config = await import('../config.json', {
-    assert: { type: 'json' }
-});
+import {config} from "../config.js";
 
 export { config }
