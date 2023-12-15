@@ -262,7 +262,11 @@
 
                 $rbt_all_faces = [];
                 $query = "select face_id from frs_faces order by 1";
-                foreach ($this->db->get($query, [], []) as $row) {
+                $result = $this->db->get($query, [], []);
+                if ($result === false)
+                    return;
+
+                foreach ($result as $row) {
                     $rbt_all_faces[] = $row["face_id"];
                 }
 
@@ -277,9 +281,12 @@
                         }
                     }
                     $query = "delete from frs_links_faces where face_id in (" . implode(",", $diff_faces) . ")";
-                    $this->db->modify($query);
+                    if ($this->db->modify($query) === false)
+                        return;
+
                     $query = "delete from frs_faces where face_id in (" . implode(",", $diff_faces) . ")";
-                    $this->db->modify($query);
+                    if ($this->db->modify($query) === false)
+                        return;
                 }
 
                 $diff_faces = array_diff($frs_all_faces, $rbt_all_faces);
@@ -318,6 +325,9 @@
                       1, 2
                 ";
                 $rbt_data = $this->db->get($query);
+                if ($rbt_data === false)
+                    return;
+
                 if (is_array($rbt_data))
                     foreach ($rbt_data as $item) {
                         $frs_base_url = $item['frs'];
@@ -347,6 +357,9 @@
                       1, 2, 3
                 ";
                 $rbt_data = $this->db->get($query);
+                if ($rbt_data === false)
+                    return;
+
                 if (is_array($rbt_data))
                     foreach ($rbt_data as $item) {
                         $frs_base_url = $item['frs'];
@@ -355,7 +368,7 @@
                         $face_uuid = $item['face_uuid'];
 
                         if ($face_uuid === null) {
-                            //face image doesn't exist in th RBT, so delete it everywhere
+                            //face image doesn't exist in RBT, so delete it everywhere
                             $this->deleteFaceId($face_id);
                             $this->apiCall($frs_base_url, self::M_DELETE_FACES, [self::P_FACE_IDS => [$face_id]]);
                         } else {
@@ -449,23 +462,16 @@
                 if (!$r) {
                     return false;
                 }
-                $flat_id = $r["flat_id"];
+
                 $query = "delete from frs_links_faces where face_id = :face_id and house_subscriber_id = :house_subscriber_id";
                 $r =  $this->db->modify($query, [
                     ":face_id" => $face_id,
                     ":house_subscriber_id" => $house_subscriber_id,
                 ]);
+                if ($r === false)
+                    return false;
 
-                //detach face_id from video streams
-                $households = loadBackend("households");
-                $entrances = $households->getEntrances("flatId", $flat_id);
-                $cameras = loadBackend("cameras");
-                foreach ($entrances as $entrance) {
-                    $cam = $cameras->getCamera($entrance["cameraId"]);
-                    $this->removeFaces($cam, [$face_id]);
-                }
-
-                return $r;
+                return true;
             }
 
             /**
@@ -474,11 +480,14 @@
             public function detachFaceIdFromFlat($face_id, $flat_id)
             {
                 $query = "delete from frs_links_faces where face_id = :face_id and flat_id = :flat_id";
-
-                return $this->db->modify($query, [
+                $r = $this->db->modify($query, [
                     ":face_id" => $face_id,
                     ":flat_id" => $flat_id,
                 ]);
+                if ($r === false)
+                    return false;
+
+                return true;
             }
 
             /**
