@@ -159,7 +159,7 @@
              * Detach face_id from all subscriber's flats
              * @param int $face_id
              * @param int $house_subscriber_id
-             * @return false|int
+             * @return bool
              */
             abstract public function detachFaceId($face_id, $house_subscriber_id);
 
@@ -167,7 +167,7 @@
              * Detach face_id from flat (all subscribers)
              * @param int $face_id
              * @param int $flat_id
-             * @return false|int
+             * @return bool
              */
             abstract public function detachFaceIdFromFlat($face_id, $flat_id);
 
