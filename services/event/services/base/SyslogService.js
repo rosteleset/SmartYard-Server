@@ -1,6 +1,6 @@
 const syslogServer = require("syslog-server");
-const { API, getTimestamp, parseSyslogMessage, isIpAddress} = require("../utils");
-const { topology } = require("../config.json");
+const { API, getTimestamp, parseSyslogMessage, isIpAddress} = require("../../utils");
+const { topology } = require("../../config.json");
 const mode = process.env.NODE_ENV || "";
 
 class SyslogService {

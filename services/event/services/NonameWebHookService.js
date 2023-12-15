@@ -1,5 +1,5 @@
 // example webhook service
-const { WebHookService } = require("./WebHookService");
+const { WebHookService } = require("./base/WebHookService");
 
 class NonameWebHookService  extends  WebHookService{
     constructor(unit, config) {

@@ -1,4 +1,4 @@
-const {WebHookService} = require("./WebHookService");
+const {WebHookService} = require("./base/WebHookService");
 const {getTimestamp} = require("../utils/getTimestamp");
 const API = require("../utils/API");
 const {mdTimer} = require("../utils");

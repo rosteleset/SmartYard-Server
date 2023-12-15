@@ -1,4 +1,4 @@
-const { SyslogService } = require("./SyslogService")
+const { SyslogService } = require("./base/SyslogService")
 const { SERVICE_QTECH } = require("../constants");
 const { API, mdTimer } = require("../utils");
 const net= require("net");

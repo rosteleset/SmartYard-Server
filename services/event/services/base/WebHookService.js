@@ -1,5 +1,5 @@
 const http = require("http");
-const { getTimestamp, API } = require("../utils");
+const { getTimestamp, API } = require("../../utils");
 
 // TODO: create logging received messages
 class WebHookService {

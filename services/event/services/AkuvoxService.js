@@ -1,4 +1,4 @@
-const { SyslogService } = require("./SyslogService")
+const { SyslogService } = require("./base/SyslogService")
 const { API, mdTimer } = require("../utils");
 
 class AkuvoxService extends SyslogService {

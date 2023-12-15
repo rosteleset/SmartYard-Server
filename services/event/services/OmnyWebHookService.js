@@ -1,4 +1,4 @@
-const { WebHookService } = require("./WebHookService");
+const { WebHookService } = require("./base/WebHookService");
 const { parseString} = require('xml2js');
 const { API, getTimestamp} = require("../utils");
 
