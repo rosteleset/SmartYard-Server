@@ -1293,9 +1293,11 @@
              * @param int[] $sort
              * @param int $skip
              * @param int $limit
+             * @param array $preprocess
+             * @param array $types
              * @return mixed
              */
-            abstract public function getIssues($collection, $query, $fields = [], $sort = [ "issueId" => 1 ], $skip = 0, $limit = 100);
+            abstract public function getIssues($collection, $query, $fields = [], $sort = [ "issueId" => 1 ], $skip = 0, $limit = 100, $preprocess = [], $types = []);
 
             /**
              * @param $issueId
@@ -1489,17 +1491,27 @@
             /**
              * @param $query
              * @param $params
+             * @param $types
              * @return mixed
              */
-            public function preprocessFilter($query, $params)
+            public function preprocessFilter($query, $params, $types)
             {
                 if ($query) {
-                    array_walk_recursive($query, function (&$item, $key, $params) {
+                    array_walk_recursive($query, function (&$item, $key, $params) use ($types) {
                         if (array_key_exists($item, $params)) {
+                            if (@$types[$item]) {
+                                $cast = $types[$item];
+                            } else {
+                                $cast = false;
+                            }
                             $item = $params[$item];
+                            if ($cast) {
+                                settype($item, $cast);
+                            }
                         }
                     }, $params);
                 }
+
                 return $query;
             }
 
@@ -1695,7 +1707,7 @@
                         if ($filter) {
                             $skip = 0;
                             do {
-                                $issues = $this->getIssues($task["acronym"], @$filter["filter"], @$filter["fields"], [ "created" => 1 ], $skip, 5, []);
+                                $issues = $this->getIssues($task["acronym"], @$filter["filter"], @$filter["fields"], [ "created" => 1 ], $skip, 5);
                                 $skip += 5;
                                 for ($i = 0; $i < count($issues["issues"]); $i++) {
                                     $issue = $this->getIssue($issues["issues"][$i]["issueId"]);

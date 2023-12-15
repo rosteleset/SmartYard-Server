@@ -239,7 +239,7 @@
             /**
              * @inheritDoc
              */
-            public function getIssues($collection, $query, $fields = [], $sort = [ "created" => 1 ], $skip = 0, $limit = 100, $preprocess = [])
+            public function getIssues($collection, $query, $fields = [], $sort = [ "created" => 1 ], $skip = 0, $limit = 100, $preprocess = [], $types = [])
             {
                 $db = $this->dbName;
 
@@ -260,35 +260,84 @@
                 $preprocess["%%strToday-1day"] = date("Y-m-d", strtotime("-1 day"));
 
                 $preprocess["%%timestamp"] = time();
+                $types["%%timestamp"] = "int";
+
                 $preprocess["%%timestampToday"] = strtotime(date("Y-m-d"));
+                $types["%%timestampToday"] = "int";
 
                 $preprocess["%%timestamp+1hour"] = strtotime(date("Y-m-d", strtotime("+1 hour")));
+                $types["%%timestamp+1hour"] = "int";
+
                 $preprocess["%%timestamp+2hours"] = strtotime(date("Y-m-d", strtotime("+2 hour")));
+                $types["%%timestamp+2hours"] = "int";
+                
                 $preprocess["%%timestamp+4hours"] = strtotime(date("Y-m-d", strtotime("+4 hour")));
+                $types["%%timestamp+4hours"] = "int";
+                
                 $preprocess["%%timestamp+8hours"] = strtotime(date("Y-m-d", strtotime("+8 hour")));
+                $types["%%timestamp+8hours"] = "int";
+                
                 $preprocess["%%timestamp+1day"] = strtotime(date("Y-m-d", strtotime("+1 day")));
+                $types["%%timestamp+1day"] = "int";
+                
                 $preprocess["%%timestamp+2days"] = strtotime(date("Y-m-d", strtotime("+2 day")));
+                $types["%%timestamp+2days"] = "int";
+                
                 $preprocess["%%timestamp+3days"] = strtotime(date("Y-m-d", strtotime("+3 day")));
+                $types["%%timestamp+3days"] = "int";
+                
                 $preprocess["%%timestamp+7days"] = strtotime(date("Y-m-d", strtotime("+7 day")));
+                $types["%%timestamp+7days"] = "int";
+                
                 $preprocess["%%timestamp+1month"] = strtotime(date("Y-m-d", strtotime("+1 month")));
+                $types["%%timestamp+1month"] = "int";
+                
                 $preprocess["%%timestamp+1year"] = strtotime(date("Y-m-d", strtotime("+1 year")));
+                $types["%%timestamp+1year"] = "int";
+                
                 $preprocess["%%timestamp+2years"] = strtotime(date("Y-m-d", strtotime("+2 year")));
+                $types["%%timestamp+2years"] = "int";
+                
                 $preprocess["%%timestamp+3years"] = strtotime(date("Y-m-d", strtotime("+3 year")));
+                $types["%%timestamp+3years"] = "int";
                 
                 $preprocess["%%timestamp-1hour"] = strtotime(date("Y-m-d", strtotime("-1 hour")));
+                $types["%%timestamp-1hour"] = "int";
+
                 $preprocess["%%timestamp-2hours"] = strtotime(date("Y-m-d", strtotime("-2 hour")));
+                $types["%%timestamp-2hours"] = "int";
+
                 $preprocess["%%timestamp-4hours"] = strtotime(date("Y-m-d", strtotime("-4 hour")));
+                $types["%%timestamp-4hours"] = "int";
+
                 $preprocess["%%timestamp-8hours"] = strtotime(date("Y-m-d", strtotime("-8 hour")));
+                $types["%%timestamp-8hours"] = "int";
+
                 $preprocess["%%timestamp-1day"] = strtotime(date("Y-m-d", strtotime("-1 day")));
+                $types["%%timestamp-1day"] = "int";
+
                 $preprocess["%%timestamp-2days"] = strtotime(date("Y-m-d", strtotime("-2 day")));
+                $types["%%timestamp-2days"] = "int";
+
                 $preprocess["%%timestamp-3days"] = strtotime(date("Y-m-d", strtotime("-3 day")));
+                $types["%%timestamp-3days"] = "int";
+
                 $preprocess["%%timestamp-7days"] = strtotime(date("Y-m-d", strtotime("-7 day")));
+                $types["%%timestamp-7days"] = "int";
+
                 $preprocess["%%timestamp-1month"] = strtotime(date("Y-m-d", strtotime("-1 month")));
+                $types["%%timestamp-1month"] = "int";
+
                 $preprocess["%%timestamp-1year"] = strtotime(date("Y-m-d", strtotime("-1 year")));
+                $types["%%timestamp-1year"] = "int";
+
                 $preprocess["%%timestamp-2years"] = strtotime(date("Y-m-d", strtotime("-2 year")));
+                $types["%%timestamp-2years"] = "int";
+
                 $preprocess["%%timestamp-3years"] = strtotime(date("Y-m-d", strtotime("-3 year")));
+                $types["%%timestamp-3years"] = "int";
                 
-                $query = $this->preprocessFilter($query, $preprocess);
+                $query = $this->preprocessFilter($query, $preprocess, $types);
 
                 $projection = [];
 

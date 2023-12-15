@@ -1169,6 +1169,26 @@ function textRTrim(text) {
     return text.join("\n");
 }
 
+function parseIntEx(i) {
+    i = parseInt(i);
+
+    if (isNaN(i)) {
+        return 0;
+    } else {
+        return i;
+    }
+}
+
+function parseFloatEx(f) {
+    f = parseFloat(f);
+
+    if (isNaN(f)) {
+        return 0;
+    } else {
+        return f;
+    }
+}
+
 function QUERY(api, method, query, fresh) {
     return $.ajax({
         url: lStore("_server") + "/" + encodeURIComponent(api) + "/" + encodeURIComponent(method) + (query?("?" + $.param(query)):""),
