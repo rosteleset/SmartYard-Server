@@ -1,6 +1,6 @@
 import { WebHookService } from "./base/WebHookService.js";
 import { getTimestamp } from "../utils/index.js";
-import API from "../utils/index.js";
+import API from "../utils/API.js";
 import { mdTimer } from "../utils/index.js";
 
 class SputnikService extends WebHookService {

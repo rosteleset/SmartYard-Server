@@ -1,5 +1,5 @@
-const http = require("http");
-const { getTimestamp, API } = require("../../utils");
+import http from "http";
+import { getTimestamp, API } from "../../utils/index.js";
 
 // TODO: create logging received messages
 class WebHookService {

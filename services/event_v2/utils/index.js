@@ -5,9 +5,9 @@ import { isIpAddress } from './isIpAddress.js';
 import { mdTimer } from './mdTimer.js';
 
 export {
-    API,
     getTimestamp,
     parseSyslogMessage,
     isIpAddress,
     mdTimer,
+    API
 };
