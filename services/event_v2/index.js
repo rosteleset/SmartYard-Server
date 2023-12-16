@@ -1,4 +1,4 @@
-import  { hw } from "./config.json";
+import  { config } from "./config.js";
 import  {
     BewardService,
     BewardServiceDS,
@@ -9,7 +9,7 @@ import  {
     NonameWebHookService,
     SputnikService,
     OmnyWebHookService
-} from "./services";
+} from "./services/index.js";
 import {
     SERVICE_BEWARD,
     SERVICE_BEWARD_DS,
@@ -20,7 +20,9 @@ import {
     SERVICE_NONAME_WEBHOOK,
     SERVICE_SPUTNIK,
     SERVICE_OMNY
-} from "./constants";
+} from "./constants.js";
+
+const { hw } = config;
 
 const serviceParam = process.argv[2]?.toLowerCase();
 

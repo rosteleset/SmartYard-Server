@@ -1,5 +1,5 @@
 // example webhook service
-const { WebHookService } = require("./base/WebHookService");
+import { WebHookService } from "./base/WebHookService.js";
 
 class NonameWebHookService  extends  WebHookService{
     constructor(unit, config) {
@@ -25,4 +25,4 @@ class NonameWebHookService  extends  WebHookService{
 
 }
 
-module.exports = { NonameWebHookService }
+export { NonameWebHookService }

@@ -1,7 +1,7 @@
-const { SyslogService } = require("./base/SyslogService")
-const { SERVICE_QTECH } = require("../constants");
-const { API, mdTimer } = require("../utils");
-const net= require("net");
+import { SyslogService } from "./base/SyslogService.js"
+import { SERVICE_QTECH } from "../constants.js" //FIXME: not use
+import { API, mdTimer } from "../utils/index.js"
+import net from "net"
 
 // TODO: check feature
 class QtechService extends SyslogService {
@@ -157,4 +157,4 @@ class QtechService extends SyslogService {
 
 }
 
-module.exports = { QtechService }
+export { QtechService }

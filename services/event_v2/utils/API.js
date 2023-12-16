@@ -1,7 +1,7 @@
 import axios from "axios";
 import https from "https";
 import { getTimestamp } from "./getTimestamp.js";
-import { events } from "./events.js";
+import { events } from "../constants.js";
 import { config } from "../config.js"; //FIXME: update config import
 const {api:{internal}, clickhouse} = config;
 

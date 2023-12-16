@@ -1,5 +1,5 @@
-const { SyslogService } = require("./base/SyslogService")
-const { API } = require("../utils");
+import { API } from  "../utils/index.js";
+import {SyslogService} from "./base/SyslogService.js";
 
 class BewardService extends SyslogService {
     constructor(unit, config) {
@@ -107,4 +107,4 @@ class BewardService extends SyslogService {
     }
 }
 
-module.exports = { BewardService }
+export { BewardService }

@@ -3,8 +3,6 @@ import { getTimestamp } from './getTimestamp.js';
 import { parseSyslogMessage } from './parseSyslogMessage.js';
 import { isIpAddress } from './isIpAddress.js';
 import { mdTimer } from './mdTimer.js';
-import { config } from './getConfig.js';
-
 
 export {
     API,
@@ -12,5 +10,4 @@ export {
     parseSyslogMessage,
     isIpAddress,
     mdTimer,
-    config
 };
