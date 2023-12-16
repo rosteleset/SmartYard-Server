@@ -1,7 +1,7 @@
-const {WebHookService} = require("./base/WebHookService");
-const {getTimestamp} = require("../utils/getTimestamp");
-const API = require("../utils/API");
-const {mdTimer} = require("../utils");
+import { WebHookService } from "./base/WebHookService.js";
+import { getTimestamp } from "../utils/index.js";
+import API from "../utils/index.js";
+import { mdTimer } from "../utils/index.js";
 
 class SputnikService extends WebHookService {
     constructor(unit, config) {
