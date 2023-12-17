@@ -1,9 +1,9 @@
 import axios from "axios";
 import https from "https";
 import { getTimestamp } from "./getTimestamp.js";
-import { events } from "../constants.js";
+import { EVENT } from "../constants.js";
 import { config } from "../config.js"; //FIXME: update config import
-const {api:{internal}, clickhouse} = config;
+const { api: { internal }, clickhouse } = config;
 
 const agent = new https.Agent({ rejectUnauthorized: false });
 
@@ -138,13 +138,13 @@ class API {
         try {
             switch (by) {
                 case "rfid":
-                    payload.event = events.OPEN_BY_KEY;
+                    payload.event = EVENT.OPEN_BY_KEY;
                     break;
                 case "code":
-                    payload.event = events.OPEN_BY_CODE;
+                    payload.event = EVENT.OPEN_BY_CODE;
                     break;
                 case "button":
-                    payload.event = events.OPEN_BY_BUTTON;
+                    payload.event = EVENT.OPEN_BY_BUTTON;
                     break;
             }
             return await internalAPI.post("/actions/openDoor", payload);

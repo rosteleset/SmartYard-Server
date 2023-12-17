@@ -1,5 +1,5 @@
 // services names:
-export const events = {
+export const EVENT = {
     "NOT_ANSWERED": 1,
     "ANSWERED": 2,
     "OPEN_BY_KEY": 3,

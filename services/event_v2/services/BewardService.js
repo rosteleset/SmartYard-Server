@@ -1,5 +1,5 @@
 import { API } from  "../utils/index.js";
-import {SyslogService} from "./base/SyslogService.js";
+import { SyslogService } from "./base/SyslogService.js";
 
 class BewardService extends SyslogService {
     constructor(unit, config) {

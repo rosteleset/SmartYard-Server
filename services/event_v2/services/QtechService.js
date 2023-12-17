@@ -1,5 +1,4 @@
 import { SyslogService } from "./base/SyslogService.js"
-import { SERVICE_QTECH } from "../constants.js" //FIXME: not use
 import { API, mdTimer } from "../utils/index.js"
 import net from "net"
 
@@ -151,7 +150,7 @@ class QtechService extends SyslogService {
         });
 
         socket.listen(this.config.port , undefined, () => {
-            console.log(`${SERVICE_QTECH.toUpperCase()} debug server running on TCP port ${this.config.port}`);
+            console.log(`${this.unit.toUpperCase()} debug server running on TCP port ${this.config.port}`);
         });
     }
 
