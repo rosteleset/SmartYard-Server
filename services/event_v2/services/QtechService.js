@@ -1,8 +1,13 @@
-import { SyslogService } from "./base/SyslogService.js"
-import { API, mdTimer } from "../utils/index.js"
 import net from "net"
+import { SyslogService } from "./index.js"
+import { API, mdTimer } from "../utils/index.js"
 
-// TODO: check feature
+/**
+ * TODO:
+ *      - check feature
+ *      - remove debug server
+  */
+
 class QtechService extends SyslogService {
     constructor(unit, config) {
         super(unit, config);

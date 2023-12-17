@@ -1,5 +1,5 @@
+import { BewardService } from "./index.js";
 import { API } from "../utils/index.js";
-import { BewardService } from "./BewardService.js";
 
 class BewardServiceDS extends BewardService {
     constructor(unit, config) {

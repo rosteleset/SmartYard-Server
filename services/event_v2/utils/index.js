@@ -1,13 +1,5 @@
-import API from './API.js';
-import { getTimestamp } from './getTimestamp.js';
-import { parseSyslogMessage } from './parseSyslogMessage.js';
-import { isIpAddress } from './isIpAddress.js';
-import { mdTimer } from './mdTimer.js';
-
-export {
-    getTimestamp,
-    parseSyslogMessage,
-    isIpAddress,
-    mdTimer,
-    API
-};
+export {  default as API } from "./API.js"
+export { getTimestamp } from "./getTimestamp.js"
+export { parseSyslogMessage } from "./parseSyslogMessage.js"
+export { isIpAddress } from "./isIpAddress.js"
+export { mdTimer } from "./mdTimer.js"

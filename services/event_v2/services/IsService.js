@@ -1,4 +1,4 @@
-import { SyslogService } from "./base/SyslogService.js";
+import { SyslogService } from "./index.js";
 import { API, mdTimer } from "../utils/index.js";
 
 class IsService extends SyslogService {

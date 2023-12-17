@@ -1,6 +1,6 @@
 // const { SyslogService } = require("./base/SyslogService")
+import { SyslogService } from "./index.js";
 import { API, mdTimer } from "../utils/index.js";
-import { SyslogService } from "./base/SyslogService.js";
 
 class AkuvoxService extends SyslogService {
     constructor(unit, config) {

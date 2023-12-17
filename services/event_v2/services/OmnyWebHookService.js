@@ -1,5 +1,5 @@
-import { WebHookService } from "./base/WebHookService.js";
 import { parseString } from 'xml2js';
+import { WebHookService } from "./index.js";
 import { API, getTimestamp } from "../utils/index.js";
 
 class OmnyWebHookService extends WebHookService {

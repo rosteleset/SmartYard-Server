@@ -1,4 +1,3 @@
-// services names:
 export const EVENT = {
     "NOT_ANSWERED": 1,
     "ANSWERED": 2,
@@ -10,6 +9,7 @@ export const EVENT = {
     "OPEN_BY_BUTTON": 8
 };
 
+// services names:
 export const SERVICE_BEWARD = "beward";
 export const SERVICE_BEWARD_DS = "beward_ds";
 export const SERVICE_QTECH = "qtech";

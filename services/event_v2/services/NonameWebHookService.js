@@ -1,5 +1,5 @@
 // example webhook service
-import { WebHookService } from "./base/WebHookService.js";
+import { WebHookService } from "./index.js";
 
 class NonameWebHookService  extends  WebHookService{
     constructor(unit, config) {

@@ -1,25 +1,10 @@
-import { SyslogService } from "./base/SyslogService.js";
-import { WebHookService } from "./base/WebHookService.js";
-import { BewardService } from "./BewardService.js";
-import { BewardServiceDS } from "./BewardServiceDS.js";
-import { QtechService } from "./QtechService.js";
-import { AkuvoxService } from "./AkuvoxService.js";
-import { IsService } from "./IsService.js";
-import { RubetekService } from "./RubetekService.js";
-import { NonameWebHookService } from "./NonameWebHookService.js";
-import { SputnikService } from "./SputnikService.js";
-import { OmnyWebHookService } from "./OmnyWebHookService.js";
-
-export  {
-    SyslogService,
-    WebHookService,
-    BewardService,
-    BewardServiceDS,
-    QtechService,
-    AkuvoxService,
-    IsService,
-    RubetekService,
-    SputnikService,
-    NonameWebHookService,
-    OmnyWebHookService
-}
+export { SyslogService, WebHookService } from "./base/index.js"
+export { BewardService } from "./BewardService.js";
+export { BewardServiceDS } from "./BewardServiceDS.js";
+export { QtechService } from "./QtechService.js";
+export { AkuvoxService } from "./AkuvoxService.js";
+export { IsService } from "./IsService.js";
+export { RubetekService } from "./RubetekService.js";
+export { NonameWebHookService } from "./NonameWebHookService.js";
+export { SputnikService } from "./SputnikService.js";
+export { OmnyWebHookService } from "./OmnyWebHookService.js";
