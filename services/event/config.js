@@ -34,7 +34,7 @@ export const config = {
     "rubetek": {
       "port": 45456
     },
-    "sputnik": {
+    "sputnik_cloud": {
       "port": 45457,
       "apiEndpoint": "/webhook/sputnik"
     },

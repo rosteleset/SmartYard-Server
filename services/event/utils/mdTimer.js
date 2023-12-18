@@ -1,5 +1,5 @@
-const API = require("./API");
-const { getTimestamp } = require("./getTimestamp");
+import { API } from "./index.js";
+import { getTimestamp } from "./getTimestamp.js";
 
 const mdStorage = {};
 
@@ -31,4 +31,4 @@ const mdTimer = ({ ip = null, subId = null, delay = 5000 }) => {
     }
 }
 
-module.exports = { mdTimer };
+export { mdTimer };

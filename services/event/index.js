@@ -1,26 +1,28 @@
-const { hw } = require("./config.json");
-const {
+import { config } from "./config.js";
+import {
+    AkuvoxService,
     BewardService,
     BewardServiceDS,
-    QtechService,
-    AkuvoxService,
     IsService,
-    RubetekService,
     NonameWebHookService,
-    SputnikService,
-    OmnyWebHookService
-} = require("./services")
-const {
+    OmnyWebHookService,
+    QtechService,
+    RubetekService,
+    SputnikService
+} from "./services/index.js";
+import {
+    SERVICE_AKUVOX,
     SERVICE_BEWARD,
     SERVICE_BEWARD_DS,
-    SERVICE_QTECH,
-    SERVICE_AKUVOX,
     SERVICE_IS,
-    SERVICE_RUBETEK,
     SERVICE_NONAME_WEBHOOK,
-    SERVICE_SPUTNIK,
-    SERVICE_OMNY
-} = require("./constants")
+    SERVICE_OMNY,
+    SERVICE_QTECH,
+    SERVICE_RUBETEK,
+    SERVICE_SPUTNIK_CLOUD
+} from "./constants.js";
+
+const { hw } = config;
 
 const serviceParam = process.argv[2]?.toLowerCase();
 
@@ -30,7 +32,7 @@ if (!serviceParam) {
 }
 
 if (!hw[serviceParam]) {
-    console.error(`Unit: "${serviceParam}" not defined in config file: config.json`)
+    console.error(`Unit: "${ serviceParam }" not defined in config file: config.js`)
     process.exit(1);
 }
 
@@ -78,12 +80,12 @@ switch (serviceParam) {
         omnyWebhookService.start();
         break;// example webhook for ip camera (example OMNY miniDome2T-U v2), make api call to LPRS or FRS services
 
-    case SERVICE_SPUTNIK:
+    case SERVICE_SPUTNIK_CLOUD:
         if (!serviceConfig.apiEndpoint) {
-            console.error(`Unit: "${serviceParam}" not defined apiEndpoint in config file: config.json`)
+            console.error(`Unit: "${ serviceParam }" not defined apiEndpoint in config file: config.json`)
             process.exit(1);
         }
-        const sputnikService = new SputnikService(SERVICE_SPUTNIK, serviceConfig)
+        const sputnikService = new SputnikService(SERVICE_SPUTNIK_CLOUD, serviceConfig)
         sputnikService.start();
         break;
 

@@ -1,5 +1,6 @@
 // IETF (RFC 5424) message, with structured data and chained hostnames
-const {getTimestamp} = require("./getTimestamp");
+import { getTimestamp } from "./index.js";
+
 const parseSyslogMessage = (str) => {
     if (!str) return false;
     str = str.trim();
@@ -27,7 +28,7 @@ const parseSyslogMessage = (str) => {
             message
         };
     } else if (partsBSD) {
-        const [, priority,timestamp ,host, app,pid, message] = partsBSD;
+        const [, priority, timestamp, host, app, pid, message] = partsBSD;
         return {
             format: 'BSD',
             priority: Number(priority),
@@ -39,4 +40,4 @@ const parseSyslogMessage = (str) => {
     } else return false;
 };
 
-module.exports = {parseSyslogMessage};
+export { parseSyslogMessage };

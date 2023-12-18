@@ -1,14 +1,17 @@
-import axios from "axios";
-import https from "https";
-import { getTimestamp } from "./index.js";
-import { EVENT } from "../constants.js";
-import { config } from "../config.js"; //FIXME: update config import
+const axios = require("axios");
+const https = require("https");
+const { getTimestamp } = require("./getTimestamp");
+const events = require("./events.json");
+const { api: {internal}, clickhouse } = require("../config.json");
+const agent = new https.Agent({rejectUnauthorized: false});
 
-const { api: { internal }, clickhouse } = config;
-const agent = new https.Agent({ rejectUnauthorized: false });
 const internalAPI = axios.create({
     baseURL: internal, withCredentials: true, responseType: "json", httpsAgent: agent
 });
+
+// const internalAPI = axios.create({
+//   baseURL: internal,
+// });
 
 class API {
 
@@ -26,19 +29,21 @@ class API {
             const processedMsg = msg.replace(/'/g, "\\'"); // escape single quotes
             const query = `
                 INSERT INTO syslog (date, ip, sub_id, unit, msg)
-                VALUES ('${ date }',
-                        ${ ip !== null ? `'${ ip }'` : 'NULL' },
-                        ${ subId !== null ? `'${ subId }'` : 'NULL' },
-                        '${ unit }',
-                        '${ processedMsg }');
+                VALUES (
+                               '${date}',
+                               ${ip !== null ? `'${ip}'` : 'NULL'},
+                               ${subId !== null ? `'${subId}'` : 'NULL'},
+                               '${unit}',
+                               '${processedMsg}'
+                       );
             `;
             const config = {
                 method: "post",
-                url: `http://${ clickhouse.host }:${ clickhouse.port }`,
+                url: `http://${clickhouse.host}:${clickhouse.port}`,
                 headers: {
-                    'Authorization': `Basic ${ Buffer.from(`${ clickhouse.username }:${ clickhouse.password }`).toString('base64') }`,
+                    'Authorization': `Basic ${Buffer.from(`${clickhouse.username}:${clickhouse.password}`).toString('base64')}`,
                     'Content-Type': 'text/plain;charset=UTF-8',
-                    'X-ClickHouse-Database': `${ clickhouse.database }`
+                    'X-ClickHouse-Database': `${clickhouse.database}`
                 },
                 data: query,
             };
@@ -59,7 +64,7 @@ class API {
      */
     async motionDetection({ date, ip = null, subId = null, motionActive }) {
         try {
-            return await internalAPI.post("/actions/motionDetection", { date, ip, subId, motionActive });
+            return await internalAPI.post("/actions/motionDetection", {date, ip, subId, motionActive});
         } catch (error) {
             console.error(getTimestamp(new Date()), "||", ip ? ip : subId, "|| motionDetection error: ", error.message);
         }
@@ -75,7 +80,7 @@ class API {
      */
     async callFinished({ date, ip, subId = null, callId = null }) {
         try {
-            return await internalAPI.post("/actions/callFinished", { date, ip, subId, callId });
+            return await internalAPI.post("/actions/callFinished", {date, ip, subId, callId});
         } catch (error) {
             console.error(getTimestamp(new Date()), "||", ip ? ip : subId, "|| callFinished error: ", error.message);
         }
@@ -100,7 +105,7 @@ class API {
             apartmentNumber = 0,
             apartmentId = 0,
         },
-    ) {
+        ) {
         try {
             return await internalAPI.post("/actions/setRabbitGates", {
                 date,
@@ -131,13 +136,13 @@ class API {
         try {
             switch (by) {
                 case "rfid":
-                    payload.event = EVENT.OPEN_BY_KEY;
+                    payload.event = events.OPEN_BY_KEY;
                     break;
                 case "code":
-                    payload.event = EVENT.OPEN_BY_CODE;
+                    payload.event = events.OPEN_BY_CODE;
                     break;
                 case "button":
-                    payload.event = EVENT.OPEN_BY_BUTTON;
+                    payload.event = events.OPEN_BY_BUTTON;
                     break;
             }
             return await internalAPI.post("/actions/openDoor", payload);
@@ -147,4 +152,4 @@ class API {
     }
 }
 
-export default new API();
+module.exports = new API();

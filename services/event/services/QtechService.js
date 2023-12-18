@@ -1,9 +1,13 @@
-const { SyslogService } = require("./base/SyslogService")
-const { SERVICE_QTECH } = require("../constants");
-const { API, mdTimer } = require("../utils");
-const net= require("net");
+import net from "net"
+import { SyslogService } from "./index.js"
+import { API, mdTimer } from "../utils/index.js"
 
-// TODO: check feature
+/**
+ * TODO:
+ *      - check feature
+ *      - remove debug server
+ */
+
 class QtechService extends SyslogService {
     constructor(unit, config) {
         super(unit, config);
@@ -36,8 +40,8 @@ class QtechService extends SyslogService {
          *  Motion detection start
          */
         if (qtMsgParts[1] === "Send Photo") {
-            await API.motionDetection({ date: now, ip: host, motionActive: true });
-            await mdTimer({ ip: host });
+            await API.motionDetection({date: now, ip: host, motionActive: true});
+            await mdTimer({ip: host});
         }
 
         /**
@@ -52,20 +56,20 @@ class QtechService extends SyslogService {
          * example msg: "EVENT:700:Prefix:12,Replace Number:1000000001, Status:0"
          */
         if (qtMsgParts[2] === "Replace Number" && qtMsgParts[1].length === 6) {
-                const number = qtMsgParts[3];
+            const number = qtMsgParts[3];
 
-                (this.gateRabbits)[host] = {
-                    ip: host,
-                    prefix: parseInt(number.substring(0, 4)),
-                    apartmentNumber: parseInt(number.substring(4)),
-                };
+            (this.gateRabbits)[host] = {
+                ip: host,
+                prefix: parseInt(number.substring(0, 4)),
+                apartmentNumber: parseInt(number.substring(4)),
+            };
         }
 
         /**
          * Opening door by CMS handset
          */
         if (qtMsgParts[2] === "Open Door By Intercom" && this.cmsCalls[host]) {
-            await API.setRabbitGates({ date: now, ip: host, apartmentNumber: this.cmsCalls[host] });
+            await API.setRabbitGates({date: now, ip: host, apartmentNumber: this.cmsCalls[host]});
         }
 
         /**
@@ -75,10 +79,10 @@ class QtechService extends SyslogService {
             const number = qtMsgParts[1];
 
             if (number.length === 6 && this.gateRabbits[host]) { // Gate with prefix mode
-                const { ip, prefix, apartmentNumber } = this.gateRabbits[host];
-                await API.setRabbitGates({ date: now, ip, prefix, apartmentNumber: apartmentNumber });
+                const {ip, prefix, apartmentNumber} = this.gateRabbits[host];
+                await API.setRabbitGates({date: now, ip, prefix, apartmentNumber: apartmentNumber});
             } else { // Normal mode
-                await API.setRabbitGates({ date: now, ip: host, apartmentNumber: number });
+                await API.setRabbitGates({date: now, ip: host, apartmentNumber: number});
             }
         }
 
@@ -91,7 +95,7 @@ class QtechService extends SyslogService {
                 door = 1;
             }
 
-            await API.openDoor({ date: now, ip: host, door, detail: rfid, by: "rfid" });
+            await API.openDoor({date: now, ip: host, door, detail: rfid, by: "rfid"});
         }
 
         /**
@@ -99,7 +103,7 @@ class QtechService extends SyslogService {
          */
         if (qtMsgParts[2] === "Open Door By Code") {
             const code = parseInt(qtMsgParts[4]);
-            await API.openDoor({ date: now, ip: host, detail: code, by: "code" });
+            await API.openDoor({date: now, ip: host, detail: code, by: "code"});
         }
 
         /**
@@ -125,14 +129,14 @@ class QtechService extends SyslogService {
                     detail = "main"
             }
 
-            await API.openDoor({ date: now, ip: host, door, detail, by: "button" });
+            await API.openDoor({date: now, ip: host, door, detail, by: "button"});
         }
 
         /**
          * All calls are done
          */
         if (qtMsgParts[0] === 'Finished Call') {
-            await API.callFinished({ date: now, ip: host });
+            await API.callFinished({date: now, ip: host});
         }
     }
 
@@ -140,7 +144,7 @@ class QtechService extends SyslogService {
      * Qtech debug server
      * @returns {Promise<void>}
      */
-    async startDebugServer()  {
+    async startDebugServer() {
         const socket = net.createServer((socket) => {
             socket.on("data", async (data) => {
                 const msg = data.toString();
@@ -150,11 +154,11 @@ class QtechService extends SyslogService {
             });
         });
 
-        socket.listen(this.config.port , undefined, () => {
-            console.log(`${SERVICE_QTECH.toUpperCase()} debug server running on TCP port ${this.config.port}`);
+        socket.listen(this.config.port, undefined, () => {
+            console.log(`${this.unit.toUpperCase()} debug server running on TCP port ${this.config.port}`);
         });
     }
 
 }
 
-module.exports = { QtechService }
+export { QtechService }

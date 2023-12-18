@@ -2,7 +2,7 @@
     "name": "event-service",
     "version": "1.0.0",
     "description": "Event service for intercom and ip camera",
-    "type": "module",
+    "type": "commonjs",
     "scripts": {
         "start": "concurrently -k \"npm run start:beward\" \"npm run start:beward_ds\" \"npm run start:qtech\" \"npm run start:is\" \"npm run start:akuvox\" \"npm run start:rubetek\"  \"npm run start:sputnik\"",
         "dev": "concurrently -k \"npm run dev:beward\" \"npm run dev:beward_ds\" \"npm run dev:qtech\" \"npm run dev:is\" \"npm run dev:akuvox\" \"npm run dev:rubetek\" \"npm run dev:sputnik\"",
@@ -11,7 +11,7 @@
         "start:beward_ds": "node index.js beward_ds",
         "start:qtech": "node index.js qtech",
         "start:is": "node index.js is",
-        "start:sputnik": "node index.js sputnik_cloud",
+        "start:sputnik": "node index.js sputnik",
         "start:akuvox": "node index.js akuvox",
         "start:rubetek": "node index.js rubetek",
         "dev:beward": "nodemon index.js beward",
@@ -20,7 +20,7 @@
         "dev:is": "nodemon index.js is",
         "dev:akuvox": "nodemon index.js akuvox",
         "dev:rubetek": "nodemon index.js rubetek",
-        "dev:sputnik": "nodemon index.js sputnik_cloud"
+        "dev:sputnik": "nodemon index.js sputnik"
     },
     "keywords": [],
     "author": "",

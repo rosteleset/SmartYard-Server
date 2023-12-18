@@ -1,8 +1,6 @@
-import syslogServer from "syslog-server";
-import { API, getTimestamp, isIpAddress, parseSyslogMessage } from "../../utils/index.js";
-import { config } from "../../config.js"
-
-const { topology } = config;
+const syslogServer = require("syslog-server");
+const { API, getTimestamp, parseSyslogMessage, isIpAddress} = require("../../utils");
+const { topology } = require("../../config.json");
 const mode = process.env.NODE_ENV || "";
 
 class SyslogService {
@@ -27,7 +25,7 @@ class SyslogService {
      * @param msg
      */
     logToConsole(now, host, msg) {
-        console.log(`${ now } || ${ host } || ${ msg }`);
+        console.log(`${now} || ${host} || ${msg}`);
     }
 
     /**
@@ -58,8 +56,8 @@ class SyslogService {
              *      - refactor syslog parser for BSD syslog messages.
              *      - temporarily use handler
              */
-            if (!msg) {
-                console.error("Parse message failed: " + message);
+            if(!msg){
+                console.error("Parse message failed: "+message);
                 return
             }
 
@@ -83,7 +81,7 @@ class SyslogService {
         });
 
         syslog.start({ port: this.config.port }).then(() => {
-            console.log(`${ this.unit.toUpperCase() } syslog server running on UDP port ${ this.config.port } || NAT is ${ topology?.nat || false } || mode: ${ mode }`);
+            console.log(`${this.unit.toUpperCase()} syslog server running on UDP port ${this.config.port} || NAT is ${topology?.nat || false} || mode: ${mode}`);
         });
     }
 
@@ -92,4 +90,4 @@ class SyslogService {
     }
 }
 
-export { SyslogService };
+module.exports = { SyslogService };

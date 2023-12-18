@@ -1,5 +1,5 @@
-const { SyslogService } = require("./base/SyslogService")
-const { API } = require("../utils");
+import { SyslogService } from "./index.js";
+import { API } from  "../utils/index.js";
 
 class BewardService extends SyslogService {
     constructor(unit, config) {
@@ -73,20 +73,20 @@ class BewardService extends SyslogService {
             }
         }
 
-        // Opening door by RFID key
+        // Opening a door by RFID key
         if (/^Opening door by RFID [a-fA-F0-9]+, apartment \d+$/.test(msg) || /^Opening door by external RFID [a-fA-F0-9]+, apartment \d+$/.test(msg)) {
             const rfid = msg.split("RFID")[1].split(",")[0].trim();
             const door = msg.indexOf("external") >= 0 ? "1" : "0";
             await API.openDoor({date: now, ip: host, door, detail: rfid, by: "rfid"});
         }
 
-        // Opening door by personal code
+        // Opening a door by personal code
         if (msg.indexOf("Opening door by code") >= 0) {
             const code = parseInt(msg.split("code")[1].split(",")[0]);
             await API.openDoor({date: now, ip: host, detail: code, by: "code"});
         }
 
-        // Opening door by button pressed
+        // Opening a door by button pressed
         if (msg.indexOf("door button pressed") >= 0) {
             let door = 0;
             let detail = "main";
@@ -107,4 +107,4 @@ class BewardService extends SyslogService {
     }
 }
 
-module.exports = { BewardService }
+export { BewardService }

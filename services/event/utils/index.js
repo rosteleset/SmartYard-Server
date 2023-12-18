@@ -1,13 +1,5 @@
-const API = require('./API');
-const {getTimestamp} = require('./getTimestamp');
-const {parseSyslogMessage} = require('./parseSyslogMessage');
-const {isIpAddress} = require('./isIpAddress');
-const {mdTimer} = require('./mdTimer');
-
-module.exports = {
-    API,
-    getTimestamp,
-    parseSyslogMessage,
-    isIpAddress,
-    mdTimer,
-};
+export { default as API } from "./API.js"
+export { getTimestamp } from "./getTimestamp.js"
+export { parseSyslogMessage } from "./parseSyslogMessage.js"
+export { isIpAddress } from "./isIpAddress.js"
+export { mdTimer } from "./mdTimer.js"

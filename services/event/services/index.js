@@ -1,25 +1,10 @@
-const { SyslogService } = require("./base/SyslogService");
-const { WebHookService } = require("./base/WebHookService");
-const { BewardService } = require("./BewardService");
-const { BewardServiceDS } = require("./BewardServiceDS");
-const { QtechService } = require("./QtechService");
-const { AkuvoxService } = require("./AkuvoxService");
-const { IsService } = require("./IsService");
-const { RubetekService } = require("./RubetekService");
-const { NonameWebHookService } = require("./NonameWebHookService");
-const { SputnikService } = require("./SputnikService");
-const { OmnyWebHookService } = require("./OmnyWebHookService");
-
-module.exports = {
-    SyslogService,
-    WebHookService,
-    BewardService,
-    BewardServiceDS,
-    QtechService,
-    AkuvoxService,
-    IsService,
-    RubetekService,
-    SputnikService,
-    NonameWebHookService,
-    OmnyWebHookService
-}
+export { SyslogService, WebHookService } from "./base/index.js"
+export { BewardService } from "./BewardService.js";
+export { BewardServiceDS } from "./BewardServiceDS.js";
+export { QtechService } from "./QtechService.js";
+export { AkuvoxService } from "./AkuvoxService.js";
+export { IsService } from "./IsService.js";
+export { RubetekService } from "./RubetekService.js";
+export { NonameWebHookService } from "./NonameWebHookService.js";
+export { SputnikService } from "./SputnikService.js";
+export { OmnyWebHookService } from "./OmnyWebHookService.js";

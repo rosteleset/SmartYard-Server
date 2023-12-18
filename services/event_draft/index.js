@@ -1,28 +1,26 @@
-import { config } from "./config.js";
-import {
-    AkuvoxService,
+const { hw } = require("./config.json");
+const {
     BewardService,
     BewardServiceDS,
-    IsService,
-    NonameWebHookService,
-    OmnyWebHookService,
     QtechService,
+    AkuvoxService,
+    IsService,
     RubetekService,
-    SputnikService
-} from "./services/index.js";
-import {
-    SERVICE_AKUVOX,
+    NonameWebHookService,
+    SputnikService,
+    OmnyWebHookService
+} = require("./services")
+const {
     SERVICE_BEWARD,
     SERVICE_BEWARD_DS,
-    SERVICE_IS,
-    SERVICE_NONAME_WEBHOOK,
-    SERVICE_OMNY,
     SERVICE_QTECH,
+    SERVICE_AKUVOX,
+    SERVICE_IS,
     SERVICE_RUBETEK,
-    SERVICE_SPUTNIK
-} from "./constants.js";
-
-const { hw } = config;
+    SERVICE_NONAME_WEBHOOK,
+    SERVICE_SPUTNIK,
+    SERVICE_OMNY
+} = require("./constants")
 
 const serviceParam = process.argv[2]?.toLowerCase();
 
@@ -32,7 +30,7 @@ if (!serviceParam) {
 }
 
 if (!hw[serviceParam]) {
-    console.error(`Unit: "${ serviceParam }" not defined in config file: config.json`)
+    console.error(`Unit: "${serviceParam}" not defined in config file: config.json`)
     process.exit(1);
 }
 
@@ -82,7 +80,7 @@ switch (serviceParam) {
 
     case SERVICE_SPUTNIK:
         if (!serviceConfig.apiEndpoint) {
-            console.error(`Unit: "${ serviceParam }" not defined apiEndpoint in config file: config.json`)
+            console.error(`Unit: "${serviceParam}" not defined apiEndpoint in config file: config.json`)
             process.exit(1);
         }
         const sputnikService = new SputnikService(SERVICE_SPUTNIK, serviceConfig)

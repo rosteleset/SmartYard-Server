@@ -1,5 +1,7 @@
-import { WebHookService } from "./index.js";
-import { API, getTimestamp, mdTimer } from "../utils/index.js";
+const {WebHookService} = require("./base/WebHookService");
+const {getTimestamp} = require("../utils/getTimestamp");
+const API = require("../utils/API");
+const {mdTimer} = require("../utils");
 
 class SputnikService extends WebHookService {
     constructor(unit, config) {
@@ -39,12 +41,7 @@ class SputnikService extends WebHookService {
                     break;
                 // FIXME: currently triggered when the door is opened using the API
                 case 'intercom.open_door': // Opening a door by DTMF code
-                    await API.setRabbitGates({
-                        date: now,
-                        ip: null,
-                        subId: deviceId,
-                        apartmentNumber: parseInt(payload?.flat)
-                    });
+                    await API.setRabbitGates({date: now, ip: null, subId: deviceId, apartmentNumber: parseInt(payload?.flat)});
                     break;
 
                 case 'intercom.key': // Opening a door by RFID key
@@ -63,7 +60,7 @@ class SputnikService extends WebHookService {
                     }
                     break;
 
-                case 'intercom.exit-button': // Opening the main door by button pressed
+                case 'intercom.exit-button': // Opening main door by button pressed
                     await API.openDoor(
                         {
                             date: now,
@@ -95,4 +92,4 @@ class SputnikService extends WebHookService {
     }
 }
 
-export { SputnikService }
+module.exports = { SputnikService }
