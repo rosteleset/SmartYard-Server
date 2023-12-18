@@ -36,7 +36,7 @@ class AkuvoxService extends SyslogService {
         //  Motion detection: start
         if (msg.indexOf("Requst SnapShot") >= 0) {
             await API.motionDetection({date: now, ip: host, motionActive: true});
-            await mdTimer({ ip: host });
+            await mdTimer({ip: host});
         }
 
         //  Opening a door by DTMF

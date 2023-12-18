@@ -1,8 +1,8 @@
 import syslogServer from "syslog-server";
-import { API, getTimestamp, parseSyslogMessage, isIpAddress} from "../../utils/index.js";
-import {config } from "../../config.js"
+import { API, getTimestamp, isIpAddress, parseSyslogMessage } from "../../utils/index.js";
+import { config } from "../../config.js"
 
-const { topology } = config;
+const {topology} = config;
 const mode = process.env.NODE_ENV || "";
 
 class SyslogService {
@@ -38,15 +38,15 @@ class SyslogService {
      * @returns {Promise<void>}
      */
     async sendToSyslogStorage(now, host, msg) {
-        await API.sendLog({ date: now, ip: host, unit: this.unit, msg });
+        await API.sendLog({date: now, ip: host, unit: this.unit, msg});
     }
 
     createSyslogServer() {
         const syslog = new syslogServer();
 
-        syslog.on("message", async ({ date, host, message }) => {
+        syslog.on("message", async ({date, host, message}) => {
             const now = getTimestamp(date);// Get server timestamp
-            let { hostname: addressFromMessageBody, message: msg } = parseSyslogMessage(message);
+            let {hostname: addressFromMessageBody, message: msg} = parseSyslogMessage(message);
 
             //  Check hostname from syslog message body
             if (topology?.nat && isIpAddress(addressFromMessageBody)) {
@@ -58,8 +58,8 @@ class SyslogService {
              *      - refactor syslog parser for BSD syslog messages.
              *      - temporarily use handler
              */
-            if(!msg){
-                console.error("Parse message failed: "+message);
+            if (!msg) {
+                console.error("Parse message failed: " + message);
                 return
             }
 
@@ -82,7 +82,7 @@ class SyslogService {
             console.error(err.message);
         });
 
-        syslog.start({ port: this.config.port }).then(() => {
+        syslog.start({port: this.config.port}).then(() => {
             console.log(`${this.unit.toUpperCase()} syslog server running on UDP port ${this.config.port} || NAT is ${topology?.nat || false} || mode: ${mode}`);
         });
     }

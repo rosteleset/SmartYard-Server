@@ -11,10 +11,6 @@ const internalAPI = axios.create({
     baseURL: internal, withCredentials: true, responseType: "json", httpsAgent: agent
 });
 
-// const internalAPI = axios.create({
-//   baseURL: internal,
-// });
-
 class API {
 
     /**
@@ -107,7 +103,7 @@ class API {
             apartmentNumber = 0,
             apartmentId = 0,
         },
-        ) {
+    ) {
         try {
             return await internalAPI.post("/actions/setRabbitGates", {
                 date,

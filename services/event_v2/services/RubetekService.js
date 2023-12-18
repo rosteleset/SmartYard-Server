@@ -16,7 +16,7 @@ class RubetekService extends SyslogService {
         // Motion detection (face detection): start
         if (msgParts[2] === 'The face was detected and sent to the server') {
             await API.motionDetection({date: now, ip: host, motionActive: true});
-            await mdTimer({ ip: host });
+            await mdTimer({ip: host});
         }
 
         // Call start
@@ -44,7 +44,7 @@ class RubetekService extends SyslogService {
             }
         }
 
-        // Opening door by RFID key
+        // Opening a door by RFID key
         if (msgParts[3] === 'Access allowed by public RFID') {
             let door = 0;
             const rfid = msgParts[2].padStart(14, 0);
@@ -56,13 +56,13 @@ class RubetekService extends SyslogService {
             await API.openDoor({date: now, ip: host, door: door, detail: rfid, by: "rfid"});
         }
 
-        // Opening door by personal code
+        // Opening a door by personal code
         if (msgParts[4] === 'Access allowed by apartment code') {
             const code = parseInt(msgParts[2]);
             await API.openDoor({date: now, ip: host, detail: code, by: "code"});
         }
 
-        // Opening door by button pressed
+        // Opening a door by button pressed
         if (msgParts[3] === 'Exit button pressed') {
             let door = 0;
             let detail = "main";
@@ -81,6 +81,7 @@ class RubetekService extends SyslogService {
             await API.openDoor({date: now, ip: host, door: door, detail: detail, by: "button"});
         }
 
+        // TODO: check
         // All calls are done
         if (true) {
 

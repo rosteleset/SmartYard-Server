@@ -1,7 +1,7 @@
 // example webhook service
 import { WebHookService } from "./index.js";
 
-class NonameWebHookService  extends  WebHookService{
+class NonameWebHookService extends WebHookService {
     constructor(unit, config) {
         super(unit, config)
     }
@@ -15,7 +15,7 @@ class NonameWebHookService  extends  WebHookService{
 
     }
 
-    async getEventHandler (req, data){
+    async getEventHandler(req, data) {
         console.log("getEventHandler data >>>");
 
         const sourceIPAddress = req.connection.remoteAddress

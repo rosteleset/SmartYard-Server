@@ -1,25 +1,25 @@
-import  { config } from "./config.js";
-import  {
+import { config } from "./config.js";
+import {
+    AkuvoxService,
     BewardService,
     BewardServiceDS,
-    QtechService,
-    AkuvoxService,
     IsService,
-    RubetekService,
     NonameWebHookService,
-    SputnikService,
-    OmnyWebHookService
+    OmnyWebHookService,
+    QtechService,
+    RubetekService,
+    SputnikService
 } from "./services/index.js";
 import {
+    SERVICE_AKUVOX,
     SERVICE_BEWARD,
     SERVICE_BEWARD_DS,
-    SERVICE_QTECH,
-    SERVICE_AKUVOX,
     SERVICE_IS,
-    SERVICE_RUBETEK,
     SERVICE_NONAME_WEBHOOK,
-    SERVICE_SPUTNIK,
-    SERVICE_OMNY
+    SERVICE_OMNY,
+    SERVICE_QTECH,
+    SERVICE_RUBETEK,
+    SERVICE_SPUTNIK
 } from "./constants.js";
 
 const { hw } = config;
@@ -32,7 +32,7 @@ if (!serviceParam) {
 }
 
 if (!hw[serviceParam]) {
-    console.error(`Unit: "${serviceParam}" not defined in config file: config.json`)
+    console.error(`Unit: "${ serviceParam }" not defined in config file: config.json`)
     process.exit(1);
 }
 
@@ -82,7 +82,7 @@ switch (serviceParam) {
 
     case SERVICE_SPUTNIK:
         if (!serviceConfig.apiEndpoint) {
-            console.error(`Unit: "${serviceParam}" not defined apiEndpoint in config file: config.json`)
+            console.error(`Unit: "${ serviceParam }" not defined apiEndpoint in config file: config.json`)
             process.exit(1);
         }
         const sputnikService = new SputnikService(SERVICE_SPUTNIK, serviceConfig)
