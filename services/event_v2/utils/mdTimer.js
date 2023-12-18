@@ -1,4 +1,4 @@
-import API from "./API.js";
+import { API } from "./index.js";
 import { getTimestamp } from "./getTimestamp.js";
 
 const mdStorage = {};
