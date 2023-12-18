@@ -51,6 +51,7 @@
 
         /**
          * Load backend 'households'
+         * @param string $backend
          * @return void
          */
         private function loadBackend($backend = 'households'): void
@@ -174,10 +175,53 @@
             // validate in enable SIP service for flat
             if ($sipEnabled) {
                 $ha1 = md5($subscriber .':'. KAMAILIO_DOMAIN .':'. $sipPassword);//md5(username:realm:password)
-                response(200, ['ha1'=>$ha1]);
+                response(200, ['ha1' => $ha1]);
             } else {
                 response(403, false, false, 'SIP Not Enabled');
             }
+        }
+
+        public function checkSipExtension(int $extension): void
+        {
+            $indoorPattern = '/^4\d{9}$/';
+            $outdoorPattern = '/^1\d{5}$/';
+
+            if (preg_match($indoorPattern, $extension)){
+                $credential = $this->getIndoorIntercomCredentials($extension);
+                if ($credential) {
+                    //  generate hash and return
+                } else {
+                    // return err
+                }
+            } elseif ( preg_match($outdoorPattern, $extension)){
+                // get sip outdoor intercom credentials
+            } else {
+                response(400, false, false, 'Invalid Received Subscriber UserName');
+                exit(1);
+            }
+        }
+
+        public function getIndoorIntercomCredentials(int $extension)
+        {
+            $flat_id = (int)substr($extension, 1);
+            ['sipEnabled' => $sipEnabled, 'sipPassword' => $sipPassword] = $this->backend->getFlat($flat_id);
+
+            if ($sipEnabled) {
+                return $sipPassword;
+            } else {
+                return false;
+            }
+        }
+
+        public function getOutdoorIntercomCredentials(int $extension)
+        {
+            // get outdoor intercom password
+
+        }
+
+        public function generateHash($subscriber, $domain, $password)
+        {
+            return md5($subscriber . ':' . $domain . ':' . $password);//md5(username:realm:password)
         }
 
         /**
