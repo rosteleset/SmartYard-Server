@@ -1,5 +1,4 @@
-import { API } from "./index.js";
-import { getTimestamp } from "./getTimestamp.js";
+import { API, getTimestamp } from "./index.js";
 
 const mdStorage = {};
 
@@ -12,7 +11,7 @@ const mdStorage = {};
  */
 const mdStop = async (deviceId, ip, subId) => {
     const now = getTimestamp(new Date());
-    await API.motionDetection({date: now, ip, subId, motionActive: false});
+    await API.motionDetection({ date: now, ip, subId, motionActive: false });
     delete mdStorage[deviceId];
 }
 

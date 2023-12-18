@@ -1,4 +1,5 @@
-import { config } from "./config.js";
+// import { config } from "./config.js";
+import config from "./config.json" assert { type: "json"}
 import {
     AkuvoxService,
     BewardService,
@@ -32,7 +33,7 @@ if (!serviceParam) {
 }
 
 if (!hw[serviceParam]) {
-    console.error(`Unit: "${ serviceParam }" not defined in config file: config.js`)
+    console.error(`Unit: "${ serviceParam }" not defined in config file: config.json`)
     process.exit(1);
 }
 

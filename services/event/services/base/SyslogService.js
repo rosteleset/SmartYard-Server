@@ -1,6 +1,6 @@
 import syslogServer from "syslog-server";
 import { API, getTimestamp, isIpAddress, parseSyslogMessage } from "../../utils/index.js";
-import { config } from "../../config.js"
+import config from "../../config.json" assert { type: "json"}
 
 const { topology } = config;
 const mode = process.env.NODE_ENV || "";

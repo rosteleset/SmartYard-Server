@@ -1,5 +1,5 @@
-const API = require("./API");
-const { getTimestamp } = require("./getTimestamp");
+const API = require("./index.js");
+const { getTimestamp } = require("./index.js");
 
 class MotionDetector {
     constructor() {

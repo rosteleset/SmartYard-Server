@@ -2,7 +2,7 @@ import axios from "axios";
 import https from "https";
 import { getTimestamp } from "./index.js";
 import { EVENT } from "../constants.js";
-import { config } from "../config.js"; //FIXME: update config import
+import config from "../config.json" assert { type: "json"}
 
 const { api: { internal }, clickhouse } = config;
 const agent = new https.Agent({ rejectUnauthorized: false });

@@ -1,4 +1,3 @@
-// const { SyslogService } = require("./base/SyslogService")
 import { SyslogService } from "./index.js";
 import { API, mdTimer } from "../utils/index.js";
 
