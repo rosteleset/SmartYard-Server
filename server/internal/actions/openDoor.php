@@ -5,7 +5,7 @@
     */
 
     /*
-     * TODO: refactor events code ?!
+     * TODO: refactor events code, move to global constants?
      * Define Events
      */
     $events = [
@@ -20,7 +20,7 @@
     ];
 
     if (!isset($postdata["ip"]) && !isset($postdata["subId"])) {
-        response(406, "Invalid payload");
+        response(406, false, false, "Invalid payload");
         exit();
     }
 
@@ -30,7 +30,7 @@
         $postdata["door"],
         $postdata["detail"],
     )) {
-        response(406, "Invalid payload");
+        response(406, false, false, "Invalid payload");
         exit();
     }
 
@@ -73,7 +73,7 @@
                                 WHERE (ip = :ip OR sub_id = :sub_id) AND domophone_output = :door)',
                 ["ip" => $ip, "sub_id" => $subId, "door" => $door]);
 
-            if ($result && $result[0]) {
+            if ($result[0]) {
                 ["camera_id" => $streamId, "frs" => $frsUrl] = $result[0];
                 if (isset($frsUrl)) {
                     $payload = ["streamId" => strval($streamId)];
