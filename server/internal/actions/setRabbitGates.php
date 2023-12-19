@@ -24,6 +24,7 @@
         "date" => $date,
     ] = $postdata;
 
+    //FIXME: move SQL request to backend 'helpers'
     $query = "UPDATE houses_flats SET last_opened = :last_opened
         WHERE (flat = :flat OR house_flat_id = :house_flat_id) AND white_rabbit > 0 AND address_house_id = (
         SELECT address_house_id from houses_houses_entrances 

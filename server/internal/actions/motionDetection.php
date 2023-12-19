@@ -1,5 +1,5 @@
 <?php
-    /** Get ip motion detection device, find stream_id and frs url.
+    /** Get an ip motion detection device, find stream_id and frs url.
      * Send POST request to FRS.
      */
     if (!isset($postdata["date"], $postdata["motionActive"])) {

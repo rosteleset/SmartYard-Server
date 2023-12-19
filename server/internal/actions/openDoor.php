@@ -1,7 +1,7 @@
 <?php
     /*
      * Store events to db plog_door_open.
-     * "freeze motion detection" request for SRS
+     * "Freeze motion detection" request for SRS
     */
 
     /*
@@ -29,7 +29,7 @@
         $postdata["event"],
         $postdata["door"],
         $postdata["detail"],
-      )) {
+    )) {
         response(406, "Invalid payload");
         exit();
     }
@@ -61,27 +61,28 @@
             break;
 
         case $events['OPEN_BY_BUTTON']:
+            //FIXME: move SQL request to backend 'helpers'
+
             /* "Host-->FRS | Event: open door by button.
             send request to FRS for "freeze motion detection" on this entry"
             */
-            [0 => [
-                "camera_id" => $streamId,
-                "frs" => $frsUrl
-            ]] = $db->get('SELECT frs, camera_id FROM cameras 
-                        WHERE camera_id = (
-                        SELECT camera_id FROM houses_domophones 
-                        LEFT JOIN houses_entrances USING (house_domophone_id)
-                        WHERE (ip = :ip OR sub_id = :sub_id) AND domophone_output = :door)',
+            $result = $db->get('SELECT frs, camera_id FROM cameras 
+                                WHERE camera_id = (
+                                SELECT camera_id FROM houses_domophones 
+                                LEFT JOIN houses_entrances USING (house_domophone_id)
+                                WHERE (ip = :ip OR sub_id = :sub_id) AND domophone_output = :door)',
                 ["ip" => $ip, "sub_id" => $subId, "door" => $door]);
 
-            if (isset($frsUrl)){
-                $payload = ["streamId" => strval($streamId)];
-                $apiResponse = apiExec("POST", $frsUrl . "/api/doorIsOpen", $payload);
-                response(201, $apiResponse);
+            if ($result && $result[0]) {
+                ["camera_id" => $streamId, "frs" => $frsUrl] = $result[0];
+                if (isset($frsUrl)) {
+                    $payload = ["streamId" => strval($streamId)];
+                    $apiResponse = apiExec("POST", $frsUrl . "/api/doorIsOpen", $payload);
+                    response(201, $apiResponse);
+                }
+            } else {
+                response(204);
             }
-
-            response(200);
             break;
     }
-
     exit();
