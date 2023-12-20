@@ -142,7 +142,8 @@
             ],
             "stub": {
                 "payment_require_url": "https://video.server.hostname:8443/stub_payment_require",
-                "service_url": "https://video.server.hostname:8443/stub_service"
+                "service_url": "https://video.server.hostname:8443/stub_service",
+                "fallback_url": "https://video.server.hostname:8443/fallback"
             }
         },
 

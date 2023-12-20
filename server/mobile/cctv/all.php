@@ -32,26 +32,33 @@ $households = loadBackend("households");
 $cameras = loadBackend("cameras");
 
 $houses = [];
-$stub_payment_require = $config['backends']['dvr']['stub']['payment_require_url'];
-$stub_service = $config['backends']['dvr']['stub']['service_url'];
+$stub_payment_require = $config['backends']['dvr']['stub']['payment_require_url'];  // stub if flat is blocked
+$stub_service = $config['backends']['dvr']['stub']['service_url'];                  // stub if camera  disabled
+$stub_fallback = $config['backends']['dvr']['stub']['fallback_url'];                    // stub if set not valid DVR url
 
 /**
- * replace DVR URL if
+ * TODO: refactor stub vars usage
+ * replace DVR url handler.
  * - flat blocked: stub service requires payment
  * - there is no DVR or the camera is disabled: the plug is undergoing technical work
  * @param array $cams
  * @param bool $flatIsBlocked
  * @param string $stub_payment_url
  * @param string $stub_service_url
+ * @param string $stub_fallback
  * @return array
  */
-function replace_url(array $cams, bool $flatIsBlocked, string $stub_payment_url, string $stub_service_url ): array
+function replace_url(array $cams, bool $flatIsBlocked, string $stub_payment_url, string $stub_service_url, string $stub_fallback ): array
 {
     $result = [];
     foreach ($cams as $cam) {
-        //check if stream enabled or set correct url
-        if ($cam['enabled'] === 0 || filter_var($cam['dvrStream'], FILTER_VALIDATE_URL) !== false) {
+        //check if stream enabled
+        if ($cam['enabled'] === 0) {
             $cam['dvrStream'] = $stub_service_url;
+        }
+        // check the correct DVR url
+        if (filter_var($cam['dvrStream'], FILTER_VALIDATE_URL) === false) {
+            $cam['dvrStream'] = $stub_fallback;
         }
         //check flat is blocked
         if ($flatIsBlocked ) {
@@ -103,6 +110,7 @@ foreach($subscriber['flats'] as $flat) {
         $flatIsBlock,
         $stub_payment_require,
         $stub_service,
+        $stub_fallback
     );
     
 }
