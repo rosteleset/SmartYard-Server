@@ -32,10 +32,35 @@ $households = loadBackend("households");
 $cameras = loadBackend("cameras");
 
 $houses = [];
+$stub_payment_require = $config['backends']['dvr']['stub']['payment_require_url'];
+$stub_service = $config['backends']['dvr']['stub']['service_url'];
+
+function replace_url($cams, $is_blocked, $stub_payment_url, $stub_service_url ): array
+{
+    $result = [];
+    foreach ($cams as $cam) {
+        // v1
+        $cam['enabled'] === 0 && $cam['dvrStream'] = $stub_service_url;
+        $is_blocked && $cam['dvrStream'] = $stub_payment_url;
+
+        // v2
+//        if ($cam['enabled'] === 0) {
+//            $cam['dvrStream'] = $stub_service_url;
+//        }
+//        if ($is_blocked ) {
+//            $cam['dvrStream'] = $stub_payment_url;
+//        }
+
+        $result[] = $cam;
+    }
+    return $result;
+};
 
 foreach($subscriber['flats'] as $flat) {
     $houseId = $flat['addressHouseId'];
-    
+    $flatDetail = $households->getFlat($flat['flatId']);
+    $flatIsBlock = $flatDetail['adminBlock'] || $flatDetail['manualBlock'] || $flatDetail['autoBlock'];
+
     if (array_key_exists($houseId, $houses)) {
         $house = &$houses[$houseId];
         
@@ -47,10 +72,9 @@ foreach($subscriber['flats'] as $flat) {
         $house['cameras'] = $households->getCameras("houseId", $houseId);
         $house['doors'] = [];
     }
-    
+
     $house['cameras'] = array_merge($house['cameras'], $households->getCameras("flatId", $flat['flatId']));
 
-    $flatDetail = $households->getFlat($flat['flatId']);
     foreach ($flatDetail['entrances'] as $entrance) {
         if (array_key_exists($entrance['entranceId'], $house['doors'])) {
             continue;
@@ -67,6 +91,16 @@ foreach($subscriber['flats'] as $flat) {
         $house['doors'][$entrance['entranceId']] = $door;
         
     }
+
+    /**
+     * Change the URL in case the flat is locked or the camera is disabled
+     */
+    $house['cameras'] = replace_url(
+        $house['cameras'],
+        $flatIsBlock,
+        $stub_payment_require,
+        $stub_service,
+    );
     
 }
 $ret = [];
