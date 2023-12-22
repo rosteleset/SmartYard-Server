@@ -21,7 +21,7 @@
          * @param string $backend
          * @return void
          */
-        private function loadBackend($backend = 'households'): void
+        private function loadBackend(string $backend = 'households'): void
         {
             $this->backend = loadBackend($backend);
 
@@ -79,15 +79,16 @@
             }
 
             // Handler Kamailio sip server REGISTER request
-            if ($request_method === 'POST' && $path === 'subscriber/hash') {
-                $this->auth();
-                [$subscriber, $sipDomain] = explode('@', explode(':', $postData['from_uri'])[1]);
-
-                $this->getSubscriberHash($subscriber, $sipDomain);
-            }
+//            if ($request_method === 'POST' && $path === 'subscriber/hash') {
+//                $this->auth();
+//                [$subscriber, $sipDomain] = explode('@', explode(':', $postData['from_uri'])[1]);
+//
+//                $this->getSubscriberHash($subscriber, $sipDomain);
+//            }
 
             //FIXME, test new feature ⚡
-            if ($request_method === 'POST' && $path === 'subscriber/hash2') {
+            // Handle SIP REGISTER message
+            if ($request_method === 'POST' && $path === 'subscriber/hash') {
                 $this->auth();
                 [$subscriber, $sipDomain] = explode('@', explode(':', $postData['from_uri'])[1]);
                 $this->handleExtension($subscriber, $sipDomain);
@@ -203,7 +204,7 @@
          *
          * @return void
          */
-        public function handleExtension(int $extension, string $sipDomain): void
+        private function handleExtension(int $extension, string $sipDomain): void
         {
             $sipDomain = $this->checkSipDomain($sipDomain);// validate SIP domain
             $indoorPattern = '/^4\d{9}$/';//  indoor SIP intercom extension pattern 4000000000
