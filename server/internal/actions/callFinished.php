@@ -1,7 +1,7 @@
 <?php
-    // store events to db plog_call_done
+    // store events to db 'plog_call_done'
     if (!isset($postdata["date"]) || !isset($postdata["ip"]) && !isset($postdata["subId"])) {
-        response(406, "Invalid payload");
+        response(406, false, false, "Invalid payload");
         exit();
     }
 
