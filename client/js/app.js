@@ -298,14 +298,19 @@ function whoAmI(force) {
             myself.phone = _me.user.phone;
             myself.webRtcExtension = _me.user.webRtcExtension;
             myself.webRtcPassword = _me.user.webRtcPassword;
+            myself.groups = [];
             if (_me.user.groups) {
                 for (let i in _me.user.groups) {
                     if (_me.user.groups[i].acronym == _me.user.primaryGroupAcronym) {
                         myself.primaryGroupName = _me.user.groups[i].name;
                     }
+                    myself.groups.push({
+                        "acronym": _me.user.groups[i].acronym,
+                        "adminLogin": _me.user.groups[i].adminLogin,
+                        "name": _me.user.groups[i].name,
+                    });
                 }
             }
-            myself.groups = _me.user.groups;
             if (_me.user.defaultRoute) {
                 config.defaultRoute = _me.user.defaultRoute;
             }
