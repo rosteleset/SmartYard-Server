@@ -305,6 +305,7 @@ function whoAmI(force) {
                     }
                 }
             }
+            myself.groups = _me.user.groups;
             if (_me.user.defaultRoute) {
                 config.defaultRoute = _me.user.defaultRoute;
             }
