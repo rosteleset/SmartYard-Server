@@ -1,6 +1,8 @@
 <?php
     namespace Kamailio;
 
+    use api\accounts\password;
+
     class Kamailio
     {
         private mixed $backend;
@@ -116,6 +118,12 @@
                 $this->getSubscriberHash($subscriber, $sipDomain);
             }
 
+            if ($request_method === 'POST' && $path === 'subscriber/hash2'){
+                $this->auth();
+                [$subscriber, $sipDomain] = explode('@', explode(':', $postData['from_uri'])[1]);
+                $this->checkSipExtension($subscriber, $sipDomain);
+            }
+
             /**
              *  remove GET handler after test methods
              *  TODO:
@@ -170,6 +178,7 @@
             }
 
             $flat_id = (int)substr($subscriber, 1);
+//            $this->loadBackend('households');
             ['sipEnabled' => $sipEnabled, 'sipPassword' => $sipPassword] = $this->backend->getFlat($flat_id);
 
             // validate in enable SIP service for flat
@@ -181,20 +190,49 @@
             }
         }
 
-        public function checkSipExtension(int $extension): void
+        private function checkSipDomain($sipDomain)
         {
-            $indoorPattern = '/^4\d{9}$/';
-            $outdoorPattern = '/^1\d{5}$/';
+            define("KAMAILIO_DOMAIN", $this->kamailioConf['domain']);
+            // validate 'sip domain' field extension@your-sip-domain
+            if ($sipDomain !== KAMAILIO_DOMAIN) {
+                response(400, false, false, 'Invalid Received Sip Domain');
+                exit(1);
+            } else {
+                return $sipDomain;
+            }
+
+        }
+
+        public function checkSipExtension(int $extension, $sipDomain): void
+        {
+            $sipDomain = $this->checkSipDomain($sipDomain);
+
+            $indoorPattern = '/^4\d{9}$/'; //  indoor SIP intercom extension pattern 4000000000
+            $outdoorPattern = '/^1\d{5}$/'; // outdoor SIP intercom extension pattern 100000
 
             if (preg_match($indoorPattern, $extension)){
                 $credential = $this->getIndoorIntercomCredentials($extension);
                 if ($credential) {
                     //  generate hash and return
+                    $ha1 = $this->generateHash($extension, $sipDomain, $credential );
+                    response(200, ['ha1' => $ha1]);
                 } else {
                     // return err
+                    response(404);
                 }
+                exit(1);
             } elseif ( preg_match($outdoorPattern, $extension)){
                 // get sip outdoor intercom credentials
+                $credential = $this->getOutdoorIntercomCredentials($extension);
+
+                if ($credential) {
+                    $ha1 = $this->generateHash($extension, $sipDomain, $credential);
+                    response(200, ['ha1' => $ha1]);
+                }
+                else {
+                    response(404);
+                }
+
             } else {
                 response(400, false, false, 'Invalid Received Subscriber UserName');
                 exit(1);
@@ -216,7 +254,15 @@
         public function getOutdoorIntercomCredentials(int $extension)
         {
             // get outdoor intercom password
-
+            $result = $this->backend->getDomophone((int)substr($extension, 1));
+            if ($result){
+                ['enabled' => $enabled, 'credentials' => $credentials] = $result;
+                if ($enabled) {
+                    return $credentials;
+                } else {
+                    return  false;
+                }
+            }
         }
 
         public function generateHash($subscriber, $domain, $password)
