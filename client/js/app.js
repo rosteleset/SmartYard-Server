@@ -292,6 +292,7 @@ function whoAmI(force) {
         if (_me && _me.user) {
             $(".myNameIs").attr("title", _me.user.realName?_me.user.realName:_me.user.login);
             myself.uid = _me.user.uid;
+            myself.login = _me.user.login;
             myself.realName = _me.user.realName;
             myself.eMail = _me.user.eMail;
             myself.phone = _me.user.phone;
