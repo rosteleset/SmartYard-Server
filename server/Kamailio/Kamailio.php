@@ -1,7 +1,8 @@
 <?php
+
     namespace Kamailio;
 
-    use api\accounts\password;
+    use JetBrains\PhpStorm\NoReturn;
 
     class Kamailio
     {
@@ -13,42 +14,6 @@
         {
             $this->loadBackend();
             $this->loadKamailioConfiguration();
-        }
-
-        private function getAuthorizationHeader(): ?string
-        {
-            $headers = null;
-            if (isset($_SERVER['Authorization'])) {
-                $headers = trim($_SERVER['Authorization']);
-            }
-            else if (isset($_SERVER['HTTP_AUTHORIZATION'])) {
-                $headers = trim($_SERVER['HTTP_AUTHORIZATION']);
-            }
-            return $headers;
-        }
-
-        private function getBearerToken(): ?string
-        {
-            $headers = $this->getAuthorizationHeader();
-            if (!empty($headers) && preg_match('/Bearer\s(\S+)/', $headers, $matches)) {
-                return $matches[1];
-            }
-            return null;
-        }
-
-        /**
-         * Get Bearer token
-         * @return void
-         */
-        private function auth(): void
-        {
-            $receive_token = $this->getBearerToken();
-            $token = $this->kamailioConf['auth_token'];
-
-            if(!$receive_token || $receive_token !== $token){
-                $this->reply(498, null, null, 'Invalid token or empty');
-                exit(1);
-            }
         }
 
         /**
@@ -67,6 +32,21 @@
         }
 
         /**
+         * Replies with a custom response using the provided parameters.
+         *
+         * @param int $code The HTTP status code for the response.
+         * @param mixed $data Additional data for the response (default: false).
+         * @param mixed $name Additional name for the response (default: false).
+         * @param mixed $message Additional message for the response (default: false).
+         *
+         * @return void
+         */
+        public function reply(int $code, $data = false, $name = false, $message = false): void
+        {
+            response($code, $data, $name, $message);
+        }
+
+        /**
          * TODO: refactor use multiple servers
          * @return void
          */
@@ -78,18 +58,6 @@
                     $this->kamailioConf = $server;
                 }
             }
-        }
-
-        private function makeKamailioRpcUrl(): void
-        {
-            // make kamailio JSON RPC url example: http://example-host.com:8080/RPC';
-            [
-                'rpc_interface' => $kamailio_address,
-                'rpc_port' => $kamailio_rpc_port,
-                'rpc_path' => $kamailio_rpc_path,
-            ] = $this->kamailioConf;
-
-            $this->kamailioRpcUrl = 'http://'.$kamailio_address.':'.$kamailio_rpc_port.'/'.$kamailio_rpc_path;
         }
 
         public function handleRequest(): void
@@ -119,10 +87,10 @@
             }
 
             //FIXME, test new feature ⚡
-            if ($request_method === 'POST' && $path === 'subscriber/hash2'){
+            if ($request_method === 'POST' && $path === 'subscriber/hash2') {
                 $this->auth();
                 [$subscriber, $sipDomain] = explode('@', explode(':', $postData['from_uri'])[1]);
-                $this->checkSipExtension($subscriber, $sipDomain);
+                $this->handleExtension($subscriber, $sipDomain);
             }
 
             /**
@@ -135,17 +103,17 @@
              *      -   removeRegistration()
              *      -   pingSubscriber()
              */
-            if ($request_method === 'GET'){
+            if ($request_method === 'GET') {
                 $this->makeKamailioRpcUrl();
                 $path = explode('/', $path);
 
                 // getSubscriberStatus
-                if (sizeof($path) === 2 && $path[0] === 'subscriber' && (strlen((int)$path[1]) === 10)){
+                if (sizeof($path) === 2 && $path[0] === 'subscriber' && (strlen((int)$path[1]) === 10)) {
                     $subscriber = $path[1];
                     $this->getSubscriberStatus($subscriber);
-               }
+                }
 
-                if ($path[0] === 'subscribers'){
+                if ($path[0] === 'subscribers') {
                     $this->getAllSubscriberStatus();
                 }
             }
@@ -153,6 +121,42 @@
             response(400);
             exit(1);
         }
+
+        /**
+         * Get Bearer token
+         * @return void
+         */
+        private function auth(): void
+        {
+            $receive_token = $this->getBearerToken();
+            $token = $this->kamailioConf['auth_token'];
+
+            if (!$receive_token || $receive_token !== $token) {
+                $this->reply(498, null, null, 'Invalid token or empty');
+                exit(1);
+            }
+        }
+
+        private function getBearerToken(): ?string
+        {
+            $headers = $this->getAuthorizationHeader();
+            if (!empty($headers) && preg_match('/Bearer\s(\S+)/', $headers, $matches)) {
+                return $matches[1];
+            }
+            return null;
+        }
+
+        private function getAuthorizationHeader(): ?string
+        {
+            $headers = null;
+            if (isset($_SERVER['Authorization'])) {
+                $headers = trim($_SERVER['Authorization']);
+            } else if (isset($_SERVER['HTTP_AUTHORIZATION'])) {
+                $headers = trim($_SERVER['HTTP_AUTHORIZATION']);
+            }
+            return $headers;
+        }
+        //NOTE: :
 
         /**
          * Generates a hash value for the provided subscriber and SIP domain.
@@ -173,22 +177,64 @@
 
             // validate subscriber extension mask
             //TODO: add regexp for check extension
-            if (strlen((int)$subscriber) !== 10 ) {
+            if (strlen((int)$subscriber) !== 10) {
                 response(400, false, false, 'Invalid Received Subscriber UserName');
                 exit(1);
             }
 
             $flat_id = (int)substr($subscriber, 1);
-//            $this->loadBackend('households');
+    //            $this->loadBackend('households');
             ['sipEnabled' => $sipEnabled, 'sipPassword' => $sipPassword] = $this->backend->getFlat($flat_id);
 
             // validate in enable SIP service for flat
             if ($sipEnabled) {
-                $ha1 = md5($subscriber .':'. KAMAILIO_DOMAIN .':'. $sipPassword);//md5(username:realm:password)
+                $ha1 = md5($subscriber . ':' . KAMAILIO_DOMAIN . ':' . $sipPassword);//md5(username:realm:password)
                 $this->reply(200, ['ha1' => $ha1]);
             } else {
                 $this->reply(403, false, false, 'SIP Not Enabled');
             }
+        }
+
+        /**
+         * Validates and handles SIP extension based on predefined patterns.
+         *
+         * @param int $extension SIP extension
+         * @param string $sipDomain SIP domain.
+         *
+         * @return void
+         */
+        public function handleExtension(int $extension, string $sipDomain): void
+        {
+            $sipDomain = $this->checkSipDomain($sipDomain);// validate SIP domain
+            $indoorPattern = '/^4\d{9}$/';//  indoor SIP intercom extension pattern 4000000000
+            $outdoorPattern = '/^1\d{5}$/';// outdoor SIP intercom extension pattern 100000
+
+            // validate SIP extension
+            if (preg_match($indoorPattern, $extension)) {
+                $credential = $this->getIndoorIntercomCredentials($extension);
+
+                if ($credential) {
+                    $ha1 = $this->generateHash($extension, $sipDomain, $credential);
+                    $this->reply(200, ['ha1' => $ha1]);
+                } else {
+                    $this->reply(403, false, false, 'SIP Not Enabled');
+                }
+
+            }
+            elseif (preg_match($outdoorPattern, $extension)) {
+                $credential = $this->getOutdoorIntercomCredentials($extension);
+
+                if ($credential) {
+                    $ha1 = $this->generateHash($extension, $sipDomain, $credential);
+                    $this->reply(200, ['ha1' => $ha1]);
+                } else {
+                    $this->reply(403, false, false, 'SIP Not Enabled');
+                }
+            }
+            else {
+                $this->reply(400, false, false, 'Invalid Received Subscriber UserName');
+            }
+            exit(1);
         }
 
         private function checkSipDomain($receivedSipDomain)
@@ -204,77 +250,72 @@
 
         }
 
-        public function checkSipExtension(int $extension, $sipDomain): void
-        {
-            $sipDomain = $this->checkSipDomain($sipDomain);
-
-            $indoorPattern = '/^4\d{9}$/'; //  indoor SIP intercom extension pattern 4000000000
-            $outdoorPattern = '/^1\d{5}$/'; // outdoor SIP intercom extension pattern 100000
-
-            if (preg_match($indoorPattern, $extension)){
-                $credential = $this->getIndoorIntercomCredentials($extension);
-                if ($credential) {
-                    //  generate hash and return
-                    $ha1 = $this->generateHash($extension, $sipDomain, $credential );
-                    $this->reply(200, ['ha1' => $ha1]);
-                } else {
-                    // return err
-                    $this->reply(404);
-                }
-                exit(1);
-            } elseif ( preg_match($outdoorPattern, $extension)){
-                // get sip outdoor intercom credentials
-                $credential = $this->getOutdoorIntercomCredentials($extension);
-
-                if ($credential) {
-                    $ha1 = $this->generateHash($extension, $sipDomain, $credential);
-                    $this->reply(200, ['ha1' => $ha1]);
-                }
-                else {
-                    $this->reply(404);
-                }
-
-            } else {
-                $this->reply(400, false, false, 'Invalid Received Subscriber UserName');
-                exit(1);
-            }
-        }
-
-        public function getIndoorIntercomCredentials(int $extension)
+        /**
+         * Get indoor client intercom credentials
+         *
+         * @param int $extension
+         *
+         * @return string|null
+         */
+        public function getIndoorIntercomCredentials(int $extension): ?string
         {
             $flat_id = (int)substr($extension, 1);
-            ['sipEnabled' => $sipEnabled, 'sipPassword' => $sipPassword] = $this->backend->getFlat($flat_id);
+            $result = $this->backend->getFlat($flat_id);
 
-            if ($sipEnabled) {
-                return $sipPassword;
-            } else {
-                return false;
+            if ($result && $result['sipEnabled'] && $result['sipPassword']) {
+                return $result['sipPassword'];
             }
+
+            return null;
         }
 
-        public function getOutdoorIntercomCredentials(int $extension)
-        {
-            // get outdoor intercom password
-            $result = $this->backend->getDomophone((int)substr($extension, 1));
-            if ($result){
-                ['enabled' => $enabled, 'credentials' => $credentials] = $result;
-                if ($enabled) {
-                    return $credentials;
-                } else {
-                    return  false;
-                }
-            }
-        }
-
-        public function generateHash($subscriber, $domain, $password)
+        /**
+         * Generates an MD5 hash for the provided subscriber
+         *
+         * @param string $subscriber The subscriber's username.
+         * @param string $domain The SIP domain.
+         * @param string $password The SIP password.
+         *
+         * @return string The MD5 hash generated using the subscriber, domain, and password.
+         */
+        public function generateHash(string $subscriber, string $domain, string $password): string
         {
             return md5($subscriber . ':' . $domain . ':' . $password);//md5(username:realm:password)
         }
 
         /**
+         * Get outdoor intercom credentials
+         * @param int $extension
+         * @return string|null
+         */
+        public function getOutdoorIntercomCredentials(int $extension): ?string
+        {
+            $homophone_id = (int)substr($extension, 1);
+            $result = $this->backend->getDomophone($homophone_id);
+
+            if ($result && $result['enabled'] && $result['credentials']) {
+                return $result['credentials'];
+            }
+
+            return null;
+        }
+
+        private function makeKamailioRpcUrl(): void
+        {
+            // make kamailio JSON RPC url example: http://example-host.com:8080/RPC';
+            [
+                'rpc_interface' => $kamailio_address,
+                'rpc_port' => $kamailio_rpc_port,
+                'rpc_path' => $kamailio_rpc_path,
+            ] = $this->kamailioConf;
+
+            $this->kamailioRpcUrl = 'http://' . $kamailio_address . ':' . $kamailio_rpc_port . '/' . $kamailio_rpc_path;
+        }
+
+        /**
          * @example
          * curl --location 'http://172.28.0.2/kamailio/subscriber/4000000001' \
-         * --header 'Authorization: Bearer EXAMPLETOKEN'
+         * --header 'Authorization: Bearer EXAMPLE_TOKEN'
          */
         public function getSubscriberStatus($subscriber): void
         {
@@ -301,9 +342,10 @@
         /**
          * @example
          * curl --location 'http://172.28.0.2/kamailio/subscribers' \
-         * --header 'Authorization: Bearer EXAMPLETOKEN'
+         * --header 'Authorization: Bearer EXAMPLE_TOKEN'
          */
-        public function getAllSubscriberStatus(): void {
+        public function getAllSubscriberStatus(): void
+        {
             /**
              *  TODO:
              *      - implement API call,  get all active subscriber from kamailio sip server
@@ -322,24 +364,20 @@
             exit(1);
         }
 
-        public function removeRegistration($subscriber) {
+        public function removeRegistration($subscriber)
+        {
             /**
              *  TODO:
              *      - implement API call, drop active subscriber  registration kamailio sip server
              */
         }
 
-        public function pingSubscriber($subscriber) {
+        public function pingSubscriber($subscriber)
+        {
             /**
              *  TODO:
              *      - implement API call, make SIP ping to selected subscriber for test
              */
         }
-
-        public function reply(int $code, $data = false, $name = false, $message = false): void
-        {
-            response($code, $data, $name, $message);
-        }
-
     }
 
