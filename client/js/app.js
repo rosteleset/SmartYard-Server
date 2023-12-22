@@ -302,6 +302,7 @@ function whoAmI(force) {
             if (_me.user.groups) {
                 for (let i in _me.user.groups) {
                     if (_me.user.groups[i].acronym == _me.user.primaryGroupAcronym) {
+                        myself.primaryGroupAcronym = _me.user.groups[i].acronym;
                         myself.primaryGroupName = _me.user.groups[i].name;
                     }
                     myself.groups[_me.user.groups[i].acronym] = {
