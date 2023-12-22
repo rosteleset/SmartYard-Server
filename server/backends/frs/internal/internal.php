@@ -6,15 +6,22 @@
 
     namespace backends\frs
     {
+
+        use Exception;
+
         class internal extends frs
         {
+            const KEY_SYNCING = 'frs_syncing';
+            const KEY_FACES = 'frs_ignore_faces';
+            const KEY_FACE_UUIDS = 'frs_ignore_face_uuids';
+
             //private methods
-            private function camshotUrl($cam)
+            private function camshotUrl($cam): string
             {
                 return $this->config["api"]["internal"] . "/frs/camshot/" . $cam[self::CAMERA_ID];
             }
 
-            private function callback($cam)
+            private function callback($cam): string
             {
                 return $this->config["api"]["internal"] . "/frs/callback?stream_id=" . $cam[self::CAMERA_ID];
             }
@@ -28,8 +35,8 @@
 
                 $content_type = "image/jpeg";
                 $image_data = file_get_contents($data[self::P_FACE_IMAGE]);
-                if (substr($data[self::P_FACE_IMAGE], 0, 5) === "data:") {
-                    if (preg_match_all("/^data\:(.*)\;/i", $image_data, $matches)) {
+                if (str_starts_with($data[self::P_FACE_IMAGE], "data:")) {
+                    if (preg_match_all("/^data:(.*);/i", $image_data, $matches)) {
                         $content_type = end($matches[1]);
                     }
                 } else {
@@ -53,6 +60,9 @@
                     ":face_uuid" => $face_uuid,
                     ":event_uuid" => $event_uuid,
                 ]);
+
+                $this->ignoreSyncingFaceId($data[self::P_FACE_ID]);
+                $this->ignoreSyncingFaceUuid($face_uuid);
 
                 return $data[self::P_FACE_ID];
             }
@@ -219,15 +229,25 @@
             /**
              * @inheritDoc
              */
-            public function cron($part)
+            public function cron($part): bool
             {
+                $result = true;
                 if ($part === @$this->config['backends']['frs']['cron_sync_data_scheduler']) {
-                    $this->syncData();
+                    if (!$this->startSyncing())
+                        return false;
+                    try {
+                        $result = $this->syncData();
+                    } catch (Exception $e) {
+                        error_log(print_r($e, true));
+                        $result = false;
+                    }
+                    if (!$this->stopSyncing())
+                        return false;
                 }
-                return true;
+                return $result;
             }
 
-            private function deleteFaceId($face_id)
+            private function deleteFaceId($face_id): void
             {
                 $query = "delete from frs_links_faces where face_id = :face_id";
                 $this->db->modify($query, [":face_id" => $face_id]);
@@ -237,16 +257,114 @@
                 if ($r) {
                     $files = loadBackend("files");
                     $files->deleteFile($files->fromGUIDv4($r["face_uuid"]));
+                    $this->ignoreSyncingFaceUuid($r["face_uuid"]);
                 }
 
                 $query = "delete from frs_faces where face_id = :face_id";
-                $this->db->modify($query, [":face_id" => $face_id]);
+                if ($this->db->modify($query, [":face_id" => $face_id]) !== false) {
+                    $this->ignoreSyncingFaceId($face_id);
+                }
             }
 
-            private function syncData()
+            private function startSyncing(): bool
+            {
+                try {
+                    $this->redis->sAdd(self::KEY_SYNCING, 1);
+                    return true;
+                } catch (Exception $e) {
+                    error_log(print_r($e, true));
+                }
+
+                return false;
+            }
+
+            private function stopSyncing(): bool
+            {
+                try {
+                    $this->redis->del(self::KEY_SYNCING);
+                    $this->redis->del(self::KEY_FACES);
+                    $this->redis->del(self::KEY_FACE_UUIDS);
+                    return true;
+                } catch (Exception $e) {
+                    error_log(print_r($e, true));
+                }
+
+                return false;
+            }
+
+            private function isSyncing(): bool
+            {
+                try {
+                    return ($this->redis->exists(self::KEY_SYNCING) === 1);
+                } catch (Exception $e) {
+                    error_log(print_r($e, true));
+                }
+
+                return false;
+            }
+
+            private function ignoreSyncingFaceId($face_id): void
+            {
+                if ($this->isSyncing()) {
+                    try {
+                        $this->redis->sAdd(self::KEY_FACES, $face_id);
+                    } catch (Exception $e) {
+                        error_log(print_r($e, true));
+                    }
+                }
+            }
+
+            private function ignoreSyncingFaceUuid($face_uuid): void
+            {
+                if ($this->isSyncing()) {
+                    try {
+                        $this->redis->sAdd(self::KEY_FACE_UUIDS, $face_uuid);
+                    } catch (Exception $e) {
+                        error_log(print_r($e, true));
+                    }
+                }
+            }
+
+            private function checkIgnoredSyncingFace($face_id): bool
+            {
+                $result = false;
+                try {
+                    $result = $this->redis->sIsMember(self::KEY_FACES, $face_id);
+                } catch (Exception $e) {
+                    error_log(print_r($e, true));
+                }
+
+                return $result;
+            }
+
+            private function getIgnoredSyncingFaces()
+            {
+                $result = [];
+                try {
+                    $result = $this->redis->sMembers(self::KEY_FACES);
+                } catch (Exception $e) {
+                    error_log(print_r($e, true));
+                }
+
+                return $result;
+            }
+
+            private function getIgnoredSyncingFaceUuids()
+            {
+                $result = [];
+                try {
+                    $result = $this->redis->sMembers(self::KEY_FACE_UUIDS);
+                } catch (Exception $e) {
+                    error_log(print_r($e, true));
+                }
+
+                return $result;
+            }
+
+            private function syncData(): bool
             {
                 if (!is_array($this->servers())) {
-                    return;
+                    return false;
                 }
 
                 //syncing all faces
@@ -254,42 +372,58 @@
                 foreach ($this->servers() as $frs_server) {
                     $all_faces = $this->apiCall($frs_server[self::FRS_BASE_URL], self::M_LIST_ALL_FACES, null);
                     if ($all_faces[self::P_CODE] > 204)
-                        return;
+                        return false;
                     if ($all_faces && array_key_exists(self::P_DATA, $all_faces)) {
                         $frs_all_faces = array_merge($frs_all_faces, $all_faces[self::P_DATA]);
                     }
                 }
 
-                $rbt_all_faces = [];
-                $query = "select face_id from frs_faces order by 1";
+                $query = "select face_id, face_uuid from frs_faces order by 1";
                 $result = $this->db->get($query, [], []);
                 if ($result === false)
-                    return;
+                    return false;
 
+                $rbt_all_faces = [];
+                $rbt_all_face_uuids = [];
                 foreach ($result as $row) {
                     $rbt_all_faces[] = $row["face_id"];
+                    $rbt_all_face_uuids[] = $row["face_uuid"];
                 }
 
-                $diff_faces = array_diff($rbt_all_faces, $frs_all_faces);
+                //delete face photos from files backend if they don't exist in frs backend
+                $files = loadBackend("files");
+                if ($files) {
+                    $face_uuids = array_map(function ($item) use($files) {
+                        return $files->toGUIDv4($item['id']);
+                    }, $files->searchFiles(["filename" => "face_image"]));
+                    $diff_faces_photo = array_diff($face_uuids, $rbt_all_face_uuids, $this->getIgnoredSyncingFaceUuids());
+                    foreach ($diff_faces_photo as $face_uuid) {
+                        $files->deleteFile($files->fromGUIDv4($face_uuid));
+                    }
+                }
+
+                //delete unmatched faces in RBT
+                $diff_faces = array_diff($rbt_all_faces, $frs_all_faces, $this->getIgnoredSyncingFaces());
                 if ($diff_faces) {
-                    $files = loadBackend("files");
+                    $query = "delete from frs_links_faces where face_id in (" . implode(",", $diff_faces) . ")";
+                    if ($this->db->modify($query) === false)
+                        return false;
+
                     foreach ($diff_faces as $f_id) {
                         $query = "select face_uuid from frs_faces where face_id = :face_id";
                         $r = $this->db->get($query, [":face_id" => $f_id], [], [self::PDO_SINGLIFY]);
-                        if ($r) {
+                        if ($r && $files) {
                             $files->deleteFile($files->fromGUIDv4($r["face_uuid"]));
                         }
                     }
-                    $query = "delete from frs_links_faces where face_id in (" . implode(",", $diff_faces) . ")";
-                    if ($this->db->modify($query) === false)
-                        return;
 
                     $query = "delete from frs_faces where face_id in (" . implode(",", $diff_faces) . ")";
                     if ($this->db->modify($query) === false)
-                        return;
+                        return false;
                 }
 
-                $diff_faces = array_diff($frs_all_faces, $rbt_all_faces);
+                //delete unmatched faces in FRS
+                $diff_faces = array_diff($frs_all_faces, $rbt_all_faces, $this->getIgnoredSyncingFaces());
                 if ($diff_faces) {
                     foreach ($this->servers() as $frs_server) {
                         $this->apiCall($frs_server[self::FRS_BASE_URL], self::M_DELETE_FACES, [self::P_FACE_IDS => $diff_faces]);
@@ -301,7 +435,7 @@
                     $frs_all_data[$frs_server[self::FRS_BASE_URL]] = [];
                     $streams = $this->apiCall($frs_server[self::FRS_BASE_URL], self::M_LIST_STREAMS, null);
                     if ($streams[self::P_CODE] > 204)
-                        return;
+                        return false;
                     if ($streams && isset($streams[self::P_DATA]) && is_array($streams[self::P_DATA]))
                         foreach ($streams[self::P_DATA] as $item)
                         {
@@ -322,11 +456,10 @@
                     where
                       length(c.frs) > 1
                     order by
-                      1, 2
-                ";
+                      1, 2";
                 $rbt_data = $this->db->get($query);
                 if ($rbt_data === false)
-                    return;
+                    return false;
 
                 if (is_array($rbt_data))
                     foreach ($rbt_data as $item) {
@@ -354,17 +487,19 @@
                     where
                        length(c.frs) > 1
                     order by
-                      1, 2, 3
-                ";
+                      1, 2, 3";
                 $rbt_data = $this->db->get($query);
                 if ($rbt_data === false)
-                    return;
+                    return false;
 
                 if (is_array($rbt_data))
                     foreach ($rbt_data as $item) {
+                        $face_id = $item['face_id'];
+                        if ($this->checkIgnoredSyncingFace($face_id))
+                            continue;
+
                         $frs_base_url = $item['frs'];
                         $stream_id = $item['camera_id'];
-                        $face_id = $item['face_id'];
                         $face_uuid = $item['face_uuid'];
 
                         if ($face_uuid === null) {
@@ -377,6 +512,7 @@
                     }
 
                 foreach ($rbt_all_data as $base_url => $data) {
+
                     //syncing video streams
                     $diff_streams = array_diff_key($data, $frs_all_data[$base_url]);
                     foreach ($diff_streams as $stream_id => $faces) {
@@ -400,25 +536,41 @@
                         $this->apiCall($base_url, self::M_REMOVE_STREAM, [self::P_STREAM_ID => $stream_id]);
                     }
 
-                    //syncing faces
+                    //syncing faces by video streams
                     $common_streams = array_intersect_key($data, $frs_all_data[$base_url]);
                     foreach ($common_streams as $stream_id => $rbt_faces) {
-                        $diff_faces = array_diff($rbt_faces, $frs_all_data[$base_url][$stream_id]);
+                        $diff_faces = array_diff($rbt_faces, $frs_all_data[$base_url][$stream_id], $this->getIgnoredSyncingFaces());
                         if ($diff_faces) {
                             $this->apiCall($base_url, self::M_ADD_FACES, [self::P_STREAM_ID => $stream_id, self::P_FACE_IDS => $diff_faces]);
                         }
 
-                        $diff_faces = array_diff($frs_all_data[$base_url][$stream_id], $rbt_faces);
+                        $diff_faces = array_diff($frs_all_data[$base_url][$stream_id], $rbt_faces, $this->getIgnoredSyncingFaces());
                         if ($diff_faces)
                             $this->apiCall($base_url, self::M_REMOVE_FACES, [self::P_STREAM_ID => $stream_id, self::P_FACE_IDS => $diff_faces]);
                     }
                 }
+
+                //delete all unattached faces in RBT
+                $query = "select f.face_id from frs_faces f where f.face_id not in (select fl.face_id from frs_links_faces fl)";
+                $result = $this->db->get($query, [], []);
+                if ($result === false)
+                    return false;
+
+                foreach ($result as $row) {
+                    $face_id = $row["face_id"];
+                    if ($this->checkIgnoredSyncingFace($face_id))
+                        continue;
+
+                    $this->deleteFaceId($face_id);
+                }
+
+                return true;
             }
 
             /**
              * @inheritDoc
              */
-            public function attachFaceId($face_id, $flat_id, $house_subscriber_id)
+            public function attachFaceId($face_id, $flat_id, $house_subscriber_id): bool
             {
                 $query = "
                     select
@@ -428,8 +580,7 @@
                     where
                         flat_id = :flat_id
                         and house_subscriber_id = :house_subscriber_id
-                        and face_id = :face_id
-                ";
+                        and face_id = :face_id";
                 $r = $this->db->get($query, [
                     ":flat_id" => $flat_id,
                     ":house_subscriber_id" => $house_subscriber_id,
@@ -440,19 +591,27 @@
 
                 $query = "
                     insert into frs_links_faces(face_id, flat_id, house_subscriber_id)
-                    values(:face_id, :flat_id, :house_subscriber_id)
-                ";
-                return $this->db->insert($query, [
+                    values(:face_id, :flat_id, :house_subscriber_id)";
+                $r = $this->db->insert($query, [
                     ":face_id" => $face_id,
                     ":house_subscriber_id" => $house_subscriber_id,
                     ":flat_id" => $flat_id,
                 ]);
+
+                if ($r !== false) {
+                    $this->ignoreSyncingFaceId($face_id);
+                }
+
+                if ($r === false)
+                    return false;
+
+                return true;
             }
 
             /**
              * @inheritDoc
              */
-            public function detachFaceId($face_id, $house_subscriber_id)
+            public function detachFaceId($face_id, $house_subscriber_id): bool
             {
                 $query = "select flat_id from frs_links_faces where face_id = :face_id and house_subscriber_id = :house_subscriber_id";
                 $r = $this->db->get($query, [
@@ -468,6 +627,11 @@
                     ":face_id" => $face_id,
                     ":house_subscriber_id" => $house_subscriber_id,
                 ]);
+
+                if ($r !== false) {
+                    $this->ignoreSyncingFaceId($face_id);
+                }
+
                 if ($r === false)
                     return false;
 
@@ -477,13 +641,18 @@
             /**
              * @inheritDoc
              */
-            public function detachFaceIdFromFlat($face_id, $flat_id)
+            public function detachFaceIdFromFlat($face_id, $flat_id): bool
             {
                 $query = "delete from frs_links_faces where face_id = :face_id and flat_id = :flat_id";
                 $r = $this->db->modify($query, [
                     ":face_id" => $face_id,
                     ":flat_id" => $flat_id,
                 ]);
+
+                if ($r !== false) {
+                    $this->ignoreSyncingFaceId($face_id);
+                }
+
                 if ($r === false)
                     return false;
 
@@ -493,7 +662,7 @@
             /**
              * @inheritDoc
              */
-            public function getFlatsByFaceId($face_id, $entrance_id)
+            public function getFlatsByFaceId($face_id, $entrance_id): array
             {
                 // TODO: perhaps some of this data should be retrieved from households backend
                 $query = "
@@ -505,8 +674,7 @@
                             on hef.house_flat_id = flf.flat_id
                     where
                         hef.house_entrance_id = :entrance_id
-                        and flf.face_id = :face_id
-                ";
+                        and flf.face_id = :face_id";
                 $r = $this->db->get($query, [
                     ":entrance_id" => $entrance_id,
                     ":face_id" => $face_id,
@@ -527,7 +695,7 @@
             /**
              * @inheritDoc
              */
-            public function isLikedFlag($flat_id, $subscriber_id, $face_id, $event_uuid, $is_owner)
+            public function isLikedFlag($flat_id, $subscriber_id, $face_id, $event_uuid, $is_owner): bool
             {
                 $is_liked1 = false;
                 if ($event_uuid !== null) {
@@ -557,10 +725,10 @@
             /**
              * @inheritDoc
              */
-            public function listFaces($flat_id, $subscriber_id, $is_owner = false)
+            public function listFaces($flat_id, $subscriber_id, $is_owner = false): array
             {
                 $query1 = "
-                    select
+                    select distinct
                       ff.face_id,
                       ff.face_uuid
                     from
@@ -570,10 +738,9 @@
                     where
                       lf.flat_id = :flat_id
                     order by
-                      ff.face_id
-                ";
+                      ff.face_id";
                 $query2 = "
-                    select
+                    select distinct
                       ff.face_id,
                       ff.face_uuid
                     from
@@ -584,8 +751,7 @@
                       lf.flat_id = :flat_id
                       and lf.house_subscriber_id = :subscriber_id
                     order by
-                      ff.face_id
-                ";
+                      ff.face_id";
                 if ($is_owner) {
                     $query = $query1;
                     $r = $this->db->get($query, [":flat_id" => $flat_id], []);
