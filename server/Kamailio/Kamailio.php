@@ -46,7 +46,7 @@
             $token = $this->kamailioConf['auth_token'];
 
             if(!$receive_token || $receive_token !== $token){
-                response(498, null, null, 'Invalid token or empty');
+                $this->reply(498, null, null, 'Invalid token or empty');
                 exit(1);
             }
         }
@@ -61,7 +61,7 @@
             $this->backend = loadBackend($backend);
 
             if (!$this->backend) {
-                response(555, false, false, 'No backend loaded');
+                $this->reply(555, false, false, 'No backend loaded');
                 exit(1);
             }
         }
@@ -99,7 +99,7 @@
             $request_method = $_SERVER['REQUEST_METHOD'];
             $path = $_SERVER["REQUEST_URI"];
 
-            // TODO: rename var
+            // FIXME: rename var
             $authApi = parse_url($config["api"]["kamailio"]);
             // update a patch process
             if ($authApi && $authApi['path']) {
@@ -118,6 +118,7 @@
                 $this->getSubscriberHash($subscriber, $sipDomain);
             }
 
+            //FIXME, test new feature ⚡
             if ($request_method === 'POST' && $path === 'subscriber/hash2'){
                 $this->auth();
                 [$subscriber, $sipDomain] = explode('@', explode(':', $postData['from_uri'])[1]);
@@ -184,21 +185,21 @@
             // validate in enable SIP service for flat
             if ($sipEnabled) {
                 $ha1 = md5($subscriber .':'. KAMAILIO_DOMAIN .':'. $sipPassword);//md5(username:realm:password)
-                response(200, ['ha1' => $ha1]);
+                $this->reply(200, ['ha1' => $ha1]);
             } else {
-                response(403, false, false, 'SIP Not Enabled');
+                $this->reply(403, false, false, 'SIP Not Enabled');
             }
         }
 
-        private function checkSipDomain($sipDomain)
+        private function checkSipDomain($receivedSipDomain)
         {
             define("KAMAILIO_DOMAIN", $this->kamailioConf['domain']);
             // validate 'sip domain' field extension@your-sip-domain
-            if ($sipDomain !== KAMAILIO_DOMAIN) {
-                response(400, false, false, 'Invalid Received Sip Domain');
+            if ($receivedSipDomain !== KAMAILIO_DOMAIN) {
+                $this->reply(400, false, false, 'Invalid Received Sip Domain');
                 exit(1);
             } else {
-                return $sipDomain;
+                return $receivedSipDomain;
             }
 
         }
@@ -215,10 +216,10 @@
                 if ($credential) {
                     //  generate hash and return
                     $ha1 = $this->generateHash($extension, $sipDomain, $credential );
-                    response(200, ['ha1' => $ha1]);
+                    $this->reply(200, ['ha1' => $ha1]);
                 } else {
                     // return err
-                    response(404);
+                    $this->reply(404);
                 }
                 exit(1);
             } elseif ( preg_match($outdoorPattern, $extension)){
@@ -227,14 +228,14 @@
 
                 if ($credential) {
                     $ha1 = $this->generateHash($extension, $sipDomain, $credential);
-                    response(200, ['ha1' => $ha1]);
+                    $this->reply(200, ['ha1' => $ha1]);
                 }
                 else {
-                    response(404);
+                    $this->reply(404);
                 }
 
             } else {
-                response(400, false, false, 'Invalid Received Subscriber UserName');
+                $this->reply(400, false, false, 'Invalid Received Subscriber UserName');
                 exit(1);
             }
         }
@@ -289,9 +290,9 @@
             ];
             try {
                 $get_subscriber_info = apiExec('POST', $this->kamailioRpcUrl, $postData, false, false);
-                response(200, json_decode($get_subscriber_info));
+                $this->reply(200, json_decode($get_subscriber_info));
             } catch (Exception $err) {
-                response(500, false, false, [$err->getMessage()]);
+                $this->reply(500, false, false, [$err->getMessage()]);
             }
 
             exit(1);
@@ -317,7 +318,7 @@
             $res = apiExec('POST', $this->kamailioRpcUrl, $postData, false, false);
             $res = json_decode($res, true);
             header('Content-Type: application/json');
-            echo response(200, $res['result']);
+            $this->reply(200, $res['result']);
             exit(1);
         }
 
@@ -333,6 +334,11 @@
              *  TODO:
              *      - implement API call, make SIP ping to selected subscriber for test
              */
+        }
+
+        public function reply(int $code, $data = false, $name = false, $message = false): void
+        {
+            response($code, $data, $name, $message);
         }
 
     }
