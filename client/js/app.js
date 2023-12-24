@@ -384,7 +384,7 @@ function initAll() {
     $("#brandTitle").text(i18n("windowTitle"));
     $("#logout").text(i18n("logout"));
 
-    $("#myNotifications").attr("title", i18n("myNotifications"));
+    $("#myNotifications").attr("title", i18n("noNotifications"));
 
     if (config.z2Enabled) {
         $(".rs232-scanner-button").show();
