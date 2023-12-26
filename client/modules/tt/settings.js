@@ -2101,7 +2101,7 @@
             editor.setOptions({
                 enableBasicAutocompletion: true,
                 enableSnippets: true,
-                enableLiveAutocompletion: false
+                enableLiveAutocompletion: true,
             });
             editor.session.setMode("ace/mode/lua");
             editor.setValue(w.body, -1);
@@ -2258,7 +2258,7 @@
             editor.setOptions({
                 enableBasicAutocompletion: true,
                 enableSnippets: true,
-                enableLiveAutocompletion: false
+                enableLiveAutocompletion: true,
             });
             editor.session.setMode("ace/mode/lua");
             editor.setValue(l.body, -1);
@@ -2729,7 +2729,7 @@
                 editor.setOptions({
                     enableBasicAutocompletion: true,
                     enableSnippets: true,
-                    enableLiveAutocompletion: false
+                    enableLiveAutocompletion: true,
                 });
                 editor.session.setMode("ace/mode/json");
 
@@ -3299,7 +3299,7 @@
             editor.setOptions({
                 enableBasicAutocompletion: true,
                 enableSnippets: true,
-                enableLiveAutocompletion: false
+                enableLiveAutocompletion: true,
             });
             editor.session.setMode("ace/mode/javascript");
             editor.setValue(code, -1);

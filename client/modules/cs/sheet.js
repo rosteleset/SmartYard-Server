@@ -25,7 +25,7 @@
             editor.setOptions({
                 enableBasicAutocompletion: true,
                 enableSnippets: true,
-                enableLiveAutocompletion: false
+                enableLiveAutocompletion: true,
             });
             editor.session.setMode("ace/mode/json");
             let pretty = false;
