@@ -3300,6 +3300,7 @@
             });
             editor.session.setMode("ace/mode/javascript");
             editor.setValue(code, -1);
+            editor.getSession().setUndoManager(new ace.UndoManager());
             editor.clearSelection();
             editor.setFontSize(14);
             editor.commands.addCommand({
