@@ -1493,6 +1493,11 @@
             if (params.customSearch && params.customSearch !== true) {
                 let editor = ace.edit("filterEditor");
                 editor.setTheme("ace/theme/chrome");
+                editor.setOptions({
+                    enableBasicAutocompletion: true,
+                    enableSnippets: true,
+                    enableLiveAutocompletion: false
+                });
                 editor.session.setMode("ace/mode/json");
                 editor.clearSelection();
                 editor.setFontSize(14);

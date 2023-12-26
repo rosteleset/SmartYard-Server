@@ -2098,6 +2098,11 @@
             $("#mainForm").html(h);
             let editor = ace.edit("workflowEditor");
             editor.setTheme("ace/theme/chrome");
+            editor.setOptions({
+                enableBasicAutocompletion: true,
+                enableSnippets: true,
+                enableLiveAutocompletion: false
+            });
             editor.session.setMode("ace/mode/lua");
             editor.setValue(w.body, -1);
             editor.clearSelection();
@@ -2249,6 +2254,11 @@
             $("#mainForm").html(h);
             let editor = ace.edit("libEditor");
             editor.setTheme("ace/theme/chrome");
+            editor.setOptions({
+                enableBasicAutocompletion: true,
+                enableSnippets: true,
+                enableLiveAutocompletion: false
+            });
             editor.session.setMode("ace/mode/lua");
             editor.setValue(l.body, -1);
             editor.clearSelection();
@@ -2714,6 +2724,11 @@
                 $("#mainForm").html(h);
                 let editor = ace.edit("filterEditor");
                 editor.setTheme("ace/theme/chrome");
+                editor.setOptions({
+                    enableBasicAutocompletion: true,
+                    enableSnippets: true,
+                    enableLiveAutocompletion: false
+                });
                 editor.session.setMode("ace/mode/json");
 
                 let template = {
@@ -3278,6 +3293,11 @@
             $("#mainForm").html(h);
             let editor = ace.edit("viewerEditor");
             editor.setTheme("ace/theme/chrome");
+            editor.setOptions({
+                enableBasicAutocompletion: true,
+                enableSnippets: true,
+                enableLiveAutocompletion: false
+            });
             editor.session.setMode("ace/mode/javascript");
             editor.setValue(code, -1);
             editor.clearSelection();
