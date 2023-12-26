@@ -2105,6 +2105,7 @@
             });
             editor.session.setMode("ace/mode/lua");
             editor.setValue(w.body, -1);
+            editor.getSession().setUndoManager(new ace.UndoManager());
             editor.clearSelection();
             editor.setFontSize(14);
             editor.commands.addCommand({
@@ -2261,6 +2262,7 @@
             });
             editor.session.setMode("ace/mode/lua");
             editor.setValue(l.body, -1);
+            editor.getSession().setUndoManager(new ace.UndoManager());
             editor.clearSelection();
             editor.setFontSize(14);
             editor.commands.addCommand({
@@ -2756,6 +2758,7 @@
                 template.name = filter;
                 
                 editor.setValue((trim(f.body) == "{}")?JSON.stringify(template, null, 4):f.body , -1);
+                editor.getSession().setUndoManager(new ace.UndoManager());
                 editor.clearSelection();
                 editor.setFontSize(14);
                 editor.setReadOnly(readOnly);
@@ -3300,6 +3303,7 @@
             });
             editor.session.setMode("ace/mode/javascript");
             editor.setValue(code, -1);
+            editor.getSession().setUndoManager(new ace.UndoManager());
             editor.getSession().setUndoManager(new ace.UndoManager());
             editor.clearSelection();
             editor.setFontSize(14);

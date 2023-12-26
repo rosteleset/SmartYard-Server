@@ -1524,6 +1524,7 @@
                     ]
                 };
                 editor.setValue(JSON.stringify(template, null, "\t"));
+                editor.getSession().setUndoManager(new ace.UndoManager());
                 editor.commands.addCommand({
                     name: 'save',
                     bindKey: {

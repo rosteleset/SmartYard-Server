@@ -42,6 +42,7 @@
             } else {
                 editor.setValue(response.sheet, -1);
             }
+            editor.getSession().setUndoManager(new ace.UndoManager());
             editor.clearSelection();
             editor.setFontSize(14);
             editor.commands.addCommand({
