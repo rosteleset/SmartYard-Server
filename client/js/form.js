@@ -680,6 +680,11 @@ function cardForm(params) {
         if (params.fields[i].type === "code") {
             let editor = ace.edit(`${_prefix}${params.fields[i].id}`);
             editor.setTheme("ace/theme/chrome");
+            editor.setOptions({
+                enableBasicAutocompletion: true,
+                enableSnippets: true,
+                enableLiveAutocompletion: false
+            });
             if (params.fields[i].language) {
                 editor.session.setMode("ace/mode/" + params.fields[i].language);
             }
@@ -694,6 +699,11 @@ function cardForm(params) {
         if (params.fields[i].type === "json") {
             let editor = ace.edit(`${_prefix}${params.fields[i].id}`);
             editor.setTheme("ace/theme/chrome");
+            editor.setOptions({
+                enableBasicAutocompletion: true,
+                enableSnippets: true,
+                enableLiveAutocompletion: false
+            });
             editor.session.setMode("ace/mode/json");
             params.fields[i].editor = editor;
             if (params.fields[i].value) {

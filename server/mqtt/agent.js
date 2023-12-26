@@ -13,7 +13,7 @@ const client = mqtt.connect(config.ws, {
     password: config.password,
 });
 
-redis.connect().then(() => {
+function redisInit() {
     redis.sendCommand([ 'config', 'set', 'notify-keyspace-events', 'Ex' ]).then(() => {
         redis.subscribe('__keyevent@0__:expired', (k, e) => {
             if (e == '__keyevent@0__:expired') {
@@ -21,6 +21,14 @@ redis.connect().then(() => {
             }
         });
     });
+}
+
+redis.connect().then(() => {
+    if (config.redis.password) {
+        redis.auth(config.redis.password).then(redisInit);
+    } else {
+        redisInit();
+    }
 });
 
 app.post('/broadcast', express.json({ type: '*/*' }), (req, res) => {

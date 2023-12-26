@@ -135,11 +135,20 @@
                 <div id="rightTopDynamic"></div>
 
                 <li class="nav-item rs232-scanner-button" style="display: none;">
-                    <span class="nav-link" style="padding-top: 4px;"><span class="bg-dark p-1 rounded rs232-scanner text-bold text-monospace pointer" style="font-size: 70%;">Z2</span></span>
+                    <span class="nav-link rs232-scanner pr-0" role="button" style="cursor: pointer">
+                        <i class="fas fa-lg fa-fw fa-credit-card"></i>
+                    </span>
+                </li>
+
+                <li class="nav-item">
+                    <span class="nav-link text-secondary pr-1" role="button" style="cursor: pointer" title="Notifications" id="myNotifications">
+                        <i class="far fa-lg fa-fw fa-bell"></i>
+                        <span class="badge badge-danger navbar-badge text-bold" style="display: none;" id="myNotificationsBadge">3</span>
+                    </span>
                 </li>
 
                 <li class="nav-item dropdown">
-                    <a class="nav-link text-dark myNameIs" data-toggle="dropdown" href="#">
+                    <a class="nav-link text-dark myNameIs" data-toggle="dropdown" href="#" style="padding-left: 0.75rem!important;">
                         <i class="fas fa-lg fa-fw fa-user-cog"></i>
                     </a>
                     <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right" style="max-width: none;">
@@ -419,7 +428,8 @@
     <!-- beep -->
     <script src="js/beep.js"></script>
     <!-- ACE-Editor -->
-    <script src="lib/ace-builds/src-noconflict/ace.js"></script>
+    <script src="lib/ace-builds/src-min-noconflict/ace.js"></script>
+    <script src="lib/ace-builds/src-min-noconflict/ext-language_tools.js"></script>
     <!-- select2totree -->
     <script src="js/select2totree.js"></script>
     <!-- MQTT client -->

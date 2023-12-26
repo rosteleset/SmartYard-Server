@@ -1,14 +1,14 @@
 <?php
-    /** Get ip motion detection device, find stream_id and frs url.
+    /** Get an ip motion detection device, find stream_id and frs url.
      * Send POST request to FRS.
      */
     if (!isset($postdata["date"], $postdata["motionActive"])) {
-        response(406, "Invalid payload");
+        response(406, false, false, "Invalid payload");
         exit();
     }
 
     if (!isset($postdata["ip"]) && !isset($postdata["subId"])) {
-        response(406, "Invalid payload");
+        response(406, false, false, "Invalid payload");
         exit();
     }
 
@@ -23,15 +23,12 @@
     $params = ["ip" => $ip, "sub_id" => $subId, "frs" => "-"];
     $result = $db->get($query, $params);
 
-    if (!$result) {
-        response(200, "FRS not enabled on this stream");
+    if (!$result[0]) {
+        response(202, false, false, "FRS not enabled on this stream");
         exit();
     }
 
-    [0 => [
-        "camera_id" => $streamId,
-        "frs" => $frsUrl
-    ]] = $result;
+    ["camera_id" => $streamId, "frs" => $frsUrl] = $result[0];
 
     $payload = ["streamId" => $streamId, "start" => $motionActive ? "t" : "f"];
 
