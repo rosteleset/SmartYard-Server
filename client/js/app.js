@@ -292,16 +292,23 @@ function whoAmI(force) {
         if (_me && _me.user) {
             $(".myNameIs").attr("title", _me.user.realName?_me.user.realName:_me.user.login);
             myself.uid = _me.user.uid;
+            myself.login = _me.user.login;
             myself.realName = _me.user.realName;
             myself.eMail = _me.user.eMail;
             myself.phone = _me.user.phone;
             myself.webRtcExtension = _me.user.webRtcExtension;
             myself.webRtcPassword = _me.user.webRtcPassword;
+            myself.groups = {};
             if (_me.user.groups) {
                 for (let i in _me.user.groups) {
                     if (_me.user.groups[i].acronym == _me.user.primaryGroupAcronym) {
+                        myself.primaryGroupAcronym = _me.user.groups[i].acronym;
                         myself.primaryGroupName = _me.user.groups[i].name;
                     }
+                    myself.groups[_me.user.groups[i].acronym] = {
+                        "adminLogin": _me.user.groups[i].adminLogin,
+                        "name": _me.user.groups[i].name,
+                    };
                 }
             }
             if (_me.user.defaultRoute) {
@@ -376,6 +383,8 @@ function initAll() {
 
     $("#brandTitle").text(i18n("windowTitle"));
     $("#logout").text(i18n("logout"));
+
+    $("#myNotifications").attr("title", i18n("noNotifications"));
 
     if (config.z2Enabled) {
         $(".rs232-scanner-button").show();

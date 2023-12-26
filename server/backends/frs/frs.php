@@ -84,7 +84,7 @@
              * Call API method
              * @param string $base_url base URL FRS
              * @param string $method API method name
-             * @param obect $params call parameters
+             * @param array|null $params call parameters
              * @return false|object
              */
             abstract public function apiCall($base_url, $method, $params);
@@ -153,7 +153,7 @@
              * @param int $house_subscriber_id
              * @return bool
              */
-            abstract public function attachFaceId($face_id, $flat_id, $house_subscriber_id);
+            abstract public function attachFaceId($face_id, $flat_id, $house_subscriber_id): bool;
 
             /**
              * Detach face_id from all subscriber's flats
@@ -161,7 +161,7 @@
              * @param int $house_subscriber_id
              * @return bool
              */
-            abstract public function detachFaceId($face_id, $house_subscriber_id);
+            abstract public function detachFaceId($face_id, $house_subscriber_id): bool;
 
             /**
              * Detach face_id from flat (all subscribers)
@@ -169,14 +169,14 @@
              * @param int $flat_id
              * @return bool
              */
-            abstract public function detachFaceIdFromFlat($face_id, $flat_id);
+            abstract public function detachFaceIdFromFlat($face_id, $flat_id): bool;
 
             /**
              * @param $face_id
              * @param $entrance_id
              * @return array returns a list of flat identifiers
              */
-            abstract public function getFlatsByFaceId($face_id, $entrance_id);
+            abstract public function getFlatsByFaceId($face_id, $entrance_id): array;
 
             /**
              * Check liked flag
@@ -187,7 +187,7 @@
              * @param bool $is_owner
              * @return bool
              */
-            abstract public function isLikedFlag($flat_id, $subscriber_id, $face_id, $event_uuid, $is_owner);
+            abstract public function isLikedFlag($flat_id, $subscriber_id, $face_id, $event_uuid, $is_owner): bool;
 
             /**
              * List all liked faces in the flat by subscriber or all faces in the flat for owner
@@ -196,7 +196,7 @@
              * @param bool $is_owner
              * @return array
              */
-            abstract public function listFaces($flat_id, $subscriber_id, $is_owner = false);
+            abstract public function listFaces($flat_id, $subscriber_id, $is_owner = false): array;
 
             /**
              * Get registered face_id by event's UUID

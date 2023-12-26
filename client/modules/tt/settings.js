@@ -2098,8 +2098,14 @@
             $("#mainForm").html(h);
             let editor = ace.edit("workflowEditor");
             editor.setTheme("ace/theme/chrome");
+            editor.setOptions({
+                enableBasicAutocompletion: true,
+                enableSnippets: true,
+                enableLiveAutocompletion: true,
+            });
             editor.session.setMode("ace/mode/lua");
             editor.setValue(w.body, -1);
+            editor.getSession().setUndoManager(new ace.UndoManager());
             editor.clearSelection();
             editor.setFontSize(14);
             editor.commands.addCommand({
@@ -2249,8 +2255,14 @@
             $("#mainForm").html(h);
             let editor = ace.edit("libEditor");
             editor.setTheme("ace/theme/chrome");
+            editor.setOptions({
+                enableBasicAutocompletion: true,
+                enableSnippets: true,
+                enableLiveAutocompletion: true,
+            });
             editor.session.setMode("ace/mode/lua");
             editor.setValue(l.body, -1);
+            editor.getSession().setUndoManager(new ace.UndoManager());
             editor.clearSelection();
             editor.setFontSize(14);
             editor.commands.addCommand({
@@ -2714,6 +2726,11 @@
                 $("#mainForm").html(h);
                 let editor = ace.edit("filterEditor");
                 editor.setTheme("ace/theme/chrome");
+                editor.setOptions({
+                    enableBasicAutocompletion: true,
+                    enableSnippets: true,
+                    enableLiveAutocompletion: true,
+                });
                 editor.session.setMode("ace/mode/json");
 
                 let template = {
@@ -2741,6 +2758,7 @@
                 template.name = filter;
                 
                 editor.setValue((trim(f.body) == "{}")?JSON.stringify(template, null, 4):f.body , -1);
+                editor.getSession().setUndoManager(new ace.UndoManager());
                 editor.clearSelection();
                 editor.setFontSize(14);
                 editor.setReadOnly(readOnly);
@@ -2877,7 +2895,7 @@
                                         nowrap: true,
                                     },
                                     {
-                                        data: trimStr(modules.tt.meta.filtersExt[i].name?modules.tt.meta.filtersExt[i].name:i, 33, true),
+                                        data: trimStr(modules.tt.meta.filtersExt[i].name?modules.tt.meta.filtersExt[i].name:i, 128, true),
                                         nowrap: true,
                                     },
                                 ],
@@ -3278,8 +3296,15 @@
             $("#mainForm").html(h);
             let editor = ace.edit("viewerEditor");
             editor.setTheme("ace/theme/chrome");
+            editor.setOptions({
+                enableBasicAutocompletion: true,
+                enableSnippets: true,
+                enableLiveAutocompletion: true,
+            });
             editor.session.setMode("ace/mode/javascript");
             editor.setValue(code, -1);
+            editor.getSession().setUndoManager(new ace.UndoManager());
+            editor.getSession().setUndoManager(new ace.UndoManager());
             editor.clearSelection();
             editor.setFontSize(14);
             editor.commands.addCommand({
