@@ -34,13 +34,12 @@ $cameras = loadBackend("cameras");
 $houses = [];
 $stub_payment_require = $config['backends']['dvr']['stub']['payment_require_url'];  // stub if flat is blocked
 $stub_service = $config['backends']['dvr']['stub']['service_url'];                  // stub if camera  disabled
-$stub_fallback = $config['backends']['dvr']['stub']['fallback_url'];                    // stub if set not valid DVR url
+$stub_fallback = $config['backends']['dvr']['stub']['fallback_url'];                // stub if set not valid DVR url
 
 /**
- * TODO: refactor stub vars usage
- * replace DVR url handler.
- * - flat blocked: stub service requires payment
- * - there is no DVR or the camera is disabled: the plug is undergoing technical work
+ * Replace DVR url handler.
+ * - flat blocked: stub 'service requires payment'
+ * - DVR not set, or the camera is disabled: stub 'service / undergoing technical work'
  * @param array $cams
  * @param bool $flatIsBlocked
  * @param string $stub_payment_url
