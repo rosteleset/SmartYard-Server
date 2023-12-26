@@ -328,6 +328,12 @@
                 $preprocess["%%timestamp-1month"] = strtotime(date("Y-m-d", strtotime("-1 month")));
                 $types["%%timestamp-1month"] = "int";
 
+                $preprocess["%%timestamp-2month"] = strtotime(date("Y-m-d", strtotime("-2 month")));
+                $types["%%timestamp-2month"] = "int";
+
+                $preprocess["%%timestamp-3month"] = strtotime(date("Y-m-d", strtotime("-3 month")));
+                $types["%%timestamp-3month"] = "int";
+
                 $preprocess["%%timestamp-1year"] = strtotime(date("Y-m-d", strtotime("-1 year")));
                 $types["%%timestamp-1year"] = "int";
 
