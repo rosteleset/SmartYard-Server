@@ -22,6 +22,11 @@
             $("#mainForm").html(h);
             let editor = ace.edit("sheetEditor");
             editor.setTheme("ace/theme/chrome");
+            editor.setOptions({
+                enableBasicAutocompletion: true,
+                enableSnippets: true,
+                enableLiveAutocompletion: true,
+            });
             editor.session.setMode("ace/mode/json");
             let pretty = false;
             try {
@@ -37,6 +42,7 @@
             } else {
                 editor.setValue(response.sheet, -1);
             }
+            editor.getSession().setUndoManager(new ace.UndoManager());
             editor.clearSelection();
             editor.setFontSize(14);
             editor.commands.addCommand({

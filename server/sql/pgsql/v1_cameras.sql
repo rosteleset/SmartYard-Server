@@ -1,12 +1,12 @@
 -- cameras
 CREATE TABLE cameras
 (
-    camera_id serial primary key,
-    enabled integer not null,
-    model character varying not null,
-    url character varying not null,
+    camera_id serial PRIMARY KEY,
+    enabled integer NOT NULL,
+    model character varying NOT NULL,
+    url character varying NOT NULL,
     stream character varying,
-    credentials character varying not null,                                                                             -- plaintext:login:password, token:token, or something else
+    credentials character varying NOT NULL,                                                                             -- plaintext:login:password, token:token, or something else
     name character varying,
     dvr_stream character varying,
     timezone character varying, 
@@ -24,5 +24,5 @@ CREATE TABLE cameras
     ip text,
     comment character varying
 );
-CREATE INDEX cameras_url on cameras(url);
+CREATE INDEX cameras_url ON cameras(url);
 

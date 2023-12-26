@@ -52,6 +52,8 @@
     "fileAlreadyExists": "This file is already uploaded",
     "addModify": "Add (change)",
     "other": "Other",
+    "myNotifications": "Notifications",
+    "noNotifications": "No new notifications",
     "errors": {
         "404caption": "Oh! Page not found.",
         "404message": "It seems that we cannot find the page you need. <br /> Try to switch to <a href=\"?#\"> the initial page </a>.",
