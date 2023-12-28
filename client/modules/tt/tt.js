@@ -1458,9 +1458,9 @@
             $(".tt_pager").off("click").on("click", function () {
                 if (target) {
                     loadingStart();
-                    console.log($(this).attr("data-target"));
                     params.skip = Math.max(0, (parseInt($(this).attr("data-page")) - 1) * limit);
                     params.limit = limit?limit:modules.tt.defaultIssuesPerPage;
+                    console.log(params, $(this).attr("data-target"));
                     modules.tt.renderIssues(params, true, $(this).attr("data-target"), loadingDone);
                 } else {
                     modules.tt.selectFilter(false, Math.max(0, (parseInt($(this).attr("data-page")) - 1) * limit));
