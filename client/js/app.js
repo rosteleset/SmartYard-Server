@@ -887,7 +887,7 @@ function loadModule() {
         .fail(FAIL)
         .always(() => {
             $.getScript("modules/" + module + "/" + module + ".js")
-            .fail(FAIL);
+            .fail(FAILPAGE);
         });
     }
 }
