@@ -1442,6 +1442,7 @@
             }
 
             if (target) {
+                console.log(issuesListId);
                 if (target !== true) {
                     target.append(`<table class="mt-2 ml-2" style="width: 100%;"><tr><td style="width: 100%;">${filters}<br/>${issuesListId + '-count'}</td><td style="padding-right: 15px;">${pager(issuesListId)}</td></tr></table><div class="ml-2 mr-2" id="${issuesListId}"></div>`);
                 } else {
