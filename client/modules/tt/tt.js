@@ -1455,7 +1455,7 @@
                 modules.tt.selectFilter($(this).attr("data-filter-name"));
             });
 
-            $(`.tt_pager[data-target="${issuesListId}]"`).off("click").on("click", function () {
+            $(`.tt_pager[data-target="${issuesListId}"]`).off("click").on("click", function () {
                 if (target) {
                     loadingStart();
                     params.skip = Math.max(0, (parseInt($(this).attr("data-page")) - 1) * limit);
