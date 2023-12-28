@@ -1126,7 +1126,7 @@
             target = false;
         }
         
-        if (issuesListId === "undefined") {
+        if (issuesListId === "undefined" || !issuesListId) {
             issuesListId = md5(guid());
         }
 
@@ -1239,7 +1239,7 @@
         let filters;
 
         if (target) {
-            filters = `<span class="text-bold">${(modules.tt.meta.filters[x]?modules.tt.meta.filters[x]:i18n("tt.filter")).replaceAll("/", "<i class='fas fa-fw fa-xs fa-angle-double-right'></i>")}</span>`;
+            filters = `<span class="text-bold ${params.class?params.class:''}">${(modules.tt.meta.filters[x]?modules.tt.meta.filters[x]:i18n("tt.filter")).replaceAll("/", "<i class='fas fa-fw fa-xs fa-angle-double-right'></i>")}</span>`;
         } else {
             let fcount = 0;
             filters = `<span class="dropdown">`;
@@ -1258,7 +1258,7 @@
                 f[tree[tree.length - 1]] = project.filters[i];
             }
 
-            filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" style="margin-left: -4px;"><i class="far fa-fw fa-caret-square-down mr-1 ml-1"></i>${(modules.tt.meta.filters[x]?modules.tt.meta.filters[x]:i18n("tt.filter")).replaceAll("/", "<i class='fas fa-fw fa-xs fa-angle-double-right'></i>")}</span>`;
+            filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" style="margin-left: -4px;"><i class="far fa-fw fa-caret-square-down mr-1"></i>${(modules.tt.meta.filters[x]?modules.tt.meta.filters[x]:i18n("tt.filter")).replaceAll("/", "<i class='fas fa-fw fa-xs fa-angle-double-right'></i>")}</span>`;
             filters += `<ul class="dropdown-menu" aria-labelledby="ttFilter">`;
     
             (function hh(t) {
@@ -1443,19 +1443,19 @@
 
             if (target) {
                 if (target !== true) {
-                    target.append(`<table class="mt-2 ml-2" style="width: 100%;"><tr><td style="width: 100%;">${filters}</td><td style="padding-right: 15px;">${pager(issuesListId)}</td></tr></table><div class="ml-2 mr-2" id="${issuesListId}"></div>`);
+                    target.append(`<table class="mt-2 ml-2" style="width: 100%;"><tr><td style="width: 100%;">${filters}<br/><span id='${issuesListId + '-count'}'></span></td><td style="padding-right: 15px;">${pager(issuesListId)}</td></tr></table><div class="ml-2 mr-2" id="${issuesListId}"></div>`);
                 } else {
                     $(`.pager[data-target="${issuesListId}"]`).html(pager(issuesListId));
                 }
             } else {
-                $("#mainForm").html(`${cs}<table class="mt-2 ml-2" style="width: 100%;"><tr><td style="width: 100%;">${cs?'&nbsp;':filters}</td><td style="padding-right: 15px;">${pager(issuesListId)}</td></tr></table><div class="ml-2 mr-2" id="${issuesListId}"></div>`);
+                $("#mainForm").html(`${cs}<table class="mt-2 ml-2" style="width: 100%;"><tr><td style="width: 100%;">${cs?'&nbsp;':filters}<br/><span id='${issuesListId + '-count'}'></span></td><td style="padding-right: 15px;">${pager(issuesListId)}</td></tr></table><div class="ml-2 mr-2" id="${issuesListId}"></div>`);
             }
 
             $(".tt_issues_filter").off("click").on("click", function () {
                 modules.tt.selectFilter($(this).attr("data-filter-name"));
             });
 
-            $(".tt_pager").off("click").on("click", function () {
+            $(`.tt_pager[data-target="${issuesListId}"]`).off("click").on("click", function () {
                 if (target) {
                     loadingStart();
                     params.skip = Math.max(0, (parseInt($(this).attr("data-page")) - 1) * limit);
@@ -1611,7 +1611,8 @@
                 });
             });
 
-            if (issues.issues) {
+            if (issues.issues && issues.issues.length) {
+                $("#" + issuesListId + "-count").text(i18n("tt.showCounts", parseInt(issues.skip) + 1, parseInt(issues.skip) + issues.issues.length, issues.count)).addClass("small");
                 cardTable({
                     target: "#" + issuesListId,
                     columns: columns,
@@ -1651,7 +1652,7 @@
                     },
                 });
             } else {
-                $("#issuesList").append(`<span class="ml-1 text-bold">${i18n("tt.noIssuesAvailable")}</span>`);
+                $("#" + issuesListId + "-count").text(i18n("tt.noIssuesAvailable")).addClass("small");
             }
             if (!params.customSearch || params.customSearch === true || !params.filter || params.filter === true || params.filter == "empty") {
                 if (typeof callback === "undefined") {

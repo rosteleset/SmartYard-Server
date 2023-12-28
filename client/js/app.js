@@ -883,8 +883,11 @@ function loadModule() {
                 delete i18n.methods;
             }
             lang[module] = i18n;
-        }).always(() => {
-            $.getScript("modules/" + module + "/" + module + ".js");
+        })
+        .fail(FAIL)
+        .always(() => {
+            $.getScript("modules/" + module + "/" + module + ".js")
+            .fail(FAIL);
         });
     }
 }
