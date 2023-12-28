@@ -1652,7 +1652,7 @@
                     },
                 });
             } else {
-                $("#issuesList").append(`<span class="ml-1 text-bold">${i18n("tt.noIssuesAvailable")}</span>`);
+                $("#" + issuesListId).append(`<span class="ml-1 text-bold">${i18n("tt.noIssuesAvailable")}</span>`);
             }
             if (!params.customSearch || params.customSearch === true || !params.filter || params.filter === true || params.filter == "empty") {
                 if (typeof callback === "undefined") {
