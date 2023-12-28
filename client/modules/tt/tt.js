@@ -1126,7 +1126,7 @@
             target = false;
         }
         
-        if (issuesListId === "undefined") {
+        if (issuesListId === "undefined" || !issuesListId) {
             issuesListId = md5(guid());
         }
 
