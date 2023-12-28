@@ -1612,7 +1612,7 @@
             });
 
             if (issues.issues && issues.issues.length) {
-                $("#" + issuesListId + "-count").text(i18n("tt.showCounts", parseInt(issues.skip) * size + 1, issues.issues.length, issues.count)).addClass("small");
+                $("#" + issuesListId + "-count").text(i18n("tt.showCounts", parseInt(issues.skip) * limit + 1, issues.issues.length, issues.count)).addClass("small");
                 cardTable({
                     target: "#" + issuesListId,
                     columns: columns,
