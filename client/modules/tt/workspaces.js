@@ -136,7 +136,7 @@
                             id: "code",
                             type: "code",
                             language: "json",
-                            height: window.innerHeight / 2,
+                            height: 2 * (window.innerHeight / 3),
                             value: JSON.stringify(workspace.length?{ name: currentWorkspace, workspace: workspace }:modules.tt.workspaces.demoWorkspace, null, 4),
                             validate: w => {
                                 try {
