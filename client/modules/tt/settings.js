@@ -1274,6 +1274,7 @@
             topApply: true,
             singleColumn: true,
             apply: i18n("add"),
+            size: "lg",
             fields: [
                 {
                     id: "filter",
