@@ -272,6 +272,7 @@
     "confirmWorkspaceDelete": "Удалить рабочий стол \"%s\"?",
     "unlinkIssues": "Удалить связь между \"%s\" и \"%s\"?",
     "workflowAction": "Действие рабочего процесса",
+    "showCounts": "Показаны заявки с %s по %s из %s",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",

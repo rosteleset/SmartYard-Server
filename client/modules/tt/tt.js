@@ -1612,8 +1612,7 @@
             });
 
             if (issues.issues) {
-                console.log(issues);
-                $("#" + issuesListId + "-count").text();
+                $("#" + issuesListId + "-count").text(i18n("tt.showCounts", parseInt(issues.skip) + 1, issues.issues.length, issues.count)).addClass("small");
                 cardTable({
                     target: "#" + issuesListId,
                     columns: columns,
