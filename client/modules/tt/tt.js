@@ -1239,7 +1239,7 @@
         let filters;
 
         if (target) {
-            filters = `<span class="text-bold">${(modules.tt.meta.filters[x]?modules.tt.meta.filters[x]:i18n("tt.filter")).replaceAll("/", "<i class='fas fa-fw fa-xs fa-angle-double-right'></i>")}</span>`;
+            filters = `<span class="text-bold ${params.class?params.class:''}">${(modules.tt.meta.filters[x]?modules.tt.meta.filters[x]:i18n("tt.filter")).replaceAll("/", "<i class='fas fa-fw fa-xs fa-angle-double-right'></i>")}</span>`;
         } else {
             let fcount = 0;
             filters = `<span class="dropdown">`;

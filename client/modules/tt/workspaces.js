@@ -107,6 +107,7 @@
                     modules.tt.renderIssues({
                         project: block.project,
                         filter: block.filter,
+                        class: block.class,
                     }, $(block.right?"#altForm":"#mainForm"), md5(guid()), loadWorkspace);
                 } else {
                     loadingDone();
