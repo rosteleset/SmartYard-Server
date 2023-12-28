@@ -1377,6 +1377,8 @@
 
             let issues = response.issues;
 
+            console.log(response);
+
             limit = parseInt(issues.limit);
             skip = parseInt(issues.skip);
 
