@@ -1258,7 +1258,7 @@
                 f[tree[tree.length - 1]] = project.filters[i];
             }
 
-            filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" style="margin-left: -4px;"><i class="far fa-fw fa-caret-square-down mr-1 ml-1"></i>${(modules.tt.meta.filters[x]?modules.tt.meta.filters[x]:i18n("tt.filter")).replaceAll("/", "<i class='fas fa-fw fa-xs fa-angle-double-right'></i>")}</span>`;
+            filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" style="margin-left: -4px;"><i class="far fa-fw fa-caret-square-down mr-1"></i>${(modules.tt.meta.filters[x]?modules.tt.meta.filters[x]:i18n("tt.filter")).replaceAll("/", "<i class='fas fa-fw fa-xs fa-angle-double-right'></i>")}</span>`;
             filters += `<ul class="dropdown-menu" aria-labelledby="ttFilter">`;
     
             (function hh(t) {
@@ -1458,6 +1458,7 @@
             $(".tt_pager").off("click").on("click", function () {
                 if (target) {
                     loadingStart();
+                    console.log($(this).attr("data-target"));
                     params.skip = Math.max(0, (parseInt($(this).attr("data-page")) - 1) * limit);
                     params.limit = limit?limit:modules.tt.defaultIssuesPerPage;
                     modules.tt.renderIssues(params, true, $(this).attr("data-target"), loadingDone);
