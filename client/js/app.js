@@ -1272,6 +1272,7 @@ function FAILPAGE(response) {
         error(i18n("errors." + response.responseJSON.error), i18n("error"), 30);
         pageError(i18n("errors." + response.responseJSON.error));
     } else {
+        console.log(response);
         error(i18n("errors.unknown"), i18n("error"), 30);
         pageError();
     }
