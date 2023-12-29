@@ -834,7 +834,7 @@ function leftSide(button, title, target, group, withibleOnlyWhenActive) {
     let id = md5(guid());
 
     $("#leftside-menu").append(`
-        <li id="${id}" class="nav-item ${mainSidebarFirst?"mt-1":""} ${withibleOnlyWhenActive?" withibleOnlyWhenActive":""}" data-target="${target}" title="${escapeHTML(title)}"${(withibleOnlyWhenActive && target !== "#" + route.split('.')[0])?" style='display: none;'":""}>
+        <li id="${id}" class="nav-item${mainSidebarFirst?" mt-2":""}${withibleOnlyWhenActive?" withibleOnlyWhenActive":""}" data-target="${target}" title="${escapeHTML(title)}"${(withibleOnlyWhenActive && target !== "#" + route.split('.')[0])?" style='display: none;'":""}>
             <a href="${target}" data-href="${target}" class="nav-link${(target === "#" + route.split('.')[0])?" active":""}">
                 <i class="${button} nav-icon"></i>
                 <p class="text-nowrap">${title}</p>
