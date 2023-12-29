@@ -2,6 +2,7 @@
     "_code": "en",
     "windowTitle": "RBT",
     "error": "Error",
+    "errorCode": "Error [%s]",
     "warning": "Warning",
     "confirm": "Confirmation",
     "message": "Message",

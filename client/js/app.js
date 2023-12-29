@@ -1263,17 +1263,16 @@ function FAIL(response) {
             }, 5000);
         }
     } else {
-        error(i18n("errors.unknown"), i18n("error"), 30);
+        error(i18n("errors.unknown"), i18n("errorCode", response.status), 30);
     }
 }
 
-function FAILPAGE(response, c, d, e) {
+function FAILPAGE(response) {
     if (response && response.responseJSON && response.responseJSON.error) {
         error(i18n("errors." + response.responseJSON.error), i18n("error"), 30);
         pageError(i18n("errors." + response.responseJSON.error));
     } else {
-        console.log(response, c, d, e);
-        error(i18n("errors.unknown"), i18n("error"), 30);
+        error(i18n("errors.unknown"), i18n("errorCode", response.status), 30);
         pageError();
     }
     loadingDone();

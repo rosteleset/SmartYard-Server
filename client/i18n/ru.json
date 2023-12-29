@@ -2,6 +2,7 @@
     "_code": "ru",
     "windowTitle": "RBT",
     "error": "Ошибка",
+    "errorCode": "Ошибка [%s]",
     "warning": "Предупреждение",
     "confirm": "Подтверждение",
     "message": "Сообщение",
