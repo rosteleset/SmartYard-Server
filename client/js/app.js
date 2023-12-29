@@ -887,7 +887,9 @@ function loadModule() {
         .fail(FAIL)
         .always(() => {
             $.getScript("modules/" + module + "/" + module + ".js")
-            .fail(FAILPAGE);
+            .fail(() => {
+                pageError(i18n("errors.errorLoadingModule", module));
+            });
         });
     }
 }

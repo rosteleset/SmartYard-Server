@@ -3,6 +3,7 @@
     "windowTitle": "RBT",
     "error": "Ошибка",
     "errorCode": "Ошибка [%s]",
+    "errorLoadingModule": "Ошибка загрузки модуля [%s]",
     "warning": "Предупреждение",
     "confirm": "Подтверждение",
     "message": "Сообщение",

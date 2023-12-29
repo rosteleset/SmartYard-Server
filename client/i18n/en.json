@@ -3,6 +3,7 @@
     "windowTitle": "RBT",
     "error": "Error",
     "errorCode": "Error [%s]",
+    "errorLoadingModule": "Error loading module [%s]",
     "warning": "Warning",
     "confirm": "Confirmation",
     "message": "Message",
