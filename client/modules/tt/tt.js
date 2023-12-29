@@ -28,7 +28,7 @@
                 this.printMenuItem = md5(guid());
                 $(`
                     <li id="${this.printMenuItem}" class="nav-item" title="${escapeHTML(i18n("tt.printIssue"))}" style="display: n1one;"}>
-                        <span href="${target}" class="nav-link">
+                        <span class="nav-link">
                             <i class="nav-icon fas fa-fw fa-print"></i>
                             <p class="text-nowrap">${escapeHTML(i18n("tt.printIssue"))}</p>
                         </span>
