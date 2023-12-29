@@ -27,7 +27,7 @@
                 this.menuItem = leftSide("fas fa-fw fa-tasks", i18n("tt.tt"), "?#tt", "tt");
                 this.printMenuItem = md5(guid());
                 $(`
-                    <li id="${this.printMenuItem}" class="nav-item pointer" title="${escapeHTML(i18n("tt.printIssue"))}" style="d1isplay: none;" disabled="disabled">
+                    <li id="${this.printMenuItem}" class="nav-item pointer" title="${escapeHTML(i18n("tt.printIssue"))}" style="display: none;">
                         <a href="javascript:void(0)" class="nav-link">
                             <i class="nav-icon fas fa-fw fa-print"></i>
                             <p class="text-nowrap">${escapeHTML(i18n("tt.printIssue"))}</p>
