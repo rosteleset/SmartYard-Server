@@ -1267,12 +1267,12 @@ function FAIL(response) {
     }
 }
 
-function FAILPAGE(response) {
+function FAILPAGE(response, c, d, e) {
     if (response && response.responseJSON && response.responseJSON.error) {
         error(i18n("errors." + response.responseJSON.error), i18n("error"), 30);
         pageError(i18n("errors." + response.responseJSON.error));
     } else {
-        console.log(response);
+        console.log(response, c, d, e);
         error(i18n("errors.unknown"), i18n("error"), 30);
         pageError();
     }
