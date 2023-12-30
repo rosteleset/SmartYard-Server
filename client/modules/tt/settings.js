@@ -3455,6 +3455,7 @@
             "roles",
             "customs",
             "viewers",
+            "print",
         ];
 
         let section = params["section"]?params["section"]:"projects";
@@ -3524,6 +3525,10 @@
 
             case "viewers":
                 modules.tt.settings.renderViewers();
+                break;
+
+            case "print":
+                modules.tt.settings.renderPrints();
                 break;
 
             default:
