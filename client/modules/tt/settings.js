@@ -3439,6 +3439,109 @@
         fail(loadingDone);
     },
 
+    renderPrints: function () {
+        loadingStart();
+        GET("tt", "tt", false, true).
+        done(modules.tt.tt).
+        done(() => {
+            GET("tt", "viewer", false, true).
+            done(r => {
+                let cf = {};
+
+                for (let i in modules.tt.meta.customFields) {
+                    cf["_cf_" + modules.tt.meta.customFields[i].field] = modules.tt.meta.customFields[i].fieldDisplay;
+                }
+
+                let v = {};
+
+                r.viewers.sort((a, b) => {
+                    let f1 = (a.field.substring(0, 4) == "_cf_")?cf[a.field]:i18n("tt." + a.field);
+                    let f2 = (b.field.substring(0, 4) == "_cf_")?cf[b.field]:i18n("tt." + b.field);
+                    if (f1 > f2) {
+                        return 1;
+                    }
+                    if (f1 < f2) {
+                        return -1;
+                    }
+                    return 0;
+                });
+
+                cardTable({
+                    target: "#mainForm",
+                    title: {
+                        button: {
+                            caption: i18n("tt.addViewer"),
+                            click: modules.tt.settings.addViewer,
+                        },
+                        caption: i18n("tt.viewers"),
+                        filter: true,
+                    },
+                    columns: [
+                        {
+                            title: i18n("tt.viewer"),
+                        },
+                        {
+                            title: i18n("tt.viewerField"),
+                        },
+                        {
+                            title: i18n("tt.viewerName"),
+                            fullWidth: true,
+                        },
+                    ],
+                    edit: k => {
+                        location.href = `?#tt.settings&section=viewer&field=${encodeURIComponent(v[k].field)}&name=${encodeURIComponent(v[k].name)}`;
+                    },
+                    rows: () => {
+                        let rows = [];
+
+                        for (let i in r.viewers) {
+                            let key = md5(guid());
+                            v[key] = {
+                                field: r.viewers[i].field,
+                                name: r.viewers[i].name,
+                            }
+                            rows.push({
+                                uid: key,
+                                cols: [
+                                    {
+                                        data: r.viewers[i].filename,
+                                        nowrap: true,
+                                    },
+                                    {
+                                        data: (r.viewers[i].field.substring(0, 4) == "_cf_")?cf[r.viewers[i].field]:i18n("tt." + r.viewers[i].field),
+                                        nowrap: true,
+                                    },
+                                    {
+                                        data: r.viewers[i].name,
+                                        nowrap: true,
+                                    },
+                                ],
+                                dropDown: {
+                                    items: [
+                                        {
+                                            icon: "fas fa-trash-alt",
+                                            title: i18n("tt.deleteFilter"),
+                                            class: "text-danger",
+                                            click: k => {
+                                                modules.tt.settings.deleteViewer(v[k].field, v[k].name);
+                                            },
+                                        },
+                                    ],
+                                },
+                            });
+                        }
+
+                        return rows;
+                    },
+                });
+            }).
+            fail(FAIL).
+            always(loadingDone);
+        }).
+        fail(FAIL).
+        fail(loadingDone);
+    },
+
     route: function (params) {
         $("#altForm").hide();
         $("#subTop").html("");
