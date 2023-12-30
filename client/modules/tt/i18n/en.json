@@ -273,6 +273,7 @@
     "unlinkIssues": "Delete link between \"%s\" and \"%s\"?",
     "workflowAction": "Workflow action",
     "showCounts": "Showing orders from %s to %s from %s",
+    "printIssue": "Print",
     "methods": {
         "tt": {
             "_title": "Task Manager",

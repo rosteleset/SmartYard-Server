@@ -273,6 +273,7 @@
     "unlinkIssues": "Удалить связь между \"%s\" и \"%s\"?",
     "workflowAction": "Действие рабочего процесса",
     "showCounts": "Показаны задачи с %s по %s из %s",
+    "printIssue": "Печать",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",
