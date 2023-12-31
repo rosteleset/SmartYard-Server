@@ -149,7 +149,7 @@ telegram:
   bot: "<!-- your telegram bot token here --!>"
 document_builder:
   bin: "/opt/onlyoffice/documentbuilder/docbuilder"
-  tmp: "/tmp"
+  tmp: "/tmp/print"
 syslog_servers:
   beward:
   - syslog.udp:127.0.0.1:45450

@@ -115,6 +115,11 @@ server {
                 try_files $uri $uri/ =404;
         }
 
+        location /print {
+                root /tmp/print;
+                try_files $uri $uri/ =404;
+        }
+
         location /.well-known {
                 root /var/www/html;
         }

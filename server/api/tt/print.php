@@ -35,13 +35,6 @@
                 return api::ANSWER($success);
             }
 
-            public static function POST($params) {
-                $tt = loadBackend("tt");
-                $success = false;
-
-                return api::ANSWER($success);
-            }
-
             public static function PUT($params) {
                 $tt = loadBackend("tt");
                 $success = false;
