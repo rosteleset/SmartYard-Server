@@ -1725,7 +1725,7 @@
 
                 try {
                     if ($part == "hourly") {
-                        $fileSystemIterator = new FilesystemIterator(@$this->config["document_builder"]["tmp"]?:"/tmp/print");
+                        $fileSystemIterator = new \FilesystemIterator(@$this->config["document_builder"]["tmp"]?:"/tmp/print");
                         $threshold = strtotime('-2 hours');
                         foreach ($fileSystemIterator as $file) {
                             if ($threshold >= $file->getCTime()) {
