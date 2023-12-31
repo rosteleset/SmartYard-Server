@@ -1726,7 +1726,7 @@
                 try {
                     if ($part == "hourly") {
                         $path = @$this->config["document_builder"]["tmp"]?:"/tmp/print";
-                        if (!is_dir($path)) {
+                        if (is_dir($path)) {
                             $fileSystemIterator = new \FilesystemIterator($path);
                             $threshold = strtotime('-2 hours');
                             foreach ($fileSystemIterator as $file) {
