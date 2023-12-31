@@ -107,7 +107,7 @@ server {
         }
 
         location /print {
-                root /tmp/print;
+                root /tmp;
                 try_files $uri $uri/ =404;
         }
 
