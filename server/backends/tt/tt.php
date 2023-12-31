@@ -1730,7 +1730,6 @@
                             $fileSystemIterator = new \FilesystemIterator($path);
                             $threshold = strtotime('-2 hours');
                             foreach ($fileSystemIterator as $file) {
-                                echo $file->getRealPath() . "\n";
                                 if ($threshold >= $file->getCTime()) {
                                     unlink($file->getRealPath());
                                 }
