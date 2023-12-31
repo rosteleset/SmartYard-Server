@@ -9,10 +9,10 @@
         use api\api;
 
         /**
-         * viewer method
+         * prints method
          */
 
-        class viewer extends api {
+        class prints extends api {
 
             public static function GET($params) {
                 $tt = loadBackend("tt");
