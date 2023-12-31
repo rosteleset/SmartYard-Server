@@ -61,5 +61,8 @@
         "v17_cameras.sql",
         "v17_houses.sql",
         "v17_plog.sql"
+    ],
+    "18": [
+        "v18_tt.sql"
     ]
 }
