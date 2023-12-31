@@ -1726,6 +1726,8 @@
                 try {
                     if ($part == "hourly") {
                         $path = @$this->config["document_builder"]["tmp"]?:"/tmp/print";
+                        $user = @$this->config["document_builder"]["www_user"]?:"www-data";
+                        $group = @$this->config["document_builder"]["www_group"]?:"www-data";
                         if (is_dir($path)) {
                             $fileSystemIterator = new \FilesystemIterator($path);
                             $threshold = strtotime('-2 hours');
@@ -1737,8 +1739,8 @@
                         } else {
                             mkdir($path);
                             chmod($path, 0755);
-                            chown($path, "www-data");
-                            chgrp($path, "www-data");
+                            chown($path, $user);
+                            chgrp($path, $group);
                         }
                     }
                 } catch (\Exception $e) {
