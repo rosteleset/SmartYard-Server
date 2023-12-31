@@ -1775,6 +1775,15 @@
             }
 
             /**
+             * @param $id
+             * @param $data
+             * @return mixed
+             */
+            public function printExec($id, $data) {
+
+            }
+
+            /**
              * @inheritDoc
              */
             public function cron($part)
