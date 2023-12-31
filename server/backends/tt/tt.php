@@ -1737,6 +1737,8 @@
                         } else {
                             mkdir($path);
                             chmod($path, 0755);
+                            chown($path, "www-data");
+                            chgrp($path, "www-data");
                         }
                     }
                 } catch (\Exception $e) {
