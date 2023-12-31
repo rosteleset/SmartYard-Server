@@ -1744,7 +1744,6 @@
                         }
                     }
                 } catch (\Exception $e) {
-                    print_r($e);
                     $success = false;
                 }
 
