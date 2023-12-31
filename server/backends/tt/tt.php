@@ -1728,8 +1728,9 @@
                         $fileSystemIterator = new \FilesystemIterator(@$this->config["document_builder"]["tmp"]?:"/tmp/print");
                         $threshold = strtotime('-2 hours');
                         foreach ($fileSystemIterator as $file) {
+                            echo $file->getRealPath();
                             if ($threshold >= $file->getCTime()) {
-                                unlink($file->getRealPath());
+                                // unlink($file->getRealPath());
                             }
                         }
                     }
