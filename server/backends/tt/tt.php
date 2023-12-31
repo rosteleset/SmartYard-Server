@@ -1680,6 +1680,101 @@
             }
 
             /**
+             * @param $formName
+             * @param $extension
+             * @param $description
+             * @return mixed
+             */
+            public function addPrint($formName, $extension, $description) {
+
+            }
+
+            /**
+             * @param $id
+             * @return mixed
+             */
+            public function printGetData($id) {
+                
+            }
+
+            /**
+             * @param $id
+             * @param $file
+             * @return mixed
+             */
+            public function printSetData($id, $file) {
+
+            }
+
+            /**
+             * @param $id
+             * @return mixed
+             */
+            public function printGetFormatter($id) {
+                
+            }
+
+            /**
+             * @param $id
+             * @param $file
+             * @return mixed
+             */
+            public function printSetFormatter($id, $file) {
+
+            }
+
+            /**
+             * @param $id
+             * @return mixed
+             */
+            public function printGetTemplate($id) {
+                
+            }
+
+            /**
+             * @param $id
+             * @param $file
+             * @return mixed
+             */
+            public function printSetTemplate($id, $file) {
+
+            }
+
+            /**
+             * @param $id
+             * @param $formName
+             * @param $extension
+             * @param $description
+             * @return mixed
+             */
+            public function modifyPrint($id, $formName, $extension, $descripton) {
+
+            }
+
+            /**
+             * @param $id
+             * @return mixed
+             */
+            public function getPrint($id) {
+
+            }
+
+            /**
+             * @return mixed
+             */
+            public function getPrints() {
+
+            }
+
+            /**
+             * @param $id
+             * @return mixed
+             */
+            public function deletePrint($id) {
+
+            }
+
+            /**
              * @inheritDoc
              */
             public function cron($part)
