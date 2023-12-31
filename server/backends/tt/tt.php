@@ -1738,7 +1738,7 @@
                             }
                         } else {
                             mkdir($path);
-                            chmod($path, 0755);
+                            chmod($path, 0775);
                             chown($path, $user);
                             chgrp($path, $group);
                         }
