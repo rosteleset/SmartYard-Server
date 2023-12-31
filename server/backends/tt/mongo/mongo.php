@@ -11,7 +11,7 @@
          * internal.db + mongoDB tt class
          */
 
-        require_once __DIR__ . "/../.traits/backends/tt/db.php";
+        require_once __DIR__ . "/../.traits/db.php";
 
         class mongo extends tt
         {

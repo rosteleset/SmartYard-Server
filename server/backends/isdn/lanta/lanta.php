@@ -11,9 +11,9 @@
          * LanTa's variant of flash calls and sms sending
          */
 
-        require_once __DIR__ . "/../.traits/backends/isdn/push.php";
-        require_once __DIR__ . "/../.traits/backends/isdn/sms.php";
-        require_once __DIR__ . "/../.traits/backends/isdn/incoming.php";
+        require_once __DIR__ . "/../.traits/push.php";
+        require_once __DIR__ . "/../.traits/sms.php";
+        require_once __DIR__ . "/../.traits/incoming.php";
 
         class lanta extends isdn
         {
