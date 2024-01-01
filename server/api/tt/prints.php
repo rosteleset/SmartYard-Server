@@ -20,15 +20,15 @@
 
                 switch ($params["mode"]) {
                     case "data":
+                        $success = $tt->printGetData($params["_id"]);
                         break;
 
                     case "formatter":
+                        $success = $tt->printGetFormatter($params["_id"]);
                         break;
 
                     case "template":
-                        break;
-    
-                    case "result":
+                        $success = $tt->printGetTemplate($params["_id"]);
                         break;
                 }
 
@@ -37,6 +37,17 @@
 
             public static function POST($params) {
                 $tt = loadBackend("tt");
+                $success = false;
+
+                switch ($params["mode"]) {
+                    case "exec":
+                        $success = $tt->printExec($params["_id"], $params["data"]);
+                        break;
+
+                    default:
+                        $success = $tt->addPrint($params["formName"], $params["extension"], $params["description"]);
+                        break;
+                }
 
                 return api::ANSWER($success);
             }
@@ -47,12 +58,15 @@
 
                 switch ($params["mode"]) {
                     case "data":
+                        $success = $tt->printSetData($params["_id"], $params["data"]);
                         break;
 
                     case "formatter":
+                        $success = $tt->printSetFormatter($params["_id"], $params["formatter"]);
                         break;
 
                     case "template":
+                        $success = $tt->printSetTemplate($params["_id"], $params["template"]);
                         break;
                 }
 
@@ -64,10 +78,12 @@
                 $success = false;
 
                 switch ($params["mode"]) {
-                    case "print":
+                    case "template":
+                        $success = $tt->printDeleteTemplate($params["_id"]);
                         break;
 
-                    case "template":
+                    default:
+                        $success = $tt->deletePrint($params["_id"]);
                         break;
                 }
 

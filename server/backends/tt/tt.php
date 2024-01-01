@@ -1686,7 +1686,7 @@
              * @return mixed
              */
             public function addPrint($formName, $extension, $description) {
-
+                $this->unCache("PRINTS");
             }
 
             /**
@@ -1694,7 +1694,24 @@
              * @return mixed
              */
             public function printGetData($id) {
-                
+                $print = $this->getPrint($id);
+
+                if ($print) {
+                    $files = loadBackend("files");
+
+                    $data = $files->searchFiles([
+                        "metadata.type" => "print-data",
+                        "metadata.name" => $print["formName"],
+                    ]);
+
+                    if ($data) {
+                        return $files->streamToContents($files->getFileStream($data[0]["id"])) ? : "//function data (issue) {\n\treturn {};\n//}\n";
+                    } else {
+                        return "//function data (issue) {\n\treturn {};\n//}\n";
+                    }
+                }
+
+                return false;
             }
 
             /**
@@ -1703,7 +1720,27 @@
              * @return mixed
              */
             public function printSetData($id, $file) {
+                if (!checkInt($id)) {
+                    return false;
+                }
 
+                $print = $this->getPrint($id);
+
+                if ($print) {
+                    $files = loadBackend("files");
+
+                    if ($files) {
+                        return $files->deleteFiles([
+                            "metadata.type" => "print-data",
+                            "metadata.name" => $print["formName"],
+                        ]) && $files->addFile($print["formName"] . "-data.js", $files->contentsToStream($file), [
+                            "metadata.type" => "print-data",
+                            "metadata.name" => $print["formName"],
+                        ]);
+                    }
+                }
+
+                return false;
             }
 
             /**
@@ -1711,7 +1748,24 @@
              * @return mixed
              */
             public function printGetFormatter($id) {
-                
+                $print = $this->getPrint($id);
+
+                if ($print) {
+                    $files = loadBackend("files");
+
+                    $formatter = $files->searchFiles([
+                        "metadata.type" => "print-formatter",
+                        "metadata.name" => $print["formName"],
+                    ]);
+
+                    if ($formatter) {
+                        return $files->streamToContents($files->getFileStream($formatter[0]["id"])) ? : "";
+                    } else {
+                        return "";
+                    }
+                }
+
+                return false;
             }
 
             /**
@@ -1720,7 +1774,27 @@
              * @return mixed
              */
             public function printSetFormatter($id, $file) {
+                if (!checkInt($id)) {
+                    return false;
+                }
 
+                $print = $this->getPrint($id);
+
+                if ($print) {
+                    $files = loadBackend("files");
+
+                    if ($files) {
+                        return $files->deleteFiles([
+                            "metadata.type" => "print-formatter",
+                            "metadata.name" => $print["formName"],
+                        ]) && $files->addFile($print["formName"] . "-formatter.js", $files->contentsToStream($file), [
+                            "metadata.type" => "print-formatter",
+                            "metadata.name" => $print["formName"],
+                        ]);
+                    }
+                }
+
+                return false;
             }
 
             /**
@@ -1728,7 +1802,24 @@
              * @return mixed
              */
             public function printGetTemplate($id) {
-                
+                $print = $this->getPrint($id);
+
+                if ($print) {
+                    $files = loadBackend("files");
+
+                    $template = $files->searchFiles([
+                        "metadata.type" => "print-template",
+                        "metadata.name" => $print["formName"],
+                    ]);
+
+                    if ($template) {
+                        return $files->streamToContents($files->getFileStream($template[0]["id"])) ? : false;
+                    } else {
+                        return false;
+                    }
+                }
+
+                return false;
             }
 
             /**
@@ -1737,7 +1828,56 @@
              * @return mixed
              */
             public function printSetTemplate($id, $file) {
+                if (!checkInt($id)) {
+                    return false;
+                }
 
+                $print = $this->getPrint($id);
+
+                if ($print) {
+                    $files = loadBackend("files");
+
+                    if ($files) {
+                        $this->unCache("PRINTS");
+
+                        return $files->deleteFiles([
+                            "metadata.type" => "print-template",
+                            "metadata.name" => $print["formName"],
+                        ]) && $files->addFile($print["formName"] . "-template." . $print["extension"], $files->contentsToStream($file), [
+                            "metadata.type" => "print-template",
+                            "metadata.name" => $print["formName"],
+                        ]);
+                    }
+                }
+
+                return false;
+            }
+
+            /**
+             * @param $id
+             * @return mixed
+             */
+            public function printDeleteTemplate($id) {
+                if (!checkInt($id)) {
+                    return false;
+                }
+
+                $print = $this->getPrint($id);
+
+                if ($print) {
+                    $files = loadBackend("files");
+
+                    if ($files) {
+                        $this->unCache("PRINTS");
+
+                        return $files->deleteFiles([
+                            "metadata.type" => "print-template",
+                            "metadata.name" => $print["formName"],
+                        ]);
+                    }
+                }
+
+                return false;
             }
 
             /**
@@ -1748,7 +1888,17 @@
              * @return mixed
              */
             public function modifyPrint($id, $formName, $extension, $descripton) {
+                if (!checkInt($id)) {
+                    return false;
+                }
 
+                $this->unCache("PRINTS");
+
+                return $this->db->modify("update tt_prints set form_name = :form_name, extension = :extension, description = :description where tt_print_id = $id", [
+                    "form_name" => $formName,
+                    "extension" => $extension,
+                    "description" => $descripton,
+                ]);
             }
 
             /**
@@ -1756,14 +1906,50 @@
              * @return mixed
              */
             public function getPrint($id) {
+                if (!checkInt($id)) {
+                    return false;
+                }
 
+                $prints = $this->getPrints();
+
+                foreach ($prints as $p) {
+                    if ($id == $p["printId"]) {
+                        return $p;
+                    }
+                }
+
+                return false;
             }
 
             /**
              * @return mixed
              */
             public function getPrints() {
+                $cache = $this->cacheGet("PRINTS");
+                if ($cache) {
+                    return $cache;
+                }
 
+                $_prints = $this->db->get("select * from tt_prints order by form_name", false, [
+                    "tt_print_id" => "printId",
+                    "form_name" => "formName",
+                    "extension" => "extension",
+                    "description" => "description",
+                ]);
+
+                $files = loadBackend("files");
+
+                if ($files) {
+                    foreach ($_prints as &$p) {
+                        $p["hasTemplate"] = searchFiles([
+                            "metadata.type" => "print-template",
+                            "metadata.name" => $p["formName"],
+                        ]);
+                    }
+                }
+
+                $this->cacheSet("PRINTS", $_prints);
+                return $_prints;
             }
 
             /**
@@ -1771,7 +1957,34 @@
              * @return mixed
              */
             public function deletePrint($id) {
+                if (!checkInt($id)) {
+                    return false;
+                }
 
+                $print = $this->getPrint($id);
+
+                if ($print) {
+                    $files = loadBackend("files");
+
+                    if ($files) {
+                        $files->deleteFiles([
+                            "metadata.type" => "print-data",
+                            "metadata.name" => $print["formName"],
+                        ]);
+                        $files->deleteFiles([
+                            "metadata.type" => "print-formatter",
+                            "metadata.name" => $print["formName"],
+                        ]);
+                        $files->deleteFiles([
+                            "metadata.type" => "print-template",
+                            "metadata.name" => $print["formName"],
+                        ]);
+                    }
+                }
+
+                $this->unCache("PRINTS");
+
+                return $this->db->modify("delete from tt_prints where tt_print_id = $id");
             }
 
             /**
