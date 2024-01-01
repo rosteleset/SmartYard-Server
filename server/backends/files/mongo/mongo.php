@@ -153,6 +153,22 @@
             /**
              * @inheritDoc
              */
+            public function deleteFiles($query)
+            {
+                $files = $this->searchFiles($query);
+
+                foreach ($files as $f) {
+                    if (!$this->deleteFile($f["id"])) {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            /**
+             * @inheritDoc
+             */
             public function toGUIDv4($uuid)
             {
                 $uuid = "10001000" . $uuid;

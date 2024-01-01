@@ -73,6 +73,14 @@
              */
             abstract public function deleteFile($uuid);
 
+            /** 
+             * delete files
+             * 
+             * @param mixed
+             * @return boolean
+             */
+            abstract public function deleteFiles($query);
+
             /**
              * @param $uuid
              * @return mixed
