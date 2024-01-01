@@ -1225,6 +1225,62 @@
         always(loadingDone);
     },
 
+    modifyPrint: function (printId) {
+        cardForm({
+            title: i18n("tt.addPrint"),
+            apply: i18n("tt.addPrint"),
+            footer: true,
+            borderless: true,
+            topApply: true,
+            fields: [
+                {
+                    id: "formName",
+                    type: "text",
+                    title: i18n("tt.printFormName"),
+                    placeholder: i18n("tt.printFormName"),
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
+                },
+                {
+                    id: "extension",
+                    type: "select2",
+                    title: i18n("tt.printExtension"),
+                    placeholder: i18n("tt.printExtension"),
+                    options: [
+                        {
+                            id: "docx",
+                            text: "docx",
+                        },
+                        {
+                            id: "xlsx",
+                            text: "xlsx",
+                        },
+                        {
+                            id: "pdf",
+                            text: "pdf",
+                        },
+                    ],
+                validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
+                },
+                {
+                    id: "description",
+                    type: "text",
+                    title: i18n("tt.printDescription"),
+                    placeholder: i18n("tt.printDescription"),
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
+                },
+            ],
+            callback: function (result) {
+                //
+            },
+        }).show();
+    },
+
     deleteProject: function (projectId) {
         mConfirm(i18n("tt.confirmProjectDelete", projectId.toString()), i18n("confirm"), `danger:${i18n("tt.projectDelete")}`, () => {
             modules.tt.settings.doDeleteProject(projectId);
