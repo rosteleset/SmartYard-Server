@@ -1687,6 +1687,12 @@
              */
             public function addPrint($formName, $extension, $description) {
                 $this->unCache("PRINTS");
+
+                return $this->db->insert("insert into tt_prints (form_name, extension, description) values (:form_name, :extension, :description", [
+                    "form_name" => $formName,
+                    "extension" => $extension,
+                    "description" => $description,
+                ]);
             }
 
             /**
@@ -1949,6 +1955,7 @@
                 }
 
                 $this->cacheSet("PRINTS", $_prints);
+
                 return $_prints;
             }
 

@@ -274,6 +274,12 @@
     "workflowAction": "Действие рабочего процесса",
     "showCounts": "Показаны задачи с %s по %s из %s",
     "print": "Печать",
+    "prints": "Печатные формы",
+    "printId": "#",
+    "printFormName": "Форма",
+    "printExtension": "Тип",
+    "printDescription": "Описание",
+    "addPrint": "Добавить форму",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",

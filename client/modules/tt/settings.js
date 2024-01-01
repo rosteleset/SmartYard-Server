@@ -628,6 +628,62 @@
         }).show();
     },
 
+    addPrint: function () {
+        cardForm({
+            title: i18n("tt.addPrint"),
+            apply: i18n("tt.addPrint"),
+            footer: true,
+            borderless: true,
+            topApply: true,
+            fields: [
+                {
+                    id: "formName",
+                    type: "text",
+                    title: i18n("tt.printFormName"),
+                    placeholder: i18n("tt.printFormName"),
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
+                },
+                {
+                    id: "extension",
+                    type: "select2",
+                    title: i18n("tt.printExtension"),
+                    placeholder: i18n("tt.printExtension"),
+                    options: [
+                        {
+                            id: "docx",
+                            text: "docx",
+                        },
+                        {
+                            id: "xlsx",
+                            text: "xlsx",
+                        },
+                        {
+                            id: "pdf",
+                            text: "pdf",
+                        },
+                    ],
+                validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
+                },
+                {
+                    id: "description",
+                    type: "text",
+                    title: i18n("tt.printDescription"),
+                    placeholder: i18n("tt.printDescription"),
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
+                },
+            ],
+            callback: function (result) {
+                //
+            },
+        }).show();
+    },
+
     modifyProject: function (projectId) {
         let project = false;
 
@@ -3444,99 +3500,74 @@
         GET("tt", "tt", false, true).
         done(modules.tt.tt).
         done(() => {
-            GET("tt", "viewer", false, true).
-            done(r => {
-                let cf = {};
-
-                for (let i in modules.tt.meta.customFields) {
-                    cf["_cf_" + modules.tt.meta.customFields[i].field] = modules.tt.meta.customFields[i].fieldDisplay;
-                }
-
-                let v = {};
-
-                r.viewers.sort((a, b) => {
-                    let f1 = (a.field.substring(0, 4) == "_cf_")?cf[a.field]:i18n("tt." + a.field);
-                    let f2 = (b.field.substring(0, 4) == "_cf_")?cf[b.field]:i18n("tt." + b.field);
-                    if (f1 > f2) {
-                        return 1;
-                    }
-                    if (f1 < f2) {
-                        return -1;
-                    }
-                    return 0;
-                });
-
-                cardTable({
-                    target: "#mainForm",
-                    title: {
-                        button: {
-                            caption: i18n("tt.addViewer"),
-                            click: modules.tt.settings.addViewer,
-                        },
-                        caption: i18n("tt.viewers"),
-                        filter: true,
+            cardTable({
+                target: "#mainForm",
+                title: {
+                    button: {
+                        caption: i18n("tt.addPrint"),
+                        click: modules.tt.settings.addPrint,
                     },
-                    columns: [
-                        {
-                            title: i18n("tt.viewer"),
-                        },
-                        {
-                            title: i18n("tt.viewerField"),
-                        },
-                        {
-                            title: i18n("tt.viewerName"),
-                            fullWidth: true,
-                        },
-                    ],
-                    edit: k => {
-                        location.href = `?#tt.settings&section=viewer&field=${encodeURIComponent(v[k].field)}&name=${encodeURIComponent(v[k].name)}`;
+                    caption: i18n("tt.prints"),
+                    filter: true,
+                },
+                columns: [
+                    {
+                        title: i18n("tt.printId"),
                     },
-                    rows: () => {
-                        let rows = [];
+                    {
+                        title: i18n("tt.printFormName"),
+                    },
+                    {
+                        title: i18n("tt.printExtension"),
+                    },
+                    {
+                        title: i18n("tt.printDescription"),
+                        fullWidth: true,
+                    },
+                ],
+                edit: modules.tt.settings.modifyPrint,
+                rows: () => {
+                    let rows = [];
 
-                        for (let i in r.viewers) {
-                            let key = md5(guid());
-                            v[key] = {
-                                field: r.viewers[i].field,
-                                name: r.viewers[i].name,
-                            }
-                            rows.push({
-                                uid: key,
-                                cols: [
+                    console.log(modules.tt.meta.prints);
+
+                    for (let i in modules.tt.meta.prints) {
+                        rows.push({
+                            uid: modules.tt.meta.prints[i].printId,
+                            cols: [
+                                {
+                                    data: modules.tt.meta.prints[i].printId,
+                                    nowrap: true,
+                                },
+                                {
+                                    data: modules.tt.meta.prints[i].formName,
+                                    nowrap: true,
+                                },
+                                {
+                                    data: modules.tt.meta.prints[i].extension,
+                                    nowrap: true,
+                                },
+                                {
+                                    data: modules.tt.meta.prints[i].description,
+                                    nowrap: true,
+                                },
+                            ],
+                            dropDown: {
+                                items: [
                                     {
-                                        data: r.viewers[i].filename,
-                                        nowrap: true,
-                                    },
-                                    {
-                                        data: (r.viewers[i].field.substring(0, 4) == "_cf_")?cf[r.viewers[i].field]:i18n("tt." + r.viewers[i].field),
-                                        nowrap: true,
-                                    },
-                                    {
-                                        data: r.viewers[i].name,
-                                        nowrap: true,
+                                        icon: "fas fa-trash-alt",
+                                        title: i18n("tt.deletePrint"),
+                                        class: "text-danger",
+                                        click: modules.tt.settings.deletePrint,
                                     },
                                 ],
-                                dropDown: {
-                                    items: [
-                                        {
-                                            icon: "fas fa-trash-alt",
-                                            title: i18n("tt.deleteFilter"),
-                                            class: "text-danger",
-                                            click: k => {
-                                                modules.tt.settings.deleteViewer(v[k].field, v[k].name);
-                                            },
-                                        },
-                                    ],
-                                },
-                            });
-                        }
-
-                        return rows;
-                    },
-                });
-            }).
-            fail(FAIL).
-            always(loadingDone);
+                            },
+                        });
+                    }
+                    return rows;
+                },
+            });
+            loadingDone();
         }).
         fail(FAIL).
         fail(loadingDone);
@@ -3633,7 +3664,15 @@
             case "print":
                 modules.tt.settings.renderPrints();
                 break;
-
+    
+            case "printData":
+                modules.tt.settings.renderPrintData();
+                break;
+        
+            case "printFormatter":
+                modules.tt.settings.renderPrintFormatter();
+                break;
+            
             default:
                 modules.tt.settings.renderProjects();
                 break;

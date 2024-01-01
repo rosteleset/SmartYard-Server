@@ -18,7 +18,8 @@
                 $tt = loadBackend("tt");
                 $success = false;
 
-                switch ($params["mode"]) {
+                $mode = @$params["mode"];
+                switch (@$params["mode"]) {
                     case "data":
                         $success = $tt->printGetData($params["_id"]);
                         break;
@@ -30,9 +31,14 @@
                     case "template":
                         $success = $tt->printGetTemplate($params["_id"]);
                         break;
+
+                    default:
+                        $mode = "prints";
+                        $success = $tt->getPrints();
+                        break;
                 }
 
-                return api::ANSWER($success);
+                return api::ANSWER($success, ($success !== false)?$mode:"notAcceptable");
             }
 
             public static function POST($params) {

@@ -274,6 +274,12 @@
     "workflowAction": "Workflow action",
     "showCounts": "Showing orders from %s to %s from %s",
     "print": "Print",
+    "prints": "Print forms",
+    "printId": "#",
+    "printFormName": "Form",
+    "printExtension": "Type",
+    "printDescription": "Description",
+    "addPrint": "Add form",
     "methods": {
         "tt": {
             "_title": "Task Manager",
