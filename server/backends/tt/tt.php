@@ -1740,8 +1740,8 @@
                             "metadata.type" => "print-data",
                             "metadata.name" => $print["formName"],
                         ]) && $files->addFile($print["formName"] . "-data.js", $files->contentsToStream($file), [
-                            "metadata.type" => "print-data",
-                            "metadata.name" => $print["formName"],
+                            "type" => "print-data",
+                            "name" => $print["formName"],
                         ]);
                     }
                 }
@@ -1794,8 +1794,8 @@
                             "metadata.type" => "print-formatter",
                             "metadata.name" => $print["formName"],
                         ]) && $files->addFile($print["formName"] . "-formatter.js", $files->contentsToStream($file), [
-                            "metadata.type" => "print-formatter",
-                            "metadata.name" => $print["formName"],
+                            "type" => "print-formatter",
+                            "name" => $print["formName"],
                         ]);
                     }
                 }
@@ -1819,7 +1819,11 @@
                     ]);
 
                     if ($template) {
-                        return $files->streamToContents($files->getFileStream($template[0]["id"])) ? : false;
+                        return [
+                            "body" => $files->streamToContents($files->getFileStream($template[0]["id"])),
+                            "name" => $template[0]["filename"],
+                            "size" => $template[0]["length"],
+                        ];
                     } else {
                         return false;
                     }
@@ -1833,7 +1837,7 @@
              * @param $file
              * @return mixed
              */
-            public function printSetTemplate($id, $file) {
+            public function printSetTemplate($id, $fileName, $fileBody) {
                 if (!checkInt($id)) {
                     return false;
                 }
@@ -1849,9 +1853,9 @@
                         return $files->deleteFiles([
                             "metadata.type" => "print-template",
                             "metadata.name" => $print["formName"],
-                        ]) && $files->addFile($print["formName"] . "-template." . $print["extension"], $files->contentsToStream($file), [
-                            "metadata.type" => "print-template",
-                            "metadata.name" => $print["formName"],
+                        ]) && $files->addFile($fileName, $files->contentsToStream(base64_decode($fileBody)), [
+                            "type" => "print-template",
+                            "name" => $print["formName"],
                         ]);
                     }
                 }

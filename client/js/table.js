@@ -166,7 +166,7 @@ function cardTable(params) {
                         t += ` menuItem-${tableClass}`;
                         o = true;
                     }
-                    t += `" title="${rows[i].dropDown.items[0].title}" rowId="${i}" dropDownId="0" uid="${rows[i].uid}" action="${rows[i].dropDown.items[0].action}">`;
+                    t += `" title="${rows[i].dropDown.items[0].title}" rowId="${i}" dropDownId="0" uid="${rows[i].uid}" action="${rows[i].dropDown.items[0].action?rows[i].dropDown.items[0].action:""}">`;
                     t += `<i class="${rows[i].dropDown.items[0].icon} fa-fw"></i>`;
                     t += `</span>`;
                 } else {
@@ -194,7 +194,7 @@ function cardTable(params) {
                                 t += ` menuItem-${tableClass}`;
                                 o = true;
                             }
-                            t += `" rowId="${i}" dropDownId="${j}" uid="${rows[i].uid}" action="${rows[i].dropDown.items[j].action}">`;
+                            t += `" rowId="${i}" dropDownId="${j}" uid="${rows[i].uid}" action="${rows[i].dropDown.items[j].action?rows[i].dropDown.items[j].action:""}">`;
                             if (rows[i].dropDown.items[j].icon) {
                                 t += `<i class="${rows[i].dropDown.items[j].icon} fa-fw mr-2"></i>`;
                             } else {
@@ -352,7 +352,9 @@ function cardTable(params) {
 
     function addHandlers() {
         $(".menuItem-" + tableClass).off("click").on("click", function () {
-            rows[parseInt($(this).attr("rowId"))].dropDown.items[parseInt($(this).attr("dropDownId"))].click($(this).attr("uid"), $(this).attr("action"));
+            if ($(this).attr("dropDownId") && rows[parseInt($(this).attr("rowId"))].dropDown.items[parseInt($(this).attr("dropDownId"))] && typeof rows[parseInt($(this).attr("rowId"))].dropDown.items[parseInt($(this).attr("dropDownId"))].click === "function") {
+                rows[parseInt($(this).attr("rowId"))].dropDown.items[parseInt($(this).attr("dropDownId"))].click($(this).attr("uid"), $(this).attr("action"));
+            }
         });
 
         $("." + clickableClass).off("click").on("click", function () {

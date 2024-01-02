@@ -289,6 +289,11 @@
     "downloadPrintTemplate": "Скачать шаблон",
     "deletePrintTemplate": "Удалить шаблон",
     "deletePrint": "Удалить форму",
+    "printTemplateWasUploaded": "Шаблон загружен",
+    "printTemplateWasDeleted": "Шаблон удален",
+    "confirmDeletePrintTemplate": "Удалить шаблон формы \"%s\"?",
+    "confirmDeletePrint": "Удалить форму \"%s\"?",
+    "printWasDeleted": "Форма удалена",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",

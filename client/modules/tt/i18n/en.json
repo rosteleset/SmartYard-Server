@@ -289,6 +289,11 @@
     "downloadPrintTemplate": "Download template",
     "deletePrintTemplate": "Delete template",
     "deletePrint": "Delete form",
+    "printTemplateWasUploaded": "Template was uploaded",
+    "printTemplateWasDeleted": "Template was deleted",
+    "confirmDeletePrintTemplate": "Delete template for form \"%s\"?",
+    "confirmDeletePrint": "Delete form \"%s\"?",
+    "printWasDeleted": "Form was deleted",
     "methods": {
         "tt": {
             "_title": "Task Manager",

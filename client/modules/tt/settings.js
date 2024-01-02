@@ -1257,6 +1257,7 @@
                     type: "text",
                     title: i18n("tt.printFormName"),
                     placeholder: i18n("tt.printFormName"),
+                    readOnly: true,
                     value: print.formName,
                     validate: v => {
                         return !!v.match(/^[a-zA-Z_][a-zA-Z0-9_]*$/gm);
@@ -3588,19 +3589,49 @@
     },
 
     uploadPrintTemplate: function (printId) {
-
+        loadFile([ ".docx", ".xlsx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ], false, f => {
+            loadingStart();
+            PUT("tt", "prints", printId, {
+                "mode": "template",
+                "name": f.name,
+                "body": f.body,
+            }).
+            fail(FAIL).
+            done(() => {
+                message(i18n("tt.printTemplateWasUploaded"));
+            }).
+            always(modules.tt.settings.renderPrints);
+        }, i18n("tt.uploadPrintTemplate"));
     },
 
     downloadPrintTemplate: function (printId) {
-
+        window.location.href = lStore("_server") + "/tt/prints/" + printId + "?mode=template&_token=" + encodeURIComponent(lStore("_token"));
     },
 
     deletePrintTemplate: function (printId) {
-
+        mConfirm(i18n("tt.confirmDeletePrintTemplate", printId.toString()), i18n("confirm"), `danger:${i18n("tt.deletePrintTemplate")}`, () => {
+            loadingStart();
+            DELETE("tt", "prints", printId, {
+                "mode": "template",
+            }).
+            fail(FAIL).
+            done(() => {
+                message(i18n("tt.printTemplateWasDeleted"));
+            }).
+            always(modules.tt.settings.renderPrints);
+        });
     },
 
     deletePrint: function (printId) {
-
+        mConfirm(i18n("tt.confirmDeletePrint", printId.toString()), i18n("confirm"), `danger:${i18n("tt.deletePrint")}`, () => {
+            loadingStart();
+            DELETE("tt", "prints", printId).
+            fail(FAIL).
+            done(() => {
+                message(i18n("tt.printWasDeleted"));
+            }).
+            always(modules.tt.settings.renderPrints);
+        });
     },
 
     renderPrints: function () {

@@ -29,7 +29,19 @@
                         break;
 
                     case "template":
-                        $success = $tt->printGetTemplate($params["_id"]);
+                        $template = $tt->printGetTemplate($params["_id"]);
+        
+                        if ($template) {
+                            header("Content-Disposition: attachment; filename=" . urlencode($template["name"]));
+                            header('Cache-Control: public, must-revalidate, max-age=0');
+                            header('Pragma: no-cache');
+                            header('Content-Length:' . $template["size"]);
+                            header('Content-Transfer-Encoding: binary');
+        
+                            echo $template["body"];
+        
+                            exit();
+                        }
                         break;
 
                     default:
@@ -72,7 +84,7 @@
                         break;
 
                     case "template":
-                        $success = $tt->printSetTemplate($params["_id"], $params["template"]);
+                        $success = $tt->printSetTemplate($params["_id"], $params["name"], $params["body"]);
                         break;
 
                     default:
