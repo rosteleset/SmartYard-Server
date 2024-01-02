@@ -4,23 +4,6 @@
         moduleLoaded("tt.settings", this);
     },
 
-    doAddProjectUser: function (projectId, uid, roleId) {
-        loadingStart();
-        POST("tt", "role", false, {
-            projectId: projectId,
-            uid: uid,
-            roleId: roleId,
-        }).
-        fail(FAIL).
-        fail(loadingDone).
-        done(() => {
-            message(i18n("tt.projectWasChanged"));
-        }).
-        done(() => {
-            modules.tt.settings.projectUsers(projectId);
-        });
-    },
-
     doAddProjectGroup: function (projectId, gid, roleId) {
         loadingStart();
         POST("tt", "role", false, {
@@ -546,7 +529,19 @@
                 },
             ],
             callback: function (result) {
-                modules.tt.settings.doAddProjectUser(projectId, result.uid, result.roleId);
+                loadingStart();
+                POST("tt", "role", false, {
+                    projectId: projectId,
+                    uid: result.uid,
+                    roleId: result.roleId,
+                }).
+                fail(FAIL).
+                done(() => {
+                    message(i18n("tt.projectWasChanged"));
+                }).
+                always(() => {
+                    modules.tt.settings.projectUsers(projectId);
+                });
             },
         }).show();
     },
