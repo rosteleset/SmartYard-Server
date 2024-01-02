@@ -4,22 +4,6 @@
         moduleLoaded("tt.settings", this);
     },
 
-    doAddProjectFilter: function (projectId, filter, personal) {
-        loadingStart();
-        POST("tt", "project", projectId, {
-            filter: filter,
-            personal: personal,
-        }).
-        fail(FAIL).
-        fail(loadingDone).
-        done(() => {
-            message(i18n("tt.projectWasChanged"));
-        }).
-        done(() => {
-            modules.tt.settings.projectFilters(projectId);
-        });
-    },
-
     doAddProjectUser: function (projectId, uid, roleId) {
         loadingStart();
         POST("tt", "role", false, {
@@ -1414,7 +1398,19 @@
                 },
             ],
             callback: result => {
-                modules.tt.settings.doAddProjectFilter(projectId, result.filter, result.personal)
+                loadingStart();
+                POST("tt", "project", projectId, {
+                    filter: result.filter,
+                    personal: result.personal,
+                }).
+                fail(FAIL).
+                fail(loadingDone).
+                done(() => {
+                    message(i18n("tt.projectWasChanged"));
+                }).
+                done(() => {
+                    modules.tt.settings.projectFilters(projectId);
+                });
             },
         }).show();
     },
