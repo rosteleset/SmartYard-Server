@@ -1337,6 +1337,7 @@ setInterval(() => {
     if (hasUnsavedChanges || ($("#editorContainer").length && currentAceEditor && currentAceEditorOriginalValue !== false && currentAceEditor.getValue() != currentAceEditorOriginalValue)) {
         if (typeof window.onbeforeunload != "function") {
             window.onbeforeunload = () => false;
+            $(".saveButton").addClass("text-primary");
         }
     } else {
         if (!$("#editorContainer").length) {
@@ -1345,6 +1346,7 @@ setInterval(() => {
         }
         if (typeof window.onbeforeunload == "function") {
             window.onbeforeunload = null;
+            $(".saveButton").removeClass("text-primary");
         }
     } 
 }, 1000);

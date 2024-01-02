@@ -2216,7 +2216,7 @@
             h += `<div id='editorContainer' style='width: 100%; height: ${height}px;'>`;
             h += `<pre class="ace-editor mt-2" id="workflowEditor" style="position: relative; border: 1px solid #ced4da; border-radius: 0.25rem; width: 100%; height: 100%;"></pre>`;
             h += "</div>";
-            h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="workflowSave" class="hoverable"><i class="fas fa-save pr-2"></i>${i18n("tt.workflowSave")}</span></span>`;
+            h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="workflowSave" class="hoverable saveButton"><i class="fas fa-save pr-2"></i>${i18n("tt.workflowSave")}</span></span>`;
             $("#mainForm").html(h);
             let editor = ace.edit("workflowEditor");
             editor.setTheme("ace/theme/chrome");
@@ -2376,7 +2376,7 @@
             h += `<div id='editorContainer' style='width: 100%; height: ${height}px;'>`;
             h += `<pre class="ace-editor mt-2" id="libEditor" style="position: relative; border: 1px solid #ced4da; border-radius: 0.25rem; width: 100%; height: 100%;"></pre>`;
             h += "</div>";
-            h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="libSave" class="hoverable"><i class="fas fa-save pr-2"></i>${i18n("tt.workflowLibSave")}</span></span>`;
+            h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="libSave" class="hoverable saveButton"><i class="fas fa-save pr-2"></i>${i18n("tt.workflowLibSave")}</span></span>`;
             $("#mainForm").html(h);
             let editor = ace.edit("libEditor");
             editor.setTheme("ace/theme/chrome");
@@ -2849,7 +2849,7 @@
                 h += `<pre class="ace-editor mt-2" id="filterEditor" style="position: relative; border: 1px solid #ced4da; border-radius: 0.25rem; width: 100%; height: 100%;"></pre>`;
                 h += "</div>";
                 if (!readOnly) {
-                    h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="filterSave" class="hoverable"><i class="fas fa-save pr-2"></i>${i18n("tt.filterSave")}</span></span>`;
+                    h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="filterSave" class="hoverable saveButton"><i class="fas fa-save pr-2"></i>${i18n("tt.filterSave")}</span></span>`;
                 }
                 $("#mainForm").html(h);
                 let editor = ace.edit("filterEditor");
@@ -3422,7 +3422,7 @@
             h += `<div id='editorContainer' style='width: 100%; height: ${height}px;'>`;
             h += `<pre class="ace-editor mt-2" id="viewerEditor" style="position: relative; border: 1px solid #ced4da; border-radius: 0.25rem; width: 100%; height: 100%;"></pre>`;
             h += "</div>";
-            h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="viewerSave" class="hoverable"><i class="fas fa-save pr-2"></i>${i18n("tt.viewerSave")}</span></span>`;
+            h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="viewerSave" class="hoverable saveButton"><i class="fas fa-save pr-2"></i>${i18n("tt.viewerSave")}</span></span>`;
             $("#mainForm").html(h);
             let editor = ace.edit("viewerEditor");
             editor.setTheme("ace/theme/chrome");
@@ -3746,7 +3746,7 @@
             h += `<div id='editorContainer' style='width: 100%; height: ${height}px;'>`;
             h += `<pre class="ace-editor mt-2" id="printDataEditor" style="position: relative; border: 1px solid #ced4da; border-radius: 0.25rem; width: 100%; height: 100%;"></pre>`;
             h += "</div>";
-            h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="printDataSave" class="hoverable"><i class="fas fa-save pr-2"></i>${i18n("tt.printDataSave")}</span></span>`;
+            h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="printDataSave" class="hoverable saveButton"><i class="fas fa-save pr-2"></i>${i18n("tt.printDataSave")}</span></span>`;
             $("#mainForm").html(h);
             let editor = ace.edit("printDataEditor");
             editor.setTheme("ace/theme/chrome");
@@ -3807,7 +3807,7 @@
             h += `<div id='editorContainer' style='width: 100%; height: ${height}px;'>`;
             h += `<pre class="ace-editor mt-2" id="printFormatterEditor" style="position: relative; border: 1px solid #ced4da; border-radius: 0.25rem; width: 100%; height: 100%;"></pre>`;
             h += "</div>";
-            h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="printFormatterSave" class="hoverable"><i class="fas fa-save pr-2"></i>${i18n("tt.printFormatterSave")}</span></span>`;
+            h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="printFormatterSave" class="hoverable saveButton"><i class="fas fa-save pr-2"></i>${i18n("tt.printFormatterSave")}</span></span>`;
             $("#mainForm").html(h);
             let editor = ace.edit("printFormatterEditor");
             editor.setTheme("ace/theme/chrome");

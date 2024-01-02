@@ -1436,7 +1436,7 @@
                 cs += `<pre class="ace-editor mt-2" id="filterEditor" style="position: relative; border: 1px solid #ced4da; border-radius: 0.25rem; width: 100%; height: 100%;"></pre>`;
                 cs += "</div>";
                 cs += `<span style='position: absolute; right: 35px; top: 35px;'>`;
-                cs += `<span id="filterRun" class="hoverable"><i class="fas fa-running pr-2"></i>${i18n("tt.filterRun")}</span>`;
+                cs += `<span id="filterRun" class="hoverable saveButton"><i class="fas fa-running pr-2"></i>${i18n("tt.filterRun")}</span>`;
                 cs += `</span>`;
                 cs += '</div>';
             }
