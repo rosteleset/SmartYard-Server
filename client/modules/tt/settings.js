@@ -1257,7 +1257,7 @@
                     type: "text",
                     title: i18n("tt.printFormName"),
                     placeholder: i18n("tt.printFormName"),
-                    readOnly: true,
+                    readonly: true,
                     value: print.formName,
                     validate: v => {
                         return !!v.match(/^[a-zA-Z_][a-zA-Z0-9_]*$/gm);
