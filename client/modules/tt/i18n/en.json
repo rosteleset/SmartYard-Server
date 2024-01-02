@@ -283,6 +283,12 @@
     "modifyPrint": "Modify form",
     "printWasAdded": "Form was added",
     "printWasChanged": "Form was changed",
+    "modifyPrintData": "Data script",
+    "modifyPrintFormatter": "Format script",
+    "uploadPrintTemplate": "Upload template",
+    "downloadPrintTemplate": "Download template",
+    "deletePrintTemplate": "Delete template",
+    "deletePrint": "Delete form",
     "methods": {
         "tt": {
             "_title": "Task Manager",

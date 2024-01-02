@@ -283,6 +283,12 @@
     "modifyPrint": "Изменить форму",
     "printWasAdded": "Форма добавлена",
     "printWasChanged": "Форма изменена",
+    "modifyPrintData": "Подготовка данных",
+    "modifyPrintFormatter": "Форматирование",
+    "uploadPrintTemplate": "Загрузить шаблон",
+    "downloadPrintTemplate": "Скачать шаблон",
+    "deletePrintTemplate": "Удалить шаблон",
+    "deletePrint": "Удалить форму",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",

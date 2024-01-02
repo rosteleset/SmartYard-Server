@@ -3579,6 +3579,30 @@
         fail(loadingDone);
     },
 
+    modifyPrintData: function (printId) {
+
+    },
+
+    modifyPrintFormatter: function (printId) {
+
+    },
+
+    uploadPrintTemplate: function (printId) {
+
+    },
+
+    downloadPrintTemplate: function (printId) {
+
+    },
+
+    deletePrintTemplate: function (printId) {
+
+    },
+
+    deletePrint: function (printId) {
+
+    },
+
     renderPrints: function () {
         loadingStart();
         GET("tt", "tt", false, true).
@@ -3638,6 +3662,40 @@
                             ],
                             dropDown: {
                                 items: [
+                                    {
+                                        icon: "fas fa-database",
+                                        title: i18n("tt.modifyPrintData"),
+                                        click: modules.tt.settings.modifyPrintData,
+                                    },
+                                    {
+                                        icon: "fas fa-paragraph",
+                                        title: i18n("tt.modifyPrintFormatter"),
+                                        click: modules.tt.settings.modifyPrintFormatter,
+                                    },
+                                    {
+                                        title: "-",
+                                    },
+                                    {
+                                        icon: "fas fa-upload",
+                                        title: i18n("tt.uploadPrintTemplate"),
+                                        click: modules.tt.settings.uploadPrintTemplate,
+                                    },
+                                    {
+                                        icon: "fas fa-download",
+                                        title: i18n("tt.downloadPrintTemplate"),
+                                        disabled: !modules.tt.meta.prints[i].hasTemplate,
+                                        click: modules.tt.settings.downloadPrintTemplate,
+                                    },
+                                    {
+                                        icon: "fas fa-ban",
+                                        title: i18n("tt.deletePrintTemplate"),
+                                        class: "text-danger",
+                                        disabled: !modules.tt.meta.prints[i].hasTemplate,
+                                        click: modules.tt.settings.deletePrintTemplate,
+                                    },
+                                    {
+                                        title: "-",
+                                    },
                                     {
                                         icon: "fas fa-trash-alt",
                                         title: i18n("tt.deletePrint"),
