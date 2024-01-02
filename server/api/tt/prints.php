@@ -74,6 +74,10 @@
                     case "template":
                         $success = $tt->printSetTemplate($params["_id"], $params["template"]);
                         break;
+
+                    default:
+                        $success = $tt->modifyPrint($params["_id"], $params["formName"], $params["extension"], $params["description"]);
+                        break;
                 }
 
                 return api::ANSWER($success);

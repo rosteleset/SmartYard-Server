@@ -631,7 +631,7 @@
     addPrint: function () {
         cardForm({
             title: i18n("tt.addPrint"),
-            apply: i18n("tt.addPrint"),
+            apply: i18n("add"),
             footer: true,
             borderless: true,
             topApply: true,
@@ -682,7 +682,10 @@
                 loadingStart();
                 POST("tt", "prints", false, r).
                 fail(FAIL).
-                always(modules.tt.renderPrints);
+                done(() => {
+                    message(i18n("tt.printWasAdded"));
+                }).
+                always(modules.tt.settings.renderPrints);
             },
         }).show();
     },
@@ -1229,27 +1232,42 @@
     },
 
     modifyPrint: function (printId) {
+        let print = {};
+
+        for (let i in modules.tt.meta.prints) {
+            if (modules.tt.meta.prints[i].printId == printId) {
+                print = modules.tt.meta.prints[i];
+            }
+        }
+
         cardForm({
-            title: i18n("tt.addPrint"),
-            apply: i18n("tt.addPrint"),
+            title: i18n("tt.modifyPrint"),
             footer: true,
             borderless: true,
             topApply: true,
             fields: [
                 {
+                    id: "printId",
+                    type: "text",
+                    hidden: true,
+                    value: print.printId,
+                },
+                {
                     id: "formName",
                     type: "text",
                     title: i18n("tt.printFormName"),
                     placeholder: i18n("tt.printFormName"),
+                    value: print.formName,
                     validate: v => {
                         return !!v.match(/^[a-zA-Z_][a-zA-Z0-9_]*$/gm);
-                    }
+                    },
                 },
                 {
                     id: "extension",
                     type: "select2",
                     title: i18n("tt.printExtension"),
                     placeholder: i18n("tt.printExtension"),
+                    value: print.extension,
                     options: [
                         {
                             id: "docx",
@@ -1266,20 +1284,27 @@
                     ],
                 validate: (v) => {
                         return $.trim(v) !== "";
-                    }
+                    },
                 },
                 {
                     id: "description",
                     type: "text",
                     title: i18n("tt.printDescription"),
                     placeholder: i18n("tt.printDescription"),
+                    value: print.description,
                     validate: (v) => {
                         return $.trim(v) !== "";
-                    }
+                    },
                 },
             ],
-            callback: function (result) {
-                //
+            callback: r => {
+                loadingStart();
+                PUT("tt", "prints", r.printId, r).
+                fail(FAIL).
+                done(() => {
+                    message(i18n("tt.printWasChanged"));
+                }).
+                always(modules.tt.settings.renderPrints);
             },
         }).show();
     },
@@ -3626,10 +3651,9 @@
                     return rows;
                 },
             });
-            loadingDone();
         }).
         fail(FAIL).
-        fail(loadingDone);
+        always(loadingDone);
     },
 
     route: function (params) {

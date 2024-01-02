@@ -280,6 +280,9 @@
     "printExtension": "Тип",
     "printDescription": "Описание",
     "addPrint": "Добавить форму",
+    "modifyPrint": "Изменить форму",
+    "printWasAdded": "Форма добавлена",
+    "printWasChanged": "Форма изменена",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",

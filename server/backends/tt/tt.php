@@ -1947,7 +1947,7 @@
 
                 if ($files) {
                     foreach ($_prints as &$p) {
-                        $p["hasTemplate"] = $files->searchFiles([
+                        $p["hasTemplate"] = !!$files->searchFiles([
                             "metadata.type" => "print-template",
                             "metadata.name" => $p["formName"],
                         ]);

@@ -280,6 +280,9 @@
     "printExtension": "Type",
     "printDescription": "Description",
     "addPrint": "Add form",
+    "modifyPrint": "Modify form",
+    "printWasAdded": "Form was added",
+    "printWasChanged": "Form was changed",
     "methods": {
         "tt": {
             "_title": "Task Manager",
