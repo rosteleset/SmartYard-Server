@@ -42,7 +42,9 @@
             } else {
                 editor.setValue(response.sheet, -1);
             }
-            editor.getSession().setUndoManager(new ace.UndoManager());
+            currentAceEditor = editor;
+            currentAceEditorOriginalValue = currentAceEditor.getValue();
+            editor.getSession().getUndoManager().markClean();
             editor.clearSelection();
             editor.setFontSize(14);
             editor.commands.addCommand({
@@ -65,6 +67,7 @@
                 fail(FAIL).
                 done(() => {
                     message(i18n("cs.sheetWasSaved"));
+                    currentAceEditorOriginalValue = currentAceEditor.getValue();
                 }).
                 always(() => {
                     loadingDone();

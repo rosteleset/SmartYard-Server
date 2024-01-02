@@ -16,6 +16,8 @@ var badge = false;
 var currentModule = false;
 var lStoreEngine = false;
 var hasUnsavedChanges = false;
+var currentAceEditor = false;
+var currentAceEditorOriginalValue = false;
 
 function hashChange() {
     let [ route, params, hash ] = hashParse();
@@ -1332,11 +1334,15 @@ $(window).off("resize").on("resize", () => {
 });
 
 setInterval(() => {
-    if (hasUnsavedChanges || $("#editorContainer").length) {
+    if (hasUnsavedChanges || ($("#editorContainer").length && currentAceEditor && currentAceEditorOriginalValue !== false && currentAceEditor.getValue() != currentAceEditorOriginalValue)) {
         if (typeof window.onbeforeunload != "function") {
             window.onbeforeunload = () => false;
         }
     } else {
+        if (!$("#editorContainer").length) {
+            currentAceEditor = false;
+            currentAceEditorOriginalValue = false;
+        }
         if (typeof window.onbeforeunload == "function") {
             window.onbeforeunload = null;
         }

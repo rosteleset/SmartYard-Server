@@ -4,33 +4,6 @@
         moduleLoaded("tt.settings", this);
     },
 
-    doAddResolution: function (resolution) {
-        loadingStart();
-        POST("tt", "resolution", false, {
-            resolution: resolution,
-        }).
-        fail(FAIL).
-        done(() => {
-            message(i18n("tt.resolutionWasAdded"));
-        }).
-        always(modules.tt.settings.renderResolutions);
-    },
-
-    doAddCustomField: function (catalog, type, field, fieldDisplay) {
-        loadingStart();
-        POST("tt", "customField", false, {
-            catalog: catalog,
-            type: type,
-            field: field,
-            fieldDisplay: fieldDisplay,
-        }).
-        fail(FAIL).
-        done(() => {
-            message(i18n("tt.customFieldWasAdded"));
-        }).
-        always(modules.tt.settings.renderCustomFields);
-    },
-
     doAddProjectFilter: function (projectId, filter, personal) {
         loadingStart();
         POST("tt", "project", projectId, {
@@ -439,7 +412,15 @@
                 },
             ],
             callback: function (result) {
-                modules.tt.settings.doAddResolution(result.resolution);
+                loadingStart();
+                POST("tt", "resolution", false, {
+                    resolution: result.resolution,
+                }).
+                fail(FAIL).
+                done(() => {
+                    message(i18n("tt.resolutionWasAdded"));
+                }).
+                always(modules.tt.settings.renderResolutions);
             },
         }).show();
     },
@@ -530,7 +511,18 @@
                 },
             ],
             callback: function (result) {
-                modules.tt.settings.doAddCustomField(result.catalog, result.type, result.field, result.fieldDisplay);
+                loadingStart();
+                POST("tt", "customField", false, {
+                    catalog: result.catalog,
+                    type: result.type,
+                    field: result.field,
+                    fieldDisplay: result.fieldDisplay,
+                }).
+                fail(FAIL).
+                done(() => {
+                    message(i18n("tt.customFieldWasAdded"));
+                }).
+                always(modules.tt.settings.renderCustomFields);
             },
         }).show();
     },
@@ -2235,7 +2227,9 @@
             });
             editor.session.setMode("ace/mode/lua");
             editor.setValue(w.body, -1);
-            editor.getSession().setUndoManager(new ace.UndoManager());
+            currentAceEditor = editor;
+            currentAceEditorOriginalValue = currentAceEditor.getValue();
+            editor.getSession().getUndoManager().markClean();
             editor.clearSelection();
             editor.setFontSize(14);
             editor.commands.addCommand({
@@ -2254,6 +2248,7 @@
                 fail(FAIL).
                 done(() => {
                     message(i18n("tt.workflowWasSaved"));
+                    currentAceEditorOriginalValue = currentAceEditor.getValue();
                 }).
                 always(() => {
                     loadingDone();
@@ -2392,7 +2387,9 @@
             });
             editor.session.setMode("ace/mode/lua");
             editor.setValue(l.body, -1);
-            editor.getSession().setUndoManager(new ace.UndoManager());
+            currentAceEditor = editor;
+            currentAceEditorOriginalValue = currentAceEditor.getValue();
+            editor.getSession().getUndoManager().markClean();
             editor.clearSelection();
             editor.setFontSize(14);
             editor.commands.addCommand({
@@ -2411,6 +2408,7 @@
                 fail(FAIL).
                 done(() => {
                     message(i18n("tt.workflowLibWasSaved"));
+                    currentAceEditorOriginalValue = currentAceEditor.getValue();
                 }).
                 always(() => {
                     loadingDone();
@@ -2888,7 +2886,9 @@
                 template.name = filter;
                 
                 editor.setValue((trim(f.body) == "{}")?JSON.stringify(template, null, 4):f.body , -1);
-                editor.getSession().setUndoManager(new ace.UndoManager());
+                currentAceEditor = editor;
+                currentAceEditorOriginalValue = currentAceEditor.getValue();
+                editor.getSession().getUndoManager().markClean();
                 editor.clearSelection();
                 editor.setFontSize(14);
                 editor.setReadOnly(readOnly);
@@ -3433,7 +3433,9 @@
             });
             editor.session.setMode("ace/mode/javascript");
             editor.setValue(code, -1);
-            editor.getSession().setUndoManager(new ace.UndoManager());
+            currentAceEditor = editor;
+            currentAceEditorOriginalValue = currentAceEditor.getValue();
+            editor.getSession().getUndoManager().markClean();
             editor.clearSelection();
             editor.setFontSize(14);
             editor.commands.addCommand({
@@ -3452,6 +3454,7 @@
                 fail(FAIL).
                 done(() => {
                     message(i18n("tt.viewerWasSaved"));
+                    currentAceEditorOriginalValue = currentAceEditor.getValue();
                 }).
                 always(() => {
                     loadingDone();
@@ -3754,7 +3757,9 @@
             });
             editor.session.setMode("ace/mode/javascript");
             editor.setValue(code, -1);
-            editor.getSession().setUndoManager(new ace.UndoManager());
+            currentAceEditor = editor;
+            currentAceEditorOriginalValue = currentAceEditor.getValue();
+            editor.getSession().getUndoManager().markClean();
             editor.clearSelection();
             editor.setFontSize(14);
             editor.commands.addCommand({
@@ -3776,6 +3781,7 @@
                 fail(FAIL).
                 done(() => {
                     message(i18n("tt.printDataWasSaved"));
+                    currentAceEditorOriginalValue = currentAceEditor.getValue();
                 }).
                 always(() => {
                     loadingDone();
@@ -3812,7 +3818,9 @@
             });
             editor.session.setMode("ace/mode/javascript");
             editor.setValue(code, -1);
-            editor.getSession().setUndoManager(new ace.UndoManager());
+            currentAceEditor = editor;
+            currentAceEditorOriginalValue = currentAceEditor.getValue();
+            editor.getSession().getUndoManager().markClean();
             editor.clearSelection();
             editor.setFontSize(14);
             editor.commands.addCommand({
@@ -3834,6 +3842,7 @@
                 fail(FAIL).
                 done(() => {
                     message(i18n("tt.printFormatterWasSaved"));
+                    currentAceEditorOriginalValue = currentAceEditor.getValue();
                 }).
                 always(() => {
                     loadingDone();

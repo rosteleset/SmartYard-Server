@@ -1524,8 +1524,10 @@
                     ]
                 };
                 editor.setValue(JSON.stringify(template, null, "\t"));
-                editor.getSession().setUndoManager(new ace.UndoManager());
-                editor.commands.addCommand({
+                currentAceEditor = editor;
+                currentAceEditorOriginalValue = currentAceEditor.getValue();
+                editor.getSession().getUndoManager().markClean();
+                    editor.commands.addCommand({
                     name: 'save',
                     bindKey: {
                         win: "Ctrl-S", 
@@ -1567,6 +1569,7 @@
                         done(() => {
                             message(i18n("tt.filterWasSaved"));
                             lStore("_tt_issue_filter_" + current_project, n);
+                            currentAceEditorOriginalValue = currentAceEditor.getValue();
                             location.href = '?#tt&filter=' + n + '&customSearch=yes&_=' + Math.random();                        
                         }).
                         fail(FAIL).
