@@ -1688,7 +1688,7 @@
             public function addPrint($formName, $extension, $description) {
                 $this->unCache("PRINTS");
 
-                return $this->db->insert("insert into tt_prints (form_name, extension, description) values (:form_name, :extension, :description", [
+                return $this->db->insert("insert into tt_prints (form_name, extension, description) values (:form_name, :extension, :description)", [
                     "form_name" => $formName,
                     "extension" => $extension,
                     "description" => $description,
@@ -1947,7 +1947,7 @@
 
                 if ($files) {
                     foreach ($_prints as &$p) {
-                        $p["hasTemplate"] = searchFiles([
+                        $p["hasTemplate"] = $files->searchFiles([
                             "metadata.type" => "print-template",
                             "metadata.name" => $p["formName"],
                         ]);

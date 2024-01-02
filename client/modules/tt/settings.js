@@ -390,8 +390,8 @@
                     type: "text",
                     title: i18n("tt.projectAcronym"),
                     placeholder: i18n("tt.projectAcronym"),
-                    validate: (v) => {
-                        return $.trim(v) !== "";
+                    validate: v => {
+                        return !!v.match(/^[a-zA-Z_][a-zA-Z0-9_]*$/gm);
                     }
                 },
                 {
@@ -481,9 +481,9 @@
                     type: "text",
                     title: i18n("tt.customFieldField"),
                     placeholder: i18n("tt.customFieldField"),
-                    validate: (v) => {
-                        return $.trim(v) !== "";
-                    }
+                    validate: v => {
+                        return !!v.match(/^[a-zA-Z_][a-zA-Z0-9_]*$/gm);
+                    },
                 },
                 {
                     id: "catalog",
@@ -641,8 +641,8 @@
                     type: "text",
                     title: i18n("tt.printFormName"),
                     placeholder: i18n("tt.printFormName"),
-                    validate: (v) => {
-                        return $.trim(v) !== "";
+                    validate: v => {
+                        return !!v.match(/^[a-zA-Z_][a-zA-Z0-9_]*$/gm);
                     }
                 },
                 {
@@ -664,7 +664,7 @@
                             text: "pdf",
                         },
                     ],
-                validate: (v) => {
+                    validate: (v) => {
                         return $.trim(v) !== "";
                     }
                 },
@@ -678,8 +678,11 @@
                     }
                 },
             ],
-            callback: function (result) {
-                //
+            callback: r => {
+                loadingStart();
+                POST("tt", "prints", false, r).
+                fail(FAIL).
+                always(modules.tt.renderPrints);
             },
         }).show();
     },
@@ -1238,8 +1241,8 @@
                     type: "text",
                     title: i18n("tt.printFormName"),
                     placeholder: i18n("tt.printFormName"),
-                    validate: (v) => {
-                        return $.trim(v) !== "";
+                    validate: v => {
+                        return !!v.match(/^[a-zA-Z_][a-zA-Z0-9_]*$/gm);
                     }
                 },
                 {

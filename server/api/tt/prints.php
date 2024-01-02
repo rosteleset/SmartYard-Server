@@ -45,7 +45,7 @@
                 $tt = loadBackend("tt");
                 $success = false;
 
-                switch ($params["mode"]) {
+                switch (@$params["mode"]) {
                     case "exec":
                         $success = $tt->printExec($params["_id"], $params["data"]);
                         break;
@@ -62,7 +62,7 @@
                 $tt = loadBackend("tt");
                 $success = false;
 
-                switch ($params["mode"]) {
+                switch (@$params["mode"]) {
                     case "data":
                         $success = $tt->printSetData($params["_id"], $params["data"]);
                         break;
@@ -83,7 +83,7 @@
                 $tt = loadBackend("tt");
                 $success = false;
 
-                switch ($params["mode"]) {
+                switch (@$params["mode"]) {
                     case "template":
                         $success = $tt->printDeleteTemplate($params["_id"]);
                         break;
