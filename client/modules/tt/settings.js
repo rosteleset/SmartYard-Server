@@ -4,23 +4,6 @@
         moduleLoaded("tt.settings", this);
     },
 
-    doAddProjectGroup: function (projectId, gid, roleId) {
-        loadingStart();
-        POST("tt", "role", false, {
-            projectId: projectId,
-            gid: gid,
-            roleId: roleId,
-        }).
-        fail(FAIL).
-        fail(loadingDone).
-        done(() => {
-            message(i18n("tt.projectWasChanged"));
-        }).
-        done(() => {
-            modules.tt.settings.projectGroups(projectId);
-        });
-    },
-
     doAddTag: function (projectId, tag, foreground, background) {
         loadingStart();
         POST("tt", "tag", false, {
@@ -582,7 +565,20 @@
                 },
             ],
             callback: function (result) {
-                modules.tt.settings.doAddProjectGroup(projectId, result.gid, result.roleId);
+                loadingStart();
+                POST("tt", "role", false, {
+                    projectId: projectId,
+                    gid: result.gid,
+                    roleId: result.roleId,
+                }).
+                fail(FAIL).
+                fail(loadingDone).
+                done(() => {
+                    message(i18n("tt.projectWasChanged"));
+                }).
+                always(() => {
+                    modules.tt.settings.projectGroups(projectId);
+                });
             },
         }).show();
     },
