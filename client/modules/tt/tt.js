@@ -1526,7 +1526,7 @@
                 editor.setValue(JSON.stringify(template, null, "\t"));
                 currentAceEditor = editor;
                 currentAceEditorOriginalValue = currentAceEditor.getValue();
-                editor.getSession().getUndoManager().markClean();
+                editor.getSession().getUndoManager().reset();
                     editor.commands.addCommand({
                     name: 'save',
                     bindKey: {

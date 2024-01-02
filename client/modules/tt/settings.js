@@ -2220,7 +2220,7 @@
             editor.setValue(w.body, -1);
             currentAceEditor = editor;
             currentAceEditorOriginalValue = currentAceEditor.getValue();
-            editor.getSession().getUndoManager().markClean();
+            editor.getSession().getUndoManager().reset();
             editor.clearSelection();
             editor.setFontSize(14);
             editor.commands.addCommand({
@@ -2380,7 +2380,7 @@
             editor.setValue(l.body, -1);
             currentAceEditor = editor;
             currentAceEditorOriginalValue = currentAceEditor.getValue();
-            editor.getSession().getUndoManager().markClean();
+            editor.getSession().getUndoManager().reset();
             editor.clearSelection();
             editor.setFontSize(14);
             editor.commands.addCommand({
@@ -2879,7 +2879,7 @@
                 editor.setValue((trim(f.body) == "{}")?JSON.stringify(template, null, 4):f.body , -1);
                 currentAceEditor = editor;
                 currentAceEditorOriginalValue = currentAceEditor.getValue();
-                editor.getSession().getUndoManager().markClean();
+                editor.getSession().getUndoManager().reset();
                 editor.clearSelection();
                 editor.setFontSize(14);
                 editor.setReadOnly(readOnly);
@@ -3426,7 +3426,7 @@
             editor.setValue(code, -1);
             currentAceEditor = editor;
             currentAceEditorOriginalValue = currentAceEditor.getValue();
-            editor.getSession().getUndoManager().markClean();
+            editor.getSession().getUndoManager().reset();
             editor.clearSelection();
             editor.setFontSize(14);
             editor.commands.addCommand({
@@ -3750,7 +3750,7 @@
             editor.setValue(code, -1);
             currentAceEditor = editor;
             currentAceEditorOriginalValue = currentAceEditor.getValue();
-            editor.getSession().getUndoManager().markClean();
+            editor.getSession().getUndoManager().reset();
             editor.clearSelection();
             editor.setFontSize(14);
             editor.commands.addCommand({
@@ -3811,7 +3811,7 @@
             editor.setValue(code, -1);
             currentAceEditor = editor;
             currentAceEditorOriginalValue = currentAceEditor.getValue();
-            editor.getSession().getUndoManager().markClean();
+            editor.getSession().getUndoManager().reset();
             editor.clearSelection();
             editor.setFontSize(14);
             editor.commands.addCommand({

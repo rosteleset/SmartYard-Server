@@ -44,7 +44,7 @@
             }
             currentAceEditor = editor;
             currentAceEditorOriginalValue = currentAceEditor.getValue();
-            editor.getSession().getUndoManager().markClean();
+            editor.getSession().getUndoManager().reset();
             editor.clearSelection();
             editor.setFontSize(14);
             editor.commands.addCommand({
