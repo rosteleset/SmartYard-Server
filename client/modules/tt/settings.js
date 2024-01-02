@@ -3667,8 +3667,6 @@
                 rows: () => {
                     let rows = [];
 
-                    console.log(modules.tt.meta.prints);
-
                     for (let i in modules.tt.meta.prints) {
                         rows.push({
                             uid: modules.tt.meta.prints[i].printId,
