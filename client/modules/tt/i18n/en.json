@@ -294,6 +294,10 @@
     "confirmDeletePrintTemplate": "Delete template for form \"%s\"?",
     "confirmDeletePrint": "Delete form \"%s\"?",
     "printWasDeleted": "Form was deleted",
+    "printDataSave": "Save",
+    "printFormatterSave": "Save",
+    "printDataWasSaved": "Data script was saved",
+    "printFormatterWasSaved": "Format script was saved",
     "methods": {
         "tt": {
             "_title": "Task Manager",

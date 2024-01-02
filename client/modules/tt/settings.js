@@ -3581,11 +3581,11 @@
     },
 
     modifyPrintData: function (printId) {
-
+        location.href = `?#tt.settings&section=printData&printId=${printId}`;
     },
 
     modifyPrintFormatter: function (printId) {
-
+        location.href = `?#tt.settings&section=printFormatter&printId=${printId}`;
     },
 
     uploadPrintTemplate: function (printId) {
@@ -3745,6 +3745,124 @@
         always(loadingDone);
     },
 
+    renderPrintData: function (printId) {
+        loadingStart();
+        QUERY("tt", "prints", {
+            "_id": printId,
+            "mode": "data",
+        }, true).
+        done(v => {
+            let code = (v && v.data)?v.data:`//function data (issue) {\n\treturn {};\n//}\n`;
+            let height = $(window).height() - mainFormTop;
+            let h = '';
+            h += `<div id='editorContainer' style='width: 100%; height: ${height}px;'>`;
+            h += `<pre class="ace-editor mt-2" id="printDataEditor" style="position: relative; border: 1px solid #ced4da; border-radius: 0.25rem; width: 100%; height: 100%;"></pre>`;
+            h += "</div>";
+            h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="printDataSave" class="hoverable"><i class="fas fa-save pr-2"></i>${i18n("tt.printDataSave")}</span></span>`;
+            $("#mainForm").html(h);
+            let editor = ace.edit("printDataEditor");
+            editor.setTheme("ace/theme/chrome");
+            editor.setOptions({
+                enableBasicAutocompletion: true,
+                enableSnippets: true,
+                enableLiveAutocompletion: true,
+            });
+            editor.session.setMode("ace/mode/javascript");
+            editor.setValue(code, -1);
+            editor.getSession().setUndoManager(new ace.UndoManager());
+            editor.getSession().setUndoManager(new ace.UndoManager());
+            editor.clearSelection();
+            editor.setFontSize(14);
+            editor.commands.addCommand({
+                name: 'save',
+                bindKey: {
+                    win: "Ctrl-S", 
+                    mac: "Cmd-S"
+                },
+                exec: (() => {
+                    $("#printDataSave").click();
+                }),
+            });
+            $("#printDataSave").off("click").on("click", () => {
+                loadingStart();
+                PUT("tt", "prints", printId, {
+                    "mode": "data",
+                    "data": textRTrim($.trim(editor.getValue())),
+                }).
+                fail(FAIL).
+                done(() => {
+                    message(i18n("tt.printDataWasSaved"));
+                }).
+                always(() => {
+                    loadingDone();
+                });
+            });
+        }).
+        fail(FAIL).
+        always(() => {
+            loadingDone();
+        });
+    },
+
+    renderPrintFormatter: function (printId) {
+        loadingStart();
+        QUERY("tt", "prints", {
+            "_id": printId,
+            "mode": "formatter",
+        }, true).
+        done(v => {
+            let code = (v && v.formatter)?v.formatter:"";
+            let height = $(window).height() - mainFormTop;
+            let h = '';
+            h += `<div id='editorContainer' style='width: 100%; height: ${height}px;'>`;
+            h += `<pre class="ace-editor mt-2" id="printFormatterEditor" style="position: relative; border: 1px solid #ced4da; border-radius: 0.25rem; width: 100%; height: 100%;"></pre>`;
+            h += "</div>";
+            h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="printFormatterSave" class="hoverable"><i class="fas fa-save pr-2"></i>${i18n("tt.printFormatterSave")}</span></span>`;
+            $("#mainForm").html(h);
+            let editor = ace.edit("printFormatterEditor");
+            editor.setTheme("ace/theme/chrome");
+            editor.setOptions({
+                enableBasicAutocompletion: true,
+                enableSnippets: true,
+                enableLiveAutocompletion: true,
+            });
+            editor.session.setMode("ace/mode/javascript");
+            editor.setValue(code, -1);
+            editor.getSession().setUndoManager(new ace.UndoManager());
+            editor.getSession().setUndoManager(new ace.UndoManager());
+            editor.clearSelection();
+            editor.setFontSize(14);
+            editor.commands.addCommand({
+                name: 'save',
+                bindKey: {
+                    win: "Ctrl-S", 
+                    mac: "Cmd-S"
+                },
+                exec: (() => {
+                    $("#printFormatterSave").click();
+                }),
+            });
+            $("#printFormatterSave").off("click").on("click", () => {
+                loadingStart();
+                PUT("tt", "prints", printId, {
+                    "mode": "formatter",
+                    "formatter": textRTrim($.trim(editor.getValue())),
+                }).
+                fail(FAIL).
+                done(() => {
+                    message(i18n("tt.printFormatterWasSaved"));
+                }).
+                always(() => {
+                    loadingDone();
+                });
+            });
+        }).
+        fail(FAIL).
+        always(() => {
+            loadingDone();
+        });
+    },
+
     route: function (params) {
         $("#altForm").hide();
         $("#subTop").html("");
@@ -3761,7 +3879,7 @@
             "roles",
             "customs",
             "viewers",
-            "print",
+            "prints",
         ];
 
         let section = params["section"]?params["section"]:"projects";
@@ -3833,16 +3951,16 @@
                 modules.tt.settings.renderViewers();
                 break;
 
-            case "print":
+            case "prints":
                 modules.tt.settings.renderPrints();
                 break;
     
             case "printData":
-                modules.tt.settings.renderPrintData();
+                modules.tt.settings.renderPrintData(params["printId"]);
                 break;
         
             case "printFormatter":
-                modules.tt.settings.renderPrintFormatter();
+                modules.tt.settings.renderPrintFormatter(params["printId"]);
                 break;
             
             default:

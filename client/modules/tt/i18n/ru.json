@@ -294,6 +294,10 @@
     "confirmDeletePrintTemplate": "Удалить шаблон формы \"%s\"?",
     "confirmDeletePrint": "Удалить форму \"%s\"?",
     "printWasDeleted": "Форма удалена",
+    "printDataSave": "Сохранить",
+    "printFormatterSave": "Сохранить",
+    "printDataWasSaved": "Скрипт данных сохранен",
+    "printFormatterWasSaved": "Скрипт форматирования сохранен",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",
