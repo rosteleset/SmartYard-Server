@@ -274,7 +274,7 @@
     "workflowAction": "Workflow action",
     "showCounts": "Showing orders from %s to %s from %s",
     "print": "Print",
-    "prints": "Print forms",
+    "prints": "Print",
     "printId": "#",
     "printFormName": "Form",
     "printExtension": "Type",

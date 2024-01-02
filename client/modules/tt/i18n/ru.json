@@ -274,7 +274,7 @@
     "workflowAction": "Действие рабочего процесса",
     "showCounts": "Показаны задачи с %s по %s из %s",
     "print": "Печать",
-    "prints": "Печатные формы",
+    "prints": "Печать",
     "printId": "#",
     "printFormName": "Форма",
     "printExtension": "Тип",
