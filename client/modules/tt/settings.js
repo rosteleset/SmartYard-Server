@@ -4,35 +4,6 @@
         moduleLoaded("tt.settings", this);
     },
 
-    /*
-        action functions
-     */
-
-    doAddProject: function (acronym, project) {
-        loadingStart();
-        POST("tt", "project", false, {
-            acronym: acronym,
-            project: project,
-        }).
-        fail(FAIL).
-        done(() => {
-            message(i18n("tt.projectWasAdded"));
-        }).
-        always(modules.tt.settings.renderProjects);
-    },
-
-    doAddStatus: function (status) {
-        loadingStart();
-        POST("tt", "status", false, {
-            status: status,
-        }).
-        fail(FAIL).
-        done(() => {
-            message(i18n("tt.statusWasAdded"));
-        }).
-        always(modules.tt.settings.renderStatuses);
-    },
-
     doAddResolution: function (resolution) {
         loadingStart();
         POST("tt", "resolution", false, {
@@ -405,7 +376,16 @@
                 },
             ],
             callback: function (result) {
-                modules.tt.settings.doAddProject(result.acronym, result.project);
+                loadingStart();
+                POST("tt", "project", false, {
+                    acronym: result.acronym,
+                    project: result.project,
+                }).
+                fail(FAIL).
+                done(() => {
+                    message(i18n("tt.projectWasAdded"));
+                }).
+                always(modules.tt.settings.renderProjects);
             },
         }).show();
     },
@@ -428,7 +408,15 @@
                 },
             ],
             callback: function (result) {
-                modules.tt.settings.doAddStatus(result.status);
+                loadingStart();
+                POST("tt", "status", false, {
+                    status: result.status,
+                }).
+                fail(FAIL).
+                done(() => {
+                    message(i18n("tt.statusWasAdded"));
+                }).
+                always(modules.tt.settings.renderStatuses);
             },
         }).show();
     },
