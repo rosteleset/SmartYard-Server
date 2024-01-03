@@ -4,34 +4,6 @@
         moduleLoaded("tt.settings", this);
     },
 
-    doAddTag: function (projectId, tag, foreground, background) {
-        loadingStart();
-        POST("tt", "tag", false, {
-            projectId: projectId,
-            tag: tag,
-            foreground,
-            background,
-        }).
-        fail(FAIL).
-        fail(loadingDone).
-        done(() => {
-            message(i18n("tt.projectWasChanged"));
-        }).
-        done(() => {
-            modules.tt.settings.projectTags(projectId);
-        });
-    },
-
-    doAddCrontab: function (crontab) {
-        loadingStart();
-        POST("tt", "crontab", false, crontab).
-        fail(FAIL).
-        done(() => {
-            message(i18n("tt.crontabWasAdded"));
-        }).
-        always(modules.tt.settings.renderCrontabs);
-    },
-
     doDeleteCrontab: function (crontabId) {
         loadingStart();
         DELETE("tt", "crontab", crontabId).
@@ -572,7 +544,6 @@
                     roleId: result.roleId,
                 }).
                 fail(FAIL).
-                fail(loadingDone).
                 done(() => {
                     message(i18n("tt.projectWasChanged"));
                 }).
@@ -1894,7 +1865,20 @@
                                     },
                                 ],
                                 callback: f => {
-                                    modules.tt.settings.doAddTag(projectId, f.tag, f.foreground, f.background);
+                                    loadingStart();
+                                    POST("tt", "tag", false, {
+                                        projectId: projectId,
+                                        tag: f.tag,
+                                        foreground: f.foreground,
+                                        background: f.background,
+                                    }).
+                                    fail(FAIL).
+                                    done(() => {
+                                        message(i18n("tt.projectWasChanged"));
+                                    }).
+                                    always(() => {
+                                        modules.tt.settings.projectTags(projectId);
+                                    });
                                 },
                             });
                         },
@@ -3162,12 +3146,10 @@
                             select: (el, id, prefix) => {
                                 $(`#${prefix}filter`).html("").select2({
                                     data: filtersByProject(el.val()),
-//                                    minimumResultsForSearch: Infinity,
                                     language: lang["_code"],
                                 });
                                 $(`#${prefix}uid`).html("").select2({
                                     data: uidsByProject(el.val()),
-//                                    minimumResultsForSearch: Infinity,
                                     language: lang["_code"],
                                 });
                             },
@@ -3202,7 +3184,15 @@
                             },
                         },
                     ],
-                    callback: modules.tt.settings.doAddCrontab,
+                    callback: f => {
+                        loadingStart();
+                        POST("tt", "crontab", false, f).
+                        fail(FAIL).
+                        done(() => {
+                            message(i18n("tt.crontabWasAdded"));
+                        }).
+                        always(modules.tt.settings.renderCrontabs);
+                    },
                 }).show();
             }).
             fail(FAIL).
