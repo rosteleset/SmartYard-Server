@@ -24,7 +24,7 @@ function redisInit() {
 }
 
 redis.connect().then(() => {
-    if (config.redis.password) {
+    if (config && config.redis && config.redis.password) {
         redis.auth(config.redis.password).then(redisInit);
     } else {
         redisInit();
