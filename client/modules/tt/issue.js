@@ -1330,7 +1330,12 @@
                         }).
                         fail(FAIL).
                         done(r => {
-                            console.log(r);
+                            if (r && r.file) {
+                                let link = document.createElement('a');
+                                link.href = lStore("_server") + "/print/" + r.file;
+                                link.target = "_blank";
+                                link.click();
+                            }
                         }).
                         always(() => {
                             loadingDone();

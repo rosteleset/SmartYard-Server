@@ -215,7 +215,9 @@
 
     "document_builder": {
         "bin": "/opt/onlyoffice/documentbuilder/docbuilder",
-        "tmp": "/tmp/print"
+        "tmp": "/tmp/print",
+        "www_user": "www-data",
+        "www_group": "www-data"
     },
 
     "syslog_servers": {

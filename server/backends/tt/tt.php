@@ -1686,7 +1686,7 @@
              * @return mixed
              */
             public function addPrint($formName, $extension, $description) {
-                $this->unCache("PRINTS");
+                $this->clearCache();
 
                 return $this->db->insert("insert into tt_prints (form_name, extension, description) values (:form_name, :extension, :description)", [
                     "form_name" => $formName,
@@ -1848,7 +1848,7 @@
                     $files = loadBackend("files");
 
                     if ($files) {
-                        $this->unCache("PRINTS");
+                        $this->clearCache();
 
                         return $files->deleteFiles([
                             "metadata.type" => "print-template",
@@ -1878,7 +1878,7 @@
                     $files = loadBackend("files");
 
                     if ($files) {
-                        $this->unCache("PRINTS");
+                        $this->clearCache();
 
                         return $files->deleteFiles([
                             "metadata.type" => "print-template",
@@ -1902,7 +1902,7 @@
                     return false;
                 }
 
-                $this->unCache("PRINTS");
+                $this->clearCache();
 
                 return $this->db->modify("update tt_prints set form_name = :form_name, extension = :extension, description = :description where tt_print_id = $id", [
                     "form_name" => $formName,
@@ -1993,7 +1993,7 @@
                     }
                 }
 
-                $this->unCache("PRINTS");
+                $this->clearCache();
 
                 return $this->db->modify("delete from tt_prints where tt_print_id = $id");
             }
@@ -2004,9 +2004,63 @@
              * @return mixed
              */
             public function printExec($id, $data) {
-                return [
-                    "url" => "https://ya.ru",
-                ];
+                $tmp = md5(time() . rand());
+
+                $print = $this->getPrint($id);
+
+                if (!$print) {
+                    setLastError("printNotFound");
+                    return false;
+                }
+
+                $path = rtrim(@$this->config["document_builder"]["tmp"]?:"/tmp/print", "/");
+                $bin = @$this->config["document_builder"]["bin"]?:"/opt/onlyoffice/documentbuilder/docbuilder";
+                $user = @$this->config["document_builder"]["www_user"]?:"www-data";
+                $group = @$this->config["document_builder"]["www_group"]?:"www-data";
+
+                if (!is_dir($path)) {
+                    mkdir($path);
+                    chmod($path, 0775);
+                    @chown($path, $user);
+                    @chgrp($path, $group);
+                }
+
+                $template = @$this->printGetTemplate($id);
+                $formatter = @$this->printGetFormatter($id);
+
+                if (!$formatter) {
+                    setLastError("formatterNotDefined");
+                    return false;
+                }
+
+                if ($template) {
+                    $templateExt = explode(".", $template["name"]);
+                    $templateExt = $templateExt[count($templateExt) - 1];
+                    $templateName = "$path/$tmp-tmp.$templateExt";
+                    file_put_contents($templateName, $template["body"]);
+                    $formatter = str_replace('${templateName}', $templateName, $formatter);
+                }
+
+                $outFile = "$path/$tmp-out.{$print["extension"]}";
+
+                $formatter = str_replace('${outFile}', $outFile, $formatter);
+                $formatter = str_replace('${extension}', $print["extension"], $formatter);
+                $formatter = str_replace('${tmp}', $path, $formatter);
+
+                $formatter = "var data = " . json_encode($data). ";\n\n" . $formatter;
+
+                file_put_contents($path . "/" . $tmp . "-bld.docbuilder", $formatter);
+
+                $log = [];
+                exec("$bin $path/$tmp-bld.docbuilder 2>&1", $log);
+
+                file_put_contents("$path/$tmp-log.log", implode("\n", $log));
+
+                if (file_exists($outFile)) {
+                    return "$tmp-out.{$print["extension"]}";
+                } else {
+                    return false;
+                }
             }
 
             /**

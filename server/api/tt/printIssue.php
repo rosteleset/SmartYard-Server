@@ -19,7 +19,7 @@
 
                 $success = $tt->printExec($params["_id"], $params["data"]);
 
-                return api::ANSWER($success, ($success !== false)?"form":"notAcceptable");
+                return api::ANSWER($success, ($success !== false)?"file":"cantGenerateForm");
             }
 
             public static function index() {
