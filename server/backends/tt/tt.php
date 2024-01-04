@@ -2108,13 +2108,13 @@
                 }
 
                 try {
-                    if ($part == "hourly") {
+                    if ($part == "minutely") {
                         $path = @$this->config["document_builder"]["tmp"]?:"/tmp/print";
                         $user = @$this->config["document_builder"]["www_user"]?:"www-data";
                         $group = @$this->config["document_builder"]["www_group"]?:"www-data";
                         if (is_dir($path)) {
                             $fileSystemIterator = new \FilesystemIterator($path);
-                            $threshold = strtotime('-2 hours');
+                            $threshold = strtotime('-15 min');
                             foreach ($fileSystemIterator as $file) {
                                 if ($threshold >= $file->getCTime()) {
                                     unlink($file->getRealPath());
