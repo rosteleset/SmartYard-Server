@@ -273,6 +273,31 @@
     "unlinkIssues": "Удалить связь между \"%s\" и \"%s\"?",
     "workflowAction": "Действие рабочего процесса",
     "showCounts": "Показаны задачи с %s по %s из %s",
+    "print": "Печать",
+    "prints": "Печать",
+    "printId": "#",
+    "printFormName": "Форма (код)",
+    "printExtension": "Тип",
+    "printDescription": "Описание",
+    "addPrint": "Добавить форму",
+    "modifyPrint": "Изменить форму",
+    "printWasAdded": "Форма добавлена",
+    "printWasChanged": "Форма изменена",
+    "modifyPrintData": "Подготовка данных",
+    "modifyPrintFormatter": "Форматирование",
+    "uploadPrintTemplate": "Загрузить шаблон",
+    "downloadPrintTemplate": "Скачать шаблон",
+    "deletePrintTemplate": "Удалить шаблон",
+    "deletePrint": "Удалить форму",
+    "printTemplateWasUploaded": "Шаблон загружен",
+    "printTemplateWasDeleted": "Шаблон удален",
+    "confirmDeletePrintTemplate": "Удалить шаблон формы \"%s\"?",
+    "confirmDeletePrint": "Удалить форму \"%s\"?",
+    "printWasDeleted": "Форма удалена",
+    "printDataSave": "Сохранить",
+    "printFormatterSave": "Сохранить",
+    "printDataWasSaved": "Скрипт данных сохранен",
+    "printFormatterWasSaved": "Скрипт форматирования сохранен",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",
@@ -308,6 +333,8 @@
         "insufficentRights": "Недостаточно прав для выполнения операции",
         "filterNotFound": "Фильтр не найден",
         "invalidFilter": "Фильтр содержит ошибки, сохранение невозможно",
-        "functionNotFound": "Функция %s не найдена"
+        "functionNotFound": "Функция %s не найдена",
+        "errorInFunction": "Ошибка вызова функции данных",
+        "cantGenerateForm": "Ошибка при генерации документа"
     }
 }

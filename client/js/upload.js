@@ -11,19 +11,22 @@ const mime2fa = {
     ".ods": "far fa-fw fa-file-excel",
     ".xlsx": "far fa-fw fa-file-excel",
     ".xls": "far fa-fw fa-file-excel",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "far fa-fw fa-file-word",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": "far fa-fw fa-file-excel",
 };
 
-function uploadForm(mimeTypes) {
+function uploadForm(mimeTypes, button) {
     mimeTypes = mimeTypes?escapeHTML(mimeTypes.join(",")):"";
 
+    $("#fileInput").attr("accept", mimeTypes);
     $("#uploadModalTitle").text(i18n("upload"));
     $("#uploadModalCancel").attr("title", i18n("cancel"));
     $("#chooseFileToUpload").text(i18n("chooseFile"));
-    $("#uploadButton").text(i18n("doUpload"));
+    $("#uploadButton").text(button?button:i18n("doUpload"));
 }    
 
-function loadFile(mimeTypes, maxSize, callback) {
-    uploadForm(mimeTypes);
+function loadFile(mimeTypes, maxSize, callback, button) {
+    uploadForm(mimeTypes, button);
 
     let files = [];
     let file = false;
@@ -70,10 +73,10 @@ function loadFile(mimeTypes, maxSize, callback) {
                 } else {
                     icon = mime2fa[false];
                 }
-                $("#fileIcon").html(`<h1><i class="${icon}"></i></h1>`);
+                $("#fileIcon").html(`<h1><i class="fa fa-fw ${icon}"></i></h1>`);
                 $("#fileIcon").attr("title", file.name);
                 $("#uploadFileInfo").html(`
-                    ${file.name}<br />
+                    <span class="font-weight-bold">${file.name}</span><br />
                     ${i18n("fileSize")}: ${formatBytes(file.size)}<br />
                     ${i18n("fileDate")}: ${date("Y-m-d H:i", file.lastModified / 1000)}<br />
                     ${i18n("fileType")}: ${file.type}<br />

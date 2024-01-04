@@ -1436,7 +1436,7 @@
                 cs += `<pre class="ace-editor mt-2" id="filterEditor" style="position: relative; border: 1px solid #ced4da; border-radius: 0.25rem; width: 100%; height: 100%;"></pre>`;
                 cs += "</div>";
                 cs += `<span style='position: absolute; right: 35px; top: 35px;'>`;
-                cs += `<span id="filterRun" class="hoverable"><i class="fas fa-running pr-2"></i>${i18n("tt.filterRun")}</span>`;
+                cs += `<span id="filterRun" class="hoverable saveButton"><i class="fas fa-running pr-2"></i>${i18n("tt.filterRun")}</span>`;
                 cs += `</span>`;
                 cs += '</div>';
             }
@@ -1524,8 +1524,10 @@
                     ]
                 };
                 editor.setValue(JSON.stringify(template, null, "\t"));
-                editor.getSession().setUndoManager(new ace.UndoManager());
-                editor.commands.addCommand({
+                currentAceEditor = editor;
+                currentAceEditorOriginalValue = currentAceEditor.getValue();
+                editor.getSession().getUndoManager().reset();
+                    editor.commands.addCommand({
                     name: 'save',
                     bindKey: {
                         win: "Ctrl-S", 
@@ -1567,6 +1569,7 @@
                         done(() => {
                             message(i18n("tt.filterWasSaved"));
                             lStore("_tt_issue_filter_" + current_project, n);
+                            currentAceEditorOriginalValue = currentAceEditor.getValue();
                             location.href = '?#tt&filter=' + n + '&customSearch=yes&_=' + Math.random();                        
                         }).
                         fail(FAIL).

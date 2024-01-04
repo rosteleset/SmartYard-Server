@@ -25,10 +25,9 @@ mobile:
   time_zone: Europe/Moscow
   guest_access: turnOnOnly
   cctv_view: map
-
-  # Active app's tab at start. One of: addresses, notifications, chat, pay, menu. The default value is addresses
+  _comments_active_tab: 'Active app''s tab at start. One of: addresses, notifications,
+    chat, pay, menu. The default value is addresses'
   active_tab: addresses
-
 db:
   dsn: pgsql:host=127.0.0.1;port=5433;dbname=rbt
   username: rbt
@@ -74,16 +73,21 @@ backends:
     backend: clickhouse
   plog:
     backend: clickhouse
-    time_shift: "<!-- your time shift in seconds from current time as the end timepoint
-      for processing plog_* tables (hint 60) --!>"
-    max_call_length: "<!-- your max call length in seconds for backward processing
+    _comment_time_shift: "<!-- your time shift in seconds from current time as the
+      end timepoint for processing plog_* tables (hint 60) --!>"
+    time_shift: 60
+    _comment_max_call_length: "<!-- your max call length in seconds for backward processing
       call events (hint 120) --!>"
-    ttl_temp_record: "<!-- your time to live in seconds for temporary data in plog_*
-      tables (hint 86400 - one day) --!>"
-    ttl_camshot_days: "<!-- your time to live in days for camshots (hint 180 - approx.
-      half year) --!>"
-    back_time_shift_video_shot: "<!-- your back time shift in seconds for receiving
-      video shot from media server (hint 3) --!>"
+    max_call_length: 120
+    _comment_ttl_temp_record: "<!-- your time to live in seconds for temporary data
+      in plog_* tables (hint 86400 - one day) --!>"
+    ttl_temp_record: 86400
+    _comment_ttl_camshot_days: "<!-- your time to live in days for camshots (hint
+      180 - approx. half year) --!>"
+    ttl_camshot_days: 180
+    _comment_back_time_shift_video_shot: "<!-- your back time shift in seconds for
+      receiving video shot from media server (hint 3) --!>"
+    back_time_shift_video_shot: 3
     cron_process_events_scheduler: minutely
   configs:
     backend: json
@@ -138,6 +142,14 @@ backends:
     mqtt: mqtt://127.0.0.1:1883
     username: rbt
     password: "<!-- your mosquitto password here --!>"
+  issue_adapter:
+    backend: lanta
+    tt_url: "<!-- your tt url here --!>"
+    tt_token: "<!-- your tt bearer token here --!>"
+    anti_spam_interval: "<!-- your minimum interval in seconds which permits creating
+      similar issue (hint 86400 - one day) --!>"
+  queue:
+    backend: internal
 email:
   server: 127.0.0.1
   port: 587
@@ -146,6 +158,9 @@ email:
   from: RBT
 telegram:
   bot: "<!-- your telegram bot token here --!>"
+document_builder:
+  bin: "/opt/onlyoffice/documentbuilder/docbuilder"
+  tmp: "/tmp/print"
 syslog_servers:
   beward:
   - syslog.udp:127.0.0.1:45450
@@ -162,6 +177,6 @@ syslog_servers:
   rubetek:
   - syslog.udp:127.0.0.1:45456
   sputnik:
-  - https://your-https-server/events/sputnik:45457
+  - https://your-http(s)-server:45457/events/sputnik
 ntp_servers:
 - ntp:<-- your ntp server ip here -->:123

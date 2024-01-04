@@ -4,140 +4,6 @@
         moduleLoaded("tt.settings", this);
     },
 
-    /*
-        action functions
-     */
-
-    doAddProject: function (acronym, project) {
-        loadingStart();
-        POST("tt", "project", false, {
-            acronym: acronym,
-            project: project,
-        }).
-        fail(FAIL).
-        done(() => {
-            message(i18n("tt.projectWasAdded"));
-        }).
-        always(modules.tt.settings.renderProjects);
-    },
-
-    doAddStatus: function (status) {
-        loadingStart();
-        POST("tt", "status", false, {
-            status: status,
-        }).
-        fail(FAIL).
-        done(() => {
-            message(i18n("tt.statusWasAdded"));
-        }).
-        always(modules.tt.settings.renderStatuses);
-    },
-
-    doAddResolution: function (resolution) {
-        loadingStart();
-        POST("tt", "resolution", false, {
-            resolution: resolution,
-        }).
-        fail(FAIL).
-        done(() => {
-            message(i18n("tt.resolutionWasAdded"));
-        }).
-        always(modules.tt.settings.renderResolutions);
-    },
-
-    doAddCustomField: function (catalog, type, field, fieldDisplay) {
-        loadingStart();
-        POST("tt", "customField", false, {
-            catalog: catalog,
-            type: type,
-            field: field,
-            fieldDisplay: fieldDisplay,
-        }).
-        fail(FAIL).
-        done(() => {
-            message(i18n("tt.customFieldWasAdded"));
-        }).
-        always(modules.tt.settings.renderCustomFields);
-    },
-
-    doAddProjectFilter: function (projectId, filter, personal) {
-        loadingStart();
-        POST("tt", "project", projectId, {
-            filter: filter,
-            personal: personal,
-        }).
-        fail(FAIL).
-        fail(loadingDone).
-        done(() => {
-            message(i18n("tt.projectWasChanged"));
-        }).
-        done(() => {
-            modules.tt.settings.projectFilters(projectId);
-        });
-    },
-
-    doAddProjectUser: function (projectId, uid, roleId) {
-        loadingStart();
-        POST("tt", "role", false, {
-            projectId: projectId,
-            uid: uid,
-            roleId: roleId,
-        }).
-        fail(FAIL).
-        fail(loadingDone).
-        done(() => {
-            message(i18n("tt.projectWasChanged"));
-        }).
-        done(() => {
-            modules.tt.settings.projectUsers(projectId);
-        });
-    },
-
-    doAddProjectGroup: function (projectId, gid, roleId) {
-        loadingStart();
-        POST("tt", "role", false, {
-            projectId: projectId,
-            gid: gid,
-            roleId: roleId,
-        }).
-        fail(FAIL).
-        fail(loadingDone).
-        done(() => {
-            message(i18n("tt.projectWasChanged"));
-        }).
-        done(() => {
-            modules.tt.settings.projectGroups(projectId);
-        });
-    },
-
-    doAddTag: function (projectId, tag, foreground, background) {
-        loadingStart();
-        POST("tt", "tag", false, {
-            projectId: projectId,
-            tag: tag,
-            foreground,
-            background,
-        }).
-        fail(FAIL).
-        fail(loadingDone).
-        done(() => {
-            message(i18n("tt.projectWasChanged"));
-        }).
-        done(() => {
-            modules.tt.settings.projectTags(projectId);
-        });
-    },
-
-    doAddCrontab: function (crontab) {
-        loadingStart();
-        POST("tt", "crontab", false, crontab).
-        fail(FAIL).
-        done(() => {
-            message(i18n("tt.crontabWasAdded"));
-        }).
-        always(modules.tt.settings.renderCrontabs);
-    },
-
     doDeleteCrontab: function (crontabId) {
         loadingStart();
         DELETE("tt", "crontab", crontabId).
@@ -390,8 +256,8 @@
                     type: "text",
                     title: i18n("tt.projectAcronym"),
                     placeholder: i18n("tt.projectAcronym"),
-                    validate: (v) => {
-                        return $.trim(v) !== "";
+                    validate: v => {
+                        return !!v.match(/^[a-zA-Z_][a-zA-Z0-9_]*$/gm);
                     }
                 },
                 {
@@ -405,7 +271,16 @@
                 },
             ],
             callback: function (result) {
-                modules.tt.settings.doAddProject(result.acronym, result.project);
+                loadingStart();
+                POST("tt", "project", false, {
+                    acronym: result.acronym,
+                    project: result.project,
+                }).
+                fail(FAIL).
+                done(() => {
+                    message(i18n("tt.projectWasAdded"));
+                }).
+                always(modules.tt.settings.renderProjects);
             },
         }).show();
     },
@@ -428,7 +303,15 @@
                 },
             ],
             callback: function (result) {
-                modules.tt.settings.doAddStatus(result.status);
+                loadingStart();
+                POST("tt", "status", false, {
+                    status: result.status,
+                }).
+                fail(FAIL).
+                done(() => {
+                    message(i18n("tt.statusWasAdded"));
+                }).
+                always(modules.tt.settings.renderStatuses);
             },
         }).show();
     },
@@ -451,7 +334,15 @@
                 },
             ],
             callback: function (result) {
-                modules.tt.settings.doAddResolution(result.resolution);
+                loadingStart();
+                POST("tt", "resolution", false, {
+                    resolution: result.resolution,
+                }).
+                fail(FAIL).
+                done(() => {
+                    message(i18n("tt.resolutionWasAdded"));
+                }).
+                always(modules.tt.settings.renderResolutions);
             },
         }).show();
     },
@@ -481,9 +372,9 @@
                     type: "text",
                     title: i18n("tt.customFieldField"),
                     placeholder: i18n("tt.customFieldField"),
-                    validate: (v) => {
-                        return $.trim(v) !== "";
-                    }
+                    validate: v => {
+                        return !!v.match(/^[a-zA-Z_][a-zA-Z0-9_]*$/gm);
+                    },
                 },
                 {
                     id: "catalog",
@@ -542,7 +433,18 @@
                 },
             ],
             callback: function (result) {
-                modules.tt.settings.doAddCustomField(result.catalog, result.type, result.field, result.fieldDisplay);
+                loadingStart();
+                POST("tt", "customField", false, {
+                    catalog: result.catalog,
+                    type: result.type,
+                    field: result.field,
+                    fieldDisplay: result.fieldDisplay,
+                }).
+                fail(FAIL).
+                done(() => {
+                    message(i18n("tt.customFieldWasAdded"));
+                }).
+                always(modules.tt.settings.renderCustomFields);
             },
         }).show();
     },
@@ -582,7 +484,19 @@
                 },
             ],
             callback: function (result) {
-                modules.tt.settings.doAddProjectUser(projectId, result.uid, result.roleId);
+                loadingStart();
+                POST("tt", "role", false, {
+                    projectId: projectId,
+                    uid: result.uid,
+                    roleId: result.roleId,
+                }).
+                fail(FAIL).
+                done(() => {
+                    message(i18n("tt.projectWasChanged"));
+                }).
+                always(() => {
+                    modules.tt.settings.projectUsers(projectId);
+                });
             },
         }).show();
     },
@@ -623,7 +537,81 @@
                 },
             ],
             callback: function (result) {
-                modules.tt.settings.doAddProjectGroup(projectId, result.gid, result.roleId);
+                loadingStart();
+                POST("tt", "role", false, {
+                    projectId: projectId,
+                    gid: result.gid,
+                    roleId: result.roleId,
+                }).
+                fail(FAIL).
+                done(() => {
+                    message(i18n("tt.projectWasChanged"));
+                }).
+                always(() => {
+                    modules.tt.settings.projectGroups(projectId);
+                });
+            },
+        }).show();
+    },
+
+    addPrint: function () {
+        cardForm({
+            title: i18n("tt.addPrint"),
+            apply: i18n("add"),
+            footer: true,
+            borderless: true,
+            topApply: true,
+            fields: [
+                {
+                    id: "formName",
+                    type: "text",
+                    title: i18n("tt.printFormName"),
+                    placeholder: i18n("tt.printFormName"),
+                    validate: v => {
+                        return !!v.match(/^[a-zA-Z_][a-zA-Z0-9_]*$/gm);
+                    }
+                },
+                {
+                    id: "extension",
+                    type: "select2",
+                    title: i18n("tt.printExtension"),
+                    placeholder: i18n("tt.printExtension"),
+                    options: [
+                        {
+                            id: "docx",
+                            text: "docx",
+                        },
+                        {
+                            id: "xlsx",
+                            text: "xlsx",
+                        },
+                        {
+                            id: "pdf",
+                            text: "pdf",
+                        },
+                    ],
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
+                },
+                {
+                    id: "description",
+                    type: "text",
+                    title: i18n("tt.printDescription"),
+                    placeholder: i18n("tt.printDescription"),
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    }
+                },
+            ],
+            callback: r => {
+                loadingStart();
+                POST("tt", "prints", false, r).
+                fail(FAIL).
+                done(() => {
+                    message(i18n("tt.printWasAdded"));
+                }).
+                always(modules.tt.settings.renderPrints);
             },
         }).show();
     },
@@ -1169,6 +1157,85 @@
         always(loadingDone);
     },
 
+    modifyPrint: function (printId) {
+        let print = {};
+
+        for (let i in modules.tt.meta.prints) {
+            if (modules.tt.meta.prints[i].printId == printId) {
+                print = modules.tt.meta.prints[i];
+            }
+        }
+
+        cardForm({
+            title: i18n("tt.modifyPrint"),
+            footer: true,
+            borderless: true,
+            topApply: true,
+            fields: [
+                {
+                    id: "printId",
+                    type: "text",
+                    hidden: true,
+                    value: print.printId,
+                },
+                {
+                    id: "formName",
+                    type: "text",
+                    title: i18n("tt.printFormName"),
+                    placeholder: i18n("tt.printFormName"),
+                    readonly: true,
+                    value: print.formName,
+                    validate: v => {
+                        return !!v.match(/^[a-zA-Z_][a-zA-Z0-9_]*$/gm);
+                    },
+                },
+                {
+                    id: "extension",
+                    type: "select2",
+                    title: i18n("tt.printExtension"),
+                    placeholder: i18n("tt.printExtension"),
+                    value: print.extension,
+                    options: [
+                        {
+                            id: "docx",
+                            text: "docx",
+                        },
+                        {
+                            id: "xlsx",
+                            text: "xlsx",
+                        },
+                        {
+                            id: "pdf",
+                            text: "pdf",
+                        },
+                    ],
+                validate: (v) => {
+                        return $.trim(v) !== "";
+                    },
+                },
+                {
+                    id: "description",
+                    type: "text",
+                    title: i18n("tt.printDescription"),
+                    placeholder: i18n("tt.printDescription"),
+                    value: print.description,
+                    validate: (v) => {
+                        return $.trim(v) !== "";
+                    },
+                },
+            ],
+            callback: r => {
+                loadingStart();
+                PUT("tt", "prints", r.printId, r).
+                fail(FAIL).
+                done(() => {
+                    message(i18n("tt.printWasChanged"));
+                }).
+                always(modules.tt.settings.renderPrints);
+            },
+        }).show();
+    },
+
     deleteProject: function (projectId) {
         mConfirm(i18n("tt.confirmProjectDelete", projectId.toString()), i18n("confirm"), `danger:${i18n("tt.projectDelete")}`, () => {
             modules.tt.settings.doDeleteProject(projectId);
@@ -1293,7 +1360,19 @@
                 },
             ],
             callback: result => {
-                modules.tt.settings.doAddProjectFilter(projectId, result.filter, result.personal)
+                loadingStart();
+                POST("tt", "project", projectId, {
+                    filter: result.filter,
+                    personal: result.personal,
+                }).
+                fail(FAIL).
+                fail(loadingDone).
+                done(() => {
+                    message(i18n("tt.projectWasChanged"));
+                }).
+                done(() => {
+                    modules.tt.settings.projectFilters(projectId);
+                });
             },
         }).show();
     },
@@ -1786,7 +1865,20 @@
                                     },
                                 ],
                                 callback: f => {
-                                    modules.tt.settings.doAddTag(projectId, f.tag, f.foreground, f.background);
+                                    loadingStart();
+                                    POST("tt", "tag", false, {
+                                        projectId: projectId,
+                                        tag: f.tag,
+                                        foreground: f.foreground,
+                                        background: f.background,
+                                    }).
+                                    fail(FAIL).
+                                    done(() => {
+                                        message(i18n("tt.projectWasChanged"));
+                                    }).
+                                    always(() => {
+                                        modules.tt.settings.projectTags(projectId);
+                                    });
                                 },
                             });
                         },
@@ -2095,7 +2187,7 @@
             h += `<div id='editorContainer' style='width: 100%; height: ${height}px;'>`;
             h += `<pre class="ace-editor mt-2" id="workflowEditor" style="position: relative; border: 1px solid #ced4da; border-radius: 0.25rem; width: 100%; height: 100%;"></pre>`;
             h += "</div>";
-            h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="workflowSave" class="hoverable"><i class="fas fa-save pr-2"></i>${i18n("tt.workflowSave")}</span></span>`;
+            h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="workflowSave" class="hoverable saveButton"><i class="fas fa-save pr-2"></i>${i18n("tt.workflowSave")}</span></span>`;
             $("#mainForm").html(h);
             let editor = ace.edit("workflowEditor");
             editor.setTheme("ace/theme/chrome");
@@ -2106,7 +2198,9 @@
             });
             editor.session.setMode("ace/mode/lua");
             editor.setValue(w.body, -1);
-            editor.getSession().setUndoManager(new ace.UndoManager());
+            currentAceEditor = editor;
+            currentAceEditorOriginalValue = currentAceEditor.getValue();
+            editor.getSession().getUndoManager().reset();
             editor.clearSelection();
             editor.setFontSize(14);
             editor.commands.addCommand({
@@ -2125,6 +2219,7 @@
                 fail(FAIL).
                 done(() => {
                     message(i18n("tt.workflowWasSaved"));
+                    currentAceEditorOriginalValue = currentAceEditor.getValue();
                 }).
                 always(() => {
                     loadingDone();
@@ -2252,7 +2347,7 @@
             h += `<div id='editorContainer' style='width: 100%; height: ${height}px;'>`;
             h += `<pre class="ace-editor mt-2" id="libEditor" style="position: relative; border: 1px solid #ced4da; border-radius: 0.25rem; width: 100%; height: 100%;"></pre>`;
             h += "</div>";
-            h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="libSave" class="hoverable"><i class="fas fa-save pr-2"></i>${i18n("tt.workflowLibSave")}</span></span>`;
+            h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="libSave" class="hoverable saveButton"><i class="fas fa-save pr-2"></i>${i18n("tt.workflowLibSave")}</span></span>`;
             $("#mainForm").html(h);
             let editor = ace.edit("libEditor");
             editor.setTheme("ace/theme/chrome");
@@ -2263,7 +2358,9 @@
             });
             editor.session.setMode("ace/mode/lua");
             editor.setValue(l.body, -1);
-            editor.getSession().setUndoManager(new ace.UndoManager());
+            currentAceEditor = editor;
+            currentAceEditorOriginalValue = currentAceEditor.getValue();
+            editor.getSession().getUndoManager().reset();
             editor.clearSelection();
             editor.setFontSize(14);
             editor.commands.addCommand({
@@ -2282,6 +2379,7 @@
                 fail(FAIL).
                 done(() => {
                     message(i18n("tt.workflowLibWasSaved"));
+                    currentAceEditorOriginalValue = currentAceEditor.getValue();
                 }).
                 always(() => {
                     loadingDone();
@@ -2722,7 +2820,7 @@
                 h += `<pre class="ace-editor mt-2" id="filterEditor" style="position: relative; border: 1px solid #ced4da; border-radius: 0.25rem; width: 100%; height: 100%;"></pre>`;
                 h += "</div>";
                 if (!readOnly) {
-                    h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="filterSave" class="hoverable"><i class="fas fa-save pr-2"></i>${i18n("tt.filterSave")}</span></span>`;
+                    h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="filterSave" class="hoverable saveButton"><i class="fas fa-save pr-2"></i>${i18n("tt.filterSave")}</span></span>`;
                 }
                 $("#mainForm").html(h);
                 let editor = ace.edit("filterEditor");
@@ -2759,7 +2857,9 @@
                 template.name = filter;
                 
                 editor.setValue((trim(f.body) == "{}")?JSON.stringify(template, null, 4):f.body , -1);
-                editor.getSession().setUndoManager(new ace.UndoManager());
+                currentAceEditor = editor;
+                currentAceEditorOriginalValue = currentAceEditor.getValue();
+                editor.getSession().getUndoManager().reset();
                 editor.clearSelection();
                 editor.setFontSize(14);
                 editor.setReadOnly(readOnly);
@@ -3046,12 +3146,10 @@
                             select: (el, id, prefix) => {
                                 $(`#${prefix}filter`).html("").select2({
                                     data: filtersByProject(el.val()),
-//                                    minimumResultsForSearch: Infinity,
                                     language: lang["_code"],
                                 });
                                 $(`#${prefix}uid`).html("").select2({
                                     data: uidsByProject(el.val()),
-//                                    minimumResultsForSearch: Infinity,
                                     language: lang["_code"],
                                 });
                             },
@@ -3086,7 +3184,15 @@
                             },
                         },
                     ],
-                    callback: modules.tt.settings.doAddCrontab,
+                    callback: f => {
+                        loadingStart();
+                        POST("tt", "crontab", false, f).
+                        fail(FAIL).
+                        done(() => {
+                            message(i18n("tt.crontabWasAdded"));
+                        }).
+                        always(modules.tt.settings.renderCrontabs);
+                    },
                 }).show();
             }).
             fail(FAIL).
@@ -3293,7 +3399,7 @@
             h += `<div id='editorContainer' style='width: 100%; height: ${height}px;'>`;
             h += `<pre class="ace-editor mt-2" id="viewerEditor" style="position: relative; border: 1px solid #ced4da; border-radius: 0.25rem; width: 100%; height: 100%;"></pre>`;
             h += "</div>";
-            h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="viewerSave" class="hoverable"><i class="fas fa-save pr-2"></i>${i18n("tt.viewerSave")}</span></span>`;
+            h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="viewerSave" class="hoverable saveButton"><i class="fas fa-save pr-2"></i>${i18n("tt.viewerSave")}</span></span>`;
             $("#mainForm").html(h);
             let editor = ace.edit("viewerEditor");
             editor.setTheme("ace/theme/chrome");
@@ -3304,8 +3410,9 @@
             });
             editor.session.setMode("ace/mode/javascript");
             editor.setValue(code, -1);
-            editor.getSession().setUndoManager(new ace.UndoManager());
-            editor.getSession().setUndoManager(new ace.UndoManager());
+            currentAceEditor = editor;
+            currentAceEditorOriginalValue = currentAceEditor.getValue();
+            editor.getSession().getUndoManager().reset();
             editor.clearSelection();
             editor.setFontSize(14);
             editor.commands.addCommand({
@@ -3324,6 +3431,7 @@
                 fail(FAIL).
                 done(() => {
                     message(i18n("tt.viewerWasSaved"));
+                    currentAceEditorOriginalValue = currentAceEditor.getValue();
                 }).
                 always(() => {
                     loadingDone();
@@ -3439,6 +3547,291 @@
         fail(loadingDone);
     },
 
+    modifyPrintData: function (printId) {
+        location.href = `?#tt.settings&section=printData&printId=${printId}`;
+    },
+
+    modifyPrintFormatter: function (printId) {
+        location.href = `?#tt.settings&section=printFormatter&printId=${printId}`;
+    },
+
+    uploadPrintTemplate: function (printId) {
+        loadFile([ ".docx", ".xlsx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ], false, f => {
+            loadingStart();
+            PUT("tt", "prints", printId, {
+                "mode": "template",
+                "name": f.name,
+                "body": f.body,
+            }).
+            fail(FAIL).
+            done(() => {
+                message(i18n("tt.printTemplateWasUploaded"));
+            }).
+            always(modules.tt.settings.renderPrints);
+        }, i18n("tt.uploadPrintTemplate"));
+    },
+
+    downloadPrintTemplate: function (printId) {
+        window.location.href = lStore("_server") + "/tt/prints/" + printId + "?mode=template&_token=" + encodeURIComponent(lStore("_token"));
+    },
+
+    deletePrintTemplate: function (printId) {
+        mConfirm(i18n("tt.confirmDeletePrintTemplate", printId.toString()), i18n("confirm"), `danger:${i18n("tt.deletePrintTemplate")}`, () => {
+            loadingStart();
+            DELETE("tt", "prints", printId, {
+                "mode": "template",
+            }).
+            fail(FAIL).
+            done(() => {
+                message(i18n("tt.printTemplateWasDeleted"));
+            }).
+            always(modules.tt.settings.renderPrints);
+        });
+    },
+
+    deletePrint: function (printId) {
+        mConfirm(i18n("tt.confirmDeletePrint", printId.toString()), i18n("confirm"), `danger:${i18n("tt.deletePrint")}`, () => {
+            loadingStart();
+            DELETE("tt", "prints", printId).
+            fail(FAIL).
+            done(() => {
+                message(i18n("tt.printWasDeleted"));
+            }).
+            always(modules.tt.settings.renderPrints);
+        });
+    },
+
+    renderPrints: function () {
+        loadingStart();
+        GET("tt", "tt", false, true).
+        done(modules.tt.tt).
+        done(() => {
+            cardTable({
+                target: "#mainForm",
+                title: {
+                    button: {
+                        caption: i18n("tt.addPrint"),
+                        click: modules.tt.settings.addPrint,
+                    },
+                    caption: i18n("tt.prints"),
+                    filter: true,
+                },
+                columns: [
+                    {
+                        title: i18n("tt.printId"),
+                    },
+                    {
+                        title: i18n("tt.printFormName"),
+                    },
+                    {
+                        title: i18n("tt.printExtension"),
+                    },
+                    {
+                        title: i18n("tt.printDescription"),
+                        fullWidth: true,
+                    },
+                ],
+                edit: modules.tt.settings.modifyPrint,
+                rows: () => {
+                    let rows = [];
+
+                    for (let i in modules.tt.meta.prints) {
+                        rows.push({
+                            uid: modules.tt.meta.prints[i].printId,
+                            cols: [
+                                {
+                                    data: modules.tt.meta.prints[i].printId,
+                                    nowrap: true,
+                                },
+                                {
+                                    data: modules.tt.meta.prints[i].formName,
+                                    nowrap: true,
+                                },
+                                {
+                                    data: modules.tt.meta.prints[i].extension,
+                                    nowrap: true,
+                                },
+                                {
+                                    data: modules.tt.meta.prints[i].description,
+                                    nowrap: true,
+                                },
+                            ],
+                            dropDown: {
+                                items: [
+                                    {
+                                        icon: "fas fa-database",
+                                        title: i18n("tt.modifyPrintData"),
+                                        click: modules.tt.settings.modifyPrintData,
+                                    },
+                                    {
+                                        icon: "fas fa-paragraph",
+                                        title: i18n("tt.modifyPrintFormatter"),
+                                        click: modules.tt.settings.modifyPrintFormatter,
+                                    },
+                                    {
+                                        title: "-",
+                                    },
+                                    {
+                                        icon: "fas fa-upload",
+                                        title: i18n("tt.uploadPrintTemplate"),
+                                        click: modules.tt.settings.uploadPrintTemplate,
+                                    },
+                                    {
+                                        icon: "fas fa-download",
+                                        title: i18n("tt.downloadPrintTemplate"),
+                                        disabled: !modules.tt.meta.prints[i].hasTemplate,
+                                        click: modules.tt.settings.downloadPrintTemplate,
+                                    },
+                                    {
+                                        icon: "fas fa-ban",
+                                        title: i18n("tt.deletePrintTemplate"),
+                                        class: "text-danger",
+                                        disabled: !modules.tt.meta.prints[i].hasTemplate,
+                                        click: modules.tt.settings.deletePrintTemplate,
+                                    },
+                                    {
+                                        title: "-",
+                                    },
+                                    {
+                                        icon: "fas fa-trash-alt",
+                                        title: i18n("tt.deletePrint"),
+                                        class: "text-danger",
+                                        click: modules.tt.settings.deletePrint,
+                                    },
+                                ],
+                            },
+                        });
+                    }
+                    return rows;
+                },
+            });
+        }).
+        fail(FAIL).
+        always(loadingDone);
+    },
+
+    renderPrintData: function (printId) {
+        loadingStart();
+        QUERY("tt", "prints", {
+            "_id": printId,
+            "mode": "data",
+        }, true).
+        done(v => {
+            let code = (v && v.data)?v.data:`//function data (issue, callback) {\n\tcallback(issue);\n//}\n`;
+            let height = $(window).height() - mainFormTop;
+            let h = '';
+            h += `<div id='editorContainer' style='width: 100%; height: ${height}px;'>`;
+            h += `<pre class="ace-editor mt-2" id="printDataEditor" style="position: relative; border: 1px solid #ced4da; border-radius: 0.25rem; width: 100%; height: 100%;"></pre>`;
+            h += "</div>";
+            h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="printDataSave" class="hoverable saveButton"><i class="fas fa-save pr-2"></i>${i18n("tt.printDataSave")}</span></span>`;
+            $("#mainForm").html(h);
+            let editor = ace.edit("printDataEditor");
+            editor.setTheme("ace/theme/chrome");
+            editor.setOptions({
+                enableBasicAutocompletion: true,
+                enableSnippets: true,
+                enableLiveAutocompletion: true,
+            });
+            editor.session.setMode("ace/mode/javascript");
+            editor.setValue(code, -1);
+            currentAceEditor = editor;
+            currentAceEditorOriginalValue = currentAceEditor.getValue();
+            editor.getSession().getUndoManager().reset();
+            editor.clearSelection();
+            editor.setFontSize(14);
+            editor.commands.addCommand({
+                name: 'save',
+                bindKey: {
+                    win: "Ctrl-S", 
+                    mac: "Cmd-S"
+                },
+                exec: (() => {
+                    $("#printDataSave").click();
+                }),
+            });
+            $("#printDataSave").off("click").on("click", () => {
+                loadingStart();
+                PUT("tt", "prints", printId, {
+                    "mode": "data",
+                    "data": textRTrim($.trim(editor.getValue())),
+                }).
+                fail(FAIL).
+                done(() => {
+                    message(i18n("tt.printDataWasSaved"));
+                    currentAceEditorOriginalValue = currentAceEditor.getValue();
+                }).
+                always(() => {
+                    loadingDone();
+                });
+            });
+        }).
+        fail(FAIL).
+        always(() => {
+            loadingDone();
+        });
+    },
+
+    renderPrintFormatter: function (printId) {
+        loadingStart();
+        QUERY("tt", "prints", {
+            "_id": printId,
+            "mode": "formatter",
+        }, true).
+        done(v => {
+            let code = (v && v.formatter)?v.formatter:"";
+            let height = $(window).height() - mainFormTop;
+            let h = '';
+            h += `<div id='editorContainer' style='width: 100%; height: ${height}px;'>`;
+            h += `<pre class="ace-editor mt-2" id="printFormatterEditor" style="position: relative; border: 1px solid #ced4da; border-radius: 0.25rem; width: 100%; height: 100%;"></pre>`;
+            h += "</div>";
+            h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="printFormatterSave" class="hoverable saveButton"><i class="fas fa-save pr-2"></i>${i18n("tt.printFormatterSave")}</span></span>`;
+            $("#mainForm").html(h);
+            let editor = ace.edit("printFormatterEditor");
+            editor.setTheme("ace/theme/chrome");
+            editor.setOptions({
+                enableBasicAutocompletion: true,
+                enableSnippets: true,
+                enableLiveAutocompletion: true,
+            });
+            editor.session.setMode("ace/mode/javascript");
+            editor.setValue(code, -1);
+            currentAceEditor = editor;
+            currentAceEditorOriginalValue = currentAceEditor.getValue();
+            editor.getSession().getUndoManager().reset();
+            editor.clearSelection();
+            editor.setFontSize(14);
+            editor.commands.addCommand({
+                name: 'save',
+                bindKey: {
+                    win: "Ctrl-S", 
+                    mac: "Cmd-S"
+                },
+                exec: (() => {
+                    $("#printFormatterSave").click();
+                }),
+            });
+            $("#printFormatterSave").off("click").on("click", () => {
+                loadingStart();
+                PUT("tt", "prints", printId, {
+                    "mode": "formatter",
+                    "formatter": textRTrim($.trim(editor.getValue())),
+                }).
+                fail(FAIL).
+                done(() => {
+                    message(i18n("tt.printFormatterWasSaved"));
+                    currentAceEditorOriginalValue = currentAceEditor.getValue();
+                }).
+                always(() => {
+                    loadingDone();
+                });
+            });
+        }).
+        fail(FAIL).
+        always(() => {
+            loadingDone();
+        });
+    },
+
     route: function (params) {
         $("#altForm").hide();
         $("#subTop").html("");
@@ -3455,6 +3848,7 @@
             "roles",
             "customs",
             "viewers",
+            "prints",
         ];
 
         let section = params["section"]?params["section"]:"projects";
@@ -3526,6 +3920,18 @@
                 modules.tt.settings.renderViewers();
                 break;
 
+            case "prints":
+                modules.tt.settings.renderPrints();
+                break;
+    
+            case "printData":
+                modules.tt.settings.renderPrintData(params["printId"]);
+                break;
+        
+            case "printFormatter":
+                modules.tt.settings.renderPrintFormatter(params["printId"]);
+                break;
+            
             default:
                 modules.tt.settings.renderProjects();
                 break;

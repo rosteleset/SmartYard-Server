@@ -16,6 +16,8 @@ var badge = false;
 var currentModule = false;
 var lStoreEngine = false;
 var hasUnsavedChanges = false;
+var currentAceEditor = false;
+var currentAceEditorOriginalValue = false;
 
 function hashChange() {
     let [ route, params, hash ] = hashParse();
@@ -198,7 +200,7 @@ function showForgotPasswordForm() {
 }
 
 function ping(server) {
-    return jQuery.ajax({
+    return $.ajax({
         url: server + "/server/ping",
         type: "POST",
         contentType: "json",
@@ -230,7 +232,7 @@ function login() {
     lStore("_server", server);
 
     ping(server).then(() => {
-        return jQuery.ajax({
+        return $.ajax({
             url: server + "/authentication/login",
             type: "POST",
             contentType: "json",
@@ -834,7 +836,7 @@ function leftSide(button, title, target, group, withibleOnlyWhenActive) {
     let id = md5(guid());
 
     $("#leftside-menu").append(`
-        <li id="${id}" class="nav-item ${mainSidebarFirst?"mt-1":""} ${withibleOnlyWhenActive?" withibleOnlyWhenActive":""}" data-target="${target}" title="${escapeHTML(title)}"${(withibleOnlyWhenActive && target !== "#" + route.split('.')[0])?" style='display: none;'":""}>
+        <li id="${id}" class="nav-item${mainSidebarFirst?" mt-2":""}${withibleOnlyWhenActive?" withibleOnlyWhenActive":""}" data-target="${target}" title="${escapeHTML(title)}"${(withibleOnlyWhenActive && target !== "#" + route.split('.')[0])?" style='display: none;'":""}>
             <a href="${target}" data-href="${target}" class="nav-link${(target === "#" + route.split('.')[0])?" active":""}">
                 <i class="${button} nav-icon"></i>
                 <p class="text-nowrap">${title}</p>
@@ -887,7 +889,9 @@ function loadModule() {
         .fail(FAIL)
         .always(() => {
             $.getScript("modules/" + module + "/" + module + ".js")
-            .fail(FAIL);
+            .fail(() => {
+                pageError(i18n("errorLoadingModule", module));
+            });
         });
     }
 }
@@ -1216,10 +1220,18 @@ function QUERY(api, method, query, fresh) {
 }
 
 function GET(api, method, id, fresh) {
+    let l = lStore("_lang");
+    if (!l) {
+        l = config.defaultLanguage;
+    }
+    if (!l) {
+        l = "ru";
+    }
     return $.ajax({
         url: lStore("_server") + "/" + encodeURIComponent(api) + "/" + encodeURIComponent(method) + ((typeof id !== "undefined" && id !== false)?("/" + encodeURIComponent(id)):""),
         beforeSend: xhr => {
             xhr.setRequestHeader("Authorization", "Bearer " + lStore("_token"));
+            xhr.setRequestHeader("Lang", l);
             if (fresh) {
                 xhr.setRequestHeader("X-Api-Refresh", "1");
             }
@@ -1230,10 +1242,18 @@ function GET(api, method, id, fresh) {
 }
 
 function AJAX(type, api, method, id, query) {
+    let l = lStore("_lang");
+    if (!l) {
+        l = config.defaultLanguage;
+    }
+    if (!l) {
+        l = "ru";
+    }
     return $.ajax({
         url: lStore("_server") + "/" + encodeURIComponent(api) + "/" + encodeURIComponent(method) + ((typeof id !== "undefined" && id !== false)?("/" + encodeURIComponent(id)):""),
         beforeSend: xhr => {
             xhr.setRequestHeader("Authorization", "Bearer " + lStore("_token"));
+            xhr.setRequestHeader("Lang", l);
         },
         type: type,
         contentType: "json",
@@ -1263,7 +1283,7 @@ function FAIL(response) {
             }, 5000);
         }
     } else {
-        error(i18n("errors.unknown"), i18n("error"), 30);
+        error(i18n("errors.unknown"), i18n("errorCode", response.status), 30);
     }
 }
 
@@ -1272,7 +1292,7 @@ function FAILPAGE(response) {
         error(i18n("errors." + response.responseJSON.error), i18n("error"), 30);
         pageError(i18n("errors." + response.responseJSON.error));
     } else {
-        error(i18n("errors.unknown"), i18n("error"), 30);
+        error(i18n("errors.unknown"), i18n("errorCode", response.status), 30);
         pageError();
     }
     loadingDone();
@@ -1314,13 +1334,19 @@ $(window).off("resize").on("resize", () => {
 });
 
 setInterval(() => {
-    if (hasUnsavedChanges || $("#editorContainer").length) {
+    if (hasUnsavedChanges || ($("#editorContainer").length && currentAceEditor && currentAceEditorOriginalValue !== false && currentAceEditor.getValue() != currentAceEditorOriginalValue)) {
         if (typeof window.onbeforeunload != "function") {
             window.onbeforeunload = () => false;
+            $(".saveButton").addClass("text-primary");
         }
     } else {
+        if (!$("#editorContainer").length) {
+            currentAceEditor = false;
+            currentAceEditorOriginalValue = false;
+        }
         if (typeof window.onbeforeunload == "function") {
             window.onbeforeunload = null;
+            $(".saveButton").removeClass("text-primary");
         }
     } 
 }, 1000);

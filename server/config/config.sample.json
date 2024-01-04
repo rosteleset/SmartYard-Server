@@ -225,6 +225,13 @@
         "bot": "<!-- your telegram bot token here --!>"
     },
 
+    "document_builder": {
+        "bin": "/opt/onlyoffice/documentbuilder/docbuilder",
+        "tmp": "/tmp/print",
+        "www_user": "www-data",
+        "www_group": "www-data"
+    },
+
     "syslog_servers": {
         "beward": [
             "syslog.udp:127.0.0.1:45450"

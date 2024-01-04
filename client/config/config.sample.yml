@@ -1,23 +1,16 @@
 ---
-defaultServer: http://localhost:8000/server/frontend.php
+defaultServer: https://example.com/frontend
 defaultLanguage: ru
 languages:
   ru: Русский
+  en: English
 modules:
-- mqtt
-- tt
-- cs
 - asterisk
 - addresses
-- users
-- groups
-- permissions
-- providers
 - about
-- geocoder
 defaultRoute: "#about"
-logo: lanta
-ws: false
+logo: rbt
+ws: wss://example.com/wss
 ice:
 - urls:
   - stun:stun.l.google.com:19302
@@ -30,5 +23,6 @@ map:
     zoom: 13
   min: 4
   max: 18
-sipDomain: 10.7.26.2
-phonePattern: "+7 (###) ###-##-##"
+phonePattern: '7 (###) ###-##-##'
+sipDomain: "<!-- your asterisk server external ip here -->"
+printUrl: https://tt.lanta.me/print

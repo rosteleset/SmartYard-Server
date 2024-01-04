@@ -36,7 +36,6 @@
                 if (loadBackend("tt")) {
                     return [
                         "GET" => "#same(tt,tt,GET)",
-                        "POST" => "#same(tt,project,POST)",
                         "PUT" => "#same(tt,project,PUT)",
                         "DELETE" => "#same(tt,project,DELETE)",
                     ];
