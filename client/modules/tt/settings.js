@@ -3717,7 +3717,7 @@
             "mode": "data",
         }, true).
         done(v => {
-            let code = (v && v.data)?v.data:`//function data (issue) {\n\treturn {};\n//}\n`;
+            let code = (v && v.data)?v.data:`//function data (issue, callback) {\n\tcallback(issue);\n//}\n`;
             let height = $(window).height() - mainFormTop;
             let h = '';
             h += `<div id='editorContainer' style='width: 100%; height: ${height}px;'>`;

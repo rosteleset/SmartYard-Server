@@ -200,7 +200,7 @@ function showForgotPasswordForm() {
 }
 
 function ping(server) {
-    return jQuery.ajax({
+    return $.ajax({
         url: server + "/server/ping",
         type: "POST",
         contentType: "json",
@@ -232,7 +232,7 @@ function login() {
     lStore("_server", server);
 
     ping(server).then(() => {
-        return jQuery.ajax({
+        return $.ajax({
             url: server + "/authentication/login",
             type: "POST",
             contentType: "json",

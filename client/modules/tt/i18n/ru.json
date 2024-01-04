@@ -333,6 +333,7 @@
         "insufficentRights": "Недостаточно прав для выполнения операции",
         "filterNotFound": "Фильтр не найден",
         "invalidFilter": "Фильтр содержит ошибки, сохранение невозможно",
-        "functionNotFound": "Функция %s не найдена"
+        "functionNotFound": "Функция %s не найдена",
+        "errorInFunction": "Ошибка вызова функции данных"
     }
 }

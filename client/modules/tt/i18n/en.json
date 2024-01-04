@@ -333,6 +333,7 @@
         "insufficientRights": "Insufficient rights to perform the operation",
         "filterNotFound": "Filter not found",
         "invalidFilter": "Filter contains errors, cannot be saved",
-        "functionNotFound": "Function %s not found"
+        "functionNotFound": "Function %s not found",
+        "errorInFunction": "Error calling data function"
     }
 }

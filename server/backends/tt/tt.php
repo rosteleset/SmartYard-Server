@@ -1711,9 +1711,9 @@
                     ]);
 
                     if ($data) {
-                        return $files->streamToContents($files->getFileStream($data[0]["id"])) ? : "//function data (issue) {\n\treturn {};\n//}\n";
+                        return $files->streamToContents($files->getFileStream($data[0]["id"])) ? : "//function data (issue, callback) {\n\tcallback(issue);\n//}\n";
                     } else {
-                        return "//function data (issue) {\n\treturn {};\n//}\n";
+                        return "//function data (issue, callback) {\n\tcallback(issue);\n//}\n";
                     }
                 }
 
@@ -2004,7 +2004,9 @@
              * @return mixed
              */
             public function printExec($id, $data) {
-
+                return [
+                    "url" => "https://ya.ru",
+                ];
             }
 
             /**
