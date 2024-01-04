@@ -1332,7 +1332,7 @@
                         done(r => {
                             if (r && r.file) {
                                 let link = document.createElement('a');
-                                link.href = lStore("_server") + "/print/" + r.file;
+                                link.href = trim(config.printUrl, "/") + "/" + r.file;
                                 link.target = "_blank";
                                 link.click();
                             }
