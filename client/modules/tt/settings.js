@@ -4,89 +4,6 @@
         moduleLoaded("tt.settings", this);
     },
 
-    doDeleteCrontab: function (crontabId) {
-        loadingStart();
-        DELETE("tt", "crontab", crontabId).
-        fail(FAIL).
-        done(() => {
-            message(i18n("tt.crontabWasDeleted"));
-        }).
-        always(modules.tt.settings.renderCrontabs);
-    },
-
-    doModifyProject: function (project) {
-        loadingStart();
-        PUT("tt", "project", project["projectId"], project).
-        fail(FAIL).
-        done(() => {
-            message(i18n("tt.projectWasChanged"));
-        }).
-        always(modules.tt.settings.renderProjects);
-    },
-
-    doDeleteProject: function (projectId) {
-        loadingStart();
-        DELETE("tt", "project", projectId).
-        fail(FAIL).
-        done(() => {
-            message(i18n("tt.projectWasDeleted"));
-        }).
-        always(modules.tt.settings.renderProjects);
-    },
-
-    doDeleteProjectFilter: function (projectId, projectFilterId) {
-        loadingStart();
-        DELETE("tt", "project", false, {
-            filter: projectFilterId,
-        }).
-        fail(FAIL).
-        fail(loadingDone).
-        done(() => {
-            message(i18n("tt.projectWasChanged"));
-        }).
-        done(() => {
-            modules.tt.settings.projectFilters(projectId);
-        });
-    },
-
-    doDeleteCustomField: function (customFieldId) {
-        loadingStart();
-        DELETE("tt", "customField", customFieldId).
-        fail(FAIL).
-        done(() => {
-            message(i18n("tt.customFieldWasDeleted"));
-        }).
-        done(() => {
-            $("#altForm").hide();
-        }).
-        always(modules.tt.settings.renderCustomFields);
-    },
-
-    doDeleteViewer: function (field, name) {
-        loadingStart();
-        DELETE("tt", "viewer", false, {
-            field: field,
-            name: name,
-        }).
-        fail(FAIL).
-        done(() => {
-            message(i18n("tt.viewerWasDeleted"));
-        }).
-        always(modules.tt.settings.renderViewers);
-    },
-
-    doSetProjectWorkflows: function (projectId, workflows) {
-        loadingStart();
-        PUT("tt", "project", projectId, {
-            workflows: workflows,
-        }).
-        fail(FAIL).
-        done(() => {
-            message(i18n("tt.projectWasChanged"));
-        }).
-        always(modules.tt.settings.renderProjects);
-    },
-
     doSetProjectResolutions: function (projectId, resolutions) {
         loadingStart();
         PUT("tt", "project", projectId, {
@@ -756,7 +673,13 @@
                 if (result.delete === "yes") {
                     modules.tt.settings.deleteProject(result.projectId);
                 } else {
-                    modules.tt.settings.doModifyProject(result);
+                    loadingStart();
+                    PUT("tt", "project", project["projectId"], result).
+                    fail(FAIL).
+                    done(() => {
+                        message(i18n("tt.projectWasChanged"));
+                    }).
+                    always(modules.tt.settings.renderProjects);
                 }
             },
         }).show();
@@ -1238,13 +1161,28 @@
 
     deleteProject: function (projectId) {
         mConfirm(i18n("tt.confirmProjectDelete", projectId.toString()), i18n("confirm"), `danger:${i18n("tt.projectDelete")}`, () => {
-            modules.tt.settings.doDeleteProject(projectId);
+            loadingStart();
+            DELETE("tt", "project", projectId).
+            fail(FAIL).
+            done(() => {
+                message(i18n("tt.projectWasDeleted"));
+            }).
+            always(modules.tt.settings.renderProjects);
         });
     },
 
     deleteCustomField: function (customFieldId) {
         mConfirm(i18n("tt.confirmCustomFieldDelete", customFieldId.toString()), i18n("confirm"), `danger:${i18n("tt.customFieldDelete")}`, () => {
-            modules.tt.settings.doDeleteCustomField(customFieldId);
+            loadingStart();
+            DELETE("tt", "customField", customFieldId).
+            fail(FAIL).
+            done(() => {
+                message(i18n("tt.customFieldWasDeleted"));
+            }).
+            done(() => {
+                $("#altForm").hide();
+            }).
+            always(modules.tt.settings.renderCustomFields);
         });
     },
 
@@ -1262,7 +1200,16 @@
 
     deleteViewer: function (field, name) {
         mConfirm(i18n("tt.confirmViewerDelete", field + " [" + name + "]"), i18n("confirm"), `danger:${i18n("tt.viewerDelete")}`, () => {
-            modules.tt.settings.doDeleteViewer(field, name);
+            loadingStart();
+            DELETE("tt", "viewer", false, {
+                field: field,
+                name: name,
+            }).
+            fail(FAIL).
+            done(() => {
+                message(i18n("tt.viewerWasDeleted"));
+            }).
+            always(modules.tt.settings.renderViewers);
         });
     },
 
@@ -1301,7 +1248,15 @@
                 },
             ],
             callback: function (result) {
-                modules.tt.settings.doSetProjectWorkflows(projectId, result.workflows);
+                loadingStart();
+                PUT("tt", "project", projectId, {
+                    workflows: result.workflows,
+                }).
+                fail(FAIL).
+                done(() => {
+                    message(i18n("tt.projectWasChanged"));
+                }).
+                always(modules.tt.settings.renderProjects);
             },
         }).show();
     },
@@ -1379,7 +1334,18 @@
 
     deleteProjectFilter: function (projectFilterId, projectId) {
         mConfirm(i18n("tt.confirmFilterDelete", projectFilterId), i18n("confirm"), `danger:${i18n("delete")}`, () => {
-            modules.tt.settings.doDeleteProjectFilter(projectId, projectFilterId);
+            loadingStart();
+            DELETE("tt", "project", false, {
+                filter: projectFilterId,
+            }).
+            fail(FAIL).
+            fail(loadingDone).
+            done(() => {
+                message(i18n("tt.projectWasChanged"));
+            }).
+            done(() => {
+                modules.tt.settings.projectFilters(projectId);
+            });
         });
     },
 
@@ -3204,7 +3170,13 @@
 
     deleteCrontab: function (crontabId) {
         mConfirm(i18n("tt.confirmCrontabDelete", crontabId), i18n("confirm"), `warning:${i18n("tt.crontabDelete")}`, () => {
-            modules.tt.settings.doDeleteCrontab(crontabId);
+            loadingStart();
+            DELETE("tt", "crontab", crontabId).
+            fail(FAIL).
+            done(() => {
+                message(i18n("tt.crontabWasDeleted"));
+            }).
+            always(modules.tt.settings.renderCrontabs);
         });
     },
 
