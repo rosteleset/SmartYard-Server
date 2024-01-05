@@ -4,163 +4,6 @@
         moduleLoaded("tt.settings", this);
     },
 
-    doSetProjectResolutions: function (projectId, resolutions) {
-        loadingStart();
-        PUT("tt", "project", projectId, {
-            resolutions: resolutions,
-        }).
-        fail(FAIL).
-        done(() => {
-            message(i18n("tt.projectWasChanged"));
-        }).
-        always(modules.tt.settings.renderProjects);
-    },
-
-    doSetProjectCustomFields: function (projectId, customFields) {
-        loadingStart();
-        PUT("tt", "project", projectId, {
-            customFields: customFields,
-        }).
-        fail(FAIL).
-        done(() => {
-            message(i18n("tt.projectWasChanged"));
-        }).
-        always(modules.tt.settings.renderProjects);
-    },
-
-    doSetProjectViewers: function (projectId, viewers) {
-        loadingStart();
-        PUT("tt", "project", projectId, {
-            viewers: viewers,
-        }).
-        fail(FAIL).
-        done(() => {
-            message(i18n("tt.projectWasChanged"));
-        }).
-        always(modules.tt.settings.renderProjects);
-    },
-
-    doModifyStatus: function (statusId, status) {
-        loadingStart();
-        PUT("tt", "status", statusId, {
-            status: status,
-        }).
-        fail(FAIL).
-        done(() => {
-            message(i18n("tt.statusWasChanged"));
-        }).
-        always(modules.tt.settings.renderStatuses);
-    },
-
-    doModifyResolution: function (resolutionId, resolution) {
-        loadingStart();
-        PUT("tt", "resolution", resolutionId, {
-            resolution: resolution,
-        }).
-        fail(FAIL).
-        done(() => {
-            message(i18n("tt.resolutionWasChanged"));
-        }).
-        always(modules.tt.settings.renderResolutions);
-    },
-
-    doModifyTag: function (tagId, tag, foreground, background, projectId) {
-        loadingStart();
-        PUT("tt", "tag", tagId, {
-            tag: tag,
-            foreground: foreground,
-            background: background,
-        }).
-        fail(FAIL).
-        fail(loadingDone).
-        done(() => {
-            message(i18n("tt.projectWasChanged"));
-        }).
-        done(() => {
-            modules.tt.settings.projectTags(projectId);
-        });
-    },
-
-    doDeleteResolution: function (resolutionId) {
-        loadingStart();
-        DELETE("tt", "resolution", resolutionId).
-        fail(FAIL).
-        done(() => {
-            message(i18n("tt.resolutionWasDeleted"));
-        }).
-        always(modules.tt.settings.renderResolutions);
-    },
-
-    doDeleteStatus: function (statusId) {
-        loadingStart();
-        DELETE("tt", "status", statusId).
-        fail(FAIL).
-        done(() => {
-            message(i18n("tt.statusWasDeleted"));
-        }).
-        always(modules.tt.settings.renderStatuses);
-    },
-
-    doProjectDeleteRole: function (projectRoleId, projectId, user) {
-        loadingStart();
-        DELETE("tt", "role", projectRoleId).
-        fail(FAIL).
-        fail(loadingDone).
-        done(() => {
-            message(i18n("tt.projectWasChanged"));
-        }).
-        done(() => {
-            if (user) {
-                modules.tt.settings.projectUsers(projectId);
-            } else {
-                modules.tt.settings.projectGroups(projectId);
-            }
-        });
-    },
-
-    doModifyRole: function (roleId, display) {
-        loadingStart();
-        PUT("tt", "role", roleId, {
-            display: display,
-        }).
-        fail(FAIL).
-        fail(loadingDone).
-        done(() => {
-            message(i18n("tt.roleWasChanged"));
-        }).
-        done(modules.tt.settings.renderRoles);
-    },
-
-    doModifyCustomField: function (customFieldId, field) {
-        loadingStart();
-        PUT("tt", "customField", customFieldId, field).
-        fail(FAIL).
-        done(() => {
-            message(i18n("tt.customFieldWasChanged"));
-        }).
-        done(() => {
-            $("#altForm").hide();
-        }).
-        always(modules.tt.settings.renderCustomFields);
-    },
-
-    doDeleteTag: function (tagId, projectId) {
-        loadingStart();
-        DELETE("tt", "tag", tagId).
-        fail(FAIL).
-        fail(loadingDone).
-        done(() => {
-            message(i18n("tt.projectWasChanged"));
-        }).
-        done(() => {
-            modules.tt.settings.projectTags(projectId);
-        });
-    },
-
-    /*
-        UI functions
-     */
-
     addProject: function () {
         cardForm({
             title: i18n("tt.addProject"),
@@ -722,7 +565,15 @@
                 if (result.delete === "yes") {
                     modules.tt.settings.deleteStatus(statusId);
                 } else {
-                    modules.tt.settings.doModifyStatus(statusId, result.status);
+                    loadingStart();
+                    PUT("tt", "status", statusId, {
+                        status: result.status,
+                    }).
+                    fail(FAIL).
+                    done(() => {
+                        message(i18n("tt.statusWasChanged"));
+                    }).
+                    always(modules.tt.settings.renderStatuses);
                 }
             },
         }).show();
@@ -762,7 +613,15 @@
                 if (result.delete === "yes") {
                     modules.tt.settings.deleteResolution(resolutionId);
                 } else {
-                    modules.tt.settings.doModifyResolution(resolutionId, result.resolution);
+                    loadingStart();
+                    PUT("tt", "resolution", resolutionId, {
+                        resolution: result.resolution,
+                    }).
+                    fail(FAIL).
+                    done(() => {
+                        message(i18n("tt.resolutionWasChanged"));
+                    }).
+                    always(modules.tt.settings.renderResolutions);
                 }
             },
         }).show();
@@ -811,7 +670,16 @@
                 },
             ],
             callback: function (result) {
-                modules.tt.settings.doModifyRole(roleId, result.display);
+                loadingStart();
+                PUT("tt", "role", roleId, {
+                    display: result.display,
+                }).
+                fail(FAIL).
+                fail(loadingDone).
+                done(() => {
+                    message(i18n("tt.roleWasChanged"));
+                }).
+                done(modules.tt.settings.renderRoles);
             },
         }).show();
     },
@@ -1068,7 +936,16 @@
                             result.format += " " + result.usersAndGroups;
                         }
                         result.format = $.trim(result.format);
-                        modules.tt.settings.doModifyCustomField(customFieldId, result);
+                        loadingStart();
+                        PUT("tt", "customField", customFieldId, result).
+                        fail(FAIL).
+                        done(() => {
+                            message(i18n("tt.customFieldWasChanged"));
+                        }).
+                        done(() => {
+                            $("#altForm").hide();
+                        }).
+                        always(modules.tt.settings.renderCustomFields);
                     }
                 },
                 cancel: function () {
@@ -1188,13 +1065,25 @@
 
     deleteStatus: function (statusId) {
         mConfirm(i18n("tt.confirmStatusDelete", statusId.toString()), i18n("confirm"), `danger:${i18n("tt.statusDelete")}`, () => {
-            modules.tt.settings.doDeleteStatus(statusId);
+            loadingStart();
+            DELETE("tt", "status", statusId).
+            fail(FAIL).
+            done(() => {
+                message(i18n("tt.statusWasDeleted"));
+            }).
+            always(modules.tt.settings.renderStatuses);
         });
     },
 
     deleteResolution: function (resolutionId) {
         mConfirm(i18n("tt.confirmResolutionDelete", resolutionId.toString()), i18n("confirm"), `danger:${i18n("tt.resolutionDelete")}`, () => {
-            modules.tt.settings.doDeleteResolution(resolutionId);
+            loadingStart();
+            DELETE("tt", "resolution", resolutionId).
+            fail(FAIL).
+            done(() => {
+                message(i18n("tt.resolutionWasDeleted"));
+            }).
+            always(modules.tt.settings.renderResolutions);
         });
     },
 
@@ -1518,7 +1407,15 @@
                 },
             ],
             callback: function (result) {
-                modules.tt.settings.doSetProjectResolutions(projectId, result.resolutions);
+                loadingStart();
+                PUT("tt", "project", projectId, {
+                    resolutions: result.resolutions,
+                }).
+                fail(FAIL).
+                done(() => {
+                    message(i18n("tt.projectWasChanged"));
+                }).
+                always(modules.tt.settings.renderProjects);
             },
         }).show();
     },
@@ -1567,20 +1464,46 @@
                 },
             ],
             callback: function (result) {
-                modules.tt.settings.doSetProjectCustomFields(projectId, result.customFields);
+                loadingStart();
+                PUT("tt", "project", projectId, {
+                    customFields: result.customFields,
+                }).
+                fail(FAIL).
+                done(() => {
+                    message(i18n("tt.projectWasChanged"));
+                }).
+                always(modules.tt.settings.renderProjects);
             },
         }).show();
     },
 
     projectDeleteUser: function (projectRoleId, projectId) {
         mConfirm(i18n("users.confirmDelete", projectRoleId.toString()), i18n("confirm"), `warning:${i18n("tt.removeUserFromProject")}`, () => {
-            modules.tt.settings.doProjectDeleteRole(projectRoleId, projectId, true);
+            loadingStart();
+            DELETE("tt", "role", projectRoleId).
+            fail(FAIL).
+            fail(loadingDone).
+            done(() => {
+                message(i18n("tt.projectWasChanged"));
+            }).
+            done(() => {
+                modules.tt.settings.projectUsers(projectId);
+            });
         });
     },
 
     projectDeleteGroup: function (projectRoleId, projectId) {
         mConfirm(i18n("groups.confirmDelete", projectRoleId.toString()), i18n("confirm"), `warning:${i18n("tt.removeGroupFromProject")}`, () => {
-            modules.tt.settings.doProjectDeleteRole(projectRoleId, projectId);
+            loadingStart();
+            DELETE("tt", "role", projectRoleId).
+            fail(FAIL).
+            fail(loadingDone).
+            done(() => {
+                message(i18n("tt.projectWasChanged"));
+            }).
+            done(() => {
+                modules.tt.settings.projectGroups(projectId);
+            });
         });
     },
 
@@ -1907,10 +1830,33 @@
                         callback: f => {
                             if (f.delete === "yes") {
                                 mConfirm(i18n("tt.confirmDeleteTag", tagId), i18n("confirm"), `danger:${i18n("tt.deleteTag")}`, () => {
-                                    modules.tt.settings.doDeleteTag(tagId, projectId);
+                                    loadingStart();
+                                    DELETE("tt", "tag", tagId).
+                                    fail(FAIL).
+                                    fail(loadingDone).
+                                    done(() => {
+                                        message(i18n("tt.projectWasChanged"));
+                                    }).
+                                    done(() => {
+                                        modules.tt.settings.projectTags(projectId);
+                                    });
                                 });
                             } else {
                                 modules.tt.settings.doModifyTag(tagId, f.tag, f.foreground, f.background, projectId);
+                                loadingStart();
+                                PUT("tt", "tag", tagId, {
+                                    tag: f.tag,
+                                    foreground: f.foreground,
+                                    background: f.background,
+                                }).
+                                fail(FAIL).
+                                fail(loadingDone).
+                                done(() => {
+                                    message(i18n("tt.projectWasChanged"));
+                                }).
+                                done(() => {
+                                    modules.tt.settings.projectTags(projectId);
+                                });
                             }
                         },
                     });
@@ -2024,11 +1970,19 @@
                 },
             ],
             callback: function (result) {
+                loadingStart();
                 let vo = [];
                 for (let i in result.viewers) {
                      vo.push(vi[result.viewers[i]]);
                 }
-                modules.tt.settings.doSetProjectViewers(projectId, vo);
+                PUT("tt", "project", projectId, {
+                    viewers: vo,
+                }).
+                fail(FAIL).
+                done(() => {
+                    message(i18n("tt.projectWasChanged"));
+                }).
+                always(modules.tt.settings.renderProjects);
             },
         }).show();
     },
