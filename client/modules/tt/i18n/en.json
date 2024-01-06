@@ -298,6 +298,7 @@
     "printFormatterSave": "Save",
     "printDataWasSaved": "Data script was saved",
     "printFormatterWasSaved": "Format script was saved",
+    "finalStatus": "Final",
     "methods": {
         "tt": {
             "_title": "Task Manager",
