@@ -59,13 +59,19 @@
                     placeholder: i18n("tt.status"),
                     validate: (v) => {
                         return $.trim(v) !== "";
-                    }
+                    },
+                },
+                {
+                    id: "final",
+                    type: "noyes",
+                    title: i18n("tt.finalStatus"),
                 },
             ],
             callback: function (result) {
                 loadingStart();
                 POST("tt", "status", false, {
                     status: result.status,
+                    final: result.final,
                 }).
                 fail(FAIL).
                 done(() => {
@@ -530,10 +536,12 @@
 
     modifyStatus: function (statusId) {
         let status = '';
+        let final = 0;
 
         for (let i in modules.tt.meta.statuses) {
             if (modules.tt.meta.statuses[i].statusId == statusId) {
                 status = modules.tt.meta.statuses[i].status;
+                final = parseInt(modules.tt.meta.statuses[i].finalStatus);
             }
         }
 
@@ -559,6 +567,12 @@
                         return $.trim(v) !== "";
                     }
                 },
+                {
+                    id: "final",
+                    type: "noyes",
+                    title: i18n("tt.finalStatus"),
+                    value: final,
+                },
             ],
             delete: i18n("tt.statusDelete"),
             callback: function (result) {
@@ -568,6 +582,7 @@
                     loadingStart();
                     PUT("tt", "status", statusId, {
                         status: result.status,
+                        final: result.final,
                     }).
                     fail(FAIL).
                     done(() => {
@@ -2433,6 +2448,9 @@
                         nowrap: true,
                         fullWidth: true,
                     },
+                    {
+                        title: i18n("tt.finalStatus"),
+                    },
                 ],
                 edit: modules.tt.settings.modifyStatus,
                 rows: () => {
@@ -2447,6 +2465,9 @@
                                 },
                                 {
                                     data: modules.tt.meta.statuses[i].status,
+                                },
+                                {
+                                    data: parseInt(modules.tt.meta.statuses[i].final) ? i18n("yes") : i18n("no"),
                                 },
                             ],
                         });
