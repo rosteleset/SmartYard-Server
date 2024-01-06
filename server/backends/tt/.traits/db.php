@@ -439,7 +439,7 @@
              */
             public function addStatus($status, $final)
             {
-                $final = $final ? 1 : 0;
+                $final = (int)$final ? 1 : 0;
 
                 $this->clearCache();
 
@@ -457,7 +457,7 @@
              */
             public function modifyStatus($statusId, $status, $final)
             {
-                $final = $final ? 1 : 0;
+                $final = (int)$final ? 1 : 0;
 
                 $this->clearCache();
 
