@@ -576,15 +576,15 @@
              * @return false|integer
              */
 
-             abstract public function addStatus($status);
+             abstract public function addStatus($status, $fianl);
 
              /**
              * @param $statusId
-             * @param $display
+             * @param $status
              * @return boolean
              */
 
-             abstract public function modifyStatus($statusId, $display);
+             abstract public function modifyStatus($statusId, $status, $fianl);
 
              /**
               * @param $statusId

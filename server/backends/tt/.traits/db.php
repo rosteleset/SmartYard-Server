@@ -455,7 +455,7 @@
             /**
              * @inheritDoc
              */
-            public function modifyStatus($statusId, $statu, $final)
+            public function modifyStatus($statusId, $status, $final)
             {
                 $final = $final ? 1 : 0;
 
