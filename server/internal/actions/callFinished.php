@@ -16,5 +16,5 @@
 
     $callDone = $plog->addCallDoneData($date, $ip, $subId, $callId);
 
-    response(201, ["id" => $callDone]);
+    response(204);
     exit();
