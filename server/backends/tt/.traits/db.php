@@ -414,13 +414,14 @@
                 }
 
                 try {
-                    $statuses = $this->db->query("select issue_status_id, status from tt_issue_statuses order by status", \PDO::FETCH_ASSOC)->fetchAll();
+                    $statuses = $this->db->query("select issue_status_id, status, final from tt_issue_statuses order by status", \PDO::FETCH_ASSOC)->fetchAll();
                     $_statuses = [];
 
                     foreach ($statuses as $statuse) {
                         $_statuses[] = [
                             "statusId" => $statuse["issue_status_id"],
                             "status" => $statuse["status"],
+                            "final" => $statuse["final"],
                         ];
                     }
 
@@ -436,8 +437,10 @@
             /**
              * @inheritDoc
              */
-            public function addStatus($status)
+            public function addStatus($status, $final)
             {
+                $final = (int)$final ? 1 : 0;
+
                 $this->clearCache();
 
                 $status = trim($status);
@@ -446,14 +449,16 @@
                     return false;
                 }
 
-                return $this->db->insert("insert into tt_issue_statuses (status) values (:status)", [ "status" => $status, ]);
+                return $this->db->insert("insert into tt_issue_statuses (status, final) values (:status)", [ "status" => $status, "final" => $final ]);
             }
 
             /**
              * @inheritDoc
              */
-            public function modifyStatus($statusId, $status)
+            public function modifyStatus($statusId, $status, $final)
             {
+                $final = (int)$final ? 1 : 0;
+
                 $this->clearCache();
 
                 $status = trim($status);
@@ -463,9 +468,10 @@
                 }
 
                 try {
-                    $sth = $this->db->prepare("update tt_issue_statuses set status = :status where issue_status_id = $statusId");
+                    $sth = $this->db->prepare("update tt_issue_statuses set status = :status, final = :final where issue_status_id = $statusId");
                     $sth->execute([
                         ":status" => $status,
+                        ":final" => $final,
                     ]);
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));

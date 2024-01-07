@@ -711,7 +711,7 @@
                 h += "<span class='ml-2 text-info text-bold'>";
                 h += members[issue.issue.attachments[i].metadata.attachman]?members[issue.issue.attachments[i].metadata.attachman]:issue.issue.attachments[i].metadata.attachman;
                 h += "</span>";
-                if (modules.tt.meta.myRoles[issue.issue.project] >= 20 && issue.issue.status != "closed") {
+                if (modules.tt.meta.myRoles[issue.issue.project] >= 20 && !modules.tt.meta.finalStatus[issue.issue.status]) {
                     if (modules.tt.meta.myRoles[issue.issue.project] >= 70 || issue.issue.attachments[i].metadata.attachman == lStore("_login")) {
                         h += "<i class='far fa-trash-alt ml-2 pointer text-danger deleteAttachment'></i>";
                     }
@@ -791,7 +791,7 @@
                 } else {
                     h += "<i class='fas fa-fw fa-eye ml-2 text-success'></i>";
                 }
-                if (modules.tt.meta.myRoles[issue.issue.project] >= 20 && issue.issue.status != "closed") {
+                if (modules.tt.meta.myRoles[issue.issue.project] >= 20 && !modules.tt.meta.finalStatus[issue.issue.status]) {
                     if (modules.tt.meta.myRoles[issue.issue.project] >= 70 || issue.issue.comments[i].author == lStore("_login")) {
                         h += `<i class='far fa-fw fa-edit ml-2 pointer text-primary modifyComment' data-index='${i}'></i>`;
                     }

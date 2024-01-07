@@ -1089,6 +1089,8 @@
     tt: function (tt) {
         modules.tt.meta = tt["meta"];
 
+        modules.tt.meta.finalStatus = {};
+
         if (!modules.tt.viewers) {
             modules.tt.viewers = {};
         }
@@ -1101,6 +1103,12 @@
                 modules.tt.viewers[modules.tt.meta.viewers[i].field][modules.tt.meta.viewers[i].name] = new Function('value', 'issue', 'field', 'target', modules.tt.meta.viewers[i].code);
             } catch (e) {
                 modules.tt.viewers[modules.tt.meta.viewers[i].field][modules.tt.meta.viewers[i].name] = new Function('value', 'issue', 'field', 'target', "//function $name (value, field, issue, terget) {\n\treturn value;\n//}\n");
+            }
+        }
+
+        for (let i in modules.tt.meta.statuses) {
+            if (parseInt(modules.tt.meta.statuses[i].final)) {
+                modules.tt.meta.finalStatus[modules.tt.meta.statuses[i].status] = true;
             }
         }
     },

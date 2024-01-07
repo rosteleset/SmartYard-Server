@@ -33,7 +33,7 @@ CREATE TABLE tt_projects_filters
 CREATE UNIQUE INDEX tt_projects_filters_uniq on tt_projects_filters (project_id, filter, personal);
 
 -- issue statuses
-CREATE TABLE tt_issue_statuses                                                                                          -- !!! managed by workflows !!!
+CREATE TABLE tt_issue_statuses
 (
     issue_status_id serial primary key,
     status character varying not null

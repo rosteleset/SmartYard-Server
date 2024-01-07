@@ -298,6 +298,7 @@
     "printFormatterSave": "Сохранить",
     "printDataWasSaved": "Скрипт данных сохранен",
     "printFormatterWasSaved": "Скрипт форматирования сохранен",
+    "finalStatus": "Закрывающий",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",
