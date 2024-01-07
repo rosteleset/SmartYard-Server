@@ -2,8 +2,6 @@
 
     namespace Kamailio;
 
-    use JetBrains\PhpStorm\NoReturn;
-
     class Kamailio
     {
         private mixed $backend;
@@ -67,7 +65,7 @@
             $request_method = $_SERVER['REQUEST_METHOD'];
             $path = $_SERVER["REQUEST_URI"];
 
-            // FIXME: rename var
+            // FIXME: var name
             $authApi = parse_url($config["api"]["kamailio"]);
             // update a patch process
             if ($authApi && $authApi['path']) {
@@ -78,15 +76,7 @@
                 $path = substr($path, 1);
             }
 
-            // Handler Kamailio sip server REGISTER request
-//            if ($request_method === 'POST' && $path === 'subscriber/hash') {
-//                $this->auth();
-//                [$subscriber, $sipDomain] = explode('@', explode(':', $postData['from_uri'])[1]);
-//
-//                $this->getSubscriberHash($subscriber, $sipDomain);
-//            }
-
-            //FIXME, test new feature ⚡
+            // FIXME, test new feature ⚡
             // Handle SIP REGISTER message
             if ($request_method === 'POST' && $path === 'subscriber/hash') {
                 $this->auth();
@@ -97,6 +87,7 @@
             /**
              *  remove GET handler after test methods
              *  TODO:
+             *      -   ⚡ handle SIP events: INFO or REGISTER
              *      -   error handlers
              *      -   test kamailio JSONRPC API methods
              *      -   getSubscriberStatus($subscriber)
@@ -158,43 +149,6 @@
             return $headers;
         }
         //NOTE: :
-
-        /**
-         * Generates a hash value for the provided subscriber and SIP domain.
-         *
-         * @param string $subscriber The subscriber's username.
-         * @param string $sipDomain The SIP domain to validate against.
-         *
-         * @return void
-         */
-        public function getSubscriberHash(string $subscriber, string $sipDomain): void
-        {
-            define("KAMAILIO_DOMAIN", $this->kamailioConf['domain']);
-            // validate 'sip domain' field extension@your-sip-domain
-            if ($sipDomain !== KAMAILIO_DOMAIN) {
-                response(400, false, false, 'Invalid Received Sip Domain');
-                exit(1);
-            }
-
-            // validate subscriber extension mask
-            //TODO: add regexp for check extension
-            if (strlen((int)$subscriber) !== 10) {
-                response(400, false, false, 'Invalid Received Subscriber UserName');
-                exit(1);
-            }
-
-            $flat_id = (int)substr($subscriber, 1);
-    //            $this->loadBackend('households');
-            ['sipEnabled' => $sipEnabled, 'sipPassword' => $sipPassword] = $this->backend->getFlat($flat_id);
-
-            // validate in enable SIP service for flat
-            if ($sipEnabled) {
-                $ha1 = md5($subscriber . ':' . KAMAILIO_DOMAIN . ':' . $sipPassword);//md5(username:realm:password)
-                $this->reply(200, ['ha1' => $ha1]);
-            } else {
-                $this->reply(403, false, false, 'SIP Not Enabled');
-            }
-        }
 
         /**
          * Validates and handles SIP extension based on predefined patterns.
@@ -271,20 +225,6 @@
         }
 
         /**
-         * Generates an MD5 hash for the provided subscriber
-         *
-         * @param string $subscriber The subscriber's username.
-         * @param string $domain The SIP domain.
-         * @param string $password The SIP password.
-         *
-         * @return string The MD5 hash generated using the subscriber, domain, and password.
-         */
-        public function generateHash(string $subscriber, string $domain, string $password): string
-        {
-            return md5($subscriber . ':' . $domain . ':' . $password);//md5(username:realm:password)
-        }
-
-        /**
          * Get outdoor intercom credentials
          * @param int $extension
          * @return string|null
@@ -299,6 +239,20 @@
             }
 
             return null;
+        }
+
+        /**
+         * Generates an MD5 hash for the provided subscriber
+         *
+         * @param string $subscriber The subscriber's username.
+         * @param string $domain The SIP domain.
+         * @param string $password The SIP password.
+         *
+         * @return string The MD5 hash generated using the subscriber, domain, and password.
+         */
+        public function generateHash(string $subscriber, string $domain, string $password): string
+        {
+            return md5($subscriber . ':' . $domain . ':' . $password);//md5(username:realm:password)
         }
 
         private function makeKamailioRpcUrl(): void
