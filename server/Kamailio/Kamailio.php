@@ -197,16 +197,11 @@
             $id = (int)substr($extension, 1);
             $result = $type === 'indoor' ? $this->backend->getFlat($id) : $this->backend->getDomophone($id);
 
-            if ($result) {
-                if ($type === 'indoor') {
-                    if ($result['sipEnabled'] && $result['sipPassword']) {
-                        return $result['sipPassword'];
-                    }
-                } elseif ($type === 'outdoor') {
-                    if ($result['enabled'] && $result['credentials']) {
-                        return $result['credentials'];
-                    }
-                }
+            if ($result && (
+                    ($type === 'indoor' && $result['sipEnabled'] && $result['sipPassword']) ||
+                    ($type === 'outdoor' && $result['enabled'] && $result['credentials'])
+                )) {
+                return $type === 'indoor' ? $result['sipPassword'] : $result['credentials'];
             }
 
             return null;
@@ -224,42 +219,6 @@
             }
 
         }
-
-//        /**
-//         * Get indoor client intercom credentials
-//         *
-//         * @param int $extension
-//         *
-//         * @return string|null
-//         */
-//        public function getIndoorIntercomCredentials(int $extension): ?string
-//        {
-//            $flat_id = (int)substr($extension, 1);
-//            $result = $this->backend->getFlat($flat_id);
-//
-//            if ($result && $result['sipEnabled'] && $result['sipPassword']) {
-//                return $result['sipPassword'];
-//            }
-//
-//            return null;
-//        }
-//
-//        /**
-//         * Get outdoor intercom credentials
-//         * @param int $extension
-//         * @return string|null
-//         */
-//        public function getOutdoorIntercomCredentials(int $extension): ?string
-//        {
-//            $homophone_id = (int)substr($extension, 1);
-//            $result = $this->backend->getDomophone($homophone_id);
-//
-//            if ($result && $result['enabled'] && $result['credentials']) {
-//                return $result['credentials'];
-//            }
-//
-//            return null;
-//        }
 
         /**
          * Generates an MD5 hash for the provided subscriber
