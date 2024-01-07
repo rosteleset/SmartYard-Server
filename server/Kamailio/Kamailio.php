@@ -161,35 +161,47 @@
         private function handleExtension(int $extension, string $sipDomain): void
         {
             $sipDomain = $this->checkSipDomain($sipDomain);// validate SIP domain
+
             $indoorPattern = '/^4\d{9}$/';//  indoor SIP intercom extension pattern 4000000000
             $outdoorPattern = '/^1\d{5}$/';// outdoor SIP intercom extension pattern 100000
 
+            $credential = null;
+
             // validate SIP extension
             if (preg_match($indoorPattern, $extension)) {
-                $credential = $this->getIndoorIntercomCredentials($extension);
-
-                if ($credential) {
-                    $ha1 = $this->generateHash($extension, $sipDomain, $credential);
-                    $this->reply(200, ['ha1' => $ha1]);
-                } else {
-                    $this->reply(403, false, false, 'SIP Not Enabled');
-                }
-
+                $credential = $this->getIntercomCredentials($extension, 'indoor');
+            } elseif (preg_match($outdoorPattern, $extension)) {
+                $credential = $this->getIntercomCredentials($extension, 'outdoor');
             }
-            elseif (preg_match($outdoorPattern, $extension)) {
-                $credential = $this->getOutdoorIntercomCredentials($extension);
 
-                if ($credential) {
-                    $ha1 = $this->generateHash($extension, $sipDomain, $credential);
-                    $this->reply(200, ['ha1' => $ha1]);
-                } else {
-                    $this->reply(403, false, false, 'SIP Not Enabled');
-                }
+            if ($credential) {
+                $ha1 = $this->generateHash($extension, $sipDomain, $credential);
+                $this->reply(200, ['ha1' => $ha1]);
+            } else {
+                $this->reply(403, false, false, 'SIP not enabled');
             }
-            else {
-                $this->reply(400, false, false, 'Invalid Received Subscriber UserName');
-            }
+
             exit(1);
+        }
+
+        /**
+         * Get intercom credentials based on the extension type.
+         *
+         * @param int    $extension SIP extension
+         * @param string $type      Intercom type ('indoor' or 'outdoor')
+         *
+         * @return string|null
+         */
+        private function getIntercomCredentials(int $extension, string $type): ?string
+        {
+            $id = (int)substr($extension, 1);
+            $result = $type === 'indoor' ? $this->backend->getFlat($id) : $this->backend->getDomophone($id);
+
+            if ($result && $result['enabled'] && $result['credentials']) {
+                return $result['credentials'];
+            }
+
+            return null;
         }
 
         private function checkSipDomain($receivedSipDomain)
