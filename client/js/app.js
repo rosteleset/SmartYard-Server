@@ -1317,7 +1317,9 @@ $(document).on('select2:open', () => {
 */
 
 $("#loginBoxPassword").off("keypress").on("keypress", e => {
-    console.log(e);
+    if (e.keyCode == 13) {
+        login();
+    }
 });
 
 $(document).on('select2:open', '.select2', function () {
