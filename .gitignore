@@ -99,9 +99,9 @@ package-lock.json
 /install/asterisk/extconfig.conf
 
 # ----- push service
-/services/push/assets/pushServiceAccountKey.json
-/services/push/assets/certificate-and-privatekey.pem
-/services/push/.env_production
-/services/push/.env_development
-!/services/push/package.json
+/server/services/push/assets/pushServiceAccountKey.json
+/server/services/push/assets/certificate-and-privatekey.pem
+/server/services/push/.env_production
+/server/services/push/.env_development
+!/server/services/push/package.json
 
