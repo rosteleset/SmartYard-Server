@@ -31,5 +31,5 @@
     },
     "phonePattern": "7 (###) ###-##-##",
     "sipDomain": "<!-- your asterisk server external ip here -->",
-    "printUrl": "https://tt.lanta.me/print"
+    "printServer": "https://example.com/print"
 }

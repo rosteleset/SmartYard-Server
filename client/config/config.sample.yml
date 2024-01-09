@@ -25,4 +25,4 @@ map:
   max: 18
 phonePattern: '7 (###) ###-##-##'
 sipDomain: "<!-- your asterisk server external ip here -->"
-printUrl: https://tt.lanta.me/print
+printUrl: https://example.com/print
