@@ -1,7 +1,7 @@
 import { WebHookService } from "./index.js";
 import { API, getTimestamp, mdTimer } from "../utils/index.js";
 
-class SputnikService extends WebHookService {
+class SputnikCloudService extends WebHookService {
     constructor(unit, config) {
         super(unit, config);
     }
@@ -95,4 +95,4 @@ class SputnikService extends WebHookService {
     }
 }
 
-export { SputnikService }
+export { SputnikCloudService }

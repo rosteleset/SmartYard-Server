@@ -1,26 +1,25 @@
-// import { config } from "./config.js";
 import config from "./config.json" assert { type: "json"}
 import {
     AkuvoxService,
     BewardService,
     BewardServiceDS,
     IsService,
-    NonameWebHookService,
-    OmnyWebHookService,
     QtechService,
     RubetekService,
-    SputnikService
+    SputnikCloudService,
+    OmnyWebHookService,
+    NonameWebHookService,
 } from "./services/index.js";
 import {
     SERVICE_AKUVOX,
     SERVICE_BEWARD,
     SERVICE_BEWARD_DS,
     SERVICE_IS,
-    SERVICE_NONAME_WEBHOOK,
-    SERVICE_OMNY,
     SERVICE_QTECH,
     SERVICE_RUBETEK,
-    SERVICE_SPUTNIK_CLOUD
+    SERVICE_SPUTNIK_CLOUD,
+    SERVICE_OMNY,
+    SERVICE_NONAME_WEBHOOK,
 } from "./constants.js";
 
 const { hw } = config;
@@ -86,8 +85,8 @@ switch (serviceParam) {
             console.error(`Unit: "${ serviceParam }" not defined apiEndpoint in config file: config.json`)
             process.exit(1);
         }
-        const sputnikService = new SputnikService(SERVICE_SPUTNIK_CLOUD, serviceConfig)
-        sputnikService.start();
+        const sputnikCloudService = new SputnikCloudService(SERVICE_SPUTNIK_CLOUD, serviceConfig)
+        sputnikCloudService.start();
         break;
 
     default:
