@@ -616,7 +616,7 @@
             }
         }
 
-        if (issue.print) {
+        if (issue.print && config.printServer) {
             h += `<span class="dropdown">`;
             h += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary mr-3" id="ttIssuePrint" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">${i18n("tt.print")}</span>`;
             h += `<ul class="dropdown-menu" aria-labelledby="ttIssuePrint">`;
@@ -1332,7 +1332,7 @@
                         done(r => {
                             if (r && r.file) {
                                 let link = document.createElement('a');
-                                link.href = trim(config.printUrl, "/") + "/" + r.file;
+                                link.href = trim(config.printServer, "/") + "/" + r.file;
                                 link.target = "_blank";
                                 link.click();
                             }
