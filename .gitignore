@@ -108,7 +108,7 @@ package-lock.json
 !/server/services/push/package.json
 
 # ----- event service
-!/services/event/package.json
-/services/event/config.json
+/server/services/event/config.json
+!/server/services/event/package.json
 
 
