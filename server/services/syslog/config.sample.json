@@ -1,0 +1,41 @@
+{
+    "topology": {
+        "nat": false
+    },
+    "clickhouse": {
+        "host": "127.0.0.1",
+        "port": 8123,
+        "database": "default",
+        "username": "default",
+        "password": "qqq"
+    },
+    "api": {
+        "internal": "http://127.0.0.1/internal"
+    },
+    "hw": {
+        "beward": [
+            "syslog.udp:127.0.0.1:45450"
+        ],
+        "beward_ds": [
+            "syslog.udp:127.0.0.1:45451"
+        ],
+        "qtech": [
+            "syslog.udp:127.0.0.1:45452"
+        ],
+        "is": [
+            "syslog.udp:127.0.0.1:45453"
+        ],
+        "hikvision": [
+            "syslog.udp:127.0.0.1:45454"
+        ],
+        "akuvox": [
+            "syslog.udp:127.0.0.1:45455"
+        ],
+        "rubetek": [
+            "syslog.udp:127.0.0.1:45456"
+        ],
+        "sputnik": [
+            "http://127.0.0.1:45457"
+        ]
+    }
+}
