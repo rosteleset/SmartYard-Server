@@ -1316,6 +1316,10 @@ $(document).on('select2:open', () => {
 });
 */
 
+$("#loginBoxPassword").off("keypress").on("keypress", e => {
+    console.log(e);
+});
+
 $(document).on('select2:open', '.select2', function () {
     setTimeout(() => {
         document.querySelector(`[aria-controls="select2-${$(this).attr("id")}-results"]`).focus();
