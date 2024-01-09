@@ -616,6 +616,22 @@
             }
         }
 
+        if (issue.print && config.printServer) {
+            h += `<span class="dropdown">`;
+            h += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary mr-3" id="ttIssuePrint" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">${i18n("tt.print")}</span>`;
+            h += `<ul class="dropdown-menu" aria-labelledby="ttIssuePrint">`;
+            for (let i in issue.print) {
+                for (let j in modules.tt.meta.prints) {
+                    if (issue.print[i] == modules.tt.meta.prints[j].formName) {
+                        h += `<li class="pointer dropdown-item ttIssuePrint" data-print="${modules.tt.meta.prints[j].printId}">${modules.tt.meta.prints[j].description}</li>`;
+                        break;
+                    }
+                }
+            }
+            h += '</ul>';
+            h += '</span>';
+        }
+
         if (issue.showJournal) {
             h += `<span class="hoverable text-primary mr-3 ttJournal">${i18n("tt.journal")}</span>`;
         }
@@ -695,7 +711,7 @@
                 h += "<span class='ml-2 text-info text-bold'>";
                 h += members[issue.issue.attachments[i].metadata.attachman]?members[issue.issue.attachments[i].metadata.attachman]:issue.issue.attachments[i].metadata.attachman;
                 h += "</span>";
-                if (modules.tt.meta.myRoles[issue.issue.project] >= 20 && issue.issue.status != "closed") {
+                if (modules.tt.meta.myRoles[issue.issue.project] >= 20 && !modules.tt.meta.finalStatus[issue.issue.status]) {
                     if (modules.tt.meta.myRoles[issue.issue.project] >= 70 || issue.issue.attachments[i].metadata.attachman == lStore("_login")) {
                         h += "<i class='far fa-trash-alt ml-2 pointer text-danger deleteAttachment'></i>";
                     }
@@ -775,7 +791,7 @@
                 } else {
                     h += "<i class='fas fa-fw fa-eye ml-2 text-success'></i>";
                 }
-                if (modules.tt.meta.myRoles[issue.issue.project] >= 20 && issue.issue.status != "closed") {
+                if (modules.tt.meta.myRoles[issue.issue.project] >= 20 && !modules.tt.meta.finalStatus[issue.issue.status]) {
                     if (modules.tt.meta.myRoles[issue.issue.project] >= 70 || issue.issue.comments[i].author == lStore("_login")) {
                         h += `<i class='far fa-fw fa-edit ml-2 pointer text-primary modifyComment' data-index='${i}'></i>`;
                     }
@@ -1292,6 +1308,44 @@
         $(".ttSaCoordinate").off("click").on("click", () => {
             lStore("_coordinate_issue", issue.issue["issueId"]);
             location.href = "?#cs";
+        });
+
+        $(".ttIssuePrint").off("click").on("click", function () {
+            let printId = $(this).attr("data-print");
+            loadingStart();
+            QUERY("tt", "prints", {
+                "mode": "data",
+                "_id": printId,
+            }, true).
+            fail(FAIL).
+            fail(() => {
+                loadingDone();
+            }).
+            done(r => {
+                try {
+                    (new Function ("issue", "callback", r.data))(issue.issue, data => {
+                        loadingStart();
+                        POST("tt", "printIssue", printId, {
+                            "data": data,
+                        }).
+                        fail(FAIL).
+                        done(r => {
+                            if (r && r.file) {
+                                let link = document.createElement('a');
+                                link.href = trim(config.printServer, "/") + "/" + r.file;
+                                link.target = "_blank";
+                                link.click();
+                            }
+                        }).
+                        always(() => {
+                            loadingDone();
+                        });
+                    });
+                } catch (e) {
+                    loadingDone();
+                    error(i18n("errors.errorInFunction"), i18n("error"), 30);
+                }
+            });
         });
 
         $("#stepPrev").off("click").on("click", () => {

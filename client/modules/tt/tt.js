@@ -1089,6 +1089,8 @@
     tt: function (tt) {
         modules.tt.meta = tt["meta"];
 
+        modules.tt.meta.finalStatus = {};
+
         if (!modules.tt.viewers) {
             modules.tt.viewers = {};
         }
@@ -1101,6 +1103,12 @@
                 modules.tt.viewers[modules.tt.meta.viewers[i].field][modules.tt.meta.viewers[i].name] = new Function('value', 'issue', 'field', 'target', modules.tt.meta.viewers[i].code);
             } catch (e) {
                 modules.tt.viewers[modules.tt.meta.viewers[i].field][modules.tt.meta.viewers[i].name] = new Function('value', 'issue', 'field', 'target', "//function $name (value, field, issue, terget) {\n\treturn value;\n//}\n");
+            }
+        }
+
+        for (let i in modules.tt.meta.statuses) {
+            if (parseInt(modules.tt.meta.statuses[i].final)) {
+                modules.tt.meta.finalStatus[modules.tt.meta.statuses[i].status] = true;
             }
         }
     },
@@ -1126,7 +1134,7 @@
             target = false;
         }
         
-        if (issuesListId === "undefined") {
+        if (issuesListId === "undefined" || !issuesListId) {
             issuesListId = md5(guid());
         }
 
@@ -1239,7 +1247,7 @@
         let filters;
 
         if (target) {
-            filters = `<span class="text-bold">${(modules.tt.meta.filters[x]?modules.tt.meta.filters[x]:i18n("tt.filter")).replaceAll("/", "<i class='fas fa-fw fa-xs fa-angle-double-right'></i>")}</span>`;
+            filters = `<span class="text-bold ${params.class?params.class:''}">${(modules.tt.meta.filters[x]?modules.tt.meta.filters[x]:i18n("tt.filter")).replaceAll("/", "<i class='fas fa-fw fa-xs fa-angle-double-right'></i>")}</span>`;
         } else {
             let fcount = 0;
             filters = `<span class="dropdown">`;
@@ -1258,7 +1266,7 @@
                 f[tree[tree.length - 1]] = project.filters[i];
             }
 
-            filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" style="margin-left: -4px;"><i class="far fa-fw fa-caret-square-down mr-1 ml-1"></i>${(modules.tt.meta.filters[x]?modules.tt.meta.filters[x]:i18n("tt.filter")).replaceAll("/", "<i class='fas fa-fw fa-xs fa-angle-double-right'></i>")}</span>`;
+            filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" style="margin-left: -4px;"><i class="far fa-fw fa-caret-square-down mr-1"></i>${(modules.tt.meta.filters[x]?modules.tt.meta.filters[x]:i18n("tt.filter")).replaceAll("/", "<i class='fas fa-fw fa-xs fa-angle-double-right'></i>")}</span>`;
             filters += `<ul class="dropdown-menu" aria-labelledby="ttFilter">`;
     
             (function hh(t) {
@@ -1436,26 +1444,26 @@
                 cs += `<pre class="ace-editor mt-2" id="filterEditor" style="position: relative; border: 1px solid #ced4da; border-radius: 0.25rem; width: 100%; height: 100%;"></pre>`;
                 cs += "</div>";
                 cs += `<span style='position: absolute; right: 35px; top: 35px;'>`;
-                cs += `<span id="filterRun" class="hoverable"><i class="fas fa-running pr-2"></i>${i18n("tt.filterRun")}</span>`;
+                cs += `<span id="filterRun" class="hoverable saveButton"><i class="fas fa-running pr-2"></i>${i18n("tt.filterRun")}</span>`;
                 cs += `</span>`;
                 cs += '</div>';
             }
 
             if (target) {
                 if (target !== true) {
-                    target.append(`<table class="mt-2 ml-2" style="width: 100%;"><tr><td style="width: 100%;">${filters}</td><td style="padding-right: 15px;">${pager(issuesListId)}</td></tr></table><div class="ml-2 mr-2" id="${issuesListId}"></div>`);
+                    target.append(`<table class="mt-2 ml-2" style="width: 100%;"><tr><td style="width: 100%;">${filters}<br/><span id='${issuesListId + '-count'}'></span></td><td style="padding-right: 15px;">${pager(issuesListId)}</td></tr></table><div class="ml-2 mr-2" id="${issuesListId}"></div>`);
                 } else {
                     $(`.pager[data-target="${issuesListId}"]`).html(pager(issuesListId));
                 }
             } else {
-                $("#mainForm").html(`${cs}<table class="mt-2 ml-2" style="width: 100%;"><tr><td style="width: 100%;">${cs?'&nbsp;':filters}</td><td style="padding-right: 15px;">${pager(issuesListId)}</td></tr></table><div class="ml-2 mr-2" id="${issuesListId}"></div>`);
+                $("#mainForm").html(`${cs}<table class="mt-2 ml-2" style="width: 100%;"><tr><td style="width: 100%;">${cs?'&nbsp;':filters}<br/><span id='${issuesListId + '-count'}'></span></td><td style="padding-right: 15px;">${pager(issuesListId)}</td></tr></table><div class="ml-2 mr-2" id="${issuesListId}"></div>`);
             }
 
             $(".tt_issues_filter").off("click").on("click", function () {
                 modules.tt.selectFilter($(this).attr("data-filter-name"));
             });
 
-            $(".tt_pager").off("click").on("click", function () {
+            $(`.tt_pager[data-target="${issuesListId}"]`).off("click").on("click", function () {
                 if (target) {
                     loadingStart();
                     params.skip = Math.max(0, (parseInt($(this).attr("data-page")) - 1) * limit);
@@ -1524,8 +1532,10 @@
                     ]
                 };
                 editor.setValue(JSON.stringify(template, null, "\t"));
-                editor.getSession().setUndoManager(new ace.UndoManager());
-                editor.commands.addCommand({
+                currentAceEditor = editor;
+                currentAceEditorOriginalValue = currentAceEditor.getValue();
+                editor.getSession().getUndoManager().reset();
+                    editor.commands.addCommand({
                     name: 'save',
                     bindKey: {
                         win: "Ctrl-S", 
@@ -1567,6 +1577,7 @@
                         done(() => {
                             message(i18n("tt.filterWasSaved"));
                             lStore("_tt_issue_filter_" + current_project, n);
+                            currentAceEditorOriginalValue = currentAceEditor.getValue();
                             location.href = '?#tt&filter=' + n + '&customSearch=yes&_=' + Math.random();                        
                         }).
                         fail(FAIL).
@@ -1611,7 +1622,8 @@
                 });
             });
 
-            if (issues.issues) {
+            if (issues.issues && issues.issues.length) {
+                $("#" + issuesListId + "-count").text(i18n("tt.showCounts", parseInt(issues.skip) + 1, parseInt(issues.skip) + issues.issues.length, issues.count)).addClass("small");
                 cardTable({
                     target: "#" + issuesListId,
                     columns: columns,
@@ -1651,7 +1663,7 @@
                     },
                 });
             } else {
-                $("#issuesList").append(`<span class="ml-1 text-bold">${i18n("tt.noIssuesAvailable")}</span>`);
+                $("#" + issuesListId + "-count").text(i18n("tt.noIssuesAvailable")).addClass("small");
             }
             if (!params.customSearch || params.customSearch === true || !params.filter || params.filter === true || params.filter == "empty") {
                 if (typeof callback === "undefined") {

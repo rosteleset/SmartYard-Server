@@ -10,6 +10,7 @@ use utils\SmartConfigurator\SmartConfigurator;
 function autoconfigure_device(string $deviceType, int $deviceId, bool $firstTime = false)
 {
     global $config;
+
     $householdsBackend = loadBackend('households');
 
     switch ($deviceType) {
@@ -18,6 +19,11 @@ function autoconfigure_device(string $deviceType, int $deviceId, bool $firstTime
 
             if (!$deviceData) {
                 throw new Error("Device '$deviceType' with ID $deviceId not found in the DB");
+            }
+
+            if (!$deviceData['enabled']) {
+                echo 'Device is disabled' . PHP_EOL;
+                exit(0);
             }
 
             $dbConfigCollector = new DomophoneDbConfigCollector($config, $deviceData, $householdsBackend);
@@ -29,6 +35,11 @@ function autoconfigure_device(string $deviceType, int $deviceId, bool $firstTime
 
             if (!$deviceData) {
                 throw new Error("Device '$deviceType' with ID $deviceId not found in the DB");
+            }
+
+            if (!$deviceData['enabled']) {
+                echo 'Device is disabled' . PHP_EOL;
+                exit(0);
             }
 
             $dbConfigCollector = new CameraDbConfigCollector($config, $deviceData);

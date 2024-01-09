@@ -85,13 +85,9 @@ __pycache__
 /server/config/config.json
 /server/config/config.yml
 /server/vendor
-/server/syslog/config.json
-/server/syslog/config_v2.json
 /.stylelintrc.json
 package.json
 package-lock.json
-!/server/syslog/package.json
-
 /server/test.php
 /server/integration.php
 /server/mqtt/node_modules
@@ -100,14 +96,18 @@ package-lock.json
 /install/asterisk/config.lua
 /install/asterisk/extconfig.conf
 
-# ----- push service
-/services/push/assets/pushServiceAccountKey.json
-/services/push/assets/certificate-and-privatekey.pem
-/services/push/.env_production
-/services/push/.env_development
-!/services/push/package.json
+# ----- syslog service
+/server/services/syslog/config.json
+!/server/services/syslog/package.json
 
-# ----- Event service
+# ----- push service
+/server/services/push/assets/pushServiceAccountKey.json
+/server/services/push/assets/certificate-and-privatekey.pem
+/server/services/push/.env_production
+/server/services/push/.env_development
+!/server/services/push/package.json
+
+# ----- event service
 !/services/event/package.json
 /services/event/config.json
 

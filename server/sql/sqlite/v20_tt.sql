@@ -1,0 +1,1 @@
+ALTER TABLE tt_issue_statuses ADD COLUMN final INTEGER DEFAULT 0;

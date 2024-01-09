@@ -5,8 +5,8 @@ After=network.target
 
 [Service]
 Type=simple
-WorkingDirectory=/opt/rbt/server/syslog/
-ExecStart=/usr/bin/node /opt/rbt/server/syslog/sputnik.js
+WorkingDirectory=/opt/rbt/server/services/syslog/
+ExecStart=/usr/bin/node /opt/rbt/server/services/syslog/sputnik.js
 RestartSec=10
 Restart=always
 User=isyslog

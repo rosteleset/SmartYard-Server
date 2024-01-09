@@ -47,8 +47,8 @@
     
     [Service]
     Type=simple
-    WorkingDirectory=/opt/rbt/services/push
-    ExecStart=/usr/bin/node /opt/rbt/services/push/push.js
+    WorkingDirectory=/opt/rbt/server/services/push
+    ExecStart=/usr/bin/node /opt/rbt/server/services/push/push.js
     RestartSec=10
     Restart=always
     User=rbt

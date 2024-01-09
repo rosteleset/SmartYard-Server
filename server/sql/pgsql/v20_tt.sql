@@ -1,0 +1,1 @@
+ALTER TABLE tt_issue_statuses ADD IF NOT EXISTS final INTEGER DEFAULT 0;

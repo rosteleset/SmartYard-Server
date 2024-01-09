@@ -33,6 +33,7 @@
                         "crontabs" => $tt->getCrontabs(),
                         "myRoles" => $tt->myRoles(),
                         "myGroups" => $tt->myGroups(),
+                        "prints" => $tt->getPrints(),
                     ];
 
                     return api::ANSWER($meta, "meta");

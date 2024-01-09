@@ -8,7 +8,7 @@ Environment=HOME=/tmp
 WorkingDirectory=/tmp
 User=www-data
 Group=www-data
-ExecStart=/opt/rbt/server/mqtt/agent.js
+ExecStart=/opt/rbt/server/services/mqtt/agent.js
 LimitCORE=infinity
 Restart=always
 RestartSec=4
