@@ -1208,7 +1208,7 @@ function parseFloatEx(f) {
 function convertLinks(input) {
     let text = input;
     const aLink = [];
-    const linksFound = text.match(/(?:www|https?)[^\s]+/g);
+    const linksFound = text.match(/(?:www|https?)[^(\s|\)|\])]+/g);
 
     if (linksFound != null) {
         for (let i = 0; i < linksFound.length; i++) {
