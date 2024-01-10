@@ -1269,7 +1269,7 @@
             let filter_name = (modules.tt.meta.filters[x]?modules.tt.meta.filters[x]:i18n("tt.filter")).replaceAll("/", "<i class='fas fa-fw fa-xs fa-angle-double-right'></i>");
             filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" style="margin-left: -4px;"><i class="far fa-fw fa-caret-square-down mr-1"></i>${filter_name}</span>`;
             filters += `<ul class="dropdown-menu" aria-labelledby="ttFilter">`;
-            document.title = i18n("windowTitle") + " :: " + filter_name;
+            document.title = i18n("windowTitle") + " :: " + (modules.tt.meta.filters[x]?modules.tt.meta.filters[x]:i18n("tt.filter"));
 
             (function hh(t) {
                 let fMy = [];
