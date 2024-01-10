@@ -1246,6 +1246,10 @@ function convertLinks(input) {
     }
 }
 
+function getMonthDifference(startDate, endDate) {
+    return endDate.getMonth() - startDate.getMonth() + 12 * (endDate.getFullYear() - startDate.getFullYear());
+}
+
 function QUERY(api, method, query, fresh) {
     return $.ajax({
         url: lStore("_server") + "/" + encodeURIComponent(api) + "/" + encodeURIComponent(method) + (query?("?" + $.param(query)):""),
