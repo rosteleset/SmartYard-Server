@@ -823,7 +823,7 @@
                     case "description":
                     case "subject":
                     case "commentBody":
-                        val = nl2br(escapeHTML(val));
+                        val = convertLinks(nl2br(escapeHTML(val)));
                         break;
     
                     case "assigned":
