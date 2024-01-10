@@ -91,13 +91,14 @@ class SputnikCloudService extends WebHookService {
                     break;
             }
 
-            await API.sendLog({
-                date: now,
-                ip: null,
-                subId: deviceId,
-                unit: this.unit,
+            await this.sendToSyslogStorage(
+                now,
+                null,
+                deviceId,
+                this.unit,
                 msg
-            }).then(this.logToConsole(now, null, deviceId, msg))
+            )
+                .then(() => this.logToConsole(now, null, deviceId, msg))
         } catch (err) {
             console.error(err.message)
         }
