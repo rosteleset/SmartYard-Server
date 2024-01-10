@@ -1,0 +1,20 @@
+[Unit]
+Description=Event service for QTECH intercom syslog messages
+Documentation=https://github.com/rosteleset/SmartYard-Server/tree/main/install
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/rbt/server/service/event/
+ExecStart=/usr/bin/node /opt/rbt/server/service/event/index.js qtech
+RestartSec=10
+Restart=always
+User=rbt
+Group=rbt
+LimitCORE=infinity
+KillMode=process
+#StandardOutput=file:/var/log/event_service/event_qtech.log
+StandardError=file:/var/log/event_service/event_qtech.error.log
+
+[Install]
+WantedBy=multi-user.target
