@@ -8,13 +8,14 @@ class SputnikCloudService extends WebHookService {
 
     async postEventHandler(req, data) {
         try {
-            const {device_id: deviceId, date_time: datetime, event, Data: payload} = data;
+            const { device_id: deviceId, date_time: datetime, event, Data: payload } = data;
             const now = getTimestamp(new Date(datetime));
+            const msg = this.createLogMessage(payload)
 
             //TODO: refactor sendToSyslogStorage, send this message from cloud
             // await this.sendToSyslogStorage(now, null, deviceId, 'sputnik', "message_body" );
 
-            console.table(data)
+            // console.table(data)
             switch (event) {
                 case 'intercom.talking':
                     if (payload?.reason === 'wrong_flat_number') { // Skip the wrong flat number
@@ -25,7 +26,7 @@ class SputnikCloudService extends WebHookService {
                         case 'cancel': // The call ended by pressing the cancel button or by timeout
                         case 'finish_handset': // CMS call ended
                         case 'finish_cloud': // SIP call ended
-                            await API.callFinished({date: now, ip: null, subId: deviceId});
+                            await API.callFinished({ date: now, ip: null, subId: deviceId });
 
                             break;
 
@@ -78,20 +79,35 @@ class SputnikCloudService extends WebHookService {
                 default:
                     if (payload?.action === 'digital_key') { // Opening a door by personal code
                         await API.openDoor(
-                            {date: now, ip: null, subId: deviceId, detail: payload.num, by: 'code'});
+                            { date: now, ip: null, subId: deviceId, detail: payload.num, by: 'code' });
                     }
 
                     if (payload?.msg === 'C pressed') { // Start face recognition (by cancellation button)
                         await API.motionDetection(
-                            {date: now, subId: deviceId, motionActive: true});
-                        await mdTimer({subId: deviceId, ip: null, delay: 10000});
+                            { date: now, subId: deviceId, motionActive: true });
+                        await mdTimer({ subId: deviceId, ip: null, delay: 10000 });
                     }
 
                     break;
             }
+
+            await API.sendLog({
+                date: now,
+                ip: null,
+                subId: deviceId,
+                unit: this.unit,
+                msg
+            }).then(this.logToConsole(now, null, deviceId, msg))
         } catch (err) {
             console.error(err.message)
         }
+    }
+
+    createLogMessage(data) {
+        return Object.entries(data)
+            .filter(([key]) => key !== 'time')
+            .map(([key, value]) => `${ key }: '${ value }'`)
+            .join(', ');
     }
 }
 

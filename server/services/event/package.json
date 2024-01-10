@@ -2,6 +2,7 @@
     "name": "event-service",
     "version": "1.0.0",
     "description": "Event service for intercom and ip camera",
+    "main": "index.js",
     "type": "module",
     "scripts": {
         "start": "concurrently -k \"npm run start:beward\" \"npm run start:beward_ds\" \"npm run start:qtech\" \"npm run start:is\" \"npm run start:akuvox\" \"npm run start:rubetek\"  \"npm run start:sputnik\"",
