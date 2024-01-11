@@ -645,7 +645,7 @@
             } else {
                 h += "<i class='fas fa-fw fa-chevron-left text-muted'></i>"
             }
-            h += "<span class='ml-2 mr-2'>" + index + " " + i18n("tt.of") + " " + count + "</span>";
+            h += "<span class='hoverable pointer ml-2 mr-2' id='stepOf'>" + index + " " + i18n("tt.of") + " " + count + "</span>";
             if (parseInt(index) < parseInt(count)) {
                 h += "<i id='stepNext' class='fas fa-fw fa-chevron-right pointer'></i>"
             } else {
@@ -1390,6 +1390,11 @@
             }).
             fail(FAIL).
             fail(loadingDone);
+        });
+
+        $("#stepOf").off("click").on("click", () => {
+            loadingStart();
+            modules.tt.selectFilter(filter, 0, modules.tt.defaultIssuesPerPage, search);
         });
 
         loadingDone();
