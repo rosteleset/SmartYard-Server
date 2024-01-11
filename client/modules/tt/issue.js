@@ -1394,7 +1394,7 @@
 
         $("#stepOf").off("click").on("click", () => {
             loadingStart();
-            modules.tt.selectFilter(filter, 0, modules.tt.defaultIssuesPerPage, search);
+            modules.tt.selectFilter(filter, (parseInt(response.issues.skip) % modules.tt.defaultIssuesPerPage) * modules.tt.defaultIssuesPerPage, modules.tt.defaultIssuesPerPage, search);
         });
 
         loadingDone();
