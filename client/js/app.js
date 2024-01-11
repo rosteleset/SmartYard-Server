@@ -1195,8 +1195,12 @@ function parseIntEx(i) {
     }
 }
 
-function parseFloatEx(f) {
+function parseFloatEx(f, r) {
     f = parseFloat(f);
+
+    if (r) {
+        f = Math.round(f * (10 ** r)) / (10 ** r);
+    }
 
     if (isNaN(f)) {
         return 0;
