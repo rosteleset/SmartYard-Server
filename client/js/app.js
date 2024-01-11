@@ -1196,7 +1196,7 @@ function parseIntEx(i) {
 }
 
 function parseFloatEx(f, r) {
-    f = parseFloat(f.toString().replaceAll(",", "."));
+    f = parseFloat(`${f}`.toString().replaceAll(",", "."));
 
     if (r) {
         f = Math.round(f * (10 ** r)) / (10 ** r);
