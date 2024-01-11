@@ -1039,7 +1039,7 @@ function pad2(n) {
     return (n < 10 ? '0' : '') + n;
 }
 
-function ttDate(date, dateOnly) {
+function ttDate(date, dateOnly, skip) {
     if (date) {
         date = new Date(date * 1000);
         if (dateOnly) {
@@ -1048,7 +1048,11 @@ function ttDate(date, dateOnly) {
             return date.toLocaleDateString() + " " + pad2(date.getHours()) + ":" + pad2(date.getMinutes());
         }
     } else {
-        return "&nbsp;"
+        if (skip) {
+            return false;
+        } else {
+            return "&nbsp;"
+        }
     }
 }
 
