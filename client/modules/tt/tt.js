@@ -823,7 +823,7 @@
                     case "description":
                     case "subject":
                     case "commentBody":
-                        val = nl2br(escapeHTML(val));
+                        val = convertLinks(nl2br(escapeHTML(val)));
                         break;
     
                     case "assigned":
@@ -1266,9 +1266,11 @@
                 f[tree[tree.length - 1]] = project.filters[i];
             }
 
-            filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" style="margin-left: -4px;"><i class="far fa-fw fa-caret-square-down mr-1"></i>${(modules.tt.meta.filters[x]?modules.tt.meta.filters[x]:i18n("tt.filter")).replaceAll("/", "<i class='fas fa-fw fa-xs fa-angle-double-right'></i>")}</span>`;
+            let filter_name = (modules.tt.meta.filters[x]?modules.tt.meta.filters[x]:i18n("tt.filter")).replaceAll("/", "<i class='fas fa-fw fa-xs fa-angle-double-right'></i>");
+            filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" style="margin-left: -4px;"><i class="far fa-fw fa-caret-square-down mr-1"></i>${filter_name}</span>`;
             filters += `<ul class="dropdown-menu" aria-labelledby="ttFilter">`;
-    
+            document.title = i18n("windowTitle") + " :: " + (modules.tt.meta.filters[x]?modules.tt.meta.filters[x]:i18n("tt.filter"));
+
             (function hh(t) {
                 let fMy = [];
                 let fFolders = [];
@@ -1578,7 +1580,7 @@
                             message(i18n("tt.filterWasSaved"));
                             lStore("_tt_issue_filter_" + current_project, n);
                             currentAceEditorOriginalValue = currentAceEditor.getValue();
-                            location.href = '?#tt&filter=' + n + '&customSearch=yes&_=' + Math.random();                        
+                            location.href = '?#tt&filter=' + n + '&customSearch=yes&_=' + Math.random();
                         }).
                         fail(FAIL).
                         fail(loadingDone);

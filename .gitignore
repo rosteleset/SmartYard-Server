@@ -107,8 +107,8 @@ package-lock.json
 /server/services/push/.env_development
 !/server/services/push/package.json
 
-# ----- event service
-/server/services/event/config.json
-!/server/services/event/package.json
+# ----- ami service
+!/server/services/ami/package.json
 
-
+# ----- mqtt service
+!server/services/mqtt/package.json
