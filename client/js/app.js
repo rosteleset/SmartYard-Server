@@ -1263,7 +1263,7 @@ function toPhrase(x, c) {
 // sum in words for numbers from 0 to 999 trillion
 // you can pass the "currency" parameter: RUB,USD,EUR (default RUB)
 
-    let x = x.toFixed(2);
+    x = x.toFixed(2);
     if (x < 0 || x > 999999999999999.99) return false;
 
     let currency = 'RUB';
