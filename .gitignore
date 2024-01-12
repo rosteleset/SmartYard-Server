@@ -110,5 +110,5 @@ package-lock.json
 # ----- ami service
 !/server/services/ami/package.json
 
-
-
+# ----- mqtt service
+!server/services/mqtt/package.json
