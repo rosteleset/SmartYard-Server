@@ -1,17 +1,16 @@
 {
-  "name": "push-service",
+  "name": "push",
   "version": "1.0.0",
-  "description": "Firebase push notification service",
+  "description": "",
   "main": "push.js",
   "scripts": {
-    "start": "NODE_ENV=production node push.js",
-    "dev": "NODE_ENV=development nodemon push.js"
+    "start": "node push.js",
+    "dev": "nodemon push.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "axios": "^1.6.0",
     "body-parser": "^1.20.2",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
@@ -22,6 +21,7 @@
     "nodemon": "^3.0.1"
   },
   "engines": {
-    "node": ">=18.0.0 <=18.20.0"
+    "node": "^18.18.1",
+    "npm": "^9.8.1"
   }
 }

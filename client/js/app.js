@@ -16,6 +16,8 @@ var badge = false;
 var currentModule = false;
 var lStoreEngine = false;
 var hasUnsavedChanges = false;
+var currentAceEditor = false;
+var currentAceEditorOriginalValue = false;
 
 function hashChange() {
     let [ route, params, hash ] = hashParse();
@@ -198,7 +200,7 @@ function showForgotPasswordForm() {
 }
 
 function ping(server) {
-    return jQuery.ajax({
+    return $.ajax({
         url: server + "/server/ping",
         type: "POST",
         contentType: "json",
@@ -230,7 +232,7 @@ function login() {
     lStore("_server", server);
 
     ping(server).then(() => {
-        return jQuery.ajax({
+        return $.ajax({
             url: server + "/authentication/login",
             type: "POST",
             contentType: "json",
@@ -834,7 +836,7 @@ function leftSide(button, title, target, group, withibleOnlyWhenActive) {
     let id = md5(guid());
 
     $("#leftside-menu").append(`
-        <li id="${id}" class="nav-item ${mainSidebarFirst?"mt-1":""} ${withibleOnlyWhenActive?" withibleOnlyWhenActive":""}" data-target="${target}" title="${escapeHTML(title)}"${(withibleOnlyWhenActive && target !== "#" + route.split('.')[0])?" style='display: none;'":""}>
+        <li id="${id}" class="nav-item${mainSidebarFirst?" mt-2":""}${withibleOnlyWhenActive?" withibleOnlyWhenActive":""}" data-target="${target}" title="${escapeHTML(title)}"${(withibleOnlyWhenActive && target !== "#" + route.split('.')[0])?" style='display: none;'":""}>
             <a href="${target}" data-href="${target}" class="nav-link${(target === "#" + route.split('.')[0])?" active":""}">
                 <i class="${button} nav-icon"></i>
                 <p class="text-nowrap">${title}</p>
@@ -883,8 +885,13 @@ function loadModule() {
                 delete i18n.methods;
             }
             lang[module] = i18n;
-        }).always(() => {
-            $.getScript("modules/" + module + "/" + module + ".js");
+        })
+        .fail(FAIL)
+        .always(() => {
+            $.getScript("modules/" + module + "/" + module + ".js")
+            .fail(() => {
+                pageError(i18n("errorLoadingModule", module));
+            });
         });
     }
 }
@@ -1032,7 +1039,7 @@ function pad2(n) {
     return (n < 10 ? '0' : '') + n;
 }
 
-function ttDate(date, dateOnly) {
+function ttDate(date, dateOnly, skip) {
     if (date) {
         date = new Date(date * 1000);
         if (dateOnly) {
@@ -1041,7 +1048,11 @@ function ttDate(date, dateOnly) {
             return date.toLocaleDateString() + " " + pad2(date.getHours()) + ":" + pad2(date.getMinutes());
         }
     } else {
-        return "&nbsp;"
+        if (skip) {
+            return false;
+        } else {
+            return "&nbsp;"
+        }
     }
 }
 
@@ -1188,14 +1199,252 @@ function parseIntEx(i) {
     }
 }
 
-function parseFloatEx(f) {
-    f = parseFloat(f);
+function parseFloatEx(f, r) {
+    f = parseFloat(`${f}`.toString().replaceAll(",", "."));
+
+    if (r) {
+        f = Math.round(f * (10 ** r)) / (10 ** r);
+    }
 
     if (isNaN(f)) {
         return 0;
     } else {
         return f;
     }
+}
+
+function convertLinks(input) {
+    let text = input;
+    const aLink = [];
+    const linksFound = text.match(/(?:www|https?)[^(\s|\)|\])]+/g);
+
+    if (linksFound != null) {
+        for (let i = 0; i < linksFound.length; i++) {
+            let replace = linksFound[i];
+
+            if (!(linksFound[i].match(/(http(s?)):\/\//))) {
+                replace = 'http://' + linksFound[i];
+            }
+
+            let linkText = replace.split('/')[2];
+
+            if (linkText.substring(0, 3) == 'www') {
+                linkText = linkText.replace('www.', '');
+            }
+
+            if (linkText.match(/youtu/)) {
+                const youtubeID = replace.split('/').slice(-1)[0].split('=')[1];
+
+                if (youtubeID === undefined || youtubeID === '') {
+                    aLink.push('<a onclick="xblur()" href="' + replace + '" target="_blank">' + linkText + '</a>');
+                } else {
+                    aLink.push('<span class="video-wrapper"><iframe src="https://www.youtube.com/embed/' + youtubeID + '" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></span>');
+                }
+            } else {
+                aLink.push('<a onclick="xblur()" href="' + replace + '" target="_blank">' + linkText + '</a>');
+            }
+
+            text = text.split(linksFound[i]).map(item => {
+                return aLink[i].includes('iframe') ? item.trim() : item;
+            }).join(aLink[i]);
+        }
+        return text;
+    } else {
+        return input;
+    }
+}
+
+function getMonthDifference(startDate, endDate) {
+    return endDate.getMonth() - startDate.getMonth() + 12 * (endDate.getFullYear() - startDate.getFullYear());
+}
+
+function toPhrase(x, c) {
+// TODO: add i18n support
+// sum in words for numbers from 0 to 999 trillion
+// you can pass the "currency" parameter: RUB,USD,EUR (default RUB)
+
+    x = x.toFixed(2);
+    if (x < 0 || x > 999999999999999.99) return false;
+
+    let currency = 'RUB';
+
+    if (typeof(c) == 'string') currency=c.trimAll().toUpperCase();
+
+    if (currency == 'RUR') currency = 'RUB';
+    if (currency != 'RUB' && currency != 'USD' && currency != 'EUR') return false;
+
+    let groups = [];
+
+    groups[0] = [];
+    groups[1] = [];
+    groups[2] = [];
+    groups[3] = [];
+    groups[4] = [];
+
+    groups[9] = [];
+
+    groups[0][-1] = { 'RUB': 'рублей', 'USD': 'долларов США', 'EUR': 'евро' };
+
+    groups[0][1] = { 'RUB': 'рубль', 'USD': 'доллар США', 'EUR': 'евро' };
+    groups[0][2] = { 'RUB': 'рубля', 'USD': 'доллара США', 'EUR': 'евро' };
+    groups[0][3] = { 'RUB': 'рубля', 'USD': 'доллара США', 'EUR': 'евро' };
+    groups[0][4] = { 'RUB': 'рубля', 'USD': 'доллара США', 'EUR': 'евро' };
+
+    groups[1][-1] = 'тысяч';
+
+    groups[1][1] = 'тысяча';
+    groups[1][2] = 'тысячи';
+    groups[1][3] = 'тысячи';
+    groups[1][4] = 'тысячи';
+
+    groups[2][-1] = 'миллионов';
+
+    groups[2][1] = 'миллион';
+    groups[2][2] = 'миллиона';
+    groups[2][3] = 'миллиона';
+    groups[2][4] = 'миллиона';
+
+    groups[3][-1] = 'миллиардов';
+
+    groups[3][1] = 'миллиард';
+    groups[3][2] = 'миллиарда';
+    groups[3][3] = 'миллиарда';
+    groups[3][4] = 'миллиарда';
+
+    groups[4][-1] = 'триллионов';
+
+    groups[4][1] = 'триллион';
+    groups[4][2] = 'триллиона';
+    groups[4][3] = 'триллиона';
+    groups[4][4] = 'триллиона';
+
+    groups[9][-1] = { 'RUB': 'копеек', 'USD': 'центов', 'EUR': 'центов' };
+
+    groups[9][1] = { 'RUB': 'копейка', 'USD': 'цент', 'EUR': 'цент' };
+    groups[9][2] = { 'RUB': 'копейки', 'USD': 'цента', 'EUR': 'цента' };
+    groups[9][3] = { 'RUB': 'копейки', 'USD': 'цента', 'EUR': 'цента' };
+    groups[9][4] = { 'RUB': 'копейки', 'USD': 'цента', 'EUR': 'цента' };
+
+    let names = [];
+    names[1] = {0: 'один', 1: 'одна', 2: 'один', 3: 'один', 4: 'один' };
+    names[2] = {0: 'два', 1: 'две', 2: 'два', 3: 'два', 4: 'два' };
+    names[3] = 'три';
+    names[4] = 'четыре';
+    names[5] = 'пять';
+    names[6] = 'шесть';
+    names[7] = 'семь';
+    names[8] = 'восемь';
+    names[9] = 'девять';
+    names[10] = 'десять';
+    names[11] = 'одиннадцать';
+    names[12] = 'двенадцать';
+    names[13] = 'тринадцать';
+    names[14] = 'четырнадцать';
+    names[15] = 'пятнадцать';
+    names[16] = 'шестнадцать';
+    names[17] = 'семнадцать';
+    names[18] = 'восемнадцать';
+    names[19] = 'девятнадцать';
+    names[20] = 'двадцать';
+    names[30] = 'тридцать';
+    names[40] = 'сорок';
+    names[50] = 'пятьдесят';
+    names[60] = 'шестьдесят';
+    names[70] = 'семьдесят';
+    names[80] = 'восемьдесят';
+    names[90] = 'девяносто';
+    names[100] = 'сто';
+    names[200] = 'двести';
+    names[300] = 'триста';
+    names[400] = 'четыреста';
+    names[500] = 'пятьсот';
+    names[600] = 'шестьсот';
+    names[700] = 'семьсот';
+    names[800] = 'восемьсот';
+    names[900] = 'девятьсот';
+
+    let r = '';
+    let i, j;
+
+    let y = Math.floor(x);
+
+    if (y > 0) {
+        let t = [];
+
+        for (i=0;i<=4;i++) {
+            t[i] = y % 1000;
+            y = Math.floor(y / 1000);
+        }
+
+        let d = [];
+
+        for (i=0; i<=4; i++) {
+            d[i] = [];
+            d[i][0] = t[i] % 10;
+            d[i][10] = t[i] % 100 - d[i][0];
+            d[i][100] = t[i] - d[i][10] - d[i][0];
+            d[i][11] = t[i] % 100;
+        }
+
+        for (i=4; i>=0; i--) {
+            if (t[i]>0) {
+                if (names[d[i][100]])
+                    r += ' ' + ((typeof(names[d[i][100]]) == 'object')?(names[d[i][100]][i]):(names[d[i][100]]));
+
+                if (names[d[i][11]])
+                    r += ' '+ ((typeof(names[d[i][11]]) == 'object')?(names[d[i][11]][i]):(names[d[i][11]]));
+                else
+                {
+                    if (names[d[i][10]]) r += ' ' + ((typeof(names[d[i][10]]) == 'object')?(names[d[i][10]][i]):(names[d[i][10]]));
+                    if (names[d[i][0]]) r += ' ' + ((typeof(names[d[i][0]]) == 'object')?(names[d[i][0]][i]):(names[d[i][0]]));
+                }
+
+                if (names[d[i][11]])  // если существует числительное
+                    j = d[i][11];
+                else
+                    j = d[i][0];
+
+                if (groups[i][j])
+                {
+                    if (i==0)
+                        r += ' ' + groups[i][j][currency];
+                    else
+                        r += ' ' + groups[i][j];
+                }
+                else
+                {
+                    if (i==0)
+                        r += ' ' + groups[i][-1][currency];
+                    else
+                        r += ' ' + groups[i][-1];
+                }
+            }
+        }
+
+        if (t[0] == 0) r += ' ' + groups[0][-1][currency];
+    }
+    else r= 'Ноль ' + groups[0][-1][currency];
+
+    y = ((x - Math.floor(x)) * 100).toFixed();
+    if (y < 10) y = '0' + y;
+
+    r = r.trim();
+    r = r.substring(0, 1).toUpperCase()+r.substring(1);
+    r += ' ' + y;
+
+    y = y * 1;
+
+    if (names[y]) 
+        j = y;
+    else
+        j = y % 10;
+
+    if (groups[9][j])
+        r+=' ' + groups[9][j][currency];
+    else
+        r+=' ' + groups[9][-1][currency];
+
+    return r;
 }
 
 function QUERY(api, method, query, fresh) {
@@ -1213,10 +1462,18 @@ function QUERY(api, method, query, fresh) {
 }
 
 function GET(api, method, id, fresh) {
+    let l = lStore("_lang");
+    if (!l) {
+        l = config.defaultLanguage;
+    }
+    if (!l) {
+        l = "ru";
+    }
     return $.ajax({
         url: lStore("_server") + "/" + encodeURIComponent(api) + "/" + encodeURIComponent(method) + ((typeof id !== "undefined" && id !== false)?("/" + encodeURIComponent(id)):""),
         beforeSend: xhr => {
             xhr.setRequestHeader("Authorization", "Bearer " + lStore("_token"));
+            xhr.setRequestHeader("Lang", l);
             if (fresh) {
                 xhr.setRequestHeader("X-Api-Refresh", "1");
             }
@@ -1227,10 +1484,18 @@ function GET(api, method, id, fresh) {
 }
 
 function AJAX(type, api, method, id, query) {
+    let l = lStore("_lang");
+    if (!l) {
+        l = config.defaultLanguage;
+    }
+    if (!l) {
+        l = "ru";
+    }
     return $.ajax({
         url: lStore("_server") + "/" + encodeURIComponent(api) + "/" + encodeURIComponent(method) + ((typeof id !== "undefined" && id !== false)?("/" + encodeURIComponent(id)):""),
         beforeSend: xhr => {
             xhr.setRequestHeader("Authorization", "Bearer " + lStore("_token"));
+            xhr.setRequestHeader("Lang", l);
         },
         type: type,
         contentType: "json",
@@ -1260,7 +1525,7 @@ function FAIL(response) {
             }, 5000);
         }
     } else {
-        error(i18n("errors.unknown"), i18n("error"), 30);
+        error(i18n("errors.unknown"), i18n("errorCode", response.status), 30);
     }
 }
 
@@ -1269,7 +1534,7 @@ function FAILPAGE(response) {
         error(i18n("errors." + response.responseJSON.error), i18n("error"), 30);
         pageError(i18n("errors." + response.responseJSON.error));
     } else {
-        error(i18n("errors.unknown"), i18n("error"), 30);
+        error(i18n("errors.unknown"), i18n("errorCode", response.status), 30);
         pageError();
     }
     loadingDone();
@@ -1293,6 +1558,12 @@ $(document).on('select2:open', () => {
 });
 */
 
+$("#loginBoxPassword").off("keypress").on("keypress", e => {
+    if (e.keyCode == 13) {
+        login();
+    }
+});
+
 $(document).on('select2:open', '.select2', function () {
     setTimeout(() => {
         document.querySelector(`[aria-controls="select2-${$(this).attr("id")}-results"]`).focus();
@@ -1311,13 +1582,19 @@ $(window).off("resize").on("resize", () => {
 });
 
 setInterval(() => {
-    if (hasUnsavedChanges || $("#editorContainer").length) {
+    if (hasUnsavedChanges || ($("#editorContainer").length && currentAceEditor && currentAceEditorOriginalValue !== false && currentAceEditor.getValue() != currentAceEditorOriginalValue)) {
         if (typeof window.onbeforeunload != "function") {
             window.onbeforeunload = () => false;
+            $(".saveButton").addClass("text-primary");
         }
     } else {
+        if (!$("#editorContainer").length) {
+            currentAceEditor = false;
+            currentAceEditorOriginalValue = false;
+        }
         if (typeof window.onbeforeunload == "function") {
             window.onbeforeunload = null;
+            $(".saveButton").removeClass("text-primary");
         }
     } 
 }, 1000);

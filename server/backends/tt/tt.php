@@ -576,15 +576,15 @@
              * @return false|integer
              */
 
-             abstract public function addStatus($status);
+             abstract public function addStatus($status, $fianl);
 
              /**
              * @param $statusId
-             * @param $display
+             * @param $status
              * @return boolean
              */
 
-             abstract public function modifyStatus($statusId, $display);
+             abstract public function modifyStatus($statusId, $status, $fianl);
 
              /**
               * @param $statusId
@@ -1680,6 +1680,390 @@
             }
 
             /**
+             * @param $formName
+             * @param $extension
+             * @param $description
+             * @return mixed
+             */
+            public function addPrint($formName, $extension, $description) {
+                $this->clearCache();
+
+                return $this->db->insert("insert into tt_prints (form_name, extension, description) values (:form_name, :extension, :description)", [
+                    "form_name" => $formName,
+                    "extension" => $extension,
+                    "description" => $description,
+                ]);
+            }
+
+            /**
+             * @param $id
+             * @return mixed
+             */
+            public function printGetData($id) {
+                $print = $this->getPrint($id);
+
+                if ($print) {
+                    $files = loadBackend("files");
+
+                    $data = $files->searchFiles([
+                        "metadata.type" => "print-data",
+                        "metadata.name" => $print["formName"],
+                    ]);
+
+                    if ($data) {
+                        return $files->streamToContents($files->getFileStream($data[0]["id"])) ? : "//function data (issue, callback) {\n\tcallback(issue);\n//}\n";
+                    } else {
+                        return "//function data (issue, callback) {\n\tcallback(issue);\n//}\n";
+                    }
+                }
+
+                return false;
+            }
+
+            /**
+             * @param $id
+             * @param $file
+             * @return mixed
+             */
+            public function printSetData($id, $file) {
+                if (!checkInt($id)) {
+                    return false;
+                }
+
+                $print = $this->getPrint($id);
+
+                if ($print) {
+                    $files = loadBackend("files");
+
+                    if ($files) {
+                        return $files->deleteFiles([
+                            "metadata.type" => "print-data",
+                            "metadata.name" => $print["formName"],
+                        ]) && $files->addFile($print["formName"] . "-data.js", $files->contentsToStream($file), [
+                            "type" => "print-data",
+                            "name" => $print["formName"],
+                        ]);
+                    }
+                }
+
+                return false;
+            }
+
+            /**
+             * @param $id
+             * @return mixed
+             */
+            public function printGetFormatter($id) {
+                $print = $this->getPrint($id);
+
+                if ($print) {
+                    $files = loadBackend("files");
+
+                    $formatter = $files->searchFiles([
+                        "metadata.type" => "print-formatter",
+                        "metadata.name" => $print["formName"],
+                    ]);
+
+                    if ($formatter) {
+                        return $files->streamToContents($files->getFileStream($formatter[0]["id"])) ? : "";
+                    } else {
+                        return "";
+                    }
+                }
+
+                return false;
+            }
+
+            /**
+             * @param $id
+             * @param $file
+             * @return mixed
+             */
+            public function printSetFormatter($id, $file) {
+                if (!checkInt($id)) {
+                    return false;
+                }
+
+                $print = $this->getPrint($id);
+
+                if ($print) {
+                    $files = loadBackend("files");
+
+                    if ($files) {
+                        return $files->deleteFiles([
+                            "metadata.type" => "print-formatter",
+                            "metadata.name" => $print["formName"],
+                        ]) && $files->addFile($print["formName"] . "-formatter.js", $files->contentsToStream($file), [
+                            "type" => "print-formatter",
+                            "name" => $print["formName"],
+                        ]);
+                    }
+                }
+
+                return false;
+            }
+
+            /**
+             * @param $id
+             * @return mixed
+             */
+            public function printGetTemplate($id) {
+                $print = $this->getPrint($id);
+
+                if ($print) {
+                    $files = loadBackend("files");
+
+                    $template = $files->searchFiles([
+                        "metadata.type" => "print-template",
+                        "metadata.name" => $print["formName"],
+                    ]);
+
+                    if ($template) {
+                        return [
+                            "body" => $files->streamToContents($files->getFileStream($template[0]["id"])),
+                            "name" => $template[0]["filename"],
+                            "size" => $template[0]["length"],
+                        ];
+                    } else {
+                        return false;
+                    }
+                }
+
+                return false;
+            }
+
+            /**
+             * @param $id
+             * @param $file
+             * @return mixed
+             */
+            public function printSetTemplate($id, $fileName, $fileBody) {
+                if (!checkInt($id)) {
+                    return false;
+                }
+
+                $print = $this->getPrint($id);
+
+                if ($print) {
+                    $files = loadBackend("files");
+
+                    if ($files) {
+                        $this->clearCache();
+
+                        return $files->deleteFiles([
+                            "metadata.type" => "print-template",
+                            "metadata.name" => $print["formName"],
+                        ]) && $files->addFile($fileName, $files->contentsToStream(base64_decode($fileBody)), [
+                            "type" => "print-template",
+                            "name" => $print["formName"],
+                        ]);
+                    }
+                }
+
+                return false;
+            }
+
+            /**
+             * @param $id
+             * @return mixed
+             */
+            public function printDeleteTemplate($id) {
+                if (!checkInt($id)) {
+                    return false;
+                }
+
+                $print = $this->getPrint($id);
+
+                if ($print) {
+                    $files = loadBackend("files");
+
+                    if ($files) {
+                        $this->clearCache();
+
+                        return $files->deleteFiles([
+                            "metadata.type" => "print-template",
+                            "metadata.name" => $print["formName"],
+                        ]);
+                    }
+                }
+
+                return false;
+            }
+
+            /**
+             * @param $id
+             * @param $formName
+             * @param $extension
+             * @param $description
+             * @return mixed
+             */
+            public function modifyPrint($id, $formName, $extension, $descripton) {
+                if (!checkInt($id)) {
+                    return false;
+                }
+
+                $this->clearCache();
+
+                return $this->db->modify("update tt_prints set form_name = :form_name, extension = :extension, description = :description where tt_print_id = $id", [
+                    "form_name" => $formName,
+                    "extension" => $extension,
+                    "description" => $descripton,
+                ]);
+            }
+
+            /**
+             * @param $id
+             * @return mixed
+             */
+            public function getPrint($id) {
+                if (!checkInt($id)) {
+                    return false;
+                }
+
+                $prints = $this->getPrints();
+
+                foreach ($prints as $p) {
+                    if ($id == $p["printId"]) {
+                        return $p;
+                    }
+                }
+
+                return false;
+            }
+
+            /**
+             * @return mixed
+             */
+            public function getPrints() {
+                $cache = $this->cacheGet("PRINTS");
+                if ($cache) {
+                    return $cache;
+                }
+
+                $_prints = $this->db->get("select * from tt_prints order by form_name", false, [
+                    "tt_print_id" => "printId",
+                    "form_name" => "formName",
+                    "extension" => "extension",
+                    "description" => "description",
+                ]);
+
+                $files = loadBackend("files");
+
+                if ($files) {
+                    foreach ($_prints as &$p) {
+                        $p["hasTemplate"] = !!$files->searchFiles([
+                            "metadata.type" => "print-template",
+                            "metadata.name" => $p["formName"],
+                        ]);
+                    }
+                }
+
+                $this->cacheSet("PRINTS", $_prints);
+
+                return $_prints;
+            }
+
+            /**
+             * @param $id
+             * @return mixed
+             */
+            public function deletePrint($id) {
+                if (!checkInt($id)) {
+                    return false;
+                }
+
+                $print = $this->getPrint($id);
+
+                if ($print) {
+                    $files = loadBackend("files");
+
+                    if ($files) {
+                        $files->deleteFiles([
+                            "metadata.type" => "print-data",
+                            "metadata.name" => $print["formName"],
+                        ]);
+                        $files->deleteFiles([
+                            "metadata.type" => "print-formatter",
+                            "metadata.name" => $print["formName"],
+                        ]);
+                        $files->deleteFiles([
+                            "metadata.type" => "print-template",
+                            "metadata.name" => $print["formName"],
+                        ]);
+                    }
+                }
+
+                $this->clearCache();
+
+                return $this->db->modify("delete from tt_prints where tt_print_id = $id");
+            }
+
+            /**
+             * @param $id
+             * @param $data
+             * @return mixed
+             */
+            public function printExec($id, $data) {
+                $tmp = md5(time() . rand());
+
+                $print = $this->getPrint($id);
+
+                if (!$print) {
+                    setLastError("printNotFound");
+                    return false;
+                }
+
+                $path = rtrim(@$this->config["document_builder"]["tmp"]?:"/tmp/print", "/");
+                $bin = @$this->config["document_builder"]["bin"]?:"/opt/onlyoffice/documentbuilder/docbuilder";
+                $user = @$this->config["document_builder"]["www_user"]?:"www-data";
+                $group = @$this->config["document_builder"]["www_group"]?:"www-data";
+
+                if (!is_dir($path)) {
+                    mkdir($path);
+                    chmod($path, 0775);
+                    @chown($path, $user);
+                    @chgrp($path, $group);
+                }
+
+                $template = @$this->printGetTemplate($id);
+                $formatter = @$this->printGetFormatter($id);
+
+                if (!$formatter) {
+                    setLastError("formatterNotDefined");
+                    return false;
+                }
+
+                if ($template) {
+                    $templateExt = explode(".", $template["name"]);
+                    $templateExt = $templateExt[count($templateExt) - 1];
+                    $templateName = "$path/$tmp-tmp.$templateExt";
+                    file_put_contents($templateName, $template["body"]);
+                    $formatter = str_replace('${templateName}', $templateName, $formatter);
+                }
+
+                $outFile = "$path/$tmp-out.{$print["extension"]}";
+
+                $formatter = str_replace('${outFile}', $outFile, $formatter);
+                $formatter = str_replace('${extension}', $print["extension"], $formatter);
+                $formatter = str_replace('${tmp}', $path, $formatter);
+
+                $formatter = "var data = " . json_encode($data). ";\n\n" . $formatter;
+
+                file_put_contents($path . "/" . $tmp . "-bld.docbuilder", $formatter);
+
+                $log = [];
+                exec("$bin $path/$tmp-bld.docbuilder 2>&1", $log);
+
+                file_put_contents("$path/$tmp-log.log", implode("\n", $log));
+
+                if (file_exists($outFile)) {
+                    return "$tmp-out.{$print["extension"]}";
+                } else {
+                    return false;
+                }
+            }
+
+            /**
              * @inheritDoc
              */
             public function cron($part)
@@ -1721,6 +2105,30 @@
                     } catch (\Exception $e) {
                         $success = false;
                     }
+                }
+
+                try {
+                    if ($part == "minutely") {
+                        $path = @$this->config["document_builder"]["tmp"]?:"/tmp/print";
+                        $user = @$this->config["document_builder"]["www_user"]?:"www-data";
+                        $group = @$this->config["document_builder"]["www_group"]?:"www-data";
+                        if (is_dir($path)) {
+                            $fileSystemIterator = new \FilesystemIterator($path);
+                            $threshold = strtotime('-15 min');
+                            foreach ($fileSystemIterator as $file) {
+                                if ($threshold >= $file->getCTime()) {
+                                    unlink($file->getRealPath());
+                                }
+                            }
+                        } else {
+                            mkdir($path);
+                            chmod($path, 0775);
+                            chown($path, $user);
+                            chgrp($path, $group);
+                        }
+                    }
+                } catch (\Exception $e) {
+                    $success = false;
                 }
 
                 return $success && parent::cron($part);

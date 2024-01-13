@@ -23,7 +23,7 @@
     $params = ["ip" => $ip, "sub_id" => $subId, "frs" => "-"];
     $result = $db->get($query, $params);
 
-    if (!$result[0]) {
+    if (!$result) {
         response(202, false, false, "FRS not enabled on this stream");
         exit();
     }

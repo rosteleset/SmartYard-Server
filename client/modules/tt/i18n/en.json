@@ -272,6 +272,33 @@
     "confirmWorkspaceDelete": "Delete workspace \"%s\"?",
     "unlinkIssues": "Delete link between \"%s\" and \"%s\"?",
     "workflowAction": "Workflow action",
+    "showCounts": "Showing orders from %s to %s from %s",
+    "print": "Print",
+    "prints": "Print",
+    "printId": "#",
+    "printFormName": "Form (code)",
+    "printExtension": "Type",
+    "printDescription": "Description",
+    "addPrint": "Add form",
+    "modifyPrint": "Modify form",
+    "printWasAdded": "Form was added",
+    "printWasChanged": "Form was changed",
+    "modifyPrintData": "Data script",
+    "modifyPrintFormatter": "Format script",
+    "uploadPrintTemplate": "Upload template",
+    "downloadPrintTemplate": "Download template",
+    "deletePrintTemplate": "Delete template",
+    "deletePrint": "Delete form",
+    "printTemplateWasUploaded": "Template was uploaded",
+    "printTemplateWasDeleted": "Template was deleted",
+    "confirmDeletePrintTemplate": "Delete template for form \"%s\"?",
+    "confirmDeletePrint": "Delete form \"%s\"?",
+    "printWasDeleted": "Form was deleted",
+    "printDataSave": "Save",
+    "printFormatterSave": "Save",
+    "printDataWasSaved": "Data script was saved",
+    "printFormatterWasSaved": "Format script was saved",
+    "finalStatus": "Final",
     "methods": {
         "tt": {
             "_title": "Task Manager",
@@ -307,6 +334,8 @@
         "insufficientRights": "Insufficient rights to perform the operation",
         "filterNotFound": "Filter not found",
         "invalidFilter": "Filter contains errors, cannot be saved",
-        "functionNotFound": "Function %s not found"
+        "functionNotFound": "Function %s not found",
+        "errorInFunction": "Error calling data function",
+        "cantGenerateForm": "Error when creating document"
     }
 }

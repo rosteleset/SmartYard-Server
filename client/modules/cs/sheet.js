@@ -18,7 +18,7 @@
             h += `<div id='editorContainer' style='width: 100%; height: ${height}px;'>`;
             h += `<pre class="ace-editor mt-2" id="sheetEditor" style="position: relative; border: 1px solid #ced4da; border-radius: 0.25rem; width: 100%; height: 100%;"></pre>`;
             h += "</div>";
-            h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="sheetSave" class="hoverable"><i class="fas fa-save pr-2"></i>${i18n("cs.sheetSave")}</span></span>`;
+            h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="sheetSave" class="hoverable saveButton"><i class="fas fa-save pr-2"></i>${i18n("cs.sheetSave")}</span></span>`;
             $("#mainForm").html(h);
             let editor = ace.edit("sheetEditor");
             editor.setTheme("ace/theme/chrome");
@@ -42,7 +42,9 @@
             } else {
                 editor.setValue(response.sheet, -1);
             }
-            editor.getSession().setUndoManager(new ace.UndoManager());
+            currentAceEditor = editor;
+            currentAceEditorOriginalValue = currentAceEditor.getValue();
+            editor.getSession().getUndoManager().reset();
             editor.clearSelection();
             editor.setFontSize(14);
             editor.commands.addCommand({
@@ -65,6 +67,7 @@
                 fail(FAIL).
                 done(() => {
                     message(i18n("cs.sheetWasSaved"));
+                    currentAceEditorOriginalValue = currentAceEditor.getValue();
                 }).
                 always(() => {
                     loadingDone();

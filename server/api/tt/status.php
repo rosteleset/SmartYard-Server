@@ -15,13 +15,13 @@
         class status extends api {
 
             public static function POST($params) {
-                $statusId = loadBackend("tt")->addStatus($params["status"]);
+                $statusId = loadBackend("tt")->addStatus($params["status"], $params["final"]);
 
                 return api::ANSWER($statusId, ($statusId !== false)?"statusId":"notAcceptable");
             }
 
             public static function PUT($params) {
-                $success = loadBackend("tt")->modifyStatus($params["_id"], $params["status"]);
+                $success = loadBackend("tt")->modifyStatus($params["_id"], $params["status"], $params["final"]);
 
                 return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }

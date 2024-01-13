@@ -107,6 +107,8 @@
                     modules.tt.renderIssues({
                         project: block.project,
                         filter: block.filter,
+                        class: block.class,
+                        limit: block.limit,
                     }, $(block.right?"#altForm":"#mainForm"), md5(guid()), loadWorkspace);
                 } else {
                     loadingDone();
@@ -134,6 +136,7 @@
                             id: "code",
                             type: "code",
                             language: "json",
+                            height: 2 * (window.innerHeight / 3),
                             value: JSON.stringify(workspace.length?{ name: currentWorkspace, workspace: workspace }:modules.tt.workspaces.demoWorkspace, null, 4),
                             validate: w => {
                                 try {

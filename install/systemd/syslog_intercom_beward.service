@@ -6,7 +6,7 @@ After=network.target
 [Service]
 Type=simple
 WorkingDirectory=/opt/rbt/server/syslog/
-ExecStart=/usr/bin/node /opt/rbt/server/syslog/beward.js --config=beward
+ExecStart=/usr/bin/node /opt/rbt/server/services/syslog/beward.js --config=beward
 RestartSec=10
 Restart=always
 User=isyslog

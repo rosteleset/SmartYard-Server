@@ -1,0 +1,1 @@
+ALTER TABLE tt_issue_custom_fields ADD IF NOT EXISTS catalog CHARACTER VARYING;
