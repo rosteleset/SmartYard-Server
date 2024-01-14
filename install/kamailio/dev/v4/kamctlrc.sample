@@ -1,0 +1,30 @@
+## The Kamailio configuration file for the control tools.
+##
+## Here you can set variables used in the kamctl and kamdbctl setup
+## scripts. Per default all variables here are commented out, the control tools
+## will use their internal default values.
+
+## the SIP domain
+SIP_DOMAIN=rbt-sbc-example.com
+
+DBENGINE=PGSQL
+## database host
+DBHOST=localhost
+
+## database port
+DBPORT=5432
+
+## database name
+DBNAME=kamailio
+
+## database read/write user
+DBRWUSER="kamailio"
+DBRWPW="kamailio"
+
+## database read only user
+DBROUSER="kamailioro"
+DBROPW="kamailioro"
+
+## database super user and password
+DBROOTUSER="rbt"
+DBROOTPW="rbt"
