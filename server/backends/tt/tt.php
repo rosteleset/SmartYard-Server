@@ -224,18 +224,38 @@
                     $sandbox->registerLibrary("custom", [
                         "GET" => function ($params) {
                             $custom = loadBackend("custom");
+
+                            $params["_config"] = $this->config;
+                            $params["_redis"] = $this->redis;
+                            $params["_db"] = $this->db;
+
                             return [ $custom->GET($params) ];
                         },
                         "POST" => function ($params) {
                             $custom = loadBackend("custom");
+
+                            $params["_config"] = $this->config;
+                            $params["_redis"] = $this->redis;
+                            $params["_db"] = $this->db;
+
                             return [ $custom->POST($params) ];
                         },
                         "PUT" => function ($params) {
                             $custom = loadBackend("custom");
+
+                            $params["_config"] = $this->config;
+                            $params["_redis"] = $this->redis;
+                            $params["_db"] = $this->db;
+
                             return [ $custom->PUT($params) ];
                         },
                         "DELETE" => function ($params) {
                             $custom = loadBackend("custom");
+
+                            $params["_config"] = $this->config;
+                            $params["_redis"] = $this->redis;
+                            $params["_db"] = $this->db;
+
                             return [ $custom->DELETE($params) ];
                         },
                     ]);
