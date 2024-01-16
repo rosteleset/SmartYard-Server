@@ -548,7 +548,7 @@ extensions = {
         [ "_4XXXXXXXXX" ] = handleSIPIntercom,
 
         -- from "PSTN" to mobile application call (for testing)
-        [ "_5XXXXXXXXX" ] = handleMobileApp ,
+        [ "_5XXXXXXXXX" ] = handleMobileApp,
 
         -- panel's call
         [ "_6XXXXXXXXX" ] = hanleSIPOutdoorIntercom,
