@@ -200,7 +200,7 @@
         $postdata = json_decode($raw_postdata, true);
 
         if (!isset($postdata)) {
-            response(405, ["error"=>"post body"]);
+            response(405, false, false, 'Request body is invalid or empty' );
         }
 
         $path = explode("?", $_SERVER["REQUEST_URI"])[0];
