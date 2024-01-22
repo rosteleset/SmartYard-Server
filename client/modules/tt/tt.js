@@ -1413,13 +1413,10 @@
                     }
                 }
 
-                let preFirst = Math.max(0, last - modules.tt.defaultPagerItemsCount);
-                let postLast = Math.max(pages - last, 0);
+                console.log(page, pages, delta, first, last);
 
                 h += `<nav class="pager" data-target="${issuesListId}">`;
                 h += '<ul class="pagination mb-0 ml-0">';
-
-                console.log(page, pages, delta, first, preFirst, last, postLast);
 
                 if (first > 1) {
                     h += `<li class="page-item pointer tt_pager" data-page="1" data-target="${issuesListId}"><span class="page-link"><span aria-hidden="true">&laquo;</span></li>`;
