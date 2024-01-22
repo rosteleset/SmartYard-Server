@@ -1,7 +1,7 @@
 ({
     meta: {},
 
-    defaultIssuesPerPage: 25,
+    defaultIssuesPerPage: 20,
     defaultPagerItemsCount: 10,
     menuItem: false,
 
