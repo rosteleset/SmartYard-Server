@@ -1413,7 +1413,7 @@
                     h += `<li class="page-item disabled"><span class="page-link"><span aria-hidden="true">&laquo;</span></li>`;
                 }
 
-                for (let i = Math.max(first - postLast, 1); i <= Math.min(last + preFirst, pages); i++) {
+                for (let i = first; i <= last; i++) {
                     if (page == i) {
                         h += `<li class="page-item font-weight-bold disabled" data-page="${i}" data-target="${issuesListId}"><span class="page-link">${i}</span></li>`;
                     } else {
