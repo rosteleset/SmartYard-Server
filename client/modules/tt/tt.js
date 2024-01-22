@@ -1409,7 +1409,7 @@
                         last = modules.tt.defaultPagerItemsCount;
                     } else {
                         first = 1 + page - delta;
-                        last = first - 1 + modules.tt.defaultPagerItemsCount;
+                        last = Math.min(first - 1 + modules.tt.defaultPagerItemsCount, pages);
                     }
                 }
 
