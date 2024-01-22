@@ -1421,7 +1421,7 @@
                     }
                 }
                 
-                if (page < pages) {
+                if (last < pages) {
                     h += `<li class="page-item pointer tt_pager" data-page="${pages}" data-target="${issuesListId}"><span class="page-link"><span aria-hidden="true">&raquo;</span></li>`;
                 } else {
                     h += `<li class="page-item disabled"><span class="page-link"><span aria-hidden="true">&raquo;</span></li>`;
