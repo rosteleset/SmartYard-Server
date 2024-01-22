@@ -1410,7 +1410,7 @@
                     }
                 }
 
-                console.log(pages, delta, first, preFirst, last, postLast);
+                console.log(page, pages, delta, first, preFirst, last, postLast);
 
                 h += `<nav class="pager" data-target="${issuesListId}">`;
                 h += '<ul class="pagination mb-0 ml-0">';
