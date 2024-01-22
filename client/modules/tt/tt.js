@@ -1402,6 +1402,8 @@
                 let preFirst = Math.max(0, last - modules.tt.defaultPagerItemsCount);
                 let postLast = pages - last;
 
+                console.log(page, pages, delta, first, preFirst, last, postLast);
+
                 if (last + preFirst - first + postLast >= modules.tt.defaultPagerItemsCount) {
                     if (first > 1) {
                         first++;
@@ -1409,8 +1411,6 @@
                         last--;
                     }
                 }
-
-                console.log(page, pages, delta, first, preFirst, last, postLast);
 
                 h += `<nav class="pager" data-target="${issuesListId}">`;
                 h += '<ul class="pagination mb-0 ml-0">';
