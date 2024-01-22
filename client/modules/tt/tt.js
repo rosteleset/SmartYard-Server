@@ -1421,7 +1421,7 @@
 
                 console.log(page, pages, delta, first, preFirst, last, postLast);
 
-                if (page > 1) {
+                if (first > 1) {
                     h += `<li class="page-item pointer tt_pager" data-page="1" data-target="${issuesListId}"><span class="page-link"><span aria-hidden="true">&laquo;</span></li>`;
                 } else {
                     h += `<li class="page-item disabled"><span class="page-link"><span aria-hidden="true">&laquo;</span></li>`;
