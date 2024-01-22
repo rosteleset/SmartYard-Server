@@ -8,12 +8,12 @@ modules:
 - asterisk
 - addresses
 - about
-defaultRoute: "#about"
-logo: rbt
-ws: wss://example.com/wss
-ice:
-- urls:
-  - stun:stun.l.google.com:19302
+asterisk:
+  ws: wss://example.com/wss
+  ice:
+  - urls:
+    - stun:stun.l.google.com:19302
+  sipDomain: "<!-- your asterisk server external ip here -->"
 map:
   tile: https://tile.openstreetmap.org/{z}/{x}/{y}.png
   crs: EPSG3857
@@ -23,6 +23,7 @@ map:
     zoom: 13
   min: 4
   max: 18
+defaultRoute: "#about"
+logo: rbt
 phonePattern: '7 (###) ###-##-##'
-sipDomain: "<!-- your asterisk server external ip here -->"
-printUrl: https://example.com/print
+printServer: https://example.com/print
