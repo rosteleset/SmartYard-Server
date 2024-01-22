@@ -1399,7 +1399,7 @@
                 let delta = Math.floor(modules.tt.defaultPagerItemsCount / 2);
                 let first = Math.max(page - delta, 1);
                 let preFirst = Math.max(0, 1 - page + delta);
-                let last = Math.min(page + delta, pages);
+                let last = Math.min(page + delta, pages) + 1;
                 let postLast = Math.max(pages, page + delta) - pages;
 
                 if (last + preFirst - first + postLast >= modules.tt.defaultPagerItemsCount) {
