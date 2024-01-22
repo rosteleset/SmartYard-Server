@@ -1410,6 +1410,8 @@
                     }
                 }
 
+                console.log(pages, delta, first, preFirst, last, postLast);
+
                 h += `<nav class="pager" data-target="${issuesListId}">`;
                 h += '<ul class="pagination mb-0 ml-0">';
 
@@ -1418,6 +1420,7 @@
                 } else {
                     h += `<li class="page-item disabled"><span class="page-link"><span aria-hidden="true">&laquo;</span></li>`;
                 }
+
                 for (let i = Math.max(first - postLast, 1); i <= Math.min(last + preFirst, pages); i++) {
                     if (page == i) {
                         h += `<li class="page-item font-weight-bold disabled" data-page="${i}" data-target="${issuesListId}"><span class="page-link">${i}</span></li>`;
@@ -1425,6 +1428,7 @@
                         h += `<li class="page-item pointer tt_pager" data-page="${i}" data-target="${issuesListId}"><span class="page-link">${i}</span></li>`;
                     }
                 }
+                
                 if (page < pages) {
                     h += `<li class="page-item pointer tt_pager" data-page="${pages}" data-target="${issuesListId}"><span class="page-link"><span aria-hidden="true">&raquo;</span></li>`;
                 } else {
