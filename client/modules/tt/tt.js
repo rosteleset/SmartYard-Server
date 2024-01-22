@@ -1408,8 +1408,8 @@
                         first = 1;
                         last = modules.tt.defaultPagerItemsCount;
                     } else {
-                        first = 1 + page - delta;
-                        last = Math.min(first - 1 + modules.tt.defaultPagerItemsCount, pages);
+                        last = pages;
+                        first = last - modules.tt.defaultPagerItemsCount + 1;
                     }
                 }
 
