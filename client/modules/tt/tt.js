@@ -1398,8 +1398,8 @@
                 let pages = Math.ceil(issues.count / limit);
                 let delta = Math.floor(modules.tt.defaultPagerItemsCount / 2);
                 let first = Math.max(page - delta, 1);
-                let preFirst = Math.max(0, 1 - page + delta);
                 let last = first + Math.min(modules.tt.defaultPagerItemsCount, pages) - 1;
+                let preFirst = Math.max(0, last - modules.tt.defaultPagerItemsCount);
                 let postLast = pages - last;
 
                 if (last + preFirst - first + postLast >= modules.tt.defaultPagerItemsCount) {
