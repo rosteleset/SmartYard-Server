@@ -1397,15 +1397,29 @@
 
                 let pages = Math.ceil(issues.count / limit);
                 let delta = Math.floor(modules.tt.defaultPagerItemsCount / 2);
-                let first = Math.max(page - delta, 1);
-                let last = first + Math.min(modules.tt.defaultPagerItemsCount, pages) - 1;
+
+                let first, last;
+
+                if (pages <= modules.tt.defaultPagerItemsCount) {
+                    first = 1;
+                    last = pages;
+                } else {
+                    if (page <= delta) {
+                        first = 1;
+                        last = modules.tt.defaultPagerItemsCount;
+                    } else {
+                        first = 1 + page - delta;
+                        last = first - 1 + modules.tt.defaultPagerItemsCount;
+                    }
+                }
+
                 let preFirst = Math.max(0, last - modules.tt.defaultPagerItemsCount);
                 let postLast = Math.max(pages - last, 0);
 
-                console.log(page, pages, delta, first, preFirst, last, postLast);
-
                 h += `<nav class="pager" data-target="${issuesListId}">`;
                 h += '<ul class="pagination mb-0 ml-0">';
+
+                console.log(page, pages, delta, first, preFirst, last, postLast);
 
                 if (page > 1) {
                     h += `<li class="page-item pointer tt_pager" data-page="1" data-target="${issuesListId}"><span class="page-link"><span aria-hidden="true">&laquo;</span></li>`;
