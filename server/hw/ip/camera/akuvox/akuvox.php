@@ -40,9 +40,10 @@ class akuvox extends camera
         return file_get_contents("http://$this->login:$this->password@$host:8080/picture.jpg");
     }
 
-    public function setOsdText(string $text = '') // TODO: Latin only
+    public function setOsdText(string $text = '') // Latin only
     {
         $this->setConfigParams([
+            'Config.DoorSetting.RTSP.OSDEnable' => $text ? '1' : '0',
             'Config.DoorSetting.RTSP.OSDText' => $text,
             'Config.DoorSetting.RTSP.OSDColor' => '3', // green color for high contrast
         ]);

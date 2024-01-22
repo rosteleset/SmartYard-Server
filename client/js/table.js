@@ -238,28 +238,45 @@ function cardTable(params) {
 
         let pages = Math.ceil(rows.length / pageLength);
         let delta = Math.floor(pagerItemsCount / 2);
-        let first = Math.max(page - delta, 1);
-        let preFirst = Math.max(0, 1 - page + delta);
-        let last = Math.min(page + delta, pages);
-        let postLast = Math.max(pages, page + delta) - pages;
 
-        if (last + preFirst - first + postLast >= pagerItemsCount) {
-            if (first > 1) {
-                first++;
+        let first, last;
+
+        if (pages <= pagerItemsCount) {
+            first = 1;
+            last = pages;
+        } else {
+            if (page <= delta) {
+                first = 1;
+                last = pagerItemsCount;
             } else {
-                last--;
+                first = page - delta + 1;
+                last = first + pagerItemsCount - 1;
+                if (last > pages) {
+                    last = pages;
+                    first = last - pagerItemsCount + 1;
+                }
             }
         }
 
-        h += `<li class="page-item pointer ${tableClass}-navButton" page="1"><span class="page-link" aria-label="Prev"><span aria-hidden="true">&laquo;</span><span class="sr-only">Prev</span></span></li>`;
-        for (let i = Math.max(first - postLast, 1); i <= Math.min(last + preFirst, pages); i++) {
+        if (first > 1) {
+            h += `<li class="page-item pointer ${tableClass}-navButton" page="1"><span class="page-link" aria-label="Prev"><span aria-hidden="true">&laquo;</span><span class="sr-only">Prev</span></span></li>`;
+        } else {
+            h += `<li class="page-item disabled"><span class="page-link"><span aria-hidden="true">&laquo;</span></li>`;
+        }
+        
+        for (let i = first; i <= last; i++) {
             if (currentPage == i) {
                 h += `<li class="page-item pointer font-weight-bold ${tableClass}-navButton" page="${i}"><span class="page-link">${i}</span></li>`;
             } else {
                 h += `<li class="page-item pointer ${tableClass}-navButton" page="${i}"><span class="page-link">${i}</span></li>`;
             }
         }
-        h += `<li class="page-item pointer ${tableClass}-navButton" page="${pages}"><span class="page-link" aria-label="Next"><span aria-hidden="true">&raquo;</span><span class="sr-only">Next</span></></li>`;
+        
+        if (last < pages) {
+            h += `<li class="page-item pointer ${tableClass}-navButton" page="${pages}"><span class="page-link" aria-label="Next"><span aria-hidden="true">&raquo;</span><span class="sr-only">Next</span></></li>`;
+        } else {
+            h += `<li class="page-item disabled"><span class="page-link"><span aria-hidden="true">&raquo;</span></li>`;
+        }
 
         return h;
     }

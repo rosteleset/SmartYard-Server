@@ -63,18 +63,19 @@ abstract class akuvox extends domophone
             'Config.DoorSetting.RTSP.Enable' => '1',
             'Config.DoorSetting.RTSP.Audio' => '1',
             'Config.DoorSetting.RTSP.AudioCodec' => '0', // PCMU
-            'Config.DoorSetting.RTSP.Authorization' => '1',
+            'Config.DoorSetting.RTSP.Authorization' => '1', // Enabled
+            'Config.DoorSetting.RTSP.AuthenticationType' => '0', // Basic auth
             'Config.DoorSetting.RTSP.MJPEGAuthorization' => '1',
 
             // First stream
-            'Config.DoorSetting.RTSP.Video' => '1',
+            'Config.DoorSetting.RTSP.Video' => '1', // Enabled
             'Config.DoorSetting.RTSP.VideoCodec' => '0', // H.264
             'Config.DoorSetting.RTSP.H264Resolution' => '5', // 720P
             'Config.DoorSetting.RTSP.H264FrameRate' => '30',
             'Config.DoorSetting.RTSP.H264BitRate' => '1024',
 
             // Second stream
-            'Config.DoorSetting.RTSP.Video2' => '1',
+            'Config.DoorSetting.RTSP.Video2' => '1', // Enabled
             'Config.DoorSetting.RTSP.VideoCodec2' => '0', // H.264
             'Config.DoorSetting.RTSP.H264Resolution2' => '3', // VGA
             'Config.DoorSetting.RTSP.H264FrameRate2' => '30',

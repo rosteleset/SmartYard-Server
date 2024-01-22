@@ -35,7 +35,7 @@
                 if (!count($keys)) {
                     $token = md5(GUIDv4());
                     $params["_redis"]->setex("forgot_" . $token . "_" . $uid, 900, "1");
-                    eMail($params["_config"], $params["eMail"], "password restoration", "<a href='{$params['_config']['server']}/accounts/forgot?token=$token'>{$params['_config']['server']}/accounts/forgot?token=$token</a>");
+                    eMail($params["_config"], $params["eMail"], "password restoration", "<a href='{$params['_config']['api']['frontend']}/accounts/forgot?token=$token'>{$params['_config']['api']['frontend']}/accounts/forgot?token=$token</a>");
                 }
             }
         }
