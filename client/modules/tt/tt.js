@@ -1408,7 +1408,7 @@
                         first = 1;
                         last = modules.tt.defaultPagerItemsCount;
                     } else {
-                        first = delta - page - 1;
+                        first = page - delta + 1;
                         last = first + modules.tt.defaultPagerItemsCount - 1;
                         if (last > pages) {
                             last = pages;
@@ -1417,7 +1417,7 @@
                     }
                 }
 
-                console.log(page, pages, first, last);
+                console.log(page, delta, pages, first, last);
 
                 h += `<nav class="pager" data-target="${issuesListId}">`;
                 h += '<ul class="pagination mb-0 ml-0">';
