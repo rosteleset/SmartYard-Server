@@ -1400,7 +1400,7 @@
                 let first = Math.max(page - delta, 1);
                 let last = first + Math.min(modules.tt.defaultPagerItemsCount, pages) - 1;
                 let preFirst = Math.max(0, last - modules.tt.defaultPagerItemsCount);
-                let postLast = pages - last;
+                let postLast = Math.max(pages - last, 0);
 
                 console.log(page, pages, delta, first, preFirst, last, postLast);
 
