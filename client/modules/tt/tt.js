@@ -1404,14 +1404,6 @@
 
                 console.log(page, pages, delta, first, preFirst, last, postLast);
 
-                if (last + preFirst - first + postLast >= modules.tt.defaultPagerItemsCount) {
-                    if (first > 1) {
-                        first++;
-                    } else {
-                        last--;
-                    }
-                }
-
                 h += `<nav class="pager" data-target="${issuesListId}">`;
                 h += '<ul class="pagination mb-0 ml-0">';
 
