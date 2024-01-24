@@ -1971,10 +1971,16 @@
 
                 if ($files) {
                     foreach ($_prints as &$p) {
-                        $p["hasTemplate"] = !!$files->searchFiles([
+                        $template = $files->searchFiles([
                             "metadata.type" => "print-template",
                             "metadata.name" => $p["formName"],
                         ]);
+                        $p["hasTemplate"] = !!$template;
+                        if ($p["hasTemplate"]) {
+                            $p["templateName"] = $template[0]["filename"];
+                            $p["templateSize"] = $template[0]["length"];
+                            $p["templateUploadDate"] = $template[0]["uploadDate"]['$date'];
+                        }
                     }
                 }
 

@@ -3591,7 +3591,7 @@
     },
 
     uploadPrintTemplate: function (printId) {
-        loadFile([ ".docx", ".xlsx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ], false, f => {
+        loadFile([ ".doc", ".odt", ".docx", ".xlsx", "application/msword", "application/vnd.oasis.opendocument.text", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ], false, f => {
             loadingStart();
             PUT("tt", "prints", printId, {
                 "mode": "template",
@@ -3659,6 +3659,15 @@
                         title: i18n("tt.printFormName"),
                     },
                     {
+                        title: i18n("tt.printTemplateName"),
+                    },
+                    {
+                        title: i18n("tt.printTemplateSize"),
+                    },
+                    {
+                        title: i18n("tt.printTemplateDate"),
+                    },
+                    {
                         title: i18n("tt.printExtension"),
                     },
                     {
@@ -3680,6 +3689,18 @@
                                 },
                                 {
                                     data: modules.tt.meta.prints[i].formName,
+                                    nowrap: true,
+                                },
+                                {
+                                    data: modules.tt.meta.prints[i].templateName ? modules.tt.meta.prints[i].templateName : "&nbsp;",
+                                    nowrap: true,
+                                },
+                                {
+                                    data: modules.tt.meta.prints[i].templateSize ? formatBytes(modules.tt.meta.prints[i].templateSize) : "&nbsp;",
+                                    nowrap: true,
+                                },
+                                {
+                                    data: modules.tt.meta.prints[i].templateUploadDate ? ttDate(modules.tt.meta.prints[i].templateUploadDate["$numberLong"] / 1000) : "&nbsp;",
                                     nowrap: true,
                                 },
                                 {

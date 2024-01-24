@@ -38,6 +38,7 @@ foreach ($common_cameras as $camera) {
         "url" => $camera['dvrStream'],
         "token" => $dvr->getDVRTokenForCam($camera, $subscriber['subscriberId']),
         "serverType" => $dvr->getDVRServerByStream($camera['dvrStream'])["type"],
+        "hasSound" => boolval($camera['sound']),
     ];
 
     if ($hlsMode && in_array($hlsMode, $allowedMods)){
