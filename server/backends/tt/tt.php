@@ -1978,7 +1978,7 @@
                         $p["hasTemplate"] = !!$template;
                         if ($p["hasTemplate"]) {
                             $p["templateName"] = $template[0]["filename"];
-                            $p["templateSize"] = $template[0]["length"];
+                            $p["templateUploadDate"] = $template[0]["uploadDate"]['$date'];
                         }
                     }
                 }
