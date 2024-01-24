@@ -3692,7 +3692,7 @@
                                     nowrap: true,
                                 },
                                 {
-                                    data: modules.tt.meta.prints[i].templateName,
+                                    data: modules.tt.meta.prints[i].templateName ? modules.tt.meta.prints[i].templateName : "&nbsp;",
                                     nowrap: true,
                                 },
                                 {
