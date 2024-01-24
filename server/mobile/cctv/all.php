@@ -82,7 +82,8 @@ foreach($houses as $house_key => $h) {
             "url" => $camera['dvrStream'],
             "token" => loadBackend("dvr")->getDVRTokenForCam($camera, $subscriber['subscriberId']),
             "lon" => strval($camera['lon']),
-            "serverType" => $dvr['type']
+            "serverType" => $dvr['type'],
+            "hasSound" => boolval($camera['sound']),
         ];
         if (array_key_exists("hlsMode", $dvr)) {
             $item["hlsMode"] = $dvr["hlsMode"];
