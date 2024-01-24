@@ -299,6 +299,8 @@
     "printDataWasSaved": "Скрипт данных сохранен",
     "printFormatterWasSaved": "Скрипт форматирования сохранен",
     "finalStatus": "Закрывающий",
+    "printTemplateName": "Шаблон",
+    "printTemplateSize": "Размер",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",
