@@ -3665,6 +3665,9 @@
                         title: i18n("tt.printTemplateSize"),
                     },
                     {
+                        title: i18n("tt.printTemplateDate"),
+                    },
+                    {
                         title: i18n("tt.printExtension"),
                     },
                     {
@@ -3694,6 +3697,10 @@
                                 },
                                 {
                                     data: modules.tt.meta.prints[i].templateSize ? formatBytes(modules.tt.meta.prints[i].templateSize) : "&nbsp;",
+                                    nowrap: true,
+                                },
+                                {
+                                    data: modules.tt.meta.prints[i].templateUploadDate ? ttDate(modules.tt.meta.prints[i].templateUploadDate["$numberLong"] / 1000) : "&nbsp;",
                                     nowrap: true,
                                 },
                                 {

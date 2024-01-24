@@ -301,6 +301,7 @@
     "finalStatus": "Закрывающий",
     "printTemplateName": "Шаблон",
     "printTemplateSize": "Размер",
+    "printTemplateDate": "Дата",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",

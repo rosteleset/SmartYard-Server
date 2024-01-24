@@ -301,6 +301,7 @@
     "finalStatus": "Final",
     "printTemplateName": "Template",
     "printTemplateSize": "Size",
+    "printTemplateDate": "Date",
     "methods": {
         "tt": {
             "_title": "Task Manager",
