@@ -14,6 +14,7 @@ const mime2fa = {
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "far fa-fw fa-file-word",
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": "far fa-fw fa-file-excel",
     "application/vnd.oasis.opendocument.text": "far fa-fw fa-file-word",
+    "application/msword": "far fa-fw fa-file-word",
 };
 
 function uploadForm(mimeTypes, button) {

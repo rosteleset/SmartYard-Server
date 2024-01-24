@@ -3591,7 +3591,7 @@
     },
 
     uploadPrintTemplate: function (printId) {
-        loadFile([ ".odt", ".docx", ".xlsx", "application/vnd.oasis.opendocument.text", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ], false, f => {
+        loadFile([ ".doc", ".odt", ".docx", ".xlsx", "application/msword", "application/vnd.oasis.opendocument.text", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ], false, f => {
             loadingStart();
             PUT("tt", "prints", printId, {
                 "mode": "template",
