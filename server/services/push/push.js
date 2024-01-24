@@ -1,6 +1,6 @@
 // Load environment variables based on NODE_ENV
 require("dotenv").config({
-    path: `${process.env.NODE_ENV === "development" ? ".env_development" : ".env_production"}`
+    path: `${process.env.NODE_ENV === "development" ? ".env_development" : ".env"}`
 });
 const path = require('path');
 const app = require('express')();
