@@ -1015,6 +1015,12 @@
              */
             public function getSuggestions($project, $field, $query)
             {
+                $me = $this->myRoles();
+
+                if (@$me[$project] >= 30) { // 30, 'participant.senior' - can create issues
+                    $db = $this->dbName;
+                    $cursor = $this->mongo->$db->$project->aggregate();
+                }
                 /*
     $mongo = new MongoDB\Client();
     $db = $mongo->tt;
