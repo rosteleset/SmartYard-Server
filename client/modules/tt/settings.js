@@ -890,6 +890,13 @@
                         hidden: cf.type === "virtual" || cf.type === "text" || cf.type === "geo" || cf.type === "array",
                     },
                     {
+                        id: "suggestions",
+                        type: "noyes",
+                        title: i18n("tt.suggestions"),
+                        value: (cf.format && cf.format.split(" ").includes("suggestions"))?"1":"0",
+                        hidden: cf.type !== "select",
+                    },
+                    {
                         id: "usersAndGroups",
                         type: "select",
                         title: i18n("tt.usersAndGroups"),
@@ -943,6 +950,9 @@
                         result.format = "";
                         if (result.multiple === "1") {
                             result.format += " multiple";
+                        }
+                        if (result.suggestions === "1") {
+                            result.format += " suggestions";
                         }
                         if (result.editable === "1") {
                             result.format += " editable";
