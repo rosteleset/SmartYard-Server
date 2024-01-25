@@ -302,6 +302,7 @@
     "printTemplateName": "Шаблон",
     "printTemplateSize": "Размер",
     "printTemplateDate": "Дата",
+    "suggestions": "Подсказки",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",

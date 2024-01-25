@@ -1,6 +1,6 @@
 // Load environment variables based on NODE_ENV
 require("dotenv").config({
-    path: `${process.env.NODE_ENV === "development" ? ".env_development" : ".env_production"}`
+    path: `${process.env.NODE_ENV === "development" ? ".env_development" : ".env"}`
 });
 const path = require('path');
 const app = require('express')();
@@ -147,6 +147,11 @@ app.get('/push', function (req, res) {
             "pass",
             "live",
             "image",
+            "domophoneId",
+            "videoServer",
+            "videoToken",
+            "videoType",
+            "videoStream",
         ];
 
         for (let i = 0; i < fields.length; i++) {

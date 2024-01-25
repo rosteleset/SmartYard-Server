@@ -166,9 +166,8 @@
                 },
                 {
                     id: "sound",
-                    type: "yesno",
+                    type: "noyes",
                     title: i18n("addresses.sound"),
-                    value: "0",
                     tab: i18n("addresses.primary"),
                 },
                 {
