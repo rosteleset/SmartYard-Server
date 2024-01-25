@@ -518,7 +518,6 @@
 
                     switch (cf.type) {
                         case "text":
-
                             if (cf.editor == "yesno") {
                                 prefferredValue = 1;
                             }
@@ -559,6 +558,7 @@
                                     text: cf.options[i].optionDisplay,
                                 });
                             }
+
                             return {
                                 id: "_cf_" + fieldId,
                                 type: "select2",
@@ -583,6 +583,7 @@
                             if (cf.format.split(" ").includes("usersAndGroups")) {
                                 options = peoples(project, true, true);
                             }
+
                             return {
                                 id: "_cf_" + fieldId,
                                 type: "select2",
@@ -597,6 +598,7 @@
 
                         case "array":
                             let ax = [];
+
                             for (let i in issue["_cf_" + fieldId]) {
                                 options.push({
                                     id: issue["_cf_" + fieldId][i],
@@ -604,6 +606,7 @@
                                 });
                                 ax.push(issue["_cf_" + fieldId][i]);
                             }
+
                             options.sort((a, b) => {
                                 if (a.id > b.id) {
                                     return 1;
@@ -613,6 +616,7 @@
                                 }
                                 return 0;
                             });
+
                             ax.sort((a, b) => {
                                 if (a > b) {
                                     return 1;
@@ -621,7 +625,8 @@
                                     return -1;
                                 }
                                 return 0;
-                            })
+                            });
+                            
                             return {
                                 id: "_cf_" + fieldId,
                                 type: "select2",
