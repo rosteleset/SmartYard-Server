@@ -31,10 +31,10 @@ $house_id = (int)@$postdata['houseId'];
 $households = loadBackend("households");
 $cameras = loadBackend("cameras");
 
-$houses = [];
 $stub_payment_require = $config['backends']['dvr']['stub']['payment_require_url'];  // stub if flat is blocked
 $stub_service = $config['backends']['dvr']['stub']['service_url'];                  // stub if camera  disabled
 $stub_fallback = $config['backends']['dvr']['stub']['fallback_url'];                // stub if set not valid DVR url
+$houses = [];
 
 /**
  * Replace DVR url handler.
