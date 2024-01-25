@@ -302,6 +302,7 @@
     "printTemplateName": "Template",
     "printTemplateSize": "Size",
     "printTemplateDate": "Date",
+    "suggestions": "Suggestions",
     "methods": {
         "tt": {
             "_title": "Task Manager",
