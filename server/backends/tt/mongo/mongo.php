@@ -1011,6 +1011,59 @@
             }
 
             /**
+             * @inheritDoc
+             */
+            public function getSuggestions($project, $field, $query)
+            {
+                /*
+    $mongo = new MongoDB\Client();
+    $db = $mongo->tt;
+    $collection = $db->RTL;
+
+    $cursor = $collection->aggregate([
+        [
+        "\$match" => [
+            "\$and" => [
+                [
+                    "_cf_client_name" => [
+                        "\$regex" => "^.*пупкин.*$",
+                        "\$options" => "i",
+                    ],
+                ],
+//              [
+//                  "_cf_client_name" => [
+//                      "\$regex" => "^.*Пупкин.*$",
+//                  ],
+//              ],
+//              [
+//                  "_cf_client_name" => [
+//                      "\$regex" => "^.*Валентина.*$",
+//                  ],
+//              ],
+            ],
+        ],
+        ],
+[
+  "\$group" => [
+    "_id" => "\$_cf_client_name",
+  ],
+],
+[
+  "\$sort" => [
+    "_id" => 1
+  ]
+],
+        [
+        "\$project" => [ "_cf_client_name" => 1 ],
+    ]]);
+
+    foreach ($cursor as $document) {
+        print_r(json_decode(json_encode($document), true));
+    }
+                */
+            }
+
+            /**
              * @param $part
              * @return bool
              */

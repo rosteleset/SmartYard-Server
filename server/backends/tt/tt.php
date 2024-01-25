@@ -2090,8 +2090,18 @@
             }
 
             /**
+             * @param $project
+             * @param $field
+             * @param $query
+             * @return mixed
+             */
+
+             abstract public function getSuggestions($project, $field, $query);
+
+            /**
              * @inheritDoc
              */
+
             public function cron($part)
             {
                 $success = true;
