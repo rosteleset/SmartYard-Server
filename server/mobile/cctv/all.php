@@ -31,10 +31,15 @@ $house_id = (int)@$postdata['houseId'];
 $households = loadBackend("households");
 $cameras = loadBackend("cameras");
 
-$stub_payment_require = $config['backends']['dvr']['stub']['payment_require_url'];  // stub if flat is blocked
-$stub_service = $config['backends']['dvr']['stub']['service_url'];                  // stub if camera  disabled
-$stub_fallback = $config['backends']['dvr']['stub']['fallback_url'];                // stub if set not valid DVR url
 $houses = [];
+
+/**
+ * Get stub url's from config
+ * payment_require_url - stub if flat is blocked
+ * service_url - stub if camera  disabled
+ * fallback_url - stub if set not valid DVR url
+ */
+$stub = $config['backends']['dvr']['stub'];
 
 /**
  * Replace DVR url handler.
@@ -104,14 +109,15 @@ foreach($subscriber['flats'] as $flat) {
         
     }
 
-    $house['cameras'] = replace_url(
-        $house['cameras'],
-        $flatIsBlock,
-        $stub_payment_require,
-        $stub_service,
-        $stub_fallback
-    );
-    
+    if ($stub && $stub['payment_require_url'] && $stub['service_url'] && $stub['fallback_url']) {
+        $house['cameras'] = replace_url(
+            $house['cameras'],
+            $flatIsBlock,
+            $stub['payment_require_url'],
+            $stub['service_url'],
+            $stub['fallback_url']
+        );
+    }
 }
 $ret = [];
 foreach($houses as $house_key => $h) {
