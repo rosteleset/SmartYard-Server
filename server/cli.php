@@ -33,7 +33,7 @@
             [--run-demo-server [--port=<port>]]
 
         initialization:
-            [--init-db]
+            [--init-db [--skip=<versions>]]
             [--admin-password=<password>]
             [--reindex]
             [--clear-cache]
@@ -275,12 +275,16 @@
         }
     }
 
-    if (count($args) == 1 && array_key_exists("--init-db", $args) && !isset($args["--init-db"])) {
+    if (
+        (count($args) == 1 && array_key_exists("--init-db", $args) && !isset($args["--init-db"]))
+        ||
+        (count($args) == 2 && array_key_exists("--init-db", $args) && !isset($args["--init-db"]) && array_key_exists("--skip", $args) && isset($args["--skip"]))
+    ) {
         require_once "sql/install.php";
         require_once "utils/clear_cache.php";
         require_once "utils/reindex.php";
 
-        initDB();
+        initDB(@$args["--skip"]);
         startup();
         $n = clearCache(true);
         echo "$n cache entries cleared\n\n";

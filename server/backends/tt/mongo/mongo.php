@@ -1017,56 +1017,53 @@
             {
                 $me = $this->myRoles();
 
+                $suggestions = [];
+
                 if (@$me[$project] >= 30) { // 30, 'participant.senior' - can create issues
                     $db = $this->dbName;
-                    $cursor = $this->mongo->$db->$project->aggregate();
+                    $query = explode(" ", $query);
+                    $and = [];
+                    
+                    foreach ($query as $token) {
+                        if (trim($token)) {
+                            $and[] = [
+                                $field => [
+                                    "\$regex" => "^.*" . $token . ".*$",
+                                    "\$options" => "i",
+                                ],
+                            ];
+                        }
+                    }
+
+                    $cursor = $this->mongo->$db->$project->aggregate([
+                        [
+                            "\$match" => [
+                                "\$and" => $and,
+                            ],
+                        ],
+                        [
+                            "\$group" => [
+                                "_id" => "$" . $field,
+                            ],
+                        ],
+                        [
+                            "\$sort" => [
+                                "_id" => 1,
+                            ],
+                        ],
+                        [
+                            "\$project" => [
+                                $field => 1,
+                            ],
+                        ],
+                    ]);
+
+                    foreach ($cursor as $document) {
+                        $suggestions[] = $document["_id"];
+                    }
                 }
-                /*
-    $mongo = new MongoDB\Client();
-    $db = $mongo->tt;
-    $collection = $db->RTL;
 
-    $cursor = $collection->aggregate([
-        [
-        "\$match" => [
-            "\$and" => [
-                [
-                    "_cf_client_name" => [
-                        "\$regex" => "^.*пупкин.*$",
-                        "\$options" => "i",
-                    ],
-                ],
-//              [
-//                  "_cf_client_name" => [
-//                      "\$regex" => "^.*Пупкин.*$",
-//                  ],
-//              ],
-//              [
-//                  "_cf_client_name" => [
-//                      "\$regex" => "^.*Валентина.*$",
-//                  ],
-//              ],
-            ],
-        ],
-        ],
-[
-  "\$group" => [
-    "_id" => "\$_cf_client_name",
-  ],
-],
-[
-  "\$sort" => [
-    "_id" => 1
-  ]
-],
-        [
-        "\$project" => [ "_cf_client_name" => 1 ],
-    ]]);
-
-    foreach ($cursor as $document) {
-        print_r(json_decode(json_encode($document), true));
-    }
-                */
+                return $suggestions;
             }
 
             /**

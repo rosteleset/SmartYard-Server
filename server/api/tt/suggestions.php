@@ -23,7 +23,7 @@
 
                 $suggestions = $tt->getSuggestions($params["project"], $params["field"], $params["query"]);
 
-                return api::ANSWER($journal, "journal");
+                return api::ANSWER($suggestions, "suggestions");
             }
 
             public static function index() {

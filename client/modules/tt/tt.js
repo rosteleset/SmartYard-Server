@@ -571,6 +571,50 @@
                                 createTags: cf.format.indexOf("editable") >= 0,
                                 value: (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue["_cf_" + fieldId])?issue["_cf_" + fieldId]:[]),
                                 validate: validate,
+                                ajax: (cf.format.indexOf("suggestions") >= 0) ? {
+                                    delay: 1000,
+                                    transport: function (params, success) {
+                                        if (params.data.term) {
+                                            QUERY("tt", "suggestions", {
+                                                project: project.acronym,
+                                                field: "_cf_" + fieldId,
+                                                query: params.data.term,
+                                            }).
+                                            then(success).
+                                            fail(response => {
+                                                FAIL(response);
+                                                success(false);
+                                            });
+                                        } else {
+                                            success(false);
+                                        }
+                                    },
+                                    processResults: function (data) {
+                                        let suggestions = []; //= options;
+                                        if (data && data.suggestions) {
+                                            for (let i in data.suggestions) {
+                                                let a = false;
+                                                for (let j in options) {
+                                                    if (data.suggestions[i] == options[j].id) {
+                                                        a = true;
+                                                        break;
+                                                    }
+                                                }
+                                                if (!a) {
+                                                    suggestions.push({
+                                                        id: data.suggestions[i],
+                                                        text: data.suggestions[i],
+                                                    });
+                                                }
+                                            }
+                                        } else {
+                                            suggestions = options;
+                                        }
+                                        return {
+                                            results: suggestions,
+                                        };
+                                    },
+                                } : undefined,
                             }
 
                         case "users":

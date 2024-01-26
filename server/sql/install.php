@@ -6,7 +6,7 @@
      * @return void
      */
 
-    function initDB() {
+    function initDB($_skip) {
         global $config, $db, $version;
 
         $install = json_decode(file_get_contents("sql/install.json"), true);
@@ -15,12 +15,22 @@
 
         echo "current version $version\n";
 
+        $skip = [];
+        foreach(explode(",", $_skip) as $s) {
+            $skip[$s] = true;
+        }
+
         $db->exec("BEGIN TRANSACTION");
 
         foreach ($install as $v => $steps) {
             $v = (int)$v;
 
             if ($version >= $v) {
+                echo "skipping version $v\n";
+                continue;
+            }
+
+            if (@$skip[$v]) {
                 echo "skipping version $v\n";
                 continue;
             }
