@@ -224,18 +224,38 @@
                     $sandbox->registerLibrary("custom", [
                         "GET" => function ($params) {
                             $custom = loadBackend("custom");
+
+                            $params["_config"] = $this->config;
+                            $params["_redis"] = $this->redis;
+                            $params["_db"] = $this->db;
+
                             return [ $custom->GET($params) ];
                         },
                         "POST" => function ($params) {
                             $custom = loadBackend("custom");
+
+                            $params["_config"] = $this->config;
+                            $params["_redis"] = $this->redis;
+                            $params["_db"] = $this->db;
+
                             return [ $custom->POST($params) ];
                         },
                         "PUT" => function ($params) {
                             $custom = loadBackend("custom");
+
+                            $params["_config"] = $this->config;
+                            $params["_redis"] = $this->redis;
+                            $params["_db"] = $this->db;
+
                             return [ $custom->PUT($params) ];
                         },
                         "DELETE" => function ($params) {
                             $custom = loadBackend("custom");
+
+                            $params["_config"] = $this->config;
+                            $params["_redis"] = $this->redis;
+                            $params["_db"] = $this->db;
+
                             return [ $custom->DELETE($params) ];
                         },
                     ]);
@@ -1951,10 +1971,16 @@
 
                 if ($files) {
                     foreach ($_prints as &$p) {
-                        $p["hasTemplate"] = !!$files->searchFiles([
+                        $template = $files->searchFiles([
                             "metadata.type" => "print-template",
                             "metadata.name" => $p["formName"],
                         ]);
+                        $p["hasTemplate"] = !!$template;
+                        if ($p["hasTemplate"]) {
+                            $p["templateName"] = $template[0]["filename"];
+                            $p["templateSize"] = $template[0]["length"];
+                            $p["templateUploadDate"] = $template[0]["uploadDate"]['$date'];
+                        }
                     }
                 }
 
@@ -2064,8 +2090,18 @@
             }
 
             /**
+             * @param $project
+             * @param $field
+             * @param $query
+             * @return mixed
+             */
+
+             abstract public function getSuggestions($project, $field, $query);
+
+            /**
              * @inheritDoc
              */
+
             public function cron($part)
             {
                 $success = true;

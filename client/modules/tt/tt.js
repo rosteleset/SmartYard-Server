@@ -1,7 +1,7 @@
 ({
     meta: {},
 
-    defaultIssuesPerPage: 50,
+    defaultIssuesPerPage: 20,
     defaultPagerItemsCount: 10,
     menuItem: false,
 
@@ -518,7 +518,6 @@
 
                     switch (cf.type) {
                         case "text":
-
                             if (cf.editor == "yesno") {
                                 prefferredValue = 1;
                             }
@@ -559,6 +558,7 @@
                                     text: cf.options[i].optionDisplay,
                                 });
                             }
+
                             return {
                                 id: "_cf_" + fieldId,
                                 type: "select2",
@@ -571,6 +571,50 @@
                                 createTags: cf.format.indexOf("editable") >= 0,
                                 value: (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue["_cf_" + fieldId])?issue["_cf_" + fieldId]:[]),
                                 validate: validate,
+                                ajax: (cf.format.indexOf("suggestions") >= 0) ? {
+                                    delay: 1000,
+                                    transport: function (params, success) {
+                                        if (params.data.term) {
+                                            QUERY("tt", "suggestions", {
+                                                project: project.acronym,
+                                                field: "_cf_" + fieldId,
+                                                query: params.data.term,
+                                            }).
+                                            then(success).
+                                            fail(response => {
+                                                FAIL(response);
+                                                success(false);
+                                            });
+                                        } else {
+                                            success(false);
+                                        }
+                                    },
+                                    processResults: function (data) {
+                                        let suggestions = []; //= options;
+                                        if (data && data.suggestions) {
+                                            for (let i in data.suggestions) {
+                                                let a = false;
+                                                for (let j in options) {
+                                                    if (data.suggestions[i] == options[j].id) {
+                                                        a = true;
+                                                        break;
+                                                    }
+                                                }
+                                                if (!a) {
+                                                    suggestions.push({
+                                                        id: data.suggestions[i],
+                                                        text: data.suggestions[i],
+                                                    });
+                                                }
+                                            }
+                                        } else {
+                                            suggestions = options;
+                                        }
+                                        return {
+                                            results: suggestions,
+                                        };
+                                    },
+                                } : undefined,
                             }
 
                         case "users":
@@ -583,6 +627,7 @@
                             if (cf.format.split(" ").includes("usersAndGroups")) {
                                 options = peoples(project, true, true);
                             }
+
                             return {
                                 id: "_cf_" + fieldId,
                                 type: "select2",
@@ -597,6 +642,7 @@
 
                         case "array":
                             let ax = [];
+
                             for (let i in issue["_cf_" + fieldId]) {
                                 options.push({
                                     id: issue["_cf_" + fieldId][i],
@@ -604,6 +650,7 @@
                                 });
                                 ax.push(issue["_cf_" + fieldId][i]);
                             }
+
                             options.sort((a, b) => {
                                 if (a.id > b.id) {
                                     return 1;
@@ -613,6 +660,7 @@
                                 }
                                 return 0;
                             });
+
                             ax.sort((a, b) => {
                                 if (a > b) {
                                     return 1;
@@ -621,7 +669,8 @@
                                     return -1;
                                 }
                                 return 0;
-                            })
+                            });
+                            
                             return {
                                 id: "_cf_" + fieldId,
                                 type: "select2",
@@ -1397,35 +1446,44 @@
 
                 let pages = Math.ceil(issues.count / limit);
                 let delta = Math.floor(modules.tt.defaultPagerItemsCount / 2);
-                let first = Math.max(page - delta, 1);
-                let preFirst = Math.max(0, 1 - page + delta);
-                let last = Math.min(page + delta, pages);
-                let postLast = Math.max(pages, page + delta) - pages;
 
-                if (last + preFirst - first + postLast >= modules.tt.defaultPagerItemsCount) {
-                    if (first > 1) {
-                        first++;
+                let first, last;
+
+                if (pages <= modules.tt.defaultPagerItemsCount) {
+                    first = 1;
+                    last = pages;
+                } else {
+                    if (page <= delta) {
+                        first = 1;
+                        last = modules.tt.defaultPagerItemsCount;
                     } else {
-                        last--;
+                        first = page - delta + 1;
+                        last = first + modules.tt.defaultPagerItemsCount - 1;
+                        if (last > pages) {
+                            last = pages;
+                            first = last - modules.tt.defaultPagerItemsCount + 1;
+                        }
                     }
                 }
 
                 h += `<nav class="pager" data-target="${issuesListId}">`;
                 h += '<ul class="pagination mb-0 ml-0">';
 
-                if (page > 1) {
+                if (first > 1) {
                     h += `<li class="page-item pointer tt_pager" data-page="1" data-target="${issuesListId}"><span class="page-link"><span aria-hidden="true">&laquo;</span></li>`;
                 } else {
                     h += `<li class="page-item disabled"><span class="page-link"><span aria-hidden="true">&laquo;</span></li>`;
                 }
-                for (let i = Math.max(first - postLast, 1); i <= Math.min(last + preFirst, pages); i++) {
+
+                for (let i = first; i <= last; i++) {
                     if (page == i) {
                         h += `<li class="page-item font-weight-bold disabled" data-page="${i}" data-target="${issuesListId}"><span class="page-link">${i}</span></li>`;
                     } else {
                         h += `<li class="page-item pointer tt_pager" data-page="${i}" data-target="${issuesListId}"><span class="page-link">${i}</span></li>`;
                     }
                 }
-                if (page < pages) {
+                
+                if (last < pages) {
                     h += `<li class="page-item pointer tt_pager" data-page="${pages}" data-target="${issuesListId}"><span class="page-link"><span aria-hidden="true">&raquo;</span></li>`;
                 } else {
                     h += `<li class="page-item disabled"><span class="page-link"><span aria-hidden="true">&raquo;</span></li>`;
@@ -1537,7 +1595,29 @@
                 currentAceEditor = editor;
                 currentAceEditorOriginalValue = currentAceEditor.getValue();
                 editor.getSession().getUndoManager().reset();
-                    editor.commands.addCommand({
+                editor.commands.removeCommand("removeline");
+                editor.commands.removeCommand("redo");
+                editor.commands.addCommand({
+                    name: "removeline",
+                    description: "Remove line",
+                    bindKey: {
+                        win: "Ctrl-Y", 
+                        mac: "Cmd-Y"
+                    },
+                    exec: function (editor) { editor.removeLines(); },
+                    scrollIntoView: "cursor",
+                    multiSelectAction: "forEachLine"
+                });
+                editor.commands.addCommand({
+                    name: "redo",
+                    description: "Redo",
+                    bindKey: {
+                        win: "Ctrl-Shift-Z",
+                        mac: "Command-Shift-Z"
+                    },
+                    exec: function (editor) { editor.redo(); }
+                });
+                editor.commands.addCommand({
                     name: 'save',
                     bindKey: {
                         win: "Ctrl-S", 

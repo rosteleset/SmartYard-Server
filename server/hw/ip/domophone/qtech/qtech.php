@@ -561,6 +561,7 @@ abstract class qtech extends domophone
     protected function configureRfidMode(int $internalMode = 3, int $externalMode = 3)
     {
         $this->setParams([
+            'Config.DoorSetting.GENERAL.ReverseMode' => 1,
             'Config.DoorSetting.RFCARDDISPLAY.RfidDisplayMode' => $internalMode,
             'Config.DoorSetting.RFCARDDISPLAY.WiegandDisplayMode' => $externalMode,
             'Config.DoorSetting.Card.CardMatchMode' => 1, // Partial match mode

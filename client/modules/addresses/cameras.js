@@ -165,6 +165,12 @@
                     tab: i18n("addresses.primary"),
                 },
                 {
+                    id: "sound",
+                    type: "noyes",
+                    title: i18n("addresses.sound"),
+                    tab: i18n("addresses.primary"),
+                },
+                {
                     id: "timezone",
                     type: "select2",
                     title: i18n("addresses.timezone"),
@@ -410,6 +416,13 @@
                                 return true;
                             }
                         },
+                        tab: i18n("addresses.primary"),
+                    },
+                    {
+                        id: "sound",
+                        type: "yesno",
+                        title: i18n("addresses.sound"),
+                        value: camera.sound,
                         tab: i18n("addresses.primary"),
                     },
                     {

@@ -1011,6 +1011,62 @@
             }
 
             /**
+             * @inheritDoc
+             */
+            public function getSuggestions($project, $field, $query)
+            {
+                $me = $this->myRoles();
+
+                $suggestions = [];
+
+                if (@$me[$project] >= 30) { // 30, 'participant.senior' - can create issues
+                    $db = $this->dbName;
+                    $query = explode(" ", $query);
+                    $and = [];
+                    
+                    foreach ($query as $token) {
+                        if (trim($token)) {
+                            $and[] = [
+                                $field => [
+                                    "\$regex" => "^.*" . $token . ".*$",
+                                    "\$options" => "i",
+                                ],
+                            ];
+                        }
+                    }
+
+                    $cursor = $this->mongo->$db->$project->aggregate([
+                        [
+                            "\$match" => [
+                                "\$and" => $and,
+                            ],
+                        ],
+                        [
+                            "\$group" => [
+                                "_id" => "$" . $field,
+                            ],
+                        ],
+                        [
+                            "\$sort" => [
+                                "_id" => 1,
+                            ],
+                        ],
+                        [
+                            "\$project" => [
+                                $field => 1,
+                            ],
+                        ],
+                    ]);
+
+                    foreach ($cursor as $document) {
+                        $suggestions[] = $document["_id"];
+                    }
+                }
+
+                return $suggestions;
+            }
+
+            /**
              * @param $part
              * @return bool
              */

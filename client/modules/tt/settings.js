@@ -871,7 +871,7 @@
                         placeholder: i18n("tt.customFieldOptions"),
                         value: $.trim(options),
                         validate: (v, prefix) => {
-                            return $(`#${prefix}delete`).val() === "yes" || $.trim(v) !== "";
+                            return $(`#${prefix}delete`).val() === "yes" || parseInt($(`#${prefix}suggestions`).val()) || parseInt($(`#${prefix}editable`).val()) || $.trim(v) !== "";
                         },
                         hidden: cf.type !== "select",
                     },
@@ -888,6 +888,13 @@
                         title: i18n("tt.multiple"),
                         value: (cf.format && cf.format.split(" ").includes("multiple"))?"1":"0",
                         hidden: cf.type === "virtual" || cf.type === "text" || cf.type === "geo" || cf.type === "array",
+                    },
+                    {
+                        id: "suggestions",
+                        type: "noyes",
+                        title: i18n("tt.suggestions"),
+                        value: (cf.format && cf.format.split(" ").includes("suggestions"))?"1":"0",
+                        hidden: cf.type !== "select",
                     },
                     {
                         id: "usersAndGroups",
@@ -943,6 +950,9 @@
                         result.format = "";
                         if (result.multiple === "1") {
                             result.format += " multiple";
+                        }
+                        if (result.suggestions === "1") {
+                            result.format += " suggestions";
                         }
                         if (result.editable === "1") {
                             result.format += " editable";
@@ -2138,6 +2148,28 @@
             editor.getSession().getUndoManager().reset();
             editor.clearSelection();
             editor.setFontSize(14);
+            editor.commands.removeCommand("removeline");
+            editor.commands.removeCommand("redo");
+            editor.commands.addCommand({
+                name: "removeline",
+                description: "Remove line",
+                bindKey: {
+                    win: "Ctrl-Y", 
+                    mac: "Cmd-Y"
+                },
+                exec: function (editor) { editor.removeLines(); },
+                scrollIntoView: "cursor",
+                multiSelectAction: "forEachLine"
+            });
+            editor.commands.addCommand({
+                name: "redo",
+                description: "Redo",
+                bindKey: {
+                    win: "Ctrl-Shift-Z",
+                    mac: "Command-Shift-Z"
+                },
+                exec: function (editor) { editor.redo(); }
+            });
             editor.commands.addCommand({
                 name: 'save',
                 bindKey: {
@@ -2298,6 +2330,28 @@
             editor.getSession().getUndoManager().reset();
             editor.clearSelection();
             editor.setFontSize(14);
+            editor.commands.removeCommand("removeline");
+            editor.commands.removeCommand("redo");
+            editor.commands.addCommand({
+                name: "removeline",
+                description: "Remove line",
+                bindKey: {
+                    win: "Ctrl-Y", 
+                    mac: "Cmd-Y"
+                },
+                exec: function (editor) { editor.removeLines(); },
+                scrollIntoView: "cursor",
+                multiSelectAction: "forEachLine"
+            });
+            editor.commands.addCommand({
+                name: "redo",
+                description: "Redo",
+                bindKey: {
+                    win: "Ctrl-Shift-Z",
+                    mac: "Command-Shift-Z"
+                },
+                exec: function (editor) { editor.redo(); }
+            });
             editor.commands.addCommand({
                 name: 'save',
                 bindKey: {
@@ -2804,6 +2858,28 @@
                 editor.clearSelection();
                 editor.setFontSize(14);
                 editor.setReadOnly(readOnly);
+                editor.commands.removeCommand("removeline");
+                editor.commands.removeCommand("redo");
+                editor.commands.addCommand({
+                    name: "removeline",
+                    description: "Remove line",
+                    bindKey: {
+                        win: "Ctrl-Y", 
+                        mac: "Cmd-Y"
+                    },
+                    exec: function (editor) { editor.removeLines(); },
+                    scrollIntoView: "cursor",
+                    multiSelectAction: "forEachLine"
+                });
+                editor.commands.addCommand({
+                    name: "redo",
+                    description: "Redo",
+                    bindKey: {
+                        win: "Ctrl-Shift-Z",
+                        mac: "Command-Shift-Z"
+                    },
+                    exec: function (editor) { editor.redo(); }
+                });
                 editor.commands.addCommand({
                     name: 'save',
                     bindKey: {
@@ -3362,6 +3438,28 @@
             editor.getSession().getUndoManager().reset();
             editor.clearSelection();
             editor.setFontSize(14);
+            editor.commands.removeCommand("removeline");
+            editor.commands.removeCommand("redo");
+            editor.commands.addCommand({
+                name: "removeline",
+                description: "Remove line",
+                bindKey: {
+                    win: "Ctrl-Y", 
+                    mac: "Cmd-Y"
+                },
+                exec: function (editor) { editor.removeLines(); },
+                scrollIntoView: "cursor",
+                multiSelectAction: "forEachLine"
+            });
+            editor.commands.addCommand({
+                name: "redo",
+                description: "Redo",
+                bindKey: {
+                    win: "Ctrl-Shift-Z",
+                    mac: "Command-Shift-Z"
+                },
+                exec: function (editor) { editor.redo(); }
+            });
             editor.commands.addCommand({
                 name: 'save',
                 bindKey: {
@@ -3503,7 +3601,7 @@
     },
 
     uploadPrintTemplate: function (printId) {
-        loadFile([ ".docx", ".xlsx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ], false, f => {
+        loadFile([ ".doc", ".odt", ".docx", ".xlsx", "application/msword", "application/vnd.oasis.opendocument.text", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ], false, f => {
             loadingStart();
             PUT("tt", "prints", printId, {
                 "mode": "template",
@@ -3571,6 +3669,15 @@
                         title: i18n("tt.printFormName"),
                     },
                     {
+                        title: i18n("tt.printTemplateName"),
+                    },
+                    {
+                        title: i18n("tt.printTemplateSize"),
+                    },
+                    {
+                        title: i18n("tt.printTemplateDate"),
+                    },
+                    {
                         title: i18n("tt.printExtension"),
                     },
                     {
@@ -3592,6 +3699,18 @@
                                 },
                                 {
                                     data: modules.tt.meta.prints[i].formName,
+                                    nowrap: true,
+                                },
+                                {
+                                    data: modules.tt.meta.prints[i].templateName ? modules.tt.meta.prints[i].templateName : "&nbsp;",
+                                    nowrap: true,
+                                },
+                                {
+                                    data: modules.tt.meta.prints[i].templateSize ? formatBytes(modules.tt.meta.prints[i].templateSize) : "&nbsp;",
+                                    nowrap: true,
+                                },
+                                {
+                                    data: modules.tt.meta.prints[i].templateUploadDate ? ttDate(modules.tt.meta.prints[i].templateUploadDate["$numberLong"] / 1000) : "&nbsp;",
                                     nowrap: true,
                                 },
                                 {
@@ -3686,6 +3805,28 @@
             editor.getSession().getUndoManager().reset();
             editor.clearSelection();
             editor.setFontSize(14);
+            editor.commands.removeCommand("removeline");
+            editor.commands.removeCommand("redo");
+            editor.commands.addCommand({
+                name: "removeline",
+                description: "Remove line",
+                bindKey: {
+                    win: "Ctrl-Y", 
+                    mac: "Cmd-Y"
+                },
+                exec: function (editor) { editor.removeLines(); },
+                scrollIntoView: "cursor",
+                multiSelectAction: "forEachLine"
+            });
+            editor.commands.addCommand({
+                name: "redo",
+                description: "Redo",
+                bindKey: {
+                    win: "Ctrl-Shift-Z",
+                    mac: "Command-Shift-Z"
+                },
+                exec: function (editor) { editor.redo(); }
+            });
             editor.commands.addCommand({
                 name: 'save',
                 bindKey: {
@@ -3747,6 +3888,28 @@
             editor.getSession().getUndoManager().reset();
             editor.clearSelection();
             editor.setFontSize(14);
+            editor.commands.removeCommand("removeline");
+            editor.commands.removeCommand("redo");
+            editor.commands.addCommand({
+                name: "removeline",
+                description: "Remove line",
+                bindKey: {
+                    win: "Ctrl-Y", 
+                    mac: "Cmd-Y"
+                },
+                exec: function (editor) { editor.removeLines(); },
+                scrollIntoView: "cursor",
+                multiSelectAction: "forEachLine"
+            });
+            editor.commands.addCommand({
+                name: "redo",
+                description: "Redo",
+                bindKey: {
+                    win: "Ctrl-Shift-Z",
+                    mac: "Command-Shift-Z"
+                },
+                exec: function (editor) { editor.redo(); }
+            });
             editor.commands.addCommand({
                 name: 'save',
                 bindKey: {

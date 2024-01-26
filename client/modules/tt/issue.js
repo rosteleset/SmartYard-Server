@@ -875,7 +875,7 @@
                                     continue;
                                 }
                                 h += "<tr class='tr-hoverable'>";
-                                h += "<td class='pl-2 td-journal'>";
+                                h += "<td class='pl-2 td-journal nowrap'>";
                                 h += modules.tt.issueFieldTitle(k[j]) + ": ";
                                 h += "</td>";
                                 h += "<td class='pl-2 td-journal'>";
@@ -893,7 +893,7 @@
                             k = [...new Set(k)].sort();
                             for (let j in k) {
                                 h += "<tr class='tr-hoverable'>";
-                                h += "<td class='pl-2 td-journal'>";
+                                h += "<td class='pl-2 td-journal nowrap'>";
                                 h += modules.tt.issueFieldTitle(k[j]) + ": ";
                                 h += "</td>";
                                 if (sep == "&nbsp;") {
@@ -915,7 +915,7 @@
                             k = [...new Set(k)].sort();
                             for (let j in k) {
                                 h += "<tr class='tr-hoverable'>";
-                                h += "<td class='pl-2 td-journal'>";
+                                h += "<td class='pl-2 td-journal nowrap'>";
                                 h += modules.tt.issueFieldTitle(k[j]) + ": ";
                                 h += "</td>";
                                 h += "<td class='pl-2 td-journal'>";

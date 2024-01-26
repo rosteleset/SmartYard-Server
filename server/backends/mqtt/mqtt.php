@@ -33,8 +33,8 @@
             {
                 return file_get_contents($this->config["backends"]["mqtt"]["agent"], false, stream_context_create([
                     'http' => [
-                        'method'  => 'POST',
-                        'header'  => [
+                        'method' => 'POST',
+                        'header' => [
                             'Content-Type: application/json; charset=utf-8',
                             'Accept: application/json; charset=utf-8',
                         ],

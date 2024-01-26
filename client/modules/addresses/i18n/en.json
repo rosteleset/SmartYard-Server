@@ -271,6 +271,7 @@
   "webrtc": "WebRTC",
   "primary": "Primary",
   "secondary": "Secondary",
+  "sound": "Audio stream",
   "errors": {
     "UNIQUE constraint failed: addresses_houses.address_settlement_id, addresses_houses.address_street_id, addresses_houses.house": "This house already exists",
     "UNIQUE constraint failed: houses_houses_entrances.house_entrance_id, houses_houses_entrances.prefix": "This prefix is already in use",

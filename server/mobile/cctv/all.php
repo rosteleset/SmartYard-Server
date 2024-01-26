@@ -33,9 +33,49 @@ $cameras = loadBackend("cameras");
 
 $houses = [];
 
+/**
+ * Get stub url's from config
+ * payment_require_url - stub if flat is blocked
+ * service_url - stub if camera  disabled
+ * fallback_url - stub if set not valid DVR url
+ */
+$stub = $config['backends']['dvr']['stub'];
+
+/**
+ * Replace DVR url handler.
+ * - Flat is blocked - replace DVR stream url to paymentRequireUrl stub
+ * - IP camera disabled in admin panel - replace DVR stream url to serviceUrl stub
+ * - DVR stream invalid - replace DVR stream url to fallbackUrl stub
+ * @param array $cams
+ * @param bool $flatIsBlocked
+ * @param string $paymentRequireUrl
+ * @param string $serviceUrl
+ * @param string $fallbackUrl
+ * @return array
+ */
+function replace_url(array $cams, bool $flatIsBlocked, string $paymentRequireUrl, string $serviceUrl, string $fallbackUrl ): array
+{
+    $result = [];
+    foreach ($cams as $cam) {
+        if ($cam['enabled'] === 0) {
+            $cam['dvrStream'] = $serviceUrl;
+        }
+        if (filter_var($cam['dvrStream'], FILTER_VALIDATE_URL) === false) {
+            $cam['dvrStream'] = $fallbackUrl;
+        }
+        if ($flatIsBlocked ) {
+            $cam['dvrStream'] = $paymentRequireUrl;
+        }
+        $result[] = $cam;
+    }
+    return $result;
+};
+
 foreach($subscriber['flats'] as $flat) {
     $houseId = $flat['addressHouseId'];
-    
+    $flatDetail = $households->getFlat($flat['flatId']);
+    $flatIsBlock = $flatDetail['adminBlock'] || $flatDetail['manualBlock'] || $flatDetail['autoBlock'];
+
     if (array_key_exists($houseId, $houses)) {
         $house = &$houses[$houseId];
         
@@ -47,10 +87,9 @@ foreach($subscriber['flats'] as $flat) {
         $house['cameras'] = $households->getCameras("houseId", $houseId);
         $house['doors'] = [];
     }
-    
+
     $house['cameras'] = array_merge($house['cameras'], $households->getCameras("flatId", $flat['flatId']));
 
-    $flatDetail = $households->getFlat($flat['flatId']);
     foreach ($flatDetail['entrances'] as $entrance) {
         if (array_key_exists($entrance['entranceId'], $house['doors'])) {
             continue;
@@ -65,9 +104,17 @@ foreach($subscriber['flats'] as $flat) {
         }
         
         $house['doors'][$entrance['entranceId']] = $door;
-        
     }
-    
+
+    if ($stub && $stub['payment_require_url'] && $stub['service_url'] && $stub['fallback_url']) {
+        $house['cameras'] = replace_url(
+            $house['cameras'],
+            $flatIsBlock,
+            $stub['payment_require_url'],
+            $stub['service_url'],
+            $stub['fallback_url']
+        );
+    }
 }
 $ret = [];
 foreach($houses as $house_key => $h) {
@@ -82,7 +129,8 @@ foreach($houses as $house_key => $h) {
             "url" => $camera['dvrStream'],
             "token" => loadBackend("dvr")->getDVRTokenForCam($camera, $subscriber['subscriberId']),
             "lon" => strval($camera['lon']),
-            "serverType" => $dvr['type']
+            "serverType" => $dvr['type'],
+            "hasSound" => boolval($camera['sound']),
         ];
         if (array_key_exists("hlsMode", $dvr)) {
             $item["hlsMode"] = $dvr["hlsMode"];
