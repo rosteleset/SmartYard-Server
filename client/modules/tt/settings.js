@@ -871,7 +871,7 @@
                         placeholder: i18n("tt.customFieldOptions"),
                         value: $.trim(options),
                         validate: (v, prefix) => {
-                            return $(`#${prefix}delete`).val() === "yes" || $.trim(v) !== "";
+                            return $(`#${prefix}delete`).val() === "yes" || $(`#${prefix}suggestions`).val() === "yes" || $(`#${prefix}editable`).val() === "yes" || $.trim(v) !== "";
                         },
                         hidden: cf.type !== "select",
                     },
