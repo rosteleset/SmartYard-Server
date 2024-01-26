@@ -43,30 +43,28 @@ $stub = $config['backends']['dvr']['stub'];
 
 /**
  * Replace DVR url handler.
- * - flat blocked: stub 'service requires payment'
- * - DVR not set, or the camera is disabled: stub 'service / undergoing technical work'
+ * - Flat is blocked - replace DVR stream url to paymentRequireUrl stub
+ * - IP camera disabled in admin panel - replace DVR stream url to serviceUrl stub
+ * - DVR stream invalid - replace DVR stream url to fallbackUrl stub
  * @param array $cams
  * @param bool $flatIsBlocked
- * @param string $stub_payment_url
- * @param string $stub_service_url
- * @param string $stub_fallback
+ * @param string $paymentRequireUrl
+ * @param string $serviceUrl
+ * @param string $fallbackUrl
  * @return array
  */
-function replace_url(array $cams, bool $flatIsBlocked, string $stub_payment_url, string $stub_service_url, string $stub_fallback ): array
+function replace_url(array $cams, bool $flatIsBlocked, string $paymentRequireUrl, string $serviceUrl, string $fallbackUrl ): array
 {
     $result = [];
     foreach ($cams as $cam) {
-        //check if stream enabled
         if ($cam['enabled'] === 0) {
-            $cam['dvrStream'] = $stub_service_url;
+            $cam['dvrStream'] = $serviceUrl;
         }
-        // check the correct DVR url
         if (filter_var($cam['dvrStream'], FILTER_VALIDATE_URL) === false) {
-            $cam['dvrStream'] = $stub_fallback;
+            $cam['dvrStream'] = $fallbackUrl;
         }
-        //check flat is blocked
         if ($flatIsBlocked ) {
-            $cam['dvrStream'] = $stub_payment_url;
+            $cam['dvrStream'] = $paymentRequireUrl;
         }
         $result[] = $cam;
     }
@@ -106,7 +104,6 @@ foreach($subscriber['flats'] as $flat) {
         }
         
         $house['doors'][$entrance['entranceId']] = $door;
-        
     }
 
     if ($stub && $stub['payment_require_url'] && $stub['service_url'] && $stub['fallback_url']) {
