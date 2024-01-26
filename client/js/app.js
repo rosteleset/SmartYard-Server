@@ -691,7 +691,11 @@ function mAlert(body, title, callback, title_button, main_button) {
 function modal(body) {
     $("#modalBody").html(body);
     xblur();
-    return autoZ($('#modal')).modal('show');
+    return autoZ($('#modal')).modal({
+        backdrop: 'static',
+        keyboard: true,
+        show: true,
+    });
 }
 
 function xblur() {

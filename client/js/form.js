@@ -30,7 +30,7 @@ function cardForm(params) {
         h += `</div>`;
     }
 
-    h += `<div class="card-body table-responsive p-0">`;
+    h += `<div class="card-body table-responsive p-0" style="overflow-x: hidden!important;">`;
 
     h += '<table class="table';
 
@@ -497,6 +497,18 @@ function cardForm(params) {
     } else {
         target = modal(h);
 
+        setTimeout(() => {
+            $(".select2-selection__rendered").each(function () {
+                let s2 = $(this);
+                s2.css("width", s2.css("width"));
+            });
+            if (params.title) {
+                $("#modal").draggable({
+                    handle: "#modalHeader",
+                });
+            }
+        }, 100);
+
         if (params.timeout) {
             $('#modal').attr("data-prefix", _prefix);
             setTimeout(() => {
@@ -505,13 +517,6 @@ function cardForm(params) {
                 }
             }, params.timeout);
         }
-/*
-        if (params.title) {
-            $("#modal").draggable({
-                handle: "#modalHeader",
-            });
-        }
-*/
     }
 
     $("#" + _prefix + "form").submit(function(e) { e.preventDefault(); });
