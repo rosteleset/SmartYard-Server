@@ -162,7 +162,7 @@
                     borderless: true,
                     topApply: true,
                     size: "lg",
-                    delete: (uid.toString() !== "0" && uid.toString() !== myself.uid.toString() && AVAIL("accounts", "user", "delete")) ? i18n("users.delete") : false,
+                    delete: (uid.toString() !== "0" && uid.toString() !== myself.uid.toString() && AVAIL("accounts", "user", "DELETE")) ? i18n("users.delete") : false,
                     fields: [
                         {
                             id: "uid",
