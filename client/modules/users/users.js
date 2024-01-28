@@ -389,7 +389,7 @@
         loadingStart();
 
         QUERY("accounts", "users", { withSessions: true }, true).done(response => {
-            modules.users.users = response.users;
+            modules.users.meta = response.users;
 
             cardTable({
                 target: "#altForm",
@@ -426,9 +426,9 @@
     
                     let user = {};
     
-                    for (let i in modules.users.users) {
-                        if (modules.users.users[i].uid == uid) {
-                            user = modules.users.users[i];
+                    for (let i in modules.users.meta) {
+                        if (modules.users.meta[i].uid == uid) {
+                            user = modules.users.meta[i];
                             break;
                         }
                     }
@@ -506,7 +506,7 @@
             }
 
             QUERY("accounts", "users", { withSessions: true }, true).done(response => {
-                modules.users.users = response.users;
+                modules.users.meta = response.users;
     
                 cardTable({
                     target: "#mainForm",
