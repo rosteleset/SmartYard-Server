@@ -162,7 +162,7 @@
                     borderless: true,
                     topApply: true,
                     size: "lg",
-                    delete: (uid.toString() !== "0" && uid.toString() !== myself.uid.toString())?i18n("users.delete"):false,
+                    delete: (uid.toString() !== "0" && uid.toString() !== myself.uid.toString() && AVAIL("accounts", "user", "delete")) ? i18n("users.delete") : false,
                     fields: [
                         {
                             id: "uid",
@@ -511,10 +511,10 @@
                 cardTable({
                     target: "#mainForm",
                     title: {
-                        button: {
+                        button: AVAIL("accounts", "user", "POST") ? {
                             caption: i18n("users.addUser"),
                             click: modules.users.addUser,
-                        },
+                        } : undefined,
                         caption: i18n("users.users"),
                         filter: true,
                     },
