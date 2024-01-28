@@ -537,9 +537,6 @@
                             title: i18n("users.lastAction"),
                         },
                         {
-                            title: i18n("users.blockedShort"),
-                        },
-                        {
                             title: i18n("users.primaryGroup"),
                             hidden: !hasGroups,
                         },
@@ -566,7 +563,7 @@
 
                             rows.push({
                                 uid: response.users[i].uid.toString(),
-                                class: (response.users[i].enabled == 1)?"bg-white":"bg-light",
+                                class: (response.users[i].enabled == 1)?"bg-white":"bg-light text-decoration-line-through",
                                 cols: [
                                     {
                                         data: response.users[i].uid,
@@ -581,10 +578,6 @@
                                     },
                                     {
                                         data: response.users[i].lastAction ? ttDate(response.users[i].lastAction) : i18n("no"),
-                                        nowrap: true,
-                                    },
-                                    {
-                                        data: response.users[i].enabled ? i18n("no") : i18n("yes"),
                                         nowrap: true,
                                     },
                                     {
