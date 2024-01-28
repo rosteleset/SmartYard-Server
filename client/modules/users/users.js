@@ -532,11 +532,9 @@
                         },
                         {
                             title: i18n("users.lastLogin"),
-                            hidden: !(response.users.length || typeof response.users[0].lastLogin == "undefined"),
                         },
                         {
                             title: i18n("users.lastAction"),
-                            hidden: !(response.users.length || typeof response.users[0].lastAction == "undefined"),
                         },
                         {
                             title: i18n("users.blockedShort"),
@@ -578,14 +576,12 @@
                                         nowrap: true,
                                     },
                                     {
-                                        data: ttDate(response.users[i].lastLogin),
+                                        data: response.users[i].lastLogin ? ttDate(response.users[i].lastLogin) : "-",
                                         nowrap: true,
-                                        hidden: typeof response.users[i].lastLogin == "undefined",
                                     },
                                     {
-                                        data: ttDate(response.users[i].lastAction),
+                                        data: response.users[i].lastAction ? ttDate(response.users[i].lastAction) : "-",
                                         nowrap: true,
-                                        hidden: typeof response.users[i].lastAction == "undefined",
                                     },
                                     {
                                         data: response.users[i].enabled?i18n("no"):i18n("yes"),
