@@ -576,38 +576,38 @@
                                         nowrap: true,
                                     },
                                     {
-                                        data: response.users[i].lastLogin ? ttDate(response.users[i].lastLogin) : "-",
+                                        data: response.users[i].lastLogin ? ttDate(response.users[i].lastLogin) : i18n("no"),
                                         nowrap: true,
                                     },
                                     {
-                                        data: response.users[i].lastAction ? ttDate(response.users[i].lastAction) : "-",
+                                        data: response.users[i].lastAction ? ttDate(response.users[i].lastAction) : i18n("no"),
                                         nowrap: true,
                                     },
                                     {
-                                        data: response.users[i].enabled?i18n("no"):i18n("yes"),
+                                        data: response.users[i].enabled ? i18n("no") : i18n("yes"),
                                         nowrap: true,
                                     },
                                     {
-                                        data: groups[response.users[i].primaryGroup]?groups[response.users[i].primaryGroup].name:("<span class='text-bold text-danger'>" + i18n("no") + "</span>"),
+                                        data: groups[response.users[i].primaryGroup] ? groups[response.users[i].primaryGroup].name : i18n("no"),
                                         nowrap: true,
                                         hidden: !hasGroups,
                                     },
                                     {
-                                        data: response.users[i].realName?response.users[i].realName:i18n("no"),
+                                        data: response.users[i].realName ? response.users[i].realName : i18n("no"),
                                         nowrap: true,
                                         fullWidth: true,
                                     },
                                     {
-                                        data: (response.users[i].eMail && response.users[i].eMail != response.users[i].login)?i18n("yes"):("<span class='text-bold text-danger'>" + i18n("no") + "</span>"),
-                                        click: response.users[i].eMail?`mailto:${response.users[i].eMail}`:false,
+                                        data: (response.users[i].eMail && response.users[i].eMail != response.users[i].login) ? i18n("yes") : i18n("no"),
+                                        click: response.users[i].eMail ? `mailto:${response.users[i].eMail}` : false,
                                         nowrap: true,
                                     },
                                     {
-                                        data: response.users[i].tg?i18n("yes"):("<span class='text-bold text-danger'>" + i18n("no") + "</span>"),
+                                        data: response.users[i].tg ? i18n("yes") : i18n("no"),
                                         nowrap: true,
                                     },
                                     {
-                                        data: response.users[i].phone?response.users[i].phone:("<span class='text-bold text-danger'>" + i18n("no") + "</span>"),
+                                        data: response.users[i].phone ? response.users[i].phone : i18n("no"),
                                         nowrap: true,
                                     },
                                 ],
@@ -616,7 +616,7 @@
                                         {
                                             icon: "fas fa-list-ol",
                                             title: i18n("users.sessions"),
-                                            disabled: !response.users[0].sessions,
+                                            disabled: !response.users[i].sessions,
                                             click: uid => {
                                                 modules.users.showSessions(uid);
                                             },
