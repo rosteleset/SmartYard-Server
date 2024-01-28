@@ -3,7 +3,7 @@
     meta: [],
 
     init: function () {
-        if (AVAIL("accounts", "user", "POST")) {
+        if (AVAIL("accounts", "user", "POST") || AVAIL("accounts", "user", "PUT") || AVAIL("accounts", "user", "DELETE")) {
             leftSide("fas fa-fw fa-user", i18n("users.users"), "?#users", "accounts");
         }
         moduleLoaded("users", this);
