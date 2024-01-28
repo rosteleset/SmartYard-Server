@@ -616,7 +616,7 @@
                                         {
                                             icon: "fas fa-list-ol",
                                             title: i18n("users.sessions"),
-                                            disabled: !response.users[i].sessions,
+                                            disabled: !response.users[i].sessions || !response.users[i].sessions.length,
                                             click: uid => {
                                                 modules.users.showSessions(uid);
                                             },
