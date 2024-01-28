@@ -38,8 +38,8 @@
                             "phone" => $user["phone"],
                             "tg" => $user["tg"],
                             "enabled" => $user["enabled"],
-                            "lastLogin" => $withSessions?$this->redis->get("last_login_" . md5($user["login"])):false,
-                            "lastAction" => $withSessions?$this->redis->get("last_action_" . md5($user["login"])):false,
+                            "lastLogin" => $withSessions ? $this->redis->get("last_login_" . md5($user["login"])) : false,
+                            "lastAction" => $withSessions ? $this->redis->get("last_action_" . md5($user["login"])) : false,
                             "primaryGroup" => $user["primary_group"],
                             "primaryGroupAcronym" => $user["primary_group_acronym"],
                         ];
