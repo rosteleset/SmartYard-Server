@@ -202,6 +202,9 @@ abstract class qtech extends domophone
         $this->apiCall('sip', 'set', $sipData);
 
         $this->setParams([
+            'Config.Settings.GENERAL.DirectIP' => 0,
+            'Config.Account1.SIP.ListenPortMin' => $port,
+            'Config.Account1.SIP.ListenPortMax' => $port,
             'Config.Account1.STUN.Enable' => (int)$stunEnabled,
             'Config.Account1.STUN.Server' => $stunServer,
             'Config.Account1.STUN.Port' => $stunPort,

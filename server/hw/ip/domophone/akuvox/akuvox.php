@@ -116,12 +116,17 @@ abstract class akuvox extends domophone
                 'Config.Account1.GENERAL.Pwd' => $password,
                 'Config.Account1.GENERAL.UserAgent' => $login,
                 'Config.Account1.GENERAL.UserName' => $login,
+                'Config.Settings.GENERAL.DirectIP' => '0',
                 'Config.Account1.SIP.Port' => "$port",
                 'Config.Account1.SIP.Server' => "$server",
                 'Config.Account1.SIP.TransType' => '0', // UDP
+                'Config.Account1.SIP.ListenPortMin' => "$port",
+                'Config.Account1.SIP.ListenPortMax' => "$port",
                 'Config.Account1.STUN.Enable' => $stunEnabled ? '1' : '0',
                 'Config.Account1.STUN.Server' => $stunServer,
                 'Config.Account1.STUN.Port' => "$stunPort",
+                'Config.Account1.NAT.UdpKeepEnable' => $stunEnabled ? '1' : '0',
+                'Config.Account1.NAT.Rport' => '0',
                 'Config.Account1.AUTO_ANSWER.Enable' => '0', // disable auto answer for incoming calls
             ],
         ]);
