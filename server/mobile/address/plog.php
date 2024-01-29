@@ -16,7 +16,6 @@
  * @apiSuccess {string="Y-m-d H:i:s"} -.date дата
  * @apiSuccess {integer} [-.timezone] часовой пояс (default - Moscow Time)
  * @apiSuccess {UUID} -.uuid UUID события (уникален)
- * @apiSuccess {UUID} [-.image] UUID картинки (может повторяться для "дублирующихся" событий)
  * @apiSuccess {integer} -.objectId идентификатор объекта (домофона)
  * @apiSuccess {integer="0"} -.objectType тип объекта (0 - домофон)
  * @apiSuccess {integer="0","1","2"} -.objectMechanizma идентификатор нагрузки (двери)
@@ -102,7 +101,6 @@ try {
             $e_details = [];
             $e_details['date'] = date('Y-m-d H:i:s', $row[plog::COLUMN_DATE]);
             $e_details['uuid'] = $row[plog::COLUMN_EVENT_UUID];
-            $e_details['image'] = $row[plog::COLUMN_IMAGE_UUID];
             $e_details['previewType'] = $row[plog::COLUMN_PREVIEW];
 
             $domophone = json_decode($row[plog::COLUMN_DOMOPHONE]);
