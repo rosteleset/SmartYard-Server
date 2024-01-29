@@ -43,6 +43,7 @@
  * @apiSuccess {integer} [-.detailX.face.height] высота
  *
  * @apiErrorExample Ошибки
+ * 402 требуется оплата
  * 403 требуется авторизация
  * 422 неверный формат данных
  * 404 пользователь не найден
@@ -76,7 +77,7 @@ if (!$plog) {
     response(403);
 }
 
-//проверка на доступность событий
+// Checking for event availability
 $flat_owner = false;
 foreach ($subscriber['flats'] as $flat) {
     if ($flat['flatId'] == $flat_id) {
@@ -86,6 +87,14 @@ foreach ($subscriber['flats'] as $flat) {
 }
 
 $flat_details = $households->getFlat($flat_id);
+
+// Checking account balance. Possible use redirect to payment screen on mobile app by response code 402
+if ($flat_details['autoBlock']){
+    response(402);
+} elseif ($flat_details['adminBlock'] || $flat_details['manualBlock']) {
+    response(403);
+}
+
 $plog_access = $flat_details['plog'];
 if ($plog_access == $plog::ACCESS_DENIED || $plog_access == $plog::ACCESS_RESTRICTED_BY_ADMIN
     || $plog_access == $plog::ACCESS_OWNER_ONLY && !$flat_owner) {
