@@ -112,3 +112,6 @@ package-lock.json
 
 # ----- mqtt service
 !server/services/mqtt/package.json
+
+# -----intercom provision service
+!server/services/intercom_provision/package.json

@@ -1,0 +1,749 @@
+
+# Use Ctrl+A to select all and copy this in your editor
+
+
+#Configure the url of the firmware file server, support ftp/tftp/http/https protocol, the suffix of the file name must be .rom;
+Config.Firmware.Url = 
+
+#Configure the url of the webcam file server, support ftp/tftp/http/https protocol, the suffix of the file name must be .xml;
+Config.WebCam.Url = 
+
+#Configure the url of the LiftHints file server, support ftp/tftp/http/https protocol, the suffix of the file name must be .xml;
+Config.Hints.Url = 
+
+#Configure the url of the Blocklist file server, support ftp/tftp/http/https protocol, the suffix of the file name must be .xml;
+Config.Blocklist.Url = 
+
+#Configure the url of the contact file server, support ftp/tftp/http/https protocol, the suffix of the file name must be .xml;
+Config.Contact.Url = 
+
+#Configure the url of the doorphone file server, support ftp/tftp/http/https protocol, the suffix of the file name must be .xml;
+Config.DoorPhone.Url = 
+
+#Configure the url of the Allowlist file server, support ftp/tftp/http/https protocol, the suffix of the file name must be .xml;
+Config.Allowlist.Url = 
+
+#Configure the url of the RelayHTTPCommand file server, support ftp/tftp/http/https protocol, the suffix of the file name must be .xml;
+Config.RelayHTTPCommand.Url = 
+
+#Configure whether need to reset factory after autop
+Config.Autoprovision.RESET_FACTORY.Enable = 
+
+#Configure whether need to reboot after autop
+Config.Autoprovision.Reboot.Enable = 
+
+#Configure whether need to manual DateTime after autop
+Config.DATETIME.Year = 
+Config.DATETIME.Month = 
+Config.DATETIME.Day = 
+Config.DATETIME.Hour = 
+Config.DATETIME.Min = 
+Config.DATETIME.Sec = 
+
+#Value of Area1 and Area2 of Homepage in Call List Mode:
+0-NA, 1-DND, 2-Message, 3-Contacts, 4-Call, 6-SOS, 7-Setting, 8-Sound, 9-Display, 10-Status, 12-Lift, 13-Unlock, 14-Smart Living, 15-Capture Log
+Config.Indoor.PAGE1AREA1.DisplayType = 
+Config.Indoor.PAGE1AREA2.DisplayType = 
+Config.Indoor.PAGE1AREA1.Label = 
+Config.Indoor.PAGE1AREA2.Label = 
+
+#Value of Area1 - Area8 of Morepage in Call List Mode:
+0-NA, 1-DND, 2-Message, 3-Contacts, 4-Call, 6-SOS, 7-Setting, 8-Sound, 9-Display, 10-Status, 12-Lift, 13-Unlock, 14-Smart Living, 15-Capture Log
+Config.Indoor.PAGE2AREA1.DisplayType = 
+Config.Indoor.PAGE2AREA2.DisplayType = 
+Config.Indoor.PAGE2AREA3.DisplayType = 
+Config.Indoor.PAGE2AREA4.DisplayType = 
+Config.Indoor.PAGE2AREA5.DisplayType = 
+Config.Indoor.PAGE2AREA6.DisplayType = 
+Config.Indoor.PAGE2AREA7.DisplayType = 
+Config.Indoor.PAGE2AREA8.DisplayType = 
+Config.Indoor.PAGE2AREA1.Label = 
+Config.Indoor.PAGE2AREA2.Label = 
+Config.Indoor.PAGE2AREA3.Label = 
+Config.Indoor.PAGE2AREA4.Label = 
+Config.Indoor.PAGE2AREA5.Label = 
+Config.Indoor.PAGE2AREA6.Label = 
+Config.Indoor.PAGE2AREA7.Label = 
+Config.Indoor.PAGE2AREA8.Label = 
+
+#Value of Area1 - Area9 for Homepage in Nine Square Mode:
+#0-NA,1-Intercom,2-Live view,3-SOS,5-DND,6-Status,7-Contacts,8-Message,9-Setting,10-Sound,11-Display
+Config.Indoor.IDLEAREA1.DisplayType = 
+Config.Indoor.IDLEAREA2.DisplayType = 
+Config.Indoor.IDLEAREA3.DisplayType = 
+Config.Indoor.IDLEAREA4.DisplayType = 
+Config.Indoor.IDLEAREA5.DisplayType = 
+Config.Indoor.IDLEAREA6.DisplayType = 
+Config.Indoor.IDLEAREA7.DisplayType = 
+Config.Indoor.IDLEAREA8.DisplayType = 
+Config.Indoor.IDLEAREA9.DisplayType = 
+
+#configure the url of client certificate
+Config.Certificate.01.Url=
+Config.Certificate.02.Url=
+Config.Certificate.03.Url=
+Config.Certificate.04.Url=
+Config.Certificate.05.Url=
+Config.Certificate.06.Url=
+Config.Certificate.07.Url=
+Config.Certificate.08.Url=
+Config.Certificate.09.Url=
+Config.Certificate.10.Url=
+
+# Autoprovision Configuration
+
+Config.Autoprovision.GENERAL.Url = 
+Config.Autoprovision.GENERAL.UserName = 
+Config.Autoprovision.GENERAL.Pwd = hJUyD4RGm3zqpCykifek1jLqD4QokOqIXjctXLdGofAXiIuHN7eh/pIXxfXD
+Config.Autoprovision.GENERAL.Priority = 0
+Config.Autoprovision.GENERAL.CustomEnable = 
+Config.Autoprovision.GENERAL.CheckSync = 
+
+Config.Autoprovision.MODE.Mode = 1
+
+Config.Autoprovision.SCHEDULE.DayOfWeek = 7
+Config.Autoprovision.SCHEDULE.SomeDayOfWeek = 7
+Config.Autoprovision.SCHEDULE.HourOfDay = 22
+Config.Autoprovision.SCHEDULE.MinuteOfHour = 0
+Config.Autoprovision.SCHEDULE.SecondOfMinute = 0
+
+Config.Autoprovision.AES.Key16 = 9YQoktbBi3yCNPCW/gOEQqG7UDMPkveElfeSaKTxRlDqlijDXhU28Eb3oYf1
+Config.Autoprovision.AES.Key16Mac = F4eCaBctQXz+1pxDgjcDxRdGx5JDkomLN8WahCwzaJvw6oTIXLeQ8ff1Q5sd
+
+Config.Autoprovision.PNP.Enable = 1
+
+Config.Autoprovision.RETRY_TIMES.Times = 0
+
+# Network Configuration
+
+Config.Network.LAN.Type = 0
+Config.Network.LAN.StaticIP = 
+Config.Network.LAN.SubnetMask = 
+Config.Network.LAN.DefaultGateway = 
+Config.Network.LAN.PrimaryDNS = 
+Config.Network.LAN.SecondaryDNS = 
+Config.Network.LAN.Enable = 1
+Config.Network.LAN.UseStaticDNS = 0
+Config.Network.LAN.DHCP_VCI = udhcp 0.9.8
+Config.Network.LAN.LINK_TYPE = 0
+Config.Network.LAN.Networkid = 
+
+Config.Network.RTPPORT.Max = 12000
+Config.Network.RTPPORT.Min = 11800
+
+Config.Network.PC.Type = 0
+Config.Network.PC.RouterIP = 10.0.0.1
+Config.Network.PC.SubnetMask = 255.255.255.0
+Config.Network.PC.EnableDHCP = 1
+Config.Network.PC.StartIP = 10.0.0.10
+Config.Network.PC.EndIP = 10.0.0.100
+
+Config.Network.VLAN.LanVlanEnable = 0
+Config.Network.VLAN.LanVid = 1
+Config.Network.VLAN.LanPriority = 0
+
+Config.Network.DHCPSEVER.Active = 1
+
+# Account1 Configuration
+
+Config.Account1.GENERAL.Enable = 1
+Config.Account1.GENERAL.Label = 4000000012
+Config.Account1.GENERAL.DisplayName = 4000000012
+Config.Account1.GENERAL.UserName = 4000000012
+Config.Account1.GENERAL.AuthName = 4000000012
+Config.Account1.GENERAL.Pwd = 4000000012
+Config.Account1.GENERAL.UserAgent = 
+
+Config.Account1.SIP.TransType = 0
+Config.Account1.SIP.Server = <%= sip.serverAddress %>
+Config.Account1.SIP.Port = <%= sip.serverPort %>
+
+Config.Account1.STUN.Enable = 1
+Config.Account1.STUN.Server = stun.lanta.me
+Config.Account1.STUN.Port = 3478
+
+Config.Account1.ENCRYPTION.SRTPEncryption = 0
+
+Config.Account1.FEATURE_FORWARD_ALWAYS.Enable = 
+Config.Account1.FEATURE_FORWARD_ALWAYS.Target = 
+
+Config.Account1.FEATURE_FORWARD_BUSY.Enable = 
+Config.Account1.FEATURE_FORWARD_BUSY.Target = 
+
+Config.Account1.Video00.Enable = 1
+Config.Account1.Video00.Name = H264
+Config.Account1.Video00.Priority = 2
+Config.Account1.Video00.Payload = 104
+Config.Account1.Video00.ProfileLevel = 4
+# 0 - support NALU, 1 - support STAP, 2 - support FU-A. Only FU-A mode is supported by Hw Encode Acceleration.
+Config.Account1.Video00.PacketizationMode = 0
+Config.Account1.Video00.MaxBR = 2048
+Config.Account1.Video00.BandWidth = 4000000
+
+Config.Account1.ESCAPE_CHARACTER.Enable = 1
+
+# Account2 Configuration
+
+Config.Account2.GENERAL.Enable = 0
+Config.Account2.GENERAL.UserName = 
+Config.Account2.GENERAL.AuthName = 
+Config.Account2.GENERAL.Pwd = A5wXs6GQlnxBF5sd6oIdFaI3kPfFNjJeaPeQYRVeyP5CN/AdwvWE/ruWHWia
+Config.Account2.GENERAL.UserAgent = 
+
+Config.Account2.SIP.TransType = 0
+Config.Account2.SIP.Server = 
+Config.Account2.SIP.Port = 5060
+
+Config.Account2.STUN.Enable = 0
+Config.Account2.STUN.Server = 
+Config.Account2.STUN.Port = 3478
+
+Config.Account2.FEATURE_FORWARD_ALWAYS.Enable = 
+Config.Account2.FEATURE_FORWARD_ALWAYS.Target = 
+
+Config.Account2.FEATURE_FORWARD_BUSY.Enable = 
+Config.Account2.FEATURE_FORWARD_BUSY.Target = 
+
+# Call Forward Configuration
+
+Config.Forward.TIMEOUT.Enable = 0
+Config.Forward.TIMEOUT.LastEnable = 0
+Config.Forward.TIMEOUT.Target = 
+Config.Forward.TIMEOUT.Timeout = 30
+
+# Feature Configuration
+
+Config.Features.CALL_WAITING.Enable = 1
+Config.Features.CALL_WAITING.PlayTone = 1
+Config.Features.CALL_WAITING.OnCode = 
+Config.Features.CALL_WAITING.OffCode = 
+
+#Configure the status of DND Wholeday or TimeSchedule:
+#0-disabled,1-enabled.
+Config.Features.DND.WholeDay = 0
+Config.Features.DND.ReturnCode = 486
+Config.Features.DND.ScheduleMode = 0
+
+#Configure the Time according to HH:MM format,the range is (00:00~23:59)
+Config.Features.DND.StartTime = 00:00
+Config.Features.DND.EndTime = 00:00
+
+Config.Features.DNDMODE.IvrEnable = 
+Config.Features.DNDMODE.DndExceptDoor = 
+
+Config.Features.REJECT.ReturnCode = 486
+
+Config.Features.INTERCOM.Enable = 1
+Config.Features.INTERCOM.Preview = 1
+Config.Features.INTERCOM.Preview2 = 0
+
+Config.Features.VIDEO_CODEC_PARAM.PacketizationMode = 0
+Config.Features.VIDEO_CODEC_PARAM.ProfileLevel = 720P
+
+Config.Features.AUTOANSWER.Delay = 0
+
+Config.Features.CALLROBIN.Num01 = 
+Config.Features.CALLROBIN.Num02 = 
+Config.Features.CALLROBIN.Num03 = 
+Config.Features.CALLROBIN.Name01 = 
+Config.Features.CALLROBIN.Name02 = 
+Config.Features.CALLROBIN.Name03 = 
+Config.Features.CALLROBIN.Time = 60
+Config.Features.CALLROBIN.Count = 3
+Config.Features.CALLROBIN.Account = 0
+
+Config.Features.SIPCONFIG.DirectIPUserAgent = 
+
+Config.Features.ACTIONURL.Enable = 0
+
+Config.Features.VOICE_OWNER.Enable = 0
+Config.Features.VOICE_OWNER.TimeOut = 
+Config.Features.VOICE_OWNER.Ring = 
+
+Config.Features.VOICE_VISITOR.Enable = 0
+Config.Features.VOICE_VISITOR.Ring = 
+
+Config.Features.AUTOMUTE.Enable = 0
+
+#Value of Lift Status:
+#0-disabled,1-enabled.
+#Value of Lift Icon:
+#0-Up,1-Down,2-General.
+Config.Features.LIFT1.Status = 0
+Config.Features.LIFT1.Label = Lift 1
+Config.Features.LIFT1.HttpCommand = 
+Config.Features.LIFT1.Icon = 0
+
+Config.Features.LIFT2.Status = 0
+Config.Features.LIFT2.Label = Lift 2
+Config.Features.LIFT2.HttpCommand = 
+Config.Features.LIFT2.Icon = 1
+
+Config.Features.BUTTON1.Status = 0
+Config.Features.BUTTON1.Label = Button1
+Config.Features.BUTTON1.HttpCommand = 
+Config.Features.BUTTON1.Icon = 0
+
+Config.Features.BUTTON2.Status = 0
+Config.Features.BUTTON2.Label = Button2
+Config.Features.BUTTON2.HttpCommand = 
+Config.Features.BUTTON2.Icon = 0
+
+Config.Features.BUTTON3.Status = 0
+Config.Features.BUTTON3.Label = Button3
+Config.Features.BUTTON3.HttpCommand = 
+Config.Features.BUTTON3.Icon = 0
+
+Config.Features.BUTTON4.Status = 0
+Config.Features.BUTTON4.Label = Button4
+Config.Features.BUTTON4.HttpCommand = 
+Config.Features.BUTTON4.Icon = 0
+
+Config.Features.BUTTON5.Status = 0
+Config.Features.BUTTON5.Label = Button5
+Config.Features.BUTTON5.HttpCommand = 
+Config.Features.BUTTON5.Icon = 0
+
+Config.Features.BUTTON6.Status = 0
+Config.Features.BUTTON6.Label = Button6
+Config.Features.BUTTON6.HttpCommand = 
+Config.Features.BUTTON6.Icon = 0
+
+Config.Features.BUTTON7.Status = 0
+Config.Features.BUTTON7.Label = Button7
+Config.Features.BUTTON7.HttpCommand = 
+Config.Features.BUTTON7.Icon = 0
+
+Config.Features.BUTTON8.Status = 0
+Config.Features.BUTTON8.Label = Button8
+Config.Features.BUTTON8.HttpCommand = 
+Config.Features.BUTTON8.Icon = 0
+
+# Setting Configuration
+
+Config.Settings.LANGUAGE.Type = 3
+Config.Settings.LANGUAGE.ActiveWebLang = 
+Config.Settings.LANGUAGE.WebLang = 3
+
+Config.Settings.DATETIME.Type = 0
+Config.Settings.DATETIME.TimeFormat = 1
+Config.Settings.DATETIME.DateFormat = 2
+Config.Settings.DATETIME.Offset = 60
+Config.Settings.DATETIME.ShowStatusBarTime = 1
+
+Config.Settings.SNTP.Enable = 1
+Config.Settings.SNTP.TimeZone = GMT+3:00
+Config.Settings.SNTP.Name = Moscow
+Config.Settings.SNTP.NTPServer1 = 0.pool.ntp.org
+Config.Settings.SNTP.NTPServer2 = 1.pool.ntp.org
+Config.Settings.SNTP.DTS = 2
+Config.Settings.SNTP.Interval = 3600
+Config.Settings.SNTP.StartTime = 1/1/0
+Config.Settings.SNTP.EndTime = 12/31/23
+
+Config.Settings.BACKLIGHT.Level = 5
+Config.Settings.BACKLIGHT.Time = 60
+Config.Settings.BACKLIGHT.FreeLevel = 0
+
+Config.Settings.CAPTURE.Enable = 1
+Config.Settings.CAPTURE.Delay = 5
+
+Config.Settings.DISPLAYSTYLE.IdleStyle = 0
+
+Config.Settings.GENERAL.DirectIP = 1
+Config.Settings.GENERAL.WebTitle = IP Phone
+Config.Settings.GENERAL.HttpUserAgent = Akuvox
+Config.Settings.GENERAL.UseStarForIP = 
+Config.Settings.GENERAL.HungUpBusyTone = 1
+
+Config.Settings.LOGLEVEL.Level = 3
+Config.Settings.LOGLEVEL.RemoteSyslog = 0
+Config.Settings.LOGLEVEL.RemoteServer = 
+
+Config.Settings.RINGTONE.Type = Ring1.wav
+
+Config.Settings.AUDIO.RingVol = 0
+Config.Settings.AUDIO.RingMidVol = 35
+Config.Settings.AUDIO.AnswerTone = 1
+
+Config.Settings.HANDFREE.SpkVol = 8
+Config.Settings.HANDFREE.MicVol = 8
+Config.Settings.HANDFREE.SpkMidValue = 40
+Config.Settings.HANDFREE.MicMidValue = 0
+Config.Settings.HANDFREE.SigToneVol = 8
+Config.Settings.HANDFREE.SigToneMidVol = 35
+
+Config.Settings.INDICATOR.MissedCall = 1
+Config.Settings.INDICATOR.Message = 1
+
+Config.Settings.LOGIN.User = admin
+Config.Settings.LOGIN.Password = D/6SxcRQwsgPwVwdfIiQhg+zh8fqlvfBkNY29aSkxw+CwqItFbeLaPG7tx0D
+
+Config.Settings.WEB_LOGIN.User = admin
+Config.Settings.WEB_LOGIN.Password = xzahQYJBxcgPwVwdfJVoYTfCwiyaoosyF5BAHQ8zleoVwcdBKPXCx0aQxIaJ
+Config.Settings.WEB_LOGIN.Type = admin
+Config.Settings.WEB_LOGIN.User02 = user
+Config.Settings.WEB_LOGIN.Password02 = 8cFhHfcPCJIzUP58xJpGNsHHu1C3xAjHt4ReQmFA91DqF0Ayw4c3QEbFhDIo
+Config.Settings.WEB_LOGIN.Type02 = user
+
+Config.Settings.WEB_LOGIN_STATUS.Active = 1
+Config.Settings.WEB_LOGIN_STATUS.SessionTimeOut = 300
+Config.Settings.WEB_LOGIN_STATUS.FirstTimeLogin = 0
+
+Config.Settings.CALLTIMEOUT.DialOut = 60
+Config.Settings.CALLTIMEOUT.DialIn = 60
+
+Config.Settings.DTMFCODE.DTMFCode = 0
+
+Config.Settings.DATEDISPLAY.DisplayMode = 1
+
+Config.Settings.SECURITY.OnlyAcceptTrusted = 0
+Config.Settings.SECURITY.UserAccountEnabled = 0
+
+Config.Settings.SOUND.MediaVolume = 
+Config.Settings.SOUND.RingToneVolume = 
+Config.Settings.SOUND.AlarmVolume = 
+Config.Settings.SOUND.Ringtone = 
+Config.Settings.SOUND.TouchPadSoundEnable = 1
+Config.Settings.SOUND.KeyToneEnable = 
+Config.Settings.SOUND.TouchIconPlayToneEnable = 1
+
+Config.Settings.SCREENSAVER.Enable = 0
+Config.Settings.SCREENSAVER.Type = 1
+Config.Settings.SCREENSAVER.WaitTime = 600
+Config.Settings.SCREENSAVER.ScreesaverPictures = 
+Config.Settings.SCREENSAVER.SwitchTime = 
+Config.Settings.SCREENSAVER.Time = 1800
+
+Config.Settings.SCREENLOCK.Enable = 0
+
+Config.Settings.ADVANCE.Password = xGi3wzeQu7Y/j3ENg3w2HWiziJvxyLOJMsRGyJLwAzL3NCxch0IPiIlBltb1
+
+Config.Settings.E10S_RINGTONE.Type = Ring1.wav
+Config.Settings.E10S_RINGTONE.Lifetime = 
+
+Config.Settings.MONITOR.TimeOut = 180
+Config.Settings.MONITOR.WithWebcamEntry = 1
+Config.Settings.MONITOR.WithOnvifEntry = 1
+
+Config.Settings.SDMC.Enable = 0
+
+Config.Settings.BELLIN.RingTime = 5
+
+Config.Settings.CAPTURE_FTP.FTPServer = 
+Config.Settings.CAPTURE_FTP.FTPUser = 
+Config.Settings.CAPTURE_FTP.FTPPasswd = 
+
+Config.Settings.DIAL.WithDialEntry = 1
+Config.Settings.DIAL.WithDialResidentEntry = 0
+Config.Settings.DIAL.WithDoorPhoneEntry = 2
+Config.Settings.DIAL.WithCallCenterEntry = 2
+Config.Settings.DIAL.WithSpeedDialEntry = 
+Config.Settings.DIAL.WithRingGroupEntry = 
+Config.Settings.DIAL.WithIndoorExtensionEntry = 0
+
+Config.Settings.CONTACT.WithLocalEntry = 1
+Config.Settings.CONTACT.WithDeviceEntry = 1
+Config.Settings.CONTACT.SortMode = 0
+Config.Settings.CONTACT.ShowLocalContactsOnly = 0
+
+Config.Settings.BELLDND.Enable = 1
+
+Config.Settings.RELAY.Enable = 
+
+Config.Settings.CloudAccount.Email = 
+Config.Settings.CloudAccount.Name = 
+Config.Settings.CloudAccount.Password = m9b3goKaw3zIwxWEMv4yQi1CKPfIyGg2N1zWQTYXopUziMXFyMEzpEMzA8gd
+
+Config.Settings.AUTO_ANSWER.IndoorToIndoor = 0
+
+#Value of Area3~Area6 of Homepage in Call List Mode:
+ 0-Disabled, 1-Enabled (default).
+Config.Settings.HOME_AREA.HomeArea3 = 1
+Config.Settings.HOME_AREA.HomeArea4 = 1
+Config.Settings.HOME_AREA.HomeArea5 = 1
+Config.Settings.HOME_AREA.HomeArea6 = 1
+
+Config.Settings.ICENETWORK.IceIp = 
+Config.Settings.ICENETWORK.IcePort = 
+
+Config.Settings.ICESWITCH1.Inverted = 0
+Config.Settings.ICESWITCH1.State = 0
+Config.Settings.ICESWITCH1.ModuleCode = 
+Config.Settings.ICESWITCH1.ModuleName = 
+
+Config.Settings.ICESWITCH2.Inverted = 0
+Config.Settings.ICESWITCH2.State = 0
+Config.Settings.ICESWITCH2.ModuleCode = 
+Config.Settings.ICESWITCH2.ModuleName = 
+
+Config.Settings.ICESWITCH3.Inverted = 0
+Config.Settings.ICESWITCH3.State = 0
+Config.Settings.ICESWITCH3.ModuleCode = 
+Config.Settings.ICESWITCH3.ModuleName = 
+
+Config.Settings.ICESWITCH4.Inverted = 0
+Config.Settings.ICESWITCH4.State = 0
+Config.Settings.ICESWITCH4.ModuleCode = 
+Config.Settings.ICESWITCH4.ModuleName = 
+
+Config.Settings.RTSP.RTSPAudioEnabled = 0
+Config.Settings.RTSP.AuthorizationType = 1
+Config.Settings.RTSP.UserName = admin
+Config.Settings.RTSP.Password = NjMywZuCMsgPwVwdfIIyiKKExMiJ9/43RizwhjIPm4IDKDPEh5a3KKJBkqE0
+Config.Settings.RTSP.RTSPoverTcp = 0
+
+Config.Settings.VIDEODEBUG.Enable = 0
+
+Config.Settings.SETTING.Password = iFCQw0CVxHwVXMi7lfGaHcOV/pUDksGVpMgoklDI8OqGQBfIaMdoMkMP8IeG
+
+Config.Settings.SCREENLOCK.Password = FwOGHaH3LHzxhIRGM4iHQdYsoQ+iXjZDizbqszazwmg0UJyJMjNe8B02NPDE
+
+# Programmable Key Configuration
+
+Config.Programable.opendoorFunctionKey.Type = 35
+Config.Programable.opendoorFunctionKey.Label = 
+Config.Programable.opendoorFunctionKey.Param1 = 0
+Config.Programable.opendoorFunctionKey.Param2 = 
+Config.Programable.opendoorFunctionKey.Param3 = 
+
+Config.Programable.opendoorSoftKey.Type = 35
+Config.Programable.opendoorSoftKey.Label = 
+Config.Programable.opendoorSoftKey.Param1 = 1
+Config.Programable.opendoorSoftKey.Param2 = 
+Config.Programable.opendoorSoftKey.Param3 = 
+
+Config.Programable.CENTER.Type = 37
+Config.Programable.CENTER.Label = 
+Config.Programable.CENTER.Param1 = 0.0.0.0.0
+Config.Programable.CENTER.Param2 = 
+Config.Programable.CENTER.Param3 = 
+
+Config.Programable.SPEED_DIAL.Type = 10
+Config.Programable.SPEED_DIAL.Label = 
+Config.Programable.SPEED_DIAL.Param1 = 0.0.0.0.0
+Config.Programable.SPEED_DIAL.Param2 = 
+Config.Programable.SPEED_DIAL.Param3 = 
+
+Config.Programable.PAGING.Type = 10
+Config.Programable.PAGING.Label = 
+Config.Programable.PAGING.Param1 = 0.0.0.0.0
+Config.Programable.PAGING.Param2 = 
+Config.Programable.PAGING.Param3 = 
+
+Config.Programable.RING_GROUP.Type = 10
+Config.Programable.RING_GROUP.Label = 
+Config.Programable.RING_GROUP.Param1 = 0.0.0.0.0
+Config.Programable.RING_GROUP.Param2 = 
+Config.Programable.RING_GROUP.Param3 = 
+
+Config.Programable.IDLERELAY.Type = 36
+Config.Programable.IDLERELAY.Label = 
+Config.Programable.IDLERELAY.Param1 = 0
+Config.Programable.IDLERELAY.Param2 = 
+Config.Programable.IDLERELAY.Param3 = 
+
+Config.Programable.UNLOCK.Type = 36
+Config.Programable.UNLOCK.Label = 
+Config.Programable.UNLOCK.Param1 = 1
+Config.Programable.UNLOCK.Param2 = 
+Config.Programable.UNLOCK.Param3 = 
+
+Config.Programable.MONITORRELAY.Type = 38
+Config.Programable.MONITORRELAY.Label = Unlock
+Config.Programable.MONITORRELAY.Param1 = 1
+Config.Programable.MONITORRELAY.Param2 = 
+Config.Programable.MONITORRELAY.Param3 = 
+
+Config.Programable.PREVIEWRELAY.Type = 38
+Config.Programable.PREVIEWRELAY.Label = Unlock
+Config.Programable.PREVIEWRELAY.Param1 = 1
+Config.Programable.PREVIEWRELAY.Param2 = 
+Config.Programable.PREVIEWRELAY.Param3 = 
+
+# InDoor Configuration
+
+Config.InDoor.OpenDoor.Code = 1
+
+Config.InDoor.TALKINGPAGE.MuteDisplay = 1
+Config.InDoor.TALKINGPAGE.HoldDisplay = 1
+Config.InDoor.TALKINGPAGE.NewDisplay = 1
+Config.InDoor.TALKINGPAGE.CaptureDisplay = 1
+Config.InDoor.TALKINGPAGE.KeyboardDisplay = 1
+Config.InDoor.TALKINGPAGE.MuteLabel = 
+Config.InDoor.TALKINGPAGE.HoldLabel = 
+Config.InDoor.TALKINGPAGE.NewLabel = 
+Config.InDoor.TALKINGPAGE.CaptureLabel = 
+Config.InDoor.TALKINGPAGE.KeyboardLabel = 
+
+Config.InDoor.MONITORPAGE.CaptureDisplay = 1
+Config.InDoor.MONITORPAGE.CaptureLabel = 
+
+# Multicast Configuration
+
+#Enable/Disable multicast call priority.
+Config.Multicast.PRIORITY.Enable = 1
+
+#The multicast call priority. 0 is the highest priority.The priority of SIP call is 0.
+If the priority of new multicast call is higher than current multicast call current multicast call would be hold, 
+and the new multicast call would be answered automatically.
+Config.Multicast.PRIORITY.Priority = 0
+
+#The payload type of multicast call's codec, 0 is for PCMU, 8 is for PCMA, 9 is for G.722,
+18 is for G.729.
+Config.Multicast.GENERAL.Codec = 
+
+#Label is the display name for this multicast address,Label cannot include (%, ', =, &). IP is the multicast IP and port,
+for example 238.8.8.11:5000.
+Config.Multicast.LISTEN0.Label = 
+Config.Multicast.LISTEN0.IP = 
+
+Config.Multicast.LISTEN1.Label = 
+Config.Multicast.LISTEN1.IP = 
+
+Config.Multicast.LISTEN2.Label = 
+Config.Multicast.LISTEN2.IP = 
+
+Config.Multicast.LISTEN3.Label = 
+Config.Multicast.LISTEN3.IP = 
+
+Config.Multicast.LISTEN4.Label = 
+Config.Multicast.LISTEN4.IP = 
+
+Config.Multicast.LISTEN5.Label = 
+Config.Multicast.LISTEN5.IP = 
+
+Config.Multicast.LISTEN6.Label = 
+Config.Multicast.LISTEN6.IP = 
+
+Config.Multicast.LISTEN7.Label = 
+Config.Multicast.LISTEN7.IP = 
+
+Config.Multicast.LISTEN8.Label = 
+Config.Multicast.LISTEN8.IP = 
+
+Config.Multicast.LISTEN9.Label = 
+Config.Multicast.LISTEN9.IP = 
+
+# Which multicast group address would be calling out. Value range is 1~3. #For example, 
+device would call out Config.Multicast.GROUP1.IP when Config.Multicast.SELECTEDGROUP.SelectedGroup = 1
+Config.Multicast.SELECTEDGROUP.SelectedGroup = 0
+
+#The multicast group address for calling out.
+Config.Multicast.GROUP1.IP = 224.1.6.11:51230
+
+Config.Multicast.GROUP2.IP = 224.1.6.11:51231
+
+Config.Multicast.GROUP3.IP = 224.1.6.11:51232
+
+# Door Setting Configuration
+
+Config.DoorSetting.WEBRELAY.RelayType = 
+Config.DoorSetting.WEBRELAY.IpAddress = 
+Config.DoorSetting.WEBRELAY.UserName = 
+Config.DoorSetting.WEBRELAY.Passwd = 
+Config.DoorSetting.WEBRELAY.WebAction0 = 
+Config.DoorSetting.WEBRELAY.WebKey0 = 
+Config.DoorSetting.WEBRELAY.WebExtension0 = 
+Config.DoorSetting.WEBRELAY.WebAction1 = 
+Config.DoorSetting.WEBRELAY.WebKey1 = 
+Config.DoorSetting.WEBRELAY.WebExtension1 = 
+Config.DoorSetting.WEBRELAY.WebAction2 = 
+Config.DoorSetting.WEBRELAY.WebKey2 = 
+Config.DoorSetting.WEBRELAY.WebExtension2 = 
+Config.DoorSetting.WEBRELAY.WebAction3 = 
+Config.DoorSetting.WEBRELAY.WebKey3 = 
+Config.DoorSetting.WEBRELAY.WebExtension3 = 
+Config.DoorSetting.WEBRELAY.WebAction4 = 
+Config.DoorSetting.WEBRELAY.WebKey4 = 
+Config.DoorSetting.WEBRELAY.WebExtension4 = 
+Config.DoorSetting.WEBRELAY.WebAction5 = 
+Config.DoorSetting.WEBRELAY.WebKey5 = 
+Config.DoorSetting.WEBRELAY.WebExtension5 = 
+Config.DoorSetting.WEBRELAY.WebAction6 = 
+Config.DoorSetting.WEBRELAY.WebKey6 = 
+Config.DoorSetting.WEBRELAY.WebExtension6 = 
+Config.DoorSetting.WEBRELAY.WebAction7 = 
+Config.DoorSetting.WEBRELAY.WebKey7 = 
+Config.DoorSetting.WEBRELAY.WebExtension7 = 
+Config.DoorSetting.WEBRELAY.WebAction8 = 
+Config.DoorSetting.WEBRELAY.WebKey8 = 
+Config.DoorSetting.WEBRELAY.WebExtension8 = 
+Config.DoorSetting.WEBRELAY.WebAction9 = 
+Config.DoorSetting.WEBRELAY.WebKey9 = 
+Config.DoorSetting.WEBRELAY.WebExtension9 = 
+
+Config.DoorSetting.DEVICENODE.Type = 2
+Config.DoorSetting.DEVICENODE.Address = 1.1.1.1.1
+Config.DoorSetting.DEVICENODE.Extension = 1
+Config.DoorSetting.DEVICENODE.DownloadServer = 
+Config.DoorSetting.DEVICENODE.UploadServer = 
+Config.DoorSetting.DEVICENODE.Location = Indoor Monitor
+Config.DoorSetting.DEVICENODE.SSHPassSrv = 
+
+Config.DoorSetting.UPDATE.PrivatekeyMD5 = 
+Config.DoorSetting.UPDATE.RfidMD5 = 
+Config.DoorSetting.UPDATE.AddrMD5 = 
+Config.DoorSetting.UPDATE.AdMD5 = 
+Config.DoorSetting.UPDATE.ConfigMD5 = 
+Config.DoorSetting.UPDATE.AdModuleMD5 = 
+Config.DoorSetting.UPDATE.CommunityPhonebookMD5 = 
+Config.DoorSetting.UPDATE.ContactMD5 = 
+Config.DoorSetting.UPDATE.TZMD5 = 4abc4e1e6699fb64dd668d5a4bbb69f8
+
+Config.DoorSetting.CLOUDSERVER.Enable = 0
+Config.DoorSetting.CLOUDSERVER.Server = 
+Config.DoorSetting.CLOUDSERVER.Port = 
+Config.DoorSetting.CLOUDSERVER.RpsEnable = 1
+Config.DoorSetting.CLOUDSERVER.RpsServer = http://rps.akuvox.com:8080
+Config.DoorSetting.CLOUDSERVER.GateServer = 
+Config.DoorSetting.CLOUDSERVER.GatePort = 0
+Config.DoorSetting.CLOUDSERVER.Token = 
+Config.DoorSetting.CLOUDSERVER.MaintenanceAlarm = 1
+
+Config.DoorSetting.RELAY.DTMFCode = #
+Config.DoorSetting.RELAY.DTMFCode2 = #
+Config.DoorSetting.RELAY.DTMFCode3 = #
+Config.DoorSetting.RELAY.TalkingStatus1 = 0
+Config.DoorSetting.RELAY.TalkingColDisplayName1 = Unlock3
+Config.DoorSetting.RELAY.TalkingRelayType1 = 50
+Config.DoorSetting.RELAY.TalkingStatus2 = 0
+Config.DoorSetting.RELAY.TalkingColDisplayName2 = Unlock4
+Config.DoorSetting.RELAY.TalkingRelayType2 = 51
+Config.DoorSetting.RELAY.TalkingStatus3 = 0
+Config.DoorSetting.RELAY.TalkingColDisplayName3 = Unlock5
+Config.DoorSetting.RELAY.TalkingRelayType3 = 52
+
+Config.DoorSetting.CONTROL4.Enable = 
+
+Config.DoorSetting.CONNECT.ServerMode = 0
+Config.DoorSetting.CONNECT.DiscoveryMode = 1
+Config.DoorSetting.CONNECT.SubServerMode = 0
+
+Config.DoorSetting.DOORSTATUS.Show = 0
+Config.DoorSetting.DOORSTATUS.IPAddress = 
+
+Config.DoorSetting.RELAY.IdleRelayType = 1
+Config.DoorSetting.RELAY.IdleDisplayName = Unlock
+
+Config.DoorSetting.REMOTEDEBUG.Enable = 0
+Config.DoorSetting.REMOTEDEBUG.IP = 
+Config.DoorSetting.REMOTEDEBUG.Port = 9500
+
+# monitor Configuration
+
+# DirectIP Configuration
+
+Config.DirectIP.AUTO_ANSWER.Enable = 0
+
+Config.DirectIP.FEATURE_FORWARD_TIMEOUT.Enable = 
+Config.DirectIP.FEATURE_FORWARD_TIMEOUT.Target = 
+Config.DirectIP.FEATURE_FORWARD_TIMEOUT.TimeOut = 30
+
+Config.DirectIP.FEATURE_FORWARD_ALWAYS.Enable = 0
+Config.DirectIP.FEATURE_FORWARD_ALWAYS.Target = 
+
+Config.DirectIP.FEATURE_FORWARD_BUSY.Enable = 0
+Config.DirectIP.FEATURE_FORWARD_BUSY.Target = 
+
+Config.DirectIP.SIP.ListenPort = 5060
