@@ -2039,6 +2039,7 @@
                                 cms: cmses,
                             }).
                             done(() => {
+                                message(i18n("addresses.changesWasSaved"));
                                 modules.addresses.houses.renderEntranceCMS(houseId, entranceId);
                             }).
                             fail(FAIL).
