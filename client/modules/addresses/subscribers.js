@@ -174,7 +174,7 @@
                     id: "rfId",
                     type: "text",
                     title: i18n("addresses.key"),
-                    placeholder: i18n("addresses.key"),
+                    placeholder: "00000000ABCDEF",
                     validate: (v) => {
                         if (config.regExp && config.regExp?.rfid) {
                             return new RegExp(config.regExp.rfid).test(v);
