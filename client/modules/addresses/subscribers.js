@@ -130,7 +130,11 @@
                     title: i18n("addresses.mobile"),
                     placeholder: config.phonePattern?config.phonePattern:i18n("addresses.mobile"),
                     validate: (v) => {
-                        return $.trim(v) !== "";
+                        if (config.regExp && config.regExp?.phone) {
+                            return new RegExp(config.regExp.phone).test(v);
+                        } else
+                            console.error("Deprecated, update client configuration. Please add phone pattern regexp")
+                            return $.trim(v) !== "";
                     }
                 },
                 {
@@ -172,6 +176,10 @@
                     title: i18n("addresses.key"),
                     placeholder: i18n("addresses.key"),
                     validate: (v) => {
+                        if (config.regExp && config.regExp?.rfid) {
+                            return new RegExp(config.regExp.rfid).test(v);
+                        } else
+                            console.error("Deprecated, update client configuration. Please add rfid regexp")
                         return $.trim(v) !== "";
                     }
                 },
@@ -264,7 +272,11 @@
                         title: i18n("addresses.mobile"),
                         placeholder: config.phonePattern?config.phonePattern:i18n("addresses.mobile"),
                         validate: (v) => {
-                            return $.trim(v) !== "";
+                            if (config.regExp && config.regExp?.phone) {
+                                return new RegExp(config.regExp.phone).test(v);
+                            } else
+                                console.error("Deprecated, update client configuration. Please add phone pattern regexp")
+                                return $.trim(v) !== "";
                         },
                         value: subscriber.mobile,
                     },
