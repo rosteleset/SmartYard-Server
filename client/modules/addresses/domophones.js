@@ -129,6 +129,15 @@
                     value: "0",
                 },
                 {
+                    id: "name",
+                    type: "text",
+                    title: i18n("addresses.domophoneName"),
+                    placeholder: i18n("addresses.domophoneName"),
+                    validate: v => {
+                        return $.trim(v).length <= 64;
+                    },
+                },
+                {
                     id: "comment",
                     type: "text",
                     title: i18n("addresses.comment"),
@@ -260,6 +269,16 @@
                         type: "yesno",
                         title: i18n("addresses.locksAreOpen"),
                         value: domophone.locksAreOpen,
+                    },
+                    {
+                        id: "name",
+                        type: "text",
+                        title: i18n("addresses.domophoneName"),
+                        placeholder: i18n("addresses.domophoneName"),
+                        value: domophone.name,
+                        validate: v => {
+                            return $.trim(v).length <= 64;
+                        },
                     },
                     {
                         id: "comment",

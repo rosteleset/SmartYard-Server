@@ -348,11 +348,23 @@
                             host: response.cameras.cameras[i].url,
                         }
                     }
-                    let comment = response.cameras.cameras[i].comment;
+                    let comment = $.trim(response.cameras.cameras[i].comment);
+                    let name = $.trim(response.cameras.cameras[i].name);
+                    let text = name;
+                    if (!text) {
+                        text = comment;
+                    } else {
+                        text += " (" + comment + ")";
+                    }
+                    if (!text) {
+                        text = url.host;
+                    } else {
+                        text += " [" + url.host + "]";
+                    }
                     cameras.push({
                         id: response.cameras.cameras[i].cameraId,
-                        text: comment?(comment + ' [' + url.host + ']'):url.host,
-                    })
+                        text: text,
+                    });
                 }
 
                 GET("houses", "domophones").
@@ -374,11 +386,23 @@
                                 host: response.domophones.domophones[i].url,
                             }
                         }
-                        let comment = response.domophones.domophones[i].comment;
+                        let comment = $.trim(response.domophones.domophones[i].comment);
+                        let name = $.trim(response.domophones.domophones[i].name);
+                        let text = name;
+                        if (!text) {
+                            text = comment;
+                        } else {
+                            text += " (" + comment + ")";
+                        }
+                        if (!text) {
+                            text = url.host;
+                        } else {
+                            text += " [" + url.host + "]";
+                        }
                         domophones.push({
                             id: response.domophones.domophones[i].domophoneId,
-                            text: comment?(comment + ' [' + url.host + ']'):url.host,
-                        })
+                            text: text,
+                        });
                     }
 
                     cardForm({
@@ -914,11 +938,23 @@
                         host: response.cameras.cameras[i].url,
                     }
                 }
-                let comment = response.cameras.cameras[i].comment;
+                let comment = $.trim(response.cameras.cameras[i].comment);
+                let name = $.trim(response.cameras.cameras[i].name);
+                let text = name;
+                if (!text) {
+                    text = comment;
+                } else {
+                    text += " (" + comment + ")";
+                }
+                if (!text) {
+                    text = url.host;
+                } else {
+                    text += " [" + url.host + "]";
+                }
                 cameras.push({
                     id: response.cameras.cameras[i].cameraId,
-                    text: comment?(comment + ' [' + url.host + ']'):url.host,
-                })
+                    text: text,
+                });
             }
 
             GET("houses", "domophones").
@@ -938,11 +974,23 @@
                             host: response.domophones.domophones[i].url,
                         }
                     }
-                    let comment = response.domophones.domophones[i].comment;
+                    let comment = $.trim(response.domophones.domophones[i].comment);
+                    let name = $.trim(response.domophones.domophones[i].name);
+                    let text = name;
+                    if (!text) {
+                        text = comment;
+                    } else {
+                        text += " (" + comment + ")";
+                    }
+                    if (!text) {
+                        text = url.host;
+                    } else {
+                        text += " [" + url.host + "]";
+                    }
                     domophones.push({
                         id: response.domophones.domophones[i].domophoneId,
-                        text: comment?(comment + ' [' + url.host + ']'):url.host,
-                    })
+                        text: text,
+                    });
                 }
 
                 let entrance = false;
