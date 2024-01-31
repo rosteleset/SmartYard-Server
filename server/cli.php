@@ -44,6 +44,7 @@
 
             initialization:
                 [--init-db [--skip=<versions>]]
+                [--init-clickhouse-db]
                 [--admin-password=<password>]
                 [--reindex]
                 [--clear-cache]
@@ -360,6 +361,22 @@
         }
     }
 
+    if (count($args) == 1 && array_key_exists("--init-clickhouse-db", $args) && !isset($args["--init-clickhouse-db"])) {
+        require_once "utils/clickhouse.php";
+        require_once "sql/install_clickhouse.php";
+
+        $clickhouse_config = $config['clickhouse'];
+
+        $clickhouse = new clickhouse(
+            $clickhouse_config['host'] ?? '127.0.0.1',
+            $clickhouse_config['port'] ?? 8123,
+            $clickhouse_config['username'] ?? 'default',
+            $clickhouse_config['password'] ?? 'qqq',
+        );
+
+        initClickhouseDB($clickhouse);
+        exit(0);
+    }
 
     if (count($args) == 1 && array_key_exists("--cleanup", $args) && !isset($args["--cleanup"])) {
         require_once "utils/cleanup.php";

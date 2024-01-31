@@ -1,0 +1,13 @@
+{
+    "1": [
+        "v1_database.sql",
+        "v1_core.sql",
+        "v1_inbox.sql",
+        "v1_plog.sql",
+        "v1_syslog.sql",
+        "v1_ttlog.sql"
+    ],
+    "2": [
+        "v2_syslog.sql"
+    ]
+}
