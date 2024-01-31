@@ -2083,8 +2083,16 @@
                                             return parseInt(v) > 0;
                                         },
                                     },
+                                    {
+                                        id: "clearFirst",
+                                        title: i18n("addresses.cmsClearFirst"),
+                                        type: "noyes",
+                                    }
                                 ],
                                 callback: result => {
+                                    if (parseInt(result.clearFirst)) {
+                                        $(".cmsa").val("");
+                                    }
                                     let d = result.dozenFirst;
                                     let u = result.unitFirst;
                                     let a = result.apartmentFirst;
