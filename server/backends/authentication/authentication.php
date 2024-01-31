@@ -29,6 +29,7 @@
              * @param boolean $rememberMe generate persistent (10 year ttl) token
              * @param string $ua user agent
              * @param string $did device id
+             * @param string $ip client ip
              * @return array
              */
 
@@ -79,6 +80,8 @@
                         "uid" => $uid,
                     ];
                 } else {
+                    error_log("FAIL2BAN login failed: " . $login . " from: " . $ip);
+
                     return [
                         "result" => false,
                         "code" => 404,
@@ -151,7 +154,7 @@
                         if ($users->getUidByLogin($auth["login"]) == $auth["uid"]) {
                             return $auth;
                         } else {
-                            return false;
+                            $this->redis->del($key);
                         }
                     }
                 }
@@ -168,6 +171,8 @@
                         return $auth;
                     }
                 }
+
+                error_log("FAIL2BAN authentication fail: " . $authorization[0] . " / " . $authorization[1] . " from: " . $ip);
 
                 return false;
             }
