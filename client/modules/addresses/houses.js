@@ -2004,7 +2004,7 @@
                             cmsi++;
                         }
 
-                        h += `<button id="entranceCmsSubmit" type="submit" class="btn btn-primary modalFormOk ml-3 mb-2 mt-2">${i18n("apply")}</button>`;
+                        h += `<button id="entranceCmsSubmit" class="btn btn-primary ml-3 mb-2 mt-2">${i18n("apply")}</button>`;
 
                         h += `</div>`;
                         h += `</div>`;
