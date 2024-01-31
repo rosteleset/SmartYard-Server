@@ -80,7 +80,7 @@
                         "uid" => $uid,
                     ];
                 } else {
-                    error_log("FAIL2BAN login failed: " . $login . " from: " . $ip);
+                    error_log("FAIL2BAN: $ip login fail: " . $login);
 
                     return [
                         "result" => false,
@@ -172,7 +172,7 @@
                     }
                 }
 
-                error_log("FAIL2BAN authentication fail: " . $authorization[0] . " / " . $authorization[1] . " from: " . $ip);
+                error_log("FAIL2BAN: $ip authentication fail: " . implode(" ", $authorization));
 
                 return false;
             }
