@@ -346,6 +346,9 @@
                         title: i18n("addresses.url"),
                     },
                     {
+                        title: i18n("addresses.domophoneName"),
+                    },
+                    {
                         title: i18n("addresses.comment"),
                         fullWidth: true,
                     },
@@ -362,6 +365,10 @@
                                 },
                                 {
                                     data: modules.addresses.domophones.meta.domophones[i].url,
+                                    nowrap: true,
+                                },
+                                {
+                                    data: modules.addresses.domophones.meta.domophones[i].name,
                                     nowrap: true,
                                 },
                                 {
