@@ -1974,11 +1974,12 @@
 
                             h += `<thead>`;
 
-                            h += `<th>&nbsp;</th>`;
+                            h += `<th><button type="button" class="btn btn-primary btn-xs cms-magic" data-cms="${cmsi}" title="${i18n("addresses.cmsMagic")}"><i class="fa-fw fas fa-magic"></i></button></th>`;
 
                             for (let j = 0; j < maxX; j++) {
                                 h += `<th>${i18n("addresses.cmsD")}${j + cms.dozen_start}</th>`;
                             }
+
                             h += `</thead>`;
 
                             h += `<tbody>`;
@@ -2042,6 +2043,72 @@
                             }).
                             fail(FAIL).
                             fail(loadingDone);
+                        });
+
+                        $(".cms-magic").off("click").on("click", function () {
+                            let cms = $(this).attr("data-cms");
+
+                            cardForm({
+                                title: i18n("addresses.cmsMagic"),
+                                footer: true,
+                                borderless: true,
+                                topApply: true,
+                                apply: i18n("addresses.fill"),
+                                fields: [
+                                    {
+                                        id: "dozenFirst",
+                                        title: i18n("addresses.dozenFirst"),
+                                        validate: v => {
+                                            return parseInt(v) >= 0;
+                                        },
+                                    },
+                                    {
+                                        id: "unitFirst",
+                                        title: i18n("addresses.unitFirst"),
+                                        validate: v => {
+                                            return parseInt(v) > 0;
+                                        },
+                                    },
+                                    {
+                                        id: "apartmentFirst",
+                                        title: i18n("addresses.apartmentFirst"),
+                                        validate: v => {
+                                            return parseInt(v) > 0;
+                                        },
+                                    },
+                                    {
+                                        id: "apartmentFillCount",
+                                        title: i18n("addresses.apartmentFillCount"),
+                                        validate: v => {
+                                            return parseInt(v) > 0;
+                                        },
+                                    },
+                                ],
+                                callback: result => {
+                                    let d = result.dozenFirst;
+                                    let u = result.unitFirst;
+                                    let a = result.apartmentFirst;
+                                    for (let i = 0; i < result.apartmentFillCount; i++) {
+                                        let n = $(`.cmsa[data-cms='${cms}'][data-dozen='${d}'][data-unit='${u}']`);
+                                        if (n.length) {
+                                            n.val(a);
+                                            a++;
+                                            u++;
+                                            continue;
+                                        }
+                                        u = 1;
+                                        d++;
+                                        n = $(`.cmsa[data-cms='${cms}'][data-dozen='${d}'][data-unit='${u}']`);
+                                        if (n.length) {
+                                            n.val(a);
+                                            a++;
+                                            u++;
+                                            continue;
+                                        }
+                                        break;
+                                    }
+                                },
+                            });
                         });
 
                         loadingDone();
