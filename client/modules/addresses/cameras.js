@@ -560,7 +560,7 @@
                 edit: modules.addresses.cameras.modifyCamera,
                 columns: [
                     {
-                        title: i18n("addresses.cameraId"),
+                        title: i18n("addresses.cameraIdList"),
                     },
                     {
                         title: i18n("addresses.url"),

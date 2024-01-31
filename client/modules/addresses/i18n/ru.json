@@ -164,6 +164,7 @@
     "domophone": "Домофон",
     "addDomophone": "Добавить домофон",
     "domophoneId": "#",
+    "domophoneIdList": "#",
     "enabled": "Включен",
     "model": "Модель",
     "url": "URL",

@@ -340,7 +340,7 @@
                 },
                 columns: [
                     {
-                        title: i18n("addresses.domophoneId"),
+                        title: i18n("addresses.domophoneIdList"),
                     },
                     {
                         title: i18n("addresses.url"),
