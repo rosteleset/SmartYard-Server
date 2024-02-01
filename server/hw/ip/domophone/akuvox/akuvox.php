@@ -145,7 +145,7 @@ abstract class akuvox extends domophone
         $currentApartment = (int)$this->getConfigParams(['Config.DoorSetting.DEVICENODE.Location'])[0];
         if ($currentApartment === $apartment) {
             $this->setConfigParams([
-                'Config.Programable.SOFTKEY01.Param1' => ';;;;;;;',
+                'Config.Programable.SOFTKEY01.LocalParam1' => ';;;;;;;',
                 'Config.DoorSetting.DEVICENODE.Location' => '',
             ]);
         }
@@ -321,6 +321,7 @@ abstract class akuvox extends domophone
         unset($dbConfig['apartments'][9999]);
 
         foreach ($dbConfig['apartments'] as &$apartment) {
+            $apartment['code'] = 0;
             $apartment['cmsEnabled'] = false;
         }
 
@@ -455,7 +456,7 @@ abstract class akuvox extends domophone
     {
         $flats = [];
 
-        $sipNumbersStr = $this->getConfigParams(['Config.Programable.SOFTKEY01.Param1'])[0];
+        $sipNumbersStr = $this->getConfigParams(['Config.Programable.SOFTKEY01.LocalParam1'])[0];
         $sipNumbers = array_filter(explode(';', $sipNumbersStr));
 
         if ($sipNumbers) {
