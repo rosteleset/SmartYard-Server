@@ -927,7 +927,7 @@
                     return false;
                 }
 
-                $domophoneId = $this->db->insert("insert into houses_domophones (enabled, model, server, url, credentials, dtmf, nat, comment) values (:enabled, :model, :server, :url, :credentials, :dtmf, :nat, :comment, :name)", [
+                $domophoneId = $this->db->insert("insert into houses_domophones (enabled, model, server, url, credentials, dtmf, nat, comment, name) values (:enabled, :model, :server, :url, :credentials, :dtmf, :nat, :comment, :name)", [
                     "enabled" => (int)$enabled,
                     "model" => $model,
                     "server" => $server,
