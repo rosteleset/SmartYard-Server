@@ -6,8 +6,6 @@
     "eventServer": "akuvox",
     "outputs": 1,
     "camera": "akuvox",
-    "useSmartConfigurator": false,
-    "cmses": [
-
-    ]
+    "useSmartConfigurator": true,
+    "cmses": []
 }
