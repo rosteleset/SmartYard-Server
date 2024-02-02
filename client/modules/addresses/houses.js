@@ -1677,11 +1677,17 @@
                     let rows = [];
 
                     modules.addresses.houses.meta.flats.sort((a, b) => {
-                        try {
-                            return parseInt(a.flat) - parseInt(b.flat);
-                        } catch (e) {
-                            return 0;
+                        let d = parseInt(a.flat) - parseInt(b.flat);
+                        if (d) {
+                            return d;
                         }
+                        if (a.flat > b.flat) {
+                            return 1;
+                        }
+                        if (a.flat < b.flat) {
+                            return -1
+                        }
+                        return 0;
                     });
 
                     for (let i in modules.addresses.houses.meta.flats) {
