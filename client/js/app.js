@@ -725,38 +725,3 @@ $("#loginBoxPassword").off("keypress").on("keypress", e => {
         login();
     }
 });
-
-$(document).on('select2:open', '.select2', function () {
-    setTimeout(() => {
-        document.querySelector(`[aria-controls="select2-${$(this).attr("id")}-results"]`).focus();
-    }, 5);
-});
-
-$(window).off("resize").on("resize", () => {
-    if ($("#editorContainer").length) {
-        let height = $(window).height() - mainFormTop;
-        $("#editorContainer").css("height", height + "px");
-    }
-    if ($("#mapContainer").length) {
-        let height = $(window).height() - mainFormTop;
-        $("#mapContainer").css("height", height + "px");
-    }
-});
-
-setInterval(() => {
-    if (hasUnsavedChanges || ($("#editorContainer").length && currentAceEditor && currentAceEditorOriginalValue !== false && currentAceEditor.getValue() != currentAceEditorOriginalValue)) {
-        if (typeof window.onbeforeunload != "function") {
-            window.onbeforeunload = () => false;
-            $(".saveButton").addClass("text-primary");
-        }
-    } else {
-        if (!$("#editorContainer").length) {
-            currentAceEditor = false;
-            currentAceEditorOriginalValue = false;
-        }
-        if (typeof window.onbeforeunload == "function") {
-            window.onbeforeunload = null;
-            $(".saveButton").removeClass("text-primary");
-        }
-    } 
-}, 1000);
