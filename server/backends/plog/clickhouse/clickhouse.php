@@ -656,7 +656,7 @@
                         from
                             syslog s
                         where
-                            IPv4NumToString(s.ip) = '$ip' or s.sub_id = '$sub_id'
+                            (IPv4NumToString(s.ip) = '$ip' or s.sub_id = '$sub_id')
                             and s.date > $query_start_date
                             and s.date <= $query_end_date
                         order by
@@ -996,6 +996,11 @@
                                 unset($now_sip_call_id);
 
                                 if (strpos($msg, $pattern) !== false) {
+                                    // Check if call started from this panel
+                                    if ($now_call_from_panel > 0) {
+                                        $call_from_panel = 1;
+                                    }
+
                                     // Get call ID
                                     if (strpos($msg, 'SIP_LOG') !== false) {
                                         $now_call_id = explode('=', $msg)[1];
@@ -1003,7 +1008,8 @@
 
                                     // Get flat ID
                                     if (strpos($msg, 'DTMF_LOG:From') !== false) {
-                                        $number = explode(' ', $msg)[1];
+                                        $msgParts = explode(' ', $msg);
+                                        $number = $msgParts[count($msgParts) - 1];
                                         $now_flat_id = substr($number, 1);
                                     }
 
