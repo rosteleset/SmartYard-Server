@@ -1676,6 +1676,14 @@
                 rows: () => {
                     let rows = [];
 
+                    modules.addresses.houses.meta.flats.sort((a, b) => {
+                        try {
+                            return parseInt(a.flat) - parseInt(b.flat);
+                        } catch (e) {
+                            return 0;
+                        }
+                    });
+
                     for (let i in modules.addresses.houses.meta.flats) {
                         rows.push({
                             uid: modules.addresses.houses.meta.flats[i].flatId,
