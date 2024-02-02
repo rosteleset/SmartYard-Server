@@ -1794,6 +1794,33 @@
                     let rows = [];
                     let entrances = {};
 
+                    modules.addresses.houses.meta.entrances.sort((a, b) => {
+                        let et = {
+                            "entrance": 0,
+                            "wicket": 1,
+                            "gate": 2,
+                            "barrier": 3,
+                        }
+    
+                        if (et[a.entranceType] > et[b.entranceType]) {
+                            return 1;
+                        }
+                        if (et[a.entranceType] < et[b.entranceType]) {
+                            return -1
+                        }
+                        let d = parseInt(a.entrance) - parseInt(b.entrance);
+                        if (d) {
+                            return d;
+                        }
+                        if (a.entrance > b.entrance) {
+                            return 1;
+                        }
+                        if (a.entrance < b.entrance) {
+                            return -1
+                        }
+                        return 0;
+                    });
+
                     for (let i in modules.addresses.houses.meta.entrances) {
                         entrances[modules.addresses.houses.meta.entrances[i].entranceId] = modules.addresses.houses.meta.entrances[i];
                         rows.push({
