@@ -2153,8 +2153,8 @@
                                             u++;
                                             continue;
                                         }
-                                        u = 1;
                                         d++;
+                                        u = parseInt($(`.cmsa[data-cms='${cms}'][data-dozen='${d}']:first`).attr("data-unit"));
                                         n = $(`.cmsa[data-cms='${cms}'][data-dozen='${d}'][data-unit='${u}']`);
                                         if (n.length) {
                                             n.val(a);
