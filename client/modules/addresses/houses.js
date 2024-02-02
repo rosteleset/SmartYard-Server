@@ -2106,6 +2106,7 @@
                                 fields: [
                                     {
                                         id: "dozenFirst",
+                                        value: $(`.cmsa[data-cms='${cms}']:first`).attr("data-dozen"),
                                         title: i18n("addresses.dozenFirst"),
                                         validate: v => {
                                             return parseInt(v) >= 0;
@@ -2113,6 +2114,7 @@
                                     },
                                     {
                                         id: "unitFirst",
+                                        value: parseInt($(`.cmsa[data-cms='${cms}']:first`).attr("data-unit")) ? parseInt($(`.cmsa[data-cms='${cms}']:first`).attr("data-unit")) : parseInt($(`.cmsa[data-cms='${cms}']:first`).attr("data-unit")) + 1,
                                         title: i18n("addresses.unitFirst"),
                                         validate: v => {
                                             return parseInt(v) >= 0;
@@ -2121,6 +2123,7 @@
                                     {
                                         id: "apartmentFirst",
                                         title: i18n("addresses.apartmentFirst"),
+                                        value: "1",
                                         validate: v => {
                                             return parseInt(v) > 0;
                                         },
@@ -2128,6 +2131,7 @@
                                     {
                                         id: "apartmentFillCount",
                                         title: i18n("addresses.apartmentFillCount"),
+                                        value: $(`.cmsa[data-cms='${cms}']`).length,
                                         validate: v => {
                                             return parseInt(v) > 0;
                                         },
@@ -2145,24 +2149,27 @@
                                     let d = result.dozenFirst;
                                     let u = result.unitFirst;
                                     let a = result.apartmentFirst;
-                                    for (let i = 0; i < result.apartmentFillCount; i++) {
+                                    let i = 0;
+                                    let e = 0;
+                                    while (i < result.apartmentFillCount) {
                                         let n = $(`.cmsa[data-cms='${cms}'][data-dozen='${d}'][data-unit='${u}']`);
                                         if (n.length) {
                                             n.val(a);
+                                            i++;
                                             a++;
                                             u++;
-                                            continue;
+                                            e = 0;
+                                        } else {
+                                            d++;
+                                            if (!$(`.cmsa[data-cms='${cms}'][data-dozen='${d}']`).length) {
+                                                d = $(`.cmsa[data-cms='${cms}']:first`).attr("data-dozen");
+                                            }
+                                            u = parseInt($(`.cmsa[data-cms='${cms}'][data-dozen='${d}']:first`).attr("data-unit"));
+                                            e++;
+                                            if (e > result.apartmentFillCount) {
+                                                break;
+                                            }
                                         }
-                                        d++;
-                                        u = parseInt($(`.cmsa[data-cms='${cms}'][data-dozen='${d}']:first`).attr("data-unit"));
-                                        n = $(`.cmsa[data-cms='${cms}'][data-dozen='${d}'][data-unit='${u}']`);
-                                        if (n.length) {
-                                            n.val(a);
-                                            a++;
-                                            u++;
-                                            continue;
-                                        }
-                                        break;
                                     }
                                 },
                             });
