@@ -2115,7 +2115,7 @@
                                         id: "unitFirst",
                                         title: i18n("addresses.unitFirst"),
                                         validate: v => {
-                                            return parseInt(v) > 0;
+                                            return parseInt(v) >= 0;
                                         },
                                     },
                                     {

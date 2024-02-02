@@ -270,3 +270,19 @@ function findBootstrapEnvironment() {
     return curEnv;
 }
 
+Object.defineProperty(Array.prototype, "assoc", {
+    value: function (key, target, val) {
+        let arr = this;
+
+        for (let i in arr) {
+            if (arr[i][key] == target) {
+                if (val) {
+                    return arr[i][val];
+                } else {
+                    return arr[i];
+                }
+            }
+        }
+    }
+});
+
