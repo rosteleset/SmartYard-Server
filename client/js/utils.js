@@ -129,7 +129,7 @@ function nl2br(str) {
 function formatBytes(bytes) {
     let u = 0;
     for (; bytes > 1024; u++) bytes /= 1024;
-    return Math.round(bytes) + ' ' + [ 'B', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y' ][u];
+    return Math.round(bytes) + [ 'B', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y' ][u];
 }
 
 function escapeHTML(str) {
