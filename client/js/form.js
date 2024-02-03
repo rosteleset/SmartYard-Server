@@ -498,10 +498,13 @@ function cardForm(params) {
         target = modal(h);
 
         setTimeout(() => {
-            $(".select2-selection__rendered").each(function () {
+            $(".select2-selection__rendered:visible").each(function () {
                 let s2 = $(this);
                 s2.css("width", s2.css("width"));
             });
+        });
+
+        setTimeout(() => {
             if (params.title) {
                 $("#modal").draggable({
                     handle: "#modalHeader",
@@ -837,6 +840,13 @@ function cardForm(params) {
         $(`.jsform-tabbed-item[data-tab-index="${i}"]`).show();
         $(`.jsform-nav-link`).removeClass("text-bold");
         $(`.jsform-nav-link[data-tab-index="${i}"]`).addClass("text-bold");
+
+        setTimeout(() => {
+            $(".select2-selection__rendered:visible").each(function () {
+                let s2 = $(this);
+                s2.css("width", s2.css("width"));
+            });
+        });
     });
 
     return target;
