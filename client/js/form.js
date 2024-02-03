@@ -502,7 +502,7 @@ function cardForm(params) {
                 let s2 = $(this);
                 s2.css("width", s2.css("width"));
             });
-        });
+        }, 100);
 
         setTimeout(() => {
             if (params.title) {
@@ -846,7 +846,7 @@ function cardForm(params) {
                 let s2 = $(this);
                 s2.css("width", s2.css("width"));
             });
-        });
+        }, 100);
     });
 
     return target;
