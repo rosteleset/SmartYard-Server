@@ -607,7 +607,7 @@ function timezonesOptions () {
     let already = {};
 
     for (let i in timezones) {
-        if (!already[timezones[i]] && (!config.enabledTz || config.enabledTz[timezones[i]])) {
+        if (!already[timezones[i]] && (!config.enabledTz || config.enabledTz.indexOf(timezones[i]) >= 0)) {
             tz.push({
                 id: timezones[i],
                 text: i18n("tz." + timezones[i]),
