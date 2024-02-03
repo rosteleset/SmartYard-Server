@@ -723,7 +723,7 @@
                     h += $.trim(issue.issue.attachments[i].filename) + "<br />";
                     h += `<img src="${lStore("_server") + "/tt/file?issueId=" + encodeURIComponent(issue.issue["issueId"]) + "&filename=" + encodeURIComponent(issue.issue.attachments[i].filename) + "&_token=" + encodeURIComponent(lStore("_token"))}" style="height: 200px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;"></img>`;
                 } else {
-                    h += $.trim(issue.issue.attachments[i].filename);
+                    h += $.trim(issue.issue.attachments[i].filename) + " (" + formatBytes(issue.issue.attachments[i].length) + ")";
                 }
                 h += "</a>";
                 h += "</div>";
