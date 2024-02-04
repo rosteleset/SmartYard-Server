@@ -25,6 +25,9 @@
         global $argv;
 
         echo "usage: {$argv[0]}
+        backend:
+            [backend [params]]
+
         common parts:
             [--parent-pid=<pid>]
             [--debug]
@@ -91,7 +94,7 @@
     }
 
     $params = '';
-    foreach($args as $key => $value) {
+    foreach ($args as $key => $value) {
         if ($value) {
             $params .= " {$key}={$value}";
         } else {
@@ -273,6 +276,22 @@
         if (loadBackend($backend) === false) {
             die("can't load required backend [$backend]\n");
         }
+    }
+
+    if (count($args) && (strpos($argv[1], "--") === false || strpos($argv[1], "--") > 0)) {
+        $backend = loadBackend($argv[1]);
+
+        if (!$backend) {
+            die("backend \"{$argv[1]}\" not found\n");
+        }
+
+        unset($args[$argv[1]]);
+
+        if (!$backend->cli($args)) {
+            die("command line is not available for backend \"{$argv[1]}\"\n");
+        }
+
+        exit(0);
     }
 
     if (
