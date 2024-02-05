@@ -527,7 +527,7 @@
                             }
 
                             let ro = cf.editor == "text-ro";
-                            let val = (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue["_cf_" + fieldId])?issue["_cf_" + fieldId]:"");
+                            let val = (issue && issue["_cf_" + fieldId]) ? issue["_cf_" + fieldId] : ((typeof prefferredValue !== "undefined") ? prefferredValue :  "");
 
                             if (cf.editor == "date" || cf.editor == "datetime-local") {
                                 if (parseInt(val) <= 0) {
@@ -544,7 +544,7 @@
                                 type: cf.editor,
                                 title: modules.tt.issueFieldTitle(field),
                                 placeholder: modules.tt.issueFieldTitle(field),
-                                hint: cf.fieldDescription?cf.fieldDescription:false,
+                                hint: cf.fieldDescription ? cf.fieldDescription : false,
                                 sec: true,
                                 value: val,
                                 readonly: ro,
