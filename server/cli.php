@@ -21,6 +21,7 @@
     require_once "utils/parse_url_ext.php";
     require_once "utils/debug.php";
     require_once "utils/i18n.php";
+    require_once "utils/format_usage.php";
 
     require_once "backends/backend.php";
 
@@ -29,50 +30,51 @@
     function usage() {
         global $argv;
 
-        echo "usage: {$argv[0]}
-        backend:
-            [<backend name> [params]]
+        echo formatUsage("usage: {$argv[0]}
+        
+            backend:
+                [<backend name> [params]]
 
-        common parts:
-            [--parent-pid=<pid>]
-            [--debug]
+            common parts:
+                [--parent-pid=<pid>]
+                [--debug]
 
-        demo server:
-            [--run-demo-server [--port=<port>]]
+            demo server:
+                [--run-demo-server [--port=<port>]]
 
-        initialization:
-            [--init-db [--skip=<versions>]]
-            [--admin-password=<password>]
-            [--reindex]
-            [--clear-cache]
-            [--cleanup]
-            [--init-mobile-issues-project]
+            initialization:
+                [--init-db [--skip=<versions>]]
+                [--admin-password=<password>]
+                [--reindex]
+                [--clear-cache]
+                [--cleanup]
+                [--init-mobile-issues-project]
 
-        tests:
-            [--check-mail=<your email address>]
-            [--get-db-version]
+            tests:
+                [--check-mail=<your email address>]
+                [--get-db-version]
 
-        backends:
-            [--backends-with-cli]
-            [--check-backends]
+            backends:
+                [--backends-with-cli]
+                [--check-backends]
 
-        autoconfigure:
-            [--autoconfigure-domophone=<domophone_id> [--first-time]]
-            [--autoconfigure-device=<device_type> --id=<device_id> [--first-time]]
+            autoconfigure:
+                [--autoconfigure-domophone=<domophone_id> [--first-time]]
+                [--autoconfigure-device=<device_type> --id=<device_id> [--first-time]]
 
-        cron:
-            [--cron=<minutely|5min|hourly|daily|monthly>]
-            [--install-crontabs]
-            [--uninstall-crontabs]
+            cron:
+                [--cron=<minutely|5min|hourly|daily|monthly>]
+                [--install-crontabs]
+                [--uninstall-crontabs]
 
-        dvr:
-            [--run-record-download=<id>]
+            dvr:
+                [--run-record-download=<id>]
 
-        config:
-            [--print-config]
-            [--write-yaml-config]
-            [--write-json-config]
-        \n";
+            config:
+                [--print-config]
+                [--write-yaml-config]
+                [--write-json-config]
+        ");
 
         exit(1);
     }

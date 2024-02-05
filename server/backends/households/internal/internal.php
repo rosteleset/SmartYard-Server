@@ -1955,10 +1955,11 @@
                 {
                     global $argv;
             
-                    echo preg_replace('/^\h{12}/m', "", "usage: {$argv[0]} households
-                    rfid:
-                        [--rf-import=<filename.csv> --house-id=<id> [--rf-first]]
-                    \n");
+                    echo formatUsage("usage: {$argv[0]} households
+                    
+                        rfid:
+                            [--rf-import=<filename.csv> --house-id=<id> [--rf-first]]
+                    ");
             
                     exit(1);
                 }
