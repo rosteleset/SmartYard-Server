@@ -1977,24 +1977,24 @@
                     foreach ($r1 as $r) {
                         $r = explode(",", $r);
                         if (array_key_exists("--rfid-first", $args)) {
+                            $k = trim(@$r[0]);
+                            $f = trim(@$r[1]);
+                        } else {
                             $f = trim(@$r[0]);
                             $k = trim(@$r[1]);
-                        } else {
-                            $f = trim(@$r[1]);
-                            $k = trim(@$r[0]);
                         }
                         if ($k && $f) {
                             $r2[$k] = $f;
                         } 
                     }
-    
+
                     if (!count($r2)) {
                         die("no keys found\n");
                     }
 
                     $s = 0;
                     foreach ($r2 as $k => $f) {
-                        if ($f2[$f]) {
+                        if (@$f2[$f]) {
                             try {
                                 if ($f2[$f] && $this->addKey($k, 2, $f2[$f], "imported " . date("Y-m-d H:i:s"))) {
                                     echo "$k added into flat $f\n";
