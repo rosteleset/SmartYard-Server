@@ -64,7 +64,7 @@ class beward extends camera
             'TimeValue' => 1,
             'TimeFormat12' => 'False',
             'DateFormat' => 2,
-            'WeekValue' => 1,
+            'WeekValue' => 0,
             'BitrateValue' => 0,
             'Color' => 0,
             'ClientNum' => 0,
