@@ -1988,10 +1988,13 @@
                         if ($f2[$f]) {
                             try {
                                 if ($f2[$f] && $this->addKey($k, 2, $f2[$f], "imported " . date("Y-m-d H:i:s"))) {
+                                    echo "$k added into flat $f\n";
                                     $s++;
+                                } else {
+                                    echo "error while adding $k into flat $f\n";
                                 }
                             } catch (\Exception $e) {
-                                //
+                                echo "error while adding $k into flat $f\n";
                             }
                         }
                     }

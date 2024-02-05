@@ -4,6 +4,9 @@
 
     chdir(__DIR__);
 
+    $cli = true;
+    $cliError = false;
+
     require_once "utils/error.php";
     require_once "utils/response.php";
     require_once "utils/hooks.php";

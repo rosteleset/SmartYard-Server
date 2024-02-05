@@ -28,6 +28,8 @@
 
         function insert($query, $params = [], $options = [])
         {
+            global $cli, $cliError;
+
             try {
                 $sth = $this->prepare($query);
                 if ($sth->execute($this->trimParams($params))) {
@@ -42,12 +44,16 @@
             } catch (\PDOException $e) {
                 if (!in_array("silent", $options)) {
                     setLastError($e->errorInfo[2] ?: $e->getMessage());
-                    error_log(print_r($e, true));
+                    if ($cli && $cliError) {
+                        error_log(print_r($e, true));
+                    }
                 }
                 return false;
             } catch (\Exception $e) {
                 setLastError($e->getMessage());
-                error_log(print_r($e, true));
+                if ($cli && $cliError) {
+                    error_log(print_r($e, true));
+                }
                 return false;
             }
         }
