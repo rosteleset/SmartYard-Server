@@ -1,7 +1,7 @@
 <?php
 
     function formatUsage($str) {
-        $str = explode("\n", $str);
+        $str = explode("\n", trim($str));
         echo $str[0] . "\n";
         for ($i = 1; $i < count($str); $i++) {
             $s = trim($str[$i]);
