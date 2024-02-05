@@ -1947,13 +1947,17 @@
             
                     echo preg_replace('/^\h{12}/m', "", "usage: {$argv[0]}
                     rfid:
-                        [--rf-import=<filename.csv> --house-id=<id>]
+                        [--rf-import=<filename.csv> --house-id=<id> [--rfid-first]]
                     \n");
             
                     exit(1);
                 }
 
-                if (count($args) == 2 && isset($args["--rf-import"]) && isset($args["--house-id"])) {
+                if (
+                    (count($args) == 2 && isset($args["--rf-import"]) && isset($args["--house-id"]))
+                    ||
+                    (count($args) == 3 && isset($args["--rf-import"]) && isset($args["--house-id"]) && array_key_exists("--rfid-first", $args) && !isset($args["--rfid-first"]))
+                ) {
                     $f1 = $this->getFlats("houseId", (int)$args["--house-id"]);
                     $f2 = [];
                     foreach ($f1 as $f) {
@@ -1972,8 +1976,13 @@
                     $r2 = [];
                     foreach ($r1 as $r) {
                         $r = explode(",", $r);
-                        $f = trim(@$r[0]);
-                        $k = trim(@$r[1]);
+                        if (array_key_exists("--rfid-first", $args)) {
+                            $f = trim(@$r[0]);
+                            $k = trim(@$r[1]);
+                        } else {
+                            $f = trim(@$r[1]);
+                            $k = trim(@$r[0]);
+                        }
                         if ($k && $f) {
                             $r2[$k] = $f;
                         } 
