@@ -10,6 +10,8 @@
     require_once "utils/guidv4.php";
     require_once "utils/loader.php";
     require_once "utils/checkint.php";
+    require_once "utils/purifier.php";
+    require_once "utils/checkstr.php";
     require_once "utils/email.php";
     require_once "utils/is_executable.php";
     require_once "utils/db_ext.php";

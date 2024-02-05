@@ -1935,5 +1935,75 @@
                     }
                 }
             }
+
+            /**
+             * @inheritDoc
+             */
+            public function cli($args)
+            {
+                function cliUsage()
+                {
+                    global $argv;
+            
+                    echo preg_replace('/^\h{12}/m', "", "usage: {$argv[0]}
+                    rfid:
+                        [--rf-import=<filename.csv> --house-id=<id>]
+                    \n");
+            
+                    exit(1);
+                }
+
+                if (count($args) == 2 && isset($args["--rf-import"]) && isset($args["--house-id"])) {
+                    $f1 = $this->getFlats("houseId", (int)$args["--house-id"]);
+                    $f2 = [];
+                    foreach ($f1 as $f) {
+                        $f2[$f["flat"]] = $f["flatId"];
+                    }
+    
+                    if (!count($f2)) {
+                        die("no flats found\n");
+                    }
+    
+                    if (!file_exists($args["--rf-import"])) {
+                        die("file not found\n");
+                    }
+
+                    $r1 = explode("\n", @file_get_contents($args["--rf-import"]));
+                    $r2 = [];
+                    foreach ($r1 as $r) {
+                        $r = explode(",", $r);
+                        $f = trim(@$r[0]);
+                        $k = trim(@$r[1]);
+                        if ($k && $f) {
+                            $r2[$k] = $f;
+                        } 
+                    }
+    
+                    if (!count($r2)) {
+                        die("no keys found\n");
+                    }
+
+                    $s = 0;
+                    foreach ($r2 as $k => $f) {
+                        if ($f2[$f]) {
+                            try {
+                                if ($f2[$f] && $this->addKey($k, 2, $f2[$f], "imported " . date("Y-m-d H:i:s"))) {
+                                    $s++;
+                                }
+                            } catch (\Exception $e) {
+                                //
+                            }
+                        }
+                    }
+
+                    echo "$s key(s) imported\n";
+
+                    exit(0);
+                }
+
+                cliUsage();
+
+                return true;
+            }
         }
     }
