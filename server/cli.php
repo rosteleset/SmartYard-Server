@@ -31,7 +31,7 @@
 
         echo "usage: {$argv[0]}
         backend:
-            [backend [params]]
+            [<backend name> [params]]
 
         common parts:
             [--parent-pid=<pid>]
@@ -51,6 +51,9 @@
         tests:
             [--check-mail=<your email address>]
             [--get-db-version]
+
+        backends:
+            [--backends-with-cli]
             [--check-backends]
 
         autoconfigure:
@@ -292,8 +295,29 @@
 
         unset($args[$argv[1]]);
 
-        if (!$backend->cli($args)) {
+        if (!$backend->capabilities() || !array_key_exists("cli", $backend->capabilities())) {
             die("command line is not available for backend \"{$argv[1]}\"\n");
+        }
+
+        $backend->cli($args);
+
+        exit(0);
+    }
+
+    if (count($args) == 1 && array_key_exists("--backends-with-cli", $args) && !isset($args["--backends-with-cli"])) {
+        $cli = [];
+
+        foreach ($config["backends"] as $b => $p) {
+            $e = loadBackend($b);
+            if ($e->capabilities() && array_key_exists("cli", $e->capabilities())) {
+                $cli[] = $b;
+            }
+        }
+
+        if (count($cli)) {
+            echo "backends with cli support: " . implode(" ", $cli) . "\n";
+        } else {
+            echo "no backends with cli support found\n";
         }
 
         exit(0);

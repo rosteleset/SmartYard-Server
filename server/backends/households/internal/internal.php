@@ -1939,13 +1939,23 @@
             /**
              * @inheritDoc
              */
+            public function capabilities()
+            {
+                return [
+                    "cli" => true,
+                ];
+            }
+
+            /**
+             * @inheritDoc
+             */
             public function cli($args)
             {
                 function cliUsage()
                 {
                     global $argv;
             
-                    echo preg_replace('/^\h{12}/m', "", "usage: {$argv[0]}
+                    echo preg_replace('/^\h{12}/m', "", "usage: {$argv[0]} households
                     rfid:
                         [--rf-import=<filename.csv> --house-id=<id> [--rf-first]]
                     \n");
