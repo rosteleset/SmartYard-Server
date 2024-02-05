@@ -2,17 +2,20 @@
 
     function formatUsage($str) {
         $str = explode("\n", trim($str));
-        echo $str[0] . "\n";
+        $usage = "";
+        $usage .= $str[0] . "\n";
         for ($i = 1; $i < count($str); $i++) {
             $s = trim($str[$i]);
             if (!$s) {
-                echo "\n";
+                $usage .= "\n";
                 continue;
             }
             if ($s[0] == "[") {
-                echo "    " . $s . "\n";
+                $usage .= "    " . $s . "\n";
                 continue;
             }
-            echo "  " . $s . "\n";
+            $usage .= "  " . $s . "\n";
         }
+
+        return trim($usage) . "\n\n";
     }
