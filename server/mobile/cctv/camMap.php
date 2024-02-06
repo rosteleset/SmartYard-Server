@@ -74,7 +74,8 @@ foreach($cams as $entrance_id => $cam) {
         'url' => $cam['dvrStream'],
         'token' => loadBackend("dvr")->getDVRTokenForCam($cam, $subscriber['subscriberId']),
         'frs' => $frs,
-        'serverType' => $dvr['type']
+        'serverType' => $dvr['type'],
+        "hasSound" => boolval($cam['sound']),
     ];
     if (array_key_exists("hlsMode", $dvr)) {
         $item["hlsMode"] = $dvr["hlsMode"];

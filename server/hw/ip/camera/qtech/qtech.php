@@ -79,4 +79,26 @@ class qtech extends camera
     {
         return $this->getParam('Config.DoorSetting.GENERAL.VideoWaterMark2');
     }
+
+    /**
+     * Apply optimal image settings.
+     *
+     * @return void
+     */
+    protected function configureImage()
+    {
+        $this->setParams([
+            'Config.DoorSetting.GENERAL.IRSetting' => 1, // IR brightness (1 - 99)
+            'Config.DoorSetting.RTSP.ColorMode' => 0, // Auto
+            'Config.DoorSetting.RTSP.NoiseReduction' => 1, // Enabled
+            'Config.DoorSetting.RTSP.BLC' => 1, // Enabled
+            'Config.DoorSetting.RTSP.ExposureMode' => 1, // Auto mode
+        ]);
+    }
+
+    public function prepare()
+    {
+        parent::prepare();
+        $this->configureImage();
+    }
 }

@@ -28,13 +28,18 @@ trait beward
 
     public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow')
     {
+        // Depending on the device model, the auto mode can be 'on'/'off' or '1'/'0'.
+        // This must be determined before calling the NTP configuration, otherwise the call will fail.
+        $automode = $this->getParams('ntp_cgi')['AutoMode'] ?? null;
+        $automodeIsNumeric = is_numeric($automode);
+
         $this->apiCall('cgi-bin/ntp_cgi', [
             'action' => 'set',
             'Enable' => 'on',
             'ServerAddress' => $server,
             'ServerPort' => $port,
             'Timezone' => $this->getIdByTimezone($timezone),
-            'AutoMode' => 'off',
+            'AutoMode' => $automodeIsNumeric ? '0' : 'off',
         ]);
     }
 

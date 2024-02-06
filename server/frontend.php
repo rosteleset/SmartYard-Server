@@ -4,6 +4,9 @@
 
     // frontend client API support
 
+    $cli = false;
+    $cliError = false;
+
     header("Access-Control-Allow-Origin: *");
     header("Access-Control-Allow-Headers: *");
     header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
@@ -76,12 +79,14 @@
     }
 
     if (!$config) {
+        error_log("noConfig");
         response(555, [
             "error" => "noConfig",
         ]);
     }
 
     if (@!$config["backends"]) {
+        error_log("noBackends");
         response(555, [
             "error" => "noBackends",
         ]);
@@ -99,6 +104,7 @@
     }
 
     if (!$ip) {
+        error_log("noIp");
         response(555, [
             "error" => "noIp",
         ]);
@@ -221,6 +227,7 @@
     $backends = [];
     foreach ($required_backends as $backend) {
         if (loadBackend($backend) === false) {
+            error_log("noRequiredBackend");
             response(555, [
                 "error" => "noRequiredBackend",
             ]);
@@ -314,6 +321,7 @@
                     try {
                         $result = hook_pre($params);
                         if ($result === false) {
+                            error_log("preHook");
                             response(555, [
                                 "error" => "preHook",
                             ]);
@@ -332,6 +340,7 @@
                             }
                             response($code, $result[$code]);
                         } else {
+                            error_log("resultCode");
                             response(555, [
                                 "error" => "resultCode",
                             ]);

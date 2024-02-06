@@ -1,0 +1,9 @@
+{
+    "title": "BEWARD DS DOMOPHONE CAMERA",
+    "vendor": "BEWARD",
+    "model": false,
+    "version": false,
+    "eventServer": "beward_ds",
+    "class": "beward",
+    "useSmartConfigurator": true
+}

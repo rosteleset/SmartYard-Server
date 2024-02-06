@@ -28,6 +28,8 @@ class ds06 extends beward
         array $cmsLevels = []
     )
     {
+        $this->setHostname($apartment);
+
         $params = ['action' => 'set'];
 
         for ($i = 1; $i <= 5; $i++) {
@@ -78,6 +80,8 @@ class ds06 extends beward
             'sipserver1' => $server,
             'sipserverport1' => $port,
             'dtfmmod1' => '0',
+            'regtimeout' => 1500,
+            'regretryinterval' => 60,
             'streamtype1' => '0',
             'ckdoubleaudio' => 1,
             'calltime' => 60,
@@ -90,10 +94,11 @@ class ds06 extends beward
             'regstatus1' => 1,
             'regstatus2' => '0',
             'selcaller' => '0',
-            'cknat' => (int)$stunEnabled,
-            'stunip' => $stunServer,
-            'stunport' => $stunPort,
+            'cknat1' => (int)$stunEnabled,
+            'stunip1' => $stunServer,
+            'stunport1' => $stunPort,
         ];
+
         $this->apiCall('webs/SIPCfgEx', $params);
     }
 
@@ -104,7 +109,19 @@ class ds06 extends beward
 
     public function deleteApartment(int $apartment = 0)
     {
-        // Empty implementation
+        $currentApartment = (int)$this->getSysinfo()['HostName'] ?? 0;
+
+        if ($currentApartment === $apartment) {
+            $this->setHostname(0);
+
+            $params = ['action' => 'set'];
+            for ($i = 1; $i <= 5; $i++) {
+                $params["Acc1ContactEnable$i"] = 'off';
+                $params["Acc1ContactNumber$i"] = '';
+            }
+
+            $this->apiCall('cgi-bin/sip_cgi', $params);
+        }
     }
 
     public function deleteRfid(string $code = '')
@@ -153,6 +170,7 @@ class ds06 extends beward
     {
         domophone::prepare();
         $this->enableBonjour(false);
+        $this->enableCloud(false);
         $this->configureAudio();
         $this->configureRtsp();
     }
@@ -257,6 +275,22 @@ class ds06 extends beward
         // Empty implementation
     }
 
+    public function transformDbConfig(array $dbConfig): array
+    {
+        $timezone = $dbConfig['ntp']['timezone'];
+        $dbConfig['ntp']['timezone'] = "{$this->getIdByTimezone($timezone)}";
+        $dbConfig['rfids'] = [];
+        $dbConfig['tickerText'] = '';
+        $dbConfig['unlocked'] = false;
+
+        foreach ($dbConfig['apartments'] as &$apartment) {
+            $apartment['code'] = 0;
+            $apartment['cmsEnabled'] = false;
+        }
+
+        return $dbConfig;
+    }
+
     /**
      * Configure audio params.
      *
@@ -304,10 +338,45 @@ class ds06 extends beward
         $this->apiCall('webs/netMDNSCfgEx', ['enabledMdns' => $enabled ? 1 : 0]);
     }
 
+    /**
+     * Enable Cloud service.
+     *
+     * @param bool $enabled (Optional) True if enabled, false otherwise. Default is true.
+     *
+     * @return void
+     */
+    protected function enableCloud(bool $enabled = true)
+    {
+        $this->apiCall('webs/netCamdriveCfgEx', ['cloudtype' => $enabled ? 3 : 0]);
+        $this->wait();
+    }
+
     protected function getApartments(): array
     {
-        // TODO: Implement getApartments() method.
-        return [];
+        $flats = [];
+        $sipNumbers = [];
+
+        $sip = $this->getParams('sip_cgi');
+
+        for ($i = 1; $i <= 5; $i++) {
+            $sipNumber = $sip["Acc1ContactNumber$i"] ?? '';
+            if ($sipNumber !== '') {
+                $sipNumbers[] = $sipNumber;
+            }
+        }
+
+        if ($sipNumbers) {
+            $apartment = $this->getSysinfo()['HostName'] ?? 0;
+            $flats[$apartment] = [
+                'apartment' => (int)$apartment,
+                'code' => 0,
+                'sipNumbers' => $sipNumbers,
+                'cmsEnabled' => false,
+                'cmsLevels' => [],
+            ];
+        }
+
+        return $flats;
     }
 
     protected function getCmsModel(): string
@@ -333,5 +402,10 @@ class ds06 extends beward
     protected function getUnlocked(): bool
     {
         return false;
+    }
+
+    protected function setHostname(string $hostname)
+    {
+        $this->apiCall('webs/sysInfoCfgEx', ['sys_name' => $hostname]);
     }
 }

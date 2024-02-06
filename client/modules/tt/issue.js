@@ -720,10 +720,10 @@
                 h += "<div class='ml-2 mb-2 mt-1'>";
                 h += "<a class='hoverable' href='" + lStore("_server") + "/tt/file?issueId=" + encodeURIComponent(issue.issue["issueId"]) + "&filename=" + encodeURIComponent(issue.issue.attachments[i].filename) + "&_token=" + encodeURIComponent(lStore("_token")) + "' target='_blank'>";
                 if (issue.issue.attachments[i].metadata.type.indexOf("image/") == 0) {
-                    h += $.trim(issue.issue.attachments[i].filename) + "<br />";
+                    h += $.trim(issue.issue.attachments[i].filename) + " [" + formatBytes(issue.issue.attachments[i].length) + "]<br />";
                     h += `<img src="${lStore("_server") + "/tt/file?issueId=" + encodeURIComponent(issue.issue["issueId"]) + "&filename=" + encodeURIComponent(issue.issue.attachments[i].filename) + "&_token=" + encodeURIComponent(lStore("_token"))}" style="height: 200px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;"></img>`;
                 } else {
-                    h += $.trim(issue.issue.attachments[i].filename);
+                    h += $.trim(issue.issue.attachments[i].filename) + " [" + formatBytes(issue.issue.attachments[i].length) + "]";
                 }
                 h += "</a>";
                 h += "</div>";
@@ -875,7 +875,7 @@
                                     continue;
                                 }
                                 h += "<tr class='tr-hoverable'>";
-                                h += "<td class='pl-2 td-journal'>";
+                                h += "<td class='pl-2 td-journal nowrap'>";
                                 h += modules.tt.issueFieldTitle(k[j]) + ": ";
                                 h += "</td>";
                                 h += "<td class='pl-2 td-journal'>";
@@ -893,7 +893,7 @@
                             k = [...new Set(k)].sort();
                             for (let j in k) {
                                 h += "<tr class='tr-hoverable'>";
-                                h += "<td class='pl-2 td-journal'>";
+                                h += "<td class='pl-2 td-journal nowrap'>";
                                 h += modules.tt.issueFieldTitle(k[j]) + ": ";
                                 h += "</td>";
                                 if (sep == "&nbsp;") {
@@ -915,7 +915,7 @@
                             k = [...new Set(k)].sort();
                             for (let j in k) {
                                 h += "<tr class='tr-hoverable'>";
-                                h += "<td class='pl-2 td-journal'>";
+                                h += "<td class='pl-2 td-journal nowrap'>";
                                 h += modules.tt.issueFieldTitle(k[j]) + ": ";
                                 h += "</td>";
                                 h += "<td class='pl-2 td-journal'>";

@@ -52,7 +52,7 @@
 
             public static function POST($params) {
 
-                $auth = $params["_backends"]["authentication"]->login($params["login"], $params["password"], $params["rememberMe"] && $params["ua"] && $params["did"], trim($params["ua"]), trim($params["did"]));
+                $auth = $params["_backends"]["authentication"]->login($params["login"], $params["password"], $params["rememberMe"] && $params["ua"] && $params["did"], trim($params["ua"]), trim($params["did"]), $params["_ip"]);
 
                 if ($auth["result"]) {
                     return [

@@ -47,6 +47,28 @@
             editor.getSession().getUndoManager().reset();
             editor.clearSelection();
             editor.setFontSize(14);
+            editor.commands.removeCommand("removeline");
+            editor.commands.removeCommand("redo");
+            editor.commands.addCommand({
+                name: "removeline",
+                description: "Remove line",
+                bindKey: {
+                    win: "Ctrl-Y", 
+                    mac: "Cmd-Y"
+                },
+                exec: function (editor) { editor.removeLines(); },
+                scrollIntoView: "cursor",
+                multiSelectAction: "forEachLine"
+            });
+            editor.commands.addCommand({
+                name: "redo",
+                description: "Redo",
+                bindKey: {
+                    win: "Ctrl-Shift-Z",
+                    mac: "Command-Shift-Z"
+                },
+                exec: function (editor) { editor.redo(); }
+            });
             editor.commands.addCommand({
                 name: 'save',
                 bindKey: {

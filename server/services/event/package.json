@@ -1,0 +1,42 @@
+{
+    "name": "event-service",
+    "version": "1.0.0",
+    "description": "Event service for intercom and ip camera",
+    "main": "index.js",
+    "type": "module",
+    "scripts": {
+        "start": "concurrently -k \"npm run start:*\"",
+        "dev": "concurrently -k \"npm run dev:*\"",
+        "debug": "NODE_ENV=development concurrently -k \"npm run dev:*\"",
+        "start:beward": "node index.js beward",
+        "start:beward_ds": "node index.js beward_ds",
+        "start:qtech": "node index.js qtech",
+        "start:is": "node index.js is",
+        "start:sputnik": "node index.js sputnik_cloud",
+        "start:akuvox": "node index.js akuvox",
+        "start:rubetek": "node index.js rubetek",
+        "dev:beward": "nodemon index.js beward",
+        "dev:beward_ds": "nodemon index.js beward_ds",
+        "dev:qtech": "nodemon index.js qtech",
+        "dev:is": "nodemon index.js is",
+        "dev:akuvox": "nodemon index.js akuvox",
+        "dev:rubetek": "nodemon index.js rubetek",
+        "dev:sputnik": "nodemon index.js sputnik_cloud"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "axios": "^1.1.0",
+        "concurrently": "^7.4.0",
+        "syslog-server": "^1.0.1",
+        "xml2js": "^0.6.2"
+    },
+    "devDependencies": {
+        "nodemon": "^2.0.20"
+    },
+    "engines": {
+        "npm": ">=8.0.0",
+        "node": ">=18.0.0"
+    }
+}

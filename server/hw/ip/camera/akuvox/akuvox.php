@@ -20,8 +20,10 @@ class akuvox extends camera
         int $sensitivity = 3
     )
     {
+        $motionDetectionEnabled = $left || $top || $width || $height;
+
         $this->setConfigParams([
-            'Config.DoorSetting.MOTION_DETECT.Enable' => $sensitivity === 0 ? '0' : '2', // 2 - video detection
+            'Config.DoorSetting.MOTION_DETECT.Enable' => $motionDetectionEnabled ? '2' : '0', // 2 - video detection
             'Config.DoorSetting.MOTION_DETECT.Interval' => '1', // Motion duration
             'Config.DoorSetting.MOTION_DETECT.TFTPEnable' => '0',
             'Config.DoorSetting.MOTION_DETECT.FTPEnable' => '1',
@@ -40,9 +42,10 @@ class akuvox extends camera
         return file_get_contents("http://$this->login:$this->password@$host:8080/picture.jpg");
     }
 
-    public function setOsdText(string $text = '') // TODO: Latin only
+    public function setOsdText(string $text = '') // Latin only
     {
         $this->setConfigParams([
+            'Config.DoorSetting.RTSP.OSDEnable' => $text ? '1' : '0',
             'Config.DoorSetting.RTSP.OSDText' => $text,
             'Config.DoorSetting.RTSP.OSDColor' => '3', // green color for high contrast
         ]);
@@ -55,7 +58,7 @@ class akuvox extends camera
 
     protected function getMotionDetectionConfig(): array
     {
-        [$left, $width, $top, $height, $sensitivity] = $this->getConfigParams([
+        [$left, $width, $top, $height] = $this->getConfigParams([
             'Config.DoorSetting.MOTION_DETECT.AreaStartWidth',
             'Config.DoorSetting.MOTION_DETECT.AreaEndWidth',
             'Config.DoorSetting.MOTION_DETECT.AreaStartHeight',

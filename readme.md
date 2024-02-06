@@ -3,4 +3,7 @@
 
 Fully autonomous server part for quick launch of your intercom and video surveillance service
 
-### [Documentation](install/readme.md)
+### [Installation](https://github.com/rosteleset/SmartYard-Server/tree/main/install)
+start from 00.jammy.md
+
+### [Wiki](https://github.com/rosteleset/SmartYard-Server/wiki)

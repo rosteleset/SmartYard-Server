@@ -44,7 +44,6 @@
     ] = $postdata;
 
     $plog = loadBackend('plog');
-
     switch ($event) {
         case $events['OPEN_BY_KEY']:
         case $events['OPEN_BY_CODE']:
@@ -57,7 +56,7 @@
             /* not used
             example event: "[49704] Opening door by DTMF command for apartment 1"
              */
-            response(200);
+            response(204);
             break;
 
         case $events['OPEN_BY_BUTTON']:
@@ -73,16 +72,18 @@
                                 WHERE (ip = :ip OR sub_id = :sub_id) AND domophone_output = :door)',
                 ["ip" => $ip, "sub_id" => $subId, "door" => $door]);
 
-            if ($result[0]) {
+            if ($result) {
                 ["camera_id" => $streamId, "frs" => $frsUrl] = $result[0];
-                if (isset($frsUrl)) {
+                //FIXME: check frs field
+                if (isset($frsUrl) && filter_var($frsUrl, FILTER_VALIDATE_URL)) {
                     $payload = ["streamId" => strval($streamId)];
-                    $apiResponse = apiExec("POST", $frsUrl . "/api/doorIsOpen", $payload);
-                    response(201, $apiResponse);
+                    $frsApiResponse = apiExec("POST", $frsUrl . "/api/doorIsOpen", $payload);
+                    response(201, $frsApiResponse);
                 }
-            } else {
-                response(204);
+                // TODO: error logging on debug level in config
+                //error_log("Internal API, method openDoor: invalid frsUrl on camera_id: $streamId");
             }
+            response(204);
             break;
     }
     exit();

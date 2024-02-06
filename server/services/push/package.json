@@ -1,11 +1,11 @@
 {
   "name": "push",
   "version": "1.0.0",
-  "description": "",
+  "description": "push service for SmartYard-server",
   "main": "push.js",
   "scripts": {
     "start": "node push.js",
-    "dev": "nodemon push.js"
+    "dev": "NODE_ENV=development nodemon push.js"
   },
   "keywords": [],
   "author": "",
@@ -21,7 +21,7 @@
     "nodemon": "^3.0.1"
   },
   "engines": {
-    "node": "^18.18.1",
-    "npm": "^9.8.1"
+    "node": ">=18.0.0 <19.0.0",
+    "npm": ">=9.0.0 <10.0.0"
   }
 }

@@ -4,18 +4,24 @@
 
     chdir(__DIR__);
 
+    $cli = true;
+    $cliError = false;
+
     require_once "utils/error.php";
     require_once "utils/response.php";
     require_once "utils/hooks.php";
     require_once "utils/guidv4.php";
     require_once "utils/loader.php";
     require_once "utils/checkint.php";
+    require_once "utils/purifier.php";
+    require_once "utils/checkstr.php";
     require_once "utils/email.php";
     require_once "utils/is_executable.php";
     require_once "utils/db_ext.php";
     require_once "utils/parse_url_ext.php";
     require_once "utils/debug.php";
     require_once "utils/i18n.php";
+    require_once "utils/format_usage.php";
 
     require_once "backends/backend.php";
 
@@ -24,44 +30,51 @@
     function usage() {
         global $argv;
 
-        echo "usage: {$argv[0]}
-        common parts:
-            [--parent-pid=<pid>]
-            [--debug]
+        echo formatUsage("usage: {$argv[0]}
+        
+            backend:
+                [<backend name> [params]]
 
-        demo server:
-            [--run-demo-server [--port=<port>]]
+            common parts:
+                [--parent-pid=<pid>]
+                [--debug]
 
-        initialization:
-            [--init-db]
-            [--admin-password=<password>]
-            [--reindex]
-            [--clear-cache]
-            [--cleanup]
-            [--init-mobile-issues-project]
+            demo server:
+                [--run-demo-server [--port=<port>]]
 
-        tests:
-            [--check-mail=<your email address>]
-            [--get-db-version]
-            [--check-backends]
+            initialization:
+                [--init-db [--skip=<versions>]]
+                [--admin-password=<password>]
+                [--reindex]
+                [--clear-cache]
+                [--cleanup]
+                [--init-mobile-issues-project]
 
-        autoconfigure:
-            [--autoconfigure-domophone=<domophone_id> [--first-time]]
-            [--autoconfigure-device=<device_type> --id=<device_id> [--first-time]]
+            tests:
+                [--check-mail=<your email address>]
+                [--get-db-version]
 
-        cron:
-            [--cron=<minutely|5min|hourly|daily|monthly>]
-            [--install-crontabs]
-            [--uninstall-crontabs]
+            backends:
+                [--backends-with-cli]
+                [--check-backends]
 
-        dvr:
-            [--run-record-download=<id>]
+            autoconfigure:
+                [--autoconfigure-domophone=<domophone_id> [--first-time]]
+                [--autoconfigure-device=<device_type> --id=<device_id> [--first-time]]
 
-        config:
-            [--print-config]
-            [--write-yaml-config]
-            [--write-json-config]
-        \n";
+            cron:
+                [--cron=<minutely|5min|hourly|daily|monthly>]
+                [--install-crontabs]
+                [--uninstall-crontabs]
+
+            dvr:
+                [--run-record-download=<id>]
+
+            config:
+                [--print-config]
+                [--write-yaml-config]
+                [--write-json-config]
+        ");
 
         exit(1);
     }
@@ -91,7 +104,7 @@
     }
 
     $params = '';
-    foreach($args as $key => $value) {
+    foreach ($args as $key => $value) {
         if ($value) {
             $params .= " {$key}={$value}";
         } else {
@@ -181,7 +194,7 @@
             chdir(__DIR__ . "/..");
             passthru(PHP_BINARY . " -S 0.0.0.0:$port");
         } else {
-            echo "no php interpreter found in path\n";
+            echo "no php interpreter found in path\n\n";
         }
         exit(0);
     }
@@ -189,11 +202,11 @@
     try {
         mb_internal_encoding("UTF-8");
     } catch (Exception $e) {
-        die("mbstring extension is not available\n");
+        die("mbstring extension is not available\n\n");
     }
 
     if (!function_exists("curl_init")) {
-        die("curl extension is not installed\n");
+        die("curl extension is not installed\n\n");
     }
 
     $required_backends = [
@@ -205,11 +218,11 @@
 
     try {
         if (PHP_VERSION_ID < 50600) {
-            echo "minimal supported php version is 5.6\n";
+            echo "minimal supported php version is 5.6\n\n";
             exit(1);
         }
     } catch (Exception $e) {
-        echo "can't determine php version\n";
+        echo "can't determine php version\n\n";
         exit(1);
     }
 
@@ -228,20 +241,20 @@
     }
 
     if (!$config) {
-        echo "config is empty\n";
+        echo "config is empty\n\n";
         exit(1);
     }
 
     if (@!$config["backends"]) {
-        echo "no backends defined\n";
+        echo "no backends defined\n\n";
         exit(1);
     }
 
     try {
         $db = new PDO_EXT(@$config["db"]["dsn"], @$config["db"]["username"], @$config["db"]["password"], @$config["db"]["options"]);
     } catch (Exception $e) {
-        echo "can't open database " . $config["db"]["dsn"] . "\n";
-        echo $e->getMessage() . "\n";
+        echo "can't open database " . $config["db"]["dsn"] . "\n\n";
+        echo $e->getMessage() . "\n\n";
         exit(1);
     }
 
@@ -264,24 +277,66 @@
         }
         $redis->setex("iAmOk", 1, "1");
     } catch (Exception $e) {
-        echo "can't connect to redis server\n";
+        echo "can't connect to redis server\n\n";
         exit(1);
     }
 
     $backends = [];
     foreach ($required_backends as $backend) {
         if (loadBackend($backend) === false) {
-            die("can't load required backend [$backend]\n");
+            die("can't load required backend [$backend]\n\n");
         }
     }
 
-    if (count($args) == 1 && array_key_exists("--init-db", $args) && !isset($args["--init-db"])) {
+    if (count($args) && (strpos($argv[1], "--") === false || strpos($argv[1], "--") > 0)) {
+        $backend = loadBackend($argv[1]);
+
+        if (!$backend) {
+            die("backend \"{$argv[1]}\" not found\n\n");
+        }
+
+        unset($args[$argv[1]]);
+
+        if (!$backend->capabilities() || !array_key_exists("cli", $backend->capabilities())) {
+            die("command line is not available for backend \"{$argv[1]}\"\n\n");
+        }
+
+        $backend->cli($args);
+
+        exit(0);
+    }
+
+    if (count($args) == 1 && array_key_exists("--backends-with-cli", $args) && !isset($args["--backends-with-cli"])) {
+        $cli = [];
+
+        foreach ($config["backends"] as $b => $p) {
+            $e = loadBackend($b);
+            if ($e->capabilities() && array_key_exists("cli", $e->capabilities())) {
+                $cli[] = $b;
+            }
+        }
+
+        if (count($cli)) {
+            echo "backends with cli support: " . implode(" ", $cli) . "\n\n";
+        } else {
+            echo "no backends with cli support found\n\n";
+        }
+
+        exit(0);
+    }
+
+    if (
+        (count($args) == 1 && array_key_exists("--init-db", $args) && !isset($args["--init-db"]))
+        ||
+        (count($args) == 2 && array_key_exists("--init-db", $args) && !isset($args["--init-db"]) && array_key_exists("--skip", $args) && isset($args["--skip"]))
+    ) {
         require_once "sql/install.php";
         require_once "utils/clear_cache.php";
         require_once "utils/reindex.php";
 
-        initDB();
+        initDB(@$args["--skip"]);
         startup();
+        echo "\n";
         $n = clearCache(true);
         echo "$n cache entries cleared\n\n";
         reindex();
@@ -322,9 +377,10 @@
         require_once "utils/reindex.php";
         require_once "utils/clear_cache.php";
 
-        reindex();
         $n = clearCache(true);
-        echo "$n cache entries cleared\n";
+        echo "$n cache entries cleared\n\n";
+        reindex();
+        echo "\n";
         exit(0);
     }
 
@@ -332,7 +388,7 @@
         require_once "utils/clear_cache.php";
 
         $n = clearCache(true);
-        echo "$n cache entries cleared\n";
+        echo "$n cache entries cleared\n\n";
         exit(0);
     }
 
@@ -346,9 +402,9 @@
         try {
             $sth = $db->prepare("update core_users set password = :password, login = 'admin', enabled = 1 where uid = 0");
             $sth->execute([ ":password" => password_hash($args["--admin-password"], PASSWORD_DEFAULT) ]);
-            echo "admin account updated\n";
+            echo "admin account updated\n\n";
         } catch (Exception $e) {
-            echo "admin account update failed\n";
+            echo "admin account update failed\n\n";
         }
         exit(0);
     }
@@ -356,10 +412,10 @@
     if (count($args) == 1 && array_key_exists("--check-mail", $args) && isset($args["--check-mail"])) {
         $r = email($config, $args["--check-mail"], "test email", "test email");
         if ($r === true) {
-            echo "email sended\n";
+            echo "email sended\n\n";
         } else
         if ($r === false) {
-            echo "no email config found\n";
+            echo "no email config found\n\n";
         } else {
             print_r($r);
         }
@@ -382,10 +438,10 @@
                 if ($backend) {
                     try {
                         if (!$backend->cron($part)) {
-                            echo "$backend_name [$part] fail\n";
+                            echo "$backend_name [$part] fail\n\n";
                         }
                     } catch (\Exception $e) {
-                        echo "$backend_name [$part] exception\n";
+                        echo "$backend_name [$part] exception\n\n";
                     }
                 }
             }
@@ -446,7 +502,7 @@
         require_once "utils/install_crontabs.php";
 
         $n = installCrontabs();
-        echo "$n crontabs lines added\n";
+        echo "$n crontabs lines added\n\n";
         exit(0);
     }
 
@@ -454,12 +510,12 @@
         require_once "utils/install_crontabs.php";
 
         $n = unInstallCrontabs();
-        echo "$n crontabs lines removed\n";
+        echo "$n crontabs lines removed\n\n";
         exit(0);
     }
 
     if (count($args) == 1 && array_key_exists("--get-db-version", $args) && !isset($args["--get-db-version"])) {
-        echo "dbVersion: $version\n";
+        echo "dbVersion: $version\n\n";
         exit(0);
     }
 
@@ -469,12 +525,12 @@
         foreach ($config["backends"] as $backend => $null) {
             $t = loadBackend($backend);
             if (!$t) {
-                echo "loading $backend failed\n";
+                echo "loading $backend failed\n\n";
                 $all_ok = false;
             } else {
                 try {
                     if (!$t->check()) {
-                        echo "error checking backend $backend\n";
+                        echo "error checking backend $backend\n\n";
                         $all_ok = false;
                     }
                 } catch (\Exception $e) {
@@ -485,7 +541,7 @@
         }
 
         if ($all_ok) {
-            echo "everything is all right\n";
+            echo "everything is all right\n\n";
         }
         exit(0);
     }

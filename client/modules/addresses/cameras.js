@@ -165,11 +165,17 @@
                     tab: i18n("addresses.primary"),
                 },
                 {
+                    id: "sound",
+                    type: "noyes",
+                    title: i18n("addresses.sound"),
+                    tab: i18n("addresses.primary"),
+                },
+                {
                     id: "timezone",
                     type: "select2",
                     title: i18n("addresses.timezone"),
                     placeholder: i18n("addresses.timezone"),
-                    options: modules.addresses.timezonesOptions(),
+                    options: timezonesOptions(),
                     validate: (v) => {
                         return $.trim(v) !== "";
                     },
@@ -413,11 +419,18 @@
                         tab: i18n("addresses.primary"),
                     },
                     {
+                        id: "sound",
+                        type: "yesno",
+                        title: i18n("addresses.sound"),
+                        value: camera.sound,
+                        tab: i18n("addresses.primary"),
+                    },
+                    {
                         id: "timezone",
                         type: "select2",
                         title: i18n("addresses.timezone"),
                         placeholder: i18n("addresses.timezone"),
-                        options: modules.addresses.timezonesOptions(),
+                        options: timezonesOptions(),
                         validate: (v) => {
                             return $.trim(v) !== "";
                         },
@@ -547,7 +560,7 @@
                 edit: modules.addresses.cameras.modifyCamera,
                 columns: [
                     {
-                        title: i18n("addresses.cameraId"),
+                        title: i18n("addresses.cameraIdList"),
                     },
                     {
                         title: i18n("addresses.url"),

@@ -3,7 +3,7 @@
     ```
     cp .env_example .env_production
     ```
-2. Make project config files 
+2. Make project config files
    ```
    assets/pushServiceAccountKey.json 
    assets/certificate-and-privatekey.pem

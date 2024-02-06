@@ -10,7 +10,7 @@
     beepAmplify: 500,
     
     init: function () {
-        if (config.ws && config.ice && config.sipDomain && myself.webRtcExtension && myself.webRtcPassword) {
+        if (config.asterisk && config.asterisk.ws && config.asterisk.ice && config.asterisk.sipDomain && myself.webRtcExtension && myself.webRtcPassword) {
             moduleLoaded("asterisk", this);
 
             $(`
@@ -29,7 +29,7 @@
                     video: false
                 },
                 pcConfig: {
-                    iceServers: config.ice,
+                    iceServers: config.asterisk.ice,
                 }
             };
 
@@ -38,8 +38,8 @@
             JsSIP.debug.disable('JsSIP:*');
 
             modules.asterisk.ua = new JsSIP.UA({
-                sockets: [ new JsSIP.WebSocketInterface(config.ws) ],
-                uri: "sip:" + myself.webRtcExtension + "@" + config.sipDomain,
+                sockets: [ new JsSIP.WebSocketInterface(config.asterisk.ws) ],
+                uri: "sip:" + myself.webRtcExtension + "@" + config.asterisk.sipDomain,
                 password : myself.webRtcPassword,
             });
 

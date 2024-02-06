@@ -129,6 +129,15 @@
                     value: "0",
                 },
                 {
+                    id: "name",
+                    type: "text",
+                    title: i18n("addresses.domophoneName"),
+                    placeholder: i18n("addresses.domophoneName"),
+                    validate: v => {
+                        return $.trim(v).length <= 64;
+                    },
+                },
+                {
                     id: "comment",
                     type: "text",
                     title: i18n("addresses.comment"),
@@ -262,6 +271,16 @@
                         value: domophone.locksAreOpen,
                     },
                     {
+                        id: "name",
+                        type: "text",
+                        title: i18n("addresses.domophoneName"),
+                        placeholder: i18n("addresses.domophoneName"),
+                        value: domophone.name,
+                        validate: v => {
+                            return $.trim(v).length <= 64;
+                        },
+                    },
+                    {
                         id: "comment",
                         type: "text",
                         title: i18n("addresses.comment"),
@@ -321,10 +340,13 @@
                 },
                 columns: [
                     {
-                        title: i18n("addresses.domophoneId"),
+                        title: i18n("addresses.domophoneIdList"),
                     },
                     {
                         title: i18n("addresses.url"),
+                    },
+                    {
+                        title: i18n("addresses.domophoneName"),
                     },
                     {
                         title: i18n("addresses.comment"),
@@ -343,6 +365,10 @@
                                 },
                                 {
                                     data: modules.addresses.domophones.meta.domophones[i].url,
+                                    nowrap: true,
+                                },
+                                {
+                                    data: modules.addresses.domophones.meta.domophones[i].name,
                                     nowrap: true,
                                 },
                                 {

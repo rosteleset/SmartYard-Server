@@ -202,6 +202,9 @@ abstract class qtech extends domophone
         $this->apiCall('sip', 'set', $sipData);
 
         $this->setParams([
+            'Config.Settings.GENERAL.DirectIP' => 0,
+            'Config.Account1.SIP.ListenPortMin' => $port,
+            'Config.Account1.SIP.ListenPortMax' => $port,
             'Config.Account1.STUN.Enable' => (int)$stunEnabled,
             'Config.Account1.STUN.Server' => $stunServer,
             'Config.Account1.STUN.Port' => $stunPort,
@@ -561,6 +564,7 @@ abstract class qtech extends domophone
     protected function configureRfidMode(int $internalMode = 3, int $externalMode = 3)
     {
         $this->setParams([
+            'Config.DoorSetting.GENERAL.ReverseMode' => 1,
             'Config.DoorSetting.RFCARDDISPLAY.RfidDisplayMode' => $internalMode,
             'Config.DoorSetting.RFCARDDISPLAY.WiegandDisplayMode' => $externalMode,
             'Config.DoorSetting.Card.CardMatchMode' => 1, // Partial match mode

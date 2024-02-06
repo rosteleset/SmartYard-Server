@@ -244,7 +244,10 @@ body::-webkit-scrollbar-thumb {
 .td-journal {
   font-size: 14px;
   vertical-align: top;
-  white-space: nowrap;
+}
+
+.nowrap {
+  white-space: nowrap !important;
 }
 
 .bg-lightgray, .bg-lightgray>a {

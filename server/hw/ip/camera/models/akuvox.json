@@ -5,5 +5,5 @@
     "version": false,
     "eventServer": "akuvox",
     "class": "akuvox",
-    "useSmartConfigurator": false
+    "useSmartConfigurator": true
 }

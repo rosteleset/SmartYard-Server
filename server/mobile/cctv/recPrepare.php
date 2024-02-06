@@ -19,6 +19,49 @@
 auth();
 
 $cameraId = (int)@$postdata['id'];
+$households = loadBackend("households");
+$cameras = loadBackend("cameras");
+
+// check if the user has access to the camera
+$hasAccess = false;
+foreach($subscriber['flats'] as $flat) {
+    $houseId = $flat['addressHouseId'];
+    $flatDetail = $households->getFlat($flat['flatId']);
+    $flatIsBlocked = $flatDetail['adminBlock'] || $flatDetail['manualBlock'] || $flatDetail['autoBlock'];
+    if ($flatIsBlocked)
+        continue;
+
+    $checkCamera = function ($cameras, $cameraId) {
+        foreach ($cameras as $camera)
+            if ($camera['cameraId'] == $cameraId)
+                return true;
+
+        return false;
+    };
+
+    // get cameras attached to the house
+    $cameras = $households->getCameras("houseId", $houseId);
+    if ($checkCamera($cameras, $cameraId)) {
+        $hasAccess = true;
+        break;
+    }
+
+    // get cameras attached to the flat
+    $cameras = $households->getCameras("flatId", $flat['flatId']);
+    if ($checkCamera($cameras, $cameraId)) {
+        $hasAccess = true;
+        break;
+    }
+
+    // check cameras attached to the entrances of the flat
+    foreach ($flatDetail['entrances'] as $entrance) {
+        $e = $households->getEntrance($entrance['entranceId']);
+        if ($e['cameraId'] == $cameraId) {
+            $hasAccess = true;
+            break;
+        }
+    }
+}
 
 // приложение везде при работе с архивом передаёт время по часовому поясу Москвы, если не в конфиге это не переопределено.
 
@@ -31,7 +74,7 @@ if (@$config["mobile"]["time_zone"]) {
 $from = strtotime(@$postdata['from']);
 $to = strtotime(@$postdata['to']);
 
-if (!$cameraId || !$from || !$to) {
+if (!$cameraId || !$from || !$to || !$hasAccess) {
     response(404);
 }
 

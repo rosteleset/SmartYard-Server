@@ -2,6 +2,9 @@
 
     // asterisk support
 
+    $cli = false;
+    $cliError = false;
+
     require_once "utils/error.php";
     require_once "utils/guidv4.php";
     require_once "utils/loader.php";

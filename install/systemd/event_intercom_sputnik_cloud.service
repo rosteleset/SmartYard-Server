@@ -13,7 +13,7 @@ User=isyslog
 Group=isyslog
 LimitCORE=infinity
 KillMode=process
-StandardOutput=file:/var/log/syslog_intercom/event_intercom_sputnik_cloud.log
+#StandardOutput=file:/var/log/syslog_intercom/event_intercom_sputnik_cloud.log
 StandardError=file:/var/log/syslog_intercom/event_intercom_sputnik_cloud.error.log
 
 [Install]

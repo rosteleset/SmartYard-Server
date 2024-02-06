@@ -299,6 +299,10 @@
     "printDataWasSaved": "Data script was saved",
     "printFormatterWasSaved": "Format script was saved",
     "finalStatus": "Final",
+    "printTemplateName": "Template",
+    "printTemplateSize": "Size",
+    "printTemplateDate": "Date",
+    "suggestions": "Suggestions",
     "methods": {
         "tt": {
             "_title": "Task Manager",

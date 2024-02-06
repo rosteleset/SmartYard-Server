@@ -3,7 +3,7 @@
     meta: [],
 
     init: function () {
-        if (AVAIL("accounts", "user", "POST")) {
+        if (AVAIL("accounts", "user", "POST") || AVAIL("accounts", "user", "PUT") || AVAIL("accounts", "user", "DELETE")) {
             leftSide("fas fa-fw fa-user", i18n("users.users"), "?#users", "accounts");
         }
         moduleLoaded("users", this);
@@ -162,7 +162,7 @@
                     borderless: true,
                     topApply: true,
                     size: "lg",
-                    delete: (uid.toString() !== "0" && uid.toString() !== myself.uid.toString())?i18n("users.delete"):false,
+                    delete: (uid.toString() !== "0" && uid.toString() !== myself.uid.toString() && AVAIL("accounts", "user", "DELETE")) ? i18n("users.delete") : false,
                     fields: [
                         {
                             id: "uid",
@@ -389,7 +389,7 @@
         loadingStart();
 
         QUERY("accounts", "users", { withSessions: true }, true).done(response => {
-            modules.users.users = response.users;
+            modules.users.meta = response.users;
 
             cardTable({
                 target: "#altForm",
@@ -426,9 +426,9 @@
     
                     let user = {};
     
-                    for (let i in modules.users.users) {
-                        if (modules.users.users[i].uid == uid) {
-                            user = modules.users.users[i];
+                    for (let i in modules.users.meta) {
+                        if (modules.users.meta[i].uid == uid) {
+                            user = modules.users.meta[i];
                             break;
                         }
                     }
@@ -506,15 +506,15 @@
             }
 
             QUERY("accounts", "users", { withSessions: true }, true).done(response => {
-                modules.users.users = response.users;
+                modules.users.meta = response.users;
     
                 cardTable({
                     target: "#mainForm",
                     title: {
-                        button: {
+                        button: AVAIL("accounts", "user", "POST") ? {
                             caption: i18n("users.addUser"),
                             click: modules.users.addUser,
-                        },
+                        } : undefined,
                         caption: i18n("users.users"),
                         filter: true,
                     },
@@ -532,14 +532,9 @@
                         },
                         {
                             title: i18n("users.lastLogin"),
-                            hidden: !(response.users.length || typeof response.users[0].lastLogin == "undefined"),
                         },
                         {
                             title: i18n("users.lastAction"),
-                            hidden: !(response.users.length || typeof response.users[0].lastAction == "undefined"),
-                        },
-                        {
-                            title: i18n("users.blockedShort"),
                         },
                         {
                             title: i18n("users.primaryGroup"),
@@ -568,7 +563,7 @@
 
                             rows.push({
                                 uid: response.users[i].uid.toString(),
-                                class: (response.users[i].enabled == 1)?"bg-white":"bg-light",
+                                class: (response.users[i].enabled == 1)?"bg-white":"bg-light text-decoration-line-through",
                                 cols: [
                                     {
                                         data: response.users[i].uid,
@@ -578,40 +573,34 @@
                                         nowrap: true,
                                     },
                                     {
-                                        data: ttDate(response.users[i].lastLogin),
-                                        nowrap: true,
-                                        hidden: typeof response.users[i].lastLogin == "undefined",
-                                    },
-                                    {
-                                        data: ttDate(response.users[i].lastAction),
-                                        nowrap: true,
-                                        hidden: typeof response.users[i].lastAction == "undefined",
-                                    },
-                                    {
-                                        data: response.users[i].enabled?i18n("no"):i18n("yes"),
+                                        data: response.users[i].lastLogin ? ttDate(response.users[i].lastLogin) : i18n("no"),
                                         nowrap: true,
                                     },
                                     {
-                                        data: groups[response.users[i].primaryGroup]?groups[response.users[i].primaryGroup].name:("<span class='text-bold text-danger'>" + i18n("no") + "</span>"),
+                                        data: response.users[i].lastAction ? ttDate(response.users[i].lastAction) : i18n("no"),
+                                        nowrap: true,
+                                    },
+                                    {
+                                        data: groups[response.users[i].primaryGroup] ? groups[response.users[i].primaryGroup].name : i18n("no"),
                                         nowrap: true,
                                         hidden: !hasGroups,
                                     },
                                     {
-                                        data: response.users[i].realName?response.users[i].realName:i18n("no"),
+                                        data: response.users[i].realName ? response.users[i].realName : i18n("no"),
                                         nowrap: true,
                                         fullWidth: true,
                                     },
                                     {
-                                        data: (response.users[i].eMail && response.users[i].eMail != response.users[i].login)?i18n("yes"):("<span class='text-bold text-danger'>" + i18n("no") + "</span>"),
-                                        click: response.users[i].eMail?`mailto:${response.users[i].eMail}`:false,
+                                        data: (response.users[i].eMail && response.users[i].eMail != response.users[i].login) ? i18n("yes") : i18n("no"),
+                                        click: response.users[i].eMail ? `mailto:${response.users[i].eMail}` : false,
                                         nowrap: true,
                                     },
                                     {
-                                        data: response.users[i].tg?i18n("yes"):("<span class='text-bold text-danger'>" + i18n("no") + "</span>"),
+                                        data: response.users[i].tg ? i18n("yes") : i18n("no"),
                                         nowrap: true,
                                     },
                                     {
-                                        data: response.users[i].phone?response.users[i].phone:("<span class='text-bold text-danger'>" + i18n("no") + "</span>"),
+                                        data: response.users[i].phone ? response.users[i].phone : i18n("no"),
                                         nowrap: true,
                                     },
                                 ],
@@ -620,7 +609,7 @@
                                         {
                                             icon: "fas fa-list-ol",
                                             title: i18n("users.sessions"),
-                                            disabled: !response.users[0].sessions,
+                                            disabled: !response.users[i].sessions || !response.users[i].sessions.length,
                                             click: uid => {
                                                 modules.users.showSessions(uid);
                                             },

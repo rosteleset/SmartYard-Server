@@ -30,7 +30,7 @@ function cardForm(params) {
         h += `</div>`;
     }
 
-    h += `<div class="card-body table-responsive p-0">`;
+    h += `<div class="card-body table-responsive p-0" style="overflow-x: hidden!important;">`;
 
     h += '<table class="table';
 
@@ -497,6 +497,21 @@ function cardForm(params) {
     } else {
         target = modal(h);
 
+        setTimeout(() => {
+            $(".select2-selection__rendered:visible").each(function () {
+                let s2 = $(this);
+                s2.css("width", s2.css("width"));
+            });
+        }, 100);
+
+        setTimeout(() => {
+            if (params.title) {
+                $("#modal").draggable({
+                    handle: "#modalHeader",
+                });
+            }
+        }, 100);
+
         if (params.timeout) {
             $('#modal').attr("data-prefix", _prefix);
             setTimeout(() => {
@@ -505,13 +520,6 @@ function cardForm(params) {
                 }
             }, params.timeout);
         }
-/*
-        if (params.title) {
-            $("#modal").draggable({
-                handle: "#modalHeader",
-            });
-        }
-*/
     }
 
     $("#" + _prefix + "form").submit(function(e) { e.preventDefault(); });
@@ -694,6 +702,28 @@ function cardForm(params) {
                 editor.clearSelection();
             }
             editor.setFontSize(14);
+            editor.commands.removeCommand("removeline");
+            editor.commands.removeCommand("redo");
+            editor.commands.addCommand({
+                name: "removeline",
+                description: "Remove line",
+                bindKey: {
+                    win: "Ctrl-Y", 
+                    mac: "Cmd-Y"
+                },
+                exec: function (editor) { editor.removeLines(); },
+                scrollIntoView: "cursor",
+                multiSelectAction: "forEachLine"
+            });
+            editor.commands.addCommand({
+                name: "redo",
+                description: "Redo",
+                bindKey: {
+                    win: "Ctrl-Shift-Z",
+                    mac: "Command-Shift-Z"
+                },
+                exec: function (editor) { editor.redo(); }
+            });
         }
 
         if (params.fields[i].type === "json") {
@@ -711,6 +741,28 @@ function cardForm(params) {
                 editor.clearSelection();
             }
             editor.setFontSize(14);
+            editor.commands.removeCommand("removeline");
+            editor.commands.removeCommand("redo");
+            editor.commands.addCommand({
+                name: "removeline",
+                description: "Remove line",
+                bindKey: {
+                    win: "Ctrl-Y", 
+                    mac: "Cmd-Y"
+                },
+                exec: function (editor) { editor.removeLines(); },
+                scrollIntoView: "cursor",
+                multiSelectAction: "forEachLine"
+            });
+            editor.commands.addCommand({
+                name: "redo",
+                description: "Redo",
+                bindKey: {
+                    win: "Ctrl-Shift-Z",
+                    mac: "Command-Shift-Z"
+                },
+                exec: function (editor) { editor.redo(); }
+            });
         }
 
         if (params.fields[i].type === "files") {
@@ -788,6 +840,13 @@ function cardForm(params) {
         $(`.jsform-tabbed-item[data-tab-index="${i}"]`).show();
         $(`.jsform-nav-link`).removeClass("text-bold");
         $(`.jsform-nav-link[data-tab-index="${i}"]`).addClass("text-bold");
+
+        setTimeout(() => {
+            $(".select2-selection__rendered:visible").each(function () {
+                let s2 = $(this);
+                s2.css("width", s2.css("width"));
+            });
+        }, 100);
     });
 
     return target;
