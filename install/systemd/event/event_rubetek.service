@@ -5,7 +5,7 @@ After=network.target
 
 [Service]
 Type=simple
-WorkingDirectory=/opt/rbt/server/syslog/
+WorkingDirectory=/opt/rbt/services/event
 ExecStart=/usr/bin/node /opt/rbt/services/event/index.js rubetek
 RestartSec=10
 Restart=always
