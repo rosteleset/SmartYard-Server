@@ -5,9 +5,9 @@
     "main": "index.js",
     "type": "module",
     "scripts": {
-        "start": "concurrently -k \"npm run start:beward\" \"npm run start:beward_ds\" \"npm run start:qtech\" \"npm run start:is\" \"npm run start:akuvox\" \"npm run start:rubetek\"  \"npm run start:sputnik\"",
-        "dev": "concurrently -k \"npm run dev:beward\" \"npm run dev:beward_ds\" \"npm run dev:qtech\" \"npm run dev:is\" \"npm run dev:akuvox\" \"npm run dev:rubetek\" \"npm run dev:sputnik\"",
-        "dev:debug": "NODE_ENV=development concurrently -k \"npm run dev:beward\" \"npm run dev:beward_ds\" \"npm run dev:qtech\" \"npm run dev:is\" \"npm run dev:akuvox\" \"npm run dev:rubetek\" \"npm run dev:sputnik\"",
+        "start": "concurrently -k \"npm run start:*\"",
+        "dev": "concurrently -k \"npm run dev:*\"",
+        "debug": "NODE_ENV=development concurrently -k \"npm run dev:*\"",
         "start:beward": "node index.js beward",
         "start:beward_ds": "node index.js beward_ds",
         "start:qtech": "node index.js qtech",
