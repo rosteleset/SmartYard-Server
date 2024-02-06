@@ -6,8 +6,6 @@
     "eventServer": "beward_ds",
     "outputs": 3,
     "camera": "beward",
-    "useSmartConfigurator": false,
-    "cmses": [
-        
-    ]
+    "useSmartConfigurator": true,
+    "cmses": []
 }

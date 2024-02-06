@@ -1,5 +1,8 @@
 <?php
 
+$cli = false;
+$cliError = false;
+
 mb_internal_encoding("UTF-8");
 require_once "backends/backend.php";
 require_once "utils/loader.php";

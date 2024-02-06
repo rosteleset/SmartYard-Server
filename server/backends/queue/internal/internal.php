@@ -25,7 +25,7 @@
                 switch ($objectType) {
                     case "domophone":
                     case "camera":
-                        $this->db->insert("insert into tasks_changes (object_type, object_id) values (:object_type, :object_id)", [
+                        $this->db->insert("insert into tasks_changes (object_type, object_id) values (:object_type, :object_id) on conflict (object_type, object_id) do nothing", [
                             "object_type" => $objectType,
                             "object_id" => $objectId,
                         ], [
@@ -45,7 +45,7 @@
                 }
 
                 foreach ($domophones as $domophone) {
-                    $this->db->insert("insert into tasks_changes (object_type, object_id) values ('domophone', :object_id)", [
+                    $this->db->insert("insert into tasks_changes (object_type, object_id) values ('domophone', :object_id) on conflict (object_type, object_id) do nothing", [
                         "object_id" => $domophone["domophoneId"],
                     ], [
                         "silent"

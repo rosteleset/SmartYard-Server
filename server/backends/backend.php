@@ -210,5 +210,14 @@
 
                 return $n;
             }
+
+            /**
+             * @param $args
+             * @return mixed
+             */
+            public function cli($args)
+            {
+                return false;
+            }
         }
     }

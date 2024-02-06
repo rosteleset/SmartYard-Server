@@ -20,8 +20,10 @@ class akuvox extends camera
         int $sensitivity = 3
     )
     {
+        $motionDetectionEnabled = $left || $top || $width || $height;
+
         $this->setConfigParams([
-            'Config.DoorSetting.MOTION_DETECT.Enable' => $sensitivity === 0 ? '0' : '2', // 2 - video detection
+            'Config.DoorSetting.MOTION_DETECT.Enable' => $motionDetectionEnabled ? '2' : '0', // 2 - video detection
             'Config.DoorSetting.MOTION_DETECT.Interval' => '1', // Motion duration
             'Config.DoorSetting.MOTION_DETECT.TFTPEnable' => '0',
             'Config.DoorSetting.MOTION_DETECT.FTPEnable' => '1',
@@ -56,7 +58,7 @@ class akuvox extends camera
 
     protected function getMotionDetectionConfig(): array
     {
-        [$left, $width, $top, $height, $sensitivity] = $this->getConfigParams([
+        [$left, $width, $top, $height] = $this->getConfigParams([
             'Config.DoorSetting.MOTION_DETECT.AreaStartWidth',
             'Config.DoorSetting.MOTION_DETECT.AreaEndWidth',
             'Config.DoorSetting.MOTION_DETECT.AreaStartHeight',

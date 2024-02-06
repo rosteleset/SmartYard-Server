@@ -348,11 +348,23 @@
                             host: response.cameras.cameras[i].url,
                         }
                     }
-                    let comment = response.cameras.cameras[i].comment;
+                    let comment = $.trim(response.cameras.cameras[i].comment);
+                    let name = $.trim(response.cameras.cameras[i].name);
+                    let text = name;
+                    if (!text) {
+                        text = comment;
+                    } else {
+                        text += " (" + comment + ")";
+                    }
+                    if (!text) {
+                        text = url.host;
+                    } else {
+                        text += " [" + url.host + "]";
+                    }
                     cameras.push({
                         id: response.cameras.cameras[i].cameraId,
-                        text: comment?(comment + ' [' + url.host + ']'):url.host,
-                    })
+                        text: text,
+                    });
                 }
 
                 GET("houses", "domophones").
@@ -374,11 +386,23 @@
                                 host: response.domophones.domophones[i].url,
                             }
                         }
-                        let comment = response.domophones.domophones[i].comment;
+                        let comment = $.trim(response.domophones.domophones[i].comment);
+                        let name = $.trim(response.domophones.domophones[i].name);
+                        let text = name;
+                        if (!text) {
+                            text = comment;
+                        } else {
+                            text += " (" + comment + ")";
+                        }
+                        if (!text) {
+                            text = url.host;
+                        } else {
+                            text += " [" + url.host + "]";
+                        }
                         domophones.push({
                             id: response.domophones.domophones[i].domophoneId,
-                            text: comment?(comment + ' [' + url.host + ']'):url.host,
-                        })
+                            text: text,
+                        });
                     }
 
                     cardForm({
@@ -914,11 +938,23 @@
                         host: response.cameras.cameras[i].url,
                     }
                 }
-                let comment = response.cameras.cameras[i].comment;
+                let comment = $.trim(response.cameras.cameras[i].comment);
+                let name = $.trim(response.cameras.cameras[i].name);
+                let text = name;
+                if (!text) {
+                    text = comment;
+                } else {
+                    text += " (" + comment + ")";
+                }
+                if (!text) {
+                    text = url.host;
+                } else {
+                    text += " [" + url.host + "]";
+                }
                 cameras.push({
                     id: response.cameras.cameras[i].cameraId,
-                    text: comment?(comment + ' [' + url.host + ']'):url.host,
-                })
+                    text: text,
+                });
             }
 
             GET("houses", "domophones").
@@ -938,11 +974,23 @@
                             host: response.domophones.domophones[i].url,
                         }
                     }
-                    let comment = response.domophones.domophones[i].comment;
+                    let comment = $.trim(response.domophones.domophones[i].comment);
+                    let name = $.trim(response.domophones.domophones[i].name);
+                    let text = name;
+                    if (!text) {
+                        text = comment;
+                    } else {
+                        text += " (" + comment + ")";
+                    }
+                    if (!text) {
+                        text = url.host;
+                    } else {
+                        text += " [" + url.host + "]";
+                    }
                     domophones.push({
                         id: response.domophones.domophones[i].domophoneId,
-                        text: comment?(comment + ' [' + url.host + ']'):url.host,
-                    })
+                        text: text,
+                    });
                 }
 
                 let entrance = false;
@@ -1628,6 +1676,20 @@
                 rows: () => {
                     let rows = [];
 
+                    modules.addresses.houses.meta.flats.sort((a, b) => {
+                        let d = parseInt(a.flat) - parseInt(b.flat);
+                        if (d) {
+                            return d;
+                        }
+                        if (a.flat > b.flat) {
+                            return 1;
+                        }
+                        if (a.flat < b.flat) {
+                            return -1
+                        }
+                        return 0;
+                    });
+
                     for (let i in modules.addresses.houses.meta.flats) {
                         rows.push({
                             uid: modules.addresses.houses.meta.flats[i].flatId,
@@ -1731,6 +1793,33 @@
                 rows: () => {
                     let rows = [];
                     let entrances = {};
+
+                    modules.addresses.houses.meta.entrances.sort((a, b) => {
+                        let et = {
+                            "entrance": 0,
+                            "wicket": 1,
+                            "gate": 2,
+                            "barrier": 3,
+                        }
+    
+                        if (et[a.entranceType] > et[b.entranceType]) {
+                            return 1;
+                        }
+                        if (et[a.entranceType] < et[b.entranceType]) {
+                            return -1
+                        }
+                        let d = parseInt(a.entrance) - parseInt(b.entrance);
+                        if (d) {
+                            return d;
+                        }
+                        if (a.entrance > b.entrance) {
+                            return 1;
+                        }
+                        if (a.entrance < b.entrance) {
+                            return -1
+                        }
+                        return 0;
+                    });
 
                     for (let i in modules.addresses.houses.meta.entrances) {
                         entrances[modules.addresses.houses.meta.entrances[i].entranceId] = modules.addresses.houses.meta.entrances[i];
@@ -1974,11 +2063,12 @@
 
                             h += `<thead>`;
 
-                            h += `<th>&nbsp;</th>`;
+                            h += `<th><button type="button" class="btn btn-primary btn-xs cms-magic" data-cms="${cmsi}" title="${i18n("addresses.cmsMagic")}"><i class="fa-fw fas fa-magic"></i></button></th>`;
 
                             for (let j = 0; j < maxX; j++) {
                                 h += `<th>${i18n("addresses.cmsD")}${j + cms.dozen_start}</th>`;
                             }
+
                             h += `</thead>`;
 
                             h += `<tbody>`;
@@ -2003,7 +2093,7 @@
                             cmsi++;
                         }
 
-                        h += `<button id="entranceCmsSubmit" type="submit" class="btn btn-primary modalFormOk ml-3 mb-2 mt-2">${i18n("apply")}</button>`;
+                        h += `<button id="entranceCmsSubmit" class="btn btn-primary ml-3 mb-2 mt-2">${i18n("apply")}</button>`;
 
                         h += `</div>`;
                         h += `</div>`;
@@ -2038,10 +2128,92 @@
                                 cms: cmses,
                             }).
                             done(() => {
+                                message(i18n("addresses.changesWasSaved"));
                                 modules.addresses.houses.renderEntranceCMS(houseId, entranceId);
                             }).
                             fail(FAIL).
                             fail(loadingDone);
+                        });
+
+                        $(".cms-magic").off("click").on("click", function () {
+                            let cms = $(this).attr("data-cms");
+
+                            cardForm({
+                                title: i18n("addresses.cmsMagic"),
+                                footer: true,
+                                borderless: true,
+                                topApply: true,
+                                apply: i18n("addresses.fill"),
+                                fields: [
+                                    {
+                                        id: "dozenFirst",
+                                        value: $(`.cmsa[data-cms='${cms}']:first`).attr("data-dozen"),
+                                        title: i18n("addresses.dozenFirst"),
+                                        validate: v => {
+                                            return parseInt(v) >= 0;
+                                        },
+                                    },
+                                    {
+                                        id: "unitFirst",
+                                        value: parseInt($(`.cmsa[data-cms='${cms}']:first`).attr("data-unit")) ? parseInt($(`.cmsa[data-cms='${cms}']:first`).attr("data-unit")) : parseInt($(`.cmsa[data-cms='${cms}']:first`).attr("data-unit")) + 1,
+                                        title: i18n("addresses.unitFirst"),
+                                        validate: v => {
+                                            return parseInt(v) >= 0;
+                                        },
+                                    },
+                                    {
+                                        id: "apartmentFirst",
+                                        title: i18n("addresses.apartmentFirst"),
+                                        value: "1",
+                                        validate: v => {
+                                            return parseInt(v) > 0;
+                                        },
+                                    },
+                                    {
+                                        id: "apartmentFillCount",
+                                        title: i18n("addresses.apartmentFillCount"),
+                                        value: $(`.cmsa[data-cms='${cms}']`).length,
+                                        validate: v => {
+                                            return parseInt(v) > 0;
+                                        },
+                                    },
+                                    {
+                                        id: "clearFirst",
+                                        title: i18n("addresses.cmsClearFirst"),
+                                        type: "noyes",
+                                    }
+                                ],
+                                callback: result => {
+                                    if (parseInt(result.clearFirst)) {
+                                        $(".cmsa").val("");
+                                    }
+                                    let d = result.dozenFirst;
+                                    let u = result.unitFirst;
+                                    let a = result.apartmentFirst;
+                                    let i = 0;
+                                    let e = 0;
+                                    while (i < result.apartmentFillCount) {
+                                        let n = $(`.cmsa[data-cms='${cms}'][data-dozen='${d}'][data-unit='${u}']`);
+                                        if (n.length) {
+                                            n.val(a);
+                                            i++;
+                                            a++;
+                                            u++;
+                                            e = 0;
+                                        } else {
+                                            d++;
+                                            if (!$(`.cmsa[data-cms='${cms}'][data-dozen='${d}']`).length) {
+                                                d = $(`.cmsa[data-cms='${cms}']:first`).attr("data-dozen");
+                                            }
+                                            u = parseInt($(`.cmsa[data-cms='${cms}'][data-dozen='${d}']:first`).attr("data-unit"));
+                                            e++;
+                                            if (e > result.apartmentFillCount) {
+                                                break;
+                                            }
+                                        }
+                                    }
+                                },
+                            });
                         });
 
                         loadingDone();

@@ -175,7 +175,7 @@
                     type: "select2",
                     title: i18n("addresses.timezone"),
                     placeholder: i18n("addresses.timezone"),
-                    options: modules.addresses.timezonesOptions(),
+                    options: timezonesOptions(),
                     validate: (v) => {
                         return $.trim(v) !== "";
                     },
@@ -430,7 +430,7 @@
                         type: "select2",
                         title: i18n("addresses.timezone"),
                         placeholder: i18n("addresses.timezone"),
-                        options: modules.addresses.timezonesOptions(),
+                        options: timezonesOptions(),
                         validate: (v) => {
                             return $.trim(v) !== "";
                         },
@@ -560,7 +560,7 @@
                 edit: modules.addresses.cameras.modifyCamera,
                 columns: [
                     {
-                        title: i18n("addresses.cameraId"),
+                        title: i18n("addresses.cameraIdList"),
                     },
                     {
                         title: i18n("addresses.url"),

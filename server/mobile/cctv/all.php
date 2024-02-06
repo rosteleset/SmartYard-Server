@@ -73,6 +73,9 @@ function replace_url(array $cams, bool $flatIsBlocked, string $paymentRequireUrl
 
 foreach($subscriber['flats'] as $flat) {
     $houseId = $flat['addressHouseId'];
+    if ($house_id != $houseId && $house_id != 0)
+        continue;
+
     $flatDetail = $households->getFlat($flat['flatId']);
     $flatIsBlock = $flatDetail['adminBlock'] || $flatDetail['manualBlock'] || $flatDetail['autoBlock'];
 

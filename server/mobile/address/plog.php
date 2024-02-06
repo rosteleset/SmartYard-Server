@@ -16,7 +16,6 @@
  * @apiSuccess {string="Y-m-d H:i:s"} -.date дата
  * @apiSuccess {integer} [-.timezone] часовой пояс (default - Moscow Time)
  * @apiSuccess {UUID} -.uuid UUID события (уникален)
- * @apiSuccess {UUID} [-.image] UUID картинки (может повторяться для "дублирующихся" событий)
  * @apiSuccess {integer} -.objectId идентификатор объекта (домофона)
  * @apiSuccess {integer="0"} -.objectType тип объекта (0 - домофон)
  * @apiSuccess {integer="0","1","2"} -.objectMechanizma идентификатор нагрузки (двери)
@@ -44,6 +43,7 @@
  * @apiSuccess {integer} [-.detailX.face.height] высота
  *
  * @apiErrorExample Ошибки
+ * 402 требуется оплата
  * 403 требуется авторизация
  * 422 неверный формат данных
  * 404 пользователь не найден
@@ -77,7 +77,7 @@ if (!$plog) {
     response(403);
 }
 
-//проверка на доступность событий
+// Checking for event availability
 $flat_owner = false;
 foreach ($subscriber['flats'] as $flat) {
     if ($flat['flatId'] == $flat_id) {
@@ -87,6 +87,14 @@ foreach ($subscriber['flats'] as $flat) {
 }
 
 $flat_details = $households->getFlat($flat_id);
+
+// Checking account balance. Possible use redirect to payment screen on mobile app by response code 402
+if ($flat_details['autoBlock']){
+    response(402);
+} elseif ($flat_details['adminBlock'] || $flat_details['manualBlock']) {
+    response(403);
+}
+
 $plog_access = $flat_details['plog'];
 if ($plog_access == $plog::ACCESS_DENIED || $plog_access == $plog::ACCESS_RESTRICTED_BY_ADMIN
     || $plog_access == $plog::ACCESS_OWNER_ONLY && !$flat_owner) {
@@ -102,7 +110,6 @@ try {
             $e_details = [];
             $e_details['date'] = date('Y-m-d H:i:s', $row[plog::COLUMN_DATE]);
             $e_details['uuid'] = $row[plog::COLUMN_EVENT_UUID];
-            $e_details['image'] = $row[plog::COLUMN_IMAGE_UUID];
             $e_details['previewType'] = $row[plog::COLUMN_PREVIEW];
 
             $domophone = json_decode($row[plog::COLUMN_DOMOPHONE]);

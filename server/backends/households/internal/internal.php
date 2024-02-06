@@ -806,6 +806,7 @@
                     "nat" => "nat",
                     "locks_are_open" => "locksAreOpen",
                     "comment" => "comment",
+                    "name" => "name",
                     "ip" => "ip",
                     "sub_id" => "sub_id",
                 ];
@@ -892,7 +893,7 @@
             /**
              * @inheritDoc
              */
-            public function addDomophone($enabled, $model, $server, $url,  $credentials, $dtmf, $nat, $comment)
+            public function addDomophone($enabled, $model, $server, $url,  $credentials, $dtmf, $nat, $comment, $name)
             {
                 if (!$model) {
                     setLastError("moModel");
@@ -926,7 +927,7 @@
                     return false;
                 }
 
-                $domophoneId = $this->db->insert("insert into houses_domophones (enabled, model, server, url, credentials, dtmf, nat, comment) values (:enabled, :model, :server, :url, :credentials, :dtmf, :nat, :comment)", [
+                $domophoneId = $this->db->insert("insert into houses_domophones (enabled, model, server, url, credentials, dtmf, nat, comment, name) values (:enabled, :model, :server, :url, :credentials, :dtmf, :nat, :comment, :name)", [
                     "enabled" => (int)$enabled,
                     "model" => $model,
                     "server" => $server,
@@ -935,6 +936,7 @@
                     "dtmf" => $dtmf,
                     "nat" => $nat,
                     "comment" => $comment,
+                    "name" => $name,
                 ]);
 
                 $queue = loadBackend("queue");
@@ -950,7 +952,7 @@
             /**
              * @inheritDoc
              */
-            public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $dtmf, $firstTime, $nat, $locksAreOpen, $comment)
+            public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $dtmf, $firstTime, $nat, $locksAreOpen, $comment, $name)
             {
                 if (!checkInt($domophoneId)) {
                     setLastError("noId");
@@ -1000,7 +1002,7 @@
                     return false;
                 }
 
-                $r = $this->db->modify("update houses_domophones set enabled = :enabled, model = :model, server = :server, url = :url, credentials = :credentials, dtmf = :dtmf, first_time = :first_time, nat = :nat, locks_are_open = :locks_are_open, comment = :comment where house_domophone_id = $domophoneId", [
+                $r = $this->db->modify("update houses_domophones set enabled = :enabled, model = :model, server = :server, url = :url, credentials = :credentials, dtmf = :dtmf, first_time = :first_time, nat = :nat, locks_are_open = :locks_are_open, comment = :comment, name = :name where house_domophone_id = $domophoneId", [
                     "enabled" => (int)$enabled,
                     "model" => $model,
                     "server" => $server,
@@ -1011,6 +1013,7 @@
                     "nat" => $nat,
                     "locks_are_open" => $locksAreOpen,
                     "comment" => $comment,
+                    "name" => $name,
                 ]);
 
                 if ($r) {
@@ -1083,6 +1086,7 @@
                     "nat" => "nat",
                     "locks_are_open" => "locksAreOpen",
                     "comment" => "comment",
+                    "name" => "name",
                     "ip" => "ip",
                     "sub_id" => "sub_id",
                 ], [
@@ -1930,6 +1934,99 @@
                         $this->db->modify($query, ["ip" => $ip]);
                     }
                 }
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function capabilities()
+            {
+                return [
+                    "cli" => true,
+                ];
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function cli($args)
+            {
+                function cliUsage()
+                {
+                    global $argv;
+            
+                    echo formatUsage("usage: {$argv[0]} households
+                    
+                        rfid:
+                            [--rf-import=<filename.csv> --house-id=<id> [--rf-first]]
+                    ");
+            
+                    exit(1);
+                }
+
+                if (
+                    (count($args) == 2 && isset($args["--rf-import"]) && isset($args["--house-id"]))
+                    ||
+                    (count($args) == 3 && isset($args["--rf-import"]) && isset($args["--house-id"]) && array_key_exists("--rf-first", $args) && !isset($args["--rf-first"]))
+                ) {
+                    $f1 = $this->getFlats("houseId", (int)$args["--house-id"]);
+                    $f2 = [];
+                    foreach ($f1 as $f) {
+                        $f2[$f["flat"]] = $f["flatId"];
+                    }
+    
+                    if (!count($f2)) {
+                        die("no flats found\n");
+                    }
+    
+                    if (!file_exists($args["--rf-import"])) {
+                        die("file not found\n");
+                    }
+
+                    $r1 = explode("\n", @file_get_contents($args["--rf-import"]));
+                    $r2 = [];
+                    foreach ($r1 as $r) {
+                        $r = explode(",", $r);
+                        if (array_key_exists("--rf-first", $args)) {
+                            $k = trim(@$r[0]);
+                            $f = trim(@$r[1]);
+                        } else {
+                            $f = trim(@$r[0]);
+                            $k = trim(@$r[1]);
+                        }
+                        if ($k && $f) {
+                            $r2[$k] = $f;
+                        } 
+                    }
+
+                    if (!count($r2)) {
+                        die("no keys found\n");
+                    }
+
+                    $s = 0;
+                    foreach ($r2 as $k => $f) {
+                        if (@$f2[$f]) {
+                            try {
+                                if ($f2[$f] && $this->addKey($k, 2, $f2[$f], "imported " . date("Y-m-d H:i:s"))) {
+                                    echo "$k added into flat $f\n";
+                                    $s++;
+                                } else {
+                                    echo "error while adding $k into flat $f\n";
+                                }
+                            } catch (\Exception $e) {
+                                echo "error while adding $k into flat $f\n";
+                            }
+                        }
+                    }
+
+                    echo "$s key(s) imported\n";
+
+                    exit(0);
+                }
+
+                cliUsage();
+
+                return true;
             }
         }
     }

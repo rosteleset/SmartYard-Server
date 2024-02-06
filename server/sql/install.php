@@ -13,7 +13,7 @@
 
         $driver = explode(":", $config["db"]["dsn"])[0];
 
-        echo "current version $version\n";
+        echo "current version $version\n\n";
 
         $skip = [];
         foreach(explode(",", $_skip) as $s) {

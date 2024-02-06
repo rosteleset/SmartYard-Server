@@ -116,12 +116,17 @@ abstract class akuvox extends domophone
                 'Config.Account1.GENERAL.Pwd' => $password,
                 'Config.Account1.GENERAL.UserAgent' => $login,
                 'Config.Account1.GENERAL.UserName' => $login,
+                'Config.Settings.GENERAL.DirectIP' => '0',
                 'Config.Account1.SIP.Port' => "$port",
                 'Config.Account1.SIP.Server' => "$server",
                 'Config.Account1.SIP.TransType' => '0', // UDP
+                'Config.Account1.SIP.ListenPortMin' => "$port",
+                'Config.Account1.SIP.ListenPortMax' => "$port",
                 'Config.Account1.STUN.Enable' => $stunEnabled ? '1' : '0',
                 'Config.Account1.STUN.Server' => $stunServer,
                 'Config.Account1.STUN.Port' => "$stunPort",
+                'Config.Account1.NAT.UdpKeepEnable' => $stunEnabled ? '1' : '0',
+                'Config.Account1.NAT.Rport' => '0',
                 'Config.Account1.AUTO_ANSWER.Enable' => '0', // disable auto answer for incoming calls
             ],
         ]);
@@ -140,7 +145,7 @@ abstract class akuvox extends domophone
         $currentApartment = (int)$this->getConfigParams(['Config.DoorSetting.DEVICENODE.Location'])[0];
         if ($currentApartment === $apartment) {
             $this->setConfigParams([
-                'Config.Programable.SOFTKEY01.Param1' => ';;;;;;;',
+                'Config.Programable.SOFTKEY01.LocalParam1' => ';;;;;;;',
                 'Config.DoorSetting.DEVICENODE.Location' => '',
             ]);
         }
@@ -316,6 +321,7 @@ abstract class akuvox extends domophone
         unset($dbConfig['apartments'][9999]);
 
         foreach ($dbConfig['apartments'] as &$apartment) {
+            $apartment['code'] = 0;
             $apartment['cmsEnabled'] = false;
         }
 
@@ -450,7 +456,7 @@ abstract class akuvox extends domophone
     {
         $flats = [];
 
-        $sipNumbersStr = $this->getConfigParams(['Config.Programable.SOFTKEY01.Param1'])[0];
+        $sipNumbersStr = $this->getConfigParams(['Config.Programable.SOFTKEY01.LocalParam1'])[0];
         $sipNumbers = array_filter(explode(';', $sipNumbersStr));
 
         if ($sipNumbers) {
