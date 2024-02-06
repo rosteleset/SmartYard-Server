@@ -1660,7 +1660,7 @@
                             message(i18n("tt.filterWasSaved"));
                             lStore("_tt_issue_filter_" + current_project, n);
                             currentAceEditorOriginalValue = currentAceEditor.getValue();
-                            location.href = '?#tt&filter=' + n + '&customSearch=yes&_=' + Math.random();                        
+                            location.href = '?#tt&filter=' + n + '&customSearch=yes&_=' + Math.random();
                         }).
                         fail(FAIL).
                         fail(loadingDone);

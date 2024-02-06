@@ -1,0 +1,20 @@
+[Unit]
+Description=Event service for Intersviaz intercom syslog messages
+Documentation=https://github.com/rosteleset/SmartYard-Server/tree/main/install
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/rbt/server/service/event/
+ExecStart=/usr/bin/node /opt/rbt/server/service/event/index.js is
+RestartSec=10
+Restart=always
+User=rbt
+Group=rbt
+LimitCORE=infinity
+KillMode=process
+#StandardOutput=file:/var/log/event_service/syslog_intercom_is.log
+StandardError=file:/var/log/event_service/syslog_intercom_is.error.log
+
+[Install]
+WantedBy=multi-user.target
