@@ -28,6 +28,8 @@ class ds06 extends beward
         array $cmsLevels = []
     )
     {
+        $this->setHostname($apartment);
+
         $params = ['action' => 'set'];
 
         for ($i = 1; $i <= 5; $i++) {
@@ -107,7 +109,19 @@ class ds06 extends beward
 
     public function deleteApartment(int $apartment = 0)
     {
-        // TODO: Implement deleteApartment() method.
+        $currentApartment = (int)$this->getSysinfo()['HostName'] ?? 0;
+
+        if ($currentApartment === $apartment) {
+            $this->setHostname(0);
+
+            $params = ['action' => 'set'];
+            for ($i = 1; $i <= 5; $i++) {
+                $params["Acc1ContactEnable$i"] = 'off';
+                $params["Acc1ContactNumber$i"] = '';
+            }
+
+            $this->apiCall('cgi-bin/sip_cgi', $params);
+        }
     }
 
     public function deleteRfid(string $code = '')
@@ -265,8 +279,15 @@ class ds06 extends beward
     {
         $timezone = $dbConfig['ntp']['timezone'];
         $dbConfig['ntp']['timezone'] = "{$this->getIdByTimezone($timezone)}";
+        $dbConfig['rfids'] = [];
         $dbConfig['tickerText'] = '';
         $dbConfig['unlocked'] = false;
+
+        foreach ($dbConfig['apartments'] as &$apartment) {
+            $apartment['code'] = 0;
+            $apartment['cmsEnabled'] = false;
+        }
+
         return $dbConfig;
     }
 
@@ -332,8 +353,30 @@ class ds06 extends beward
 
     protected function getApartments(): array
     {
-        // TODO: Implement getApartments() method.
-        return [];
+        $flats = [];
+        $sipNumbers = [];
+
+        $sip = $this->getParams('sip_cgi');
+
+        for ($i = 1; $i <= 5; $i++) {
+            $sipNumber = $sip["Acc1ContactNumber$i"] ?? '';
+            if ($sipNumber !== '') {
+                $sipNumbers[] = $sipNumber;
+            }
+        }
+
+        if ($sipNumbers) {
+            $apartment = $this->getSysinfo()['HostName'] ?? 0;
+            $flats[$apartment] = [
+                'apartment' => (int)$apartment,
+                'code' => 0,
+                'sipNumbers' => $sipNumbers,
+                'cmsEnabled' => false,
+                'cmsLevels' => [],
+            ];
+        }
+
+        return $flats;
     }
 
     protected function getCmsModel(): string
@@ -359,5 +402,10 @@ class ds06 extends beward
     protected function getUnlocked(): bool
     {
         return false;
+    }
+
+    protected function setHostname(string $hostname)
+    {
+        $this->apiCall('webs/sysInfoCfgEx', ['sys_name' => $hostname]);
     }
 }
