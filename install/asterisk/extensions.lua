@@ -362,7 +362,7 @@ local function handleMobileApp(context, extension)
 end
 
 -- panel's call
-local function hanleSIPOutdoorIntercom(context, extension)
+local function handleSIPOutdoorIntercom(context, extension)
     checkin()
 
     log_debug("intercom test call " .. string.format("1%05d", tonumber(extension:sub(2))))
@@ -551,7 +551,7 @@ extensions = {
         [ "_5XXXXXXXXX" ] = handleMobileApp,
 
         -- panel's call
-        [ "_6XXXXXXXXX" ] = hanleSIPOutdoorIntercom,
+        [ "_6XXXXXXXXX" ] = handleSIPOutdoorIntercom,
 
         -- SOS
         [ "112" ] = handleSOS,
