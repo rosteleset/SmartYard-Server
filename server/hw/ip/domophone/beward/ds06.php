@@ -171,6 +171,7 @@ class ds06 extends beward
         domophone::prepare();
         $this->enableBonjour(false);
         $this->enableCloud(false);
+        $this->enableUpnp(false);
         $this->configureAudio();
         $this->configureRtsp();
     }
@@ -349,6 +350,12 @@ class ds06 extends beward
     {
         $this->apiCall('webs/netCamdriveCfgEx', ['cloudtype' => $enabled ? 3 : 0]);
         $this->wait();
+    }
+
+    protected function enableUpnp(bool $enabled = true)
+    {
+        $params = $enabled ? ['cksearch' => 1] : [];
+        $this->apiCall('webs/netUPNPCfgEx', $params);
     }
 
     protected function getApartments(): array
