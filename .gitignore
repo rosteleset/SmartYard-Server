@@ -111,10 +111,11 @@ package-lock.json
 !/server/services/ami/package.json
 
 # ----- mqtt service
-!server/services/mqtt/package.json
+!/server/services/mqtt/package.json
 
 # ----- intercom provision service
-!server/services/intercom_provision/package.json
+!/server/services/intercom_provision/package.json
 
 # ----- event service
+!/server/services/event/package.json
 /server/services/event/config.json
