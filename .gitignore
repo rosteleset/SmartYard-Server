@@ -95,7 +95,6 @@ package-lock.json
 /server/mqtt/package-lock.json
 /install/asterisk/config.lua
 /install/asterisk/extconfig.conf
-/install/asterisk/http.conf
 
 # ----- syslog service
 /server/services/syslog/config.json
@@ -112,15 +111,11 @@ package-lock.json
 !/server/services/ami/package.json
 
 # ----- mqtt service
-!server/services/mqtt/package.json
+!/server/services/mqtt/package.json
 
-# -----intercom provision service
-!server/services/intercom_provision/package.json
+# ----- intercom provision service
+!/server/services/intercom_provision/package.json
 
-# ----- Kamailio
-/install/kamailio/kamailio-local.cfg
-/install/kamailio/kamctlrc
-/server/kamailio_.php
-
-# ----- rtpengine
-/install/rtpengine/rtpengine.conf
+# ----- event service
+!/server/services/event/package.json
+/server/services/event/config.json

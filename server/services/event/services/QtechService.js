@@ -110,8 +110,8 @@ class QtechService extends SyslogService {
          *  Open door by exit button pressed
          */
         if (qtMsgParts[1] === "Exit button pressed") {
-            let door = "";
-            let detail = "";
+            let door;
+            let detail;
 
             switch (qtMsgParts[2]) {
                 case "INPUTB":
