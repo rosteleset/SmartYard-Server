@@ -39,7 +39,7 @@ syslog.on("message", async ({date, host, message}) => {
         bwMsg.indexOf("Exits doWriteLoop") >= 0 ||
         bwMsg.indexOf("busybox-lib: udhcpc:") >= 0 ||
         bwMsg.indexOf("ssl_connect") >= 0 ||
-        bwMsg.indexOf("ipdsConnect") >= 0 ||
+        bwMsg.indexOf("ipds") >= 0 ||
         bwMsg.indexOf("SS_NETTOOL_SetupNetwork") >= 0 ||
         bwMsg.indexOf("SS_VO_Init") >= 0 ||
         bwMsg.indexOf("SS_AI_Init") >= 0 ||
@@ -52,7 +52,8 @@ syslog.on("message", async ({date, host, message}) => {
         bwMsg.indexOf("video stream") >= 0 ||
         bwMsg.indexOf("Modify System KeepAlive") >= 0 ||
         bwMsg.indexOf("SS_VENC_InitEncoder") >= 0 ||
-        bwMsg.indexOf("SSSNet") >= 0
+        bwMsg.indexOf("SSSNet") >= 0 ||
+        bwMsg.indexOf("errcode") >= 0
     ) {
         return;
     }
