@@ -68,7 +68,7 @@ class BewardService extends SyslogService {
         // Incoming DTMF for white rabbit: sending rabbit gate update
         if (msg.indexOf("Incoming DTMF RFC2833 on call") >= 0) {
             if ((this.gateRabbits)[host]) {
-                const {ip, prefix, apartmentNumber} = gateRabbits[host];
+                const {ip, prefix, apartmentNumber} = this.gateRabbits[host];
                 await API.setRabbitGates({date: now, ip, prefix, apartmentNumber});
             }
         }
