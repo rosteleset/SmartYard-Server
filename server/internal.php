@@ -86,7 +86,6 @@
             $param = $m[4];
             require_once __DIR__ . "/internal/{$module}/{$method}.php";
         }
-
     }
 
     response(404);
