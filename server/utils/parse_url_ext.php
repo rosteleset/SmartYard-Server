@@ -9,7 +9,7 @@ function parse_url_ext($url)
     {  
         $url = parse_url($url);
 
-        if ($url["query"]) {
+        if (isset($url["query"])) {
             $queryExt = [];
             $q = explode("&", $url["query"]);
             foreach ($q as $e) {
@@ -23,7 +23,7 @@ function parse_url_ext($url)
             $url["queryExt"] = $queryExt;
         }
 
-        if ($url["fragment"]) {
+        if (isset($url["fragment"])) {
             $fragmentExt = [];
             $q = explode("&", $url["fragment"]);
             foreach ($q as $e) {

@@ -87,12 +87,8 @@ trait akuvox
      */
     protected function apiCall(string $resource, string $method = 'GET', array $payload = []): array
     {
-        $req = $this->url . $this->apiPrefix . $resource;
-
-//        echo $method . PHP_EOL;
-//        echo $req . PHP_EOL;
-//        echo 'Payload: ' . json_encode($payload) . PHP_EOL;
-//        echo '---------------------------------' . PHP_EOL;
+        $url = explode('/#', $this->url)[0];
+        $req = $url . $this->apiPrefix . $resource;
 
         $ch = curl_init($req);
 
