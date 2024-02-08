@@ -13,8 +13,10 @@ class BewardServiceDS extends BewardService {
      * @returns {Promise<void>}
      */
     async handleSyslogMessage(now, host, msg) {
-        // SIP call done (for DS06*)
-        if (/^SIP call \d+ _is DISCONNECTED.*$/.test(msg) || /^EVENT:\d+:SIP call \d+ _is DISCONNECTED.*$/.test(msg)) {
+        await super.handleSyslogMessage(now, host, msg);
+
+        // SIP call done
+        if (/^SIP call \d+ is DISCONNECTED.*$/.test(msg) || /^EVENT:\d+:SIP call \d+ is DISCONNECTED.*$/.test(msg)) {
             await API.callFinished({date: now, ip: host});
         }
     }
