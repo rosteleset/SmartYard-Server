@@ -240,7 +240,7 @@ function neighbour(extension)
     --
 end
 
--- вызов на мобильные SIP интерком(ы) (которых пока нет)
+-- call to mobile application
 local function handleMobileIntercom(context, extension)
     checkin()
 
@@ -380,7 +380,7 @@ local function handleSOS()
     app.Wait(900)
 end
 
--- consierge
+-- concierge call
 local function handleConcierge()
     checkin()
 
@@ -511,6 +511,7 @@ local function handleOtherCases(context, extension)
     app.Hangup()
 end
 
+-- terminate active call
 local function handleCallTermitation(context, extension)
     local src = channel.CDR("src"):get()
     local status = channel.DIALSTATUS:get()
@@ -538,7 +539,7 @@ extensions = {
 
     [ "default" ] = {
 
-        -- вызов на мобильные SIP интерком(ы) (которых пока нет)
+        -- call to mobile application
         [ "_2XXXXXXXXX" ] = handleMobileIntercom,
 
         -- call to CMS intercom
@@ -553,16 +554,16 @@ extensions = {
         -- panel's call
         [ "_6XXXXXXXXX" ] = handleSIPOutdoorIntercom,
 
-        -- SOS
+        -- emergency call, SOS
         [ "112" ] = handleSOS,
 
-        -- concierge
+        -- concierge call
         [ "9999" ] = handleConcierge,
 
         -- all others
         [ "_X!" ] = handleOtherCases,
 
-        -- завершение вызова
+        -- terminate active call
         [ "h" ] = handleCallTermitation,
     },
 }
