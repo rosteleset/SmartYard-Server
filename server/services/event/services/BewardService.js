@@ -21,7 +21,7 @@ class BewardService extends SyslogService {
             "Exits doWriteLoop",
             "busybox-lib: udhcpc:",
             "ssl_connect",
-            "ipdsConnect",
+            "ipds",
             "SS_NETTOOL_SetupNetwork",
             "SS_VO_Init",
             "SS_AI_Init",
@@ -35,6 +35,7 @@ class BewardService extends SyslogService {
             "Modify System KeepAlive",
             "SS_VENC_InitEncoder",
             "SSSNet",
+            "errcode",
         ];
 
         return bewardSpamKeywords.some(keyword => msg.includes(keyword));
