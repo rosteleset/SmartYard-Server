@@ -89,3 +89,35 @@
 
         return false;
     }
+
+    /**
+     * Loads configuration from JSON or YAML files.
+     *
+     * @return array|false The configuration array, or false if the configuration files are not found or invalid.
+     */
+    function loadConfiguration()
+    {
+        try {
+            $config = false;
+
+            $jsonConfigPath = __DIR__ . "/../config/config.json";
+            $yamlConfigPath = __DIR__ . "/../config/config.yml";
+
+            if (file_exists($jsonConfigPath)) {
+                $config = json_decode(file_get_contents($jsonConfigPath), true);
+            }
+
+            if (!$config && file_exists($yamlConfigPath)) {
+                $config = yaml_parse_file($yamlConfigPath);
+            }
+
+            if (!$config) {
+                throw new Exception('Configuration files not found or invalid.');
+            }
+
+            return $config;
+        } catch (Exception $e) {
+            error_log($e->getMessage(), 0);
+            return $e;
+        }
+    }
