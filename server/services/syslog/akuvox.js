@@ -12,7 +12,7 @@ syslog.on("message", async ({ date, host, message }) => {
 
     // Spam messages filter
     if (
-        msg.indexOf("Couldn't resolve host name") >= 0 ||
+        msg.indexOf("send ftp") >= 0 ||
         msg.indexOf("AKUVOX DCLIENT") >=0 ||
         msg.indexOf("Autoprovision") >= 0 ||
         msg.indexOf("RFID szBuf") >= 0 ||
