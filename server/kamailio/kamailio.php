@@ -62,11 +62,11 @@
         {
             global $config;
             $postData = json_decode(file_get_contents('php://input'), associative: true);
-            $request_method = $_SERVER['REQUEST_METHOD'];
-            $path = $_SERVER["REQUEST_URI"];
+            $request_method = @$_SERVER['REQUEST_METHOD'];
+            $path = @$_SERVER["REQUEST_URI"];
 
             // FIXME: var name
-            $authApi = parse_url($config["api"]["kamailio"]);
+            $authApi = parse_url(@$config["api"]["kamailio"]);
             // update a patch process
             if ($authApi && $authApi['path']) {
                 $path = substr($path, strlen($authApi['path']));

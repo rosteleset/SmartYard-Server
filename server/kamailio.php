@@ -16,17 +16,17 @@
     // get global configuration
     try {
         $config = loadConfiguration();
-        if ($config instanceof Exception){
-            throw new Exception ($config->getMessage());
+        if ($config instanceof \Exception){
+            throw new \Exception ($config->getMessage());
         }
-    } catch (Exception $err) {
+    } catch (\Exception $err) {
         response(555, false, false, $err->getMessage());
         exit(1);
     }
 
     try {
         $db = new PDO_EXT(@$config["db"]["dsn"], @$config["db"]["username"], @$config["db"]["password"], @$config["db"]["options"]);
-    } catch (Exception $err) {
+    } catch (\Exception $err) {
         response(500, false, false, [
             "Can't open database " . $config["db"]["dsn"],
             $err->getMessage(),
@@ -38,7 +38,7 @@
     try {
         $kamailioAuthHandler = new Kamailio();
         $kamailioAuthHandler->handleRequest();
-    } catch (Exception $err) {
+    } catch (\Exception $err) {
         response(500, false, false, "Failed to handle request");
         exit(1);
     }
