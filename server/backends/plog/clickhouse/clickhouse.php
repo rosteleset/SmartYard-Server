@@ -668,7 +668,7 @@
                         $unit = $item['unit'];
 
                         // Call processing for Beward panel
-                        if ($unit == 'beward') {
+                        if ($unit == 'beward' || $unit == 'beward_ds') {
                             $patterns_call = [
                                 //pattern         start  talk  open   call_from_panel
                                 ["Calling sip:", true, false, false, 1],

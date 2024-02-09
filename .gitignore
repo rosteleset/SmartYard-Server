@@ -119,3 +119,7 @@ package-lock.json
 # ----- event service
 !/server/services/event/package.json
 /server/services/event/config.json
+
+# ----- Kamailio
+install/kamailio/kamailio-local.cfg
+install/kamailio/kamctlrc

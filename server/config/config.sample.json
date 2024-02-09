@@ -5,7 +5,8 @@
         "frontend": "https://example.com/frontend",
         "asterisk": "http://127.0.0.1/asterisk",
         "internal": "http://127.0.0.1/internal",
-        "mobile": "https://example.com/mobile"
+        "mobile": "https://example.com/mobile",
+        "kamailio": "http://example.com/kamailio"
     },
 
     "mobile": {
@@ -73,8 +74,7 @@
         "geocoder": {
             "backend": "dadata",
             "token": "<!-- your dadata token here --!>"
-        },
-
+        }
         "files": {
             "backend": "mongo"
         },
@@ -162,6 +162,18 @@
                     "ip": "<!-- your asterisk server external ip here --!>",
                     "sip_tcp_port": 5060,
                     "sip_udp_port": 5060
+                },
+                {
+                    "title": "SBC server | Kamailio",
+                    "type": "kamailio",
+                    "domain": "<!-- set your kamailio domain or external ip address --!>",
+                    "rpc_interface": "<!-- set smart-yard interface call to kamailio rpc (default 127.0.0.1)--!->",
+                    "rpc_path": "set path, default is 'RPC'",
+                    "rpc_port": "<!-- set your kamailio json_rpc port here --!>",
+                    "sip_tcp_port": "<!-- set your kamailio tcp port here --!>",
+                    "sip_udp_port": "<!-- set your kamailio udp port here --!>",
+                    "sip_tls_port": "<!-- set your kamailio tls port here --!>",
+                    "auth_token": "<!-- id use bearer token for auth set token or remove this key --!>"
                 }
             ],
             "stuns": [
