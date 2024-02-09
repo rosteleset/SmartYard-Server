@@ -473,8 +473,12 @@
                     
                     return @$response["URL"] ?: false;
 
-                default: 
-                    return "$prefix/$time-preview.mp4";
+                default:
+                    // Flussonic Server by default
+                    $url = "$prefix/$time-preview.mp4";
+                    if (isset($dvr['token']) && strlen($dvr['token']) !== 0)
+                       $url = $url . "?token=" . $dvr['token'];
+                    return $url;
                 }
                 return false;
             }
