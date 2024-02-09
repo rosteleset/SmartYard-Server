@@ -25,7 +25,7 @@
             public static function PUT($params) {
                 $addresses = loadBackend("addresses");
 
-                $success = $addresses->modifyHouse($params["_id"], $params["settlementId"], $params["streetId"], $params["houseUuid"], $params["houseType"], $params["houseTypeFull"], $params["houseFull"], $params["house"]);
+                $success = $addresses->modifyHouse($params["_id"], $params["settlementId"], $params["streetId"], $params["houseUuid"], $params["houseType"], $params["houseTypeFull"], $params["houseFull"], $params["house"], $params["companyId"]);
 
                 return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }
@@ -36,7 +36,7 @@
                 if (@$params["magic"]) {
                     $houseId = $addresses->addHouseByMagic($params["magic"]);
                 } else {
-                    $houseId = $addresses->addHouse($params["settlementId"], $params["streetId"], $params["houseUuid"], $params["houseType"], $params["houseTypeFull"], $params["houseFull"], $params["house"]);
+                    $houseId = $addresses->addHouse($params["settlementId"], $params["streetId"], $params["houseUuid"], $params["houseType"], $params["houseTypeFull"], $params["houseFull"], $params["house"], $params["companyId"]);
                 }
 
                 return api::ANSWER($houseId, ($houseId !== false)?"houseId":false);

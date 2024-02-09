@@ -1,3 +1,18 @@
 {
-    "companies": "Company"
+    "company": "Company",
+    "companies": "Companies",
+    "companyId": "#",
+    "type": "Type",
+    "name": "Name",
+    "uid": "UID",
+    "contacts": "Contacts",
+    "comment": "Comment",
+    "addCompany": "Add company",
+    "companyWasAdded": "Company was added",
+    "companyWasChanged": "Company was changed",
+    "companyWasDeleted": "Company was deleted",
+    "modifyCompany": "Modify company",
+    "confirmCompanyDelete": "Delete company \"#%s\"?",
+    "type1": "Typ1",
+    "type2": "Typ2"
 }

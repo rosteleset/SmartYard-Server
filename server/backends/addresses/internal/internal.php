@@ -732,12 +732,12 @@
                 }
 
                 if ($settlementId) {
-                    $query = "select address_house_id, address_settlement_id, address_street_id, house_uuid, house_type, house_type_full, house_full, house from addresses_houses where address_settlement_id = $settlementId and coalesce(address_street_id, 0) = 0 order by house";
+                    $query = "select address_house_id, address_settlement_id, address_street_id, house_uuid, house_type, house_type_full, house_full, house, company_id from addresses_houses where address_settlement_id = $settlementId and coalesce(address_street_id, 0) = 0 order by house";
                 } else
                 if ($streetId) {
-                    $query = "select address_house_id, address_settlement_id, address_street_id, house_uuid, house_type, house_type_full, house_full, house from addresses_houses where address_street_id = $streetId and coalesce(addresses_houses.address_settlement_id, 0) = 0 order by house";
+                    $query = "select address_house_id, address_settlement_id, address_street_id, house_uuid, house_type, house_type_full, house_full, house, company_id from addresses_houses where address_street_id = $streetId and coalesce(addresses_houses.address_settlement_id, 0) = 0 order by house";
                 } else {
-                    $query = "select address_house_id, address_settlement_id, address_street_id, house_uuid, house_type, house_type_full, house_full, house from addresses_houses order by house";
+                    $query = "select address_house_id, address_settlement_id, address_street_id, house_uuid, house_type, house_type_full, house_full, house, company_id from addresses_houses order by house";
                 }
 
                 return $this->db->get($query, false, [
@@ -749,6 +749,7 @@
                     "house_type_full" => "houseTypeFull",
                     "house_full" => "houseFull",
                     "house" => "house",
+                    "company_id" => "companyId",
                 ]);
             }
 
@@ -761,7 +762,7 @@
                     return false;
                 }
 
-                return $this->db->get("select address_house_id, address_settlement_id, address_street_id, house_uuid, house_type, house_type_full, house_full, house from addresses_houses where address_house_id = $houseId", false,
+                return $this->db->get("select address_house_id, address_settlement_id, address_street_id, house_uuid, house_type, house_type_full, house_full, house, company_id from addresses_houses where address_house_id = $houseId", false,
                     [
                         "address_house_id" => "houseId",
                         "address_settlement_id" => "settlementId",
@@ -771,6 +772,7 @@
                         "house_type_full" => "houseTypeFull",
                         "house_full" => "houseFull",
                         "house" => "house",
+                        "company_id" => "companyId",
                     ],
                     [
                         "singlify"
@@ -781,7 +783,7 @@
             /**
              * @inheritDoc
              */
-            function modifyHouse($houseId, $settlementId, $streetId, $houseUuid, $houseType, $houseTypeFull, $houseFull, $house)
+            function modifyHouse($houseId, $settlementId, $streetId, $houseUuid, $houseType, $houseTypeFull, $houseFull, $house, $companyId)
             {
                 if (!checkInt($houseId)) {
                     return false;
@@ -803,8 +805,12 @@
                     return false;
                 }
 
+                if (checkInt($companyId) === false) {
+                    return false;
+                }
+
                 if (trim($houseFull) && trim($house)) {
-                    return $this->db->modify("update addresses_houses set address_settlement_id = :address_settlement_id, address_street_id = :address_street_id, house_uuid = :house_uuid, house_type = :house_type, house_type_full = :house_type_full, house_full = :house_full, house = :house where address_house_id = $houseId", [
+                    return $this->db->modify("update addresses_houses set address_settlement_id = :address_settlement_id, address_street_id = :address_street_id, house_uuid = :house_uuid, house_type = :house_type, house_type_full = :house_type_full, house_full = :house_full, house = :house, company_id = :company_id where address_house_id = $houseId", [
                         ":address_settlement_id" => $settlementId ? : null,
                         ":address_street_id" => $streetId ? : null,
                         ":house_uuid" => $houseUuid,
@@ -812,6 +818,7 @@
                         ":house_type_full" => $houseTypeFull,
                         ":house_full" => $houseFull,
                         ":house" => $house,
+                        ":company_id" => $companyId,
                     ]);
                 } else {
                     return false;
@@ -821,7 +828,7 @@
             /**
              * @inheritDoc
              */
-            function addHouse($settlementId, $streetId, $houseUuid, $houseType, $houseTypeFull, $houseFull, $house)
+            function addHouse($settlementId, $streetId, $houseUuid, $houseType, $houseTypeFull, $houseFull, $house, $companyId)
             {
                 if ($settlementId && $streetId) {
                     return false;
@@ -839,8 +846,12 @@
                     return false;
                 }
 
+                if (checkInt($companyId) === false) {
+                    return false;
+                }
+
                 if (trim($houseFull) && trim($house)) {
-                    return $this->db->insert("insert into addresses_houses (address_settlement_id, address_street_id, house_uuid, house_type, house_type_full, house_full, house) values (:address_settlement_id, :address_street_id, :house_uuid, :house_type, :house_type_full, :house_full, :house)", [
+                    return $this->db->insert("insert into addresses_houses (address_settlement_id, address_street_id, house_uuid, house_type, house_type_full, house_full, house, company_id) values (:address_settlement_id, :address_street_id, :house_uuid, :house_type, :house_type_full, :house_full, :house, :company_id)", [
                         ":address_settlement_id" => $settlementId ? : null,
                         ":address_street_id" => $streetId ? : null,
                         ":house_uuid" => $houseUuid,
@@ -848,6 +859,7 @@
                         ":house_type_full" => $houseTypeFull,
                         ":house_full" => $houseFull,
                         ":house" => $house,
+                        ":company_id" => $companyId,
                     ]);
                 } else {
                     return false;

@@ -235,7 +235,7 @@
         });
     },
 
-    doAddHouse: function (settlementId, streetId, houseUuid, houseType, houseTypeFull, houseFull, house) {
+    doAddHouse: function (settlementId, streetId, houseUuid, houseType, houseTypeFull, houseFull, house, companyId) {
         loadingStart();
         POST("addresses", "house", false, {
             settlementId,
@@ -245,6 +245,7 @@
             houseTypeFull,
             houseFull,
             house,
+            companyId,
         }).
         fail(FAIL).
         done(() => {
@@ -400,7 +401,7 @@
         });
     },
 
-    doModifyHouse: function (houseId, settlementId, streetId, houseUuid, houseType, houseTypeFull, houseFull, house, targetSettlementId, targetStreetId) {
+    doModifyHouse: function (houseId, settlementId, streetId, houseUuid, houseType, houseTypeFull, houseFull, house, targetSettlementId, targetStreetId, companyId) {
         loadingStart();
         PUT("addresses", "house", houseId, {
             houseId,
@@ -410,7 +411,8 @@
             houseType,
             houseTypeFull,
             houseFull,
-            house
+            house,
+            companyId,
         }).
         fail(FAIL).
         done(() => {
@@ -1190,138 +1192,179 @@
     },
 
     modifyHouse: function (houseId) {
-        let house = false;
+        let companies = [];
 
-        for (let i in modules.addresses.meta.houses) {
-            if (modules.addresses.meta.houses[i].houseId == houseId) {
-                house = modules.addresses.meta.houses[i];
-                break;
+        function realModifyHouse() {
+            let house = false;
+
+            for (let i in modules.addresses.meta.houses) {
+                if (modules.addresses.meta.houses[i].houseId == houseId) {
+                    house = modules.addresses.meta.houses[i];
+                    break;
+                }
+            }
+    
+            let settlements = [];
+    
+            settlements.push({
+                id: "0",
+                text: "-",
+            });
+    
+            for (let i in modules.addresses.meta.settlements) {
+                settlements.push({
+                    id: modules.addresses.meta.settlements[i].settlementId,
+                    text: modules.addresses.meta.settlements[i].settlementWithType,
+                });
+            }
+    
+            let streets = [];
+    
+            streets.push({
+                id: "0",
+                text: "-",
+            });
+    
+            for (let i in modules.addresses.meta.streets) {
+                streets.push({
+                    id: modules.addresses.meta.streets[i].streetId,
+                    text: modules.addresses.meta.streets[i].streetWithType,
+                });
+            }
+    
+            if (house) {
+                cardForm({
+                    title: i18n("addresses.editHouse"),
+                    footer: true,
+                    borderless: true,
+                    topApply: true,
+                    delete: i18n("addresses.deleteHouse"),
+                    size: "lg",
+                    fields: [
+                        {
+                            id: "houseId",
+                            type: "text",
+                            title: i18n("addresses.houseId"),
+                            value: houseId,
+                            readonly: true,
+                        },
+                        {
+                            id: "settlementId",
+                            type: "select2",
+                            title: i18n("addresses.settlement"),
+                            value: house.settlementId,
+                            options: settlements,
+                            select: (el, id, prefix) => {
+                                $(`#${prefix}streetId`).val("0").trigger("change");
+                            },
+                            validate: (v, prefix) => {
+                                return !!parseInt(v) || !!parseInt($(`#${prefix}streetId`).val());
+                            },
+                        },
+                        {
+                            id: "streetId",
+                            type: "select2",
+                            title: i18n("addresses.street"),
+                            value: house.streetId,
+                            options: streets,
+                            select: (el, id, prefix) => {
+                                $(`#${prefix}settlementId`).val("0").trigger("change");
+                            },
+                            validate: (v, prefix) => {
+                                return !!parseInt(v) || !!parseInt($(`#${prefix}settlementId`).val());
+                            },
+                        },
+                        {
+                            id: "houseUuid",
+                            type: "text",
+                            title: i18n("addresses.houseUuid"),
+                            placeholder: i18n("addresses.houseUuid"),
+                            value: house.houseUuid,
+                            validate: v => {
+                                return !!v;
+                            },
+                        },
+                        {
+                            id: "houseType",
+                            type: "text",
+                            title: i18n("addresses.houseType"),
+                            placeholder: i18n("addresses.houseType"),
+                            value: house.houseType,
+                        },
+                        {
+                            id: "houseTypeFull",
+                            type: "text",
+                            title: i18n("addresses.houseTypeFull"),
+                            placeholder: i18n("addresses.houseTypeFull"),
+                            value: house.houseTypeFull,
+                        },
+                        {
+                            id: "houseFull",
+                            type: "text",
+                            title: i18n("addresses.houseFull"),
+                            placeholder: i18n("addresses.houseFull"),
+                            validate: (v) => {
+                                return $.trim(v) !== "";
+                            },
+                            value: house.houseFull,
+                        },
+                        {
+                            id: "house",
+                            type: "text",
+                            title: i18n("addresses.house"),
+                            placeholder: i18n("addresses.house"),
+                            validate: (v) => {
+                                return $.trim(v) !== "";
+                            },
+                            value: house.house,
+                        },
+                        {
+                            id: "companyId",
+                            hidden: !companies.length,
+                            type: "select2",
+                            title: i18n("companies.company"),
+                            options: companies,
+                            value: house.companyId,
+                        },
+                    ],
+                    callback: function (result) {
+                        if (result.delete === "yes") {
+                            modules.addresses.deleteHouse(houseId, parseInt(house.settlementId), parseInt(house.streetId));
+                        } else {
+                            if (!companies.length) {
+                                console.log(house);
+                                result.companyId = house.companyId;
+                            }
+                            modules.addresses.doModifyHouse(houseId, parseInt(result.settlementId), parseInt(result.streetId), result.houseUuid, result.houseType, result.houseTypeFull, result.houseFull, result.house, parseInt(house.settlementId), parseInt(house.streetId), parseInt(result.companyId));
+                        }
+                    },
+                }).show();
+            } else {
+                error(i18n("addresses.houseNotFound"));
             }
         }
 
-        let settlements = [];
+        if (AVAIL("companies", "companies") && modules.companies) {
+            GET("companies", "companies", false, true).
+            fail(FAIL).
+            done(result => {
+                companies.push({
+                    id: "0",
+                    text: "-",
+                });
+    
+                for (let i in result.companies) {
+                    companies.push({
+                        id: result.companies[i].companyId,
+                        text: "[" + result.companies[i].uid + "] " + i18n("companies.type" + result.companies[i].type) + " " + result.companies[i].name,
+                    });
+                }
 
-        settlements.push({
-            id: "0",
-            text: "-",
-        })
-        for (let i in modules.addresses.meta.settlements) {
-            settlements.push({
-                id: modules.addresses.meta.settlements[i].settlementId,
-                text: modules.addresses.meta.settlements[i].settlementWithType,
-            });
-        }
-
-        let streets = [];
-
-        streets.push({
-            id: "0",
-            text: "-",
-        })
-        for (let i in modules.addresses.meta.streets) {
-            streets.push({
-                id: modules.addresses.meta.streets[i].streetId,
-                text: modules.addresses.meta.streets[i].streetWithType,
-            });
-        }
-
-        if (house) {
-            cardForm({
-                title: i18n("addresses.editHouse"),
-                footer: true,
-                borderless: true,
-                topApply: true,
-                delete: i18n("addresses.deleteHouse"),
-                size: "lg",
-                fields: [
-                    {
-                        id: "houseId",
-                        type: "text",
-                        title: i18n("addresses.houseId"),
-                        value: houseId,
-                        readonly: true,
-                    },
-                    {
-                        id: "settlementId",
-                        type: "select2",
-                        title: i18n("addresses.settlement"),
-                        value: house.settlementId,
-                        options: settlements,
-                        select: (el, id, prefix) => {
-                            $(`#${prefix}streetId`).val("0").trigger("change");
-                        },
-                        validate: (v, prefix) => {
-                            return !!parseInt(v) || !!parseInt($(`#${prefix}streetId`).val());
-                        },
-                    },
-                    {
-                        id: "streetId",
-                        type: "select2",
-                        title: i18n("addresses.street"),
-                        value: house.streetId,
-                        options: streets,
-                        select: (el, id, prefix) => {
-                            $(`#${prefix}settlementId`).val("0").trigger("change");
-                        },
-                        validate: (v, prefix) => {
-                            return !!parseInt(v) || !!parseInt($(`#${prefix}settlementId`).val());
-                        },
-                    },
-                    {
-                        id: "houseUuid",
-                        type: "text",
-                        title: i18n("addresses.houseUuid"),
-                        placeholder: i18n("addresses.houseUuid"),
-                        value: house.houseUuid,
-                        validate: v => {
-                            return !!v;
-                        },
-                    },
-                    {
-                        id: "houseType",
-                        type: "text",
-                        title: i18n("addresses.houseType"),
-                        placeholder: i18n("addresses.houseType"),
-                        value: house.houseType,
-                    },
-                    {
-                        id: "houseTypeFull",
-                        type: "text",
-                        title: i18n("addresses.houseTypeFull"),
-                        placeholder: i18n("addresses.houseTypeFull"),
-                        value: house.houseTypeFull,
-                    },
-                    {
-                        id: "houseFull",
-                        type: "text",
-                        title: i18n("addresses.houseFull"),
-                        placeholder: i18n("addresses.houseFull"),
-                        validate: (v) => {
-                            return $.trim(v) !== "";
-                        },
-                        value: house.houseFull,
-                    },
-                    {
-                        id: "house",
-                        type: "text",
-                        title: i18n("addresses.house"),
-                        placeholder: i18n("addresses.house"),
-                        validate: (v) => {
-                            return $.trim(v) !== "";
-                        },
-                        value: house.house,
-                    },
-                ],
-                callback: function (result) {
-                    if (result.delete === "yes") {
-                        modules.addresses.deleteHouse(houseId, parseInt(house.settlementId), parseInt(house.streetId));
-                    } else {
-                        modules.addresses.doModifyHouse(houseId, parseInt(result.settlementId), parseInt(result.streetId), result.houseUuid, result.houseType, result.houseTypeFull, result.houseFull, result.house, parseInt(house.settlementId), parseInt(house.streetId));
-                    }
-                },
-            }).show();
+                realModifyHouse();
+            }).
+            always(loadingDone);
         } else {
-            error(i18n("addresses.houseNotFound"));
+            realModifyHouse();
         }
     },
 
@@ -1667,64 +1710,98 @@
     },
 
     addHouse: function (settlementId, streetId) {
-        cardForm({
-            title: i18n("addresses.addHouse"),
-            footer: true,
-            borderless: true,
-            topApply: true,
-            apply: i18n("add"),
-            size: "lg",
-            fields: [
-                {
-                    id: "houseUuid",
-                    type: "text",
-                    title: i18n("addresses.houseUuid"),
-                    placeholder: i18n("addresses.houseUuid"),
-                    button: {
-                        class: "fas fa-magic",
-                        click: prefix => {
-                            $(`#${prefix}houseUuid`).val(guid());
+        let companies = [];
+
+        function realAddHouse() {
+            cardForm({
+                title: i18n("addresses.addHouse"),
+                footer: true,
+                borderless: true,
+                topApply: true,
+                apply: i18n("add"),
+                size: "lg",
+                fields: [
+                    {
+                        id: "houseUuid",
+                        type: "text",
+                        title: i18n("addresses.houseUuid"),
+                        placeholder: i18n("addresses.houseUuid"),
+                        button: {
+                            class: "fas fa-magic",
+                            click: prefix => {
+                                $(`#${prefix}houseUuid`).val(guid());
+                            },
+                        },
+                        validate: v => {
+                            return !!v;
                         },
                     },
-                    validate: v => {
-                        return !!v;
+                    {
+                        id: "houseType",
+                        type: "text",
+                        title: i18n("addresses.houseType"),
+                        placeholder: i18n("addresses.houseType"),
                     },
+                    {
+                        id: "houseTypeFull",
+                        type: "text",
+                        title: i18n("addresses.houseTypeFull"),
+                        placeholder: i18n("addresses.houseTypeFull"),
+                    },
+                    {
+                        id: "houseFull",
+                        type: "text",
+                        title: i18n("addresses.houseFull"),
+                        placeholder: i18n("addresses.houseFull"),
+                        validate: (v) => {
+                            return $.trim(v) !== "";
+                        }
+                    },
+                    {
+                        id: "house",
+                        type: "text",
+                        title: i18n("addresses.house"),
+                        placeholder: i18n("addresses.house"),
+                        validate: (v) => {
+                            return $.trim(v) !== "";
+                        }
+                    },
+                    {
+                        id: "companyId",
+                        hidden: !companies.length,
+                        type: "select2",
+                        title: i18n("companies.company"),
+                        options: companies,
+                    },
+                ],
+                callback: function (result) {
+                    modules.addresses.doAddHouse(settlementId, streetId, result.houseUuid, result.houseType, result.houseTypeFull, result.houseFull, result.house, result.companyId);
                 },
-                {
-                    id: "houseType",
-                    type: "text",
-                    title: i18n("addresses.houseType"),
-                    placeholder: i18n("addresses.houseType"),
-                },
-                {
-                    id: "houseTypeFull",
-                    type: "text",
-                    title: i18n("addresses.houseTypeFull"),
-                    placeholder: i18n("addresses.houseTypeFull"),
-                },
-                {
-                    id: "houseFull",
-                    type: "text",
-                    title: i18n("addresses.houseFull"),
-                    placeholder: i18n("addresses.houseFull"),
-                    validate: (v) => {
-                        return $.trim(v) !== "";
-                    }
-                },
-                {
-                    id: "house",
-                    type: "text",
-                    title: i18n("addresses.house"),
-                    placeholder: i18n("addresses.house"),
-                    validate: (v) => {
-                        return $.trim(v) !== "";
-                    }
-                },
-            ],
-            callback: function (result) {
-                modules.addresses.doAddHouse(settlementId, streetId, result.houseUuid, result.houseType, result.houseTypeFull, result.houseFull, result.house);
-            },
-        }).show();
+            }).show();
+        }
+
+        if (AVAIL("companies", "companies") && modules.companies) {
+            GET("companies", "companies", false, true).
+            fail(FAIL).
+            done(result => {
+                companies.push({
+                    id: 0,
+                    text: "-",
+                });
+    
+                for (let i in result.companies) {
+                    companies.push({
+                        id: result.companies[i].companyId,
+                        text: "[" + result.companies[i].uid + "] " + i18n("companies.type" + result.companies[i].type) + " " + result.companies[i].name,
+                    });
+                }
+
+                realAddHouse();
+            }).
+            always(loadingDone);
+        } else {
+            realAddHouse();
+        }
     },
 
     renderCities: function (target, regionId, areaId) {
