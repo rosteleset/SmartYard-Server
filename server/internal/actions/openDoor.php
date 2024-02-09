@@ -1,13 +1,34 @@
 <?php
-    /*
-     * Store events to db plog_door_open.
-     * "Freeze motion detection" request for SRS
-    */
+
+    /**
+     * @api {post} /actions/openDoor Store events to db 'plog_door_open', call "Freeze motion detection" to FRS
+     * @apiVersion 1.0.0
+     * @apiDescription *** in process ****
+     *
+     * @apiGroup internal
+     *
+     * @apiParam {Object}
+     * @apiParam {Number} date timestamp related to the call finished event.
+     * @apiParam {string|null} ip IP address associated with the event.
+     * @apiParam {string|null} subId subscription ID related to the event
+     * @apiParam {Number=1,2,3,4,5,6,7,8} event Event code
+     * @apiParam {Number=0,1} door Number door 0 - main door , 1 0 second door
+     * @apiParam {string} detail
+     *
+     * @apiSuccess {Number} status code indicating success
+     *
+     * @apiErrorExample {json} Error Responses:
+     *      HTTP/1.1 406 Invalid payload
+     *      HTTP/1.1 404 Not found
+     */
+
 
     /*
-     * TODO: refactor events code, move to global constants?
-     * Define Events
+     * TODO:
+     *      -   refactor events code, move to global constants?
+     *      -   Define Events
      */
+
     $events = [
         "NOT_ANSWERED" => 1,
         "ANSWERED" => 2,

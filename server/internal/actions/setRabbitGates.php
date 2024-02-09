@@ -1,5 +1,28 @@
 <?php
-    //Find the intercom panel in the gate mode, we find the timestamp of the door opening for the requested apartment
+
+    /**
+     * @api {post} /actions/setRabbitGates 'gate mode' feature processing
+     * @apiVersion 1.0.0
+     * @apiDescription *** testing ***
+     *
+     * @apiGroup internal
+     *
+     * @apiParam {Object}
+     * @apiParam {Number} date timestamp related to the call finished event.
+     * @apiParam {string|null} ip IP address associated with the event.
+     * @apiParam {string|null} subId subscription ID related to the event
+     * @apiParam {Number} prefix house prefix.
+     * @apiParam apartmentNumber apartment (flat) number.
+     * @apiParam apartmentId apartment ID.
+     *
+     *
+     * @apiSuccess {Number} status code indicating success
+     *
+     * @apiErrorExample {json} Error Responses:
+     *      HTTP/1.1 406 Invalid payload
+     *      HTTP/1.1 404 Not found
+     */
+
     if (!isset(
         $postdata["prefix"],
         $postdata["apartmentNumber"],
