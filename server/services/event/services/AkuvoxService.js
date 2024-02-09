@@ -40,7 +40,7 @@ class AkuvoxService extends SyslogService {
 
         //  Opening a door by DTMF
         if (msg.indexOf("DTMF_LOG:From") >= 0) {
-            const apartmentId = parseInt(msg.split(" ")[1].substring(1));
+            const apartmentId = parseInt(msg.split(' ').pop().substring(1));
             await API.setRabbitGates({date: now, ip: host, apartmentId});
         }
 
