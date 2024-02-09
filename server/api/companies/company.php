@@ -20,7 +20,7 @@
                 $company = false;
 
                 if ($companies) {
-                    $company = $cs->getCompany(@$params["_id"]);
+                    $company = $companies->getCompany(@$params["_id"]);
                 }
 
                 return api::ANSWER($company, ($company !== false)?"company":"notFound");
@@ -32,7 +32,7 @@
                 $success = false;
 
                 if ($companies) {
-                    $success = $companies->addCompany($params["_id"]);
+                    $success = $companies->addCompany(@$params["type"], @$params["uid"], @$params["name"], @$params["contacts"], @$params["comment"]);
                 }
 
                 return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
@@ -44,18 +44,18 @@
                 $success = false;
 
                 if ($companies) {
-                    $success = $companies->modifyCompany($params["_id"]);
+                    $success = $companies->modifyCompany($params["_id"], @$params["type"], @$params["uid"], @$params["name"], @$params["contacts"], @$params["comment"]);
                 }
 
                 return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }
 
             public static function DELETE($params) {
-                $cs = loadBackend("companies");
+                $companies = loadBackend("companies");
 
                 $success = false;
 
-                if ($cs) {
+                if ($companies) {
                     $success = $companies->deleteCompany($params["_id"]);
                 }
 

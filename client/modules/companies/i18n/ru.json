@@ -1,3 +1,17 @@
 {
-    "companies": "Компании"
+    "companies": "Компании",
+    "companyId": "#",
+    "type": "Тип",
+    "name": "Наименование",
+    "uid": "ИНН",
+    "contacts": "Контакты",
+    "comment": "Комментарий",
+    "addCompany": "Добавить компанию",
+    "companyWasAdded": "Компания добавлена",
+    "companyWasChanged": "Компания изменена",
+    "companyWasDeleted": "Компания удалена",
+    "modifyCompany": "Изменить компанию",
+    "confirmCompanyDelete": "Удалить компанию \"#%s\"?",
+    "type1": "УК",
+    "type2": "ТСЖ"
 }

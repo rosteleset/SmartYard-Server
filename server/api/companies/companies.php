@@ -23,13 +23,13 @@
                     $list = $companies->getCompanies();
                 }
 
-                return api::ANSWER($companies, ($companies !== false)?"companies":"notFound");
+                return api::ANSWER($list, ($list !== false)?"companies":"notFound");
             }
 
             public static function index() {
                 if (loadBackend("companies")) {
                     return [
-                        "GET" => "companies",
+                        "GET",
                     ];
                 } else {
                     return false;

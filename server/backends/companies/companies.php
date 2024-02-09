@@ -25,25 +25,25 @@ namespace backends\companies
         abstract public function getCompany($companyId);
 
         /**
-         * @param $name
          * @param $type
          * @param $uid
+         * @param $name
          * @param $contacts
          * @param $comment
          * @return false|integer
          */
-        abstract public function addCompany($name, $type, $uid, $contacts, $comment);
+        abstract public function addCompany($type, $uid, $name, $contacts, $comment);
 
         /**
          * @param $companyId
-         * @param $name
          * @param $type
          * @param $uid
+         * @param $name
          * @param $contacts
          * @param $comment
          * @return boolean
          */
-        abstract public function modifyCompany($companyId, $name, $type, $uid, $contacts, $comment);
+        abstract public function modifyCompany($type, $uid, $companyId, $name, $contacts, $comment);
 
         /**
          * @param $companyId

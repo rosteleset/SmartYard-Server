@@ -51,7 +51,7 @@ namespace backends\companies
         /**
          * @inheritDoc
          */
-        public function addCompany($name, $type, $uid, $contacts, $comment)
+        public function addCompany($type, $uid, $name, $contacts, $comment)
         {
             if (!trim($name) || !checkInt($type)) {
                 return false;
@@ -69,7 +69,7 @@ namespace backends\companies
         /**
          * @inheritDoc
          */
-        public function modifyCompany($companyId, $name, $type, $uid, $contacts, $comment)
+        public function modifyCompany($companyId, $type, $uid, $name, $contacts, $comment)
         {
             if (!checkInt($companyId) || !trim($name) || !checkInt($type)) {
                 return false;
