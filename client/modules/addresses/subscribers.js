@@ -533,10 +533,10 @@
             target: "#altForm",
             title: {
                 caption: i18n("addresses.keys"),
-                button: params.flatId?{
+                button: params.flatId ? {
                     caption: i18n("addresses.addSubscribers"),
                     click: modules.addresses.subscribers.addKey,
-                }:false,
+                } : false,
             },
             edit: keyId => {
                 modules.addresses.subscribers.modifyKey(keyId, list);
