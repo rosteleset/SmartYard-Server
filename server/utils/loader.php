@@ -56,6 +56,7 @@
     * or false if there was an error loading the class.
     */
     function loadDevice(string $type, string $model, string $url, string $password, bool $firstTime = false) {
+        require_once __DIR__ . '/parse_url_ext.php';
         require_once __DIR__ . '/../hw/autoload.php';
 
         $availableTypes = ['camera', 'domophone'];

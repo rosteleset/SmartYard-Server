@@ -2,8 +2,6 @@
 
 namespace utils\SmartConfigurator\DbConfigCollector;
 
-require_once __DIR__ . '/../../parse_url_ext.php';
-
 use utils\SmartConfigurator\ConfigurationBuilder\CameraConfigurationBuilder;
 
 /**
