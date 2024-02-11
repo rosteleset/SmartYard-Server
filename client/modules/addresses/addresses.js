@@ -5,6 +5,7 @@
         }
 
         loadSubModules("addresses", [
+            "keys",
             "houses",
             "domophones",
             "cameras",
