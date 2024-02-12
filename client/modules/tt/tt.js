@@ -1787,7 +1787,7 @@
     route: function (params) {
         loadingStart();
 
-        $("#subTop").html("");
+        subTop();
 
         if ($("#altForm:visible").length > 0) {
             $("#mainForm").html("");

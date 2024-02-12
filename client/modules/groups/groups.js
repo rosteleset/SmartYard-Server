@@ -268,7 +268,7 @@
 
     render: function () {
         $("#altForm").hide();
-        $("#subTop").html("");
+        subTop();
 
         loadingStart();
 

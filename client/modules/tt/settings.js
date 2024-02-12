@@ -3944,7 +3944,7 @@
 
     route: function (params) {
         $("#altForm").hide();
-        $("#subTop").html("");
+        subTop();
 
         document.title = i18n("windowTitle") + " :: " + i18n("tt.settings");
 

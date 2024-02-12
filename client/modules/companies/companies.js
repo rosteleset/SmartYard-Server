@@ -84,7 +84,6 @@
     modifyCompany: function (companyId) {
         GET("companies", "company", companyId, true).
         then(result => {
-            console.log(result);
 
             cardForm({
                 title: i18n("companies.modifyCompany"),
@@ -213,7 +212,10 @@
                 rows: () => {
                     let rows = [];
     
+                    let companies = {};
+
                     for (let i in modules.companies.meta) {
+                        companies[modules.companies.meta[i].companyId] = modules.companies.meta[i].name;
                         rows.push({
                             uid: modules.companies.meta[i].companyId,
                             cols: [
@@ -243,6 +245,17 @@
                                             modules.companies.deleteCompany(companyId);
                                         },
                                     },
+                                    {
+                                        title: "-",
+                                    },
+                                    {
+                                        icon: "fas fa-key",
+                                        title: i18n("addresses.objectKeys"),
+                                        click: companyId => {
+                                            let [ route, params, hash ] = hashParse();
+                                            location.href = "?#addresses.keys&query=" + companyId + "&by=5&backStr=" + encodeURIComponent(companies[companyId]) + "&back=" + encodeURIComponent(hash.join("&"));
+                                        },
+                                    },
                                 ],
                             },
                         });
@@ -259,6 +272,9 @@
     route: function (params) {
         document.title = i18n("windowTitle") + " :: " + i18n("companies.companies");
 
+        $("#altForm").hide();
+        subTop();
+        
         modules.companies.renderCompanies(params);
     },
 }).init();

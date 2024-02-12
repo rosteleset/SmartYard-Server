@@ -12,6 +12,7 @@
     "companyWasChanged": "Company was changed",
     "companyWasDeleted": "Company was deleted",
     "modifyCompany": "Modify company",
+    "deleteCompany": "Delete company",
     "confirmCompanyDelete": "Delete company \"#%s\"?",
     "type1": "Typ1",
     "type2": "Typ2"

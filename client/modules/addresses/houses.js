@@ -2236,7 +2236,7 @@
 
         if (params.show === "cms" && parseInt(params.entranceId) > 0) {
             $("#altForm").hide();
-            $("#subTop").html("");
+            subTop();
 
             modules.addresses.houses.renderEntranceCMS(params.houseId, params.entranceId);
         } else {

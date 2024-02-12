@@ -283,7 +283,15 @@
   "changesWasSaved": "Changes was saved",
   "domophoneName": "Name",
   "subscriberInbox": "Messages",
-  "errors": {
+  "objectKeys": "Object keys (%s)",
+  "superKeys": "Superkeys",
+  "keysType0": "superkeys",
+  "keysType1": "tenant",
+  "keysType2": "flat",
+  "keysType3": "entrance",
+  "keysType4": "house",
+  "keysType5": "company",
+"errors": {
     "UNIQUE constraint failed: addresses_houses.address_settlement_id, addresses_houses.address_street_id, addresses_houses.house": "This house already exists",
     "UNIQUE constraint failed: houses_houses_entrances.house_entrance_id, houses_houses_entrances.prefix": "This prefix is already in use",
     "UNIQUE constraint failed: houses_entrances.domophone_id, houses_entrances.domophone_output": "This output is already occupied",

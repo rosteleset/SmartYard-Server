@@ -199,7 +199,7 @@
             $("#" + modules.tt.workspaces.menuItem).children().first().attr("href", "?#tt.workspaces&_=" + Math.random());
         }
 
-        $("#subTop").html("");
+        subTop();
 
         if (modules.tt.menuItem) {
             $("#" + modules.tt.menuItem).children().first().attr("href", "?#tt&_=" + Math.random());

@@ -108,60 +108,6 @@ function changeLanguage() {
     location.reload();
 }
 
-function showLoginForm() {
-    $("#mainForm").html("");
-    $("#altForm").hide();
-    $("#page404").hide();
-    $("#pageError").hide();
-    $("#forgotForm").hide();
-    $("#loginForm").show();
-
-    $("#loginBoxLogin").val(lStore("_login"));
-    $("#loginBoxServer").val(lStore("_server"));
-    if (!$("#loginBoxServer").val()) {
-        $("#loginBoxServer").val(config.defaultServer);
-    }
-
-    let server = $("#loginBoxServer").val();
-
-    while (server[server.length - 1] === "/") {
-        server = server.substring(0, server.length - 1);
-    }
-
-    $.get(server + "/accounts/forgot?available=ask").done(() => {
-        $("#loginBoxForgot").show();
-    });
-
-    loadingDone(true);
-
-    if ($("#loginBoxLogin").val()) {
-        $("#loginBoxPassword").focus();
-    } else {
-        $("#loginBoxLogin").focus();
-    }
-}
-
-function showForgotPasswordForm() {
-    $("#mainForm").html("");
-    $("#altForm").hide();
-    $("#page404").hide();
-    $("#pageError").hide();
-    $("#loginForm").hide();
-    $("#forgotForm").show();
-
-    $("#forgotBoxServer").val(lStore("_server"));
-    if (!$("#forgotBoxServer").val()) {
-        $("#forgotBoxServer").val($("#loginBoxServer").val());
-    }
-    if (!$("#forgotBoxServer").val()) {
-        $("#forgotBoxServer").val(config.defaultServer);
-    }
-
-    loadingDone(true);
-
-    $("#forgotBoxEMail").focus();
-}
-
 function ping(server) {
     return $.ajax({
         url: server + "/server/ping",
@@ -469,32 +415,6 @@ function initAll() {
     }
 }
 
-function leftSide(button, title, target, group, withibleOnlyWhenActive) {
-    if (group != mainSidebarGroup && !mainSidebarFirst) {
-        $("#leftside-menu").append(`
-            <li class="nav-item"><hr class="border-top" style="opacity: 15%"></li>
-        `);
-    }
-
-    let [ route ] = hashParse();
-
-    let id = md5(guid());
-
-    $("#leftside-menu").append(`
-        <li id="${id}" class="nav-item${mainSidebarFirst?" mt-2":""}${withibleOnlyWhenActive?" withibleOnlyWhenActive":""}" data-target="${target}" title="${escapeHTML(title)}"${(withibleOnlyWhenActive && target !== "#" + route.split('.')[0])?" style='display: none;'":""}>
-            <a href="${target}" data-href="${target}" class="nav-link${(target === "#" + route.split('.')[0])?" active":""}">
-                <i class="${button} nav-icon"></i>
-                <p class="text-nowrap">${title}</p>
-            </a>
-        </li>
-    `);
-
-    mainSidebarGroup = group;
-    mainSidebarFirst = false;
-
-    return id;
-}
-
 function loadModule() {
     let module = moduleLoadQueue.shift();
     if (!module) {
@@ -576,10 +496,6 @@ function loadSubModules(parent, subModules, doneOrParentObject) {
         }).
         fail(FAIL);
     }
-}
-
-function subTop(html) {
-    $("#subTop").html(`<div class="info-box mt-2 mb-1" style="min-height: 0px;"><div class="info-box-content"><span class="info-box-text">${html}</span></div></div>`);
 }
 
 function hashParse() {
@@ -702,21 +618,6 @@ function lStore(key, val) {
             });
         }
         return true;
-    }
-}
-
-function AVAIL(api, method, request_method) {
-    if (request_method) {
-        request_method = request_method.toUpperCase();
-    }
-    if (request_method) {
-        return available && available[api] && available[api][method] && available[api][method][request_method];
-    }
-    if (method) {
-        return available && available[api] && available[api][method];
-    }
-    if (api) {
-        return available && available[api];
     }
 }
 
