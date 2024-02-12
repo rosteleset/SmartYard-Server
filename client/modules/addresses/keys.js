@@ -33,14 +33,18 @@
                 columns: [
                     {
                         title: i18n("addresses.keyId"),
+                        nowrap: true,
                     },
                     {
                         title: i18n("addresses.rfId"),
                         nowrap: true,
                     },
                     {
-                        title: i18n("addresses.comments"),
+                        title: i18n("addresses.lastSeen"),
                         nowrap: true,
+                    },
+                    {
+                        title: i18n("addresses.comments"),
                         fullWidth: true,
                     },
                 ],
@@ -53,9 +57,15 @@
                             cols: [
                                 {
                                     data: result.keys[i].keyId,
+                                    nowrap: true,
                                 },
                                 {
                                     data: result.keys[i].rfId,
+                                    nowrap: true,
+                                },
+                                {
+                                    data: ttDate(result.keys[i].lastSeen),
+                                    nowrap: true,
                                 },
                                 {
                                     data: result.keys[i].comments,
