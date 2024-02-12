@@ -368,11 +368,11 @@
                                     nowrap: true,
                                 },
                                 {
-                                    data: modules.addresses.domophones.meta.domophones[i].name,
+                                    data: modules.addresses.domophones.meta.domophones[i].name ? modules.addresses.domophones.meta.domophones[i].name : "",
                                     nowrap: true,
                                 },
                                 {
-                                    data: modules.addresses.domophones.meta.domophones[i].comment,
+                                    data: modules.addresses.domophones.meta.domophones[i].comment ? modules.addresses.domophones.meta.domophones[i].comment : "",
                                     nowrap: true,
                                 },
                             ],

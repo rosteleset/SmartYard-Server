@@ -1645,6 +1645,19 @@
         });
     },
 
+    autoconfigureDomophone: function (domophoneId, firstTime) {
+        loadingStart();
+        POST("houses", "autoconfigure", domophoneId, {
+            object: "domophone",
+            firstTime: firstTime ? "1" : "0",
+        }).
+        then(() => {
+            message(i18n("addresses.taskQueued"));
+        }).
+        fail(FAIL).
+        always(loadingDone);
+    },
+
     renderHouse: function (houseId) {
         modules.addresses.houses.loadHouse(houseId, () => {
             cardTable({
@@ -1859,6 +1872,23 @@
                                         disabled: ! modules.addresses.houses.meta.entrances[i].cameraId,
                                         click: entranceId => {
                                             location.href = "?#addresses.cameras&cameraId=" + entrances[entranceId].cameraId;
+                                        },
+                                    },
+                                    {
+                                        title: "-",
+                                    },
+                                    {
+                                        icon: "fas fa-wrench",
+                                        title: i18n("addresses.autoconfigureDomophone"),
+                                        click: entranceId => {
+                                            modules.addresses.houses.autoconfigureDomophone(entrances[entranceId].domophoneId, false);
+                                        },
+                                    },
+                                    {
+                                        icon: "fas fa-tools",
+                                        title: i18n("addresses.autoconfigureDomophoneFirstTime"),
+                                        click: entranceId => {
+                                            modules.addresses.houses.autoconfigureDomophone(entrances[entranceId].domophoneId, true);
                                         },
                                     },
                                     {
