@@ -1477,8 +1477,6 @@
                     }
                 }
 
-                error_log($q);
-    
                 return $this->db->get($q, $p, [
                     "house_rfid_id" => "keyId",
                     "rfid" => "rfId",
