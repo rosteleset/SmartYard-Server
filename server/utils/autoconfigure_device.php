@@ -2,7 +2,6 @@
 
 require_once __DIR__ . '/SmartConfigurator/autoload.php';
 require_once __DIR__ . '/array_diff_assoc_recursive.php';
-require_once __DIR__ . '/parse_url_ext.php';
 
 use utils\SmartConfigurator\DbConfigCollector\{CameraDbConfigCollector, DomophoneDbConfigCollector};
 use utils\SmartConfigurator\SmartConfigurator;
