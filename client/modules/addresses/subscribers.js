@@ -130,11 +130,7 @@
                     title: i18n("addresses.mobile"),
                     placeholder: config.phonePattern?config.phonePattern:i18n("addresses.mobile"),
                     validate: (v) => {
-                        if (config.regExp && config.regExp?.phone) {
-                            return new RegExp(config.regExp.phone).test(v);
-                        } else
-                            console.error("Deprecated, update client configuration. Please add phone pattern regexp")
-                            return $.trim(v) !== "";
+                        return new RegExp(config.regExp.phone).test(v);
                     }
                 },
                 {
@@ -176,11 +172,7 @@
                     title: i18n("addresses.key"),
                     placeholder: "00000000ABCDEF",
                     validate: (v) => {
-                        if (config.regExp && config.regExp?.rfid) {
-                            return new RegExp(config.regExp.rfid).test(v);
-                        } else
-                            console.error("Deprecated, update client configuration. Please add rfid regexp")
-                        return $.trim(v) !== "";
+                        return new RegExp(config.regExp.rfid).test(v);
                     }
                 },
                 {
@@ -272,11 +264,7 @@
                         title: i18n("addresses.mobile"),
                         placeholder: config.phonePattern?config.phonePattern:i18n("addresses.mobile"),
                         validate: (v) => {
-                            if (config.regExp && config.regExp?.phone) {
-                                return new RegExp(config.regExp.phone).test(v);
-                            } else
-                                console.error("Deprecated, update client configuration. Please add phone pattern regexp")
-                                return $.trim(v) !== "";
+                            return new RegExp(config.regExp.phone).test(v);
                         },
                         value: subscriber.mobile,
                     },
@@ -534,7 +522,7 @@
             title: {
                 caption: i18n("addresses.keys"),
                 button: params.flatId ? {
-                    caption: i18n("addresses.addSubscribers"),
+                    caption: i18n("addresses.addKey"),
                     click: modules.addresses.subscribers.addKey,
                 } : false,
             },

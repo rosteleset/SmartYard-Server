@@ -1464,15 +1464,21 @@
                 $q = "";
                 $p = false;
 
-                switch ($by) {
-                    case "flatId":
-                        $q = "select * from houses_rfids where access_to = :flat_id and access_type = 2";
-                        $p = [
-                            "flat_id" => (int)$query,
-                        ];
-                        break;
+                if (checkInt($by) !== false && checkInt($query) !== false) {
+                    $q = "select * from houses_rfids where access_to = $query and access_type = $by";
+                } else {
+                    switch ($by) {
+                        case "flatId":
+                            $q = "select * from houses_rfids where access_to = :flat_id and access_type = 2";
+                            $p = [
+                                "flat_id" => (int)$query,
+                            ];
+                            break;
+                    }
                 }
 
+                error_log($q);
+    
                 return $this->db->get($q, $p, [
                     "house_rfid_id" => "keyId",
                     "rfid" => "rfId",

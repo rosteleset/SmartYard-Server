@@ -1698,7 +1698,7 @@
                                     data: modules.addresses.houses.meta.flats[i].flatId,
                                 },
                                 {
-                                    data: modules.addresses.houses.meta.flats[i].floor?modules.addresses.houses.meta.flats[i].floor:"-",
+                                    data: modules.addresses.houses.meta.flats[i].floor ? modules.addresses.houses.meta.flats[i].floor : "-",
                                 },
                                 {
                                     data: modules.addresses.houses.meta.flats[i].flat,
@@ -1879,7 +1879,9 @@
                                         icon: "fas fa-key",
                                         title: i18n("addresses.keys"),
                                         click: entranceId => {
-                                            // ?
+                                            let [ route, params, hash ] = hashParse();
+                                            console.log(entrances[modules.addresses.houses.meta.entrances[i].entranceId]);
+                                            location.href = "?#addresses.keys&query=" + houseId + "&by=3&backStr=" + encodeURIComponent(modules.addresses.houses.meta.house.houseFull + ", " + entrances[entranceId].entrance) + "&back=" + encodeURIComponent(hash.join("&"));
                                         },
                                     },
                                 ],

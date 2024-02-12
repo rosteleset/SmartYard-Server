@@ -1977,9 +1977,11 @@
             ],
             rows: () => {
                 let rows = [];
+                let houses = {};
 
                 for (let i in modules.addresses.meta.houses) {
                     if ((settlementId && modules.addresses.meta.houses[i].settlementId == settlementId && !modules.addresses.meta.houses[i].streetId) || (streetId && modules.addresses.meta.houses[i].streetId == streetId && !modules.addresses.meta.houses[i].settlementId)) {
+                        houses[modules.addresses.meta.houses[i].houseId] = modules.addresses.meta.houses[i].houseFull;
                         rows.push({
                             uid: modules.addresses.meta.houses[i].houseId,
                             cols: [
@@ -1992,6 +1994,19 @@
                                     click: "#addresses.houses&houseId=%s",
                                 },
                             ],
+                            dropDown: {
+                                items: [
+                                    {
+                                        icon: "fas fa-key",
+                                        title: i18n("addresses.objectKeys"),
+                                        click: houseId => {
+                                            console.log(houses);
+                                            let [ route, params, hash ] = hashParse();
+                                            location.href = "?#addresses.keys&query=" + houseId + "&by=4&backStr=" + encodeURIComponent(houses[houseId]) + "&back=" + encodeURIComponent(hash.join("&"));
+                                        },
+                                    },
+                                ]
+                            },
                         });
                     }
                 }
