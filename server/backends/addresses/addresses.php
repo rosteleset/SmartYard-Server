@@ -255,7 +255,7 @@
              * @param $companyId
              * @return boolean
              */
-            abstract function modifyHouse($houseId, $settlementId, $streetId, $houseUuid, $houseType, $houseTypeFull, $houseFull, $house, $companyId);
+            abstract function modifyHouse($houseId, $settlementId, $streetId, $houseUuid, $houseType, $houseTypeFull, $houseFull, $house, $companyId = 0);
 
             /**
              * @param $settlementId
@@ -268,7 +268,7 @@
              * @param $companyId
              * @return false|integer
              */
-            abstract function addHouse($settlementId, $streetId, $houseUuid, $houseType, $houseTypeFull, $houseFull, $house, $companyId);
+            abstract function addHouse($settlementId, $streetId, $houseUuid, $houseType, $houseTypeFull, $houseFull, $house, $companyId = 0);
 
             /**
              * @param $houseId

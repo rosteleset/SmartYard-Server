@@ -3,7 +3,7 @@
 
     init: function () {
         if (AVAIL("subscribers", "keys")) {
-            this.menuItem = leftSide("fab fa-fw fa-keycdn", i18n("addresses.superkeys"), "?#addresses.keys", "households");
+            this.menuItem = leftSide("fab fa-fw fa-keycdn", i18n("addresses.superKeys"), "?#addresses.keys", "households");
         }
         moduleLoaded("addresses.keys", this);
     },

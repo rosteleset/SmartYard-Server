@@ -783,7 +783,7 @@
             /**
              * @inheritDoc
              */
-            function modifyHouse($houseId, $settlementId, $streetId, $houseUuid, $houseType, $houseTypeFull, $houseFull, $house, $companyId)
+            function modifyHouse($houseId, $settlementId, $streetId, $houseUuid, $houseType, $houseTypeFull, $houseFull, $house, $companyId = 0)
             {
                 if (!checkInt($houseId)) {
                     return false;
@@ -828,7 +828,7 @@
             /**
              * @inheritDoc
              */
-            function addHouse($settlementId, $streetId, $houseUuid, $houseType, $houseTypeFull, $houseFull, $house, $companyId)
+            function addHouse($settlementId, $streetId, $houseUuid, $houseType, $houseTypeFull, $houseFull, $house, $companyId = 0)
             {
                 if ($settlementId && $streetId) {
                     return false;
