@@ -338,11 +338,11 @@
         (count($args) == 2 && array_key_exists("--init-db", $args) && !isset($args["--init-db"]) && array_key_exists("--skip", $args) && isset($args["--skip"]))
     ) {
         require_once "sql/install.php";
-        require_once "sql/backup.php";
+        require_once "sql/backup_db.php";
         require_once "utils/clear_cache.php";
         require_once "utils/reindex.php";
 
-        backup();
+        backup_db();
 
         initDB(@$args["--skip"]);
         
@@ -622,9 +622,24 @@
 
     if (count($args) == 1 && array_key_exists("--update", $args) && !isset($args["--update"])) {
         require_once "sql/backup_db.php";
+        require_once "sql/install.php";
+        require_once "sql/backup_db.php";
+        require_once "utils/clear_cache.php";
+        require_once "utils/reindex.php";
+
         backup_db();
+
         chdir(__DIR__);
+
         system("git pull");
+        echo "\n";
+        
+        initDB(@$args["--skip"]);
+
+        $n = clearCache(true);
+        echo "$n cache entries cleared\n\n";
+        reindex();
+        echo "\n";
         exit(0);
     }
 
