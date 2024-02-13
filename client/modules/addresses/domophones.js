@@ -372,7 +372,7 @@
                                     nowrap: true,
                                 },
                                 {
-                                    data: modules.addresses.domophones.meta.domophones[i].comment ? modules.addresses.domophones.meta.domophones[i].comment : "",
+                                    data: modules.addresses.domophones.meta.domophones[i].comments ? modules.addresses.domophones.meta.domophones[i].comments : "",
                                     nowrap: true,
                                 },
                             ],
