@@ -73,6 +73,8 @@
 
             db:
                 [--backup-db]
+                [--list-db-backups]
+                [--restore-db=<backup_file_without_path_and_extension>]
 
             config:
                 [--print-config]
@@ -600,8 +602,20 @@
     }
 
     if (count($args) == 1 && array_key_exists("--backup-db", $args) && !isset($args["--backup-db"])) {
-        require_once "sql/backup.php";
-        backup();
+        require_once "sql/backup_db.php";
+        backup_db();
+        exit(0);
+    }
+
+    if (count($args) == 1 && array_key_exists("--list-db-backups", $args) && !isset($args["--list-db-backups"])) {
+        require_once "sql/backup_db.php";
+        list_db_backups();
+        exit(0);
+    }
+
+    if (count($args) == 1 && array_key_exists("--restore-db", $args) && isset($args["--restore-db"])) {
+        require_once "sql/backup_db.php";
+        restore_db($args["--restore-db"]);
         exit(0);
     }
 
