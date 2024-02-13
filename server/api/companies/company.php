@@ -32,7 +32,7 @@
                 $success = false;
 
                 if ($companies) {
-                    $success = $companies->addCompany(@$params["type"], @$params["uid"], @$params["name"], @$params["contacts"], @$params["comment"]);
+                    $success = $companies->addCompany(@$params["type"], @$params["uid"], @$params["name"], @$params["contacts"], @$params["comments"]);
                 }
 
                 return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
@@ -44,7 +44,7 @@
                 $success = false;
 
                 if ($companies) {
-                    $success = $companies->modifyCompany($params["_id"], @$params["type"], @$params["uid"], @$params["name"], @$params["contacts"], @$params["comment"]);
+                    $success = $companies->modifyCompany($params["_id"], @$params["type"], @$params["uid"], @$params["name"], @$params["contacts"], @$params["comments"]);
                 }
 
                 return api::ANSWER($success, ($success !== false)?false:"notAcceptable");

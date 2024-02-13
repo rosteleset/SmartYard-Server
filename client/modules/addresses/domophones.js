@@ -138,10 +138,10 @@
                     },
                 },
                 {
-                    id: "comment",
+                    id: "comments",
                     type: "text",
-                    title: i18n("addresses.comment"),
-                    placeholder: i18n("addresses.comment"),
+                    title: i18n("addresses.comments"),
+                    placeholder: i18n("addresses.comments"),
                     validate: v => {
                         return $.trim(v).length <= 64;
                     },
@@ -281,11 +281,11 @@
                         },
                     },
                     {
-                        id: "comment",
+                        id: "comments",
                         type: "text",
-                        title: i18n("addresses.comment"),
-                        placeholder: i18n("addresses.comment"),
-                        value: domophone.comment,
+                        title: i18n("addresses.comments"),
+                        placeholder: i18n("addresses.comments"),
+                        value: domophone.comments,
                         validate: v => {
                             return $.trim(v).length <= 64;
                         },
@@ -349,7 +349,7 @@
                         title: i18n("addresses.domophoneName"),
                     },
                     {
-                        title: i18n("addresses.comment"),
+                        title: i18n("addresses.comments"),
                         fullWidth: true,
                     },
                 ],
@@ -372,7 +372,7 @@
                                     nowrap: true,
                                 },
                                 {
-                                    data: modules.addresses.domophones.meta.domophones[i].comment,
+                                    data: modules.addresses.domophones.meta.domophones[i].comments,
                                     nowrap: true,
                                 },
                             ],

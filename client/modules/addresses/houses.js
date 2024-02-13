@@ -348,13 +348,13 @@
                             host: response.cameras.cameras[i].url,
                         }
                     }
-                    let comment = $.trim(response.cameras.cameras[i].comment);
+                    let comments = $.trim(response.cameras.cameras[i].comments);
                     let name = $.trim(response.cameras.cameras[i].name);
                     let text = name;
                     if (!text) {
-                        text = comment;
+                        text = comments;
                     } else {
-                        text += " (" + comment + ")";
+                        text += " (" + comments + ")";
                     }
                     if (!text) {
                         text = url.host;
@@ -386,13 +386,13 @@
                                 host: response.domophones.domophones[i].url,
                             }
                         }
-                        let comment = $.trim(response.domophones.domophones[i].comment);
+                        let comments = $.trim(response.domophones.domophones[i].comments);
                         let name = $.trim(response.domophones.domophones[i].name);
                         let text = name;
                         if (!text) {
-                            text = comment;
+                            text = comments;
                         } else {
-                            text += " (" + comment + ")";
+                            text += " (" + comments + ")";
                         }
                         if (!text) {
                             text = url.host;
@@ -938,13 +938,13 @@
                         host: response.cameras.cameras[i].url,
                     }
                 }
-                let comment = $.trim(response.cameras.cameras[i].comment);
+                let comment = $.trim(response.cameras.cameras[i].comments);
                 let name = $.trim(response.cameras.cameras[i].name);
                 let text = name;
                 if (!text) {
-                    text = comment;
+                    text = comments;
                 } else {
-                    text += " (" + comment + ")";
+                    text += " (" + comments + ")";
                 }
                 if (!text) {
                     text = url.host;
@@ -974,13 +974,13 @@
                             host: response.domophones.domophones[i].url,
                         }
                     }
-                    let comment = $.trim(response.domophones.domophones[i].comment);
+                    let comments = $.trim(response.domophones.domophones[i].comments);
                     let name = $.trim(response.domophones.domophones[i].name);
                     let text = name;
                     if (!text) {
-                        text = comment;
+                        text = comments;
                     } else {
-                        text += " (" + comment + ")";
+                        text += " (" + comments + ")";
                     }
                     if (!text) {
                         text = url.host;
@@ -1941,7 +1941,7 @@
                                         nowrap: true,
                                     },
                                     {
-                                        data: modules.addresses.houses.meta.cameras[i].comment?modules.addresses.houses.meta.cameras[i].comment:"",
+                                        data: modules.addresses.houses.meta.cameras[i].comments ? modules.addresses.houses.meta.cameras[i].comments : "",
                                         nowrap: true,
                                     },
                                 ],

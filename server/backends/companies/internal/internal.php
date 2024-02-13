@@ -23,7 +23,7 @@ namespace backends\companies
                 "name" => "name",
                 "uid" => "uid",
                 "contacts" => "contacts",
-                "comment" => "comment"
+                "comments" => "comments"
             ]);
         }
 
@@ -42,7 +42,7 @@ namespace backends\companies
                 "name" => "name",
                 "uid" => "uid",
                 "contacts" => "contacts",
-                "comment" => "comment"
+                "comments" => "comments"
             ], [
                 "singlify"
             ]);
@@ -51,36 +51,36 @@ namespace backends\companies
         /**
          * @inheritDoc
          */
-        public function addCompany($type, $uid, $name, $contacts, $comment)
+        public function addCompany($type, $uid, $name, $contacts, $comments)
         {
             if (!trim($name) || !checkInt($type)) {
                 return false;
             }
 
-            return $this->db->insert("insert into companies (name, company_type, uid, contacts, comment) values (:name, :company_type, :uid, :contacts, :comment)", [
+            return $this->db->insert("insert into companies (name, company_type, uid, contacts, comments) values (:name, :company_type, :uid, :contacts, :comments)", [
                 "name" => $name,
                 "company_type" => $type,
                 "uid" => $uid,
                 "contacts" => $contacts,
-                "comment" => $comment,
+                "comments" => $comments,
             ]);
         }
 
         /**
          * @inheritDoc
          */
-        public function modifyCompany($companyId, $type, $uid, $name, $contacts, $comment)
+        public function modifyCompany($companyId, $type, $uid, $name, $contacts, $comments)
         {
             if (!checkInt($companyId) || !trim($name) || !checkInt($type)) {
                 return false;
             }
 
-            return $this->db->modify("update companies set name = :name, company_type = :type, uid = :uid, contacts = :contacts, comment = :comment where company_id = $companyId", [
+            return $this->db->modify("update companies set name = :name, company_type = :type, uid = :uid, contacts = :contacts, comments = :comments where company_id = $companyId", [
                 "name" => $name,
                 "type" => $type,
                 "uid" => $uid,
                 "contacts" => $contacts,
-                "comment" => $comment,
+                "comments" => $comments,
             ]);
         }
 

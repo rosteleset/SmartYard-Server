@@ -6,7 +6,7 @@
     "name": "Name",
     "uid": "UID",
     "contacts": "Contacts",
-    "comment": "Comment",
+    "comments": "Comments",
     "addCompany": "Add company",
     "companyWasAdded": "Company was added",
     "companyWasChanged": "Company was changed",

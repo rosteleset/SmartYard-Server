@@ -240,10 +240,10 @@
                     tab: i18n("addresses.secondary"),
                 },
                 {
-                    id: "comment",
+                    id: "comments",
                     type: "text",
-                    title: i18n("addresses.comment"),
-                    placeholder: i18n("addresses.comment"),
+                    title: i18n("addresses.comments"),
+                    placeholder: i18n("addresses.comments"),
                     validate: v => {
                         return $.trim(v).length <= 64;
                     },
@@ -495,11 +495,11 @@
                         tab: i18n("addresses.secondary"),
                     },
                     {
-                        id: "comment",
+                        id: "comments",
                         type: "text",
-                        title: i18n("addresses.comment"),
-                        placeholder: i18n("addresses.comment"),
-                        value: camera.comment,
+                        title: i18n("addresses.comments"),
+                        placeholder: i18n("addresses.comments"),
+                        value: camera.comments,
                         validate: v => {
                             return $.trim(v).length <= 64;
                         },
@@ -569,7 +569,7 @@
                         title: i18n("addresses.cameraName"),
                     },
                     {
-                        title: i18n("addresses.comment"),
+                        title: i18n("addresses.comments"),
                         fullWidth: true,
                     },
                 ],
@@ -594,7 +594,7 @@
                                     nowrap: true,
                                 },
                                 {
-                                    data: modules.addresses.cameras.meta.cameras[i].comment,
+                                    data: modules.addresses.cameras.meta.cameras[i].comments,
                                 },
                             ],
                         });

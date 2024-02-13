@@ -62,10 +62,10 @@
                     placeholder: i18n("companies.contacts"),
                 },
                 {
-                    id: "comment",
+                    id: "comments",
                     type: "area",
-                    title: i18n("companies.comment"),
-                    placeholder: i18n("companies.comment"),
+                    title: i18n("companies.comments"),
+                    placeholder: i18n("companies.comments"),
                 },
             ],
             callback: result => {
@@ -139,11 +139,11 @@
                         value: result.company.contacts,
                     },
                     {
-                        id: "comment",
+                        id: "comments",
                         type: "area",
-                        title: i18n("companies.comment"),
-                        placeholder: i18n("companies.comment"),
-                        value: result.company.comment,
+                        title: i18n("companies.comments"),
+                        placeholder: i18n("companies.comments"),
+                        value: result.company.comments,
                     },
                 ],
                 callback: result => {

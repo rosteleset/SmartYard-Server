@@ -79,5 +79,8 @@
     ],
     "23": [
         "v23_addresses.sql"
+    ],
+    "24": [
+        "v24_comments.sql"
     ]
 }

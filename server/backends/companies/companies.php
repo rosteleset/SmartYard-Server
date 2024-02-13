@@ -29,10 +29,10 @@ namespace backends\companies
          * @param $uid
          * @param $name
          * @param $contacts
-         * @param $comment
+         * @param $comments
          * @return false|integer
          */
-        abstract public function addCompany($type, $uid, $name, $contacts, $comment);
+        abstract public function addCompany($type, $uid, $name, $contacts, $comments);
 
         /**
          * @param $companyId
@@ -40,10 +40,10 @@ namespace backends\companies
          * @param $uid
          * @param $name
          * @param $contacts
-         * @param $comment
+         * @param $comments
          * @return boolean
          */
-        abstract public function modifyCompany($type, $uid, $companyId, $name, $contacts, $comment);
+        abstract public function modifyCompany($type, $uid, $companyId, $name, $contacts, $comments);
 
         /**
          * @param $companyId

@@ -6,7 +6,7 @@
     "name": "Наименование",
     "uid": "ИНН",
     "contacts": "Контакты",
-    "comment": "Комментарий",
+    "comments": "Примечания",
     "addCompany": "Добавить компанию",
     "companyWasAdded": "Компания добавлена",
     "companyWasChanged": "Компания изменена",

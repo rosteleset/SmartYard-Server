@@ -673,7 +673,7 @@
                                 nowrap: true,
                             },
                             {
-                                data: list[i].comment?list[i].comment:"",
+                                data: list[i].comments ? list[i].comments : "",
                                 nowrap: true,
                             },
                         ],
