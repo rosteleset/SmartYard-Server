@@ -81,6 +81,7 @@ __pycache__
 /package-lock.json
 /client/config/config.json
 /client/config/config.yml
+/server/db/backup/*
 /server/db/internal.db
 /server/config/config.json
 /server/config/config.yml
