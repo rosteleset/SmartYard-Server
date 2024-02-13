@@ -59,6 +59,8 @@
                 backup_sqlite($dsn["params"][0], $file);
                 break;
         }
+
+        echo "db backup complete: $file\n";
     }
 
     function list_db_backups()
@@ -119,6 +121,8 @@
                 restore_sqlite($dsn["params"][0], $file);
                 break;
         }
+
+        echo "db restore complete: $file\n";
     }
 
     function backup_pgsql($host, $port, $login, $password, $db, $file)
