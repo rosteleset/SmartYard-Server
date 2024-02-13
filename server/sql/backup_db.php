@@ -40,7 +40,14 @@
     {
         global $config;
 
-        $file = __DIR__ . "/../db/backup/" . date("Y-m-d_H:i:s") . ".sql";
+        $path = @$config["db"]["backup"] ? : (__DIR__ . "/../db/backup");
+        $path = rtrim($path, "/");
+
+        if (!file_exists($path) || !is_dir($path)) {
+            die("path not found: $path\n");
+        }
+
+        $file = $path . "/" . date("Y-m-d_H:i:s") . ".sql";
         $dsn = parseDsn($config["db"]["dsn"]);
 
         switch ($dsn["protocol"]) {
@@ -56,7 +63,16 @@
 
     function list_db_backups()
     {
-        $list = glob(__DIR__ . "/../db/backup/*.sql");
+        global $config;
+
+        $path = @$config["db"]["backup"] ? : (__DIR__ . "/../db/backup");
+        $path = rtrim($path, "/");
+
+        if (!file_exists($path) || !is_dir($path)) {
+            die("path not found: $path\n");
+        }
+
+        $list = glob($path . "/*.sql");
 
         $t = [];
 
@@ -80,7 +96,18 @@
     {
         global $config;
 
-        $file = __DIR__ . "/../db/backup/$file.sql";
+        $path = @$config["db"]["backup"] ? : (__DIR__ . "/../db/backup");
+        $path = rtrim($path, "/");
+
+        if (!file_exists($path) || !is_dir($path)) {
+            die("path not found: $path\n");
+        }
+
+        $file = $path . "/$file.sql";
+        if (!file_exists($file)) {
+            die("file not found: $file\n");
+        }
+
         $dsn = parseDsn($config["db"]["dsn"]);
 
         switch ($dsn["protocol"]) {
