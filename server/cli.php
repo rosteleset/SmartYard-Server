@@ -71,6 +71,9 @@
             dvr:
                 [--run-record-download=<id>]
 
+            db:
+                [--backup-db]
+
             config:
                 [--print-config]
                 [--write-yaml-config]
@@ -332,10 +335,14 @@
         (count($args) == 2 && array_key_exists("--init-db", $args) && !isset($args["--init-db"]) && array_key_exists("--skip", $args) && isset($args["--skip"]))
     ) {
         require_once "sql/install.php";
+        require_once "sql/backup.php";
         require_once "utils/clear_cache.php";
         require_once "utils/reindex.php";
 
+        backup();
+
         initDB(@$args["--skip"]);
+        
         startup();
         echo "\n";
         $n = clearCache(true);
@@ -589,6 +596,12 @@
 
     if (count($args) == 1 && array_key_exists("--print-config", $args) && !isset($args["--print-config"])) {
         print_r($config);
+        exit(0);
+    }
+
+    if (count($args) == 1 && array_key_exists("--backup-db", $args) && !isset($args["--backup-db"])) {
+        require_once "sql/backup.php";
+        backup();
         exit(0);
     }
 
