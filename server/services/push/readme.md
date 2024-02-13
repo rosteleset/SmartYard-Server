@@ -1,7 +1,7 @@
 #### Firebase push notification service
-1. Make file environment  ".env_production" or ".env_development" and edit APP_* vars
+1. Make file environment  ".env" or ".env_development" and edit APP_* vars
     ```
-    cp .env_example .env_production
+    cp .env_example .env
     ```
 2. Make project config files
    ```
@@ -17,7 +17,7 @@
 4.  Make logging dir:
     ````
     mkdir -p /var/log/rbt_push_service/
-    chown -r rbt:rbt /var/log/rbt_push_service/
+    chown -R rbt:rbt /var/log/rbt_push_service/
     ````
 5. Make logrotate:
     ```
