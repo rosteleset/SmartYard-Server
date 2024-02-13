@@ -7,21 +7,33 @@
     $cli = true;
     $cliError = false;
 
-    require_once "utils/error.php";
-    require_once "utils/response.php";
-    require_once "utils/hooks.php";
-    require_once "utils/guidv4.php";
-    require_once "utils/loader.php";
+    require_once "sql/backup_db.php";
+    require_once "sql/install_clickhouse.php";
+    require_once "sql/install.php";
+    require_once "utils/autoconfigure_device.php";
+    require_once "utils/autoconfigure_domophone.php";
     require_once "utils/checkint.php";
-    require_once "utils/purifier.php";
     require_once "utils/checkstr.php";
-    require_once "utils/email.php";
-    require_once "utils/is_executable.php";
+    require_once "utils/cleanup.php";
+    require_once "utils/clear_cache.php";
+    require_once "utils/clickhouse.php";
     require_once "utils/db_ext.php";
-    require_once "utils/parse_url_ext.php";
     require_once "utils/debug.php";
-    require_once "utils/i18n.php";
+    require_once "utils/email.php";
+    require_once "utils/error.php";
     require_once "utils/format_usage.php";
+    require_once "utils/guidv4.php";
+    require_once "utils/hooks.php";
+    require_once "utils/i18n.php";
+    require_once "utils/install_crontabs.php";
+    require_once "utils/is_executable.php";
+    require_once "utils/loader.php";
+    require_once "utils/mobile_project.php";
+    require_once "utils/parse_url_ext.php";
+    require_once "utils/purifier.php";
+    require_once "utils/reindex.php";
+    require_once "utils/response.php";
+
 
     require_once "backends/backend.php";
 
@@ -337,11 +349,6 @@
         ||
         (count($args) == 2 && array_key_exists("--init-db", $args) && !isset($args["--init-db"]) && array_key_exists("--skip", $args) && isset($args["--skip"]))
     ) {
-        require_once "sql/install.php";
-        require_once "sql/backup_db.php";
-        require_once "utils/clear_cache.php";
-        require_once "utils/reindex.php";
-
         backup_db();
 
         initDB(@$args["--skip"]);
@@ -372,9 +379,6 @@
     }
 
     if (count($args) == 1 && array_key_exists("--init-clickhouse-db", $args) && !isset($args["--init-clickhouse-db"])) {
-        require_once "utils/clickhouse.php";
-        require_once "sql/install_clickhouse.php";
-
         $clickhouse_config = $config['clickhouse'];
 
         $clickhouse = new clickhouse(
@@ -389,21 +393,16 @@
     }
 
     if (count($args) == 1 && array_key_exists("--cleanup", $args) && !isset($args["--cleanup"])) {
-        require_once "utils/cleanup.php";
         cleanup();
         exit(0);
     }
 
     if (count($args) == 1 && array_key_exists("--init-mobile-issues-project", $args) && !isset($args["--init-mobile-issues-project"])) {
-        require_once "utils/mobile_project.php";
         init_mp();
         exit(0);
     }
 
     if (count($args) == 1 && array_key_exists("--reindex", $args) && !isset($args["--reindex"])) {
-        require_once "utils/reindex.php";
-        require_once "utils/clear_cache.php";
-
         $n = clearCache(true);
         echo "$n cache entries cleared\n\n";
         reindex();
@@ -412,8 +411,6 @@
     }
 
     if (count($args) == 1 && array_key_exists("--clear-cache", $args) && !isset($args["--clear-cache"])) {
-        require_once "utils/clear_cache.php";
-
         $n = clearCache(true);
         echo "$n cache entries cleared\n\n";
         exit(0);
@@ -494,8 +491,6 @@
         }
 
         if (checkInt($domophone_id)) {
-            require_once "utils/autoconfigure_domophone.php";
-
             autoconfigure_domophone($domophone_id, $first_time);
             exit(0);
         } else {
@@ -518,24 +513,18 @@
         }
 
         if (checkInt($device_id)) {
-            require_once "utils/autoconfigure_device.php";
-
             autoconfigure_device($device_type, $device_id, $first_time);
             exit(0);
         }
     }
 
     if (count($args) == 1 && array_key_exists("--install-crontabs", $args) && !isset($args["--install-crontabs"])) {
-        require_once "utils/install_crontabs.php";
-
         $n = installCrontabs();
         echo "$n crontabs lines added\n\n";
         exit(0);
     }
 
     if (count($args) == 1 && array_key_exists("--uninstall-crontabs", $args) && !isset($args["--uninstall-crontabs"])) {
-        require_once "utils/install_crontabs.php";
-
         $n = unInstallCrontabs();
         echo "$n crontabs lines removed\n\n";
         exit(0);
@@ -603,37 +592,29 @@
     }
 
     if (count($args) == 1 && array_key_exists("--backup-db", $args) && !isset($args["--backup-db"])) {
-        require_once "sql/backup_db.php";
         backup_db();
         exit(0);
     }
 
     if (count($args) == 1 && array_key_exists("--list-db-backups", $args) && !isset($args["--list-db-backups"])) {
-        require_once "sql/backup_db.php";
         list_db_backups();
         exit(0);
     }
 
     if (count($args) == 1 && array_key_exists("--restore-db", $args) && isset($args["--restore-db"])) {
-        require_once "sql/backup_db.php";
         restore_db($args["--restore-db"]);
         exit(0);
     }
 
     if (count($args) == 1 && array_key_exists("--update", $args) && !isset($args["--update"])) {
-        require_once "sql/backup_db.php";
-        require_once "sql/install.php";
-        require_once "sql/backup_db.php";
-        require_once "utils/clear_cache.php";
-        require_once "utils/reindex.php";
-
         backup_db();
+        echo "\n";
 
         chdir(__DIR__);
 
         system("git pull");
         echo "\n";
-        
+
         initDB(@$args["--skip"]);
 
         $n = clearCache(true);
