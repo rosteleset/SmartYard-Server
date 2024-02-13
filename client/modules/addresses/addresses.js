@@ -1333,7 +1333,6 @@
                             modules.addresses.deleteHouse(houseId, parseInt(house.settlementId), parseInt(house.streetId));
                         } else {
                             if (!companies.length) {
-                                console.log(house);
                                 result.companyId = house.companyId;
                             }
                             modules.addresses.doModifyHouse(houseId, parseInt(result.settlementId), parseInt(result.streetId), result.houseUuid, result.houseType, result.houseTypeFull, result.houseFull, result.house, parseInt(house.settlementId), parseInt(house.streetId), parseInt(result.companyId));
@@ -2000,7 +1999,6 @@
                                         icon: "fas fa-key",
                                         title: i18n("addresses.objectKeys"),
                                         click: houseId => {
-                                            console.log(houses);
                                             let [ route, params, hash ] = hashParse();
                                             location.href = "?#addresses.keys&query=" + houseId + "&by=4&backStr=" + encodeURIComponent(houses[houseId]) + "&back=" + encodeURIComponent(hash.join("&"));
                                         },
@@ -2310,7 +2308,7 @@
                 modules.addresses.renderStreet(params.streetId);
                 break;
             case "regions":
-                $("#subTop").html("");
+                subTop();
                 modules.addresses.renderRegions();
                 break;
             default:

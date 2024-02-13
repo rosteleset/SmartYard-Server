@@ -489,7 +489,7 @@
 
     render: function (params) {
         $("#altForm").hide();
-        $("#subTop").html("");
+        subTop();
 
         loadingStart();
 

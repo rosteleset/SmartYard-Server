@@ -868,7 +868,7 @@
                         $q = "select * from houses_domophones where house_domophone_id in (
                                 select house_domophone_id from houses_entrances where house_entrance_id in (
                                   select house_entrance_id from houses_entrances_flats where house_flat_id in (
-                                    select access_to from houses_rfids where house_rfid_id = $query
+                                    select access_to from houses_rfids where house_rfid_id = $query and access_type = 2
                                   )
                                 ) group by house_domophone_id
                               ) order by house_domophone_id";
@@ -944,6 +944,7 @@
                     $queue->changed("domophone", $domophoneId);
                 }
 
+                // for SPUTNIK
                 $this->updateDeviceIds($domophoneId, $model, $url, $credentials);
 
                 return $domophoneId;
@@ -1022,9 +1023,35 @@
                         $queue->changed("domophone", $domophoneId);
                     }
 
-                    $this->updateDeviceIds($domophoneId, $model, $url, $credentials);
+                // for SPUTNIK
+                $this->updateDeviceIds($domophoneId, $model, $url, $credentials);
                 }
 
+                return $r;
+            }
+
+            public function autoconfigureDomophone($domophoneId, $firstTime)
+            {
+                if (!checkInt($firstTime)) {
+                    setLastError("firstTime");
+                    return false;
+                }
+
+                if (!checkInt($domophoneId)) {
+                    setLastError("noId");
+                    return false;
+                }
+
+                $r = $this->db->modify("update houses_domophones set enabled = 1, first_time = :first_time where house_domophone_id = $domophoneId", [
+                    "first_time" => $firstTime,
+                ]);
+
+                if ($r) {
+                    $queue = loadBackend("queue");
+                    if ($queue) {
+                        $queue->changed("domophone", $domophoneId);
+                    }
+                }
                 return $r;
             }
 
@@ -1474,6 +1501,50 @@
                                 "flat_id" => (int)$query,
                             ];
                             break;
+                        
+                        case "domophoneId":
+                            $addresses = loadBackend("addresses");
+                            $q = "select address_house_id from houses_houses_entrances where house_entrance_id in (select house_entrance_id from houses_entrances where house_domophone_id = :domophone_id)";
+
+                            $c = [];
+                            $r = $this->db->get($q, [
+                                "domophone_id" => (int)$query,
+                            ], [
+                                "address_house_id" => "houseId",
+                            ]);
+
+                            foreach ($r as $i) {
+                                $h = $addresses->getHouse($i["houseId"]);
+                                if ((int)$h["companyId"]) {
+                                    $c[] = $h["companyId"];
+                                }
+                            }
+
+                            $c = implode(",", array_unique($c, SORT_NUMERIC));
+
+                            $q = "
+                                -- type 0 (any)
+                                select * from houses_rfids where access_to = 0 and access_type = 0
+                                union
+                                -- type 1 (subscriber)
+                                select * from houses_rfids where access_to in (select house_subscriber_id from houses_flats_subscribers where house_flat_id in (select house_flat_id from houses_entrances_flats where house_entrance_id in (select house_entrance_id from houses_entrances where house_domophone_id = :domophone_id))) and access_type = 1
+                                union
+                                -- type 2 (flat)
+                                select * from houses_rfids where access_to in (select house_flat_id from houses_entrances_flats where house_entrance_id in (select house_entrance_id from houses_entrances where house_domophone_id = :domophone_id)) and access_type = 2
+                                union
+                                -- type 3 (entrance)
+                                select * from houses_rfids where access_to in (select house_entrance_id from houses_entrances where house_domophone_id = :domophone_id) and access_type = 3
+                                union
+                                -- type 4 (house)
+                                select * from houses_rfids where access_to in (select address_house_id from houses_houses_entrances where house_entrance_id in (select house_entrance_id from houses_entrances where house_domophone_id = :domophone_id)) and access_type = 4
+                                union
+                                -- type 5 (company)
+                                select * from houses_rfids where access_to in ($c) and access_type = 5
+                            ";
+                            $p = [
+                                "domophone_id" => (int)$query,
+                            ];
+                            break;
                     }
                 }
 
@@ -1874,9 +1945,19 @@
                 $n += $this->db->modify("delete from houses_entrances_flats where house_flat_id not in (select house_flat_id from houses_flats)");
                 $n += $this->db->modify("delete from houses_flats_subscribers where house_flat_id not in (select house_flat_id from houses_flats)");
                 $n += $this->db->modify("delete from houses_cameras_flats where house_flat_id not in (select house_flat_id from houses_flats)");
-                $n += $this->db->modify("delete from houses_rfids where access_to not in (select house_flat_id from houses_flats) and access_type = 2");
 
-                $n += $this->db->modify("update houses_entrances set camera_id = null where camera_id not in (select camera_id from cameras)");
+                // type 1 (subscriber)
+                // TODO
+                //$n += $this->db->modify("delete from houses_rfids where access_to not in (select house_flat_id from houses_flats) and access_type = 1");
+                // type 2 (flat)
+                $n += $this->db->modify("delete from houses_rfids where access_to not in (select house_flat_id from houses_flats) and access_type = 2");
+                // type 3 (entrance)
+                $n += $this->db->modify("delete from houses_rfids where access_to not in (select house_entrance_id from houses_entrances) and access_type = 3");
+                // type 4 (house)
+                // TODO
+                //$n += $this->db->modify("delete from houses_rfids where access_to not in (select house_flat_id from houses_flats) and access_type = 4");
+
+                $n += $this->db->modify("update houses_entrances set camera_id = null where camera_id is not null and camera_id not in (select camera_id from cameras)");
                 $n += $this->db->modify("delete from houses_cameras_flats where camera_id not in (select camera_id from cameras)");
                 $n += $this->db->modify("delete from houses_cameras_houses where camera_id not in (select camera_id from cameras)");
                 $n += $this->db->modify("delete from houses_cameras_subscribers where camera_id not in (select camera_id from cameras)");
@@ -1916,6 +1997,7 @@
                         'credentials' => $credentials
                     ] = $device;
 
+                    // for SPUTNIK
                     $this->updateDeviceIds($deviceId, $model, $url, $credentials);
                 }
             }
@@ -1925,17 +2007,19 @@
                     $device = loadDevice('domophone', $model, $url, $credentials);
 
                     if ($device) {
-                        $query = "update houses_domophones
-                                  set sub_id = :sub_id
-                                  where house_domophone_id = " . $deviceId;
-                        $this->db->modify($query, ["sub_id" => $device->uuid]);
+                        $query = "update houses_domophones set sub_id = :sub_id where house_domophone_id = " . $deviceId;
+                        $this->db->modify($query, [
+                            "sub_id" => $device->uuid
+                        ]);
                     }
                 } else {
                     $ip = gethostbyname(parse_url($url, PHP_URL_HOST));
 
                     if (filter_var($ip, FILTER_VALIDATE_IP) !== false) {
                         $query = "update houses_domophones set ip = :ip where house_domophone_id = " . $deviceId;
-                        $this->db->modify($query, ["ip" => $ip]);
+                        $this->db->modify($query, [
+                            "ip" => $ip
+                        ]);
                     }
                 }
             }

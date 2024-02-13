@@ -436,9 +436,7 @@
         });
     },
 
-    renderSubscribers: function (list, flatId) {
-        loadingStart();
-
+    renderSubscribers: function (list, flatId, title) {
         let params = hashParse()[1];
 
         cardTable({
@@ -468,6 +466,7 @@
             ],
             rows: () => {
                 let rows = [];
+                let subscribers = {};
 
                 for (let i in list) {
                     let owner;
@@ -481,6 +480,8 @@
                             }
                         }
                     }
+
+                    subscribers[list[i].subscriberId] = list[i].mobile;
 
                     rows.push({
                         uid: list[i].subscriberId,
@@ -504,7 +505,15 @@
                                         location.href = "?#addresses.subscriberInbox&subscriberId=" + subscriberId;
                                     },
                                 },
-                            ]
+                                {
+                                    icon: "fas fa-key",
+                                    title: i18n("addresses.keys"),
+                                    click: subscriberId => {
+                                        let [ route, params, hash ] = hashParse();
+                                        location.href = "?#addresses.keys&query=" + subscriberId + "&by=1&backStr=" + encodeURIComponent(title + " [" + subscribers[subscriberId] + "]") + "&back=" + encodeURIComponent(hash.join("&"));
+                                    },
+                                },
+                            ],
                         },
                     });
                 }
@@ -532,14 +541,18 @@
             columns: [
                 {
                     title: i18n("addresses.keyId"),
+                    nowrap: true,
                 },
                 {
                     title: i18n("addresses.rfId"),
                     nowrap: true,
                 },
                 {
-                    title: i18n("addresses.comments"),
+                    title: i18n("addresses.lastSeen"),
                     nowrap: true,
+                },
+                {
+                    title: i18n("addresses.comments"),
                     fullWidth: true,
                 },
             ],
@@ -552,9 +565,15 @@
                         cols: [
                             {
                                 data: list[i].keyId,
+                                nowrap: true,
                             },
                             {
                                 data: list[i].rfId,
+                                nowrap: true,
+                            },
+                            {
+                                data: list[i].lastSeen,
+                                nowrap: true,
                             },
                             {
                                 data: list[i].comments,
@@ -712,10 +731,13 @@
             done(modules.addresses.addresses).
             fail(FAIL).
             done(a => {
+                let t = '';
                 for (let i in a.addresses.houses) {
                     if (a.addresses.houses[i].houseId == params.houseId) {
                         document.title = i18n("windowTitle") + " :: " + a.addresses.houses[i].houseFull + ", " + params.flat;
+                        t = a.addresses.houses[i].houseFull + ", " + params.flat;
                         subTop(modules.addresses.path((parseInt(params.settlementId)?"settlement":"street"), parseInt(params.settlementId)?params.settlementId:params.streetId) + "<i class=\"fas fa-xs fa-angle-double-right ml-2 mr-2\"></i>" + `<a href="?#addresses.houses&houseId=${params.houseId}">${a.addresses.houses[i].houseFull}</a>` + ", " + params.flat);
+                        break;
                     }
                 }
 
@@ -723,7 +745,7 @@
                     by: "flatId",
                     query: params.flatId,
                 }).done(response => {
-                    modules.addresses.subscribers.renderSubscribers(response.flat.subscribers, params.flatId);
+                    modules.addresses.subscribers.renderSubscribers(response.flat.subscribers, params.flatId, t);
                     modules.addresses.subscribers.renderKeys(response.flat.keys);
                     modules.addresses.subscribers.renderCameras(response.flat.cameras);
                 }).

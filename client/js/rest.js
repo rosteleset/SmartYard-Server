@@ -1,3 +1,18 @@
+function AVAIL(api, method, request_method) {
+    if (request_method) {
+        request_method = request_method.toUpperCase();
+    }
+    if (request_method) {
+        return available && available[api] && available[api][method] && available[api][method][request_method];
+    }
+    if (method) {
+        return available && available[api] && available[api][method];
+    }
+    if (api) {
+        return available && available[api];
+    }
+}
+
 function QUERY(api, method, query, fresh) {
     return $.ajax({
         url: lStore("_server") + "/" + encodeURIComponent(api) + "/" + encodeURIComponent(method) + (query?("?" + $.param(query)):""),

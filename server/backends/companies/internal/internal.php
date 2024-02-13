@@ -94,6 +94,14 @@ namespace backends\companies
                 return false;
             }
 
+            $households = loadBackend("households");
+            if ($households) {
+                $keys = $households->getKeys(5, $companyId);
+                foreach ($keys as $key) {
+                    $households->deleteKey($key["keyId"]);
+                }
+            }
+
             return $this->db->modify("delete from companies where company_id = $companyId");
         }
     }

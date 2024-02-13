@@ -1645,6 +1645,19 @@
         });
     },
 
+    autoconfigureDomophone: function (domophoneId, firstTime) {
+        loadingStart();
+        POST("houses", "autoconfigure", domophoneId, {
+            object: "domophone",
+            firstTime: firstTime ? "1" : "0",
+        }).
+        then(() => {
+            message(i18n("addresses.taskQueued"));
+        }).
+        fail(FAIL).
+        always(loadingDone);
+    },
+
     renderHouse: function (houseId) {
         modules.addresses.houses.loadHouse(houseId, () => {
             cardTable({
@@ -1865,6 +1878,23 @@
                                         title: "-",
                                     },
                                     {
+                                        icon: "fas fa-wrench",
+                                        title: i18n("addresses.autoconfigureDomophone"),
+                                        click: entranceId => {
+                                            modules.addresses.houses.autoconfigureDomophone(entrances[entranceId].domophoneId, false);
+                                        },
+                                    },
+                                    {
+                                        icon: "fas fa-tools",
+                                        title: i18n("addresses.autoconfigureDomophoneFirstTime"),
+                                        click: entranceId => {
+                                            modules.addresses.houses.autoconfigureDomophone(entrances[entranceId].domophoneId, true);
+                                        },
+                                    },
+                                    {
+                                        title: "-",
+                                    },
+                                    {
                                         icon: "fas fa-phone-volume",
                                         title: i18n("addresses.cms"),
                                         disabled: modules.addresses.houses.meta.entrances[i].cms.toString() === "0",
@@ -1880,7 +1910,6 @@
                                         title: i18n("addresses.keys"),
                                         click: entranceId => {
                                             let [ route, params, hash ] = hashParse();
-                                            console.log(entrances[modules.addresses.houses.meta.entrances[i].entranceId]);
                                             location.href = "?#addresses.keys&query=" + houseId + "&by=3&backStr=" + encodeURIComponent(modules.addresses.houses.meta.house.houseFull + ", " + entrances[entranceId].entrance) + "&back=" + encodeURIComponent(hash.join("&"));
                                         },
                                     },
@@ -2236,7 +2265,7 @@
 
         if (params.show === "cms" && parseInt(params.entranceId) > 0) {
             $("#altForm").hide();
-            $("#subTop").html("");
+            subTop();
 
             modules.addresses.houses.renderEntranceCMS(params.houseId, params.entranceId);
         } else {

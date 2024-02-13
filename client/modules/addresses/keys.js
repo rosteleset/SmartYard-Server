@@ -33,14 +33,18 @@
                 columns: [
                     {
                         title: i18n("addresses.keyId"),
+                        nowrap: true,
                     },
                     {
                         title: i18n("addresses.rfId"),
                         nowrap: true,
                     },
                     {
-                        title: i18n("addresses.comments"),
+                        title: i18n("addresses.lastSeen"),
                         nowrap: true,
+                    },
+                    {
+                        title: i18n("addresses.comments"),
                         fullWidth: true,
                     },
                 ],
@@ -53,14 +57,32 @@
                             cols: [
                                 {
                                     data: result.keys[i].keyId,
+                                    nowrap: true,
                                 },
                                 {
                                     data: result.keys[i].rfId,
+                                    nowrap: true,
+                                },
+                                {
+                                    data: ttDate(result.keys[i].lastSeen),
+                                    nowrap: true,
                                 },
                                 {
                                     data: result.keys[i].comments,
                                 },
                             ],
+                            dropDown: {
+                                items: [
+                                    {
+                                        icon: "fas fa-trash-alt",
+                                        title: i18n("addresses.deleteKey"),
+                                        class: "text-danger",
+                                        click: keyId => {
+                                            modules.addresses.keys.removeKey(keyId, params);
+                                        },
+                                    },
+                                ],
+                            },
                         });
                     }
 
@@ -112,11 +134,11 @@
         }).show();
     },
 
-    removeKey: function () {
+    removeKey: function (keyId, params) {
 
     },
 
-    modifyKey: function () {
+    modifyKey: function (keyId, params) {
 
     },
 
@@ -132,7 +154,7 @@
         }
 
         if (parseInt(params.by)) {
-            document.title = i18n("windowTitle") + " :: " + i18n("addresses.objectKeys");
+            document.title = i18n("windowTitle") + " :: " + i18n("addresses.objectKeys", i18n("addresses.keysType" + parseInt(params.by)));
         } else {
             document.title = i18n("windowTitle") + " :: " + i18n("addresses.superKeys");
         }

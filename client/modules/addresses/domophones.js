@@ -312,7 +312,7 @@
 
     route: function (params) {
         $("#altForm").hide();
-        $("#subTop").html("");
+        subTop();
 
         document.title = i18n("windowTitle") + " :: " + i18n("addresses.domophones");
 
@@ -368,11 +368,11 @@
                                     nowrap: true,
                                 },
                                 {
-                                    data: modules.addresses.domophones.meta.domophones[i].name,
+                                    data: modules.addresses.domophones.meta.domophones[i].name ? modules.addresses.domophones.meta.domophones[i].name : "",
                                     nowrap: true,
                                 },
                                 {
-                                    data: modules.addresses.domophones.meta.domophones[i].comments,
+                                    data: modules.addresses.domophones.meta.domophones[i].comment ? modules.addresses.domophones.meta.domophones[i].comment : "",
                                     nowrap: true,
                                 },
                             ],

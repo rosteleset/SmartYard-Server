@@ -12,6 +12,7 @@
     "companyWasChanged": "Компания изменена",
     "companyWasDeleted": "Компания удалена",
     "modifyCompany": "Изменить компанию",
+    "deleteCompany": "Удалить компанию",
     "confirmCompanyDelete": "Удалить компанию \"#%s\"?",
     "type1": "УК",
     "type2": "ТСЖ"

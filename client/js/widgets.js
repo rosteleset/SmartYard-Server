@@ -241,8 +241,8 @@ function page404() {
 
 function pageError(error) {
     $("#mainForm").html("");
-    $("#subTop").html("");
     $("#altForm").hide();
+    subTop();
     loadingDone();
     document.title = `${i18n("windowTitle")} :: ${i18n("error")}`;
     $("#pageError").html(`
@@ -258,6 +258,39 @@ function pageError(error) {
     `).show();
 }
 
+function subTop(html) {
+    if (html) {
+        $("#subTop").html(`<div class="info-box mt-2 mb-1" style="min-height: 0px;"><div class="info-box-content"><span class="info-box-text">${html}</span></div></div>`).show();
+    } else {
+        $("#subTop").hide();
+    }
+}
+
+function leftSide(button, title, target, group, withibleOnlyWhenActive) {
+    if (group != mainSidebarGroup && !mainSidebarFirst) {
+        $("#leftside-menu").append(`
+            <li class="nav-item"><hr class="border-top" style="opacity: 15%"></li>
+        `);
+    }
+
+    let [ route ] = hashParse();
+
+    let id = md5(guid());
+
+    $("#leftside-menu").append(`
+        <li id="${id}" class="nav-item${mainSidebarFirst?" mt-2":""}${withibleOnlyWhenActive?" withibleOnlyWhenActive":""}" data-target="${target}" title="${escapeHTML(title)}"${(withibleOnlyWhenActive && target !== "#" + route.split('.')[0])?" style='display: none;'":""}>
+            <a href="${target}" data-href="${target}" class="nav-link${(target === "#" + route.split('.')[0])?" active":""}">
+                <i class="${button} nav-icon"></i>
+                <p class="text-nowrap">${title}</p>
+            </a>
+        </li>
+    `);
+
+    mainSidebarGroup = group;
+    mainSidebarFirst = false;
+
+    return id;
+}
 
 $(document).on('select2:open', '.select2', function () {
     setTimeout(() => {

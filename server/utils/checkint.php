@@ -8,9 +8,9 @@
      */
 
     function checkInt(&$int) {
-        $int = trim($int);
+        $int_ = trim($int);
         $_int = strval((int)$int);
-        if ($int != $_int) {
+        if ($int_ != $_int) {
             return false;
         } else {
             $int = (int)$_int;

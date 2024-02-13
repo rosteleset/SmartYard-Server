@@ -33,6 +33,7 @@
                         ]);
                         return true;
 
+                    case "company":
                     case "house":
                     case "entrance":
                     case "flat":
