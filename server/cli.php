@@ -607,6 +607,7 @@
     }
 
     if (count($args) == 1 && array_key_exists("--update", $args) && !isset($args["--update"])) {
+        //TODO add waiting for finish other cli processes
         backup_db();
         echo "\n";
 
