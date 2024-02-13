@@ -2,6 +2,8 @@
 
 namespace hw\ip\domophone\beward;
 
+use DOMDocument;
+use DOMXPath;
 use hw\ip\domophone\domophone;
 
 /**
@@ -13,37 +15,53 @@ abstract class beward extends domophone
     use \hw\ip\common\beward\beward;
 
     /**
+     * @var array|string[] Mapping of CMS models between database and Beward names.
+     * @access protected
+     */
+    protected const CMS_MODEL_MAP = [
+        // DB         // Beward
+        'COM-25U' => 'COM-25U',
+        'COM-80U' => 'COM-80U',
+        'COM-100U' => 'COM-100U',
+        'COM-160U' => 'COM-160U',
+        'COM-220U' => 'COM-220U',
+        'BK-30' => 'BK-30/BK-10/BK-4AV/BK-4MVE/BK-4М',
+        'BK-100' => 'BK-100',
+        'BK-400' => 'BK-400',
+        'KMG-100' => 'KMG-100',
+        'KMG-100I' => 'KMG-100I',
+        'KM20-1' => 'KM20-1',
+        'KM100-7.1' => 'KM100-7.1',
+        'KM100-7.2' => 'KM100-7.2',
+        'KM100-7.3' => 'KM100-7.3',
+        'KM100-7.5' => 'KM100-7.5',
+        'KKM-100S2' => 'KKM-100S2',
+        'KKM-105' => 'KKM-105',
+        'KKM-108' => 'KKM-108',
+        'Factorial8x8' => 'Factorial 8x8',
+        'KAD2501' => 'KAD2501',
+        'KAD2502' => 'KAD2502 (DP-K2D)',
+    ];
+
+    /**
      * @var string The currently used CMS model.
      * @access protected
      */
     protected string $cmsModel = '';
 
     /**
-     * @var array|int[] Map of CMS models corresponding Beward identifiers.
+     * @var array|null An array containing a list of supported CMS with their IDs,
+     * which may be null if not loaded.
      * @access protected
      */
-    protected array $cmsModelIdMap = [
-        'COM-25U' => 0,
-        'COM-80U' => 1,
-        'COM-100U' => 2,
-        'COM-160U' => 3,
-        'COM-220U' => 4,
-        'BK-30' => 5,
-        'BK-100' => 6,
-        'BK-400' => 7,
-        'KMG-100' => 8,
-        'KMG-100I' => 9,
-        'KM20-1' => 10,
-        'KM100-7.1' => 11,
-        'KM100-7.2' => 12,
-        'KM100-7.3' => 13,
-        'KM100-7.5' => 14,
-        'KKM-100S2' => 15,
-        'KKM-105' => 16,
-        'KKM-108' => 19,
-        'Factorial8x8' => 17,
-        'KAD2501' => 18,
-    ];
+    protected ?array $supportedCmsList = null;
+
+    /**
+     * @var bool|null A property that indicates whether the device has an external RFID table,
+     * which can be null if not loaded.
+     * @access protected
+     */
+    protected ?bool $hasExternalRfidTable = null;
 
     public function __destruct()
     {
@@ -52,7 +70,14 @@ abstract class beward extends domophone
 
     public function addRfid(string $code, int $apartment = 0)
     {
-        $this->apiCall('cgi-bin/rfid_cgi', ['action' => 'add', 'Key' => $code]);
+        $this->loadExternalRfidTableExists();
+
+        if ($this->hasExternalRfidTable) {
+            $this->apiCall('cgi-bin/mifare_cgi', ['action' => 'add', 'Key' => $code, 'Type' => 1]);
+            $this->apiCall('cgi-bin/extrfid_cgi', ['action' => 'add', 'Key' => $code, 'Type' => 1]);
+        } else {
+            $this->apiCall('cgi-bin/rfid_cgi', ['action' => 'add', 'Key' => $code]);
+        }
     }
 
     public function addRfids(array $rfids)
@@ -229,6 +254,13 @@ abstract class beward extends domophone
             'passwd1' => $password,
             'newpassword' => '',
         ]);
+
+        $this->apiCall('cgi-bin/pwdgrp_cgi', [
+            'action' => 'update',
+            'username' => 'user1',
+            'password' => $password,
+        ]);
+
         $this->apiCall('webs/sysRightsCfgEx', [
             'ckusr1func1' => '1',
             'ckusr1func2' => '1',
@@ -258,11 +290,23 @@ abstract class beward extends domophone
 
     public function deleteRfid(string $code = '')
     {
+        $this->loadExternalRfidTableExists();
+
         if ($code) {
-            $this->apiCall('cgi-bin/rfid_cgi', ['action' => 'delete', 'Key' => $code]);
+            if ($this->hasExternalRfidTable) {
+                $this->apiCall('cgi-bin/mifare_cgi', ['action' => 'delete', 'Key' => $code]);
+                $this->apiCall('cgi-bin/extrfid_cgi', ['action' => 'delete', 'Key' => $code]);
+            } else {
+                $this->apiCall('cgi-bin/rfid_cgi', ['action' => 'delete', 'Key' => $code]);
+            }
         } else {
-            $this->apiCall('cgi-bin/rfid_cgi', ['action' => 'clear']);
-            $this->apiCall('cgi-bin/rfid_cgi', ['action' => 'delete', 'Apartment' => 0]);
+            if ($this->hasExternalRfidTable) {
+                $this->apiCall('cgi-bin/mifare_cgi', ['action' => 'delete', 'Apartment' => 0]);
+                $this->apiCall('cgi-bin/extrfid_cgi', ['action' => 'delete', 'Apartment' => 0]);
+            } else {
+                $this->apiCall('cgi-bin/rfid_cgi', ['action' => 'clear']);
+                $this->apiCall('cgi-bin/rfid_cgi', ['action' => 'delete', 'Apartment' => 0]);
+            }
 
             foreach ($this->getRfids() as $rfid) {
                 $this->deleteRfid($rfid);
@@ -322,11 +366,18 @@ abstract class beward extends domophone
 
     public function getRfids(): array
     {
-        $rfids = [];
-        $rawRfids = $this->parseParamValue($this->apiCall('cgi-bin/rfid_cgi', ['action' => 'list']));
+        $this->loadExternalRfidTableExists();
 
+        $resource = $this->hasExternalRfidTable ? 'mifare_cgi' : 'rfid_cgi';
+        $sign = $this->hasExternalRfidTable ? 'Key' : 'KeyValue';
+
+        $rawRfids = $this->parseParamValue(
+            $this->apiCall("cgi-bin/$resource", ['action' => 'list'])
+        );
+
+        $rfids = [];
         foreach ($rawRfids as $key => $value) {
-            if (strpos($key, 'KeyValue') !== false) {
+            if (strpos($key, $sign) !== false) {
                 $rfids[$value] = $value;
             }
         }
@@ -409,12 +460,24 @@ abstract class beward extends domophone
 
     public function setCmsModel(string $model = '')
     {
-        if (array_key_exists($model, $this->cmsModelIdMap)) {
-            $nowMatrix = $this->getMatrix();
-            $this->apiCall('webs/kmnDUCfgEx', ['kmntype' => $this->cmsModelIdMap[$model]]);
-            $this->cmsModel = $model;
-            $this->configureMatrix($nowMatrix);
+        if (!array_key_exists($model, self::CMS_MODEL_MAP)) {
+            return;
         }
+
+        $this->loadSupportedCmsList();
+        $cmsId = $this->supportedCmsList[self::CMS_MODEL_MAP[$model]] ?? null;
+
+        if ($cmsId === null) {
+            return;
+        }
+
+        $nowMatrix = $this->getMatrix(); // Save current matrix...
+
+        // ...because here it will reset
+        $this->apiCall('webs/kmnDUCfgEx', ['kmntype' => $cmsId]);
+
+        $this->cmsModel = $model;
+        $this->configureMatrix($nowMatrix); // Restore saved matrix
     }
 
     public function setConciergeNumber(int $sipNumber)
@@ -539,10 +602,13 @@ abstract class beward extends domophone
 
     protected function getApartments(): array
     {
-        $flatsParams = $this->parseParamValue($this->apiCall('cgi-bin/apartment_cgi', [
-            'action' => 'list',
-            'LastNumber' => 9998,
-        ]));
+        $flatsParams = $this->parseParamValue(
+            $this->apiCall('cgi-bin/apartment_cgi', [
+                'action' => 'list',
+                'LastNumber' => 9998,
+            ])
+        );
+
         $flats = [];
 
         if (!$flatsParams) {
@@ -566,8 +632,8 @@ abstract class beward extends domophone
                 ],
                 'cmsEnabled' => $flatsParams["BlockCMS$i"] === 'off',
                 'cmsLevels' => [
-                    (int)$flatsParams["HandsetUpLevel$i"] ?? null,
-                    (int)$flatsParams["DoorOpenLevel$i"] ?? null,
+                    (int)($flatsParams["HandsetUpLevel$i"] ?? null),
+                    (int)($flatsParams["DoorOpenLevel$i"] ?? null),
                 ],
             ];
         }
@@ -577,12 +643,16 @@ abstract class beward extends domophone
 
     protected function getCmsModel(): string
     {
-        $cmsType = $this->parseParamValue($this->apiCall('cgi-bin/intercomdu_cgi', [
+        $this->loadSupportedCmsList();
+
+        $cmsTypeRaw = $this->apiCall('cgi-bin/intercomdu_cgi', [
             'action' => 'list',
             'Index' => -1,
-        ]))['Type'];
+        ]);
 
-        return array_search($cmsType, $this->cmsModelIdMap);
+        $cmsType = $this->parseParamValue($cmsTypeRaw)['Type'];
+
+        return array_search(array_search($cmsType, $this->supportedCmsList), self::CMS_MODEL_MAP);
     }
 
     /**
@@ -719,5 +789,45 @@ abstract class beward extends domophone
         }
 
         return $params;
+    }
+
+    /**
+     * Load and cache the boolean variable representing the existence of an external RFID table.
+     *
+     * @return void
+     */
+    protected function loadExternalRfidTableExists()
+    {
+        if ($this->hasExternalRfidTable === null) {
+            $res = $this->apiCall('cgi-bin/extrfid_cgi');
+            $this->hasExternalRfidTable = stripos($res, 'not found') === false;
+        }
+    }
+
+    /**
+     * Load and cache the supported CMS list if it hasn't been loaded already.
+     *
+     * @return void
+     */
+    protected function loadSupportedCmsList()
+    {
+        if ($this->supportedCmsList === null) {
+            $res = $this->apiCall('/xml/kmnducfg.xml');
+
+            $doc = new DOMDocument();
+            $doc->loadXML($res);
+
+            $xpath = new DOMXPath($doc);
+
+            $cmsListNodes = $xpath->query('//Resources[@name="English"]/Page//*[starts-with(name(),"opkmntype")]');
+
+            $rawCmsList = [];
+            foreach ($cmsListNodes as $node) {
+                // Trims and removes 'Beward' from node values
+                $rawCmsList[] = trim(str_replace('Beward', '', $node->nodeValue));
+            }
+
+            $this->supportedCmsList = array_flip($rawCmsList);
+        }
     }
 }

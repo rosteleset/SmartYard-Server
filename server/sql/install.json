@@ -82,5 +82,8 @@
     ],
     "24": [
         "v24_comments.sql"
+    ],
+    "25": [
+        "v25_houses.sql"
     ]
 }
