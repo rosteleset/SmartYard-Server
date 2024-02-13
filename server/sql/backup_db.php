@@ -5,7 +5,7 @@
         $dsn = trim($dsn);
 
         if (strpos($dsn, ':') === false) {
-            throw new Exception(sprintf('The DSN is invalid. It does not have scheme separator ":".'));
+            die("the dsn is invalid, it does not have scheme separator \":\"\n");
         }
 
         list($prefix, $dsnWithoutPrefix) = preg_split('#\s*:\s*#', $dsn, 2);
@@ -13,7 +13,7 @@
         $protocol = $prefix;
 
         if (preg_match('/^[a-z\d]+$/', strtolower($prefix)) == false) {
-            throw new Exception('The DSN is invalid. Prefix contains illegal symbols.');
+            die("the dsn is invalid, prefix contains illegal symbols\n");
         }
 
         $dsnElements = preg_split('#\s*\;\s*#', $dsnWithoutPrefix);

@@ -42,7 +42,7 @@
             demo server:
                 [--run-demo-server [--port=<port>]]
 
-            initialization:
+            initialization and update:
                 [--init-db [--skip=<versions>]]
                 [--init-clickhouse-db]
                 [--admin-password=<password>]
@@ -50,6 +50,7 @@
                 [--clear-cache]
                 [--cleanup]
                 [--init-mobile-issues-project]
+                [--update]
 
             tests:
                 [--check-mail=<your email address>]
@@ -616,6 +617,14 @@
     if (count($args) == 1 && array_key_exists("--restore-db", $args) && isset($args["--restore-db"])) {
         require_once "sql/backup_db.php";
         restore_db($args["--restore-db"]);
+        exit(0);
+    }
+
+    if (count($args) == 1 && array_key_exists("--update", $args) && !isset($args["--update"])) {
+        require_once "sql/backup_db.php";
+        backup_db();
+        chdir(__DIR__);
+        system("git pull");
         exit(0);
     }
 
