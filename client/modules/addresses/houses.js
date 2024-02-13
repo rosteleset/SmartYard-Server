@@ -938,7 +938,7 @@
                         host: response.cameras.cameras[i].url,
                     }
                 }
-                let comment = $.trim(response.cameras.cameras[i].comments);
+                let comments = $.trim(response.cameras.cameras[i].comments);
                 let name = $.trim(response.cameras.cameras[i].name);
                 let text = name;
                 if (!text) {
