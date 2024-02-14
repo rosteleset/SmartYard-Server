@@ -2159,8 +2159,8 @@
                         } else {
                             mkdir($path);
                             chmod($path, 0775);
-                            chown($path, $user);
-                            chgrp($path, $group);
+                            @chown($path, $user);
+                            @chgrp($path, $group);
                         }
                     }
                 } catch (\Exception $e) {
