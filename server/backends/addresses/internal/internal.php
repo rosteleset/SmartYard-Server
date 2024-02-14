@@ -933,6 +933,10 @@
                         $regionId = null;
                     }
 
+                    if ($house["data"]["area_fias_id"] === $house["data"]["city_fias_id"]) {
+                        $house["data"]["city_fias_id"] = null;
+                    }
+
                     $cityId = null;
                     if ($house["data"]["city_fias_id"]) {
                         $cityId = $this->db->get("select address_city_id from addresses_cities where city_uuid = :city_uuid or (address_region_id = :address_region_id and city = :city) or (address_area_id = :address_area_id and city = :city)",
