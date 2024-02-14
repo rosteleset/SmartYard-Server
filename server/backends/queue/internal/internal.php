@@ -63,7 +63,7 @@
             {
                 $this->db->modify("delete from core_running_processes where (done is not null and expire < :expire) or (done is not null and start < :start)", [
                     "expire" => time(),
-                    "start" => time() - 24 * 60 * 60,
+                    "start" => time() - 7 * 24 * 60 * 60,
                 ]);
 
                 if (@$this->tasks[$part]) {
