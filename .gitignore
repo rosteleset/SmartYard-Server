@@ -76,6 +76,7 @@ RBT/RBT.xcodeproj/
 .bash_history
 *.apk
 .vscode
+.release
 __pycache__
 /package.json
 /package-lock.json
