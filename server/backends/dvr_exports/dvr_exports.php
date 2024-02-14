@@ -76,7 +76,7 @@
             
                         $metadata = $files->getFileMetadata($uuid);
             
-                        $msgId = $inbox->sendMessage($metadata['subscriberId'], i18n("dvr.videoReady"), i18n("dvr.threeDays", $this->$config['api']['mobile'], $uuid));
+                        $msgId = $inbox->sendMessage($metadata['subscriberId'], i18n("dvr.videoReady"), i18n("dvr.threeDays", $this->config['api']['mobile'], $uuid));
                     }
                     exit(0);
                 }
