@@ -117,7 +117,7 @@
                 if (link) {
                     return st.parent + sp + link("street", st.street, id);
                 } else {
-                    return st.parent + sp + st.street;
+                    return st.parent + sp + st.streetWithType;
                 }
 
             default:
