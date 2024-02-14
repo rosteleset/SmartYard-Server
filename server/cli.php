@@ -81,9 +81,6 @@
                 [--install-crontabs]
                 [--uninstall-crontabs]
 
-            dvr:
-                [--run-record-download=<id>]
-
             db:
                 [--backup-db]
                 [--list-db-backups]
