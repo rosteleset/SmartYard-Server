@@ -1897,7 +1897,7 @@
                                     {
                                         icon: "fas fa-phone-volume",
                                         title: i18n("addresses.cms"),
-                                        disabled: modules.addresses.houses.meta.entrances[i].cms.toString() === "0",
+                                        disabled: !modules.addresses.houses.meta.entrances[i].cms || modules.addresses.houses.meta.entrances[i].cms.toString() === "0",
                                         click: entranceId => {
                                             location.href = "?#addresses.houses&show=cms&houseId=" + houseId + "&entranceId=" + entrances[entranceId].entranceId;
                                         },
