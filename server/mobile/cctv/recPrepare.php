@@ -89,7 +89,7 @@ if (@$check['id']) {
 // если такой кусок ещё не запрашивали, то добавляем запрос на скачивание.
 $res = (int)$dvr_exports->addDownloadRecord($cameraId, $subscriber["subscriberId"], $from, $to);
 session_write_close();
-exec("php ". __DIR__."/../../cli.php --run-record-download=$res >/dev/null 2>/dev/null &");
+exec("php ". __DIR__."/../../cli.php dvr_exports --run-record-download=$res >/dev/null 2>/dev/null &");
 
 response(200, $res);
 

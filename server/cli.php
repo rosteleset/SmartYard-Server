@@ -562,20 +562,6 @@
         exit(0);
     }
 
-    if (count($args) == 1 && array_key_exists("--run-record-download", $args) && isset($args["--run-record-download"])) {
-        $recordId = (int)$args["--run-record-download"];
-        $dvr_exports = @loadBackend("dvr_exports");
-        if ($dvr_exports && ($uuid = $dvr_exports->runDownloadRecordTask($recordId))) {
-            $inbox = loadBackend("inbox");
-            $files = loadBackend("files");
-
-            $metadata = $files->getFileMetadata($uuid);
-
-            $msgId = $inbox->sendMessage($metadata['subscriberId'], i18n("dvr.videoReady"), i18n("dvr.threeDays", $config['api']['mobile'], $uuid));
-        }
-        exit(0);
-    }
-
     if (count($args) == 1 && array_key_exists("--write-yaml-config", $args) && !isset($args["--write-yaml-config"])) {
         file_put_contents("config/config.yml", yaml_emit($config));
         exit(0);
