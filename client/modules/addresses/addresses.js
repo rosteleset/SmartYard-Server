@@ -69,7 +69,7 @@
                         s.parent = a.parent + sp + link("area", a.areaWithType, a.areaId);
                     } else {
                         let c = city(s.cityId);
-                        s.parent = c.parent + sp + link("city", c.city, c.cityId);
+                        s.parent = c.parent + sp + link("city", c.cityWithType, c.cityId);
                     }
                     return s;
                 }
@@ -82,10 +82,10 @@
                     let s = modules.addresses.meta.streets[i];
                     if (s.cityId) {
                         let c = city(s.cityId);
-                        s.parent = c.parent + sp + link("city", c.city, c.cityId);
+                        s.parent = c.parent + sp + link("city", c.cityWithType, c.cityId);
                     } else {
                         let e = settlement(s.settlementId);
-                        s.parent = e.parent + sp + link("settlement", e.settlement, e.settlementId);
+                        s.parent = e.parent + sp + link("settlement", e.settlementWithType, e.settlementId);
                     }
                     return s;
                 }
