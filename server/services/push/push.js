@@ -5,14 +5,15 @@ require("dotenv").config({
 const path = require('path');
 const app = require('express')();
 const admin = require('firebase-admin');
-const cert = path.join(__dirname, './assets/certificate-and-privatekey.pem');
 const { Curl } = require('node-libcurl');
 
+const CERT = path.join(__dirname, './assets/certificate-and-privatekey.pem');
+const SERVICE_ACCOUNT = path.join(__dirname, './assets/pushServiceAccountKey.json');
 const PORT = process.env.APP_PORT || 8080;
 const HOST = process.env.APP_HOST || "127.0.0.1";
-const app_bundle_id = process.env.APP_BUNDLE_ID || "example_app_bundle_id";
-const app_user_agent = process.env.APP_USER_AGENT || 'example_app_user_agent';
-const database = process.env.APP_DATABASE_NAME || 'example_database';
+const APP_BUNDLE_ID = process.env.APP_BUNDLE_ID || "example_app_bundle_id";
+const APP_USER_ID = process.env.APP_USER_AGENT || 'example_app_user_agent';
+const DB_NAME = process.env.APP_DATABASE_NAME || 'example_database';
 
 const pushOk = (token, result, res) => {
     if (result && result.successCount && parseInt(result.successCount)) {
@@ -89,9 +90,9 @@ const realPush = (msg, data, options, token, type, res) => {
             curl.setOpt(Curl.option.URL, `${http2_server}/3/device/${token}`);
             curl.setOpt(Curl.option.PORT, 443);
             curl.setOpt(Curl.option.HTTPHEADER, [
-                `apns-topic: ${app_bundle_id}.voip`,
+                `apns-topic: ${APP_BUNDLE_ID}.voip`,
                 `apns-push-type: voip`,
-                `User-Agent: ${app_user_agent}`,
+                `User-Agent: ${APP_USER_ID}`,
             ]);
             curl.setOpt(Curl.option.POST, true);
             curl.setOpt(Curl.option.POSTFIELDS, JSON.stringify({
@@ -99,7 +100,7 @@ const realPush = (msg, data, options, token, type, res) => {
             }));
             curl.setOpt(Curl.option.TIMEOUT, 30);
             curl.setOpt(Curl.option.SSL_VERIFYPEER, false);
-            curl.setOpt(Curl.option.SSLCERT, cert);
+            curl.setOpt(Curl.option.SSLCERT, CERT);
             curl.setOpt(Curl.option.HEADER, true);
             curl.setOpt(Curl.option.VERBOSE, false);
 
@@ -235,7 +236,7 @@ app.use(require('body-parser').urlencoded({ extended: true }));
 app.listen(PORT, HOST, () => console.log(`Push server started >> http://${HOST}:${PORT}`))
     .on("listening", () =>{
         admin.initializeApp({
-            credential: admin.credential.cert(require(path.join(__dirname, './assets/pushServiceAccountKey.json'))),
-            databaseURL: database,
+            credential: admin.credential.cert(SERVICE_ACCOUNT),
+            databaseURL: DB_NAME,
         });
     })
