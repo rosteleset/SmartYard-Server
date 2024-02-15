@@ -18,7 +18,7 @@
         modules.addresses.meta = addresses["addresses"];
     },
 
-    path: function (object, id, link) {
+    path: function (object, id, _link) {
         let sp = "<i class=\"fas fa-xs fa-angle-double-right ml-2 mr-2\"></i>";
 
         function link(target, text, id) {
@@ -98,23 +98,31 @@
 
             case "area":
                 let a = area(id);
-                return a.parent + sp + a.areaWithType;
+                if (_link) {
+                    return a.parent + sp + link("area", a.areaWithType, id);
+                } else {
+                    return a.parent + sp + a.areaWithType;
+                }
 
             case "city":
                 let c = city(id);
-                return c.parent + sp + c.city;
+                if (_link) {
+                    return c.parent + sp + link("city", c.cityWithType, id);
+                } else {
+                    return c.parent + sp + c.cityWithType;
+                }
 
             case "settlement":
                 let se = settlement(id);
-                if (link) {
-                    return se.parent + sp + link("settlement", se.settlement, id);
+                if (_link) {
+                    return se.parent + sp + link("settlement", se.settlementWithType, id);
                 } else {
-                    return se.parent + sp + se.settlement;
+                    return se.parent + sp + se.settlementWithType;
                 }
 
             case "street":
                 let st = street(id);
-                if (link) {
+                if (_link) {
                     return st.parent + sp + link("street", st.streetWithType, id);
                 } else {
                     return st.parent + sp + st.streetWithType;

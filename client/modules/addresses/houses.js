@@ -1614,7 +1614,7 @@
                         modules.addresses.houses.houseId = houseId;
                         modules.addresses.houses.settlementId = modules.addresses.meta.houses[i].settlementId?modules.addresses.meta.houses[i].settlementId:0;
                         modules.addresses.houses.streetId = modules.addresses.meta.houses[i].streetId?modules.addresses.meta.houses[i].streetId:0;
-                        subTop(modules.addresses.path((modules.addresses.meta.houses[i].settlementId?"settlement":"street"), modules.addresses.meta.houses[i].settlementId?modules.addresses.meta.houses[i].settlementId:modules.addresses.meta.houses[i].streetId) + "<i class=\"fas fa-xs fa-angle-double-right ml-2 mr-2\"></i>" + modules.addresses.houses.meta.house.houseFull);
+                        subTop(modules.addresses.path(modules.addresses.meta.houses[i].settlementId ? "settlement" : "street", modules.addresses.meta.houses[i].settlementId ? modules.addresses.meta.houses[i].settlementId : modules.addresses.meta.houses[i].streetId, true) + "<i class=\"fas fa-xs fa-angle-double-right ml-2 mr-2\"></i>" + modules.addresses.houses.meta.house.houseFull);
                         f = true;
                     }
                 }
