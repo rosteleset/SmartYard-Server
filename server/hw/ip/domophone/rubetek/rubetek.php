@@ -12,6 +12,21 @@ abstract class rubetek extends domophone
 
     use \hw\ip\common\rubetek\rubetek;
 
+    /**
+     * @var array|string[] Mapping of CMS models between database and Rubetek names.
+     * @access protected
+     */
+    protected const CMS_MODEL_MAP = [
+        // DB          // Rubetek
+        'KM100-7.1' => 'km100-7.1',
+        'KM100-7.3' => 'km100-7.3',
+        'KM100-7.5' => 'km100-7.5',
+        'KKM-100S2' => 'kkm-100s2',
+        'KKM-105' => 'kkm-105',
+        'KKM-108' => 'kkm-108',
+        'KMG-100' => 'kmg-100',
+    ];
+
     protected string $defaultWebPassword = 'Rubetek34';
 
     public function _setUnlockTime(int $time)
@@ -289,18 +304,17 @@ abstract class rubetek extends domophone
 
     public function setCmsModel(string $model = '')
     {
-        switch ($model) {
-            case 'FE-12D':
-                $mode = 'digital';
-                break;
-            default:
-                $mode = 'analog';
-                // TODO: API for configuring the CMS model
-                break;
+        if ($model === 'DIGITAL') {
+            $mode = 'digital';
+            $type = 'custom';
+        } else {
+            $mode = 'analog';
+            $type = self::CMS_MODEL_MAP[$model] ?? 'custom';
         }
 
         $analogSettings = $this->apiCall('/settings/analog');
         $analogSettings['mode'] = $mode;
+        $analogSettings['kkmtype'] = $type;
         $this->apiCall('/configuration', 'PATCH', ['analog' => $analogSettings]);
     }
 
@@ -478,8 +492,13 @@ abstract class rubetek extends domophone
 
     protected function getCmsModel(): string
     {
-        // TODO: Implement getCmsModel() method.
-        return '';
+        $cmsModelRaw = $this->apiCall('/settings/analog');
+
+        if ($cmsModelRaw['mode'] === 'digital') {
+            return 'DIGITAL';
+        }
+
+        return array_search($cmsModelRaw['kkmtype'], self::CMS_MODEL_MAP) ?? '';
     }
 
     /**

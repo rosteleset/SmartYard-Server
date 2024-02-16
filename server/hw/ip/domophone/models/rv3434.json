@@ -8,7 +8,7 @@
     "camera": "rubetek",
     "useSmartConfigurator": false,
     "cmses": [
-        "fe-12d",
+        "digital",
         "kkm-100s2",
         "kkm-105",
         "kkm-108",

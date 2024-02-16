@@ -1,9 +1,9 @@
 {
-    "title": "FALCON EYE FE-12D",
-    "model": "FE-12D",
+    "title": "DIGITAL",
+    "model": "DIGITAL",
     "dozen_start": 0,
     "cms": {
-        "FE-12D": {
+        "DIGITAL": {
             "1": 26,
             "2": 26,
             "3": 26,
