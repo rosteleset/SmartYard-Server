@@ -12,25 +12,35 @@ abstract class rubetek extends domophone
 
     use \hw\ip\common\rubetek\rubetek;
 
-    protected string $defaultWebPassword = 'Rubetek34';
-
-    public function _setUnlockTime(int $time)
-    {
-        $this->apiCall('/settings/door_left_open_timeout', 'PATCH', ['timeout' => $time]);
-    }
+    /**
+     * @var array|null $dialplans An array that holds dialplan information,
+     * which may be null if not loaded.
+     */
+    protected ?array $dialplans = null;
 
     public function addRfid(string $code, int $apartment = 0)
     {
         $this->apiCall('/rfids', 'POST', [
             'rfid' => $code,
-            'door_access' => [1, 5] // 1 - Relay A, internal reader; 5 - Relay B, external reader
+            'door_access' => [
+                RubetekConst::RELAY_1_INTERNAL,
+                RubetekConst::RELAY_2_EXTERNAL,
+            ],
         ]);
     }
 
     public function addRfids(array $rfids)
     {
-        foreach ($rfids as $rfid) {
-            $this->addRfid($rfid);
+        $rfidChunks = array_chunk($rfids, 400); // Cannot add more than 400 records in one request
+
+        foreach ($rfidChunks as $rfidChunk) {
+            $this->apiCall('/rfids_pack', 'POST', [
+                'rfids' => $rfidChunk,
+                'door_access' => [
+                    RubetekConst::RELAY_1_INTERNAL,
+                    RubetekConst::RELAY_2_EXTERNAL,
+                ]
+            ]);
         }
     }
 
@@ -42,13 +52,18 @@ abstract class rubetek extends domophone
         array $cmsLevels = []
     )
     {
-        $this->apiCall('/apartments', 'POST', [
-            'id' => "$apartment",
-            'sip_number' => (string)($sipNumbers[0] ?? $apartment),
-            'call_type' => $cmsEnabled ? 'sip_0_analog' : 'sip',
-            'door_access' => [1],
-            'access_codes' => $code ? ["$code"] : [],
-        ]);
+        $this->loadDialplans();
+
+        $dialplan = $this->dialplans[$apartment] ?? ['id' => "$apartment", 'analog_number' => ''];
+
+        $this->updateDialplan(
+            $dialplan['id'],
+            $sipNumbers[0],
+            $dialplan['analog_number'],
+            $cmsEnabled ? RubetekConst::SIP_ANALOG : RubetekConst::SIP,
+            [RubetekConst::RELAY_1_INTERNAL],
+            $code !== 0 ? ["$code"] : [],
+        );
     }
 
     public function configureEncoding()
@@ -88,43 +103,42 @@ abstract class rubetek extends domophone
                 'start_number' => $link['firstFlat'],
                 'end_number' => $link['lastFlat'],
                 'call_number' => 'XXXXYYYY',
-                'call_type' => 'sip',
-                'door_access' => [1],
+                'call_type' => RubetekConst::SIP,
+                'door_access' => [RubetekConst::RELAY_1_INTERNAL],
             ]);
         }
     }
 
     public function configureMatrix(array $matrix)
     {
-        // Delete all analog replaces
-        $apartments = $this->apiCall('/apartments');
-
-        foreach ($apartments as $apartment) {
-            ['id' => $id, 'sip_number' => $sipNumber] = $apartment;
-
-            if (!$sipNumber) { // Delete apartment from dialplan if it doesn't have a SIP number
-                $this->apiCall("/apartments/$id", 'DELETE');
-            } else { // Otherwise, remove the analog number from the apartment
-                $this->apiCall('/apartments', 'POST', [
-                    'id' => $id,
-                    'analog_number' => '',
-                ]);
-            }
-        }
+        $this->clearMatrix();
 
         foreach ($matrix as $matrixCell) {
             [
-                'cms' => $cmsNumber,
-                'dozen' => $dozen,
-                'unit' => $unit,
+                'hundreds' => $hundreds,
+                'tens' => $tens,
+                'units' => $units,
                 'apartment' => $apartment,
             ] = $matrixCell;
 
-            $this->apiCall('/apartments', 'POST', [
+            $analogNumber = (string)($hundreds * 100 + $tens * 10 + $units);
+
+            $dialplan = $this->dialplans[$apartment] ?? [
                 'id' => "$apartment",
-                'analog_number' => (string)($cmsNumber * 100 + $dozen * 10 + $unit),
-                'door_access' => [1],
-            ]);
+                'sip_number' => '',
+                'call_type' => RubetekConst::SIP_ANALOG,
+                'door_access' => [RubetekConst::RELAY_1_INTERNAL],
+                'access_codes' => [],
+            ];
+
+            $this->updateDialplan(
+                $dialplan['id'],
+                $dialplan['sip_number'],
+                $analogNumber,
+                $dialplan['call_type'],
+                $dialplan['door_access'],
+                $dialplan['access_codes'],
+            );
         }
     }
 
@@ -173,11 +187,30 @@ abstract class rubetek extends domophone
 
     public function deleteApartment(int $apartment = 0)
     {
-        if ($apartment !== 0) {
-            $this->apiCall("/apartments/$apartment", 'DELETE');
+        $this->loadDialplans();
+
+        if ($apartment === 0) {
+            foreach ($this->dialplans as $apartment => $dialplan) {
+                $this->deleteApartment($apartment);
+            }
         } else {
-            foreach ($this->getApartmentsIDs() as $apartment) { // TODO: too slow
-                $this->apiCall("/apartments/$apartment", 'DELETE');
+            $dialplan = $this->dialplans[$apartment] ?? null;
+
+            if ($dialplan) {
+                $analogNumber = $dialplan['analog_number'];
+
+                if ($analogNumber === '') {
+                    $this->deleteDialplan($apartment);
+                } else {
+                    $this->updateDialplan(
+                        $dialplan['id'],
+                        '',
+                        $analogNumber,
+                        RubetekConst::SIP_ANALOG,
+                        [RubetekConst::RELAY_1_INTERNAL],
+                        [],
+                    );
+                }
             }
         }
     }
@@ -187,16 +220,43 @@ abstract class rubetek extends domophone
         if ($code) {
             $this->apiCall("/rfids/$code", 'DELETE');
         } else {
-            // Until better times...
-            // $rfids_chunks = array_chunk($this->get_rfids(), 900);
-            // foreach ($rfids_chunks as $rfids_chunk) {
-            // $this->api_call('/rfids_apartment', 'DELETE', [ 'rfids' => $rfids_chunk ]);
-            // }
-
-            foreach ($this->getRfids() as $rfid) { // TODO: too slow
+            foreach ($this->getRfids() as $rfid) {
                 $this->deleteRfid($rfid);
             }
         }
+    }
+
+    public function getApartments(): array
+    {
+        $apartments = [];
+        $this->loadDialplans();
+
+        foreach ($this->dialplans as $dialplan) {
+            [
+                'id' => $apartmentNumber,
+                'sip_number' => $sipNumbers,
+                'call_type' => $callType,
+                'access_codes' => $codes,
+            ] = $dialplan;
+
+            if (
+                $apartmentNumber === RubetekConst::CONCIERGE_ID ||
+                $apartmentNumber === RubetekConst::SOS_ID ||
+                !$sipNumbers
+            ) {
+                continue;
+            }
+
+            $apartments[$apartmentNumber] = [
+                'apartment' => $apartmentNumber,
+                'code' => $codes[0] ?? 0,
+                'sipNumbers' => [$sipNumbers],
+                'cmsEnabled' => $callType === RubetekConst::SIP_ANALOG,
+                'cmsLevels' => [],
+            ];
+        }
+
+        return $apartments;
     }
 
     public function getAudioLevels(): array
@@ -222,9 +282,11 @@ abstract class rubetek extends domophone
         ];
     }
 
-    public function getLineDiagnostics(int $apartment)
+    public function getLineDiagnostics(int $apartment): float
     {
-        // TODO: wait for new firmware
+        $handsetStatus = $this->apiCall("/analog_handset_status/$apartment") ?? [];
+        $voltageRaw = $handsetStatus['voltage'] ?? '';
+        return (float)filter_var($voltageRaw, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
     }
 
     public function getRfids(): array
@@ -246,6 +308,7 @@ abstract class rubetek extends domophone
     public function prepare()
     {
         parent::prepare();
+        $this->configureBasicSettings();
         $this->setAdminPin(false);
         $this->configureInternalReader();
         $this->configureExternalReader();
@@ -289,18 +352,17 @@ abstract class rubetek extends domophone
 
     public function setCmsModel(string $model = '')
     {
-        switch ($model) {
-            case 'FE-12D':
-                $mode = 'digital';
-                break;
-            default:
-                $mode = 'analog';
-                // TODO: API for configuring the CMS model
-                break;
+        if ($model === 'DIGITAL') {
+            $mode = 'digital';
+            $type = 'custom';
+        } else {
+            $mode = 'analog';
+            $type = RubetekConst::CMS_MODEL_MAP[$model] ?? 'custom';
         }
 
         $analogSettings = $this->apiCall('/settings/analog');
         $analogSettings['mode'] = $mode;
+        $analogSettings['kkmtype'] = $type;
         $this->apiCall('/configuration', 'PATCH', ['analog' => $analogSettings]);
     }
 
@@ -310,8 +372,8 @@ abstract class rubetek extends domophone
             'enabled' => true,
             'dial_number' => "$sipNumber",
             'analog_dial_number' => '',
-            'call_type' => 'sip',
-            'door_access' => [1],
+            'call_type' => RubetekConst::SIP,
+            'door_access' => [],
         ]);
     }
 
@@ -322,8 +384,9 @@ abstract class rubetek extends domophone
             'code1' => $code1,
             'code2' => $code2,
             'code3' => $code3,
-            'out_code' => $codeCms,
             'out_mode' => 'SIP-INFO',
+            'internal_dtmf_enabled' => false,
+            'out_code' => $codeCms,
         ]);
     }
 
@@ -343,7 +406,7 @@ abstract class rubetek extends domophone
             'enabled' => true,
             'dial_number' => "$sipNumber",
             'analog_dial_number' => '',
-            'call_type' => 'sip',
+            'call_type' => RubetekConst::SIP,
             'backlight_period' => 3,
         ]);
     }
@@ -359,8 +422,10 @@ abstract class rubetek extends domophone
     {
         $displaySettings = $this->getConfig()['display'];
         $displaySettings['welcome_display'] = 1;
-        $displaySettings['text'] = $text;
-        $this->apiCall('/configuration', 'PATCH', ['display' => $displaySettings]);
+        $displaySettings['text'] = $text . ' '; // Space is needed, otherwise the text will stick together
+        $displaySettings['changeLineTimeout'] = 5; // Seconds
+        $displaySettings['changeSymbolTimeout'] = 5; // Milliseconds
+        $this->apiCall('/settings/display', 'PATCH', $displaySettings);
     }
 
     public function setUnlockTime(int $time = 3)
@@ -396,6 +461,9 @@ abstract class rubetek extends domophone
 
     public function transformDbConfig(array $dbConfig): array
     {
+        $timezone = $dbConfig['ntp']['timezone'];
+        $dbConfig['ntp']['timezone'] = $this->getOffsetByTimezone($timezone);
+
         $stunEnabled = $dbConfig['sip']['stunEnabled'];
         if (!$stunEnabled) {
             $dbConfig['sip']['stunServer'] = '';
@@ -403,6 +471,55 @@ abstract class rubetek extends domophone
         }
 
         return $dbConfig;
+    }
+
+    /**
+     * Clears the matrix by removing analog numbers from dialplans or deleting dialplans without SIP numbers.
+     *
+     * @return void
+     */
+    protected function clearMatrix()
+    {
+        $this->loadDialplans();
+
+        foreach ($this->dialplans as $dialplan) {
+            [
+                'id' => $id,
+                'sip_number' => $sipNumber,
+                'call_type' => $callType,
+                'door_access' => $doorAccess,
+                'access_codes' => $accessCodes,
+            ] = $dialplan;
+
+            if (!$sipNumber) { // Delete the dialplan if it doesn't have a SIP number
+                $this->deleteDialplan($id);
+            } else { // Otherwise, remove the analog number from the dialplan
+                $this->updateDialplan($id, $sipNumber, '', $callType, $doorAccess, $accessCodes);
+            }
+        }
+    }
+
+    /**
+     * Configure basic settings.
+     *
+     * @return void
+     */
+    protected function configureBasicSettings()
+    {
+        $this->apiCall('/configuration', 'PATCH', [
+            'log_buffer_size' => 1024,
+            'accelerometer_sensitivity' => 20,
+            'onvif_enabled' => false,
+            'call_end_type' => 0, // at the end of the call
+            'keep_analog_calling' => false,
+            'ignore_early_media' => true,
+            'display_typed_number_time' => 15, // seconds
+            'backlight_keypad_time' => 15, // seconds
+            'light_sensor_mode_enabled' => false,
+            'backlight_day_brightness' => 6, // 50% brightness
+            'backlight_night_brightness' => 3, // 20% brightness
+            'backlight_increase_brightness' => 3,
+        ]);
     }
 
     /**
@@ -431,52 +548,40 @@ abstract class rubetek extends domophone
             'disable_sl3' => true,
             'code_length' => 4,
             'reverse_data_order' => true,
+            'find_direct_and_reverse_orders' => false,
         ]);
     }
 
-    protected function getApartments(): array
-    {
-        $apartments = [];
-        $rawApartments = $this->apiCall('/apartments');
-
-        foreach ($rawApartments as $rawApartment) {
-            [
-                'id' => $apartmentNumber,
-                'sip_number' => $sipNumbers,
-                'call_type' => $callType,
-                'access_codes' => $codes,
-            ] = $rawApartment;
-
-            if ($apartmentNumber === 'CONCIERGE' || $apartmentNumber === 'SOS' || !$sipNumbers) {
-                continue;
-            }
-
-            $apartments[$apartmentNumber] = [
-                'apartment' => $apartmentNumber,
-                'code' => $codes[0] ?? 0,
-                'sipNumbers' => [$sipNumbers],
-                'cmsEnabled' => $callType === 'sip_0_analog',
-                'cmsLevels' => [],
-            ];
-        }
-
-        return $apartments;
-    }
-
     /**
-     * Get all apartment IDs (apartment numbers).
+     * Delete a dialplan based on the provided ID (apartment number).
      *
-     * @return array An array containing apartment IDs.
+     * @param int $id (Optional) The ID of the dialplan to be deleted.
+     * If 0, then all dialplans will be deleted. Default is 0.
+     *
+     * @return void
      */
-    protected function getApartmentsIDs(): array
+    protected function deleteDialplan(int $id = 0)
     {
-        return array_column($this->apiCall('/apartments'), 'id');
+        $this->loadDialplans();
+
+        if ($id === 0) {
+            $this->apiCall('/apartments', 'DELETE', ['apartIds' => []]);
+            $this->dialplans = [];
+        } elseif (isset($this->dialplans[$id])) {
+            $this->apiCall("/apartments/$id", 'DELETE');
+            unset($this->dialplans[$id]);
+        }
     }
 
     protected function getCmsModel(): string
     {
-        // TODO: Implement getCmsModel() method.
-        return '';
+        $cmsModelRaw = $this->apiCall('/settings/analog');
+
+        if ($cmsModelRaw['mode'] === 'digital') {
+            return 'DIGITAL';
+        }
+
+        return array_search($cmsModelRaw['kkmtype'], RubetekConst::CMS_MODEL_MAP) ?? '';
     }
 
     /**
@@ -533,16 +638,22 @@ abstract class rubetek extends domophone
     protected function getMatrix(): array
     {
         $matrix = [];
-        $analogReplaces = array_filter(array_column($this->apiCall('/apartments'), 'analog_number', 'id'), 'strlen');
+        $this->loadDialplans();
 
-        foreach ($analogReplaces as $apartmentNumber => $analogReplace) {
-            [$cms, $dozen, $unit] = str_split(str_pad($analogReplace, 3, '0', STR_PAD_LEFT));
+        foreach ($this->dialplans as $dialplan) {
+            $analogNumber = $dialplan['analog_number'];
 
-            $matrix[$cms . $dozen . $unit] = [
-                'hundreds' => $cms,
-                'tens' => $dozen,
-                'units' => $unit,
-                'apartment' => $apartmentNumber,
+            if ($analogNumber === '') {
+                continue;
+            }
+
+            [$hundreds, $tens, $units] = str_split(str_pad($analogNumber, 3, '0', STR_PAD_LEFT));
+
+            $matrix[$hundreds . $tens . $units] = [
+                'hundreds' => $hundreds,
+                'tens' => $tens,
+                'units' => $units,
+                'apartment' => $dialplan['id'],
             ];
         }
 
@@ -574,12 +685,33 @@ abstract class rubetek extends domophone
 
     protected function getTickerText(): string
     {
-        return $this->getConfig()['display']['text'];
+        return trim($this->getConfig()['display']['text']) ?? '';
     }
 
     protected function getUnlocked(): bool
     {
         return $this->getDoors()[0]['open'];
+    }
+
+    /**
+     * Load and cache dialplans from the API if they haven't been loaded already.
+     *
+     * @return void
+     */
+    protected function loadDialplans()
+    {
+        if ($this->dialplans === null) {
+            $rawDialplans = $this->apiCall('/apartments');
+
+            $this->dialplans = array_column(
+                array_filter(
+                    $rawDialplans,
+                    fn($value) => $value['id'] !== RubetekConst::CONCIERGE_ID && $value['id'] !== RubetekConst::SOS_ID,
+                ),
+                null,
+                'id',
+            );
+        }
     }
 
     /**
@@ -620,5 +752,43 @@ abstract class rubetek extends domophone
         $displaySettings = $this->getConfig()['display'];
         $displaySettings['admin_password'] = $pin;
         $this->apiCall('/configuration', 'PATCH', ['display' => $displaySettings]);
+    }
+
+    /**
+     * Update or add a dialplan with the provided parameters.
+     *
+     * @param string $id Apartment number.
+     * @param string $sipNumber SIP number for an apartment.
+     * @param string $analogNumber Analog number for an apartment.
+     * @param string $callType Indicates where to call.
+     * @param int[] $doorAccess List of numeric codes that control access to the relay.
+     * @param string[] $accessCodes List of apartment access codes.
+     *
+     * @return void
+     *
+     * @see RubetekConst
+     */
+    protected function updateDialplan(
+        string $id,
+        string $sipNumber,
+        string $analogNumber,
+        string $callType,
+        array  $doorAccess,
+        array  $accessCodes
+    )
+    {
+        $this->loadDialplans();
+
+        $data = [
+            'id' => $id,
+            'sip_number' => $sipNumber,
+            'analog_number' => $analogNumber,
+            'call_type' => $callType,
+            'door_access' => $doorAccess,
+            'access_codes' => $accessCodes,
+        ];
+
+        $this->apiCall('/apartments', 'POST', $data);
+        $this->dialplans[$id] = $data;
     }
 }

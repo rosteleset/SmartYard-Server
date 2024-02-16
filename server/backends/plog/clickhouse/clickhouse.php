@@ -1061,6 +1061,126 @@
                             }
                         }
 
+                        if ($unit === 'rubetek') {
+                            $patterns_call = [
+                                // pattern         start  talk  open   call_from_panel
+                                ['Start - general', true, false, false, 1],
+                                ['Start - VoIP', true, false, false, 1],
+                                ['Start - AT', true, false, false, 1],
+                                ['Dial to apartment', false, false, false, 0],
+                                ['Start AT call', false, true, false, 1],
+                                ['Ending AT call', false, true, false, 1],
+                                ['Start VoIP call', false, true, false, 1],
+                                ['Ending VoIP', false, true, false, 1],
+                                ['General - open door', false, true, true, 0],
+                                ['Open door by AT', false, true, true, 1],
+                                ['Open door by analog handset', false, true, true, 1],
+                                ['Open door by VoIP', false, true, true, 1],
+                                ['Open door by DTMF', false, true, true, 1],
+
+                                // Incoming call patterns
+                                ['IncomingCallProcessing', false, false, false, -1],
+                                ['incoming call', false, false, false, -1],
+                            ];
+
+                            foreach ($patterns_call as [$pattern, $flag_start, $flag_talk_started, $flag_door_opened, $now_call_from_panel]) {
+                                unset($now_flat_id, $now_flat_number, $now_call_id, $now_sip_call_id);
+
+                                if (!str_contains($msg, $pattern)) {
+                                    continue;
+                                }
+
+                                // Check if call started from this panel
+                                if ($now_call_from_panel > 0) {
+                                    $call_from_panel = 1;
+                                } elseif ($now_call_from_panel < 0) {
+                                    $call_from_panel = -1;
+                                    break;
+                                }
+
+                                if ($pattern === 'Dial to apartment') {
+                                    $msgParts = explode(':', $msg);
+                                    $number = $msgParts[4];
+                                    $numberLen = strlen($number);
+
+                                    if ($numberLen < 10) {
+                                        if ($numberLen < 5) {
+                                            // Apartment - ordinary panel
+                                            $now_flat_number = $number;
+                                        } else {
+                                            // Gate panel - prefix and apartment
+                                            $prefix = substr($number, 0, 4);
+                                            $now_flat_number = substr($number, 4);
+                                        }
+                                    } elseif ($numberLen === 10) {
+                                        // Apartment ID - ordinary panel
+                                        $now_flat_id = substr($number, 1);
+                                    }
+                                }
+
+                                if (in_array($pattern, [
+                                    'Start - general',
+                                    'Start - VoIP',
+                                    'Start - AT',
+                                    'Open door by AT'
+                                ])) {
+                                    if (preg_match('/house: (\d+)/', $msg, $matches)) {
+                                        $prefix = $matches[1];
+                                    }
+
+                                    if (preg_match('/alias: (\d+)/', $msg, $matches)) {
+                                        $now_flat_number = $matches[1];
+                                    }
+
+                                    if (preg_match('/number: (\d+)/', $msg, $matches)) {
+                                        $number = $matches[1];
+                                        $numberLen = strlen($number);
+
+                                        if ($numberLen < 10) {
+                                            if ($numberLen < 5) {
+                                                // Apartment - ordinary panel
+                                                $now_flat_number = $number;
+                                            } else {
+                                                // Gate panel - prefix and apartment
+                                                $prefix = substr($number, 0, 4);
+                                                $now_flat_number = substr($number, 4);
+                                            }
+                                        } elseif ($numberLen === 10) {
+                                            // Apartment ID - ordinary panel
+                                            $now_flat_id = substr($number, 1);
+                                        }
+                                    }
+                                }
+
+                                $call_start_lost =
+                                    (isset($now_flat_id, $flat_id) && $now_flat_id != $flat_id) ||
+                                    (isset($now_flat_number, $flat_number) && $now_flat_number != $flat_number);
+
+                                if ($call_start_lost) {
+                                    break;
+                                }
+
+                                $event_data[self::COLUMN_DATE] = $item['date'];
+
+                                if (isset($now_flat_number) && !isset($flat_number)) {
+                                    $flat_number = $now_flat_number;
+                                }
+                                if (isset($now_flat_id) && !isset($flat_id)) {
+                                    $flat_id = $now_flat_id;
+                                }
+                                if ($flag_talk_started) {
+                                    $event_data[self::COLUMN_EVENT] = self::EVENT_ANSWERED_CALL;
+                                }
+                                if ($flag_door_opened) {
+                                    $event_data[self::COLUMN_OPENED] = 1;
+                                }
+                                if ($flag_start) {
+                                    $call_start_found = true;
+                                    break;
+                                }
+                            }
+                        }
+
                         if ($unit === 'sputnik_cloud') {
                             $patterns_call = [
                                 // pattern         start  talk  open   call_from_panel

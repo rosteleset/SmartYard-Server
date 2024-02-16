@@ -15,9 +15,9 @@ class rubetek extends camera
     public function configureMotionDetection(
         int $left = 0,
         int $top = 0,
-        int $width = 705,
-        int $height = 576,
-        int $sensitivity = 1
+        int $width = 0,
+        int $height = 0,
+        int $sensitivity = 0
     )
     {
         $detectionSettings = $this->getConfig()['face_detection'];
@@ -28,7 +28,7 @@ class rubetek extends camera
         $detectionSettings['token'] = '1'; // Not used
 
         // Detection settings
-        $detectionSettings['detection_mode'] = $sensitivity ? 1 : 0; // Detection on
+        $detectionSettings['detection_mode'] = (int)($left || $top || $width || $height); // Detection on/off
         $detectionSettings['threshold'] = 42; // Threshold of confidence
         $detectionSettings['liveness_frame_num'] = 0; // Not used
         $detectionSettings['frame_interval'] = 500; // Doesn't work
@@ -57,10 +57,11 @@ class rubetek extends camera
         $this->apiCall('/settings/osd', 'PATCH', [
             'show_name' => true,
             'name' => $text,
+            'osd_position' => 'top_left',
             'show_datetime' => true,
             'date_format' => 'DD.MM.YYYY',
             'use_24h_clock' => true,
-            'weekdays' => true,
+            'weekdays' => false,
         ]);
     }
 

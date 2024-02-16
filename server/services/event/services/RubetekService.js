@@ -1,26 +1,27 @@
-import { SyslogService } from "./index.js"
+import { SyslogService } from "./index.js";
 import { API, mdTimer } from "../utils/index.js";
 
+/**
+ * Class representing an event handler for Rubetek devices.
+ * @class
+ * @augments SyslogService
+ */
 class RubetekService extends SyslogService {
     constructor(unit, config, spamWords = []) {
         super(unit, config, spamWords);
         this.gateRabbits = [];
     }
 
-    async handleSyslogMessage(now, host, msg) {
-        // TODO: check message
-        // const msg = message.split(": ")[1].trim();
+    async handleSyslogMessage(date, host, msg) {
         const msgParts = msg.split(/[,:]/).filter(Boolean).map(part => part.trim());
 
-
-        // Motion detection (face detection): start
+        // Start motion detection
         if (msgParts[2] === 'The face was detected and sent to the server') {
-            await API.motionDetection({date: now, ip: host, motionActive: true});
-            await mdTimer({ip: host});
+            await API.motionDetection({ date: date, ip: host, motionActive: true });
+            await mdTimer({ ip: host });
         }
 
         // Call start
-        // TODO: unstable, wait for fix
         if (msgParts[5] === 'Dial to apartment') {
             const number = msgParts[4];
 
@@ -34,32 +35,35 @@ class RubetekService extends SyslogService {
             }
         }
 
-        // TODO: Opening door by DTMF or CMS handset
+        // Opening door by DTMF or CMS handset
+        if (msgParts[0] === 'General - open door') {
+            await API.setRabbitGates({ date: date, ip: host, apartmentNumber: parseInt(msgParts[4]) });
+        }
 
         // Incoming DTMF for white rabbit: sending rabbit gate update
         if (msgParts[4] === 'Open door by DTMF') {
             if (this.gateRabbits[host]) {
-                const {ip, prefix, apartmentNumber} = this.gateRabbits[host];
-                await API.setRabbitGates({date: now, ip, prefix, apartmentNumber});
+                const { ip, prefix, apartmentNumber } = this.gateRabbits[host];
+                await API.setRabbitGates({ date: date, ip, prefix, apartmentNumber });
             }
         }
 
         // Opening a door by RFID key
         if (msgParts[3] === 'Access allowed by public RFID') {
             let door = 0;
-            const rfid = msgParts[2].padStart(14, 0);
+            const rfid = msgParts[2].padStart(14, '0');
 
             if (rfid[6] === '0' && rfid[7] === '0') {
                 door = 1;
             }
 
-            await API.openDoor({date: now, ip: host, door: door, detail: rfid, by: "rfid"});
+            await API.openDoor({ date: date, ip: host, door: door, detail: rfid, by: "rfid" });
         }
 
         // Opening a door by personal code
         if (msgParts[4] === 'Access allowed by apartment code') {
             const code = parseInt(msgParts[2]);
-            await API.openDoor({date: now, ip: host, detail: code, by: "code"});
+            await API.openDoor({ date: date, ip: host, detail: code, by: "code" });
         }
 
         // Opening a door by button pressed
@@ -78,15 +82,14 @@ class RubetekService extends SyslogService {
                     break;
             }
 
-            await API.openDoor({date: now, ip: host, door: door, detail: detail, by: "button"});
+            await API.openDoor({ date: date, ip: host, door: door, detail: detail, by: "button" });
         }
 
-        // TODO: check
         // All calls are done
-        if (true) {
-
+        if (msgParts[0] === 'General ending call') {
+            await API.callFinished({ date: date, ip: host });
         }
     }
 }
 
-export { RubetekService }
+export { RubetekService };

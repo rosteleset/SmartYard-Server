@@ -12,6 +12,8 @@ use Exception;
 trait rubetek
 {
 
+    protected string $defaultWebPassword = 'Rubetek34';
+
     public function configureEventServer(string $url)
     {
         ['host' => $server, 'port' => $port] = parse_url_ext($url);
@@ -54,7 +56,7 @@ trait rubetek
 
     public function setAdminPassword(string $password)
     {
-        // TODO: without sleep() the following calls can respond "access is forbidden" or "account not found"
+        // Without sleep() the following calls can respond "access is forbidden" or "account not found"
         $this->apiCall('/settings/account/password', 'PATCH', [
             'account' => 'admin',
             'current_password' => $this->defaultWebPassword,
@@ -87,11 +89,6 @@ trait rubetek
     protected function apiCall(string $resource, string $method = 'GET', array $payload = [])
     {
         $req = $this->url . $this->apiPrefix . $resource;
-
-//        echo $method . PHP_EOL;
-//        echo $req . PHP_EOL;
-//        echo 'Payload: ' . json_encode($payload, JSON_UNESCAPED_UNICODE) . PHP_EOL;
-//        echo '---------------------------------' . PHP_EOL;
 
         $ch = curl_init($req);
 

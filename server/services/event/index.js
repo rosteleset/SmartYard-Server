@@ -1,16 +1,16 @@
-import config from "./config.json" assert { type: "json"}
-import spamWords from "./spamwords.json" assert { type: "json" }
+import config from "./config.json" assert { type: "json" };
+import spamWords from "./spamwords.json" assert { type: "json" };
 
 import {
     AkuvoxService,
     BewardService,
     BewardServiceDS,
     IsService,
+    NonameWebHookService,
+    OmnyWebHookService,
     QtechService,
     RubetekService,
     SputnikCloudService,
-    OmnyWebHookService,
-    NonameWebHookService,
 } from "./services/index.js";
 
 import {
@@ -18,11 +18,11 @@ import {
     SERVICE_BEWARD,
     SERVICE_BEWARD_DS,
     SERVICE_IS,
+    SERVICE_NONAME_WEBHOOK,
+    SERVICE_OMNY,
     SERVICE_QTECH,
     SERVICE_RUBETEK,
     SERVICE_SPUTNIK_CLOUD,
-    SERVICE_OMNY,
-    SERVICE_NONAME_WEBHOOK,
 } from "./constants.js";
 
 const { hw } = config;
@@ -35,7 +35,7 @@ if (!serviceParam) {
 }
 
 if (!hw[serviceParam]) {
-    console.error(`Unit: "${ serviceParam }" not defined in config file: config.json`)
+    console.error(`Unit: "${serviceParam}" not defined in config file: config.json`);
     process.exit(1);
 }
 
@@ -68,29 +68,29 @@ switch (serviceParam) {
         break;
 
     case SERVICE_RUBETEK:
-        const rubetekService = new RubetekService(SERVICE_RUBETEK, serviceConfig);
+        const rubetekService = new RubetekService(SERVICE_RUBETEK, serviceConfig, spamWords[SERVICE_RUBETEK]);
         rubetekService.createSyslogServer();
         break;
 
     case SERVICE_NONAME_WEBHOOK:
-        const nonameWebhookService = new NonameWebHookService(SERVICE_NONAME_WEBHOOK, serviceConfig)
+        const nonameWebhookService = new NonameWebHookService(SERVICE_NONAME_WEBHOOK, serviceConfig);
         nonameWebhookService.start();
         break;// example webhook event service
 
     case SERVICE_OMNY:
-        const omnyWebhookService = new OmnyWebHookService(SERVICE_OMNY, serviceConfig)
+        const omnyWebhookService = new OmnyWebHookService(SERVICE_OMNY, serviceConfig);
         omnyWebhookService.start();
         break;// example webhook for ip camera (example OMNY miniDome2T-U v2), make api call to LPRS or FRS services
 
     case SERVICE_SPUTNIK_CLOUD:
         if (!serviceConfig.apiEndpoint) {
-            console.error(`Unit: "${ serviceParam }" not defined apiEndpoint in config file: config.json`)
+            console.error(`Unit: "${serviceParam}" not defined apiEndpoint in config file: config.json`);
             process.exit(1);
         }
-        const sputnikCloudService = new SputnikCloudService(SERVICE_SPUTNIK_CLOUD, serviceConfig)
+        const sputnikCloudService = new SputnikCloudService(SERVICE_SPUTNIK_CLOUD, serviceConfig);
         sputnikCloudService.start();
         break;
 
     default:
-        console.error('Invalid service parameter, please use "beward", "beward_ds", "qtech" ... on see documentation')
+        console.error('Invalid service parameter, please use "beward", "beward_ds", "qtech" ... on see documentation');
 }

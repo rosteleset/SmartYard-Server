@@ -148,7 +148,6 @@ class ds06 extends beward
 
     public function getLineDiagnostics(int $apartment): int
     {
-        // Empty implementation
         return 0;
     }
 

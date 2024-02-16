@@ -5,5 +5,5 @@
     "version": false,
     "eventServer": "rubetek",
     "class": "rubetek",
-    "useSmartConfigurator": false
+    "useSmartConfigurator": true
 }

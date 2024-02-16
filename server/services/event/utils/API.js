@@ -2,12 +2,12 @@ import axios from "axios";
 import https from "https";
 import { getTimestamp } from "./index.js";
 import { EVENT } from "../constants.js";
-import config from "../config.json" assert { type: "json"}
+import config from "../config.json" assert { type: "json" };
 
 const { api: { internal }, clickhouse } = config;
 const agent = new https.Agent({ rejectUnauthorized: false });
 const internalAPI = axios.create({
-    baseURL: internal, withCredentials: true, responseType: "json", httpsAgent: agent
+    baseURL: internal, withCredentials: true, responseType: "json", httpsAgent: agent,
 });
 
 class API {
@@ -26,19 +26,19 @@ class API {
             const processedMsg = msg.replace(/'/g, "\\'"); // escape single quotes
             const query = `
                 INSERT INTO syslog (date, ip, sub_id, unit, msg)
-                VALUES ('${ date }',
-                        ${ ip !== null ? `'${ ip }'` : 'NULL' },
-                        ${ subId !== null ? `'${ subId }'` : 'NULL' },
-                        '${ unit }',
-                        '${ processedMsg }');
+                VALUES ('${date}',
+                        ${ip !== null ? `'${ip}'` : 'NULL'},
+                        ${subId !== null ? `'${subId}'` : 'NULL'},
+                        '${unit}',
+                        '${processedMsg}');
             `;
             const config = {
                 method: "post",
-                url: `http://${ clickhouse.host }:${ clickhouse.port }`,
+                url: `http://${clickhouse.host}:${clickhouse.port}`,
                 headers: {
-                    'Authorization': `Basic ${ Buffer.from(`${ clickhouse.username }:${ clickhouse.password }`).toString('base64') }`,
+                    'Authorization': `Basic ${Buffer.from(`${clickhouse.username}:${clickhouse.password}`).toString('base64')}`,
                     'Content-Type': 'text/plain;charset=UTF-8',
-                    'X-ClickHouse-Database': `${ clickhouse.database }`
+                    'X-ClickHouse-Database': `${clickhouse.database}`,
                 },
                 data: query,
             };
@@ -71,7 +71,7 @@ class API {
      * @param {number} date event date in timestamp format
      * @param {string|null} ip device IP address if exists
      * @param {string|null} subId unique device identifier if required
-     * @param {number|null} callId unique callId if exists
+     * @param {number|string|null} callId unique callId if exists
      */
     async callFinished({ date, ip, subId = null, callId = null }) {
         try {
