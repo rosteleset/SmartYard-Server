@@ -114,9 +114,9 @@ abstract class rubetek extends domophone
 
         foreach ($matrix as $matrixCell) {
             [
-                'cms' => $cmsNumber,
-                'dozen' => $dozen,
-                'unit' => $unit,
+                'hundreds' => $cmsNumber,
+                'tens' => $dozen,
+                'units' => $unit,
                 'apartment' => $apartment,
             ] = $matrixCell;
 
