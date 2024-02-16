@@ -396,6 +396,9 @@ abstract class rubetek extends domophone
 
     public function transformDbConfig(array $dbConfig): array
     {
+        $timezone = $dbConfig['ntp']['timezone'];
+        $dbConfig['ntp']['timezone'] = $this->getOffsetByTimezone($timezone);
+
         $stunEnabled = $dbConfig['sip']['stunEnabled'];
         if (!$stunEnabled) {
             $dbConfig['sip']['stunServer'] = '';
