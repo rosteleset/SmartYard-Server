@@ -66,6 +66,9 @@ RBT/RBT.xcodeproj/
 /server/backends/tt/custom/custom.php
 /server/backends/tt_journal/custom/custom.php
 /server/backends/users/custom/custom.php
+/server/api/*/.hooks
+/server/api/*/.hooks/
+/server/api/*/.hooks/*
 .cache
 .config
 .fontconfig
