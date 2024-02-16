@@ -66,9 +66,9 @@ RBT/RBT.xcodeproj/
 /server/backends/tt/custom/custom.php
 /server/backends/tt_journal/custom/custom.php
 /server/backends/users/custom/custom.php
-/server/api/*/.hooks
-/server/api/*/.hooks/
-/server/api/*/.hooks/*
+/server/api/**/.hooks
+/server/api/**/.hooks/
+/server/api/**/.hooks/*
 .cache
 .config
 .fontconfig
@@ -100,31 +100,17 @@ package-lock.json
 /server/mqtt/package-lock.json
 /install/asterisk/config.lua
 /install/asterisk/extconfig.conf
-
-# ----- syslog service
 /server/services/syslog/config.json
 !/server/services/syslog/package.json
-
-# ----- push service
 /server/services/push/assets/pushServiceAccountKey.json
 /server/services/push/assets/certificate-and-privatekey.pem
 /server/services/push/.env_production
 /server/services/push/.env_development
 !/server/services/push/package.json
-
-# ----- ami service
 !/server/services/ami/package.json
-
-# ----- mqtt service
 !/server/services/mqtt/package.json
-
-# ----- intercom provision service
 !/server/services/intercom_provision/package.json
-
-# ----- event service
 !/server/services/event/package.json
 /server/services/event/config.json
-
-# ----- Kamailio
 install/kamailio/kamailio-local.cfg
 install/kamailio/kamctlrc
