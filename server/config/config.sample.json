@@ -74,7 +74,8 @@
         "geocoder": {
             "backend": "dadata",
             "token": "<!-- your dadata token here --!>"
-        }
+        },
+        
         "files": {
             "backend": "mongo"
         },
@@ -94,7 +95,8 @@
         "isdn": {
             "backend": "lanta",
             "common_secret": "<!-- your secret here --!>",
-            "confirm_method": "outgoingCall"
+            "confirm_method": "outgoingCall",
+            "confirm_number": "88002220374"
         },
 
         "inbox": {
