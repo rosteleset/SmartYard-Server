@@ -1776,7 +1776,7 @@
                     },
                     {
                         id: "companyId",
-                        hidden: !companies.length,
+                        hidden: companies.length <= 1,
                         type: "select2",
                         title: i18n("companies.company"),
                         options: companies,
@@ -1793,7 +1793,7 @@
             fail(FAIL).
             done(result => {
                 companies.push({
-                    id: 0,
+                    id: "0",
                     text: "-",
                 });
     
