@@ -3,9 +3,9 @@
         moduleLoaded("addresses.houses", this);
     },
 
-    houseId: 0,
-    settlementId: 0,
-    streetId: 0,
+    houseId: "0",
+    settlementId: "0",
+    streetId: "0",
 
     houseMagic: function () {
         cardForm({
@@ -603,7 +603,7 @@
                 let entrances = [];
 
                 entrances.push({
-                    id: 0,
+                    id: "0",
                     text: "нет",
                 });
 
@@ -1593,9 +1593,9 @@
     },
 
     loadHouse: function(houseId, callback) {
-        modules.addresses.houses.houseId = 0;
-        modules.addresses.houses.settlementId = 0;
-        modules.addresses.houses.streetId = 0;
+        modules.addresses.houses.houseId = "0";
+        modules.addresses.houses.settlementId = "0";
+        modules.addresses.houses.streetId = "0";
 
         QUERY("addresses", "addresses", {
             houseId: houseId,
