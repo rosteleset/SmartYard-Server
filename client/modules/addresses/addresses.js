@@ -1783,7 +1783,7 @@
                     },
                 ],
                 callback: function (result) {
-                    modules.addresses.doAddHouse(settlementId, streetId, result.houseUuid, result.houseType, result.houseTypeFull, result.houseFull, result.house, result.companyId ? result.companyId : "0");
+                    modules.addresses.doAddHouse(settlementId, streetId, result.houseUuid, result.houseType, result.houseTypeFull, result.houseFull, result.house, (result.companyId && companies.length > 1) ? result.companyId : "0");
                 },
             }).show();
         }
