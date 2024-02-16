@@ -20,14 +20,13 @@
  * @apiSuccess {String} names.patronymic отчество
  */
     $user_phone = @$postdata['userPhone'];
-    $user_phone = substr($user_phone,1);
     $households = loadBackend("households");
 
     $isdn = loadBackend("isdn");
     
     $result = $isdn->checkIncoming('+'. $user_phone);
 
-    if (strlen($user_phone) == 11 && substr($user_phone,1) == '7')  {
+    if (strlen($user_phone) == 11 && $user_phone[0] == '7')  {
         // для номеров из РФ дополнтельно ещё проверяем на номера вида "7XXXXXXXXXX" (без "+") и "8XXXXXXXXXX"
         $result = $result || $isdn->checkIncoming($user_phone);
         $result = $result || $isdn->checkIncoming('8'. substr($user_phone,1));
