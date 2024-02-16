@@ -7,7 +7,7 @@
  *
  * @apiGroup User
  *
- * @apiParam {String{11}} userPhone номер телефона
+ * @apiParam {String{11}} userPhone номер телефона с кодом страны без "+"
  *
  * @apiErrorExample Ошибки
  * 401 неверный код подтверждения
@@ -25,31 +25,29 @@
 
     $isdn = loadBackend("isdn");
     
-    if (strlen($user_phone) == 10)  {
-        
-        $result = $isdn->checkIncoming('8'. $user_phone);
-        $result2 = $isdn->checkIncoming('+7'. $user_phone);
-        $result3 = $isdn->checkIncoming('7'. $user_phone);
+    $result = $isdn->checkIncoming('+'. $user_phone);
 
-        if ($result || $result2 || $result3 || $user_phone == "9123456781" || $user_phone == "9123456782") {
-            $user_phone = '7' . $user_phone;
-            $token = GUIDv4();
-            $subscribers = $households->getSubscribers("mobile", $user_phone);
-                $names = [ "name" => "", "patronymic" => "" ];
-                if ($subscribers) {
-                    $subscriber = $subscribers[0];
-                    // Пользователь найден
-                    $households->modifySubscriber($subscriber["subscriberId"], [ "authToken" => $token ]);
-                    $names = [ "name" => $subscriber["subscriberName"], "patronymic" => $subscriber["subscriberPatronymic"] ];
-                } else {
-                    // Пользователь не найден - создаём
-                    $id = $households->addSubscriber($user_phone, "", "");
-                    $households->modifySubscriber($id, [ "authToken" => $token ]);
-                }
-                response(200, [ 'accessToken' => $token, 'names' => $names ]);
-        } else {
-            response(401);
-        }
+    if (strlen($user_phone) == 11 && substr($user_phone,1) = '7')  {
+        // для номеров из РФ дополнтельно ещё проверяем на номера вида "7XXXXXXXXXX" (без "+") и "8XXXXXXXXXX"
+        $result = $result || $isdn->checkIncoming($user_phone);
+        $result = $result || $isdn->checkIncoming('8'. substr($user_phone,1));
+    } 
+
+    if ($result || $user_phone == "79123456781" || $user_phone == "79123456782") {
+        $token = GUIDv4();
+        $subscribers = $households->getSubscribers("mobile", $user_phone);
+            $names = [ "name" => "", "patronymic" => "" ];
+            if ($subscribers) {
+                $subscriber = $subscribers[0];
+                // Пользователь найден
+                $households->modifySubscriber($subscriber["subscriberId"], [ "authToken" => $token ]);
+                $names = [ "name" => $subscriber["subscriberName"], "patronymic" => $subscriber["subscriberPatronymic"] ];
+            } else {
+                // Пользователь не найден - создаём
+                $id = $households->addSubscriber($user_phone, "", "");
+                $households->modifySubscriber($id, [ "authToken" => $token ]);
+            }
+            response(200, [ 'accessToken' => $token, 'names' => $names ]);
     } else {
-        response(422);
+        response(401);
     }
