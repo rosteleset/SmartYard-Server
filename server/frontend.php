@@ -19,7 +19,6 @@
 
     require_once "utils/error.php";
     require_once "utils/response.php";
-    require_once "utils/hooks.php";
     require_once "utils/guidv4.php";
     require_once "utils/loader.php";
     require_once "utils/checkint.php";
@@ -316,20 +315,17 @@
                 if ($clearCache) {
                     clearCache($auth["uid"]);
                 }
-                require_once __DIR__ . "/api/$api/$method.php";
-                if (class_exists("\\api\\$api\\$method")) {
+                if (file_exists(__DIR__ . "/api/$api/custom/$method.php")) {
+                    $file = __DIR__ . "/api/$api/custom/$method.php";
+                    $class = "\\api\\$api\\custom\\$method";
+                } else {
+                    $file = __DIR__ . "/api/$api/$method.php";
+                    $class = "\\api\\$api\\$method";
+                }
+                require_once $file;
+                if (class_exists($class)) {
                     try {
-                        $result = hook_pre($params);
-                        if ($result === false) {
-                            error_log("preHook");
-                            response(555, [
-                                "error" => "preHook",
-                            ]);
-                        }
-                        if ($result === true) {
-                            $result = call_user_func(["\\api\\$api\\$method", $params["_request_method"]], $params);
-                        }
-                        $result = hook_post($params, $result);
+                        $result = call_user_func([$class, $params["_request_method"]], $params);
                         $code = array_key_first($result);
                         if ((int)$code) {
                             if ($params["_request_method"] == "GET" && (int)$code === 200) {
