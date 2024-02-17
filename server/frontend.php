@@ -315,6 +315,7 @@
                 if ($clearCache) {
                     clearCache($auth["uid"]);
                 }
+                error_log(__DIR__ . "/api/$api/custom/$method.php" . "\n\n");
                 if (file_exists(__DIR__ . "/api/$api/custom/$method.php")) {
                     $file = __DIR__ . "/api/$api/custom/$method.php";
                     $class = "\\api\\$api\\custom\\$method";

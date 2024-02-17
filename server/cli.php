@@ -23,7 +23,6 @@
     require_once "utils/error.php";
     require_once "utils/format_usage.php";
     require_once "utils/guidv4.php";
-    require_once "utils/hooks.php";
     require_once "utils/i18n.php";
     require_once "utils/install_crontabs.php";
     require_once "utils/is_executable.php";
