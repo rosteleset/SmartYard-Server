@@ -1,5 +1,4 @@
 <?php
-
     namespace kamailio;
 
     class Kamailio

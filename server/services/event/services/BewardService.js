@@ -75,7 +75,8 @@ class BewardService extends SyslogService {
         }
 
         // Opening a door by RFID key
-        if (/^Opening door by RFID [a-fA-F0-9]+, apartment \d+$/.test(msg) || /^Opening door by external RFID [a-fA-F0-9]+, apartment \d+$/.test(msg)) {
+        if (/^Opening door by RFID [a-fA-F0-9]+, apartment \d+$/.test(msg)
+            || /^Opening door by external RFID [a-fA-F0-9]+, apartment \d+$/.test(msg)) {
             const rfid = msg.split("RFID")[1].split(",")[0].trim();
             const door = msg.includes("external") ? "1" : "0";
             await API.openDoor({date: now, ip: host, door, detail: rfid, by: "rfid"});
