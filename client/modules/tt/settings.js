@@ -1198,7 +1198,7 @@
             if (i.charAt(0) !== "#" && !modules.tt.meta.filtersExt[i].owner) {
                 f.push({
                     id: i,
-                    text: modules.tt.meta.filtersExt[i].name?(trimStr(modules.tt.meta.filtersExt[i].name) + " [" + trimStr(i) + "]"):i,
+                    text: modules.tt.meta.filtersExt[i].name ? (modules.tt.meta.filtersExt[i].name + " [" + i + "]") : i,
                 });
             }
         }
@@ -3110,7 +3110,7 @@
                     for (let k in modules.tt.meta.filters) {
                         f.push({
                             id: k,
-                            text: trimStr(modules.tt.meta.filters[k], 33, false),
+                            text: modules.tt.meta.filters[k],
                         });
                     }
 
