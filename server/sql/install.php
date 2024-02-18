@@ -29,16 +29,16 @@
             $_v = sprintf("%06d", $v);
 
             if ($version >= $v) {
-                echo "skipping version $_v\n";
+                echo "skipping DB version $_v\n";
                 continue;
             }
 
             if (@$skip[$v]) {
-                echo "force skipping version $_v\n";
+                echo "force skipping DB version $_v\n";
                 continue;
             }
 
-            echo "upgrading to version $_v\n";
+            echo "upgrading to DB version $_v\n";
 
             try {
                 foreach ($steps as $step) {
