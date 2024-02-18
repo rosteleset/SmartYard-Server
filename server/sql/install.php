@@ -25,17 +25,19 @@
         foreach ($install as $v => $steps) {
             $v = (int)$v;
 
+            $_v = sprintf("%05d", $v);
+
             if ($version >= $v) {
-                echo "skipping version $v\n";
+                echo "skipping version $_v\n";
                 continue;
             }
 
             if (@$skip[$v]) {
-                echo "skipping version $v\n";
+                echo "force skipping version $_v\n";
                 continue;
             }
 
-            echo "upgrading to version $v\n";
+            echo "upgrading to version $_v\n";
 
             try {
                 foreach ($steps as $step) {
