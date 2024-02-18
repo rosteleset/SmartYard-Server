@@ -9,7 +9,7 @@ function cardTable(params) {
         h += '<table cellpadding="0" cellspacing="0"><tr>';
         if (params.title.button) {
             titleButton = md5(guid());
-            let icon = params.title.button.icon?params.title.button.icon:"fas fa-plus-circle";
+            let icon = params.title.button.icon ? params.title.button.icon : "fas fa-plus-circle";
             h += '<td>';
             h += `<button id="${titleButton}" type="button" class="btn btn-primary btn-sm mr-2" title="${params.title.button.caption}"><i class="fa-fw ${icon}"></i></button>`;
             h += '</td>';
