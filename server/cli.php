@@ -348,13 +348,17 @@
         backup_db();
 
         initDB(@$args["--skip"]);
+        echo "\n";
         
         startup();
         echo "\n";
+
         $n = clearCache(true);
         echo "$n cache entries cleared\n\n";
+
         reindex();
         echo "\n";
+        
         exit(0);
     }
 
@@ -599,11 +603,14 @@
         echo "\n";
 
         initDB(@$args["--skip"]);
+        echo "\n";
 
         $n = clearCache(true);
         echo "$n cache entries cleared\n\n";
+
         reindex();
         echo "\n";
+        
         exit(0);
     }
 
