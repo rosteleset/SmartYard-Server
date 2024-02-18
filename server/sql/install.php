@@ -13,7 +13,8 @@
 
         $driver = explode(":", $config["db"]["dsn"])[0];
 
-        echo "current DB version $version\n\n";
+        $_version = sprintf("%06d", $version);
+        echo "current DB version $_version\n\n";
 
         $skip = [];
         foreach(explode(",", $_skip) as $s) {
@@ -25,7 +26,7 @@
         foreach ($install as $v => $steps) {
             $v = (int)$v;
 
-            $_v = sprintf("%05d", $v);
+            $_v = sprintf("%06d", $v);
 
             if ($version >= $v) {
                 echo "skipping version $_v\n";
