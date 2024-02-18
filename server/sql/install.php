@@ -13,7 +13,7 @@
 
         $driver = explode(":", $config["db"]["dsn"])[0];
 
-        echo "current version $version\n\n";
+        echo "current DB version $version\n\n";
 
         $skip = [];
         foreach(explode(",", $_skip) as $s) {
@@ -60,4 +60,3 @@
 
         $db->exec("COMMIT");
     }
-
