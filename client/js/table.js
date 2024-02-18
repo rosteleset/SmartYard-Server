@@ -4,42 +4,48 @@ function cardTable(params) {
     let titleButton = '';
     let altButton = '';
 
-    if (params.title) {
-        h += `<div class="card-header">`;
-        if (params.title.button || params.title.caption || params.title.altButton) {
-            h += `<h3 class="card-title">`;
-            if (params.title.button) {
-                titleButton = md5(guid());
-                let icon = params.title.button.icon?params.title.button.icon:"fas fa-plus-circle";
-                h += `<button id="${titleButton}" type="button" class="btn btn-primary btn-xs btn-tool-rbt-left mr-2" title="${params.title.button.caption}"><i class="fa-fw ${icon}"></i></button>`;
-            }
-            if (params.title.caption) {
-                h += " " + params.title.caption;
-            }
-            h += `</h3>`;
+    if (params.title && (params.title.button || params.title.caption || params.title.altButton)) {
+        h += '<div class="card-header">';
+        h += '<table cellpadding="0" cellspacing="0"><tr>';
+        if (params.title.button) {
+            titleButton = md5(guid());
+            let icon = params.title.button.icon?params.title.button.icon:"fas fa-plus-circle";
+            h += '<td>';
+            h += `<button id="${titleButton}" type="button" class="btn btn-primary btn-sm mr-2" title="${params.title.button.caption}"><i class="fa-fw ${icon}"></i></button>`;
+            h += '</td>';
         }   
-        if (params.title.altButton) {
-            altButton = md5(guid());
-            let icon = params.title.altButton.icon?params.title.altButton.icon:"far fa-fw fa-times-circle";
-            h += `<button id="${altButton}" type="button" class="btn btn-info btn-xs btn-tool-rbt-right ml-2 float-right" title="${params.title.altButton.caption}"><i class="fa-fw ${icon}"></i></button>`;
+        h += '<td width="100%">';
+        if (params.title.caption) {
+            h += `<h3 class="card-title" style="margin-bottom: 0rem!important">`;
+            h += params.title.caption;
+            h += `</h3>`;
+        } else {
+            h += '&nbsp;';
         }
+        h += '</td>';
         if (params.title.filter) {
+            h += '<td>';
             filterInput = md5(guid());
             h += `<div class="card-tools d-none d-md-block">`;
-            if (params.title.altButton) {
-                h += '<form autocomplete="off" class="mr-2" style="padding-top: 2px!important;">';
-            } else {
-                h += '<form autocomplete="off">';
-            }
-            h += `<div class="input-group input-group-sm">`;
-            h += `<input id="${filterInput}" type="text" class="form-control float-right table-search-input" placeholder="${i18n("filter")}">`;
+            h += '<form autocomplete="off">';
+            h += `<div class="input-group input-group-sm" style="flex-wrap: nowrap!important;">`;
+            h += `<input id="${filterInput}" type="text" class="form-control table-search-input" style="width: 200px!important;" placeholder="${i18n("filter")}">`;
             h += `<div class="input-group-append">`;
             h += `<button type="submit" class="btn btn-default" id="${filterInput}-search-button"><i class="fas fa-filter"></i></button>`;
             h += `</div>`;
             h += `</div>`;
             h += '</form>';
             h += `</div>`;
+            h += '</td>';
         }
+        if (params.title.altButton) {
+            h += '<td>';
+            altButton = md5(guid());
+            let icon = params.title.altButton.icon?params.title.altButton.icon:"far fa-fw fa-times-circle";
+            h += `<button id="${altButton}" type="button" class="btn btn-info btn-sm ml-2" title="${params.title.altButton.caption}"><i class="fa-fw ${icon}"></i></button>`;
+            h += '</td>';
+        }
+        h += '</tr></table>';
         h += `</div>`;
     }
 
@@ -390,18 +396,8 @@ function cardTable(params) {
     if (params.target) {
         if (params.mode === "append") {
             $(params.target).append(h);
-            if (params.title.altButton && params.title.filter) {
-                $(`#${filterInput}`).css("height", $(`#${altButton}`).css("height"));
-                $(`#${filterInput}`).next().css("height", $(`#${altButton}`).css("height"));
-            }   
         } else {
             $(params.target).html(h);
-            if (params.title.altButton && params.title.filter) {
-                setTimeout(() => {
-                    $(`#${filterInput}`).css("height", $(`#${altButton}`).css("height")).css("margin-top", "10px!important");
-                    $(`#${filterInput}`).next().css("height", $(`#${altButton}`).css("height"));
-                }, 100);
-            }
         }
 
         if (Math.ceil(rows.length / pageLength) > 1) {
