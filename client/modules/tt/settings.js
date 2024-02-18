@@ -1306,6 +1306,7 @@
                                 $("#altForm").hide();
                             },
                         },
+                        filter: true,
                     },
                     columns: [
                         {
