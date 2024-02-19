@@ -595,11 +595,6 @@
             modules.addresses.cameras.meta = response.cameras;
             let cameras = [];
 
-            cameras.push({
-                id: "0",
-                text: i18n("no"),
-            })
-
             for (let i in response.cameras.cameras) {
                 let url;
                 try {
@@ -623,10 +618,10 @@
                 } else {
                     text = url.host;
                 }
-            cameras.push({
+                cameras.push({
                     id: response.cameras.cameras[i].cameraId,
                     text: text,
-                })
+                });
             }
 
             cardForm({
@@ -642,6 +637,9 @@
                         type: "select2",
                         title: i18n("addresses.cameraId"),
                         options: cameras,
+                        validate: v => {
+                            return parseInt(v) > 0;
+                        },
                     },
                 ],
                 callback: result => {
