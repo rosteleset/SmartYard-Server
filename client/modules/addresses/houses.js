@@ -356,16 +356,17 @@
                     }
                     let comments = $.trim(response.cameras.cameras[i].comments);
                     let name = $.trim(response.cameras.cameras[i].name);
-                    let text = name;
-                    if (!text) {
-                        text = comments;
+                    let text = "";
+                    if (name && comments) {
+                        text = name + " (" + comments + ") [" + url.host + "]";
+                    } else
+                    if (name && !comments) {
+                        text = name + " [" + url.host + "]";
+                    } else
+                    if (!name && comments) {
+                        text = comments + " [" + url.host + "]";
                     } else {
-                        text += " (" + comments + ")";
-                    }
-                    if (!text) {
                         text = url.host;
-                    } else {
-                        text += " [" + url.host + "]";
                     }
                     cameras.push({
                         id: response.cameras.cameras[i].cameraId,
@@ -394,21 +395,29 @@
                         }
                         let comments = $.trim(response.domophones.domophones[i].comments);
                         let name = $.trim(response.domophones.domophones[i].name);
-                        let text = name;
-                        if (!text) {
-                            text = comments;
+                        let text = "";
+                        if (name && comments) {
+                            text = name + " (" + comments + ") [" + url.host + "]";
+                        } else
+                        if (name && !comments) {
+                            text = name + " [" + url.host + "]";
+                        } else
+                        if (!name && comments) {
+                            text = comments + " [" + url.host + "]";
                         } else {
-                            text += " (" + comments + ")";
-                        }
-                        if (!text) {
                             text = url.host;
-                        } else {
-                            text += " [" + url.host + "]";
                         }
                         domophones.push({
                             id: response.domophones.domophones[i].domophoneId,
                             text: text,
                         });
+                    }
+
+                    if (!domophones.length) {
+                        domophones.push({
+                            id: "0",
+                            text: i18n("no"),
+                        })
                     }
 
                     cardForm({
@@ -479,6 +488,16 @@
                                 options: cameras,
                             },
                             {
+                                id: "domophoneId",
+                                type: "select2",
+                                title: i18n("addresses.domophone"),
+                                options: domophones,
+                                validate: v => {
+                                    return parseInt(v) > 0;
+                                },
+                                select: modules.addresses.houses.domophoneIdSelect,
+                            },
+                            {
                                 id: "video",
                                 type: "select2",
                                 title: i18n("addresses.video"),
@@ -492,16 +511,6 @@
                                         text: i18n("addresses.webrtc"),
                                     },
                                 ],
-                            },
-                            {
-                                id: "domophoneId",
-                                type: "select2",
-                                title: i18n("addresses.domophone"),
-                                options: domophones,
-                                validate: v => {
-                                    return parseInt(v) > 0;
-                                },
-                                select: modules.addresses.houses.domophoneIdSelect,
                             },
                             {
                                 id: "domophoneOutput",
@@ -946,16 +955,17 @@
                 }
                 let comments = $.trim(response.cameras.cameras[i].comments);
                 let name = $.trim(response.cameras.cameras[i].name);
-                let text = name;
-                if (!text) {
-                    text = comments;
+                let text = "";
+                if (name && comments) {
+                    text = name + " (" + comments + ") [" + url.host + "]";
+                } else
+                if (name && !comments) {
+                    text = name + " [" + url.host + "]";
+                } else
+                if (!name && comments) {
+                    text = comments + " [" + url.host + "]";
                 } else {
-                    text += " (" + comments + ")";
-                }
-                if (!text) {
                     text = url.host;
-                } else {
-                    text += " [" + url.host + "]";
                 }
                 cameras.push({
                     id: response.cameras.cameras[i].cameraId,
@@ -1002,16 +1012,17 @@
                         }
                         let comments = $.trim(response.domophones.domophones[i].comments);
                         let name = $.trim(response.domophones.domophones[i].name);
-                        let text = name;
-                        if (!text) {
-                            text = comments;
+                        let text = "";
+                        if (name && comments) {
+                            text = name + " (" + comments + ") [" + url.host + "]";
+                        } else
+                        if (name && !comments) {
+                            text = name + " [" + url.host + "]";
+                        } else
+                        if (!name && comments) {
+                            text = comments + " [" + url.host + "]";
                         } else {
-                            text += " (" + comments + ")";
-                        }
-                        if (!text) {
                             text = url.host;
-                        } else {
-                            text += " [" + url.host + "]";
                         }
                         domophones.push({
                             id: response.domophones.domophones[i].domophoneId,
@@ -1106,7 +1117,7 @@
                                 options: domophones,
                                 select: modules.addresses.houses.domophoneIdSelect,
                                 validate: v => {
-                                    return !!parseInt(v);
+                                    return parseInt(v) > 0;
                                 },
                             },
                             {
@@ -2040,10 +2051,24 @@
                         host: response.cameras.cameras[i].url,
                     }
                 }
+                let comments = $.trim(response.cameras.cameras[i].comments);
+                let name = $.trim(response.cameras.cameras[i].name);
+                let text = "";
+                if (name && comments) {
+                    text = name + " (" + comments + ") [" + url.host + "]";
+                } else
+                if (name && !comments) {
+                    text = name + " [" + url.host + "]";
+                } else
+                if (!name && comments) {
+                    text = comments + " [" + url.host + "]";
+                } else {
+                    text = url.host;
+                }
                 cameras.push({
                     id: response.cameras.cameras[i].cameraId,
-                    text:  url.host + " [" + response.cameras.cameras[i].name + "]",
-                })
+                    text: text,
+                });
             }
 
             cardForm({
