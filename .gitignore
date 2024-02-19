@@ -105,7 +105,7 @@ package-lock.json
 !/server/services/syslog/package.json
 /server/services/push/assets/pushServiceAccountKey.json
 /server/services/push/assets/certificate-and-privatekey.pem
-/server/services/push/.env_production
+/server/services/push/.env
 /server/services/push/.env_development
 !/server/services/push/package.json
 !/server/services/ami/package.json
