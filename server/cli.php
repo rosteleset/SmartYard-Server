@@ -379,13 +379,13 @@
     }
 
     if (count($args) == 1 && array_key_exists("--init-clickhouse-db", $args) && !isset($args["--init-clickhouse-db"])) {
-        $clickhouse_config = $config['clickhouse'];
+        $clickhouse_config = @$config['clickhouse'];
 
         $clickhouse = new clickhouse(
-            $clickhouse_config['host'] ?? '127.0.0.1',
-            $clickhouse_config['port'] ?? 8123,
-            $clickhouse_config['username'] ?? 'default',
-            $clickhouse_config['password'] ?? 'qqq',
+            @$clickhouse_config['host'] ?? '127.0.0.1',
+            @$clickhouse_config['port'] ?? 8123,
+            @$clickhouse_config['username'] ?? 'default',
+            @$clickhouse_config['password'] ?? 'qqq',
         );
 
         initClickhouseDB($clickhouse);
