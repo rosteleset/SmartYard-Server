@@ -54,7 +54,7 @@ function initClickhouseDB(clickhouse $clickhouse)
                 }
             }
 
-            $response = $clickhouse->insert('core_vars', [['var_name' => 'dbVersion', 'var_value' => (String)$version]]);
+            $response = $clickhouse->insert('core_vars', [['var_name' => 'dbVersion', 'var_value' => (string)$version]]);
             if ($response !== true) {
                 throw new Exception("Error updating dbVersion: " . $response);
             }
