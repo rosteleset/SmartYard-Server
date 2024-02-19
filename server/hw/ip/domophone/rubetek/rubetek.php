@@ -374,7 +374,9 @@ abstract class rubetek extends domophone
         $displaySettings = $this->getConfig()['display'];
         $displaySettings['welcome_display'] = 1;
         $displaySettings['text'] = $text;
-        $this->apiCall('/configuration', 'PATCH', ['display' => $displaySettings]);
+        $displaySettings['changeLineTimeout'] = 5; // seconds
+        $displaySettings['changeSymbolTimeout'] = 5; // milliseconds
+        $this->apiCall('/settings/display', 'PATCH', $displaySettings);
     }
 
     public function setUnlockTime(int $time = 3)
@@ -596,7 +598,7 @@ abstract class rubetek extends domophone
 
     protected function getTickerText(): string
     {
-        return $this->getConfig()['display']['text'];
+        return $this->getConfig()['display']['text'] ?? '';
     }
 
     protected function getUnlocked(): bool
