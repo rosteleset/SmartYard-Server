@@ -346,6 +346,7 @@
         (count($args) == 2 && array_key_exists("--init-db", $args) && !isset($args["--init-db"]) && array_key_exists("--skip", $args) && isset($args["--skip"]))
     ) {
         backup_db();
+        echo "\n";
 
         initDB(@$args["--skip"]);
         echo "\n";
