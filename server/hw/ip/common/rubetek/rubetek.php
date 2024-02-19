@@ -12,6 +12,8 @@ use Exception;
 trait rubetek
 {
 
+    protected string $defaultWebPassword = 'Rubetek34';
+
     public function configureEventServer(string $url)
     {
         ['host' => $server, 'port' => $port] = parse_url_ext($url);

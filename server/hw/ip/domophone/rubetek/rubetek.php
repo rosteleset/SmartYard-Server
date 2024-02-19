@@ -12,6 +12,9 @@ abstract class rubetek extends domophone
 
     use \hw\ip\common\rubetek\rubetek;
 
+    protected const CONCIERGE_ID = 'CONCIERGE';
+    protected const SOS_ID = 'SOS';
+
     /**
      * @var array|string[] Mapping of CMS models between database and Rubetek names.
      * @access protected
@@ -27,7 +30,11 @@ abstract class rubetek extends domophone
         'KMG-100' => 'kmg-100',
     ];
 
-    protected string $defaultWebPassword = 'Rubetek34';
+    /**
+     * @var array|null $dialplans An array that holds dialplan information,
+     * which may be null if not loaded.
+     */
+    protected ?array $dialplans = null;
 
     public function _setUnlockTime(int $time)
     {
@@ -604,6 +611,27 @@ abstract class rubetek extends domophone
     protected function getUnlocked(): bool
     {
         return $this->getDoors()[0]['open'];
+    }
+
+    /**
+     * Load and cache dialplans from the API if they haven't been loaded already.
+     *
+     * @return void
+     */
+    protected function loadDialplans()
+    {
+        if ($this->dialplans === null) {
+            $rawDialplans = $this->apiCall('/apartments');
+
+            $this->dialplans = array_column(
+                array_filter(
+                    $rawDialplans,
+                    fn($value) => $value['id'] !== self::CONCIERGE_ID && $value['id'] !== self::SOS_ID
+                ),
+                null,
+                'id'
+            );
+        }
     }
 
     /**
