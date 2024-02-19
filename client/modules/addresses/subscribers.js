@@ -748,7 +748,7 @@
                     if (a.addresses.houses[i].houseId == params.houseId) {
                         document.title = i18n("windowTitle") + " :: " + a.addresses.houses[i].houseFull + ", " + params.flat;
                         t = a.addresses.houses[i].houseFull + ", " + params.flat;
-                        subTop(modules.addresses.path((parseInt(params.settlementId)?"settlement":"street"), parseInt(params.settlementId)?params.settlementId:params.streetId) + "<i class=\"fas fa-xs fa-angle-double-right ml-2 mr-2\"></i>" + `<a href="?#addresses.houses&houseId=${params.houseId}">${a.addresses.houses[i].houseFull}</a>` + ", " + params.flat);
+                        subTop(modules.addresses.path((parseInt(params.settlementId)?"settlement":"street"), parseInt(params.settlementId)?params.settlementId:params.streetId, true) + "<i class=\"fas fa-xs fa-angle-double-right ml-2 mr-2\"></i>" + `<a href="?#addresses.houses&houseId=${params.houseId}">${a.addresses.houses[i].houseFull}</a>` + ", " + params.flat);
                         break;
                     }
                 }
