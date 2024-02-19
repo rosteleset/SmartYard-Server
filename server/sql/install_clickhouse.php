@@ -17,15 +17,18 @@ function initClickhouseDB(clickhouse $clickhouse)
         $clickhouse->createPersistentSession();
 
         $currentVersion = getCurrentDbVersion($clickhouse);
-        echo "current version $currentVersion\n";
+        $_v = sprintf("%06d", $currentVersion);
+        echo "current CH version $_v\n";
 
         foreach ($install as $version => $steps) {
+            $_v = sprintf("%06d", $version);
+
             if ($currentVersion >= $version) {
-                echo "skipping version $version\n";
+                echo "skipping CH version $_v\n";
                 continue;
             }
 
-            echo "upgrading to version $version\n";
+            echo "upgrading to CH version $_v\n";
 
             foreach ($steps as $step) {
                 echo "================= $step\n";
