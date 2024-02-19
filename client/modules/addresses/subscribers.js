@@ -609,9 +609,23 @@
                         host: response.cameras.cameras[i].url,
                     }
                 }
-                cameras.push({
+                let comments = $.trim(response.cameras.cameras[i].comments);
+                let name = $.trim(response.cameras.cameras[i].name);
+                let text = "";
+                if (name && comments) {
+                    text = name + " (" + comments + ") [" + url.host + "]";
+                } else
+                if (name && !comments) {
+                    text = name + " [" + url.host + "]";
+                } else
+                if (!name && comments) {
+                    text = comments + " [" + url.host + "]";
+                } else {
+                    text = url.host;
+                }
+            cameras.push({
                     id: response.cameras.cameras[i].cameraId,
-                    text:  url.host + " [" + response.cameras.cameras[i].name + "]",
+                    text: text,
                 })
             }
 
