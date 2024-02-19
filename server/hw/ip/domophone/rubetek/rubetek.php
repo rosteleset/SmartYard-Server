@@ -15,6 +15,13 @@ abstract class rubetek extends domophone
     protected const CONCIERGE_ID = 'CONCIERGE';
     protected const SOS_ID = 'SOS';
 
+    protected const REL_1_INT = 1;
+    protected const REL_2_INT = 2;
+    protected const REL_3_INT = 3;
+    protected const REL_1_EXT = 4;
+    protected const REL_2_EXT = 5;
+    protected const REL_3_EXT = 6;
+
     /**
      * @var array|string[] Mapping of CMS models between database and Rubetek names.
      * @access protected
@@ -45,7 +52,10 @@ abstract class rubetek extends domophone
     {
         $this->apiCall('/rfids', 'POST', [
             'rfid' => $code,
-            'door_access' => [1, 5] // 1 - Relay A, internal reader; 5 - Relay B, external reader
+            'door_access' => [
+                self::REL_1_INT,
+                self::REL_2_EXT,
+            ],
         ]);
     }
 
@@ -68,7 +78,7 @@ abstract class rubetek extends domophone
             'id' => "$apartment",
             'sip_number' => (string)($sipNumbers[0] ?? $apartment),
             'call_type' => $cmsEnabled ? 'sip_0_analog' : 'sip',
-            'door_access' => [1],
+            'door_access' => [self::REL_1_INT],
             'access_codes' => $code ? ["$code"] : [],
         ]);
     }
@@ -111,7 +121,7 @@ abstract class rubetek extends domophone
                 'end_number' => $link['lastFlat'],
                 'call_number' => 'XXXXYYYY',
                 'call_type' => 'sip',
-                'door_access' => [1],
+                'door_access' => [self::REL_1_INT],
             ]);
         }
     }
@@ -145,7 +155,7 @@ abstract class rubetek extends domophone
             $this->apiCall('/apartments', 'POST', [
                 'id' => "$apartment",
                 'analog_number' => (string)($cmsNumber * 100 + $dozen * 10 + $unit),
-                'door_access' => [1],
+                'door_access' => [self::REL_1_INT],
             ]);
         }
     }
@@ -332,7 +342,7 @@ abstract class rubetek extends domophone
             'dial_number' => "$sipNumber",
             'analog_dial_number' => '',
             'call_type' => 'sip',
-            'door_access' => [1],
+            'door_access' => [self::REL_1_INT],
         ]);
     }
 
@@ -473,7 +483,7 @@ abstract class rubetek extends domophone
                 'access_codes' => $codes,
             ] = $rawApartment;
 
-            if ($apartmentNumber === 'CONCIERGE' || $apartmentNumber === 'SOS' || !$sipNumbers) {
+            if ($apartmentNumber === self::CONCIERGE_ID || $apartmentNumber === self::SOS_ID || !$sipNumbers) {
                 continue;
             }
 
@@ -672,5 +682,42 @@ abstract class rubetek extends domophone
         $displaySettings = $this->getConfig()['display'];
         $displaySettings['admin_password'] = $pin;
         $this->apiCall('/configuration', 'PATCH', ['display' => $displaySettings]);
+    }
+
+    /**
+     * Update or add a dialplan with the provided parameters.
+     *
+     * @param string $id Apartment number.
+     * @param string $sipNumber SIP number for an apartment.
+     * @param string $analogNumber Analog number for an apartment.
+     * @param string $callType Indicates where to call. Possible values: "sip", "analog", "sip_0_analog", "sip_p2p".
+     * @param int[] $doorAccess List of numeric codes that control access to the relay.
+     * Possible values: REL_1_INT, REL_2_INT, REL_3_INT, REL_1_EXT, REL_2_EXT, REL_3_EXT.
+     * @param string[] $accessCodes List of apartment access codes.
+     *
+     * @return void
+     */
+    protected function updateDialplan(
+        string $id,
+        string $sipNumber,
+        string $analogNumber,
+        string $callType,
+        array  $doorAccess,
+        array  $accessCodes
+    )
+    {
+        $this->loadDialplans();
+
+        $data = [
+            'id' => $id,
+            'sip_number' => $sipNumber,
+            'analog_number' => $analogNumber,
+            'call_type' => $callType,
+            'door_access' => $doorAccess,
+            'access_codes' => $accessCodes,
+        ];
+
+        $this->apiCall('/apartments', 'POST', $data);
+        $this->dialplans[$id] = $data;
     }
 }
