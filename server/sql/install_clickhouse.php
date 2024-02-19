@@ -43,6 +43,8 @@ function initClickhouseDB(clickhouse $clickhouse)
                         continue;
                     }
 
+                    echo $query . "\n";
+
                     if ($clickhouse->query($query) === false) {
                         throw new Exception("Error executing:\n$query\n");
                     }
