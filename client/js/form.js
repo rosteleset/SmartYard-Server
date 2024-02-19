@@ -830,10 +830,6 @@ function cardForm(params) {
         }
     }
 
-    if (typeof params.done == "function") {
-        params.done(_prefix);
-    }
-
     $(".jsform-tab-link").off("click").on("click", function () {
         let i = parseInt($(this).attr("data-tab-index"));
         $(`.jsform-tabbed-item`).hide();
@@ -848,6 +844,10 @@ function cardForm(params) {
             });
         }, 100);
     });
+
+    if (typeof params.done == "function") {
+        params.done(_prefix);
+    }
 
     return target;
 }

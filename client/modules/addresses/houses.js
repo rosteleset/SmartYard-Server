@@ -125,11 +125,17 @@
     outputs: function (domophoneModel, selected) {
         let o = [];
 
-        for (let i = 0; i < 32; i++) {
+        o.push({
+            id: "0",
+            text: i18n("addresses.domophoneOutputPrimary"),
+            selected: parseInt(selected) === 0,
+        });
+        
+        for (let i = 1; i < 32; i++) {
             if (domophoneModel && modules.addresses.houses.meta.domophoneModels[domophoneModel] && i < parseInt(modules.addresses.houses.meta.domophoneModels[domophoneModel].outputs)) {
                 o.push({
                     id: i.toString(),
-                    text: i?i18n("addresses.domophoneOutputSecondary", i):i18n("addresses.domophoneOutputPrimary"),
+                    text: i18n("addresses.domophoneOutputSecondary", i),
                     selected: parseInt(selected) === i,
                 });
             }
@@ -962,37 +968,6 @@
                 modules.addresses.houses.meta.domophones = response.domophones;
                 modules.addresses.houses.meta.domophoneModelsById = {};
 
-                let domophones = [];
-
-                for (let i in response.domophones.domophones) {
-                    modules.addresses.houses.meta.domophoneModelsById[response.domophones.domophones[i].domophoneId] = response.domophones.domophones[i].model;
-                    let url;
-                    try {
-                        url = new URL(response.domophones.domophones[i].url);
-                    } catch (e) {
-                        url = {
-                            host: response.domophones.domophones[i].url,
-                        }
-                    }
-                    let comments = $.trim(response.domophones.domophones[i].comments);
-                    let name = $.trim(response.domophones.domophones[i].name);
-                    let text = name;
-                    if (!text) {
-                        text = comments;
-                    } else {
-                        text += " (" + comments + ")";
-                    }
-                    if (!text) {
-                        text = url.host;
-                    } else {
-                        text += " [" + url.host + "]";
-                    }
-                    domophones.push({
-                        id: response.domophones.domophones[i].domophoneId,
-                        text: text,
-                    });
-                }
-
                 let entrance = false;
 
                 for (let i in modules.addresses.houses.meta.entrances) {
@@ -1003,6 +978,47 @@
                 }
 
                 if (entrance) {
+                    let domophones = [];
+    
+                    for (let i in response.domophones.domophones) {
+                        modules.addresses.houses.meta.domophoneModelsById[response.domophones.domophones[i].domophoneId] = response.domophones.domophones[i].model;
+                    }
+
+                    if (!modules.addresses.houses.meta.domophoneModelsById[entrance.domophoneId]) {
+                        domophones.push({
+                            id: "0",
+                            text: i18n("no"),
+                        });
+                    }
+    
+                    for (let i in response.domophones.domophones) {
+                        let url;
+                        try {
+                            url = new URL(response.domophones.domophones[i].url);
+                        } catch (e) {
+                            url = {
+                                host: response.domophones.domophones[i].url,
+                            }
+                        }
+                        let comments = $.trim(response.domophones.domophones[i].comments);
+                        let name = $.trim(response.domophones.domophones[i].name);
+                        let text = name;
+                        if (!text) {
+                            text = comments;
+                        } else {
+                            text += " (" + comments + ")";
+                        }
+                        if (!text) {
+                            text = url.host;
+                        } else {
+                            text += " [" + url.host + "]";
+                        }
+                        domophones.push({
+                            id: response.domophones.domophones[i].domophoneId,
+                            text: text,
+                        });
+                    }
+    
                     cardForm({
                         title: i18n("addresses.editEntrance"),
                         footer: true,
@@ -1083,6 +1099,25 @@
                                 options: cameras,
                             },
                             {
+                                id: "domophoneId",
+                                type: "select2",
+                                title: i18n("addresses.domophone"),
+                                value: modules.addresses.houses.meta.domophoneModelsById[entrance.domophoneId] ? entrance.domophoneId : "0",
+                                options: domophones,
+                                select: modules.addresses.houses.domophoneIdSelect,
+                                validate: v => {
+                                    return !!parseInt(v);
+                                },
+                            },
+                            {
+                                id: "domophoneOutput",
+                                type: "select",
+                                title: i18n("addresses.domophoneOutput"),
+                                placeholder: i18n("addresses.domophoneOutput"),
+                                options: modules.addresses.houses.outputs(modules.addresses.houses.meta.domophoneModelsById[entrance.domophoneId], entrance.domophoneOutput),
+                                select: modules.addresses.houses.outputsSelect,
+                            },
+                            {
                                 id: "video",
                                 type: "select2",
                                 title: i18n("addresses.video"),
@@ -1097,22 +1132,6 @@
                                     },
                                 ],
                                 value: entrance.video,
-                            },
-                            {
-                                id: "domophoneId",
-                                type: "select2",
-                                title: i18n("addresses.domophone"),
-                                value: entrance.domophoneId,
-                                options: domophones,
-                                select: modules.addresses.houses.domophoneIdSelect,
-                            },
-                            {
-                                id: "domophoneOutput",
-                                type: "select",
-                                title: i18n("addresses.domophoneOutput"),
-                                placeholder: i18n("addresses.domophoneOutput"),
-                                options: modules.addresses.houses.outputs(modules.addresses.houses.meta.domophoneModelsById[entrance.domophoneId], entrance.domophoneOutput),
-                                select: modules.addresses.houses.outputsSelect,
                             },
                             {
                                 id: "cms",
