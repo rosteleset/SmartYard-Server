@@ -7,10 +7,7 @@
 
     route: function (params) {
         subTop("<a href='#'>cameras</a>");
-
         modules.map.cameras.realRoute(params);
-
-        $('#mapContainer').css("height", ($(window).height() - mainFormTop - $('#subTop').height()) + "px");
     },
 
     allLoaded: function () {
