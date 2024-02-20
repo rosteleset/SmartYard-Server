@@ -34,6 +34,7 @@ RBT/RBT.xcodeproj/
 /client/modules/**/custom/**
 /client/modules/**/custom/*
 /client/custom.html
+client/custom.html
 .cache
 .config
 .fontconfig
