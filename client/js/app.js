@@ -453,10 +453,36 @@ function loadModule() {
         })
         .fail(FAIL)
         .always(() => {
-            $.getScript("modules/" + module + "/" + module + ".js")
-            .fail(() => {
-                pageError(i18n("errorLoadingModule", module));
-            });
+            if (config && config.customSubModules && config.customSubModules[module]) {
+                $.get("modules/" + module + "/custom/i18n/" + l + ".json", i18n => {
+                    console.log(i18n);
+                    if (i18n.errors) {
+                        if (!lang.errors) {
+                            lang.errors = {};
+                        }
+                        lang.errors = {...lang.errors, ...i18n.errors};
+                        delete i18n.errors;
+                    }
+                    if (i18n.methods) {
+                        if (!lang.methods) {
+                            lang.methods = {};
+                        }
+                        lang.methods = {...lang.methods, ...i18n.methods};
+                        delete i18n.methods;
+                    }
+                    lang[module] = {...lang[module], ...i18n};
+                }).always(() => {
+                    $.getScript("modules/" + module + "/" + module + ".js")
+                    .fail(() => {
+                        pageError(i18n("errorLoadingModule", module));
+                    });
+                });
+            } else {
+                $.getScript("modules/" + module + "/" + module + ".js")
+                .fail(() => {
+                    pageError(i18n("errorLoadingModule", module));
+                });
+            }
         });
     }
 }
