@@ -473,7 +473,11 @@ function moduleLoaded(module, object) {
     }
 
     if (m.length === 1) {
-        loadModule();
+        if (config && config.customSubModules && config.customSubModules[m[0]]) {
+            loadCustomSubModules(m[0], config.customSubModules[m[0]]);
+        } else {
+            loadModule();
+        }
     }
 }
 
@@ -493,6 +497,19 @@ function loadSubModules(parent, subModules, doneOrParentObject) {
         $.getScript("modules/" + parent + "/" + module + ".js").
         done(() => {
             loadSubModules(parent, subModules, doneOrParentObject);
+        }).
+        fail(FAIL);
+    }
+}
+
+function loadCustomSubModules(parent, subModules) {
+    let module = subModules.shift();
+    if (!module) {
+        loadModule();
+    } else{
+        $.getScript("modules/" + parent + "/custom/" + module + ".js").
+        done(() => {
+            loadCustomSubModules(parent, subModules);
         }).
         fail(FAIL);
     }

@@ -1,0 +1,39 @@
+{
+    "defaultServer": "http://localhost:8000/server/frontend.php",
+    "defaultLanguage": "ru",
+    "languages": {
+        "ru": "Русский"
+    },
+    "modules": [
+        "mqtt",
+        "tt",
+        "cs",
+        "asterisk",
+        "companies",
+        "addresses",
+        "users",
+        "groups",
+        "permissions",
+        "providers",
+        "about",
+        "geocoder"
+    ],
+    "customSubModules": {
+        "about": [
+            "subversion"
+        ]
+    },
+    "defaultRoute": "#about",
+    "logo": "lanta",
+    "ws": false,
+    "ice": [
+        {
+            "urls": [ "stun:stun.l.google.com:19302" ]
+        }
+    ],
+    "regExp": {
+        "phone": "^(7 \\(\\d{3}\\) \\d{3}-\\d{2}-\\d{2}|7\\d{10})$",
+        "rfid": "^[0-9A-F]{14}$"
+    },
+    "phonePattern": "7 (###) ###-##-##"
+}
