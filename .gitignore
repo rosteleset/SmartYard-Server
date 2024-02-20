@@ -70,6 +70,10 @@ RBT/RBT.xcodeproj/
 /server/api/**/custom/
 /server/api/**/custom/**
 /server/api/**/custom/*
+/client/modules/**/custom
+/client/modules/**/custom/
+/client/modules/**/custom/**
+/client/modules/**/custom/*
 .cache
 .config
 .fontconfig
