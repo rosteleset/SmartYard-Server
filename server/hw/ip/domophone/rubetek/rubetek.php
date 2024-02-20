@@ -78,7 +78,7 @@ abstract class rubetek extends domophone
             'id' => "$apartment",
             'sip_number' => (string)($sipNumbers[0] ?? $apartment),
             'call_type' => $cmsEnabled ? 'sip_0_analog' : 'sip',
-            'door_access' => [self::REL_1_INT],
+            // 'door_access' => [self::REL_1_INT],
             'access_codes' => $code ? ["$code"] : [],
         ]);
     }
@@ -146,15 +146,15 @@ abstract class rubetek extends domophone
 
         foreach ($matrix as $matrixCell) {
             [
-                'hundreds' => $cmsNumber,
-                'tens' => $dozen,
-                'units' => $unit,
+                'hundreds' => $hundreds,
+                'tens' => $tens,
+                'units' => $units,
                 'apartment' => $apartment,
             ] = $matrixCell;
 
             $this->apiCall('/apartments', 'POST', [
                 'id' => "$apartment",
-                'analog_number' => (string)($cmsNumber * 100 + $dozen * 10 + $unit),
+                'analog_number' => (string)($hundreds * 100 + $tens * 10 + $units),
                 'door_access' => [self::REL_1_INT],
             ]);
         }
@@ -278,6 +278,7 @@ abstract class rubetek extends domophone
     public function prepare()
     {
         parent::prepare();
+        $this->configureBasicSettings();
         $this->setAdminPin(false);
         $this->configureInternalReader();
         $this->configureExternalReader();
@@ -342,7 +343,7 @@ abstract class rubetek extends domophone
             'dial_number' => "$sipNumber",
             'analog_dial_number' => '',
             'call_type' => 'sip',
-            'door_access' => [self::REL_1_INT],
+            'door_access' => [],
         ]);
     }
 
@@ -439,6 +440,29 @@ abstract class rubetek extends domophone
         }
 
         return $dbConfig;
+    }
+
+    /**
+     * Configure basic settings.
+     *
+     * @return void
+     */
+    protected function configureBasicSettings()
+    {
+        $this->apiCall('/configuration', 'PATCH', [
+            'log_buffer_size' => 1024,
+            'accelerometer_sensitivity' => 20,
+            'onvif_enabled' => false,
+            'call_end_type' => 0, // at the end of the call
+            'keep_analog_calling' => false,
+            'ignore_early_media' => true,
+            'display_typed_number_time' => 15, // seconds
+            'backlight_keypad_time' => 15, // seconds
+            'light_sensor_mode_enabled' => false,
+            'backlight_day_brightness' => 6, // 50% brightness
+            'backlight_night_brightness' => 3, // 20% brightness
+            'backlight_increase_brightness' => 3,
+        ]);
     }
 
     /**
