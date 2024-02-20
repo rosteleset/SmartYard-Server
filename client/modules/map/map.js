@@ -8,6 +8,9 @@
 
     route: function (params) {
         let height = $(window).height() - mainFormTop;
+        if ($('#subTop:visible').length) {
+            height -= $('#subTop').height();
+        }
 
         document.title = i18n("windowTitle") + " :: " + i18n("map.map");
 
