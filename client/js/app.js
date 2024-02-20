@@ -422,6 +422,13 @@ function loadModule() {
             if (typeof modules[i].allLoaded == "function") {
                 modules[i].allLoaded();
             }
+            if (config && config.customSubModules && config.customSubModules[i]) {
+                for (let j in config.customSubModules[i]) {
+                    if (typeof modules[i][config.customSubModules[i][j]].allLoaded == "function") {
+                        modules[i][config.customSubModules[i][j]].allLoaded();
+                    }
+                }
+            }
         }
         hashChange();
         onhashchange = hashChange;
@@ -500,7 +507,7 @@ function moduleLoaded(module, object) {
 
     if (m.length === 1) {
         if (config && config.customSubModules && config.customSubModules[m[0]]) {
-            loadCustomSubModules(m[0], config.customSubModules[m[0]]);
+            loadCustomSubModules(m[0], JSON.parse(JSON.stringify(config.customSubModules[m[0]])));
         } else {
             loadModule();
         }
