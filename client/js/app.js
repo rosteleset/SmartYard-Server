@@ -462,7 +462,6 @@ function loadModule() {
         .always(() => {
             if (config && config.customSubModules && config.customSubModules[module]) {
                 $.get("modules/" + module + "/custom/i18n/" + l + ".json", i18n => {
-                    console.log(i18n);
                     if (i18n.errors) {
                         if (!lang.errors) {
                             lang.errors = {};
