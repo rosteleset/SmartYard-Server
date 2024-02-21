@@ -800,7 +800,7 @@ abstract class beward extends domophone
     {
         if ($this->hasExternalRfidTable === null) {
             $res = $this->apiCall('cgi-bin/extrfid_cgi');
-            $this->hasExternalRfidTable = stripos($res, 'not found') === false;
+            $this->hasExternalRfidTable = stripos($res, 'is not defined') === false;
         }
     }
 
