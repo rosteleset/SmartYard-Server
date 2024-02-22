@@ -49,13 +49,18 @@ abstract class rubetek extends domophone
         array $cmsLevels = []
     )
     {
-        $this->apiCall('/apartments', 'POST', [
-            'id' => "$apartment",
-            'sip_number' => (string)($sipNumbers[0] ?? $apartment),
-            'call_type' => $cmsEnabled ? RubetekConst::SIP_ANALOG : RubetekConst::SIP,
-            'door_access' => [RubetekConst::RELAY_1_INTERNAL],
-            'access_codes' => $code ? ["$code"] : [],
-        ]);
+        $this->loadDialplans();
+
+        $dialplan = $this->dialplans['id'] ?? ['id' => "$apartment", 'analog_number' => '0'];
+
+        $this->updateDialplan(
+            $dialplan['id'],
+            $sipNumbers[0],
+            $dialplan['analog_number'],
+            $cmsEnabled ? RubetekConst::SIP_ANALOG : RubetekConst::SIP,
+            [RubetekConst::RELAY_1_INTERNAL],
+            [$code] ?? [],
+        );
     }
 
     public function configureEncoding()
@@ -180,11 +185,30 @@ abstract class rubetek extends domophone
 
     public function deleteApartment(int $apartment = 0)
     {
-        if ($apartment !== 0) {
-            $this->apiCall("/apartments/$apartment", 'DELETE');
+        $this->loadDialplans();
+
+        if ($apartment === 0) {
+            foreach ($this->dialplans as $apartment => $dialplan) {
+                $this->deleteApartment($apartment);
+            }
         } else {
-            foreach ($this->getApartmentsIDs() as $apartment) { // TODO: too slow
-                $this->apiCall("/apartments/$apartment", 'DELETE');
+            $dialplan = $this->dialplans[$apartment] ?? null;
+
+            if ($dialplan) {
+                $analogNumber = $dialplan['analog_number'];
+
+                if ($analogNumber === '0') {
+                    $this->deleteDialplan($apartment);
+                } else {
+                    $this->updateDialplan(
+                        $dialplan['id'],
+                        '',
+                        $analogNumber,
+                        RubetekConst::ANALOG,
+                        [RubetekConst::RELAY_1_INTERNAL],
+                        [],
+                    );
+                }
             }
         }
     }
@@ -500,6 +524,27 @@ abstract class rubetek extends domophone
             'code_length' => 4,
             'reverse_data_order' => true,
         ]);
+    }
+
+    /**
+     * Delete a dialplan based on the provided ID (apartment number).
+     *
+     * @param int $id (Optional) The ID of the dialplan to be deleted.
+     * If 0, then all dialplans will be deleted. Default is 0.
+     *
+     * @return void
+     */
+    protected function deleteDialplan(int $id = 0)
+    {
+        $this->loadDialplans();
+
+        if ($id === 0) {
+            $this->apiCall('/apartments', 'DELETE', ['apartIds' => []]);
+            $this->dialplans = [];
+        } elseif (isset($this->dialplans[$id])) {
+            $this->apiCall("/apartments/$id", 'DELETE');
+            unset($this->dialplans[$id]);
+        }
     }
 
     /**
