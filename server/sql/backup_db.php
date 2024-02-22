@@ -127,22 +127,22 @@
 
     function backup_pgsql($host, $port, $login, $password, $db, $file)
     {
-        $result = 0;
+        $result = -1;
 
         system("PGPASSWORD=\"$password\" pg_dump -U $login -d $db -h $host -p $port -c --if-exists >$file", $result);
 
-        if (!(int)$result) {
+        if ((int)$result) {
             die("backup failed, code $result\n");
         }
     }
 
     function backup_sqlite($db, $file)
     {
-        $result = 0;
+        $result = -1;
 
         system("sqlite3 $db .dump >$file");
 
-        if (!(int)$result) {
+        if ((int)$result) {
             die("backup failed, code $result\n");
         }
     }
