@@ -512,7 +512,7 @@ local function handleOtherCases(context, extension)
 end
 
 -- terminate active call
-local function handleCallTermitation(context, extension)
+local function handleCallTermination(context, extension)
     local src = channel.CDR("src"):get()
     local status = channel.DIALSTATUS:get()
 
@@ -564,6 +564,6 @@ extensions = {
         [ "_X!" ] = handleOtherCases,
 
         -- terminate active call
-        [ "h" ] = handleCallTermitation,
+        [ "h" ] = handleCallTermination,
     },
 }
