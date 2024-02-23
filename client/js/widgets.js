@@ -105,6 +105,7 @@ function mYesNo(body, title, callbackYes, callbackNo, yes, no, timeout) {
         $('#yesnoModal').modal('hide');
         if (typeof callbackNo == 'function') callbackNo();
     });
+
     autoZ($('#yesnoModal')).modal('show');
     xblur();
 
@@ -189,14 +190,12 @@ function loadingStart() {
         backdrop: 'static',
         keyboard: false,
     }));
-//    autoZ($('#loading')).show();
 }
 
 function loadingDone(stayHidden) {
     xblur();
     
     $('#loading').modal('hide');
-//    $('#loading').hide();
 
     if (stayHidden === true) {
         $('#app').addClass("invisible");

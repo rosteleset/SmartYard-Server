@@ -148,11 +148,11 @@
                 </li>
 
                 <li class="nav-item dropdown">
-                    <a class="nav-link text-dark myNameIs" data-toggle="dropdown" href="#" style="padding-left: 0.75rem!important;">
+                    <span class="nav-link text-dark myNameIs pointer" data-toggle="dropdown" style="padding-left: 0.75rem!important;">
                         <i class="fas fa-lg fa-fw fa-user-cog"></i>
-                    </a>
+                    </span>
                     <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right" style="max-width: none;">
-                        <a href="javascript:void(0)" class="dropdown-item" id="selfSettings">
+                        <span class="dropdown-item pointer" id="selfSettings">
                             <div class="media">
                                 <img src="avatars/noavatar.png" alt="User Avatar" class="img-size-50 mr-3 img-circle userAvatar">
                                 <div class="media-body">
@@ -162,11 +162,11 @@
                                 </div>
                                 <span class="float-right text-sm"><i class="fas fa-cog"></i></span>
                             </div>
-                        </a>
+                        </span>
                         <div class="dropdown-divider"></div>
-                        <a href="#" class="dropdown-item dropdown-footer" onclick="logout()"><span id="logout">...</span>
+                        <span class="dropdown-item dropdown-footer pointer" onclick="logout()"><span id="logout">...</span>
                             <span class="float-right text-sm text-danger"><i class="fas fa-sign-out-alt"></i></span>
-                        </a>
+                        </span>
                     </div>
                 </li>
             </ul>
@@ -176,8 +176,8 @@
         <!-- Main Sidebar Container -->
         <aside class="main-sidebar sidebar-dark-primary elevation-4 sidebar-no-expand">
             <!-- Brand Logo -->
-            <span href="#" class="brand-link">
-                <a href="#" data-widget="pushmenu"><img src="img/smart.png" alt="RBT Logo" class="brand-image" id="leftSideToggler"><span class="brand-text font-weight-bold brand-title text-light" id="brandTitle"></span></a>
+            <span class="brand-link pointer">
+                <span data-widget="pushmenu" class="pointer"><img src="img/smart.png" alt="RBT Logo" class="brand-image" id="leftSideToggler"><span class="brand-text font-weight-bold brand-title text-light" id="brandTitle"></span></span>
             </span>
 
             <div class="sidebar">
@@ -344,7 +344,7 @@
                         </div>
                     </div>
                     <p id="loginBoxForgot" class="mb-1 mt-2" style="display: none;">
-                        <a href="javascript:void(0)" onclick="showForgotPasswordForm()" id="loginBoxForgotPassword"></a>
+                        <span class="pointer" onclick="showForgotPasswordForm()" id="loginBoxForgotPassword"></span>
                     </p>
                 </div>
             </div>
@@ -380,7 +380,7 @@
                         </div>
                     </div>
                     <p class="mt-4 mb-1">
-                        <a href="javascript:void(0)" onclick="showLoginForm()" id="forgotBoxLogin"></a>
+                        <span class="pointer" onclick="showLoginForm()" id="forgotBoxLogin"></span>
                     </p>
                 </div>
             </div>
