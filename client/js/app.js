@@ -172,13 +172,31 @@ function login() {
     });
 }
 
-function logout() {
+function doLogout(all) {
+    if (all != "all") {
+        all = "no";
+    }
     POST("authentication", "logout", false, {
         mode: "all",
     }).always(() => {
         lStore("_token", null);
         location.reload();
     });
+}
+
+function logout() {
+    mYesNo(
+        i18n("logoutQuestion"), 
+        i18n("logout"), 
+        () => {
+            doLogout("single");
+        },
+        () => {
+            doLogout("all");
+        },
+        i18n("logoutSingle"),
+        i18n("logoutAll")
+    );
 }
 
 function forgot() {
