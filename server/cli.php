@@ -127,6 +127,47 @@
         }
     }
 
+    if ((count($args) == 1 || count($args) == 2) && array_key_exists("--run-demo-server", $args) && !isset($args["--run-demo-server"])) {
+        $db = null;
+        if (is_executable_pathenv(PHP_BINARY)) {
+            $port = 8000;
+
+            if (count($args) == 2) {
+                if (array_key_exists("--port", $args) && !empty($args["--port"])) {
+                    $port = $args["--port"];
+                } else {
+                    usage();
+                }
+            }
+
+            echo "open in your browser:\n\n";
+            echo "http://localhost:$port/client/index.html\n\n";
+            chdir(__DIR__ . "/..");
+            passthru(PHP_BINARY . " -S 0.0.0.0:$port");
+        } else {
+            echo "no php interpreter found in path\n\n";
+        }
+        exit(0);
+    }
+
+    function shutdown() {
+        global $script_process_id, $db, $script_result;
+
+        echo " > $script_result <\n\n";
+
+        if (@$db) {
+            try {
+                $db->modify("update core_running_processes set done = :done, result = :result where running_process_id = :running_process_id", [
+                    "done" => time(),
+                    "result" => $script_result,
+                    "running_process_id" => $script_process_id,
+                ], [ "silent" ]);
+            } catch (\Exception $e) {
+                //
+            }
+        }
+    }
+
     function startup() {
         global $db, $params, $script_process_id, $script_parent_pid;
 
@@ -144,22 +185,8 @@
                 //
             }
         }
-    }
 
-    function shutdown() {
-        global $script_process_id, $db, $script_result;
-
-        if (@$db) {
-            try {
-                $db->modify("update core_running_processes set done = :done, result = :result where running_process_id = :running_process_id", [
-                    "done" => time(),
-                    "result" => $script_result,
-                    "running_process_id" => $script_process_id,
-                ], [ "silent" ]);
-            } catch (\Exception $e) {
-                //
-            }
-        }
+        register_shutdown_function('shutdown');
     }
 
     function check_if_pid_exists() {
@@ -226,31 +253,6 @@
             }
         }
         echo " - done\n\n";
-    }
-
-    register_shutdown_function('shutdown');
-
-    if ((count($args) == 1 || count($args) == 2) && array_key_exists("--run-demo-server", $args) && !isset($args["--run-demo-server"])) {
-        $db = null;
-        if (is_executable_pathenv(PHP_BINARY)) {
-            $port = 8000;
-
-            if (count($args) == 2) {
-                if (array_key_exists("--port", $args) && !empty($args["--port"])) {
-                    $port = $args["--port"];
-                } else {
-                    usage();
-                }
-            }
-
-            echo "open in your browser:\n\n";
-            echo "http://localhost:$port/client/index.html\n\n";
-            chdir(__DIR__ . "/..");
-            passthru(PHP_BINARY . " -S 0.0.0.0:$port");
-        } else {
-            echo "no php interpreter found in path\n\n";
-        }
-        exit(0);
     }
 
     try {
@@ -397,6 +399,10 @@
         }
     }
 
+    startup();
+
+    check_if_pid_exists();
+
     if (
         (count($args) == 1 && array_key_exists("--init-db", $args) && !isset($args["--init-db"]))
         ||
@@ -423,10 +429,6 @@
         maintenance(false);
         exit(0);
     }
-
-    startup();
-
-    check_if_pid_exists();
 
     if (count($args) == 1 && array_key_exists("--init-clickhouse-db", $args) && !isset($args["--init-clickhouse-db"])) {
         $clickhouse_config = @$config['clickhouse'];
