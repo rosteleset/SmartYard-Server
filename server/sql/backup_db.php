@@ -140,7 +140,7 @@
     {
         $result = -1;
 
-        system("sqlite3 $db .dump >$file");
+        system("sqlite3 $db .dump >$file", $result);
 
         if ((int)$result) {
             die("backup failed, code $result\n");

@@ -183,10 +183,48 @@
                         }
                     }
                 }
+
+                $db->modify("delete from core_running_processes where done is not null and coalesce(expire, 0) < " . time(), false, [ "silent" ]);
             } catch (\Exception $e) {
                 //
             }
         }
+    }
+
+    function maintenance($on) {
+        global $db;
+
+        if (@$db) {
+            if ($on) {
+                $db->insert("insert into core_vars (var_name, var_value) values ('maintenance', '1')");
+            } else {
+                $db->modify("delete from core_vars where var_name = 'maintenance'");
+            }
+        } else {
+            echo "database is not awailable\n\n";
+            exit(1);
+        }
+    }
+
+    function wait_all() {
+        global $db;
+
+        echo "waiting other processes to finish";
+
+        if (@$db) {
+            while (true) {
+                $exists = (int)$db->get("select count(*) as exists from core_running_processes where done is not null and pid <> " . getmypid(), [], false, [ 'fieldlify', 'silent' ]);
+        
+                if (!$exists) {
+                    break;
+                } else {
+                    echo " .";
+                }
+
+                sleep(5);
+            }
+        }
+        echo " - done\n\n";
     }
 
     register_shutdown_function('shutdown');
@@ -340,11 +378,32 @@
         exit(0);
     }
 
+    if (@$db) {
+        $already = (int)$db->get("select count(*) as already from core_running_processes where done is null and params = :params and pid <> " . getmypid(), [
+            'params' => $params,
+        ], false, [ 'fieldlify', 'silent' ]);
+
+        $maintenance = (int)$db->get("select count(*) as maintenance from core_vars where var_name = 'maintenance'", [], false, [ 'fieldlify', 'silent' ]);
+
+        if ($already) {
+            $script_result = "already running";
+            exit(0);
+        }
+
+        if ($maintenance) {
+            $script_result = "maintenance mode";
+            exit(0);
+        }
+    }
+
     if (
         (count($args) == 1 && array_key_exists("--init-db", $args) && !isset($args["--init-db"]))
         ||
         (count($args) == 2 && array_key_exists("--init-db", $args) && !isset($args["--init-db"]) && array_key_exists("--skip", $args) && isset($args["--skip"]))
     ) {
+        maintenance(true);
+        wait_all();
+
         backup_db();
         echo "\n";
 
@@ -360,24 +419,13 @@
         reindex();
         echo "\n";
         
+        maintenance(false);
         exit(0);
     }
 
     startup();
 
     check_if_pid_exists();
-    if (@$db) {
-        $db->modify("delete from core_running_processes where done is null and coalesce(expire, 0) < " . time(), false, [ "silent" ]);
-
-        $already = (int)$db->get("select count(*) as already from core_running_processes where done is null and params = :params and pid <> " . getmypid(), [
-            'params' => $params,
-        ], false, [ 'fieldlify', 'silent' ]);
-
-        if ($already) {
-            $script_result = "already running";
-            exit(0);
-        }
-    }
 
     if (count($args) == 1 && array_key_exists("--init-clickhouse-db", $args) && !isset($args["--init-clickhouse-db"])) {
         $clickhouse_config = @$config['clickhouse'];
@@ -579,7 +627,12 @@
     }
 
     if (count($args) == 1 && array_key_exists("--backup-db", $args) && !isset($args["--backup-db"])) {
+        maintenance(true);
+        wait_all();
+
         backup_db();
+
+        maintenance(false);
         exit(0);
     }
 
@@ -589,12 +642,19 @@
     }
 
     if (count($args) == 1 && array_key_exists("--restore-db", $args) && isset($args["--restore-db"])) {
+        maintenance(true);
+        wait_all();
+
         restore_db($args["--restore-db"]);
+
+        maintenance(false);
         exit(0);
     }
 
     if (count($args) == 1 && array_key_exists("--update", $args) && !isset($args["--update"])) {
-        //TODO add waiting for finish other cli processes
+        maintenance(true);
+        wait_all();
+
         backup_db();
         echo "\n";
 
@@ -612,6 +672,8 @@
         reindex();
         echo "\n";
         
+        maintenance(false);
+
         exit(0);
     }
 
