@@ -1023,8 +1023,8 @@
                         $queue->changed("domophone", $domophoneId);
                     }
 
-                // for SPUTNIK
-                $this->updateDeviceIds($domophoneId, $model, $url, $credentials);
+                    // for SPUTNIK
+                    $this->updateDeviceIds($domophoneId, $model, $url, $credentials);
                 }
 
                 return $r;
@@ -1084,10 +1084,6 @@
                 }
 
                 $r = $this->db->modify("delete from houses_domophones where house_domophone_id = $domophoneId") !== false;
-//                $r = $r && $this->db->modify("delete from houses_entrances where house_domophone_id not in (select house_domophone_id from houses_domophones)") !== false;
-//                $r = $r && $this->db->modify("delete from houses_entrances_cmses where house_entrance_id not in (select house_entrance_id from houses_entrances)") !== false;
-//                $r = $r && $this->db->modify("delete from houses_houses_entrances where house_entrance_id not in (select house_entrance_id from houses_entrances)") !== false;
-//                $r = $r && $this->db->modify("delete from houses_entrances_flats where house_entrance_id not in (select house_entrance_id from houses_entrances)") !== false;
 
                 return $r;
             }
@@ -1796,7 +1792,9 @@
 
                     foreach ($ids as $id) {
                         $cam = $cameras->getCamera($id["cameraId"]);
-                        $list[] = $cam;
+                        if ($cam) {
+                            $list[] = $cam;
+                        }
                     }
 
                     return $list;
