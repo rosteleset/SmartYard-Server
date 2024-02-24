@@ -153,8 +153,6 @@
     function shutdown() {
         global $script_process_id, $db, $script_result;
 
-        echo " > $script_result <\n\n";
-
         if (@$db) {
             try {
                 $db->modify("update core_running_processes set done = :done, result = :result where running_process_id = :running_process_id", [
@@ -169,8 +167,10 @@
     }
 
     function startup() {
-        global $db, $params, $script_process_id, $script_parent_pid;
+        global $db, $params, $script_process_id, $script_parent_pid, $script_result;
 
+        register_shutdown_function('shutdown');
+    
         if (@$db) {
             try {
                 $script_process_id = $db->insert('insert into core_running_processes (pid, ppid, start, process, params, expire) values (:pid, :ppid, :start, :process, :params, :expire)', [
@@ -184,10 +184,23 @@
             } catch (\Exception $e) {
                 //
             }
-        }
 
-        echo "registering shutdown function\n\n";
-        register_shutdown_function('shutdown');
+            $already = (int)$db->get("select count(*) as already from core_running_processes where done is null and params = :params and pid <> " . getmypid(), [
+                    'params' => $params,
+            ], false, [ 'fieldlify', 'silent' ]);
+        
+            $maintenance = (int)$db->get("select count(*) as maintenance from core_vars where var_name = 'maintenance'", [], false, [ 'fieldlify', 'silent' ]);
+    
+            if ($already) {
+                $script_result = "already running";
+                exit(0);
+            }
+        
+            if ($maintenance) {
+                $script_result = "maintenance mode";
+                exit(0);
+            }
+        }
     }
 
     function check_if_pid_exists() {
@@ -380,24 +393,6 @@
         }
 
         exit(0);
-    }
-
-    if (@$db) {
-        $already = (int)$db->get("select count(*) as already from core_running_processes where done is null and params = :params and pid <> " . getmypid(), [
-            'params' => $params,
-        ], false, [ 'fieldlify', 'silent' ]);
-
-        $maintenance = (int)$db->get("select count(*) as maintenance from core_vars where var_name = 'maintenance'", [], false, [ 'fieldlify', 'silent' ]);
-
-        if ($already) {
-            $script_result = "already running";
-            exit(0);
-        }
-
-        if ($maintenance) {
-            $script_result = "maintenance mode";
-            exit(0);
-        }
     }
 
     startup();
