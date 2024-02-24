@@ -186,6 +186,7 @@
             }
         }
 
+        echo "registering shutdown function\n\n";
         register_shutdown_function('shutdown');
     }
 
