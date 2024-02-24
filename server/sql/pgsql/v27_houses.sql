@@ -1,0 +1,2 @@
+ALTER TABLE houses_cameras_houses ADD IF NOT EXISTS path CHARACTER VARYING;
+ALTER TABLE houses_cameras_flats ADD IF NOT EXISTS path CHARACTER VARYING;
