@@ -1883,30 +1883,36 @@
                     $hc = $this->db->get("select camera_id from houses_cameras_houses");
                     foreach ($hc as $ci) {
                         if (!in_array($ci["camera_id"], $cl)) {
-                            $this->db->modify("delete from houses_cameras_houses where camera_id = :camera_id", [
+                            $n += $this->db->modify("delete from houses_cameras_houses where camera_id = :camera_id", [
                                 "camera_id" => $ci["camera_id"],
                             ]);
-                            $n++;
                         }
                     }
 
                     $fc = $this->db->get("select camera_id from houses_cameras_flats");
                     foreach ($fc as $ci) {
                         if (!in_array($ci["camera_id"], $cl)) {
-                            $this->db->modify("delete from houses_cameras_flats where camera_id = :camera_id", [
+                            $n += $this->db->modify("delete from houses_cameras_flats where camera_id = :camera_id", [
                                 "camera_id" => $ci["camera_id"],
                             ]);
-                            $n++;
                         }
                     }
 
                     $sc = $this->db->get("select camera_id from houses_cameras_subscribers");
                     foreach ($sc as $ci) {
                         if (!in_array($ci["camera_id"], $cl)) {
-                            $this->db->modify("delete from houses_cameras_subscribers where camera_id = :camera_id", [
+                            $n += $this->db->modify("delete from houses_cameras_subscribers where camera_id = :camera_id", [
                                 "camera_id" => $ci["camera_id"],
                             ]);
-                            $n++;
+                        }
+                    }
+
+                    $ec = $this->db->get("select camera_id from houses_entrances");
+                    foreach ($ec as $ci) {
+                        if (!in_array($ci["camera_id"], $cl)) {
+                            $n += $this->db->modify("update houses_entrances set camera_id = null where camera_id = :camera_id", [
+                                "camera_id" => $ci["camera_id"],
+                            ]);
                         }
                     }
                 }
@@ -1919,23 +1925,30 @@
                         $hi[] = $house["houseId"];
                     }
 
-                    $fl = $this->db->get("select house_flat_id, address_house_id from houses_flats");
+                    $fl = $this->db->get("select address_house_id from houses_flats");
                     foreach ($fl as $fi) {
                         if (!in_array($fi["address_house_id"], $hi)) {
-                            $this->db->modify("delete from houses_flats where house_flat_id = :house_flat_id", [
-                                "house_flat_id" => $fi["house_flat_id"],
+                            $n += $this->db->modify("delete from houses_flats where address_house_id = :address_house_id", [
+                                "address_house_id" => $fi["address_house_id"],
                             ]);
-                            $n++;
                         }
                     }
 
                     $el = $this->db->get("select address_house_id from houses_houses_entrances");
                     foreach ($el as $ei) {
                         if (!in_array($ei["address_house_id"], $hi)) {
-                            $this->db->modify("delete from houses_houses_entrances where address_house_id = :address_house_id", [
+                            $n += $this->db->modify("delete from houses_houses_entrances where address_house_id = :address_house_id", [
                                 "address_house_id" => $ei["address_house_id"],
                             ]);
-                            $n++;
+                        }
+                    }
+
+                    $rl = $this->db->get("select access_to as address_house_id from houses_rfids where access_type = 4");
+                    foreach ($rl as $ri) {
+                        if (!in_array($ri["address_house_id"], $hi)) {
+                            $n += $this->db->modify("delete from houses_rfids where access_id = :address_house_id and access_type = 4", [
+                                "address_house_id" => $ri["address_house_id"],
+                            ]);
                         }
                     }
                 }
@@ -1946,23 +1959,10 @@
                 $n += $this->db->modify("delete from houses_flats_subscribers where house_flat_id not in (select house_flat_id from houses_flats)");
                 $n += $this->db->modify("delete from houses_cameras_flats where house_flat_id not in (select house_flat_id from houses_flats)");
 
-                // type 1 (subscriber)
-                // TODO
-                //$n += $this->db->modify("delete from houses_rfids where access_to not in (select house_flat_id from houses_flats) and access_type = 1");
-                // type 2 (flat)
+                $n += $this->db->modify("delete from houses_rfids where access_to not in (select house_subscriber_id from houses_subscribers_mobile) and access_type = 1");
                 $n += $this->db->modify("delete from houses_rfids where access_to not in (select house_flat_id from houses_flats) and access_type = 2");
-                // type 3 (entrance)
                 $n += $this->db->modify("delete from houses_rfids where access_to not in (select house_entrance_id from houses_entrances) and access_type = 3");
-                // type 4 (house)
-                // TODO
-                //$n += $this->db->modify("delete from houses_rfids where access_to not in (select house_flat_id from houses_flats) and access_type = 4");
 
-                $n += $this->db->modify("update houses_entrances set camera_id = null where camera_id is not null and camera_id not in (select camera_id from cameras)");
-                $n += $this->db->modify("delete from houses_cameras_flats where camera_id not in (select camera_id from cameras)");
-                $n += $this->db->modify("delete from houses_cameras_houses where camera_id not in (select camera_id from cameras)");
-                $n += $this->db->modify("delete from houses_cameras_subscribers where camera_id not in (select camera_id from cameras)");
-
-//                $n += $this->db->modify("delete from houses_entrances where house_domophone_id not in (select house_domophone_id from houses_domophones)");
                 $n += $this->db->modify("delete from houses_entrances_cmses where house_entrance_id not in (select house_entrance_id from houses_entrances)");
                 $n += $this->db->modify("delete from houses_houses_entrances where house_entrance_id not in (select house_entrance_id from houses_entrances)");
                 $n += $this->db->modify("delete from houses_entrances where house_entrance_id not in (select house_entrance_id from houses_houses_entrances)");
