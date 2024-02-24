@@ -185,6 +185,7 @@
                 }
 
                 $db->modify("delete from core_running_processes where done is not null and coalesce(expire, 0) < " . time(), false, [ "silent" ]);
+                echo "delete from core_running_processes where done is not null and coalesce(expire, 0) < " . time() . "\n\n";
             } catch (\Exception $e) {
                 //
             }
@@ -213,7 +214,7 @@
 
         if (@$db) {
             while (true) {
-                $exists = (int)$db->get("select count(*) as exists from core_running_processes where done is not null and pid <> " . getmypid(), [], false, [ 'fieldlify', 'silent' ]);
+                $exists = (int)$db->get("select count(*) as exists from core_running_processes where done is null and pid <> " . getmypid(), [], false, [ 'fieldlify', 'silent' ]);
         
                 if (!$exists) {
                     break;
