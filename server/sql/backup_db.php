@@ -60,6 +60,10 @@
                 break;
         }
 
+        if (filesize($file) < 1024) {
+            die("backup file too short\n\n");
+        }
+
         echo "db backup complete: $file\n";
     }
 
