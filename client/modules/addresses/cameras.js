@@ -140,9 +140,6 @@
                     type: "text",
                     title: i18n("addresses.cameraName"),
                     placeholder: i18n("addresses.cameraName"),
-                    validate: v => {
-                        return $.trim(v) !== "";
-                    },
                     tab: i18n("addresses.primary"),
                 },
                 {
@@ -393,9 +390,6 @@
                         title: i18n("addresses.cameraName"),
                         placeholder: i18n("addresses.cameraName"),
                         value: camera.name,
-                        validate: v => {
-                            return $.trim(v) !== "";
-                        },
                         tab: i18n("addresses.primary"),
                     },
                     {
