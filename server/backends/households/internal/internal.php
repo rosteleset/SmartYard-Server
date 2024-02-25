@@ -1867,6 +1867,7 @@
             public function cleanup() {
                 $cameras = loadBackend("cameras");
                 $addresses = loadBackend("addresses");
+                $companies = loadBackend("companies");
 
                 $n = 0;
 
@@ -1874,8 +1875,13 @@
                     $cl = [];
 
                     $cameras = $cameras->getCameras();
-                    foreach ($cameras as $camera) {
-                        $cl[] = $camera["cameraId"];
+
+                    if ($cameras !== false) {
+                        foreach ($cameras as $camera) {
+                            $cl[] = $camera["cameraId"];
+                        }
+                    } else {
+                        return false;
                     }
 
                     $hc = $this->db->get("select camera_id from houses_cameras_houses");
@@ -1919,8 +1925,13 @@
                     $hi = [];
 
                     $houses = $addresses->getHouses();
-                    foreach ($houses as $house) {
-                        $hi[] = $house["houseId"];
+
+                    if ($houses !== false) {
+                        foreach ($houses as $house) {
+                            $hi[] = $house["houseId"];
+                        }
+                    } else {
+                        return false;
                     }
 
                     $fl = $this->db->get("select address_house_id from houses_flats");
@@ -1941,11 +1952,34 @@
                         }
                     }
 
-                    $rl = $this->db->get("select access_to as address_house_id from houses_rfids where access_type = 4");
+                    $rl = $this->db->get("select access_to as address_house_id from houses_rfids where access_type = 4 group by access_to");
                     foreach ($rl as $ri) {
                         if (!in_array($ri["address_house_id"], $hi)) {
                             $n += $this->db->modify("delete from houses_rfids where access_id = :address_house_id and access_type = 4", [
                                 "address_house_id" => $ri["address_house_id"],
+                            ]);
+                        }
+                    }
+                }
+
+                if ($companies) {
+                    $ol = [];
+
+                    $companies = $companies->getCompanies();
+
+                    if ($cameras !== false) {
+                        foreach ($cameras as $camera) {
+                            $ol[] = $camera["cameraId"];
+                        }
+                    } else {
+                        return false;
+                    }
+
+                    $rl = $this->db->get("select access_to as company_id from houses_rfids where access_type = 5 group by access_to");
+                    foreach ($rl as $ri) {
+                        if (!in_array($ri["company_id"], $ol)) {
+                            $n += $this->db->modify("delete from houses_rfids where access_id = :company_id and access_type = 5", [
+                                "company_id" => $ri["company_id"],
                             ]);
                         }
                     }
