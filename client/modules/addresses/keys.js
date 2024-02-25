@@ -135,11 +135,86 @@
     },
 
     removeKey: function (keyId, params) {
-
+        mConfirm(i18n("addresses.confirmDeleteKey", keyId), i18n("confirm"), `danger:${i18n("addresses.deleteEntrance")}`, () => {
+            DELETE("subscribers", "key", keyId).
+            done(() => {
+                message(i18n("addresses.keyWasDeleted"));
+                modules.addresses.keys.route(params);
+            }).
+            fail(FAIL).
+            fail(() => {
+                loadingDone();
+            });
+        });
     },
 
     modifyKey: function (keyId, params) {
+        loadingStart();
+        QUERY("subscribers", "keys", {
+            by: params.by ? params.by : "0",
+            query: params.query ? params.query : "0",
+        }, true).
+        fail(FAILPAGE).
+        done(result => {
+            loadingDone();
 
+            let key = false;
+
+            for (let i in result.keys) {
+                if (result.keys[i].keyId == keyId) {
+                    key = result.keys[i];
+                    break;
+                }
+            }
+    
+            if (key) {
+                cardForm({
+                    title: i18n("addresses.editKey"),
+                    footer: true,
+                    borderless: true,
+                    topApply: true,
+                    apply: i18n("edit"),
+                    fields: [
+                        {
+                            id: "keyId",
+                            type: "text",
+                            title: i18n("addresses.keyId"),
+                            readonly: true,
+                            value: key.keyId,
+                        },
+                        {
+                            id: "rfId",
+                            type: "text",
+                            title: i18n("addresses.rfId"),
+                            readonly: true,
+                            value: key.rfId,
+                        },
+                        {
+                            id: "comments",
+                            type: "text",
+                            title: i18n("addresses.comments"),
+                            placeholder: i18n("addresses.comments"),
+                            value: key.comments,
+                        },
+                    ],
+                    callback: function (result) {
+                        PUT("subscribers", "key", result.keyId, {
+                            comments: result.comments,
+                        }).
+                        done(() => {
+                            message(i18n("addresses.keyWasChanged"));
+                            modules.addresses.keys.route(params);
+                        }).
+                        fail(FAIL).
+                        fail(() => {
+                            loadingDone();
+                        });
+                    },
+                }).show();
+            } else {
+                error(i18n("addresses.keyNotFound"));
+            }
+        });
     },
 
     route: function (params) {

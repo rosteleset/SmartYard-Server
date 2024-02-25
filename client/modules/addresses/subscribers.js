@@ -398,6 +398,13 @@
                         value: key.keyId,
                     },
                     {
+                        id: "rfId",
+                        type: "text",
+                        title: i18n("addresses.rfId"),
+                        readonly: true,
+                        value: key.rfId,
+                    },
+                {
                         id: "comments",
                         type: "text",
                         title: i18n("addresses.comments"),
