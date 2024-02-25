@@ -2005,7 +2005,7 @@
                                 items: [
                                     {
                                         icon: "fas fa-key",
-                                        title: i18n("addresses.objectKeys"),
+                                        title: i18n("addresses.objectKeys", i18n("addresses.keysType4")),
                                         click: houseId => {
                                             let [ route, params, hash ] = hashParse();
                                             location.href = "?#addresses.keys&query=" + houseId + "&by=4&backStr=" + encodeURIComponent(houses[houseId]) + "&back=" + encodeURIComponent(hash.join("&"));
