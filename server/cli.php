@@ -197,6 +197,9 @@
             }
         
             if ($maintenance) {
+                echo "****************************************\n";
+                echo "*       !!! MAINTENANCE MODE !!!       *\n";
+                echo "****************************************\n\n";
                 $script_result = "maintenance mode";
                 exit(0);
             }
