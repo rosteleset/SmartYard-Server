@@ -166,7 +166,7 @@
         }
     }
 
-    function startup() {
+    function startup($skip_maintenance_check = false) {
         global $db, $params, $script_process_id, $script_parent_pid, $script_result;
 
         register_shutdown_function('shutdown');
@@ -189,19 +189,21 @@
                     'params' => $params,
             ], false, [ 'fieldlify', 'silent' ]);
         
-            $maintenance = (int)$db->get("select count(*) as maintenance from core_vars where var_name = 'maintenance'", [], false, [ 'fieldlify', 'silent' ]);
-    
             if ($already) {
                 $script_result = "already running";
                 exit(0);
             }
-        
-            if ($maintenance) {
-                echo "****************************************\n";
-                echo "*       !!! MAINTENANCE MODE !!!       *\n";
-                echo "****************************************\n\n";
-                $script_result = "maintenance mode";
-                exit(0);
+
+            if (!$skip_maintenance_check) {
+                $maintenance = (int)$db->get("select count(*) as maintenance from core_vars where var_name = 'maintenance'", [], false, [ 'fieldlify', 'silent' ]);
+    
+                if ($maintenance) {
+                    echo "****************************************\n";
+                    echo "*       !!! MAINTENANCE MODE !!!       *\n";
+                    echo "****************************************\n\n";
+                    $script_result = "maintenance mode";
+                    exit(0);
+                }
             }
         }
     }
@@ -415,7 +417,7 @@
         initDB(@$args["--skip"]);
         echo "\n";
         
-        startup();
+        startup(true);
         echo "\n";
 
         $n = clearCache(true);
