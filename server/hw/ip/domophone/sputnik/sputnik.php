@@ -43,21 +43,19 @@ class sputnik extends domophone
     {
         $this->apiCall('mutation', 'addIntercomKey', [
             'intercomID' => $this->uuid,
-            'key' => substr(implode(array_reverse(str_split($code, 2))), 0, 8), // invert and remove zeros
+            'key' => $this->flipRfid($code),
             'description' => '',
         ]);
     }
 
     public function addRfids(array $rfids)
     {
-        $keys = [];
-
-        foreach ($rfids as $rfid) {
-            $keys[] = [
+        $keys = array_map(function ($rfid) {
+            return [
                 'Description' => '',
-                'Key' => substr(implode(array_reverse(str_split($rfid, 2))), 0, 8), // invert and remove zeros
+                'Key' => $this->flipRfid($rfid),
             ];
-        }
+        }, $rfids);
 
         $this->apiCall('mutation', 'addIntercomKeys', [
             'intercomID' => $this->uuid,
@@ -187,7 +185,7 @@ class sputnik extends domophone
 
     public function deleteRfid(string $code = '')
     {
-        $this->rfidKeysToBeDeleted[] = substr(implode(array_reverse(str_split($code, 2))), 0, 8);
+        $this->rfidKeysToBeDeleted[] = $this->flipRfid($code);
     }
 
     public function getLineDiagnostics(int $apartment)
@@ -338,6 +336,13 @@ class sputnik extends domophone
             'intercomID' => $this->uuid,
             'keys' => $keys,
         ]);
+    }
+
+    protected function flipRfid(string $code): string
+    {
+        $reversedKey = implode(array_reverse(str_split($code, 2)));
+        $isSevenByteKey = substr($reversedKey, -6) !== '000000';
+        return $isSevenByteKey ? $reversedKey : substr($reversedKey, 0, 8);
     }
 
     protected function getApartments(): array
