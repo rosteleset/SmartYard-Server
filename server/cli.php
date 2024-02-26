@@ -62,6 +62,7 @@
                 [--cleanup]
                 [--init-mobile-issues-project]
                 [--update]
+                [--exit-maintenance-mode]
 
             tests:
                 [--check-mail=<your email address>]
