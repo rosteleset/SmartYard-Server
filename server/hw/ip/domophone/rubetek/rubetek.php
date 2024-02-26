@@ -36,8 +36,16 @@ abstract class rubetek extends domophone
 
     public function addRfids(array $rfids)
     {
-        foreach ($rfids as $rfid) {
-            $this->addRfid($rfid);
+        $rfidChunks = array_chunk($rfids, 400); // Cannot add more than 400 records in one request
+
+        foreach ($rfidChunks as $rfidChunk) {
+            $this->apiCall('/rfids_pack', 'POST', [
+                'rfids' => $rfidChunk,
+                'door_access' => [
+                    RubetekConst::RELAY_1_INTERNAL,
+                    RubetekConst::RELAY_2_EXTERNAL,
+                ]
+            ]);
         }
     }
 
@@ -218,13 +226,7 @@ abstract class rubetek extends domophone
         if ($code) {
             $this->apiCall("/rfids/$code", 'DELETE');
         } else {
-            // Until better times...
-            // $rfids_chunks = array_chunk($this->get_rfids(), 900);
-            // foreach ($rfids_chunks as $rfids_chunk) {
-            // $this->api_call('/rfids_apartment', 'DELETE', [ 'rfids' => $rfids_chunk ]);
-            // }
-
-            foreach ($this->getRfids() as $rfid) { // TODO: too slow
+            foreach ($this->getRfids() as $rfid) {
                 $this->deleteRfid($rfid);
             }
         }
