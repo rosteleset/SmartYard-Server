@@ -399,6 +399,11 @@
         exit(0);
     }
 
+    if (count($args) == 1 && array_key_exists("--exit-maintenance-mode", $args) && !isset($args["--exit-maintenance-mode"])) {
+        maintenance(false);
+        exit(0);
+    }
+
     startup();
 
     check_if_pid_exists();
