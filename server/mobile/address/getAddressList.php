@@ -66,7 +66,6 @@
         }
         
         $house['cameras'] = array_merge($house['cameras'], $households->getCameras("flatId", $flat['flatId']));
-        $house['cctv'] = count($house['cameras']);
 
         $flatDetail = $households->getFlat($flat['flatId']);
         foreach ($flatDetail['entrances'] as $entrance) {
@@ -84,7 +83,6 @@
             if ($e['cameraId']) {
                 $cam = $cameras->getCamera($e["cameraId"]);
                 $house['cameras'][] = $cam;
-                $house['cctv']++;
             }
             
             // TODO: проверить обработку блокировки
@@ -94,13 +92,15 @@
             }
 
             $house['doors'][$entrance['entranceId']] = $door;
-            
         }
-        
     }
 
     // конвертируем ассоциативные массивы в простые и удаляем лишние ключи
     foreach($houses as $house_key => $h) {
+        // count unique cameras
+        $tempArr = array_unique(array_column($h['cameras'], 'cameraId'));
+        $houses[$house_key]['cctv'] = count($tempArr);
+
         $houses[$house_key]['doors'] = array_values($h['doors']);
         unset( $houses[$house_key]['cameras']);
     }

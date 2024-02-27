@@ -142,6 +142,10 @@ foreach($houses as $house_key => $h) {
     }
 }
 
+// remove duplicates
+$tempArr = array_unique(array_column($ret, 'id'));
+$ret = array_values(array_intersect_key($ret, $tempArr));
+
 if (count($ret)) {
     response(200, $ret);
 } else {
