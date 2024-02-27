@@ -10,12 +10,7 @@ class SputnikCloudService extends WebHookService {
         try {
             const { device_id: deviceId, date_time: datetime, event, Data: payload } = data;
             const now = getTimestamp(new Date(datetime));
-            const msg = this.createLogMessage(payload)
 
-            //TODO: refactor sendToSyslogStorage, send this message from cloud
-            // await this.sendToSyslogStorage(now, null, deviceId, 'sputnik', "message_body" );
-
-            // console.table(data)
             switch (event) {
                 case 'intercom.talking':
                     if (payload?.reason === 'wrong_flat_number') { // Skip the wrong flat number
@@ -91,6 +86,8 @@ class SputnikCloudService extends WebHookService {
                     break;
             }
 
+            const msg = this.createLogMessage(payload, ['time']);
+
             await this.sendToSyslogStorage(
                 now,
                 null,
@@ -102,13 +99,6 @@ class SputnikCloudService extends WebHookService {
         } catch (err) {
             console.error(err.message)
         }
-    }
-
-    createLogMessage(data) {
-        return Object.entries(data)
-            .filter(([key]) => key !== 'time')
-            .map(([key, value]) => `${ key }: '${ value }'`)
-            .join(', ');
     }
 }
 

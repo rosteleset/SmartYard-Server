@@ -63,6 +63,19 @@ class WebHookService {
     }
 
     /**
+     * Create a log message based on the provided data object.
+     * @param {Object} data The data object from which to create the log message.
+     * @param {Array<string>} [exclude=[]] An optional array of keys to exclude from the log message.
+     * @returns {string} The log message generated from the data object.
+     */
+    createLogMessage(data, exclude = []) {
+        return Object.entries(data)
+            .filter(([key]) => !exclude.includes(key))
+            .map(([key, value]) => `${key}: '${value}'`)
+            .join(', ');
+    }
+
+    /**
      * Send an event message to remote storage
      * @param now timestamp
      * @param host IP address
