@@ -2,8 +2,8 @@ import { SyslogService } from "./index.js"
 import { API, mdTimer } from "../utils/index.js";
 
 class RubetekService extends SyslogService {
-    constructor(unit, config) {
-        super(unit, config);
+    constructor(unit, config, spamWords = []) {
+        super(unit, config, spamWords);
         this.gateRabbits = [];
     }
 

@@ -1,29 +1,11 @@
-import net from "net"
 import { SyslogService } from "./index.js"
 import { API, mdTimer } from "../utils/index.js"
 
-/**
- * TODO:
- *      - check feature
- *      - remove debug server
- */
-
 class QtechService extends SyslogService {
-    constructor(unit, config) {
-        super(unit, config);
+    constructor(unit, config, spamWords = []) {
+        super(unit, config, spamWords);
         this.gateRabbits = [];
         this.cmsCalls = []
-    }
-
-    filterSpamMessages(message) {
-        const qtechSpamKeywords = [
-            "Heart Beat",
-            "IP CHANGED",
-        ];
-
-        return qtechSpamKeywords.some((keyword) => {
-            return message.includes(keyword)
-        })
     }
 
     async handleSyslogMessage(now, host, msg) {
@@ -139,26 +121,6 @@ class QtechService extends SyslogService {
             await API.callFinished({date: now, ip: host});
         }
     }
-
-    /**
-     * Qtech debug server
-     * @returns {Promise<void>}
-     */
-    async startDebugServer() {
-        const socket = net.createServer((socket) => {
-            socket.on("data", async (data) => {
-                const msg = data.toString();
-                const host = socket.remoteAddress.split('f:')[1];
-
-                // implement debug logic
-            });
-        });
-
-        socket.listen(this.config.port, undefined, () => {
-            console.log(`${this.unit.toUpperCase()} debug server running on TCP port ${this.config.port}`);
-        });
-    }
-
 }
 
 export { QtechService }

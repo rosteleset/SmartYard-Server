@@ -3,10 +3,6 @@ import { WebHookService } from "./index.js";
 import { API, getTimestamp } from "../utils/index.js";
 
 class OmnyWebHookService extends WebHookService {
-    constructor(unit, config) {
-        super(unit, config)
-    }
-
     async requestListener(request, response) {
         const now = getTimestamp(new Date());
         const sourceIP = request.connection.remoteAddress.split("::ffff:")[1];

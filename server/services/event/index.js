@@ -1,4 +1,6 @@
 import config from "./config.json" assert { type: "json"}
+import spamWords from "./spamwords.json" assert { type: "json" }
+
 import {
     AkuvoxService,
     BewardService,
@@ -10,6 +12,7 @@ import {
     OmnyWebHookService,
     NonameWebHookService,
 } from "./services/index.js";
+
 import {
     SERVICE_AKUVOX,
     SERVICE_BEWARD,
@@ -40,7 +43,7 @@ const serviceConfig = hw[serviceParam];
 
 switch (serviceParam) {
     case SERVICE_BEWARD:
-        const bewardService = new BewardService(SERVICE_BEWARD, serviceConfig);
+        const bewardService = new BewardService(SERVICE_BEWARD, serviceConfig, spamWords[SERVICE_BEWARD]);
         bewardService.createSyslogServer();
         break;
 
@@ -50,18 +53,17 @@ switch (serviceParam) {
         break;
 
     case SERVICE_QTECH:
-        const qtechService = new QtechService(SERVICE_QTECH, serviceConfig);
+        const qtechService = new QtechService(SERVICE_QTECH, serviceConfig, spamWords[SERVICE_QTECH]);
         qtechService.createSyslogServer();
-        //qtechService.startDebugServer(); // Use to handle call completion events
-        break;  // SERVICE_QTECH: need tests!
+        break;
 
     case SERVICE_AKUVOX:
-        const akuvoxService = new AkuvoxService(SERVICE_AKUVOX, serviceConfig);
+        const akuvoxService = new AkuvoxService(SERVICE_AKUVOX, serviceConfig, spamWords[SERVICE_AKUVOX]);
         akuvoxService.createSyslogServer();
         break;
 
     case SERVICE_IS:
-        const isService = new IsService(SERVICE_IS, serviceConfig);
+        const isService = new IsService(SERVICE_IS, serviceConfig, spamWords[SERVICE_IS]);
         isService.createSyslogServer();
         break;
 

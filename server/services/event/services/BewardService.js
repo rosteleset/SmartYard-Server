@@ -2,43 +2,9 @@ import { SyslogService } from "./index.js";
 import { API } from  "../utils/index.js";
 
 class BewardService extends SyslogService {
-    constructor(unit, config) {
-        super(unit, config);
+    constructor(unit, config, spamWords = []) {
+        super(unit, config, spamWords);
         this.gateRabbits = [];
-    }
-
-    filterSpamMessages(msg) {
-        const bewardSpamKeywords = [
-            "RTSP",
-            "DestroyClientSession",
-            "Request: /cgi-bin/images_cgi",
-            "GetOneVideoFrame",
-            "SS_FLASH",
-            "SS_NOIPDDNS",
-            "Have Check Param Change Beg Save",
-            "Param Change Save To Disk Finish",
-            "User Mifare CLASSIC key",
-            "Exits doWriteLoop",
-            "busybox-lib: udhcpc:",
-            "ssl_connect",
-            "ipds",
-            "SS_NETTOOL_SetupNetwork",
-            "SS_VO_Init",
-            "SS_AI_Init",
-            "SS_AENC_Init",
-            "SS_ADEC_Init",
-            "Start SS",
-            "SS_VENC",
-            "SS_MEMFILE_",
-            "Task",
-            "video stream",
-            "Modify System KeepAlive",
-            "SS_VENC_InitEncoder",
-            "SSSNet",
-            "errcode",
-        ];
-
-        return bewardSpamKeywords.some(keyword => msg.includes(keyword));
     }
 
     async handleSyslogMessage(now, host, msg) {

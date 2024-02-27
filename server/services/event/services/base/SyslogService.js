@@ -6,18 +6,19 @@ const { topology } = config;
 const mode = process.env.NODE_ENV || "";
 
 class SyslogService {
-    constructor(unit, config) {
+    constructor(unit, config, spamWords = []) {
         this.unit = unit;
         this.config = config;
+        this.spamWords = spamWords;
     }
 
     /**
-     * Filter messages that do not carry a semantic load. Only production
-     * @param message
-     * @returns {boolean}
+     * Checks if a given message contains spam words.
+     * @param {string} message - The message to be checked for spam content.
+     * @returns {boolean} True if the message contains any spam words, otherwise false.
      */
-    filterSpamMessages(message) {
-        return false;
+    isSpamMessage(message) {
+        return this.spamWords.some(keyword => message.includes(keyword));
     }
 
     /**
@@ -66,7 +67,7 @@ class SyslogService {
             /**
              * Filtering spam syslog messages in production mode
              */
-            if (mode !== "development" && this.filterSpamMessages(msg)) {
+            if (mode !== "development" && this.isSpamMessage(msg)) {
                 return;
             }
 

@@ -2,35 +2,6 @@ import { SyslogService } from "./index.js";
 import { API, mdTimer } from "../utils/index.js";
 
 class AkuvoxService extends SyslogService {
-    constructor(unit, config) {
-        super(unit, config);
-    }
-
-    filterSpamMessages(msg) {
-        const akuvoxSpamKeywords = [
-            "send ftp",
-            "AKUVOX DCLIENT",
-            "Autoprovision",
-            "RFID szBuf",
-            "lighttpd",
-            "api.fcgi",
-            "fcgiserver",
-            "sipmain",
-            "RFID_TYPE_WIEGAND",
-            "netconfig",
-            "Invalid SenderSSRC",
-            "Listen",
-            "Waiting",
-            "Sending",
-            "don't support play dtmf kecode",
-            "Upload Server is empty",
-            "spk not enable now!",
-            "msg_handle"
-        ];
-
-        return akuvoxSpamKeywords.some(keyword => msg.includes(keyword));
-    }
-
     async handleSyslogMessage(now, host, msg) {
         //  Motion detection: start
         if (msg.includes("Requst SnapShot")) {

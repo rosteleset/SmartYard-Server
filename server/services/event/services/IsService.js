@@ -2,27 +2,9 @@ import { SyslogService } from "./index.js";
 import { API, mdTimer } from "../utils/index.js";
 
 class IsService extends SyslogService {
-    constructor(unit, config) {
-        super(unit, config);
+    constructor(unit, config, spamWords = []) {
+        super(unit, config, spamWords);
         this.gateRabbits = [];
-    }
-
-    filterSpamMessages(msg) {
-        const isSpamKeywords = [
-            "STM32.DEBUG",
-            "Вызов метода",
-            "Тело запроса",
-            "libre",
-            "ddns",
-            "DDNS",
-            "Загружена конфигурация",
-            "Interval",
-            "[Server]",
-            "Proguard start",
-            "UART",
-        ]
-
-        return isSpamKeywords.some(keyword => msg.includes(keyword));
     }
 
     async handleSyslogMessage(now, host, msg) {

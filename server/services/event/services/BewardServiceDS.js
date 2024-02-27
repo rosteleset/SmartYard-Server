@@ -2,10 +2,6 @@ import { BewardService } from "./index.js";
 import { API } from "../utils/index.js";
 
 class BewardServiceDS extends BewardService {
-    constructor(unit, config) {
-        super(unit, config);
-    }
-
     /**
      * @param now
      * @param host
