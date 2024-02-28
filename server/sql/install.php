@@ -43,9 +43,18 @@
             try {
                 foreach ($steps as $step) {
                     echo "\n================= $step\n\n";
-                    $sql = trim(file_get_contents("sql/$driver/$step"));
-                    echo "$sql\n";
-                    $db->exec($sql);
+                    $path = pathinfo($step);
+                    if ($path['extension'] == "sql") {
+                        $sql = trim(file_get_contents("sql/$driver/$step"));
+                        echo "$sql\n";
+                        $db->exec($sql);
+                    }
+                    if ($path['extension'] == "php") {
+                        require_once "sql/$driver/$step";
+                        if ($path['filename']($db) !== true) {
+                            throw new \Exception("error calling function {$path['filename']}");
+                        }
+                    }
                 }
             } catch (Exception $e) {
                 $db->exec("ROLLBACK");
