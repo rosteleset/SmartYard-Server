@@ -367,7 +367,6 @@
                     _id: issue.issue.issueId,
                     action: action,
                 }, true).done(r => {
-                    loadingDone();
                     if (typeof r.template == "string") {
                         if (modules.custom && typeof modules.custom[r.template] == "function") {
                             modules.custom[r.template](issue.issue, action, callback, prefferredValues, timeout);
@@ -375,6 +374,8 @@
                             error(i18n("errors.functionNotFound", r.template), i18n("error"), 30);
                         }
                     } else {
+                        loadingDone();
+
                         let fields = [];
         
                         let project;
