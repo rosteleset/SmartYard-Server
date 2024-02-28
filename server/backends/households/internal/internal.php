@@ -1497,7 +1497,7 @@
                                 "flat_id" => (int)$query,
                             ];
                             break;
-                        
+
                         case "domophoneId":
                             $addresses = loadBackend("addresses");
                             $q = "select address_house_id from houses_houses_entrances where house_entrance_id in (select house_entrance_id from houses_entrances where house_domophone_id = :domophone_id)";
@@ -1516,7 +1516,8 @@
                                 }
                             }
 
-                            $c = implode(",", array_unique($c, SORT_NUMERIC));
+                            $c = array_unique($c, SORT_NUMERIC);
+                            $c = !empty($c) ? implode(",", $c) : 'NULL';
 
                             $q = "
                                 -- type 0 (any)
