@@ -367,6 +367,7 @@
                     _id: issue.issue.issueId,
                     action: action,
                 }, true).done(r => {
+                    loadingDone();
                     if (typeof r.template == "string") {
                         if (modules.custom && typeof modules.custom[r.template] == "function") {
                             modules.custom[r.template](issue.issue, action, callback, prefferredValues, timeout);
@@ -457,7 +458,7 @@
                     }
                 }).
                 fail(FAIL).
-                always(loadingDone);
+                fail(loadingDone);
             });
         });
     },
