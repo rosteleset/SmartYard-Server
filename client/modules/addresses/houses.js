@@ -1940,7 +1940,7 @@
                                         title: i18n("addresses.keys"),
                                         click: entranceId => {
                                             let [ route, params, hash ] = hashParse();
-                                            location.href = "?#addresses.keys&query=" + houseId + "&by=3&backStr=" + encodeURIComponent(modules.addresses.houses.meta.house.houseFull + ", " + entrances[entranceId].entrance) + "&back=" + encodeURIComponent(hash.join("&"));
+                                            location.href = "?#addresses.keys&query=" + entranceId + "&by=3&backStr=" + encodeURIComponent(modules.addresses.houses.meta.house.houseFull + ", " + entrances[entranceId].entrance) + "&back=" + encodeURIComponent(hash.join("&"));
                                         },
                                     },
                                 ],
