@@ -135,7 +135,7 @@
     },
 
     removeKey: function (keyId, params) {
-        mConfirm(i18n("addresses.confirmDeleteKey", keyId), i18n("confirm"), `danger:${i18n("addresses.deleteEntrance")}`, () => {
+        mConfirm(i18n("addresses.confirmDeleteKey", keyId), i18n("confirm"), `danger:${i18n("addresses.deleteKey")}`, () => {
             DELETE("subscribers", "key", keyId).
             done(() => {
                 message(i18n("addresses.keyWasDeleted"));
