@@ -3,6 +3,7 @@
 namespace utils\SmartConfigurator\DbConfigCollector;
 
 use backends\addresses\addresses;
+use backends\configs\configs;
 use backends\households\households;
 use backends\sip\sip;
 use DateTime;
@@ -25,11 +26,6 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
      * @var DomophoneConfigurationBuilder The builder used to construct domophone configuration.
      */
     private DomophoneConfigurationBuilder $builder;
-
-    /**
-     * @var households Households backend object.
-     */
-    private households $householdsBackend;
 
     /**
      * @var array Array of entrances associated with domophone.
@@ -57,7 +53,6 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
     {
         $this->appConfig = $appConfig;
         $this->domophoneData = $domophoneData;
-        $this->householdsBackend = $householdsBackend;
 
         $this->entrances = $householdsBackend->getEntrances('domophoneId', [
             'domophoneId' => $domophoneData['domophoneId'],
@@ -81,10 +76,11 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
 
         if ($this->mainEntrance) { // If the domophone is linked to the entrance
             $this
-                ->addApartmentsRfidsAndGates()
+                ->addApartmentsAndGates()
                 ->addCmsLevels()
                 ->addCmsModel()
                 ->addMatrix()
+                ->addRfids()
                 ->addTickerText()
             ;
         }
@@ -93,22 +89,25 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
     }
 
     /**
-     * Add apartments, RFID keys and gate links to the domophone configuration.
+     * Add apartments and gate links to the domophone configuration.
      *
      * @return self
      * @todo: ugly but it works
      */
-    private function addApartmentsRfidsAndGates(): self
+    private function addApartmentsAndGates(): self
     {
         /** @var addresses $addresses */
         $addresses = loadBackend('addresses');
+
+        /** @var households $households */
+        $households = loadBackend('households');
 
         $domophoneId = $this->domophoneData['domophoneId'];
         $offset = 0; // For shared domophones that must contain apartments from several houses
         $gateLinks = [];
 
         foreach ($this->entrances as $entrance) {
-            $flatsRaw = $this->householdsBackend->getFlats('houseId', $entrance['houseId']);
+            $flatsRaw = $households->getFlats('houseId', $entrance['houseId']);
             $flats = array_column($flatsRaw, null, 'flat');
             ksort($flats);
 
@@ -164,12 +163,6 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
                         !$this->entranceIsShared && $flat['cmsEnabled'],
                         $apartmentLevels,
                     );
-
-                    // Getting RFID keys for flat
-                    $keys = $this->householdsBackend->getKeys('flatId', $flat['flatId']);
-                    foreach ($keys as $key) {
-                        $this->builder->addRfid($key['rfId']);
-                    }
                 }
 
                 if ($flat['flat'] == $lastFlat) {
@@ -211,7 +204,9 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
      */
     private function addCmsModel(): self
     {
+        /** @var configs $configs */
         $configs = loadBackend('configs');
+
         $cmses = $configs->getCMSes();
         $cmsFile = $this->mainEntrance['cms'];
         $this->builder->addCmsModel($cmses[$cmsFile]['model'] ?? '');
@@ -248,8 +243,11 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
      */
     private function addMatrix(): self
     {
+        /** @var households $households */
+        $households = loadBackend('households');
+
         $mainEntranceId = $this->mainEntrance['entranceId'];
-        $matrix = $this->householdsBackend->getCms($mainEntranceId);
+        $matrix = $households->getCms($mainEntranceId);
 
         foreach ($matrix as $cell) {
             $this->builder->addMatrix(...array_values($cell));
@@ -271,6 +269,24 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
         $timezone = $this->findTimezone();
 
         $this->builder->addNtp($server, $port, $timezone);
+        return $this;
+    }
+
+    /**
+     * Add RFID keys to the domophone configuration.
+     *
+     * @return self
+     */
+    private function addRfids(): self
+    {
+        /** @var households $households */
+        $households = loadBackend('households');
+
+        $keys = $households->getKeys('domophoneId', $this->domophoneData['domophoneId']);
+        foreach ($keys as $key) {
+            $this->builder->addRfid($key['rfId']);
+        }
+
         return $this;
     }
 
@@ -342,7 +358,7 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
      */
     private function findTimezone(): string
     {
-        /** @var Addresses $addresses */
+        /** @var addresses $addresses */
         $addresses = loadBackend('addresses');
 
         $house = $addresses->getHouse($this->mainEntrance['houseId'] ?? null);
