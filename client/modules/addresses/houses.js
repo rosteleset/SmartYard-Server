@@ -789,6 +789,13 @@
                     type: "text",
                     title: i18n("addresses.openCode"),
                     placeholder: i18n("addresses.openCode"),
+                    validate: (v) => {
+                        if (!new RegExp(/^\d{5}$|^$/).test(v)){
+                            error(i18n("addresses.openCodePattern"))
+                        } else {
+                            return true
+                        }
+                    }
                 },
                 {
                     id: "plog",
@@ -1451,6 +1458,13 @@
                         title: i18n("addresses.openCode"),
                         placeholder: i18n("addresses.openCode"),
                         value: flat.openCode,
+                        validate: (v) => {
+                            if (!new RegExp(/^\d{5}$|^$/).test(v)){
+                                error(i18n("addresses.openCodePattern"))
+                            } else {
+                                return true
+                            }
+                        }
                     },
                     {
                         id: "autoOpen",
