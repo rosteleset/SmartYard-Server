@@ -186,6 +186,6 @@ syslog_servers:
   rubetek:
   - syslog.udp:127.0.0.1:45456
   sputnik:
-  - https://your-http(s)-server:45457/events/sputnik
+  - https://example.com:55457/smart-yard
 ntp_servers:
 - ntp:<-- your ntp server ip here -->:123
