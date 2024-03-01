@@ -6,7 +6,7 @@
 
     doAddSubscriber: function (subscriber) {
         subscriber.message = {
-            title: i18n("addresses.addFlatTtitle"),
+            title: i18n("addresses.addFlatTitle"),
             msg: i18n("addresses.addFlatMsg"),
         }
         loadingStart();
