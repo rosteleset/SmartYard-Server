@@ -24,8 +24,8 @@ function cardTable(params) {
         }
         h += '</td>';
         if (params.title.filter) {
-            h += '<td>';
             filterInput = md5(guid());
+            h += '<td>';
             h += `<div class="card-tools d-none d-md-block">`;
             h += `<form id="${filterInput}-form" autocomplete="off" onsubmit="return false;" action="">`;
             h += `<input autocomplete="false" name="${filterInput}-hidden" type="text" style="display:none;">`;
@@ -40,8 +40,8 @@ function cardTable(params) {
             h += '</td>';
         }
         if (params.title.altButton) {
-            h += '<td>';
             altButton = md5(guid());
+            h += '<td>';
             let icon = params.title.altButton.icon?params.title.altButton.icon:"far fa-fw fa-times-circle";
             h += `<button id="${altButton}" type="button" class="btn btn-info btn-sm ml-2" title="${params.title.altButton.caption}"><i class="fa-fw ${icon}"></i></button>`;
             h += '</td>';
