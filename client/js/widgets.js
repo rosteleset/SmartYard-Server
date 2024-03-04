@@ -329,5 +329,10 @@ setInterval(() => {
             window.onbeforeunload = null;
             $(".saveButton").removeClass("text-primary");
         }
-    } 
+    }
+    
+    $("form").off("submit").on("submit", ev => {
+        ev.preventDefault();
+        return false;
+    });
 }, 1000);
