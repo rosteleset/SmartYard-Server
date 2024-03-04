@@ -136,7 +136,7 @@
         modules.asterisk.holdedSession = false;
         modules.asterisk.registered = false;
         setTimeout(() => {
-            ua.register();
+            modules.asterisk.ua.register();
         }, 5000);
         modules.asterisk.updateButton();
     },
