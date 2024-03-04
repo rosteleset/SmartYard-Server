@@ -10,6 +10,7 @@
     require_once "sql/backup_db.php";
     require_once "sql/install_clickhouse.php";
     require_once "sql/install.php";
+    require_once "sql/install_tt_mobile_template.php";
     require_once "utils/autoconfigure_device.php";
     require_once "utils/autoconfigure_domophone.php";
     require_once "utils/checkint.php";
@@ -63,6 +64,7 @@
                 [--init-mobile-issues-project]
                 [--update]
                 [--exit-maintenance-mode]
+                [--init-tt-mobile-template]
 
             tests:
                 [--check-mail=<your email address>]
@@ -402,6 +404,16 @@
 
     if (count($args) == 1 && array_key_exists("--exit-maintenance-mode", $args) && !isset($args["--exit-maintenance-mode"])) {
         maintenance(false);
+        exit(0);
+    }
+
+    if (count($args) == 1 && array_key_exists("--init-tt-mobile-template", $args) && !isset($args["--init-tt-mobile-template"])) {
+        try {
+            installTTMobileTemplate();
+        } catch (Exception $e) {
+            echo $e->getMessage() . "\n\n";
+            exit(1);
+        }
         exit(0);
     }
 

@@ -83,4 +83,8 @@
             $response["activeTab"] = $config["mobile"]["active_tab"];
         }
 
+        if (@$config["mobile"]["issues_version"]) {
+            $response["issuesVersion"] = $config["mobile"]["issues_version"];
+        }
+
     response(200, $response);

@@ -1,23 +1,24 @@
 <?php
 
 /**
- * @api {post} /issues/create создать заявку
+ * @api {post} /issues/createV2 создать заявку
  * @apiDescription **[метод готов]**
- *
- * в cf[11841] всегда (принудительно) прописывается "$userPhone"
- *
- * в cf[11947] всегда (принудительно) прописывается "11208"
- *
- * в cf[11840] всегда (принудительно) прописывается date('d.m.y H:i')
  *
  * @apiVersion 1.0.0
  * @apiGroup Issues
  *
  * @apiHeader {String} authorization токен авторизации
  *
- * @apiParam {Object} issue заявка
- * @apiParam {Object} [customFields] дополнительные поля
- * @apiParam {String[]} [actions] действия после создания
+ * @apiParam {String="requestCallback","requestFragment","removeAddress","connectServicesNoCommon","connectServicesHasCommon","connectServicesNoNetwork","requestQRCodeOffice","requestQRCodeCourier","requestCredentials"} type тип заявки
+ * @apiParam {String} [userName] ФИО
+ * @apiParam {String} [inputAddress] адрес, введённый пользователем
+ * @apiParam {String} [services] список услуг
+ * @apiParam {String} [comments] комментарий к заявке
+ * @apiParam {String} [cameraId] идентификатор камеры
+ * @apiParam {String} [cameraName] название камеры
+ * @apiParam {String} [fragmentDate] дата
+ * @apiParam {String} [fragmentTime] время
+ * @apiParam {String} [fragmentDuration] длительность фрагмента в минутах
  *
  * @apiSuccess {String} - созданная заявка
  *
