@@ -1271,8 +1271,8 @@
             if (s) {
                 let i = new RegExp("^[a-zA-Z]{2,}-[0-9]{1,}$");
                 if (i.test(s)) {
-                    modules.tt.issue.viewIssue(s.toUpperCase());
-//                    window.location.href = "?#tt&issue=" + s.toUpperCase() + "&_=" + Math.random();
+//                    modules.tt.issue.viewIssue(s.toUpperCase());
+                    window.location.href = "?#tt&issue=" + s.toUpperCase() + "&_=" + Math.random();
                 } else {
                     modules.tt.selectFilter("#search", 0, modules.tt.defaultIssuesPerPage, s);
                 }

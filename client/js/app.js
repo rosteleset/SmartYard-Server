@@ -20,6 +20,8 @@ var currentAceEditor = false;
 var currentAceEditorOriginalValue = false;
 
 function hashChange() {
+    console.log(window.location.href);
+
     let [ route, params, hash ] = hashParse();
 
     if (hash !== lastHash) {
