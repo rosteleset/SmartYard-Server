@@ -33,7 +33,7 @@
             callback: function (result) {
                 loadingStart();
                 POST("tt", "project", false, {
-                    acronym: result.acronym,
+                    acronym: result.acronym.toUpperCase(),
                     project: result.project,
                 }).
                 fail(FAIL).
