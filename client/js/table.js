@@ -27,7 +27,7 @@ function cardTable(params) {
             h += '<td>';
             filterInput = md5(guid());
             h += `<div class="card-tools d-none d-md-block">`;
-            h = `<form id="${filterInput}-form" autocomplete="off" onsubmit="return false;" action="">`;
+            h += `<form id="${filterInput}-form" autocomplete="off" onsubmit="return false;" action="">`;
             h += `<input autocomplete="false" name="${filterInput}-hidden" type="text" style="display:none;">`;
             h += `<div class="input-group input-group-sm" style="flex-wrap: nowrap!important;">`;
             h += `<input id="${filterInput}" type="text" class="form-control table-search-input" style="width: 200px!important;" placeholder="${i18n("filter")}">`;
