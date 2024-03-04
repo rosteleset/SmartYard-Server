@@ -8,6 +8,15 @@
     {
         class internal extends queue
         {
+            private const RFID_ACCESS_TYPES = [
+                0 => 'all',
+                1 => 'subscriber',
+                2 => 'flat',
+                3 => 'entrance',
+                4 => 'house',
+                5 => 'company',
+            ];
+
             private array $tasks = [
                 "minutely" => [
                     "autoconfigureDevices",
@@ -38,10 +47,18 @@
                     case "entrance":
                     case "flat":
                     case "subscriber":
+                        $domophones = $households->getDomophones($objectType, $objectId);
+                        break;
+
                     case "key":
-                        if ($households) {
-                            $domophones = $households->getDomophones($objectType, $objectId);
-                        }
+                        $rfidQuery = "select access_type, access_to from houses_rfids where house_rfid_id = $objectId";
+
+                        [
+                            'access_type' => $accessType,
+                            'access_to' => $accessTo,
+                        ] = $this->db->get($rfidQuery, false, false, ['singlify']);
+
+                        $domophones = $households->getDomophones(self::RFID_ACCESS_TYPES[$accessType], $accessTo);
                         break;
                 }
 
