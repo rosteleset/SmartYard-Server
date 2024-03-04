@@ -27,14 +27,14 @@ function cardTable(params) {
             h += '<td>';
             filterInput = md5(guid());
             h += `<div class="card-tools d-none d-md-block">`;
-            h += '<form autocomplete="off">';
+//            h += '<form autocomplete="off">';
             h += `<div class="input-group input-group-sm" style="flex-wrap: nowrap!important;">`;
             h += `<input id="${filterInput}" type="text" class="form-control table-search-input" style="width: 200px!important;" placeholder="${i18n("filter")}">`;
             h += `<div class="input-group-append">`;
             h += `<button type="submit" class="btn btn-default" id="${filterInput}-search-button"><i class="fas fa-filter"></i></button>`;
             h += `</div>`;
             h += `</div>`;
-            h += '</form>';
+//            h += '</form>';
             h += `</div>`;
             h += '</td>';
         }
