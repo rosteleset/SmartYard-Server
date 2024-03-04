@@ -1217,7 +1217,7 @@
                 }
             }
             rtd += `</select></div>`;
-            rtd += '<form autocomplete="off">';
+            rtd += '<form autocomplete="off" onsubmit="return false;">';
             rtd += `<div class="input-group input-group-sm ${cog} ttSearchInputGroup">`;
             rtd += `<input id="ttSearch" class="form-control" type="search" aria-label="Search" autocomplete="off"><div class="input-group-append"><button class="btn btn-default" id="ttSearchButton" title="${i18n("tt.search")}"><i class="fas fa-search"></i></button></div>`;
             rtd += `</div>`;
