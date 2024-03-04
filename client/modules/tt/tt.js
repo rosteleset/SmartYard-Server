@@ -1257,9 +1257,11 @@
             $("#ttProjectSelect").css("width", $("#ttSearch").parent().css("width"));
         }
 
-        $("#ttSearch").off("keypress").on("keypress", function (e) {
+        $("#ttSearch").off("keypress").on("keypress", ev => {
             if (e.keyCode == 13) {
                 $("#ttSearchButton").click();
+                ev.preventDefault();
+                return false;
             }
         });
 
