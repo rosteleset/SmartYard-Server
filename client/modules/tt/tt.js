@@ -1258,7 +1258,7 @@
         }
 
         $("#ttSearch").off("keypress").on("keypress", ev => {
-            if (e.keyCode == 13) {
+            if (ev.keyCode == 13) {
                 $("#ttSearchButton").click();
                 ev.preventDefault();
                 return false;
