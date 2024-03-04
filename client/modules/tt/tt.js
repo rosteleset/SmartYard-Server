@@ -1271,7 +1271,7 @@
             if (s) {
                 let i = new RegExp("^[a-zA-Z]{2,}-[0-9]{1,}$");
                 if (i.test(s)) {
-                    window.location.href = "/?#tt&issue=" + i.toUpperCase();
+                    window.location.href = "/?#tt&issue=" + s.toUpperCase();
                 } else {
                     modules.tt.selectFilter("#search", 0, modules.tt.defaultIssuesPerPage, s);
                 }
