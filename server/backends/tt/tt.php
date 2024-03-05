@@ -2030,7 +2030,7 @@
              * @return mixed
              */
             public function printExec($id, $data) {
-                error_log(print_r($data, true));
+                error_log(print_r($id, true));
                 
                 $tmp = md5(time() . rand());
 
