@@ -21,9 +21,6 @@
         "talk_me_domain": "<!-- put your talkMe chat domain id here --!>",
         "talk_me_token": "<!-- put your talkMe chat rest Api Token here --!>",
         "phonePattern": "7 (###) ###-##-##",
-        "tt_project": "TDM",
-        "tt_workflow": "mobile",
-        "tt_user": "mobile",
         "time_zone": "Europe/Moscow",
         "guest_access": "turnOnOnly",
         "cctv_view": "map",
@@ -206,13 +203,6 @@
             "mqtt": "mqtt://127.0.0.1:1883",
             "username": "rbt",
             "password": "<!-- your mosquitto password here --!>"
-        },
-
-        "issue_adapter": {
-            "backend": "lanta",
-            "tt_url": "<!-- your tt url here --!>",
-            "tt_token": "<!-- your tt bearer token here --!>",
-            "anti_spam_interval": "<!-- your minimum interval in seconds which permits creating similar issue (hint 86400 - one day) --!>"
         },
 
         "queue": {

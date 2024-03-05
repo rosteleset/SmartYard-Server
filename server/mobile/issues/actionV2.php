@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @api {post} /issues/comment оставить комментарий в заявке
+ * @api {post} /issues/actionV2 выполнить переход
  * @apiDescription ***нет проверки на принадлежность заявки именно этому абоненту***
  * @apiVersion 1.0.0
  * @apiGroup Issues
@@ -9,7 +9,8 @@
  * @apiHeader {String} authorization токен авторизации
  *
  * @apiParam {String} key номер заявки
- * @apiParam {String} comment комментарий
+ * @apiParam {String="close","changeQRDeliveryType"} action действие
+ * @apiParam {String="office","courier"} [deliveryType] способ доставки
  *
  * @apiErrorExample Ошибки
  * 422 неверный формат данных
@@ -20,16 +21,10 @@ auth();
 
 $adapter = loadBackend('issue_adapter');
 if (!$adapter)
-    response();
+    response(417, false, false, "Не удалось изменить заявку.");
 
-$adapter->commentIssue(@$postdata['key'], @$postdata['comment']);
-
-response();
-
-/*
-jira_require();
-
-$jiraSoap->addComment($jiraAuth, @$postdata['key'], [ 'body' => @$postdata['comment'] ]);
+$result = $adapter->actionIssue($postdata);
+if ($result === false)
+    response(417, false, false, "Не удалось изменить заявку.");
 
 response();
-*/

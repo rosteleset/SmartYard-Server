@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @api {post} /issues/comment оставить комментарий в заявке
+ * @api {post} /issues/commentV2 оставить комментарий в заявке
  * @apiDescription ***нет проверки на принадлежность заявки именно этому абоненту***
  * @apiVersion 1.0.0
  * @apiGroup Issues
@@ -25,11 +25,3 @@ if (!$adapter)
 $adapter->commentIssue(@$postdata['key'], @$postdata['comment']);
 
 response();
-
-/*
-jira_require();
-
-$jiraSoap->addComment($jiraAuth, @$postdata['key'], [ 'body' => @$postdata['comment'] ]);
-
-response();
-*/

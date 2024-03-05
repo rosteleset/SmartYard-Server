@@ -2,7 +2,7 @@
 
 /**
  * @api {post} /issues/action выполнить переход
- * @apiDescription ***нет проверки на пренадлежность заявки именно этому абоненту***
+ * @apiDescription ***нет проверки на принадлежность заявки именно этому абоненту***
  * @apiVersion 1.0.0
  * @apiGroup Issues
  *
@@ -19,37 +19,14 @@
  * 417 ожидание не удалось
  */
 
-function actionIssue($adapter, $issueId, $action, $data)
-{
-    if ($action === "Jelly.Закрыть авто")
-        return $adapter->closeIssue($issueId)[0] ?? false;
-
-    if ($action === "Jelly.Способ доставки") {
-        $is_courier = true;
-        foreach ($data as $cf) {
-            if ($cf['number'] === '10941' && $cf['value'] !== 'Курьер')
-                $is_courier = false;
-        }
-
-        if (!$is_courier)
-            return $adapter->closeIssue($issueId)[0] ?? false;
-
-        return true;
-    }
-
-    return false;
-}
-
 auth();
 
 $adapter = loadBackend('issue_adapter');
-actionIssue($adapter, @$postdata['key'], @$postdata['action'], @$postdata['customFields']);
+if (!$adapter)
+    response(417, false, false, "Не удалось изменить заявку.");
+
+$result = $adapter->actionIssue($postdata);
+if ($result === false)
+    response(417, false, false, "Не удалось изменить заявку.");
+
 response();
-
-/*
-jira_require();
-
-jira_action(@$postdata['key'], @$postdata['action'], @$postdata['customFields']);
-
-response();
-*/

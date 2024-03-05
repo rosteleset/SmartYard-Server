@@ -1,5 +1,7 @@
 <?php
 
+// works with the first(default) version of issues
+
 namespace backends\issue_adapter {
 
     class lanta extends issue_adapter {
@@ -23,7 +25,7 @@ namespace backends\issue_adapter {
             }
         */
 
-        public function createIssueForDVRFragment($phone, $description, $camera_id, $datetime, $duration, $comment) {
+        private function createIssueForDVRFragment($phone, $description, $camera_id, $datetime, $duration, $comment) {
             /*
              {
                 "project": "RTL",
@@ -71,7 +73,7 @@ namespace backends\issue_adapter {
                 return ['isNew' => true, 'issueId' => $issue['id']];
         }
 
-        public function createIssueCallback($phone)
+        private function createIssueCallback($phone)
         {
             $prev_issue = $this->getLastOpenedIssue($phone, 9005, $this->config["backends"]["issue_adapter"]["anti_spam_interval"]);
             if ($prev_issue !== false)
@@ -105,7 +107,7 @@ namespace backends\issue_adapter {
                 return ['isNew' => true, 'issueId' => $issue['id']];
         }
 
-        public function createIssueForgotEverything($phone)
+        private function createIssueForgotEverything($phone)
         {
             $prev_issue = $this->getLastOpenedIssue($phone, 9005, $this->config["backends"]["issue_adapter"]["anti_spam_interval"]);
             if ($prev_issue !== false)
@@ -139,7 +141,7 @@ namespace backends\issue_adapter {
                 return ['isNew' => true, 'issueId' => $issue['id']];
         }
 
-        public function createIssueConfirmAddress($phone, $description, $name, $address, $lat, $lon)
+        private function createIssueConfirmAddress($phone, $description, $name, $address, $lat, $lon)
         {
             $params = $this->extractValuesForConfirmAddress($description);
             $name = $params['name'] ?? "";
@@ -165,7 +167,7 @@ namespace backends\issue_adapter {
             return $this->createLantaIssue($lat, $lon, $content);
         }
 
-        public function createIssueDeleteAddress($phone, $description, $name, $address, $lat, $lon, $reason)
+        private function createIssueDeleteAddress($phone, $description, $name, $address, $lat, $lon, $reason)
         {
             $prev_issue = $this->getLastOpenedIssue($phone, 9005, $this->config["backends"]["issue_adapter"]["anti_spam_interval"]);
             if ($prev_issue !== false)
@@ -191,7 +193,7 @@ namespace backends\issue_adapter {
             return $this->createLantaIssue($lat, $lon, $content);
         }
 
-        public function createIssueUnavailableServices($phone, $description, $name, $address, $lat, $lon, $services)
+        private function createIssueUnavailableServices($phone, $description, $name, $address, $lat, $lon, $services)
         {
             $prev_issue = $this->getLastOpenedIssue($phone, 9001, $this->config["backends"]["issue_adapter"]["anti_spam_interval"]);
             if ($prev_issue !== false)
@@ -520,6 +522,65 @@ namespace backends\issue_adapter {
             ])), true);
 
             return $result['issues']['issues'][0] ?? false;
+        }
+
+        public function createIssue($phone, $data)
+        {
+            $description = $data['issue']['description'];
+            $summary = $data['issue']['summary'];
+
+            if (strpos($description, 'Обработать запрос на добавление видеофрагмента из архива видовой видеокамеры') !== false) {
+                return $this->createIssueForDVRFragment($phone, $description, null, null, null, null);
+            } elseif (strpos($summary, 'Авто: Звонок с приложения') !== false) {
+                if (strpos($description, 'Выполнить звонок клиенту по запросу с приложения') !== false
+                    || strpos($description, 'Выполнить звонок клиенту по запросу из приложения') !== false)
+                    return $this->createIssueCallback($phone);
+                elseif (strpos($description, 'Выполнить звонок клиенту для напоминания номера договора') !== false)
+                    return $this->createIssueForgotEverything($phone);
+            } elseif (strpos($description, 'Подготовить конверт') !== false) {
+                $lat = $data['customFields']['10743'];
+                $lon = $data['customFields']['10744'];
+                return $this->createIssueConfirmAddress($phone, $description, null, null, $lat, $lon);
+            } elseif (strpos($description, 'Удаление адреса') !== false) {
+                $lat = $data['customFields']['10743'];
+                $lon = $data['customFields']['10744'];
+                return $this->createIssueDeleteAddress($phone, $description, null, null, $lat, $lon, null);
+            } elseif (strpos($description, 'Список подключаемых услуг') !== false
+                && strpos($description, 'Требуется подтверждение адреса') === false) {
+                $lat = $data['customFields']['10743'];
+                $lon = $data['customFields']['10744'];
+                return $this->createIssueUnavailableServices($phone, $description, null, null, $lat, $lon, null);
+            } elseif (strpos($description, 'Выполнить звонок клиенту') !== false) {
+                $lat = $data['customFields']['10743'];
+                $lon = $data['customFields']['10744'];
+                return $this->createIssueAvailableWithoutSharedServices($phone, $description, null, null, $lat, $lon, null);
+            }
+
+            return false;
+        }
+
+        public function actionIssue($data)
+        {
+            $issueId = @$data['key'];
+            $action = @$data['action'];
+            $customFields = @$data['customFields'];
+            if ($action === "Jelly.Закрыть авто")
+                return $this->closeIssue($issueId)[0] ?? false;
+
+            if ($action === "Jelly.Способ доставки") {
+                $is_courier = true;
+                foreach ($customFields as $cf) {
+                    if ($cf['number'] === '10941' && $cf['value'] !== 'Курьер')
+                        $is_courier = false;
+                }
+
+                if (!$is_courier)
+                    return $this->closeIssue($issueId)[0] ?? false;
+
+                return true;
+            }
+
+            return false;
         }
     }
 }

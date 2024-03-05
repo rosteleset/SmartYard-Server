@@ -1,10 +1,9 @@
 <?php
 
 /**
- * @api {post} /issues/listConnect получить список заявок на подключение
+ * @api {post} /issues/listConnectV2 получить список заявок на подключение
  * @apiDescription **[метод готов]**
  *
- * cf[11841]="$userPhone" and cf[10011]=-1 and Status!="Выполнено" and Status!="Закрыто"
  * @apiVersion 1.0.0
  * @apiGroup Issues
  *
@@ -15,7 +14,6 @@
  * @apiSuccess {String} [-.houseId] идентификатор дома
  * @apiSuccess {String} [-.address] адрес
  * @apiSuccess {String="t","f"} -.courier доставка курьером
- * @apiSuccess {String} [-.services] список подключаемых услуг
  *
  * @apiErrorExample Ошибки
  * 422 неверный формат данных

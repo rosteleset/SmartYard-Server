@@ -862,15 +862,15 @@
                               ) order by house_domophone_id";
                         break;
 
-                    case "key":
+                    case "company":
                         $query = (int)$query;
 
                         $q = "select * from houses_domophones where house_domophone_id in (
-                                select house_domophone_id from houses_entrances where house_entrance_id in (
-                                  select house_entrance_id from houses_entrances_flats where house_flat_id in (
-                                    select access_to from houses_rfids where house_rfid_id = $query and access_type = 2
-                                  )
-                                ) group by house_domophone_id
+	                            select house_domophone_id from houses_entrances where house_entrance_id in (
+		                          select house_entrance_id from houses_houses_entrances where address_house_id in (
+			                        select address_house_id from addresses_houses where company_id = $query
+		                          )
+	                            ) group by house_domophone_id
                               ) order by house_domophone_id";
                         break;
                 }
