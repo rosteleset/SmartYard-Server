@@ -2040,7 +2040,7 @@
                 }
 
                 foreach ($data as $id => &$value) {
-                    $value = (string)$value;
+                    $data[$i] = (string)$value;
                 }
 
                 $path = rtrim(@$this->config["document_builder"]["tmp"]?:"/tmp/print", "/");
