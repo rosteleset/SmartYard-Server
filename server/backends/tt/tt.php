@@ -2039,9 +2039,9 @@
                     return false;
                 }
 
-                foreach ($data as $id => &$value) {
-                    $data[$i] = (string)$value;
-                }
+//                foreach ($data as $id => &$value) {
+//                    $data[$i] = (string)$value;
+//                }
 
                 $path = rtrim(@$this->config["document_builder"]["tmp"]?:"/tmp/print", "/");
                 $bin = @$this->config["document_builder"]["bin"]?:"/opt/onlyoffice/documentbuilder/docbuilder";
