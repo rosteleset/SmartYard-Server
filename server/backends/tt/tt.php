@@ -2039,6 +2039,10 @@
                     return false;
                 }
 
+                foreach ($data as $id => &$value) {
+                    $value = (string)$value;
+                }
+
                 $path = rtrim(@$this->config["document_builder"]["tmp"]?:"/tmp/print", "/");
                 $bin = @$this->config["document_builder"]["bin"]?:"/opt/onlyoffice/documentbuilder/docbuilder";
                 $user = @$this->config["document_builder"]["www_user"]?:"www-data";
