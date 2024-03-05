@@ -2030,7 +2030,6 @@
              * @return mixed
              */
             public function printExec($id, $data) {
-                error_log("111");
                 $tmp = md5(time() . rand());
 
                 $print = $this->getPrint($id);
@@ -2039,8 +2038,6 @@
                     setLastError("printNotFound");
                     return false;
                 }
-
-                error_log("222");
 
                 foreach ($data as $i => $v) {
                     $data[$i] = (string)$v;
@@ -2051,16 +2048,12 @@
                 $user = @$this->config["document_builder"]["www_user"]?:"www-data";
                 $group = @$this->config["document_builder"]["www_group"]?:"www-data";
 
-                error_log("333");
-
                 if (!is_dir($path)) {
                     mkdir($path);
                     chmod($path, 0775);
                     @chown($path, $user);
                     @chgrp($path, $group);
                 }
-
-                error_log("444");
 
                 $template = @$this->printGetTemplate($id);
                 $formatter = @$this->printGetFormatter($id);
@@ -2070,8 +2063,6 @@
                     return false;
                 }
 
-                error_log("555");
-
                 if ($template) {
                     $templateExt = explode(".", $template["name"]);
                     $templateExt = $templateExt[count($templateExt) - 1];
@@ -2079,8 +2070,6 @@
                     file_put_contents($templateName, $template["body"]);
                     $formatter = str_replace('${templateName}', $templateName, $formatter);
                 }
-
-                error_log("666");
 
                 $outFile = "$path/$tmp-out.{$print["extension"]}";
 
@@ -2091,8 +2080,6 @@
                 $formatter = "var data = " . json_encode($data). ";\n\n" . $formatter;
 
                 file_put_contents($path . "/" . $tmp . "-bld.docbuilder", $formatter);
-
-                error_log("777");
 
                 $log = [];
                 exec("$bin $path/$tmp-bld.docbuilder 2>&1", $log);
