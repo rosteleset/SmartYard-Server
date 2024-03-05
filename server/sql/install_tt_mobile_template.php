@@ -59,9 +59,9 @@ function installTTMobileTemplate(): void
     if ($workflow_body === false)
         throw new Exception("Error reading *.lua file: " . error_get_last()['message']);
 
-    $filter_body = @file_get_contents("sql/tt_mobile_template/tt_filter_all.lua");
+    $filter_body = @file_get_contents("sql/tt_mobile_template/tt_filter_all.json");
     if ($filter_body === false)
-        throw new Exception("Error reading *.lua file: " . error_get_last()['message']);
+        throw new Exception("Error reading *.json file: " . error_get_last()['message']);
 
     $tt = loadBackend("tt");
     $tt->putWorkflow("Mobile", $workflow_body);
