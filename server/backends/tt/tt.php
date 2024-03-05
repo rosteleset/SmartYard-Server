@@ -2043,7 +2043,7 @@
                 error_log("222");
 
                 foreach ($data as $id => &$value) {
-                    $data[$i] = (string)$value;
+                    $data[$id] = (string)$value;
                 }
 
                 $path = rtrim(@$this->config["document_builder"]["tmp"]?:"/tmp/print", "/");
