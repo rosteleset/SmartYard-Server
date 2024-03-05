@@ -2042,7 +2042,7 @@
 
                 error_log("222");
 
-                foreach ($data as $id => &$value) {
+                foreach ($data as $id => $value) {
                     $data[$id] = (string)$value;
                 }
 
