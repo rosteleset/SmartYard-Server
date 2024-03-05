@@ -579,7 +579,7 @@
                                 nowrap: true,
                             },
                             {
-                                data: list[i].lastSeen,
+                                data: list[i].lastSeen ? ttDate(list[i].lastSeen) : "",
                                 nowrap: true,
                             },
                             {

@@ -64,7 +64,7 @@
                                     nowrap: true,
                                 },
                                 {
-                                    data: ttDate(result.keys[i].lastSeen),
+                                    data: result.keys[i].lastSeen ? ttDate(result.keys[i].lastSeen) : "&nbsp;",
                                     nowrap: true,
                                 },
                                 {
