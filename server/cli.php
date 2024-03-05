@@ -7,10 +7,10 @@
     $cli = true;
     $cliError = false;
 
-    require_once "sql/backup_db.php";
-    require_once "sql/install_clickhouse.php";
-    require_once "sql/install.php";
-    require_once "sql/install_tt_mobile_template.php";
+    require_once "data/backup_db.php";
+    require_once "data/install_clickhouse.php";
+    require_once "data/install.php";
+    require_once "data/install_tt_mobile_template.php";
     require_once "utils/autoconfigure_device.php";
     require_once "utils/autoconfigure_domophone.php";
     require_once "utils/checkint.php";

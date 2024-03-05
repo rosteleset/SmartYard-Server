@@ -49,17 +49,17 @@ function installTTMobileTemplate(): void
     if ($driver !== "pgsql")
         throw new Exception("This template can only be installed on a PostgreSQL database.");
 
-    $sql = @file_get_contents("sql/tt_mobile_template/tt_mobile_template.sql");
+    $sql = @file_get_contents("data/tt_mobile_template/tt_mobile_template.sql");
     if ($sql === false) {
         throw new Exception("Error reading *.sql file: " . error_get_last()['message']);
     }
     $db->exec($sql);
 
-    $workflow_body = @file_get_contents("sql/tt_mobile_template/tt_mobile_workflow.lua");
+    $workflow_body = @file_get_contents("data/tt_mobile_template/tt_mobile_workflow.lua");
     if ($workflow_body === false)
         throw new Exception("Error reading *.lua file: " . error_get_last()['message']);
 
-    $filter_body = @file_get_contents("sql/tt_mobile_template/tt_filter_all.json");
+    $filter_body = @file_get_contents("data/tt_mobile_template/tt_filter_all.json");
     if ($filter_body === false)
         throw new Exception("Error reading *.json file: " . error_get_last()['message']);
 
