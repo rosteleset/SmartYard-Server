@@ -2042,8 +2042,8 @@
 
                 error_log("222");
 
-                foreach ($data as $id => $value) {
-                    $data[$id] = (string)$value;
+                foreach ($data as $i => $v) {
+                    $data[$i] = (string)$v;
                 }
 
                 $path = rtrim(@$this->config["document_builder"]["tmp"]?:"/tmp/print", "/");
