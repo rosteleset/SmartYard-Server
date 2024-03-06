@@ -2089,6 +2089,7 @@
                 if (file_exists($outFile)) {
                     return "$tmp-out.{$print["extension"]}";
                 } else {
+                    setLastError("outFileMissing");
                     return false;
                 }
             }
