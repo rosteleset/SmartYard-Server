@@ -1619,6 +1619,7 @@
             public function lastSeenKey($rfId)
             {
                 if (!checkStr($rfId, [ "minLength" => 6, "maxLength" => 32 ])) {
+                    setLastError("invalidParams");
                     return false;
                 }
 
