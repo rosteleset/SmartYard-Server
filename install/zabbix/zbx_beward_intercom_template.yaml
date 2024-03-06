@@ -18,8 +18,9 @@ zabbix_export:
           type: DEPENDENT
           key: beward_intercom.devicemodel
           delay: '0'
-          history: '0'
+          history: 7d
           trends: '0'
+          status: DISABLED
           value_type: TEXT
           inventory_link: HARDWARE
           preprocessing:
@@ -47,8 +48,8 @@ zabbix_export:
           triggers:
             - uuid: 2901c952e3514952b9f96cf9c7ed0bcb
               expression: 'last(/Intercom_BEWARD/beward_intercom.fwversion,#1)<>last(/Intercom_BEWARD/beward_intercom.fwversion,#2) and length(last(/Intercom_BEWARD/beward_intercom.fwversion))>0'
-              name: 'Beward: Version has changed'
-              event_name: 'Beward: Version has changed (new version: {ITEM.VALUE})'
+              name: 'Firmware version has changed'
+              event_name: 'INTERCOM: {HOST.NAME} | Firmvare version has changed (new version: {ITEM.VALUE})'
               priority: INFO
         - uuid: 1a622d57d7f746bb9b117c1f9d27f952
           name: 'BEWARD Intercom: SIP registration status'
@@ -76,12 +77,12 @@ zabbix_export:
           triggers:
             - uuid: 07e7050ec7b24969adf3484bdd8c65a6
               expression: 'count(/Intercom_BEWARD/beward_intercom.sipstatus,10m,,"0")>5'
-              name: 'Beward: SIP registration failure'
-              event_name: 'Beward: {HOST.NAME} SIP registration failure'
+              name: 'SIP registration failure'
+              event_name: 'INTERCOM: {HOST.NAME} | SIP registration failure'
               priority: WARNING
               description: 'Check SIP registration on device more 10 minutes'
               dependencies:
-                - name: 'Beward: device has been restarted'
+                - name: 'Device has been restarted'
                   expression: last(/Intercom_BEWARD/beward_intercom.uptime)<10m
                   recovery_expression: last(/Intercom_BEWARD/beward_intercom.uptime)>15m
                 - name: 'ICMP: Unavailable by ICMP ping'
@@ -145,14 +146,11 @@ zabbix_export:
               expression: last(/Intercom_BEWARD/beward_intercom.uptime)<10m
               recovery_mode: RECOVERY_EXPRESSION
               recovery_expression: last(/Intercom_BEWARD/beward_intercom.uptime)>15m
-              name: 'Beward: device has been restarted'
-              event_name: 'Beward: {HOST.NAME} has been restarted (uptime < 10m)'
+              name: 'Device has been restarted'
+              event_name: 'INTERCOM: {HOST.NAME} | has been restarted (uptime < 10m)'
               priority: INFO
               description: 'Device has been restarted'
               manual_close: 'YES'
-              dependencies:
-                - name: 'ICMP: Unavailable by ICMP ping'
-                  expression: 'max(/Intercom_BEWARD/icmpping,#3)=0'
             - uuid: 406db385fb8a434bb1d77dac6be153cc
               expression: 'count(/Intercom_BEWARD/beward_intercom.uptime,1800,,"5")<=200'
               recovery_mode: RECOVERY_EXPRESSION

@@ -45,6 +45,12 @@ zabbix_export:
                 - $.firmware
           master_item:
             key: qtech_intercom.systeminfo
+          triggers:
+            - uuid: 4a6eb5153c814364a282cdbed8f2859c
+              expression: 'last(/Intercom_QTECH/qtech_intercom.fwversion,#1)<>last(/Intercom_QTECH/qtech_intercom.fwversion,#2) and length(last(/Intercom_QTECH/qtech_intercom.fwversion))>0'
+              name: 'Firmware version has changed'
+              event_name: 'INTERCOM: {HOST.NAME} | Firmvare version has changed (new version: {ITEM.VALUE})'
+              priority: INFO
         - uuid: a66e2cb5c2da4254959b7b978b58d853
           name: 'QTECH Intercom: SIP registration status'
           type: HTTP_AGENT
@@ -75,6 +81,13 @@ zabbix_export:
             }
           post_type: JSON
           request_method: POST
+          triggers:
+            - uuid: 1cff8206fcd64d0bb7aa709a84c8e657
+              expression: 'count(/Intercom_QTECH/qtech_intercom.sipstatus,10m,,"0")>5'
+              name: 'SIP registration failure'
+              event_name: 'INTERCOM: {HOST.NAME} | SIP registration failure'
+              priority: WARNING
+              description: 'Check SIP registration on device more 10 minutes'
         - uuid: 472889788ce14fd29cc7ac5a80a95ddb
           name: 'QTECH Intercom: system info'
           type: HTTP_AGENT
@@ -129,6 +142,15 @@ zabbix_export:
                   return str2seconds
           master_item:
             key: qtech_intercom.systeminfo
+          triggers:
+            - uuid: 1cd98966a42848a387df2cb1b1e9ca2e
+              expression: last(/Intercom_QTECH/qtech_intercom.uptime)<10m
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: last(/Intercom_QTECH/qtech_intercom.uptime)>15m
+              name: 'Device has been restarted'
+              event_name: 'INTERCOM: {HOST.NAME} | has been restarted (uptime < 10m)'
+              priority: INFO
+              description: 'Device has been restarted'
       discovery_rules:
         - uuid: d4b9af7b7b5247e5b673875580b7314a
           name: 'Intercom discovery'
