@@ -1,0 +1,164 @@
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: ed6c76bdba8d4adfa6762850c60f4b46
+      name: Templates/Intercom
+  templates:
+    - uuid: 569ee7c7edec4f1cb8772a86f910ef9b
+      template: Intercom_QTECH
+      name: 'QTECH intercom by HTTP'
+      description: 'QTECH Intercom panel monitoring'
+      templates:
+        - name: 'ICMP Ping'
+      groups:
+        - name: Templates/Intercom
+      items:
+        - uuid: 84795b85391847c28e2a5d06c604e33e
+          name: 'QTECH Intercom: device model'
+          type: DEPENDENT
+          key: qtech_intercom.devicemodel
+          delay: '0'
+          history: 7d
+          trends: '0'
+          value_type: TEXT
+          description: 'device model'
+          inventory_link: HARDWARE
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.model
+          master_item:
+            key: qtech_intercom.systeminfo
+        - uuid: 2495bcbd2363402b9bad5e3bac9dfbcb
+          name: 'QTECH Intercom: fw version'
+          type: DEPENDENT
+          key: qtech_intercom.fwversion
+          delay: '0'
+          history: 7d
+          trends: '0'
+          value_type: CHAR
+          description: 'Check current firmware version'
+          inventory_link: SOFTWARE
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.firmware
+          master_item:
+            key: qtech_intercom.systeminfo
+        - uuid: a66e2cb5c2da4254959b7b978b58d853
+          name: 'QTECH Intercom: SIP registration status'
+          type: HTTP_AGENT
+          key: qtech_intercom.sipstatus
+          history: 7d
+          trends: 90d
+          authtype: BASIC
+          username: '{$INTERCOM_USERNAME}'
+          password: '{$INTERCOM_PASSWORD}'
+          description: 'Check SIP registration'
+          preprocessing:
+            - type: CHECK_NOT_SUPPORTED
+              parameters:
+                - ''
+              error_handler: CUSTOM_VALUE
+              error_handler_params: '{"html":{"head":{"title":"Connection error"}}}'
+            - type: JSONPATH
+              parameters:
+                - $.data.SipAccount.AccountStatus
+          url: 'http://{HOST.CONN}/api'
+          posts: |
+            {
+                "target": "sip",
+                "action": "get",
+                "data": {
+                    "AccountId": 0
+                }
+            }
+          post_type: JSON
+          request_method: POST
+        - uuid: 472889788ce14fd29cc7ac5a80a95ddb
+          name: 'QTECH Intercom: system info'
+          type: HTTP_AGENT
+          key: qtech_intercom.systeminfo
+          history: 7d
+          trends: '0'
+          value_type: TEXT
+          authtype: BASIC
+          username: '{$INTERCOM_USERNAME}'
+          password: '{$INTERCOM_PASSWORD}'
+          description: 'Get system information'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.body.data
+              error_handler: DISCARD_VALUE
+          url: 'http://{HOST.CONN}/api'
+          posts: |
+            {
+                "target": "firmware",
+                "action": "status"
+            }
+          post_type: JSON
+          request_method: POST
+          output_format: JSON
+        - uuid: 08fe9b60a9b244a78e899232e275b139
+          name: 'QTECH Intercom: uptime'
+          type: DEPENDENT
+          key: qtech_intercom.uptime
+          delay: '0'
+          history: 7d
+          trends: 90d
+          value_type: FLOAT
+          units: uptime
+          description: 'Uptime device'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.UpTime
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  const parts = value.split(/\s+/)
+                  const days = parts[0].split("day:")[1]
+                  const timeParts = parts[1].split(":");
+                  const days2seconds = parseInt(days.trim()) * 24 *  60 * 60;
+                  const hours2seconds = parseInt(timeParts[0].trim()) * 60 * 60;
+                  const minutes2seconds = parseInt(timeParts[1].trim()) * 60;
+                  const seconds = parseInt(timeParts[2].trim())
+                  
+                  const str2seconds = days2seconds + hours2seconds + minutes2seconds + seconds
+                  return str2seconds
+          master_item:
+            key: qtech_intercom.systeminfo
+      discovery_rules:
+        - uuid: d4b9af7b7b5247e5b673875580b7314a
+          name: 'Intercom discovery'
+          type: HTTP_AGENT
+          key: rbt.intercom.discovery
+          item_prototypes:
+            - uuid: f6be0abbe55c42ff9b8c56739ce6892a
+              name: '{#INTERCOM}'
+              type: HTTP_AGENT
+              key: 'rbt.intercom[{#INTERCOM}]'
+              trends: '0'
+              value_type: TEXT
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$[?(@.name=="{#INTERCOM}")].isWork'
+              url: 'http://{HOST.CONN}/internal/zbx'
+          url: 'http://{HOST.HOST}:3000/internal/zbx'
+          lld_macro_paths:
+            - lld_macro: '{#INTERCOM}'
+              path: '$[''name'']'
+      tags:
+        - tag: class
+          value: hardware
+        - tag: target
+          value: beward
+      macros:
+        - macro: '{$INTERCOM_PASSWORD}'
+          value: admin
+          description: 'WEB GUI | API password, default value admin'
+        - macro: '{$INTERCOM_USERNAME}'
+          value: admin
+          description: 'WEB GUI | API username, default value admin'
