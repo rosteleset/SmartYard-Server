@@ -59,6 +59,8 @@
     "other": "Прочее",
     "myNotifications": "Уведомления",
     "noNotifications": "Нет новых уведомлений",
+    "copied": "Скопировано",
+    "clipboard": "Буфер обмена",
     "tz": {
         "Europe/Moscow": "Европа/Москва"
     },

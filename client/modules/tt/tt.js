@@ -1542,8 +1542,6 @@
                 }
             });
 
-            new Clipboard('.cc');
-            
             $(".viewFilter").off("click").on("click", () => {
                 console.log(x);
             });
