@@ -550,7 +550,7 @@
         h += "<td style='vertical-align: top; width: 100%;'>";
         h += "<div class='text-bold pt-1 pb-1'>";
         h += "<span class='mr-3'>";
-        h += issue.issue["issueId"];
+        h += "<span class='cc hover pointer'>" + issue.issue["issueId"] + "</span>";
         if (!isEmpty(issue.actions)) {
             h += ":";
         }
@@ -1398,6 +1398,8 @@
             loadingStart();
             modules.tt.selectFilter(filter, Math.floor(index / modules.tt.defaultIssuesPerPage) * modules.tt.defaultIssuesPerPage, modules.tt.defaultIssuesPerPage, search);
         });
+
+        new Clipboard('.cc');
 
         loadingDone();
     },
