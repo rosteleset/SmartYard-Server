@@ -341,6 +341,6 @@
         "functionNotFound": "Function %s not found",
         "errorInFunction": "Error calling data function",
         "cantGenerateForm": "Error when creating document (%s)",
-        "outFileMissing": "Отсутствует выходной файл"
+        "outFileMissing": "Missing output file"
     }
 }
