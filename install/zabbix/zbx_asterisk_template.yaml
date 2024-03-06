@@ -1,0 +1,442 @@
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: 1d12408342854fd5a4436dd6d5d1bd4a
+      name: Templates/Telephony
+  templates:
+    - uuid: 5cdd133d126846538e5006cb3eddbaa1
+      template: 'Asterisk RBT'
+      name: 'Asterisk RBT'
+      groups:
+        - name: Templates/Telephony
+      items:
+        - uuid: fd0b534c219545e3afb7504235bd3865
+          name: 'Asterisk_RBT: Active calls'
+          type: DEPENDENT
+          key: asterisk_rbt.active_calls
+          delay: '0'
+          history: 7d
+          trends: 90d
+          description: 'The number of active calls at the moment.'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.active_calls
+          master_item:
+            key: asterisk_rbt.get_stats
+          tags:
+            - tag: component
+              value: calls
+        - uuid: 4e8454da8a4e41af8733b10be43f5ba0
+          name: 'Asterisk_RBT: Active channels'
+          type: DEPENDENT
+          key: asterisk_rbt.active_channels
+          delay: '0'
+          history: 7d
+          trends: 90d
+          description: 'Active channels'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.active_channels
+          master_item:
+            key: asterisk_rbt.get_stats
+          tags:
+            - tag: component
+              value: channels
+        - uuid: a99f30c9cc9b48baa561824053f74af0
+          name: 'Asterisk_RBT: Calls processed'
+          type: DEPENDENT
+          key: asterisk_rbt.calls_processed
+          delay: '0'
+          history: 7d
+          trends: 90d
+          description: 'The number of calls processed after the last service restart.'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.calls_processed
+          master_item:
+            key: asterisk_rbt.get_stats
+          tags:
+            - tag: component
+              value: calls
+        - uuid: e503d5a37bba4bdbbfc8c8801d8aa876
+          name: 'Asterisk_RBT: Get stats'
+          type: HTTP_AGENT
+          key: asterisk_rbt.get_stats
+          history: '0'
+          trends: '0'
+          value_type: TEXT
+          description: 'Asterisk system information in JSON format.'
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var Ami = {
+                      params: {
+                          url: '{$AMI.URL}',
+                      },
+                      api_request: new HttpRequest(),
+                      request: function (url, action) {
+                          url += action;
+                          Zabbix.log(4, '[ Asterisk ] Sending request: ' + url);
+                          try {
+                              response = Ami.api_request.get(url);
+                          } catch (error) {
+                              Zabbix.log(4, '[ Asterisk ] Get request returned error ' + error);
+                              throw 'Get request returned error ' + error + '. Check debug log for more information.';
+                          }
+                          Zabbix.log(4, '[ Asterisk ] Received response with status code ' +
+                              Ami.api_request.getStatus() + '\n' + response);
+                          if (Ami.api_request.getStatus() !== 200) {
+                              var message = 'Request failed with status code ' + Ami.api_request.getStatus();
+                              if (response !== null) {
+                                  if (typeof response.message === 'string') {
+                                      message += ': ' + response.message;
+                                  }
+                              }
+                              throw message + ' Check debug log for more information.';
+                          }
+                          var match = response.match('Response: (.+)');
+                          if (match !== null && match[1] !== 'Success' && match[1] !== 'Goodbye' && match[1] !== 'Follows') {
+                              var responseText = match[1],
+                                  message = 'Request failed with message ' + match[1];
+                              match = response.match('Message: (.+)');
+                              if (match !== null && match[1]) {
+                                  var responseMessage = match[1];
+                                  message += ': ' + match[1];
+                              }
+                              if (responseText !== 'Error' || responseMessage !== 'No endpoints found') {
+                                  throw message + '. Check debug log for more information.';
+                              }
+                          }
+                          return {
+                              status: Ami.api_request.getStatus(),
+                              body: response
+                          };
+                      }
+                  };
+                  var asterisk = {
+                      version: '',
+                      uptime: 0,
+                      uptime_reload: 0,
+                      active_channels: 0,
+                      active_calls: 0,
+                      calls_processed: 0,
+                      pjsip: {
+                          client_intercoms: 0,
+                          outdoor_intercoms: 0,
+                          client_webrtc: 0,
+                          total: 0,
+                      }
+                  };
+                  // utils
+                  function block2Object(text) {
+                      var parts = [],
+                          dict = {};
+                      text = text.replace(/^Output: /gm, '');
+                      text.split('\n').forEach(function (line) {
+                          parts = line.split(':');
+                          if (parts.length > 1) {
+                              dict[parts.shift().trim()] = parts.join(':').trim();
+                          }
+                      })
+                      return dict;
+                  }
+                  function text2Object(text) {
+                      var blocks = text.split('\r\n\r\n'),
+                          arr = [],
+                          i = 1,
+                          j = blocks.length - 2;
+                      for (i; i < j; i++) {
+                          arr.push(block2Object(blocks[i]));
+                      }
+                      return arr;
+                  }
+                  function getUptimeSeconds(text) {
+                      var date = {
+                          years: 0,
+                          weeks: 0,
+                          days: 0,
+                          hours: 0,
+                          minutes: 0,
+                          seconds: 0
+                      };
+                      var fields = {
+                          years: 'years?',
+                          weeks: 'weeks?',
+                          days: 'days?',
+                          hours: 'hours?',
+                          minutes: 'minutes?',
+                          seconds: 'seconds?'
+                      };
+                      Object.keys(fields).forEach(function (field) {
+                          var match = text.match('(\\d+) ' + fields[field]);
+                          if (match !== null && typeof match[1] !== 'undefined') {
+                              date[field] = parseInt(match[1]);
+                          }
+                      });
+                      return date.years * 220752000 + date.weeks * 604800 + date.days * 86400 +
+                          date.hours * 3600 + date.minutes * 60 + date.seconds;
+                  }
+                  
+                  //get cookie from login action
+                  var cookie = value.match(/mansession_id="([0-9A-z]+)"/);
+                  if (cookie == null) {
+                      throw 'Cannot find mansession_id with cookie in response.';
+                  }
+                  
+                  var url = Ami.params.url.split('?')[0] + '?action=';
+                  
+                  Ami.api_request.addHeader('Cookie: mansession_id="' + cookie[1] + '"');
+                  
+                  //  action CoreSettings
+                  function getCoreSettings() {
+                      var response = Ami.request(url, 'CoreSettings');
+                      var coreSettings = block2Object(response.body);
+                      if (typeof coreSettings.AsteriskVersion !== 'undefined') {
+                          asterisk.version = coreSettings.AsteriskVersion;
+                      }
+                  }
+                  function getUptime() {
+                      var response = Ami.request(url, 'command&command=core%20show%20uptime');
+                      var uptime = block2Object(response.body);
+                      if (typeof uptime["System uptime"] !== 'undefined') {
+                          asterisk.uptime = getUptimeSeconds(uptime["System uptime"]);
+                      }
+                      if (typeof uptime["Last reload"] !== 'undefined') {
+                          asterisk.uptime_reload = getUptimeSeconds(uptime["Last reload"]);
+                      }
+                  }
+                  function getChannels() {
+                      var response = Ami.request(url, 'command&command=core%20show%20channels%20count');
+                      var channels = response.body;
+                      var fields = {
+                          active_channels: 'active channels?',
+                          active_calls: 'active calls?',
+                          calls_processed: 'calls? processed'
+                      };
+                  
+                      Object.keys(fields).forEach(function (field) {
+                          var match = channels.match('(\\d+) ' + fields[field]);
+                          if (match !== null && typeof match[1] !== 'undefined') {
+                              asterisk[field] = parseInt(match[1]);
+                          }
+                      });
+                  }
+                  
+                  function getPjsipClients() {
+                      var response = Ami.request(url, 'PJSIPShowRegistrationInboundContactStatuses');
+                      var elements = text2Object(response.body);
+                      elements.map(function (item) {
+                          if (item && item.AOR) {
+                              asterisk.pjsip.total += 1;
+                              if (/^1\d{5}$/.test(item.AOR)) {
+                                  asterisk.pjsip.outdoor_intercoms += 1;
+                              }
+                              if (/^4\d{9}$/.test(item.AOR)) {
+                                  asterisk.pjsip.client_intercoms += 1;
+                              }
+                              if (/^7\d{9}$/.test(item.AOR)) {
+                                  asterisk.pjsip.client_webrtc += 1;
+                              }
+                          }
+                      });
+                  }
+                  
+                  getCoreSettings()
+                  getUptime()
+                  getChannels()
+                  getPjsipClients()
+                  
+                  return JSON.stringify(asterisk)
+          url: '{$AMI.URL}'
+          query_fields:
+            - name: action
+              value: login
+            - name: username
+              value: '{$AMI.USERNAME}'
+            - name: secret
+              value: '{$AMI.SECRET}'
+          retrieve_mode: HEADERS
+          tags:
+            - tag: component
+              value: raw
+        - uuid: a9e35e7660514a74b42520b5029e6f90
+          name: 'Asterisk_RBT: PJSIP total clients online'
+          type: DEPENDENT
+          key: asterisk_rbt.pjsip_clients_total
+          delay: '0'
+          history: 7d
+          trends: 90d
+          description: 'Total number of registered devices'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.pjsip.total
+          master_item:
+            key: asterisk_rbt.get_stats
+          tags:
+            - tag: component
+              value: peers
+        - uuid: 1d120bffd609459fb7220b9ce00bd05d
+          name: 'Asterisk_RBT: PJSIP client intercom online'
+          type: DEPENDENT
+          key: asterisk_rbt.pjsip_client_intercom_online
+          delay: '0'
+          history: 7d
+          trends: 90d
+          description: 'Total number of registered client calling panels.'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.pjsip.client_intercoms
+          master_item:
+            key: asterisk_rbt.get_stats
+          tags:
+            - tag: component
+              value: peers
+        - uuid: 7e4d05e31ad740f59060e753366c42bc
+          name: 'Asterisk_RBT: PJSIP outdoor intercom online'
+          type: DEPENDENT
+          key: asterisk_rbt.pjsip_outdoor_intercom_online
+          delay: '0'
+          history: 7d
+          trends: 90d
+          description: 'Total number of registered outdoor calling panels.'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.pjsip.outdoor_intercoms
+          master_item:
+            key: asterisk_rbt.get_stats
+          tags:
+            - tag: component
+              value: peers
+        - uuid: 89491f0bdf9d49de95eda14a0fa834db
+          name: 'Asterisk_RBT: PJSIP webrtc intercom online'
+          type: DEPENDENT
+          key: asterisk_rbt.pjsip_webrtc_intercom_online
+          delay: '0'
+          history: 7d
+          trends: 90d
+          description: 'Total number of registered client devices using WebRTC'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.pjsip.client_webrtc
+          master_item:
+            key: asterisk_rbt.get_stats
+          tags:
+            - tag: component
+              value: peers
+        - uuid: f7ac2bab6fa341d580810483c20caa0b
+          name: 'Asterisk_RBT: Uptime'
+          type: DEPENDENT
+          key: asterisk_rbt.uptime
+          delay: '0'
+          history: 7d
+          trends: 90d
+          value_type: FLOAT
+          units: uptime
+          description: 'The system uptime expressed in the following format: "N days, hh:mm:ss".'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.uptime
+          master_item:
+            key: asterisk_rbt.get_stats
+          tags:
+            - tag: component
+              value: system
+        - uuid: da287919af85466dbb1185c6ee6f1a9c
+          name: 'Asterisk_RBT: Uptime after reload'
+          type: DEPENDENT
+          key: asterisk_rbt.uptime_reload
+          delay: '0'
+          history: 7d
+          trends: 90d
+          units: uptime
+          description: 'System uptime after a config reload in ''N days, hh:mm:ss'' format.'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.uptime_reload
+          master_item:
+            key: asterisk_rbt.get_stats
+          tags:
+            - tag: component
+              value: system
+        - uuid: c9a1b42449a34b61b9af0b4ca997f566
+          name: 'Asterisk_RBT: Version'
+          type: DEPENDENT
+          key: asterisk_rbt.version
+          delay: '0'
+          history: 7d
+          trends: '0'
+          value_type: CHAR
+          description: 'Service version'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.version
+          master_item:
+            key: asterisk_rbt.get_stats
+          tags:
+            - tag: component
+              value: application
+        - uuid: 5213b6674b2d4c5297fab17922827690
+          name: 'Asterisk_RBT: Service response time'
+          type: SIMPLE
+          key: 'net.tcp.service.perf["tcp","{HOST.CONN}","{$AMI.PORT}"]'
+          history: 7d
+          trends: 90d
+          value_type: FLOAT
+          description: 'Asterisk Manager API performance.'
+          tags:
+            - tag: component
+              value: network
+        - uuid: 8fbd50d2580540ca855f2e38dd5a1a23
+          name: 'Asterisk_RBT: Service status'
+          type: SIMPLE
+          key: 'net.tcp.service["tcp","{HOST.CONN}","{$AMI.PORT}"]'
+          history: 7d
+          trends: 90d
+          valuemap:
+            name: 'Service state'
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 10m
+          tags:
+            - tag: component
+              value: health
+            - tag: component
+              value: network
+      tags:
+        - tag: class
+          value: voip
+        - tag: target
+          value: asterisk
+      macros:
+        - macro: '{$AMI.PORT}'
+          value: '8088'
+          description: 'The Asterisk AMI port'
+        - macro: '{$AMI.SECRET}'
+          value: zabbix
+          description: 'The Asterisk Manager secret.'
+        - macro: '{$AMI.URL}'
+          value: 'http://asterisk:8088/asterisk/rawman'
+          description: 'The Asterisk Manager API URL in the format `<scheme>://<host>:<port>/<prefix>/rawman`.'
+        - macro: '{$AMI.USERNAME}'
+          value: zabbix
+          description: 'The Asterisk Manager name.'
+      valuemaps:
+        - uuid: 6c3a2fe5c1fa432ea37220bb8cbbedf3
+          name: 'Service state'
+          mappings:
+            - value: '0'
+              newvalue: Down
+            - value: '1'
+              newvalue: Up
