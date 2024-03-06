@@ -350,6 +350,15 @@ zabbix_export:
           tags:
             - tag: component
               value: system
+          triggers:
+            - uuid: ef7e5efcad4c41108839ac7f1e6021af
+              expression: 'last(/Asterisk RBT/asterisk_rbt.uptime)<10m'
+              name: 'Asterisk_RBT: Host has been restarted'
+              event_name: 'Asterisk_RBT: {HOST.NAME} has been restarted (uptime < 10m)'
+              priority: INFO
+              tags:
+                - tag: scope
+                  value: notice
         - uuid: da287919af85466dbb1185c6ee6f1a9c
           name: 'Asterisk_RBT: Uptime after reload'
           type: DEPENDENT
@@ -368,6 +377,15 @@ zabbix_export:
           tags:
             - tag: component
               value: system
+          triggers:
+            - uuid: 137d77df6cd6401ca5513f014cc3d14b
+              expression: 'last(/Asterisk RBT/asterisk_rbt.uptime_reload)<10m'
+              name: 'Asterisk_RBT: has been reloaded'
+              event_name: 'Asterisk_RBT: {HOST.NAME} has been reloaded (uptime < 10m)'
+              priority: INFO
+              tags:
+                - tag: scope
+                  value: notice
         - uuid: c9a1b42449a34b61b9af0b4ca997f566
           name: 'Asterisk_RBT: Version'
           type: DEPENDENT
@@ -414,6 +432,14 @@ zabbix_export:
               value: health
             - tag: component
               value: network
+          triggers:
+            - uuid: 40ddd546d5d04a4982c9268c2b997d0c
+              expression: 'last(/Asterisk RBT/net.tcp.service["tcp","{HOST.CONN}","{$AMI.PORT}"])=0'
+              name: 'Asterisk_RBT: Service is down'
+              priority: AVERAGE
+              tags:
+                - tag: scope
+                  value: availability
       tags:
         - tag: class
           value: voip
