@@ -163,7 +163,7 @@ function modal(body) {
 function FAIL(response) {
     if (response && response.responseJSON && response.responseJSON.error) {
         if (response.getResponseHeader("x-last-error")) {
-            error(i18n("errors." + response.responseJSON.error, "errors." + i18n(response.getResponseHeader("x-last-error"))), i18n("error"), 30);
+            error(i18n("errors." + response.responseJSON.error, i18n("errors." + response.getResponseHeader("x-last-error"))), i18n("error"), 30);
         } else {
             error(i18n("errors." + response.responseJSON.error), i18n("error"), 30);
         }
@@ -186,16 +186,16 @@ function FAILPAGE(response) {
     console.log(response.getResponseHeader("x-last-error"));
     if (response && response.responseJSON && response.responseJSON.error) {
         if (response.getResponseHeader("x-last-error")) {
-            error(i18n("errors." + response.responseJSON.error, "errors." + i18n(response.getResponseHeader("x-last-error"))), i18n("error"), 30);
-            pageError(i18n("errors." + response.responseJSON.error, "errors." + i18n(response.getResponseHeader("x-last-error"))));
+            error(i18n("errors." + response.responseJSON.error, i18n("errors." + response.getResponseHeader("x-last-error"))), i18n("error"), 30);
+            pageError(i18n("errors." + response.responseJSON.error, i18n("errors." + response.getResponseHeader("x-last-error"))));
         } else {
             error(i18n("errors." + response.responseJSON.error), i18n("error"), 30);
             pageError(i18n("errors." + response.responseJSON.error));
         }
     } else {
         if (response.getResponseHeader("x-last-error")) {
-            error(i18n("errors.unknown" + " [" + i18n(response.getResponseHeader("x-last-error")) + "]"), i18n("errorCode", response.status), 30);
-            pageError(i18n(response.getResponseHeader("x-last-error")));
+            error(i18n("errors.unknown" + " [" + i18n("errors." + response.getResponseHeader("x-last-error")) + "]"), i18n("errorCode", response.status), 30);
+            pageError(i18n("errors." + response.getResponseHeader("x-last-error")));
         } else {
             error(i18n("errors.unknown"), i18n("errorCode", response.status), 30);
             pageError();
