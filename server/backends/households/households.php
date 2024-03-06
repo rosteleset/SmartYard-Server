@@ -298,6 +298,12 @@
             abstract public function deleteKey($keyId);
 
             /**
+             * @param $rfId
+             * @return boolean
+             */
+            abstract public function lastSeenKey($rfId);
+
+            /**
              * @param $token
              * @return boolean
              */

@@ -1616,6 +1616,21 @@
             /**
              * @inheritDoc
              */
+            public function lastSeenKey($rfId)
+            {
+                if (!checkStr($rfId, [ "minLength" => 6, "maxLength" => 32 ])) {
+                    return false;
+                }
+
+                return $this->db->modify("update houses_rfids set last_seen = :last_seen where rfid = :rfid", [
+                    "last_seen" => time(),
+                    "rfid" => $rfId,
+                ]);
+            }
+
+            /**
+             * @inheritDoc
+             */
             function doorOpened($flatId)
             {
                 if (!checkInt($flatId)) {
