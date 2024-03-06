@@ -11,5 +11,7 @@
     function setLastError($error) {
         global $lastError;
 
+        error_log($error);
+
         $lastError = $error;
     }
