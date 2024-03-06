@@ -550,7 +550,9 @@
         h += "<td style='vertical-align: top; width: 100%;'>";
         h += "<div class='text-bold pt-1 pb-1'>";
         h += "<span class='mr-3'>";
-        h += "<span class='cc hover pointer' id='issueIssueId' data-clipboard-target='#issueIssueId'><a href='?#tt&issue=" + issue.issue["issueId"] + "'>" + issue.issue["issueId"] + "</a></span>";
+        let url = new URL(window.location.href);
+        url = url.origin + url.pathname + "?#tt&issue=" + issue.issue["issueId"];
+        h += "<span class='cc hover pointer' id='issueIssueId' data-clipboard-target='#issueIssueId' data-clipboard-text='" + url + "'>" + issue.issue["issueId"] + "</span>";
         if (!isEmpty(issue.actions)) {
             h += ":";
         }
@@ -1399,7 +1401,13 @@
             modules.tt.selectFilter(filter, Math.floor(index / modules.tt.defaultIssuesPerPage) * modules.tt.defaultIssuesPerPage, modules.tt.defaultIssuesPerPage, search);
         });
 
-        new Clipboard('.cc');
+        (new ClipboardJS('.cc', {
+            text: function(trigger) {
+                return trigger.getAttribute('data-clipboard-text');
+            }
+        })).on("success", () => {
+            message(i18n("copied"), i18n("clipboard"), 3);
+        });
 
         loadingDone();
     },
