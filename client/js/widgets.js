@@ -170,6 +170,7 @@ function FAIL(response) {
             }, 5000);
         }
     } else {
+        console.log(response);
         error(i18n("errors.unknown"), i18n("errorCode", response.status), 30);
     }
 }

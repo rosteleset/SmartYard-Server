@@ -14,6 +14,11 @@
         $db = null;
 
         header('Content-Type: application/json');
+
+        if (getLastError()) {
+            header('X-Last-Error: ' . getLastError());
+        }
+        
         http_response_code($code);
 
         if ((int)$code == 204) {
