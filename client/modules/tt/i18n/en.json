@@ -340,6 +340,6 @@
         "invalidFilter": "Filter contains errors, cannot be saved",
         "functionNotFound": "Function %s not found",
         "errorInFunction": "Error calling data function",
-        "cantGenerateForm": "Error when creating document"
+        "cantGenerateForm": "Error when creating document (%s)"
     }
 }
