@@ -161,7 +161,7 @@ function modal(body) {
 }
 
 function FAIL(response) {
-    console.log(response);
+    console.log(response.getAllResponseHeaders());
     if (response && response.responseJSON && response.responseJSON.error) {
         error(i18n("errors." + response.responseJSON.error), i18n("error"), 30);
         if (response.responseJSON.error == "tokenNotFound") {
@@ -176,7 +176,7 @@ function FAIL(response) {
 }
 
 function FAILPAGE(response) {
-    console.log(response);
+    console.log(response.getAllResponseHeaders());
     if (response && response.responseJSON && response.responseJSON.error) {
         error(i18n("errors." + response.responseJSON.error), i18n("error"), 30);
         pageError(i18n("errors." + response.responseJSON.error));
