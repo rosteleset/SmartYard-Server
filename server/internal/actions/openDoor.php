@@ -65,10 +65,20 @@
     ] = $postdata;
 
     $plog = loadBackend('plog');
+
     switch ($event) {
         case $events['OPEN_BY_KEY']:
+            // Update last seen
+            $households = loadBackend('households');
+            $households->lastSeenKey($detail);
+
+            // Add door open data
+            $plogDoorOpen = $plog->addDoorOpenData($date, $ip, $subId, $event, $door, $detail);
+            response(201, ["id" => $plogDoorOpen]);
+            break;
+
         case $events['OPEN_BY_CODE']:
-            //Store event to db
+            // Add door open data
             $plogDoorOpen = $plog->addDoorOpenData($date, $ip, $subId, $event, $door, $detail);
             response(201, ["id" => $plogDoorOpen]);
             break;

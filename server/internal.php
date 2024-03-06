@@ -2,11 +2,14 @@
     mb_internal_encoding("UTF-8");
 
     require_once "backends/backend.php";
+
+    require_once "utils/checkstr.php";
     require_once "utils/loader.php";
     require_once "utils/db_ext.php";
     require_once "utils/error.php";
     require_once "utils/api_exec.php";
     require_once "utils/api_response.php";
+    require_once "utils/purifier.php";
 
     // load configuration
     try {
