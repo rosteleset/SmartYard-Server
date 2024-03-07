@@ -1,0 +1,122 @@
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: ed6c76bdba8d4adfa6762850c60f4b46
+      name: Templates/Intercom
+  templates:
+    - uuid: 91bfd12a176a404dadb9b4a3254666f9
+      template: Intercom_AKUVOX
+      name: 'AKUVOX intercom by HTTP'
+      description: 'AKUVOX Intercom panel monitoring'
+      templates:
+        - name: 'ICMP Ping'
+      groups:
+        - name: Templates/Intercom
+      items:
+        - uuid: d6224634cd544c43b12220f488cdd0f4
+          name: 'AKUVOX Intercom: device model'
+          type: DEPENDENT
+          key: akuvox_intercom.devicemodel
+          delay: '0'
+          history: 7d
+          trends: '0'
+          value_type: TEXT
+          description: 'Check current device model'
+          inventory_link: HARDWARE
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.data.Status.Model
+          master_item:
+            key: akuvox_intercom.systeminfo
+        - uuid: 9da84f2b069349c9b2f2fdb433dcb160
+          name: 'AKUVOX Intercom: fw version'
+          type: DEPENDENT
+          key: akuvox_intercom.fwversion
+          delay: '0'
+          history: 7d
+          trends: '0'
+          value_type: TEXT
+          description: 'Check current firmware version'
+          inventory_link: SOFTWARE
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.data.Status.FirmwareVersion
+          master_item:
+            key: akuvox_intercom.systeminfo
+        - uuid: c9d508fccc904dcd86556b3587cc676e
+          name: 'AKUVOX Intercom: SIP registration status'
+          type: DEPENDENT
+          key: akuvox_intercom.sipstatus
+          delay: '0'
+          history: 7d
+          trends: 90d
+          description: 'Check SIP registration'
+          valuemap:
+            name: 'SIP registration status'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.data.Account1.Status
+          master_item:
+            key: akuvox_intercom.systeminfo
+        - uuid: 31dbbe6ba58c4dd5a5cb21c86b651ea2
+          name: 'AKUVOX Intercom: system info'
+          type: HTTP_AGENT
+          key: akuvox_intercom.systeminfo
+          history: '0'
+          trends: '0'
+          value_type: CHAR
+          authtype: DIGEST
+          username: '{$INTERCOM_USERNAME}'
+          password: '{$INTERCOM_PASSWORD}'
+          description: 'Get system information from Akuvox SIP intercom'
+          url: 'http://{HOST.CONN}/api/system/info'
+        - uuid: e5b3cea71c4442fd905c6b1d071ebd96
+          name: 'AKUVOX Intercom: system status'
+          type: HTTP_AGENT
+          key: akuvox_intercom.systemstatus
+          history: '0'
+          trends: '0'
+          authtype: DIGEST
+          username: '{$INTERCOM_USERNAME}'
+          password: '{$INTERCOM_PASSWORD}'
+          description: 'Get system information from Akuvox SIP intercom'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.data.UpTime
+          url: 'http://{HOST.CONN}/api/system/status'
+        - uuid: d0fa5f1893cc4038a8224229fb2d19c2
+          name: 'AKUVOX Intercom: uptime'
+          type: DEPENDENT
+          key: akuvox_intercom.uptime
+          delay: '0'
+          history: 7d
+          trends: 90d
+          units: uptime
+          master_item:
+            key: akuvox_intercom.systemstatus
+      tags:
+        - tag: class
+          value: hardware
+        - tag: target
+          value: beward
+      macros:
+        - macro: '{$INTERCOM_PASSWORD}'
+          value: admin
+          description: 'WEB GUI | API password, default value admin'
+        - macro: '{$INTERCOM_USERNAME}'
+          value: admin
+          description: 'WEB GUI | API username, default value admin'
+      valuemaps:
+        - uuid: a6583dafc93d419b8668e94baeb319ff
+          name: 'SIP registration status'
+          mappings:
+            - value: '2'
+              newvalue: Online
+            - value: '1'
+              newvalue: Failure
+            - value: '0'
+              newvalue: Disable

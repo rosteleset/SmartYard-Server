@@ -61,6 +61,8 @@ zabbix_export:
           username: '{$INTERCOM_USERNAME}'
           password: '{$INTERCOM_PASSWORD}'
           description: 'Check SIP registration'
+          valuemap:
+            name: 'SIP registration status'
           preprocessing:
             - type: CHECK_NOT_SUPPORTED
               parameters:
@@ -184,3 +186,13 @@ zabbix_export:
         - macro: '{$INTERCOM_USERNAME}'
           value: admin
           description: 'WEB GUI | API username, default value admin'
+      valuemaps:
+        - uuid: 47ccbde4409d4c7399ea4564bb0ecffd
+          name: 'SIP registration status'
+          mappings:
+            - value: '0'
+              newvalue: Disable
+            - value: '1'
+              newvalue: Failure
+            - value: '2'
+              newvalue: Online
