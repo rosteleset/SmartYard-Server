@@ -67,7 +67,7 @@ abstract class rubetek extends domophone
             $dialplan['analog_number'],
             $cmsEnabled ? RubetekConst::SIP_ANALOG : RubetekConst::SIP,
             [RubetekConst::RELAY_1_INTERNAL],
-            [$code] ?? [],
+            $code !== 0 ? ["$code"] : [],
         );
     }
 
