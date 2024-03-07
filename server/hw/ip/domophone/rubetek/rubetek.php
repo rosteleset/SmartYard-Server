@@ -525,6 +525,7 @@ abstract class rubetek extends domophone
             'disable_sl3' => true,
             'code_length' => 4,
             'reverse_data_order' => true,
+            'find_direct_and_reverse_orders' => false,
         ]);
     }
 
