@@ -1542,10 +1542,6 @@
                 }
             });
 
-            $(".viewFilter").off("click").on("click", () => {
-                console.log(x);
-            });
-
             let columns = [ {
                 title: i18n("tt.issueIndx"),
                 nowrap: true,
