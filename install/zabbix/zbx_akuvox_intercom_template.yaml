@@ -45,6 +45,12 @@ zabbix_export:
                 - $.data.Status.FirmwareVersion
           master_item:
             key: akuvox_intercom.systeminfo
+          triggers:
+            - uuid: 7e775913229240f18998958691462bf8
+              expression: 'last(/Intercom_AKUVOX/akuvox_intercom.fwversion,#1)<>last(/Intercom_AKUVOX/akuvox_intercom.fwversion,#2) and length(last(/Intercom_AKUVOX/akuvox_intercom.fwversion))>0'
+              name: 'Firmware version has changed'
+              event_name: 'INTERCOM: {HOST.NAME} | Firmvare version has changed (new version: {ITEM.VALUE})'
+              priority: INFO
         - uuid: c9d508fccc904dcd86556b3587cc676e
           name: 'AKUVOX Intercom: SIP registration status'
           type: DEPENDENT
@@ -98,6 +104,14 @@ zabbix_export:
           units: uptime
           master_item:
             key: akuvox_intercom.systemstatus
+          triggers:
+            - uuid: 5e880280658a461ca7b0cc55cb29a6b9
+              expression: last(/Intercom_AKUVOX/akuvox_intercom.uptime)<10m
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: last(/Intercom_AKUVOX/akuvox_intercom.uptime)>15m
+              name: 'Device has been restarted'
+              event_name: 'INTERCOM: {HOST.NAME} | has been restarted (uptime < 10m)'
+              priority: INFO
       tags:
         - tag: class
           value: hardware
