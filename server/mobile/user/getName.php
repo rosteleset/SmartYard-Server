@@ -30,7 +30,7 @@ $households = loadBackend("households");
 if ($subscriber) {
     $names = ["name" => $subscriber["subscriberName"], "patronymic" => $subscriber["subscriberPatronymic"]];
 
-    response(200, ['names' => $names]);
+    response(200, $names);
 } else {
     response(404);
 }
