@@ -17,7 +17,19 @@
         "don't support play dtmf kecode",
         "Upload Server is empty",
         "spk not enable now!",
-        "msg_handle"
+        "msg_handle",
+        "REMOTE_USER",
+        "m_pPathInfo",
+        "handler.cpp",
+        "network.cpp",
+        "Process parameter",
+        "FLASH_BLOCK_SIZE",
+        "No such file or directory",
+        "Encoder",
+        "Encode",
+        "DownloadConfigFile",
+        "GetRemoteUserNameByRPID",
+        "GetRemoteDisplayNameByRPID"
     ],
     "beward": [
         "RTSP",
