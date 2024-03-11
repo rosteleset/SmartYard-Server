@@ -157,6 +157,10 @@ backends:
       similar issue (hint 86400 - one day) --!>"
   queue:
     backend: internal
+  monitoring:
+    backend: internal
+    zbx_api_url: "<!-- your zabbix api url here, example http://zabbix.example.com/api_jsonrpc.php --!>"
+    zbx_token: "<!-- your zabbix API token --!>"
 email:
   server: 127.0.0.1
   port: 587
