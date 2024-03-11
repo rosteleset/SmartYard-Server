@@ -93,6 +93,10 @@
             return $subset;
         }
 
+        /**
+         * create starter configuration on Zabbix server
+         * @return void
+         */
         private function configureTemplates()
         {
             // implement starter zabbix template, groups
@@ -101,6 +105,11 @@
         private function createItems()
         {
             // implement api call to create monitoring item
+        }
+
+        private function getItems()
+        {
+            // implement api call to get monitored items from zabbix
         }
 
         private function removeItems()
