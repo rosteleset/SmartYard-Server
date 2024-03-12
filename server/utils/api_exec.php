@@ -18,13 +18,13 @@ function apiExec(string $method, string $url, $payload = false, $contentType = f
             if ($payload) {
                 $contentType = $contentType ?: 'application/json';
                 curl_setopt($curl, CURLOPT_HTTPHEADER, ['Content-Type: ' . $contentType]);
-                curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($payload));
+                curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($payload, JSON_UNESCAPED_UNICODE));
             }
             break;
         case "PUT":
             curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
             if ($payload) {
-                curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($payload));
+                curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($payload, JSON_UNESCAPED_UNICODE));
             }
             break;
         case "DELETE":
