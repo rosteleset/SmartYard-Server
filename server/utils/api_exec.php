@@ -17,7 +17,7 @@ function apiExec(string $method, string $url, $payload = false, $contentType = f
             curl_setopt($curl, CURLOPT_POST, 1);
             if ($payload) {
                 $contentType = $contentType ?: 'application/json';
-                curl_setopt($curl, CURLOPT_HTTPHEADER, ['Content-Type: ' . $contentType]);
+                $headers[] = 'Content-Type: ' . $contentType;
                 curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($payload, JSON_UNESCAPED_UNICODE));
             }
             break;
@@ -39,9 +39,9 @@ function apiExec(string $method, string $url, $payload = false, $contentType = f
     // Add Bearer Token header in the request
     if ($token) {
         $headers[] = 'Authorization: Bearer ' . $token;
-        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
     }
 
+    curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
     curl_setopt($curl, CURLOPT_URL, $url);
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 
