@@ -1258,6 +1258,31 @@
             /**
              * @inheritDoc
              */
+            public function myPrimaryGroup($returnGids = false)
+            {
+                $groups = loadBackend("groups");
+                $users = loadBackend("users");
+
+                $g = false;
+
+                if ($groups && $users) {
+                    $user = $users->getUser($this->uid);
+
+                    if ($user) {
+                        if ($returnGids) {
+                            $g = (int)$user["primaryGroup"];
+                        } else {
+                            $g = (int)$user["primaryGroupAcronym"];
+                        }
+                    }
+                }
+
+                return $g;
+            }
+
+            /**
+             * @inheritDoc
+             */
             public function getProjectViewers($projectId) {
                 $key = $projectId?"VIEWERS:$projectId":"VIEWERS";
 

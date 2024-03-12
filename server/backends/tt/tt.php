@@ -144,6 +144,9 @@
                         "myGroups" => function () {
                             return [ $this->myGroups() ];
                         },
+                        "myPrimaryGroup" => function () {
+                            return [ $this->myPrimaryGroup() ];
+                        },
                         "myself" => function () {
                             return [ loadBackend("users")->getUser($this->uid) ];
                         }
@@ -1386,6 +1389,12 @@
              * @return mixed
              */
             abstract public function myGroups($returnGids = false);
+
+            /**
+             * @param $returnGid
+             * @return mixed
+             */
+            abstract public function myPrimaryGroup($returnGid = false);
 
             /**
              * @return mixed
