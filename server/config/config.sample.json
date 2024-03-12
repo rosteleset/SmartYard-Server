@@ -210,8 +210,8 @@
         },
 
         "monitoring": {
-            "backend": "internal",
-            "zbx_api_url": "<!-- your zabbix api url here, example http://zabbix.example.com/api_jsonrpc.php --!>",
+            "backend": "zabbix",
+            "zbx_api_url": "<!-- your zabbix APU URL here --!>",
             "zbx_token": "<!-- your zabbix API token --!>"
         }
     },
