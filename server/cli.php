@@ -586,8 +586,14 @@
         }
 
         if (checkInt($device_id)) {
-            autoconfigure_device($device_type, $device_id, $first_time);
-            exit(0);
+            try {
+                autoconfigure_device($device_type, $device_id, $first_time);
+                exit(0);
+            } catch (Exception $e) {
+                $script_result = 'fail';
+                echo "!!! FAILED: " . $e->getMessage() . " !!!\n\n";
+                exit(1);
+            }
         }
     }
 

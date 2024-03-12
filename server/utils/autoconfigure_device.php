@@ -6,6 +6,9 @@ require_once __DIR__ . '/array_diff_assoc_recursive.php';
 use utils\SmartConfigurator\DbConfigCollector\{CameraDbConfigCollector, DomophoneDbConfigCollector};
 use utils\SmartConfigurator\SmartConfigurator;
 
+/**
+ * @throws Exception
+ */
 function autoconfigure_device(string $deviceType, int $deviceId, bool $firstTime = false)
 {
     global $config;
@@ -17,7 +20,7 @@ function autoconfigure_device(string $deviceType, int $deviceId, bool $firstTime
             $deviceData = $householdsBackend->getDomophone($deviceId);
 
             if (!$deviceData) {
-                throw new Error("Device '$deviceType' with ID $deviceId not found in the DB");
+                throw new Exception("Device '$deviceType' with ID $deviceId not found");
             }
 
             if (!$deviceData['enabled']) {
@@ -33,7 +36,7 @@ function autoconfigure_device(string $deviceType, int $deviceId, bool $firstTime
             $deviceData = $camerasBackend->getCamera($deviceId);
 
             if (!$deviceData) {
-                throw new Error("Device '$deviceType' with ID $deviceId not found in the DB");
+                throw new Exception("Device '$deviceType' with ID $deviceId not found");
             }
 
             if (!$deviceData['enabled']) {
@@ -45,24 +48,20 @@ function autoconfigure_device(string $deviceType, int $deviceId, bool $firstTime
             break;
 
         default:
-            throw new ValueError("Unsupported device type '$deviceType'");
+            throw new Exception("Unsupported device type '$deviceType'");
     }
 
-    try {
-        $device = loadDevice(
-            $deviceType,
-            $deviceData['model'],
-            $deviceData['url'],
-            $deviceData['credentials'],
-            $firstTime
-        );
+    $device = loadDevice(
+        $deviceType,
+        $deviceData['model'],
+        $deviceData['url'],
+        $deviceData['credentials'],
+        $firstTime
+    );
 
-        if ($device) {
-            $configurator = new SmartConfigurator($device, $dbConfigCollector);
-            $configurator->makeConfiguration();
-            $householdsBackend->autoconfigDone($deviceId);
-        }
-    } catch (Exception $e) {
-        throw new Error($e->getMessage());
+    if ($device) {
+        $configurator = new SmartConfigurator($device, $dbConfigCollector);
+        $configurator->makeConfiguration();
+        $householdsBackend->autoconfigDone($deviceId);
     }
 }
