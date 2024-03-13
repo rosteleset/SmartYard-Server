@@ -1142,7 +1142,7 @@
                 fail(FAIL).
                 fail(loadingDone).
                 done(() => {
-                    message(i18n("tt.fileWasAdded"));
+                    message(i18n("tt.fileWasDeleted"));
                     modules.tt.route({
                         issue: issue.issue.issueId,
                         filter: filter,
