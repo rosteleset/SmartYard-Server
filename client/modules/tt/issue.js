@@ -730,7 +730,7 @@
                     h += $.trim(issue.issue.attachments[i].filename);
                 }
                 h += "</a>";
-                h += " [" + formatBytes(issue.issue.attachments[i].length) + "]";
+//                h += " [" + formatBytes(issue.issue.attachments[i].length) + "]";
                 h += "</div>";
                 h += "</td>";
                 h += "</tr>";
