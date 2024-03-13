@@ -799,8 +799,6 @@
 
                 $delete = true;
 
-                error_log(print_r($list, true));
-
                 if ($list) {
                     foreach ($list as $entry) {
                         $delete = $delete && $files->deleteFile($entry["id"]) &&
