@@ -1272,7 +1272,7 @@
                         if ($returnGids) {
                             $g = (int)$user["primaryGroup"];
                         } else {
-                            $g = (int)$user["primaryGroupAcronym"];
+                            $g = $user["primaryGroupAcronym"];
                         }
                     }
                 }
