@@ -303,7 +303,7 @@
     "printTemplateSize": "Size",
     "printTemplateDate": "Date",
     "suggestions": "Suggestions",
-    "fileWasAdded": "File(s) was deleted",
+    "fileWasDeleted": "File(s) was deleted",
     "methods": {
         "tt": {
             "_title": "Task Manager",
