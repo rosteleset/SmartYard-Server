@@ -256,7 +256,7 @@
 
                 $preprocess["%%me"] = $this->login;
                 $preprocess["%%my"] = $my;
-                $preprocess["%%primaryGrooup"] = $primaryGroup;
+                $preprocess["%%primaryGroup"] = $primaryGroup;
 
                 $preprocess["%%strToday"] = date("Y-m-d");
                 $preprocess["%%strToday+1day"] = date("Y-m-d", strtotime("+1 day"));
@@ -361,8 +361,6 @@
                         }
                     }
                 }
-
-                error_log(print_r($query, true));
 
                 $issues = $this->mongo->$db->$collection->find($query, [
                     "projection" => $projection,
