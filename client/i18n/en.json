@@ -11,7 +11,7 @@
     "login": "Login",
     "password": "Password",
     "server": "Server",
-    "passowrdForgot": "I forgot my password",
+    "passwordForgot": "I forgot my password",
     "loginAction": "Login",
     "ok": "OK",
     "forgotFormTitle": "Password recovery",

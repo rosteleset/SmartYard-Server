@@ -490,7 +490,7 @@
                             {
                                 id: "domophoneId",
                                 type: "select2",
-                                title: i18n("addresses.domophone"),
+                                title: i18n("domophone"),
                                 options: domophones,
                                 validate: v => {
                                     return parseInt(v) > 0;
@@ -1119,7 +1119,7 @@
                             {
                                 id: "domophoneId",
                                 type: "select2",
-                                title: i18n("addresses.domophone"),
+                                title: i18n("domophone"),
                                 value: modules.addresses.houses.meta.domophoneModelsById[entrance.domophoneId] ? entrance.domophoneId : "0",
                                 options: domophones,
                                 select: modules.addresses.houses.domophoneIdSelect,
@@ -1904,7 +1904,7 @@
                                 items: [
                                     {
                                         icon: "fas fa-door-open",
-                                        title: i18n("addresses.domophone"),
+                                        title: i18n("domophone"),
                                         disabled: ! modules.addresses.houses.meta.entrances[i].domophoneId,
                                         click: entranceId => {
                                             location.href = "?#addresses.domophones&domophoneId=" + entrances[entranceId].domophoneId;
@@ -1912,7 +1912,7 @@
                                     },
                                     {
                                         icon: "fas fa-video",
-                                        title: i18n("addresses.camera"),
+                                        title: i18n("camera"),
                                         disabled: ! modules.addresses.houses.meta.entrances[i].cameraId,
                                         click: entranceId => {
                                             location.href = "?#addresses.cameras&cameraId=" + entrances[entranceId].cameraId;

@@ -302,7 +302,7 @@ function initAll() {
     $("#loginBoxLang").html(l);
 
     $("#loginBoxLoginButton").text(i18n("loginAction"));
-    $("#loginBoxForgotPassword").text(i18n("passowrdForgot"));
+    $("#loginBoxForgotPassword").text(i18n("passwordForgot"));
 
     $("#forgotBoxTitle").text(i18n("forgotFormTitle"));
     $("#forgotBoxEMail").attr("placeholder", i18n("eMail"));
