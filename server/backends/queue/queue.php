@@ -14,6 +14,14 @@
          */
         abstract class queue extends backend
         {
+
+            /**
+             * Get scheduled tasks.
+             *
+             * @return array The array of tasks.
+             */
+            abstract public function getTasks(): array;
+
             /**
              * @param $objectType
              * @param $objectId

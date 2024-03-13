@@ -7,6 +7,7 @@ languages:
 modules:
 - asterisk
 - addresses
+- queues
 - about
 asterisk:
   ws: wss://example.com/wss

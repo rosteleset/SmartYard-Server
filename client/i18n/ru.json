@@ -61,6 +61,8 @@
     "noNotifications": "Нет новых уведомлений",
     "copied": "Скопировано",
     "clipboard": "Буфер обмена",
+    "domophone": "Домофон",
+    "camera": "Камера",
     "tz": {
         "Europe/Moscow": "Европа/Москва"
     },

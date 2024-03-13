@@ -8,6 +8,7 @@
     "modules": [
         "asterisk",
         "addresses",
+        "queues",
         "about"
     ],
     "asterisk": {

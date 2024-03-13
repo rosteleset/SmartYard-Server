@@ -26,6 +26,18 @@
             /**
              * @inheritDoc
              */
+            public function getTasks(): array
+            {
+                return $this->db->get("select * from tasks_changes", false, [
+                    "task_change_id" => "taskId",
+                    "object_type" => "objectType",
+                    "object_id" => "objectId",
+                ]);
+            }
+
+            /**
+             * @inheritDoc
+             */
             public function changed($objectType, $objectId)
             {
                 $households = loadBackend("households");
