@@ -1142,6 +1142,7 @@
                 fail(FAIL).
                 fail(loadingDone).
                 done(() => {
+                    message(i18n("tt.fileWasAdded"));
                     modules.tt.route({
                         issue: issue.issue.issueId,
                         filter: filter,

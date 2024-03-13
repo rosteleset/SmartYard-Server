@@ -303,6 +303,7 @@
     "printTemplateSize": "Размер",
     "printTemplateDate": "Дата",
     "suggestions": "Подсказки",
+    "fileWasAdded": "Файл(ы) удален(ы)",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",
