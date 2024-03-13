@@ -1263,7 +1263,7 @@
                 $groups = loadBackend("groups");
                 $users = loadBackend("users");
 
-                $g = false;
+                $g = null;
 
                 if ($groups && $users) {
                     $user = $users->getUser($this->uid);
