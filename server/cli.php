@@ -75,7 +75,6 @@
                 [--check-backends]
 
             autoconfigure:
-                [--autoconfigure-domophone=<domophone_id> [--first-time]]
                 [--autoconfigure-device=<device_type> --id=<device_id> [--first-time]]
 
             cron:
@@ -561,6 +560,10 @@
         }
 
         if (checkInt($domophone_id)) {
+            $idPart = "--id=$domophone_id";
+            $firstTimePart = $first_time ? " --first-time'" : "'";
+            echo "!!! Deprecated. Use '--autoconfigure-device=domophone $idPart$firstTimePart next time !!!\n\n";
+
             autoconfigure_domophone($domophone_id, $first_time);
             exit(0);
         } else {
@@ -583,8 +586,14 @@
         }
 
         if (checkInt($device_id)) {
-            autoconfigure_device($device_type, $device_id, $first_time);
-            exit(0);
+            try {
+                autoconfigure_device($device_type, $device_id, $first_time);
+                exit(0);
+            } catch (Exception $e) {
+                $script_result = 'fail';
+                echo "!!! FAILED: " . $e->getMessage() . " !!!\n\n";
+                exit(1);
+            }
         }
     }
 
