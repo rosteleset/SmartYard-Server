@@ -772,26 +772,28 @@ function cardForm(params) {
                 let id = $(this).attr("id");
                 let fileNames = $(this).val();
 
-                mConfirm(i18n("deleteFile", fileNames.join(', ')), i18n("confirm"), i18n("delete"), () => {
-                    for (let i in fileNames) {
-                        let found;
-                        do {
-                            found = false;
-                            for (let j in files[id]) {
-                                if (files[id][j].name == fileNames[i]) {
-                                    files[id].splice(j, 1);
-                                    found = true;
-                                    break;
+                if (fileNames.length) {
+                    mConfirm(i18n("deleteFile", fileNames.join(', ')), i18n("confirm"), i18n("delete"), () => {
+                        for (let i in fileNames) {
+                            let found;
+                            do {
+                                found = false;
+                                for (let j in files[id]) {
+                                    if (files[id][j].name == fileNames[i]) {
+                                        files[id].splice(j, 1);
+                                        found = true;
+                                        break;
+                                    }
                                 }
-                            }
-                        } while (found);
-                    }
-
-                    $("#" + id).html("");
-                    for (let j in files[id]) {
-                        $("#" + id).append("<option>" + files[id][j].name + "</option>");
-                    }
-                });
+                            } while (found);
+                        }
+    
+                        $("#" + id).html("");
+                        for (let j in files[id]) {
+                            $("#" + id).append("<option>" + files[id][j].name + "</option>");
+                        }
+                    });
+                }
             });
 
             $(`#${_prefix}${params.fields[i].id}-add`).off("click").on("click", function () {
