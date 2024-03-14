@@ -4,7 +4,7 @@
           "_title": "CDR",
           "cdr": {
               "_title": "CDR",
-              "GET": "View"
+              "POST": "View"
           }
       }
   }

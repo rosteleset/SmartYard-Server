@@ -14,7 +14,7 @@
 
         class cdr extends api {
 
-            public static function GET($params) {
+            public static function POST($params) {
                 $cdr = loadBackend("cdr")->getCDR(@$params["phones"], @$params["dateFrom"], @$params["dateTo"]);
 
                 return api::ANSWER($cdr, ($cdr !== false)?"cdr":"404");
@@ -25,7 +25,7 @@
 
                 if ($cdr) {
                     return [
-                        "GET",
+                        "POST",
                     ];
                 }
             }
