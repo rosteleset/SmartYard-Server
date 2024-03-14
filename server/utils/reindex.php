@@ -24,9 +24,16 @@
                 foreach ($methods as $method) {
                     if ($method != "." && $method != ".." && substr($method, -4) == ".php" && is_file("api/$api/$method")) {
                         $method = substr($method, 0, -4);
-                        require_once "api/$api/$method.php";
-                        if (class_exists("\\api\\$api\\$method")) {
-                            $request_methods = call_user_func(["\\api\\$api\\$method", "index"]);
+                        if (file_exists("api/$api/custom/$method.php")) {
+                            $file = "api/$api/custom/$method.php";
+                            $class = "\\api\\$api\\custom\\$method";
+                        } else {
+                            $file = "api/$api/$method.php";
+                            $class = "\\api\\$api\\$method";
+                        }
+                        require_once $file;
+                        if (class_exists($class)) {
+                            $request_methods = call_user_func([$class, "index"]);
                             if ($request_methods) {
                                 foreach ($request_methods as $request_method => $backend) {
                                     if (is_int($request_method)) {
