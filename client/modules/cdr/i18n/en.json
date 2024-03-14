@@ -1,0 +1,11 @@
+{
+  "methods": {
+      "cdr": {
+          "_title": "CDR",
+          "cdr": {
+              "_title": "CDR",
+              "GET": "View"
+          }
+      }
+  }
+}
