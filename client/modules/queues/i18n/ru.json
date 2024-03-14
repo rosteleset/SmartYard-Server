@@ -2,5 +2,14 @@
     "queues": "Очереди",
     "taskId": "#",
     "objectType": "Тип объекта",
-    "objectId": "ID объекта"
+    "objectId": "ID объекта",
+    "methods": {
+        "queues": {
+            "_title": "Очереди",
+            "queues": {
+                "_title": "Очереди",
+                "GET": "Просмотр"
+            }
+        }
+    }
 }
