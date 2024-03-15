@@ -212,7 +212,8 @@
         "monitoring": {
             "backend": "zabbix",
             "zbx_api_url": "<!-- your zabbix APU URL here --!>",
-            "zbx_token": "<!-- your zabbix API token --!>"
+            "zbx_token": "<!-- your zabbix API token --!>",
+            "store_days": 7
         }
     },
 

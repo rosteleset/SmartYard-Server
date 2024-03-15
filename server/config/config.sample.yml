@@ -161,6 +161,7 @@ backends:
     backend: zabbix
     zbx_api_url: "<!-- your zabbix APU URL here --!>"
     zbx_token: "<!-- your zabbix API token --!>"
+    store_days: 7
 email:
   server: 127.0.0.1
   port: 587
