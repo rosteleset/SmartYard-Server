@@ -958,7 +958,6 @@
         });
 
         $(".ttCalls").off("click").on("click", () => {
-            $(".ttCalls").hide();
             loadingStart();
             modules.tt.cdr.cdr(issue.issue).
             fail(FAIL).
@@ -966,6 +965,8 @@
                 loadingDone();
             }).
             done(result => {
+                $(".ttCalls").hide();
+                modules.tt.issue.callsLoaded = true;
                 console.log(result);
                 loadingDone;
             });
