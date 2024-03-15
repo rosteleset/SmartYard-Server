@@ -971,8 +971,7 @@
                     if ($("#issueComments").text()) {
 
                     } else {
-                        let h = '';
-                        h += `<tr><td style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.comments")}' style="font-size: 11pt;"/></td></tr>`;
+                        let h = `<tr><td style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.comments")}' style="font-size: 11pt;"/></td></tr>`;
                         for (let i in result.cdr) {
                             h += "<tr class='issueComment' data-time='" + result.cdr[i].start + "'>";
                             h += "<td class='pl-1' style='font-size: 14px;'>";
@@ -989,6 +988,7 @@
                             h += "</td>";
                             h += "</tr>";
                         }
+                        $("#issueComments").html(h);
                     }
                     message(i18n("tt.callsLoaded", result.cdr.length));
                 } else {
