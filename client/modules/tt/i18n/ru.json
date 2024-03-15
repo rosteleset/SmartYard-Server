@@ -305,7 +305,7 @@
     "suggestions": "Подсказки",
     "fileWasDeleted": "Файл(ы) удален(ы)",
     "calls": "Звонки",
-    "callsLoaded": "%s звонков найдено found",
+    "callsLoaded": "%s звонков найдено",
     "callsNotFound": "Звонки не найдены",
     "methods": {
         "tt": {
