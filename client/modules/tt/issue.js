@@ -4,6 +4,8 @@
         moduleLoaded("tt.issue", this);
     },
 
+    callsLoaded: false,
+
     createIssue: function (current_project, parent) {
         loadingStart();
         GET("tt", "tt", false, true).
@@ -470,6 +472,8 @@
     },
 
     renderIssue: function (issue, filter, index, count, search) {
+        modules.tt.issue.callsLoaded = false;
+
         $("#leftTopDynamic").html("");
         $("#rightTopDynamic").html("");
 
@@ -636,7 +640,7 @@
             h += '</span>';
         }
 
-        if (AVAIL("cdr", "cdr", "POST") && modules.tt.cdr && modules.tt.cdr.hasCdr(issue.issue)) {
+        if (AVAIL("cdr", "cdr", "POST") && modules.tt.cdr && modules.tt.cdr.hasCdr(issue.issue) && !modules.tt.issue.callsLoaded) {
             h += `<span class="hoverable text-primary mr-3 ttCalls">${i18n("tt.calls")}</span>`;
         }
 
@@ -947,10 +951,24 @@
                 $(".ttJournal").text(i18n("tt.journal"));
                 $("#issueJournal").hide();
                 $("#issueComments").show();
-                if (AVAIL("cdr", "cdr", "POST") && modules.tt.cdr && modules.tt.cdr.hasCdr(issue.issue)) {
+                if (AVAIL("cdr", "cdr", "POST") && modules.tt.cdr && modules.tt.cdr.hasCdr(issue.issue) && !modules.tt.issue.callsLoaded) {
                     $(".ttCalls").show();
                 }
             }
+        });
+
+        $(".ttCalls").off("click").on("click", () => {
+            $(".ttCalls").hide();
+            loadingStart();
+            modules.tt.cdr.cdr(issue.issue).
+            fail(FAIL).
+            fail(() => {
+                loadingDone();
+            }).
+            done(result => {
+                console.log(result);
+                loadingDone;
+            });
         });
 
         $(".ttIssueAction").off("click").on("click", function () {
