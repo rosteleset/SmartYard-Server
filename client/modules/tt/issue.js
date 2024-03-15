@@ -968,7 +968,7 @@
                 $(".ttCalls").hide();
                 modules.tt.issue.callsLoaded = true;
                 console.log(result);
-                loadingDone;
+                loadingDone();
             });
         });
 
