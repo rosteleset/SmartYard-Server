@@ -304,6 +304,7 @@
     "printTemplateDate": "Date",
     "suggestions": "Suggestions",
     "fileWasDeleted": "File(s) was deleted",
+    "calls": "Calls",
     "methods": {
         "tt": {
             "_title": "Task Manager",

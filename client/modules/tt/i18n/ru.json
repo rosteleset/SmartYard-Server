@@ -304,6 +304,7 @@
     "printTemplateDate": "Дата",
     "suggestions": "Подсказки",
     "fileWasDeleted": "Файл(ы) удален(ы)",
+    "calls": "Звонки",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",

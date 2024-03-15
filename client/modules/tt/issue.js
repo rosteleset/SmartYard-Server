@@ -636,6 +636,10 @@
             h += '</span>';
         }
 
+        if (AVAIL("cdr", "cdr", "POST") && modules.tt.cdr && modules.tt.cdr.hasCdr(issue.issue)) {
+            h += `<span class="hoverable text-primary mr-3 ttCalls">${i18n("tt.calls")}</span>`;
+        }
+
         if (issue.showJournal) {
             h += `<span class="hoverable text-primary mr-3 ttJournal">${i18n("tt.journal")}</span>`;
         }
@@ -835,6 +839,7 @@
                 GET("tt", "journal", issue.issue.issueId).
                 done(response => {
                     $(".ttJournal").text(i18n("tt.comments"));
+                    $(".ttCalls").hide();
                     $("#issueComments").hide();
                     let h = '';
                     h += `<tr><td style="width: 100%" colspan="4"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.journal")}' style="font-size: 11pt;"/></td></tr>`;
@@ -942,6 +947,9 @@
                 $(".ttJournal").text(i18n("tt.journal"));
                 $("#issueJournal").hide();
                 $("#issueComments").show();
+                if (AVAIL("cdr", "cdr", "POST") && modules.tt.cdr && modules.tt.cdr.hasCdr(issue.issue)) {
+                    $(".ttCalls").show();
+                }
             }
         });
 
