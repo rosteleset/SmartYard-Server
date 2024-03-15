@@ -305,6 +305,8 @@
     "suggestions": "Suggestions",
     "fileWasDeleted": "File(s) was deleted",
     "calls": "Calls",
+    "callsLoaded": "%s calls found",
+    "callsNotFound": "Calls not found",
     "methods": {
         "tt": {
             "_title": "Task Manager",

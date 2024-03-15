@@ -967,6 +967,33 @@
             done(result => {
                 $(".ttCalls").hide();
                 modules.tt.issue.callsLoaded = true;
+                if (result.cdr && result.cdr.length) {
+                    if ($("#issueComments").text()) {
+
+                    } else {
+                        let h = '';
+                        h += `<tr><td style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.comments")}' style="font-size: 11pt;"/></td></tr>`;
+                        for (let i in result.cdr) {
+                            h += "<tr class='issueComment' data-time='" + result.cdr[i].start + "'>";
+                            h += "<td class='pl-1' style='font-size: 14px;'>";
+                            h += "<div>";
+                            h += "*" + (parseInt(i) + 1) + " ";
+                            h += ttDate(result.cdr[i].start);
+                            h += "<span class='ml-2 text-info text-bold'>";
+                            h += result.cdr[i].src + " >>> " + result.cdr[i].dst;
+                            h += "</span>";
+                            h += "</div>";
+                            h += "<div class='ml-2 mb-2 mt-1'>";
+                            h += `<audio src='${result.cdr[i].file}' controls='true' preload='none'>`;
+                            h += "</div>";
+                            h += "</td>";
+                            h += "</tr>";
+                        }
+                    }
+                    message(i18n("tt.callsLoaded", result.cdr.length));
+                } else {
+                    message(i18n("tt.callsNotFound"));
+                }
                 console.log(result);
                 loadingDone();
             });
