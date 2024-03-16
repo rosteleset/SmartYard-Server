@@ -5,13 +5,41 @@ require_once __DIR__ . '/../../../utils/api_exec.php';
 
 class zabbix extends monitoring
 {
-    protected $debug, $zbx_api, $zbx_token, $debug_url;
+    protected $zbx_api, $zbx_token, $zbx_store_days, $zbx_data = [];
     public function __construct($config, $db, $redis, $login = false)
     {
         $this->zbx_api = $config["backends"]["monitoring"]["zbx_api_url"];
         $this->zbx_token = $config["backends"]["monitoring"]["zbx_token"];
-        $this->debug = $config["backends"]["monitoring"]["debug"];
-        $this->debug_url = $config["backends"]["monitoring"]["debug_url"];
+        $this->zbx_store_days = $config["backends"]["monitoring"]["store_days"];
+
+        /**
+         * get actual item ids
+         * TODO: store data to redis, update every hour for example
+         */
+        $this->getActualIds();
+    }
+
+    /**
+     * Get actual item id from zabbix api
+     * @return void
+     */
+    private function getActualIds():void
+    {
+        //FIXME: refactor getTemplateIds and getGroupIds
+        $templates = $this->getTemplateIds(["Intercom_AKUVOX", "Intercom_BEWARD", "Intercom_QTECH"]);
+        $groups = $this->getGroupIds(["Intercoms", "Cameras"]);
+
+        if ($templates){
+            foreach ($templates as $template) {
+                $this->zbx_data['templates'][$template['host']] = $template['templateid'];
+            }
+        }
+
+        if ($groups){
+            foreach ($groups as $group) {
+                $this->zbx_data['groups'][$group['name']] = $group['groupid'];
+            }
+        }
     }
 
     public function deviceStatus($deviceType, $deviceId)
@@ -36,28 +64,63 @@ class zabbix extends monitoring
         return apiExec($method, $url, $payload, $contentType, $token);
     }
 
-    /**
-     * TODO: send debug msg
-     * @param $payload
-     * @return bool|string
-     */
-    private function send_echo($payload)
+    private function zbxObjectMapping($source):array
     {
-        $payload = [
-            'response' => $payload,
-        ];
+        $mapped = [];
+        foreach ($source as $item) {
+            $mapped_item = [
+                "zbx_hostid" => $item["hostid"],
+                "status" => $item["status"] === "0",
+                "host" => $item["host"],
+                "name" => $item["name"],
+                "template" => $item["parentTemplates"][0]["host"],
+                "interface" => $item["interfaces"][0]["ip"]
+            ];
 
-        return $this->apiExec("POST", $this->debug_url, $payload, 'application/json', false);
+            // mapping macros
+            foreach ($item['macros'] as $macros) {
+                if ($macros["macro"] === '{$INTERCOM_PASSWORD}'){
+                    $mapped_item["credentials"] = $macros["value"];
+                    break;
+                }
+            }
+
+            // mapping tags
+            if (count($item['tags']) > 0) {
+                foreach ($item['tags'] as $tag) {
+                    $mapped_item["tags"] = [$tag['tag'] => $tag['value']];
+                }
+            }
+
+            $mapped[] = $mapped_item;
+        }
+        return $mapped;
     }
 
-    private function getDomophones()
+    private function rbtObjectMapping($source):array
+    {
+        $mapped = [];
+        foreach ($source as $item) {
+            $mapped_item = [
+                'rbt_domophoneId' => $item['domophoneId'],
+                'status' => $item['enabled'] === 1,
+                'host' => $item['ip'],
+                'name' => $item['ip'] . ' | ' . $item['name'],
+                'template' => 'Intercom_' . $item['vendor'],
+                'interface' => $item['ip'],
+                'credentials' => $item['credentials']
+            ];
+            $mapped[] = $mapped_item;
+        }
+        return $mapped;
+    }
+
+    private function getDomophones():array
     {
         $households = loadBackend("households");
         $configs = loadBackend("configs");
-
         $domophonesModels = $configs->getDomophonesModels();
         $domophones = $households->getDomophones("all");
-
         foreach ($domophones as $domophone) {
             $subset [] = [
                 "enabled" => $domophone["enabled"],
@@ -72,13 +135,12 @@ class zabbix extends monitoring
         return $subset;
     }
 
-    private function getCameras()
+    private function getCameras():array
     {
         $cameras = loadBackend("cameras");
         $configs = loadBackend("configs");
         $camerasModels = $configs->getCamerasModels();
         $allCameras = $cameras->getCameras();
-
         foreach ($allCameras as $camera) {
             $subset [] = [
                 "cameraId" => $camera["cameraId"],
@@ -99,17 +161,256 @@ class zabbix extends monitoring
      */
     private function configureTemplates()
     {
-        // implement starter zabbix template, groups
+        // implement starter zabbix template, groups ...
     }
 
-    private function createItems()
+    private function createHost(array $item, string $group_name):void
     {
         // implement api call to create monitoring item
+        //params to create host Intercom
+        $params = [
+        'host' => $item['host'],
+        'name' => $item['name'],
+        'interfaces' => [
+            [
+                "type" => 1,
+                "main" => 1,
+                "useip" => 1,
+                "ip" => $item['interface'],
+                "dns" => "",
+                "port" => "10050"
+            ]
+        ],
+        'groups' => [
+            [
+                "groupid" => $this->zbx_data['groups'][$group_name]
+            ]
+        ],
+        'tags' => [
+            [
+                "tag" => "Host type",
+                "value" => "Intercom"
+            ]
+        ],
+        'templates' => [
+            [
+                "templateid" => $this->zbx_data['templates'][$item['template']],
+            ]
+        ],
+        'macros' => [
+            [
+                "macro" => '{$INTERCOM_PASSWORD}',
+                "value" => $item['credentials'],
+            ]
+        ]
+         ];
+
+        $body = [
+            'jsonrpc' => "2.0",
+            'method' => "host.create",
+            'params' => $params,
+            'id' => 1
+        ];
+
+        $this->apiExec('POST', $this->zbx_api, $body, 'application/json', $this->zbx_token );
+    }
+    private function disableHost(array $item):void
+    {
+        // implement logic disable host and add tag "DISABLED: 1710495601 || 03/15/2024 09:40:01"
+        $now = time();
+        $body = [
+            'jsonrpc' => '2.0',
+            'method' => 'host.update',
+            'params' => [
+                'hostid' => $item['zbx_hostid'],
+                'status' => 1,
+                'tags' => [
+                    [
+                        "tag" => "DISABLED",
+                        "value" => $now .' || '. date('m/d/Y H:i:s', $now),
+                    ]
+                ]
+            ],
+            'id' => 1
+        ];
+        $this->apiExec('POST', $this->zbx_api, $body, 'application/json', $this->zbx_token);
+    }
+    private function enableHost(array $item):void
+    {
+        // implement logic enable host and delete tag
+        $body = [
+            'jsonrpc' => '2.0',
+            'method' => 'host.update',
+            'params' => [
+                'hostid' => $item['zbx_hostid'],
+                'status' => 0,
+                'tags' => [],
+            ],
+            'id' => 1
+        ];
+        $this->apiExec('POST', $this->zbx_api, $body, 'application/json', $this->zbx_token);
+    }
+
+    // TODO: refactor to mass delete
+    private function deleteHosts($item):void
+    {
+        $body = [
+            'jsonrpc' => '2.0',
+            'method' => 'host.delete',
+            'params' => [$item['zbx_hostid']],
+            'id' => 1
+        ];
+        $this->apiExec('POST', $this->zbx_api, $body, 'application/json', $this->zbx_token);
+    }
+
+    private function createHosts()
+    {
+        // implement create hosts logic
+
     }
 
     private function getItems()
     {
         // implement api call to get monitored items from zabbix
+        $body = [
+            "jsonrpc" => "2.0",
+            "method" => "hostgroup.get",
+            "params" => [
+                "output" => [
+                    "groupid",
+                    "name",
+                ],
+                "filter" => [
+                    "name" => [
+                        "Intercoms",
+                        "Cameras"
+                    ]
+                ]
+            ],
+            "id" => 1
+        ];
+
+        $response = $this->apiExec("POST", $this->zbx_api, $body, 'application/json', $this->zbx_token);
+        $response = json_decode($response, true);
+        if ($response && $response['result']) {
+            return $response['result'];
+        }
+        return null;
+    }
+
+    /**
+     * get group id by name
+     * @param $name
+     * @return mixed|null
+     */
+    private function getGroupId($name):int|null
+    {
+        // implement api call to get monitored items from zabbix
+        $body = [
+            'jsonrpc' => '2.0',
+            'method' => 'hostgroup.get',
+            'params' => [
+                'output' => ['groupid'],
+                'filter' => [
+                    "name" => [$name]
+                ],
+                'limit' => 1
+            ],
+            'id' => 1
+        ];
+        $response = $this->apiExec('POST', $this->zbx_api, $body, 'application/json', $this->zbx_token);
+        $response = json_decode($response, true);
+        if ($response && $response['result']) {
+            return $response['result'][0]['groupid'];
+        }
+
+        return null;
+    }
+
+    private function getGroupIds($names):array|null
+    {
+        // implement api call to get monitored items from zabbix
+        $body =  [
+            'jsonrpc' => '2.0',
+            'method' => 'hostgroup.get',
+            'params' => [
+                'output' => [
+                    'groupid',
+                    'name'
+                ],
+                'filter' => [
+                    'name' => $names
+                ]
+            ],
+            'id' => 1
+        ];
+
+        $response = $this->apiExec('POST', $this->zbx_api, $body, 'application/json', $this->zbx_token);
+        $response = json_decode($response, true);
+
+        if ($response && $response['result']) {
+            return $response['result'];
+        }
+
+        return null;
+    }
+
+    private function getTemplateIds($name):array|null
+    {
+        // implement api call to get monitored items from zabbix
+        $body = [
+            'jsonrpc' => '2.0',
+            'method' => 'template.get',
+            'params' => [
+                'output' => [
+                    'host',
+                    'templateid',
+                    'name'
+                ],
+                'filter' => [
+                    'host' => $name
+                ]
+            ],
+            'id' => 1
+        ];
+
+        $response = $this->apiExec('POST', $this->zbx_api, $body, 'application/json', $this->zbx_token);
+        $response = json_decode($response, true);
+
+        if ($response && $response['result']) {
+            return $response['result'];
+        }
+
+        return null;
+    }
+
+    private function getHostsByGroupId($id){
+        $body = [
+            "jsonrpc" => "2.0",
+            "method" => "host.get",
+            "params" => [
+                "output" => [
+                    "hostid",
+                    "status",
+                    "host",
+                    "name",
+                ],
+                "groupids" => $id,
+                "selectInterfaces" => ["ip", "dns"],
+                "selectParentTemplates" => ["host"],
+                "selectMacros" => ["hostmacroid", "macro", "value"],
+                "selectTags" => "extend"
+            ],
+            "id" => 1
+        ];
+        $response = $this->apiExec("POST", $this->zbx_api, $body, 'application/json', $this->zbx_token);
+        $response = json_decode($response, true);
+
+        if ($response && $response['result']) {
+            return $response['result'];
+        }
+
+        return null;
     }
 
     private function removeItems()
@@ -117,13 +418,95 @@ class zabbix extends monitoring
         // implement api call to remove monitoring item
     }
 
-    private function handle()
+    // find items missing in arr "b"
+    private function compare_arr(array $a, array $b, string $compare_key = 'host'):array
     {
-        // implement main logic
+        $result = [];
+        // check if arr "b" is empty
+        if (!empty($b)) {
+            foreach ($a as $a_item) {
+                $found = false;
+                // find item "a" in array "b"
+                foreach ($b as $b_item) {
+                    if ($a_item[$compare_key] === $b_item[$compare_key]) {
+                        $found = true;
+                        break;
+                    }
+                }
+                // If no matches are found, add the current element to the result
+                if (!$found) {
+                    $result[] = $a_item;
+                }
+            }
+        } else {
+            // If array $b is empty, add all items from array $a to result
+            $result = $a;
+        }
+
+        return $result;
     }
 
+    private function handle(): void
+    {
+        // implement main logic
+        // get data from RBT
+        $domophones = $this->getDomophones();
+        // get hosts from Zabbix API
+        $intercomsFromZbx = $this->getHostsByGroupId($this->zbx_data['groups']['Intercoms']);
+        //  mapping zabbix data
+        $intercomsFromZbxMapped = $this->zbxObjectMapping($intercomsFromZbx);
+        // mapping db data
+        $intercomsFromRBTMapped = $this->rbtObjectMapping($domophones);
+        // Compare
+        /**
+         * 5 hosts missing on monitoring
+         */
+        $missing_in_zbx = $this->compare_arr($intercomsFromRBTMapped, $intercomsFromZbxMapped);
+        /**
+         * 6 extra hosts on monitoring
+         */
+        $exclude_in_zbx = $this->compare_arr($intercomsFromZbxMapped, $intercomsFromRBTMapped);
+
+        // create missing hosts
+        if ($missing_in_zbx) {
+            foreach ($missing_in_zbx as $item){
+                // FIXME: refactor group_name param
+                $this->createHost($item, "Intercoms");
+            }
+        }
+
+        // disable or remove extra hosts on monitoring
+        if ($exclude_in_zbx) {
+            foreach ($exclude_in_zbx as $item){
+                /**
+                 * Set host state disabled
+                 * Before deleting, turn off the host, add a tag with the date of shutdown
+                 */
+                if ($item['status'] === true) {
+                    $this->disableHost($item);
+                }
+                /**
+                 * Delete host
+                 * Zabbix does not store host shutdown history.
+                 * Getting the host shutdown date from the previously added tag.
+                 * Example: "DISABLED": "1703333582 || 12/23/2023 12:13:02"
+                 */
+                if ($item['status'] === false && $item['tags']['DISABLED']){
+                    $timestamp = (int)explode(' || ', $item['tags']['DISABLED'])[0];
+                    $delete_after = $timestamp + ($this->zbx_store_days * 24 * 60 * 60);
+                    if ($delete_after < time()){
+                        $this->deleteHosts($item);
+                    }
+                }
+            }
+        }
+    }
     public function cron($part):bool
     {
-        return true;
+        $result = true;
+        if ($part === "5min"){
+            $this->handle();
+        }
+        return $result;
     }
 }
