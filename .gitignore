@@ -79,3 +79,5 @@ package-lock.json
 /server/services/event/config.json
 install/kamailio/kamailio-local.cfg
 install/kamailio/kamctlrc
+server/static/portal/*
+server/static/portal/**
