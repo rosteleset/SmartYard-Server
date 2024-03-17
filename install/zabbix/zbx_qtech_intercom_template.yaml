@@ -1,8 +1,8 @@
 zabbix_export:
   version: '6.4'
   template_groups:
-    - uuid: ed6c76bdba8d4adfa6762850c60f4b46
-      name: Templates/Intercom
+    - uuid: 6b2da836ac5d4728b89105eb2ed04250
+      name: Templates/Intercoms
   templates:
     - uuid: 569ee7c7edec4f1cb8772a86f910ef9b
       template: Intercom_QTECH
@@ -11,7 +11,7 @@ zabbix_export:
       templates:
         - name: 'ICMP Ping'
       groups:
-        - name: Templates/Intercom
+        - name: Templates/Intercoms
       items:
         - uuid: 84795b85391847c28e2a5d06c604e33e
           name: 'QTECH Intercom: device model'
@@ -153,32 +153,11 @@ zabbix_export:
               event_name: 'INTERCOM: {HOST.NAME} | has been restarted (uptime < 10m)'
               priority: INFO
               description: 'Device has been restarted'
-      discovery_rules:
-        - uuid: d4b9af7b7b5247e5b673875580b7314a
-          name: 'Intercom discovery'
-          type: HTTP_AGENT
-          key: rbt.intercom.discovery
-          item_prototypes:
-            - uuid: f6be0abbe55c42ff9b8c56739ce6892a
-              name: '{#INTERCOM}'
-              type: HTTP_AGENT
-              key: 'rbt.intercom[{#INTERCOM}]'
-              trends: '0'
-              value_type: TEXT
-              preprocessing:
-                - type: JSONPATH
-                  parameters:
-                    - '$[?(@.name=="{#INTERCOM}")].isWork'
-              url: 'http://{HOST.CONN}/internal/zbx'
-          url: 'http://{HOST.HOST}:3000/internal/zbx'
-          lld_macro_paths:
-            - lld_macro: '{#INTERCOM}'
-              path: '$[''name'']'
       tags:
         - tag: class
           value: hardware
         - tag: target
-          value: beward
+          value: qtech
       macros:
         - macro: '{$INTERCOM_PASSWORD}'
           value: admin

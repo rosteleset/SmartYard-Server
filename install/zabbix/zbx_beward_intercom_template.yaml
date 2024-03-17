@@ -1,8 +1,8 @@
 zabbix_export:
   version: '6.4'
   template_groups:
-    - uuid: ed6c76bdba8d4adfa6762850c60f4b46
-      name: Templates/Intercom
+    - uuid: 6b2da836ac5d4728b89105eb2ed04250
+      name: Templates/Intercoms
   templates:
     - uuid: 2bd845a58fb644cd906ada9bee7f7514
       template: Intercom_BEWARD
@@ -11,7 +11,7 @@ zabbix_export:
       templates:
         - name: 'ICMP Ping'
       groups:
-        - name: Templates/Intercom
+        - name: Templates/Intercoms
       items:
         - uuid: 659e196bf1504c2c9956afe605169271
           name: 'BEWARD Intercom: device model'
@@ -116,7 +116,6 @@ zabbix_export:
                       }
                   });
                   return JSON.stringify(data)
-                  
           url: 'http://{HOST.CONN}/cgi-bin/systeminfo_cgi'
           query_fields:
             - name: action
@@ -165,27 +164,6 @@ zabbix_export:
               dependencies:
                 - name: 'ICMP: Unavailable by ICMP ping'
                   expression: 'max(/Intercom_BEWARD/icmpping,#3)=0'
-      discovery_rules:
-        - uuid: 8e37731902e64d0f8e48ec081474fcae
-          name: 'Intercom discovery'
-          type: HTTP_AGENT
-          key: rbt.intercom.discovery
-          item_prototypes:
-            - uuid: 7ec9a358ea9c4280886407e7d7a87c49
-              name: '{#INTERCOM}'
-              type: HTTP_AGENT
-              key: 'rbt.intercom[{#INTERCOM}]'
-              trends: '0'
-              value_type: TEXT
-              preprocessing:
-                - type: JSONPATH
-                  parameters:
-                    - '$[?(@.name=="{#INTERCOM}")].isWork'
-              url: 'http://{HOST.CONN}/internal/zbx'
-          url: 'http://{HOST.HOST}:3000/internal/zbx'
-          lld_macro_paths:
-            - lld_macro: '{#INTERCOM}'
-              path: '$[''name'']'
       tags:
         - tag: class
           value: hardware

@@ -1,8 +1,8 @@
 zabbix_export:
   version: '6.4'
   template_groups:
-    - uuid: ed6c76bdba8d4adfa6762850c60f4b46
-      name: Templates/Intercom
+    - uuid: 6b2da836ac5d4728b89105eb2ed04250
+      name: Templates/Intercoms
   templates:
     - uuid: 91bfd12a176a404dadb9b4a3254666f9
       template: Intercom_AKUVOX
@@ -11,7 +11,7 @@ zabbix_export:
       templates:
         - name: 'ICMP Ping'
       groups:
-        - name: Templates/Intercom
+        - name: Templates/Intercoms
       items:
         - uuid: d6224634cd544c43b12220f488cdd0f4
           name: 'AKUVOX Intercom: device model'
@@ -116,7 +116,7 @@ zabbix_export:
         - tag: class
           value: hardware
         - tag: target
-          value: beward
+          value: akuvox
       macros:
         - macro: '{$INTERCOM_PASSWORD}'
           value: admin
