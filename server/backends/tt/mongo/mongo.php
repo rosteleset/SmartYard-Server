@@ -368,14 +368,14 @@
                     "limit" => (int)$limit,
                     "sort" => $sort
                 ]);
-
+/*
                 error_log(print_r([
                     "projection" => $projection,
                     "skip" => (int)$skip,
                     "limit" => (int)$limit,
                     "sort" => $sort
                 ], true));
-
+*/
                 $i = [];
 
                 $files = loadBackend("files");
