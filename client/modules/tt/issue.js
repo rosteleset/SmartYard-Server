@@ -990,6 +990,7 @@
                                 if (parseInt(result.cdr[i].start) < parseInt(comments.attr("data-time"))) {
                                     f = true;
                                     $(h).insertBefore(comments[j]);
+                                    break;
                                 }
                             }
                             if (!f) {
