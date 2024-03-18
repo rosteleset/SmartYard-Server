@@ -986,16 +986,20 @@
                             h += "</td>";
                             h += "</tr>";
                             let f = false;
-                            for (let j = comments.length; j >= 0; j--) {
-                                console.log(comments[j]);
-                                if (parseInt(result.cdr[i].start) < parseInt(comments[j].attr("data-time"))) {
-                                    f = true;
-                                    $(h).insertBefore(comments[j]);
-                                    break;
+                            let last = false;
+                            comments.get().reverse().each(function () {
+                                let comment = $(this);
+                                if (!last) {
+                                    last = comment;
                                 }
-                            }
+                                if (parseInt(result.cdr[i].start) < parseInt(comment.attr("data-time"))) {
+                                    f = true;
+                                    $(h).insertBefore(comment);
+                                    return false;
+                                }
+                            });
                             if (!f) {
-                                $(h).insertAfter(comments[comments.length - 1]);
+                                $(h).insertAfter(last);
                             }
                         }
                     } else {
