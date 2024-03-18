@@ -967,7 +967,6 @@
             done(result => {
                 $(".ttCalls").hide();
                 modules.tt.issue.callsLoaded = true;
-                console.log(result);
                 if (result.cdr && result.cdr.length) {
                     if ($("#issueComments").text()) {
                         for (let i in result.cdr) {
