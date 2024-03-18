@@ -987,8 +987,8 @@
                             h += "</tr>";
                             let f = false;
                             for (let j = comments.length; j >= 0; j--) {
+                                console.log(comments[j]);
                                 if (parseInt(result.cdr[i].start) < parseInt(comments[j].attr("data-time"))) {
-                                    console.log(comments[j]);
                                     f = true;
                                     $(h).insertBefore(comments[j]);
                                     break;
