@@ -1432,10 +1432,10 @@
 
         QUERY("tt", "issues", {
             "project": current_project,
-            "filter": x?x:'',
+            "filter": x ? x : '',
             "skip": skip,
             "limit": limit,
-            "search": ($.trim(params.search) && params.search !== true && !target)?$.trim(params.search):'',
+            "search": ($.trim(params.search) && params.search !== true && !target) ? $.trim(params.search) : '',
         }, true).
         done(response => {
             if (response.issues.exception) {
