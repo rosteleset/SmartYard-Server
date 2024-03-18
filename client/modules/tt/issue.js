@@ -969,7 +969,33 @@
                 modules.tt.issue.callsLoaded = true;
                 if (result.cdr && result.cdr.length) {
                     if ($("#issueComments").text()) {
-
+                        for (let i in result.cdr) {
+                            let comments = $(".issueComment");
+                            let h = "<tr class='issueComment' data-time='" + result.cdr[i].start + "'>";
+                            h += "<td class='pl-1' style='font-size: 14px;'>";
+                            h += "<div>";
+                            h += "*" + (parseInt(i) + 1) + " ";
+                            h += ttDate(result.cdr[i].start);
+                            h += "<span class='ml-2 text-info text-bold'>";
+                            h += result.cdr[i].src + "&nbsp;>>>&nbsp;" + result.cdr[i].dst;
+                            h += "</span>";
+                            h += "</div>";
+                            h += "<div class='ml-2 mb-2 mt-1'>";
+                            h += `<audio src='${result.cdr[i].file}' controls='true' preload='none'>`;
+                            h += "</div>";
+                            h += "</td>";
+                            h += "</tr>";
+                            let f = false;
+                            for (let j = comments.length; j >= 0; j--) {
+                                if (parseInt(result.cdr[i].start) < parseInt(comments.attr("data-time"))) {
+                                    f = true;
+                                    $(h).insertBefore(comments[j]);
+                                }
+                            }
+                            if (!f) {
+                                $(h).insertAfter(comments[comments.length - 1]);
+                            }
+                        }
                     } else {
                         let h = `<tr><td style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.comments")}' style="font-size: 11pt;"/></td></tr>`;
                         for (let i in result.cdr) {
@@ -992,7 +1018,7 @@
                     }
                     message(i18n("tt.callsLoaded", result.cdr.length));
                 } else {
-                    message(i18n("tt.callsNotFound"));
+                    warning(i18n("tt.callsNotFound"));
                 }
                 console.log(result);
                 loadingDone();
