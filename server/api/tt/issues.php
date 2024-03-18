@@ -33,7 +33,7 @@
                                 $preprocess["%%parent"] = trim($params["parent"]);
                             }
             
-                            $issues = $tt->getIssues(@$params["project"] ? : "TT", @$filter["filter"], @$filter["fields"], @$params["sortBy"] ? : ($filter["sortBy"] ? : [ "created" => 1 ]), @$params["skip"] ? : 0, @$params["limit"] ? : 5, $preprocess);
+                            $issues = $tt->getIssues(@$params["project"] ? : "TT", @$filter["filter"], @$filter["fields"], @$params["sort"] ? : ($filter["sort"] ? : [ "created" => 1 ]), @$params["skip"] ? : 0, @$params["limit"] ? : 5, $preprocess);
                         } else {
                             setLastError("filterNotFound");
                             return api::ERROR();
@@ -55,7 +55,7 @@
 
                 if ($tt && @$params["query"]) {
                     try {
-                        $issues = $tt->getIssues(@$params["project"] ? : "TT", @$params["query"], @$params["fields"], @$params["sortBy"] ? : [ "created" => 1 ], @$params["skip"] ? : 0, @$params["limit"] ? : 5, @$params["preprocess"] ? : []);
+                        $issues = $tt->getIssues(@$params["project"] ? : "TT", @$params["query"], @$params["fields"], @$params["sort"] ? : [ "created" => 1 ], @$params["skip"] ? : 0, @$params["limit"] ? : 5, @$params["preprocess"] ? : []);
                     } catch (\Exception $e) {
                         setLastError($e->getMessage());
                         return api::ERROR();
