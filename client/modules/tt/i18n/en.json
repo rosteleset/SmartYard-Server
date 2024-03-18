@@ -307,6 +307,7 @@
     "calls": "Calls",
     "callsLoaded": "%s calls found",
     "callsNotFound": "Calls not found",
+    "sec": "sec",
     "methods": {
         "tt": {
             "_title": "Task Manager",

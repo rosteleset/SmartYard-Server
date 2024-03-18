@@ -977,7 +977,7 @@
                             h += "*" + (parseInt(i) + 1) + " ";
                             h += ttDate(result.cdr[i].start);
                             h += "<span class='ml-2 text-info text-bold'>";
-                            h += result.cdr[i].src + "&nbsp;>>>&nbsp;" + result.cdr[i].dst;
+                            h += result.cdr[i].src + "&nbsp;>>>&nbsp;" + result.cdr[i].dst + " [" + result.cdr[i].billsec + " " + i18n("tt.sec") + "]";
                             h += "</span>";
                             h += "</div>";
                             h += "<div class='ml-2 mb-1 mt-1'>";
