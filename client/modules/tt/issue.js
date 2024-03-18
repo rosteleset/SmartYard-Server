@@ -987,7 +987,7 @@
                             h += "</tr>";
                             let f = false;
                             let last = false;
-                            comments.reverse().each(function () {
+                            $(comments.get().reverse()).each(function () {
                                 let comment = $(this);
                                 if (!last) {
                                     last = comment;
