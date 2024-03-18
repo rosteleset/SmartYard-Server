@@ -971,6 +971,7 @@
                     if ($("#issueComments").text()) {
                         for (let i in result.cdr) {
                             let comments = $(".issueComment");
+                            console.log(comments);
                             let h = "<tr class='issueComment' data-time='" + result.cdr[i].start + "'>";
                             h += "<td class='pl-1' style='font-size: 14px;'>";
                             h += "<div>";
