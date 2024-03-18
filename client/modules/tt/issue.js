@@ -980,7 +980,7 @@
                             h += result.cdr[i].src + "&nbsp;>>>&nbsp;" + result.cdr[i].dst;
                             h += "</span>";
                             h += "</div>";
-                            h += "<div class='ml-2 mb-2 mt-1'>";
+                            h += "<div class='ml-2 mb-1 mt-1'>";
                             h += `<audio src='${result.cdr[i].file}' controls='true' preload='none'>`;
                             h += "</div>";
                             h += "</td>";
