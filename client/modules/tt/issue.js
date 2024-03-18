@@ -971,7 +971,6 @@
                     if ($("#issueComments").text()) {
                         for (let i in result.cdr) {
                             let comments = $(".issueComment");
-                            console.log(comments);
                             let h = "<tr class='issueComment' data-time='" + result.cdr[i].start + "'>";
                             h += "<td class='pl-1' style='font-size: 14px;'>";
                             h += "<div>";
@@ -988,7 +987,7 @@
                             h += "</tr>";
                             let f = false;
                             for (let j = comments.length; j >= 0; j--) {
-                                if (parseInt(result.cdr[i].start) < parseInt(comments.attr("data-time"))) {
+                                if (parseInt(result.cdr[i].start) < parseInt(comments[j].attr("data-time"))) {
                                     f = true;
                                     $(h).insertBefore(comments[j]);
                                     break;
@@ -1022,7 +1021,6 @@
                 } else {
                     warning(i18n("tt.callsNotFound"));
                 }
-                console.log(result);
                 loadingDone();
             });
         });
