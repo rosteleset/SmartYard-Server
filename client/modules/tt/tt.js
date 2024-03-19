@@ -1614,10 +1614,10 @@
                     }
                     lStore("sortBy:" + x, sort);
                     if (target) {
+                        console.log(1);
                         loadingStart();
                         params.skip = 0;
                         params.limit = limit ? limit : modules.tt.defaultIssuesPerPage;
-                        console.log(1);
                         modules.tt.renderIssues(params, true, false, loadingDone);
                     } else {
                         console.log(2);
