@@ -115,8 +115,6 @@
                         query.sort = lStore("sortBy:" + block.filter);
                     }
 
-                    console.log(query);
-
                     modules.tt.renderIssues(query, $(block.right?"#altForm":"#mainForm"), md5(guid()), loadWorkspace);
                 } else {
                     loadingDone();
