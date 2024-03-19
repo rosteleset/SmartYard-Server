@@ -1589,7 +1589,7 @@
                 },
                 {
                     id: "_sort_asc",
-                    text: i18n("tt.sortAsc"),s
+                    text: i18n("tt.sortAsc"),
                     selected: sortDir == 1,
                 },
                 {
