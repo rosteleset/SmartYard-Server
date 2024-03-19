@@ -14,6 +14,12 @@ function AVAIL(api, method, request_method) {
 }
 
 function QUERY(api, method, query, fresh) {
+    if (fresh) {
+        if (!query) {
+            query = {};
+        }
+        query["_"] = Math.random();
+    }
     return $.ajax({
         url: lStore("_server") + "/" + encodeURIComponent(api) + "/" + encodeURIComponent(method) + (query?("?" + $.param(query)):""),
         beforeSend: xhr => {
