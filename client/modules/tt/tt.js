@@ -1179,7 +1179,7 @@
     },
 
     renderIssues: function (params, target, issuesListId, callback) {
-        console.log("x", target);
+        let eX_target = target;
 
         if (target === "undefined") {
             target = false;
@@ -1440,16 +1440,12 @@
             "search": ($.trim(params.search) && params.search !== true && !target) ? $.trim(params.search) : '',
         };
 
-        console.log(lStore("sortBy:" + x));
-
         if (lStore("sortBy:" + x)) {
             query.sort = lStore("sortBy:" + x);
         }
 
         QUERY("tt", "issues", query, true).
         done(response => {
-            console.log(response);
-
             if (response.issues.exception) {
                 error(i18n("errors." + response.issues.exception), i18n("error"), 30);
             }
@@ -1618,15 +1614,11 @@
                     }
                     lStore("sortBy:" + x, sort);
                     if (target) {
-                        console.log(1);
-                        console.log(x, sort);
                         loadingStart();
                         params.skip = 0;
                         params.limit = limit ? limit : modules.tt.defaultIssuesPerPage;
-                        console.log("z");
-                        modules.tt.renderIssues(params, true, false, loadingDone);
+                        modules.tt.renderIssues(params, eX_target, false, loadingDone);
                     } else {
-                        console.log(2);
                         modules.tt.selectFilter();
                     }
                 }
