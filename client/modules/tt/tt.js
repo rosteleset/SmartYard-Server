@@ -1618,6 +1618,7 @@
                         loadingStart();
                         params.skip = 0;
                         params.limit = limit ? limit : modules.tt.defaultIssuesPerPage;
+                        console.log(x, sort);
                         modules.tt.renderIssues(params, true, false, loadingDone);
                     } else {
                         console.log(2);
