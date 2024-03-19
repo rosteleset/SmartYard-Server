@@ -656,8 +656,7 @@ class zabbix extends monitoring
         if ($part === "5min"){
             error_log("START monitoring backend");
             $this->handle();
-
-            $this->configureZbx();
+//            $this->configureZbx();
         }
         return $result;
     }
