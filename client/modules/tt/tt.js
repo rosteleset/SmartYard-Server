@@ -1179,7 +1179,7 @@
     },
 
     renderIssues: function (params, target, issuesListId, callback) {
-        console.log("x");
+        console.log("x", target);
 
         if (target === "undefined") {
             target = false;
