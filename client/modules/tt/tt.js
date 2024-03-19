@@ -1442,6 +1442,8 @@
             query.sort = lStore("sortBy:" + x);
         }
 
+        console.log(query);
+
         QUERY("tt", "issues", query, true).
         done(response => {
             if (response.issues.exception) {
