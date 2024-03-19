@@ -1438,14 +1438,14 @@
             "search": ($.trim(params.search) && params.search !== true && !target) ? $.trim(params.search) : '',
         };
 
-        console.log(query);
-
         if (lStore("sortBy:" + x)) {
             query.sort = lStore("sortBy:" + x);
         }
 
         QUERY("tt", "issues", query, true).
         done(response => {
+            console.log(response);
+            
             if (response.issues.exception) {
                 error(i18n("errors." + response.issues.exception), i18n("error"), 30);
             }
