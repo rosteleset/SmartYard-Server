@@ -1179,6 +1179,8 @@
     },
 
     renderIssues: function (params, target, issuesListId, callback) {
+        console.log("x");
+
         if (target === "undefined") {
             target = false;
         }
@@ -1617,10 +1619,11 @@
                     lStore("sortBy:" + x, sort);
                     if (target) {
                         console.log(1);
+                        console.log(x, sort);
                         loadingStart();
                         params.skip = 0;
                         params.limit = limit ? limit : modules.tt.defaultIssuesPerPage;
-                        console.log(x, sort);
+                        console.log("z");
                         modules.tt.renderIssues(params, true, false, loadingDone);
                     } else {
                         console.log(2);
