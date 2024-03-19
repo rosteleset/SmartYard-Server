@@ -1438,6 +1438,8 @@
             "search": ($.trim(params.search) && params.search !== true && !target) ? $.trim(params.search) : '',
         };
 
+        console.log(lStore("sortBy:" + x));
+
         if (lStore("sortBy:" + x)) {
             query.sort = lStore("sortBy:" + x);
         }
