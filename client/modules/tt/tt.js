@@ -1589,7 +1589,7 @@
                 },
                 {
                     id: "_sort_asc",
-                    text: i18n("tt.sortAsc"),
+                    text: i18n("tt.sortAsc"),s
                     selected: sortDir == 1,
                 },
                 {
@@ -1617,7 +1617,7 @@
                         loadingStart();
                         params.skip = 0;
                         params.limit = limit ? limit : modules.tt.defaultIssuesPerPage;
-                        modules.tt.renderIssues(params);
+                        modules.tt.renderIssues(params, target, issuesListId, callback);
                     } else {
                         modules.tt.selectFilter();
                     }
