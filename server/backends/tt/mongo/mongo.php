@@ -390,6 +390,8 @@
                     $i[] = $x;
                 }
 
+                error_log(print_r($sort, true));
+
                 return [
                     "issues" => $i,
                     "projection" => $projection,
