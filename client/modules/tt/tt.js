@@ -1179,8 +1179,6 @@
     },
 
     renderIssues: function (params, target, issuesListId, callback) {
-        let eX_target = target;
-
         if (target === "undefined") {
             target = false;
         }
