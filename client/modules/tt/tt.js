@@ -1445,7 +1445,7 @@
         QUERY("tt", "issues", query, true).
         done(response => {
             console.log(response);
-            
+
             if (response.issues.exception) {
                 error(i18n("errors." + response.issues.exception), i18n("error"), 30);
             }
@@ -1615,11 +1615,13 @@
                     lStore("sortBy:" + x, sort);
                     if (target) {
                         loadingStart();
-                        params.skip = Math.max(0, (parseInt($(this).attr("data-page")) - 1) * limit);
-                        params.limit = limit?limit:modules.tt.defaultIssuesPerPage;
-                        modules.tt.renderIssues(params, true, $(this).attr("data-target"), loadingDone);
+                        params.skip = 0;
+                        params.limit = limit ? limit : modules.tt.defaultIssuesPerPage;
+                        console.log(1);
+                        modules.tt.renderIssues(params, true, false, loadingDone);
                     } else {
-                        modules.tt.selectFilter(false, Math.max(0, (parseInt($(this).attr("data-page")) - 1) * limit));
+                        console.log(2);
+                        modules.tt.selectFilter();
                     }
                 }
             });
