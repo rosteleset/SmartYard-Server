@@ -1617,8 +1617,7 @@
                         loadingStart();
                         params.skip = 0;
                         params.limit = limit ? limit : modules.tt.defaultIssuesPerPage;
-                        console.log(eX_target);
-                        modules.tt.renderIssues(params, eX_target);
+                        modules.tt.renderIssues(params);
                     } else {
                         modules.tt.selectFilter();
                     }
