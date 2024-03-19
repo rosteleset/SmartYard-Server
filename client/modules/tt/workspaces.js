@@ -104,12 +104,18 @@
                 let block = _workspace.shift();
     
                 if (block) {
-                    modules.tt.renderIssues({
+                    let query = {
                         project: block.project,
                         filter: block.filter,
                         class: block.class,
                         limit: block.limit,
-                    }, $(block.right?"#altForm":"#mainForm"), md5(guid()), loadWorkspace);
+                    };
+            
+                    if (lStore("sortBy:" + block.filter)) {
+                        query.sort = lStore("sortBy:" + block.filter);
+                    }
+
+                    modules.tt.renderIssues(query, $(block.right?"#altForm":"#mainForm"), md5(guid()), loadWorkspace);
                 } else {
                     loadingDone();
                 }

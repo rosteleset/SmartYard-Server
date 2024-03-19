@@ -1442,8 +1442,6 @@
             query.sort = lStore("sortBy:" + x);
         }
 
-        console.log(query);
-
         QUERY("tt", "issues", query, true).
         done(response => {
             if (response.issues.exception) {
@@ -1451,8 +1449,6 @@
             }
 
             let issues = response.issues;
-
-            console.log(response);
 
             limit = parseInt(issues.limit);
             skip = parseInt(issues.skip);
