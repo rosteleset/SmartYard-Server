@@ -362,6 +362,10 @@
                     }
                 }
 
+                foreach ($sort as $s => &$d) {
+                    $d = (int)$d;
+                }
+
                 $issues = $this->mongo->$db->$collection->find($query, [
                     "projection" => $projection,
                     "skip" => (int)$skip,
@@ -385,6 +389,8 @@
                     }
                     $i[] = $x;
                 }
+
+                error_log(print_r($sort, true));
 
                 return [
                     "issues" => $i,

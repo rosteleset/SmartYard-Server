@@ -184,6 +184,39 @@ select {
   background-color: #f4f6f9;
 }
 
+.hr-text-white {
+  line-height: 1em;
+  position: relative;
+  outline: 0;
+  border: 0;
+  color: black;
+  text-align: left;
+  height: 1.5em;
+  opacity: 0.5;
+  font-size: 8pt;
+}
+
+.hr-text-white::before {
+  content: "";
+  background: linear-gradient(to left, transparent, rgb(128 128 128 / 75%));
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 100%;
+  height: 1px;
+}
+
+.hr-text-white::after {
+  content: attr(data-content);
+  position: relative;
+  display: inline-block;
+  padding-left: 12px;
+  padding-right: 10px;
+  line-height: 1.5em;
+  color: #000;
+  background-color: white;
+}
+
 .nav-item-back-hover:hover {
   background: #ccc;
   border-radius: 4px;

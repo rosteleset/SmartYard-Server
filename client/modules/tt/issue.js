@@ -590,7 +590,7 @@
             } else
             if (t < Object.keys(issue.actions).length) {
                 h += `<span class="dropdown">`;
-                h += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary mr-3" id="ttIssueAllActions" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">${i18n("tt.allActions")}</span>`;
+                h += `<span class="pointer hoverable dropdown-toggle dropdown-toggle-no-icon text-primary mr-3" id="ttIssueAllActions" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">${i18n("tt.allActions")}</span>`;
                 h += `<ul class="dropdown-menu" aria-labelledby="ttIssueAllActions">`;
                 let hr = true;
                 for (let i = Object.keys(issue.actions).length - 1; i >= 0; i--) {
@@ -626,7 +626,7 @@
 
         if (issue.print && config.printServer) {
             h += `<span class="dropdown">`;
-            h += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary mr-3" id="ttIssuePrint" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">${i18n("tt.print")}</span>`;
+            h += `<span class="pointer hoverable dropdown-toggle dropdown-toggle-no-icon text-primary mr-3" id="ttIssuePrint" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">${i18n("tt.print")}</span>`;
             h += `<ul class="dropdown-menu" aria-labelledby="ttIssuePrint">`;
             for (let i in issue.print) {
                 for (let j in modules.tt.meta.prints) {

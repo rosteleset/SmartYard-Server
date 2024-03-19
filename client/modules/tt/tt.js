@@ -1430,13 +1430,19 @@
 
         let _ = Math.random();
 
-        QUERY("tt", "issues", {
+        let query = {
             "project": current_project,
             "filter": x ? x : '',
             "skip": skip,
             "limit": limit,
             "search": ($.trim(params.search) && params.search !== true && !target) ? $.trim(params.search) : '',
-        }, true).
+        };
+
+        if (lStore("sortBy:" + x)) {
+            query.sort = lStore("sortBy:" + x);
+        }
+
+        QUERY("tt", "issues", query, true).
         done(response => {
             if (response.issues.exception) {
                 error(i18n("errors." + response.issues.exception), i18n("error"), 30);
@@ -1536,22 +1542,90 @@
                     loadingStart();
                     params.skip = Math.max(0, (parseInt($(this).attr("data-page")) - 1) * limit);
                     params.limit = limit?limit:modules.tt.defaultIssuesPerPage;
-                    modules.tt.renderIssues(params, true, $(this).attr("data-target"), loadingDone);
+                    modules.tt.renderIssues(params, target, issuesListId, callback);
                 } else {
-                    modules.tt.selectFilter(false, Math.max(0, (parseInt($(this).attr("data-page")) - 1) * limit));
+                    modules.tt.selectFilter(false);
                 }
             });
-
-            let columns = [ {
-                title: i18n("tt.issueIndx"),
-                nowrap: true,
-            } ];
 
             let pKeys = [];
 
             if (issues.projection) {
                 pKeys = Object.keys(issues.projection);
             }
+
+            let sortMenuItems = [
+                {
+                    text: "-",
+                    hint: i18n("tt.sortBy"),
+                },
+            ];
+
+            let sortDir = false;
+            let sortBy = false;
+
+            for (let i = 0; i < pKeys.length; i++) {
+                let sort = lStore("sortBy:" + x);
+                if (!sort) {
+                    sort = {};
+                }
+                if (sort[pKeys[i]]) {
+                    sortDir = parseInt(sort[pKeys[i]]);
+                    sortBy = pKeys[i];
+                }
+                sortMenuItems.push({
+                    id: pKeys[i],
+                    text: modules.tt.issueFieldTitle(pKeys[i]),
+                    selected: sort[pKeys[i]],
+                });
+            };
+
+            sortMenuItems = sortMenuItems.concat([
+                {
+                    text: "-",
+                    hint: i18n("tt.sortDir"),
+                },
+                {
+                    id: "_sort_asc",
+                    text: i18n("tt.sortAsc"),
+                    selected: sortDir == 1,
+                },
+                {
+                    id: "_sort_desc",
+                    text: i18n("tt.sortDesc"),
+                    selected: sortDir == -1,
+                },
+            ]);
+
+            let sortMenu = menu({
+                button: "<i class='fas fa-fw fa-bars pointer'></i>",
+                items: sortMenuItems,
+                click: function (id) {
+                    let sort = {};
+                    if (id == "_sort_asc") {
+                        sort[sortBy] = 1;
+                    } else
+                    if (id == "_sort_desc") {
+                        sort[sortBy] = -1;
+                    } else {
+                        sort[id] = 1;
+                    }
+                    lStore("sortBy:" + x, sort);
+                    if (target) {
+                        loadingStart();
+                        params.skip = Math.max(0, (parseInt($(this).attr("data-page")) - 1) * limit);
+                        params.limit = limit?limit:modules.tt.defaultIssuesPerPage;
+                        modules.tt.renderIssues(params, true, $(this).attr("data-target"), loadingDone);
+                    } else {
+                        modules.tt.selectFilter(false, Math.max(0, (parseInt($(this).attr("data-page")) - 1) * limit));
+                    }
+                }
+            });
+
+            let columns = [ {
+                title: sortMenu,
+                nowrap: true,
+            } ];
 
             for (let i = 0; i < pKeys.length; i++) {
                 columns.push({

@@ -308,6 +308,10 @@
     "callsLoaded": "%s calls found",
     "callsNotFound": "Calls not found",
     "sec": "sec",
+    "sortBy": "Order by:",
+    "sortDir": "Order direction:",
+    "sortAsc": "Ascending",
+    "sortDesc": "Descending",
     "methods": {
         "tt": {
             "_title": "Task Manager",

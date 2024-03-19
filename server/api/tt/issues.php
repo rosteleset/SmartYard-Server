@@ -32,8 +32,8 @@
                             if ($params && array_key_exists("parent", $params) && trim($params["parent"])) {
                                 $preprocess["%%parent"] = trim($params["parent"]);
                             }
-            
-                            $issues = $tt->getIssues(@$params["project"] ? : "TT", @$filter["filter"], @$filter["fields"], @$params["sort"] ? : ($filter["sort"] ? : [ "created" => 1 ]), @$params["skip"] ? : 0, @$params["limit"] ? : 5, $preprocess);
+
+                            $issues = $tt->getIssues(@$params["project"] ? : "TT", @$filter["filter"], @$filter["fields"], @$params["sort"] ? : (@$filter["sort"] ? : [ "created" => 1 ]), @$params["skip"] ? : 0, @$params["limit"] ? : 5, $preprocess);
                         } else {
                             setLastError("filterNotFound");
                             return api::ERROR();

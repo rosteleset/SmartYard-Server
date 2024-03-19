@@ -184,7 +184,11 @@
             if ($key === "_") {
                 // prevents timestamps
             } else {
-                $params[$key] = urldecode($value);
+                if (gettype($value) == "string") {
+                    $params[$key] = urldecode($value);
+                } else {
+                    $params[$key] = $value;
+                }
             }
         }
     }
@@ -200,7 +204,11 @@
             if ($key == "_clearCache") {
                 $clearCache = true;
             } else {
-                $params[$key] = urldecode($value);
+                if (gettype($value) == "string") {
+                    $params[$key] = urldecode($value);
+                } else {
+                    $params[$key] = $value;
+                }
             }
         }
     }
