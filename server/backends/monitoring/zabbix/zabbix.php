@@ -41,7 +41,7 @@ class zabbix extends monitoring
                 'response' => $payload,
             ];
 
-            return $this->apiExec("POST", $debug_url, $payload, 'application/json', false);
+            return $this->apiCall("POST", $debug_url, $payload, 'application/json', false);
         }
     }
     /**
@@ -92,7 +92,7 @@ class zabbix extends monitoring
      * @param $token
      * @return false|object
      */
-    public function apiExec($payload)
+    public function apiCall(array $payload)
     {
         $method = 'POST';
         $url = $this->zbx_api;
@@ -149,6 +149,11 @@ class zabbix extends monitoring
         }
         return $mapped;
     }
+
+    /**
+     * Get current intercom list
+     * @return array
+     */
     private function getDomophones(): array
     {
         $households = loadBackend("households");
@@ -168,6 +173,11 @@ class zabbix extends monitoring
 
         return $subset;
     }
+
+    /**
+     * Get current camera list
+     * @return array
+     */
     private function getCameras(): array
     {
         $cameras = loadBackend("cameras");
@@ -187,10 +197,15 @@ class zabbix extends monitoring
 
         return $subset;
     }
+
+    /**
+     *  Create monitored host item
+     * @param array $item
+     * @param string $group_name
+     * @return void
+     */
     private function createHost(array $item, string $group_name): void
     {
-        // implement api call to create monitoring item
-        //params to create host Intercom
         $params = [
         'host' => $item['host'],
         'name' => $item['name'],
@@ -235,7 +250,7 @@ class zabbix extends monitoring
             'id' => 1
         ];
 
-        $this->apiExec($body);
+        $this->apiCall($body);
     }
     /**
      * TODO: not used
@@ -259,7 +274,7 @@ class zabbix extends monitoring
             'id' => 1
         ];
 
-        $this->apiExec('POST', $this->zbx_api, $body, 'application/json', $this->zbx_token);
+        $this->apiCall('POST', $this->zbx_api, $body, 'application/json', $this->zbx_token);
     }
     private function createHostGroup(string $groupName): void
     {
@@ -270,7 +285,7 @@ class zabbix extends monitoring
             'id' => 1
         ];
 
-        $this->apiExec($body);
+        $this->apiCall($body);
     }
     // TODO: not used
     private function createTemplateGroups(array $templateNames): void
@@ -288,7 +303,7 @@ class zabbix extends monitoring
             'id' => 1
         ];
 
-        $this->apiExec($body);
+        $this->apiCall($body);
     }
     /**
      * Create group template
@@ -304,11 +319,15 @@ class zabbix extends monitoring
             'id' => 1
         ];
 
-        $this->apiExec($body);
+        $this->apiCall($body);
     }
+    /**
+     * Disable host and add tag "DISABLED: 1710495601 || 03/15/2024 09:40:01"
+     * @param array $item
+     * @return void
+     */
     private function disableHost(array $item):void
     {
-        // implement logic disable host and add tag "DISABLED: 1710495601 || 03/15/2024 09:40:01"
         $now = time();
         $body = [
             'jsonrpc' => '2.0',
@@ -325,11 +344,10 @@ class zabbix extends monitoring
             ],
             'id' => 1
         ];
-        $this->apiExec($body);
+        $this->apiCall($body);
     }
-
     /**
-     * Enable host logic
+     * Enable monitoring
      * @param array $item -  zabbix hostid
      * @return void
      */
@@ -345,7 +363,7 @@ class zabbix extends monitoring
             ],
             'id' => 1
         ];
-        $this->apiExec($body);
+        $this->apiCall($body);
     }
     // TODO: refactor to mass delete
     private function deleteHosts($item):void
@@ -356,7 +374,7 @@ class zabbix extends monitoring
             'params' => [$item['zbx_hostid']],
             'id' => 1
         ];
-        $this->apiExec($body);
+        $this->apiCall($body);
     }
     private function getItems()
     {
@@ -379,7 +397,7 @@ class zabbix extends monitoring
             "id" => 1
         ];
 
-        $response = $this->apiExec($body);
+        $response = $this->apiCall($body);
         $response = json_decode($response, true);
         if ($response && $response['result']) {
             return $response['result'];
@@ -406,7 +424,7 @@ class zabbix extends monitoring
             ],
             'id' => 1
         ];
-        $response = $this->apiExec($body);
+        $response = $this->apiCall($body);
         $response = json_decode($response, true);
         if ($response && $response['result']) {
             return $response['result'][0]['groupid'];
@@ -432,7 +450,7 @@ class zabbix extends monitoring
             'id' => 1
         ];
 
-        $response = $this->apiExec($body);
+        $response = $this->apiCall($body);
         $response = json_decode($response, true);
 
         if ($response && $response['result']) {
@@ -460,7 +478,7 @@ class zabbix extends monitoring
             'id' => 1
         ];
 
-        $response = $this->apiExec($body);
+        $response = $this->apiCall($body);
         $response = json_decode($response, true);
 
         if ($response && $response['result']) {
@@ -488,7 +506,7 @@ class zabbix extends monitoring
             ],
             "id" => 1
         ];
-        $response = $this->apiExec($body);
+        $response = $this->apiCall($body);
         $response = json_decode($response, true);
 
         if ($response && $response['result']) {
@@ -614,10 +632,6 @@ class zabbix extends monitoring
         $result = true;
         if ($part === "5min"){
             $this->handle();
-
-            if ($config['backends']['monitoring']['debug'] === true){
-                $this->configureTemplates();
-            }
         }
         return $result;
     }
