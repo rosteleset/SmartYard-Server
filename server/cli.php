@@ -65,6 +65,7 @@
                 [--update]
                 [--exit-maintenance-mode]
                 [--init-tt-mobile-template]
+                [--init-zabbix-templates]
 
             tests:
                 [--check-mail=<your email address>]
@@ -416,7 +417,19 @@
         exit(0);
     }
 
-    startup();
+    if (count($args) == 1 && array_key_exists("--init-zabbix-templates", $args) && !isset($args["--init-zabbix-templates"])) {
+    try {
+        $zabbix = loadBackend('monitoring');
+        $zabbix->configureZbx();
+    } catch (Exception $e) {
+        echo $e->getMessage() . "\n\n";
+        exit(1);
+    }
+    exit(0);
+}
+
+
+startup();
 
     check_if_pid_exists();
 

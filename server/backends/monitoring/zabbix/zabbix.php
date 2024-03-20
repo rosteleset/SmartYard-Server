@@ -560,7 +560,7 @@ class zabbix extends monitoring
      * Create starter configuration on Zabbix server
      * @return void
      */
-    private function configureZbx(): void
+    public function configureZbx(): void
     {
         /** TODO:
          *  - implement starter zabbix template, groups ...
@@ -593,6 +593,8 @@ class zabbix extends monitoring
         foreach ($pluggetTemplates as $pluggedTemplate){
             $this->zbxData['pluggedTemplates'][$pluggedTemplate['host']] = $pluggedTemplate['templateid'];
         }
+
+        // 05 - create target template
     }
     private function handle(): void
     {
@@ -654,7 +656,6 @@ class zabbix extends monitoring
         global $config;
         $result = true;
         if ($part === "5min"){
-            error_log("START monitoring backend");
             $this->handle();
 //            $this->configureZbx();
         }

@@ -20,4 +20,9 @@
          * @return bool|mixed
          */
         abstract public function deviceStatus($deviceType, $deviceId);
+
+        /**
+         * @return mixed
+         */
+        abstract public function configureZbx();
     }
