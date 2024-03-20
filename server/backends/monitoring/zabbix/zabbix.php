@@ -590,8 +590,8 @@ class zabbix extends monitoring
 
         return $result;
     }
-
-    /** Import YAML template file
+    /**
+     * Import Zabbix template from YAML file
      * @param $fileName
      * @return mixed
      */
@@ -692,9 +692,12 @@ class zabbix extends monitoring
         error_log("finish configure zabbix");
 
     }
+    /**
+     * Main handle, get actual hosts from Smart-Yard server and sync Zabbix server
+     * @return void
+     */
     private function handle(): void
     {
-        // implement main logic
         // get data from RBT
         $domophones = $this->getDomophones();
         // get hosts from Zabbix API
