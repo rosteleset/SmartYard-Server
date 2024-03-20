@@ -17,8 +17,9 @@ class zabbix extends monitoring
         'zbx_qtech_intercom_template.yaml',
         'zbx_akuvox_intercom_template.yaml',
     ];
+    const intercomTemolatesDir = __DIR__ . "/../../../../install/zabbix/templates/intercom/";
     protected array $zbxData = [];
-    protected string $zbxApi, $zbxToken , $hostGroupIntercomId;
+    protected string $zbxApi, $zbxToken;
     protected int $zbxStoreDays;
     public function __construct($config, $db, $redis, $login = false)
     {
@@ -187,10 +188,10 @@ class zabbix extends monitoring
     /**
      *  Create monitored host item
      * @param array $item
-     * @param string $group_name
+     * @param string $groupName
      * @return void
      */
-    private function createHost(array $item, string $group_name): void
+    private function createHost(array $item, string $groupName): void
     {
         $params = [
         'host' => $item['host'],
@@ -207,7 +208,7 @@ class zabbix extends monitoring
         ],
         'groups' => [
             [
-                "groupid" => $this->zbxData['groups'][$group_name]
+                "groupid" => $this->zbxData['groups'][$groupName]
             ]
         ],
         'tags' => [
@@ -238,6 +239,39 @@ class zabbix extends monitoring
 
         $this->apiCall($body);
     }
+    /** Create template
+     * @param string $templateName
+     * @param array $templategroups
+     * @param array $pluggetTemplates
+     * @return false|object
+     */
+    private function createTemplate(string $templateName, array $templategroups, array $pluggetTemplates)
+    {
+        $templates = [];
+        $groups = [];
+        // add plugged templates
+        foreach ($pluggetTemplates as $item){
+            $templates[] = ["templateid" => $item];
+        }
+        // add template groups
+        foreach ($templategroups as $item){
+            $groups[] = ["groupid" => $item];
+        }
+
+        $body = [
+            "jsonrpc" => "2.0",
+            "method" => "template.create",
+            "params" => [
+                "host" => $templateName,
+                "groups" => $groups,
+                "templates" => $templates
+            ],
+            "id" => 1
+        ];
+
+        return $this->apiCall($body);
+    }
+
     /**
      * TODO: not used
      * Create hots group
@@ -556,6 +590,56 @@ class zabbix extends monitoring
 
         return $result;
     }
+
+    /** Import YAML template file
+     * @param $fileName
+     * @return mixed
+     */
+    private function importConfig($fileName)
+    {
+        $fileContent = file_get_contents($fileName);
+        $templateData = yaml_parse($fileContent);
+        if ($templateData === false) {
+            error_log("Error reading file: $fileName");
+            exit(1);
+        }
+
+        // yaml to string
+        $templateDataStr = yaml_emit($templateData);
+
+        $body = [
+            "jsonrpc" => "2.0",
+            "method" => "configuration.import",
+            "params" => [
+                "format" => "yaml",
+                "rules" => [
+                    "templates" => [
+                        "createMissing" => true,
+                        "updateExisting" => true
+                    ],
+                    "items" => [
+                        "createMissing" => true,
+                        "updateExisting" => true,
+                        "deleteMissing" => true
+                    ],
+                    "triggers" => [
+                        "createMissing" => true,
+                        "updateExisting" => true,
+                        "deleteMissing" => true
+                    ],
+                    "valueMaps" => [
+                        "createMissing" => true,
+                        "updateExisting" => false
+                    ]
+                ],
+                "source" => $templateDataStr
+            ],
+            "id" => 1
+        ];
+
+        return $this->apiCall($body);
+
+    }
     /**
      * Create starter configuration on Zabbix server
      * @return void
@@ -571,7 +655,7 @@ class zabbix extends monitoring
          *  5 create target template
          *  6 import template from YAML file
          */
-        error_log("START configureZbx");
+
         // 01 - Create hot groups
         foreach (self::hostGroups as $hostGroup) {
             $this->createHostGroup($hostGroup);
@@ -595,6 +679,18 @@ class zabbix extends monitoring
         }
 
         // 05 - create target template
+        foreach (self::intercomTemplateNames as $item) {
+            $this->createTemplate($item, [$this->zbxData['templateGroups']['Templates/Intercoms']], array_values($this->zbxData['pluggedTemplates']));
+        }
+
+        // 06 - import config from YAML file
+        // TODO: refactor
+        foreach (self::intercomTemplateFiles as $fileName){
+            $this->importConfig(self::intercomTemolatesDir . $fileName);
+        }
+
+        error_log("finish configure zabbix");
+
     }
     private function handle(): void
     {
@@ -653,11 +749,9 @@ class zabbix extends monitoring
     }
     public function cron($part):bool
     {
-        global $config;
         $result = true;
         if ($part === "5min"){
             $this->handle();
-//            $this->configureZbx();
         }
         return $result;
     }

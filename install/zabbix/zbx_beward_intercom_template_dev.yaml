@@ -1,0 +1,178 @@
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: 6b2da836ac5d4728b89105eb2ed04250
+      name: Templates/Intercoms
+  templates:
+    - uuid: 2bd845a58fb644cd906ada9bee7f7514
+      template: Intercom_BEWARD_dev
+      name: 'BEWARD intercom by HTTP dev'
+      description: 'BEWARD Intercom panel monitoring'
+      templates:
+        - name: 'ICMP Ping'
+      groups:
+        - name: Templates/Intercoms
+      items:
+        - uuid: 659e196bf1504c2c9956afe605169271
+          name: 'BEWARD Intercom: device model'
+          type: DEPENDENT
+          key: beward_intercom.devicemodel
+          delay: '0'
+          history: 7d
+          trends: '0'
+          status: DISABLED
+          value_type: TEXT
+          inventory_link: HARDWARE
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.DeviceModel
+          master_item:
+            key: beward_intercom.systeminfo
+        - uuid: 02116558a19d4d6694f92ec1e1f6e5f9
+          name: 'BEWARD Intercom: fw version'
+          type: DEPENDENT
+          key: beward_intercom.fwversion
+          delay: '0'
+          history: 7d
+          trends: '0'
+          value_type: TEXT
+          description: 'Check current firmware version'
+          inventory_link: SOFTWARE
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.SoftwareVersion
+          master_item:
+            key: beward_intercom.systeminfo
+          triggers:
+            - uuid: 2901c952e3514952b9f96cf9c7ed0bcb
+              expression: 'last(/Intercom_BEWARD_dev/beward_intercom.fwversion,#1)<>last(/Intercom_BEWARD_dev/beward_intercom.fwversion,#2) and length(last(/Intercom_BEWARD_dev/beward_intercom.fwversion))>0'
+              name: 'Firmware version has changed'
+              event_name: 'INTERCOM: {HOST.NAME} | Firmvare version has changed (new version: {ITEM.VALUE})'
+              priority: INFO
+        - uuid: 1a622d57d7f746bb9b117c1f9d27f952
+          name: 'BEWARD Intercom: SIP registration status'
+          type: HTTP_AGENT
+          key: beward_intercom.sipstatus
+          history: 7d
+          trends: 90d
+          authtype: BASIC
+          username: '{$INTERCOM_USERNAME}'
+          password: '{$INTERCOM_PASSWORD}'
+          description: 'Check SIP registration'
+          preprocessing:
+            - type: CHECK_NOT_SUPPORTED
+              parameters:
+                - ''
+              error_handler: CUSTOM_VALUE
+              error_handler_params: '{"html":{"head":{"title":"Connection error"}}}'
+            - type: JAVASCRIPT
+              parameters:
+                - 'return value.split("\n")[0].split("AccountReg1=")[1]'
+          url: 'http://{HOST.CONN}/cgi-bin/sip_cgi'
+          query_fields:
+            - name: action
+              value: regstatus
+          triggers:
+            - uuid: 07e7050ec7b24969adf3484bdd8c65a6
+              expression: 'count(/Intercom_BEWARD_dev/beward_intercom.sipstatus,10m,,"0")>5'
+              name: 'SIP registration failure'
+              event_name: 'INTERCOM: {HOST.NAME} | SIP registration failure'
+              priority: WARNING
+              description: 'Check SIP registration on device more 10 minutes'
+              dependencies:
+                - name: 'Device has been restarted'
+                  expression: last(/Intercom_BEWARD_dev/beward_intercom.uptime)<10m
+                  recovery_expression: last(/Intercom_BEWARD_dev/beward_intercom.uptime)>15m
+                - name: 'ICMP: Unavailable by ICMP ping'
+                  expression: 'max(/Intercom_BEWARD_dev/icmpping,#3)=0'
+        - uuid: 4aef4cd0017d4e97921b9f75b179bb3c
+          name: 'BEWARD Intercom: system info'
+          type: HTTP_AGENT
+          key: beward_intercom.systeminfo
+          history: '0'
+          trends: '0'
+          value_type: TEXT
+          authtype: BASIC
+          username: '{$INTERCOM_USERNAME}'
+          password: '{$INTERCOM_PASSWORD}'
+          description: 'Get system information from Beward SIP intercom'
+          preprocessing:
+            - type: CHECK_NOT_SUPPORTED
+              parameters:
+                - ''
+              error_handler: CUSTOM_VALUE
+              error_handler_params: '{"html":{"head":{"title":"Connection error"}}}'
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var arr = value.trim().split('\n')
+                  var data = {};
+                  arr.forEach(function(line) {
+                      var keyValue = line.split('=');
+                      if (keyValue[0] === 'SoftwareVersion' || keyValue[0] === 'UpTime' || keyValue[0] === 'DeviceModel') {
+                          data[keyValue[0]] = keyValue[1];
+                      }
+                  });
+                  return JSON.stringify(data)
+          url: 'http://{HOST.CONN}/cgi-bin/systeminfo_cgi'
+          query_fields:
+            - name: action
+              value: get
+        - uuid: b6e3e9d11bb546fa9a49f02bb2b4e6f8
+          name: 'BEWARD Intercom: uptime'
+          type: DEPENDENT
+          key: beward_intercom.uptime
+          delay: '0'
+          history: 7d
+          trends: 90d
+          value_type: FLOAT
+          units: uptime
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.UpTime
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var timeParts = value.split(":")
+                  return parseInt(timeParts[0]) * 3600 + parseInt(timeParts[1]) * 60 + parseInt(timeParts[2]);
+          master_item:
+            key: beward_intercom.systeminfo
+          triggers:
+            - uuid: 1698e347896d4877a4531209a24ce457
+              expression: last(/Intercom_BEWARD_dev/beward_intercom.uptime)<10m
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: last(/Intercom_BEWARD_dev/beward_intercom.uptime)>15m
+              name: 'Device has been restarted'
+              event_name: 'INTERCOM: {HOST.NAME} | has been restarted (uptime < 10m)'
+              priority: INFO
+              description: 'Device has been restarted'
+              manual_close: 'YES'
+            - uuid: 406db385fb8a434bb1d77dac6be153cc
+              expression: 'count(/Intercom_BEWARD_dev/beward_intercom.uptime,1800,,"5")<=200'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: last(/Intercom_BEWARD_dev/beward_intercom.uptime)>=3600
+              name: 'Intercom: power fail'
+              status: DISABLED
+              priority: HIGH
+              description: |
+                The device was rebooted more than 5 times in an hour.
+                Need to check power supply.
+              manual_close: 'YES'
+              dependencies:
+                - name: 'ICMP: Unavailable by ICMP ping'
+                  expression: 'max(/Intercom_BEWARD_dev/icmpping,#3)=0'
+      tags:
+        - tag: class
+          value: hardware
+        - tag: target
+          value: beward
+      macros:
+        - macro: '{$INTERCOM_PASSWORD}'
+          value: admin
+          description: 'WEB GUI | API password, default value admin'
+        - macro: '{$INTERCOM_USERNAME}'
+          value: admin
+          description: 'WEB GUI | API username, default value admin'
