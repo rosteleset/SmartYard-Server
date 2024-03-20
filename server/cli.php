@@ -419,8 +419,8 @@
 
     if (count($args) == 1 && array_key_exists("--init-zabbix-templates", $args) && !isset($args["--init-zabbix-templates"])) {
     try {
-        $zabbix = loadBackend('monitoring');
-        $zabbix->configureZbx();
+        $monitoring = loadBackend('monitoring');
+        $monitoring->configureZbx();
     } catch (Exception $e) {
         echo $e->getMessage() . "\n\n";
         exit(1);
