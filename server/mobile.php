@@ -3,6 +3,16 @@
 $cli = false;
 $cliError = false;
 
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Headers: *");
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+
+if ($_SERVER["REQUEST_METHOD"] == "OPTIONS") {
+    header("Content-Type: text/html;charset=ISO-8859-1");
+    http_response_code(204);
+    return;
+}
+
 mb_internal_encoding("UTF-8");
 require_once "backends/backend.php";
 require_once "utils/loader.php";
