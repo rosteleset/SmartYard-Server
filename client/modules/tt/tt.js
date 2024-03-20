@@ -829,6 +829,7 @@
 
     issueField2Html: function (issue, field, val, target) {
         let members = {};
+        let escaped = false;
 
         if (modules.groups) {
             for (let i in modules.groups.meta) {
@@ -944,6 +945,7 @@
                     case "updated":
                     case "commentCreated":
                         val = '<span style="white-space: nowrap!important;">' + ttDate(val) + '</span>';
+                        escaped = true;
                         break;
 
                     case "workflowAction":
@@ -955,7 +957,7 @@
 
                 let cf = {};
                 let multiple = false;
-
+                
                 for (let i in modules.tt.meta.customFields) {
                     if (modules.tt.meta.customFields[i].field == field) {
                         cf = modules.tt.meta.customFields[i];
@@ -1058,14 +1060,18 @@
                                 
                             case "datetime-local":
                                 val = '<span style="white-space: nowrap!important;">' + ttDate(val) + '</span>';
+                                escaped = true;
                                 break;
 
                             case "date":
                                 val = '<span style="white-space: nowrap!important;">' + ttDate(val, true) + '</span>';
+                                escaped = true;
                                 break;
                         }
                         
-                        val = nl2br(escapeHTML(val));
+                        if (!escaped) {
+                            val = nl2br(escapeHTML(val));
+                        }
 
                         if (cf.link) {
                             val = "<a href='" + cf.link.replaceAll('%value%', val) + "' target='_blank' class='hover'>" + val + "</a>";
