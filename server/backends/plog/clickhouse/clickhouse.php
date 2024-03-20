@@ -1046,15 +1046,15 @@
                             $patterns_call = [
                                 // pattern         start  talk  open   call_from_panel
                                 ["/action: 'call_log', flat: '(\d+)', module: 'talking', step: 'ring'/", true, false, false, 1],
-                                ["/cid: '0x', com_flat: '(\d+)', flat: '(\d+)', module: 'talking', step: 'ring_handset'/", true, false, false, 1],
-                                ["/cid: '0x', com_flat: '(\d+)', flat: '(\d+)', module: 'talking', step: 'ring_cloud'/", true, false, false, 1],
+                                ["/com_flat: '(\d+)', flat: '(\d+)', module: 'talking', step: 'ring_handset'/", true, false, false, 1],
+                                ["/com_flat: '(\d+)', flat: '(\d+)', module: 'talking', step: 'ring_cloud'/", true, false, false, 1],
                                 ["/action: 'start_talking', call_id: '([a-zA-Z0-9]+)', type: 'SIP'/", false, true, false, 1],
-                                ["/cid: '0x', com_flat: '(\d+)', flat: '(\d+)', module: 'talking', step: 'speak_cloud'/", false, true, false, 1],
-                                ["/cid: '0x', com_flat: '(\d+)', flat: '(\d+)', module: 'talking', step: 'speak_handset'/", false, true, false, 1],
-                                ["/cid: '0x', com_flat: '(\d+)', flat: '(\d+)', module: 'talking', step: 'open_door_handset'/", false, false, true, 1],
-                                ["/action: 'intercom_log', flat: '(\d+)', level: 'info', module: 'talking', state: 'success', step: 'open_door', type: 'phone'/", false, false, true, 1],
-                                ["/cid: '0x', com_flat: '(\d+)', flat: '(\d+)', module: 'talking', step: 'finish_handset/", false, false, false, 1],
-                                ["/cid: '0x', com_flat: '(\d+)', flat: '(\d+)', module: 'talking', step: 'finish_cloud'/", false, false, false, 1],
+                                ["/com_flat: '(\d+)', flat: '(\d+)', module: 'talking', step: 'speak_cloud'/", false, true, false, 1],
+                                ["/com_flat: '(\d+)', flat: '(\d+)', module: 'talking', step: 'speak_handset'/", false, true, false, 1],
+                                ["/com_flat: '(\d+)', flat: '(\d+)', module: 'talking', step: 'open_door_handset'/", false, false, true, 1],
+                                ["/event: 'intercom.open_door', dtmf: '(\d+)', duration: '(\d+)', flat: '(\d+)', type: 'DTMF'/", false, false, true, 1],
+                                ["/com_flat: '(\d+)', flat: '(\d+)', module: 'talking', step: 'finish_handset'/", false, false, false, 1],
+                                ["/com_flat: '(\d+)', flat: '(\d+)', module: 'talking', step: 'finish_cloud'/", false, false, false, 1],
                                 ["/action: 'call_stop', call_id: '([a-zA-Z0-9]+)', detail: 'Panel stopped call', flat: '(\d+)', reason: 'cancel_panel'/", false, false, false, 1],
                             ];
 

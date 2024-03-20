@@ -86,7 +86,7 @@ class SputnikCloudService extends WebHookService {
             }
 
             const logMessageData = event !== undefined ? {event, ...payload} : payload;
-            const msg = this.createLogMessage(logMessageData, ['time']);
+            const msg = this.createLogMessage(logMessageData, ['time', 'cid']);
 
             await this.sendToSyslogStorage(
                 now,
