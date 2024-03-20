@@ -943,7 +943,7 @@
                     case "created":
                     case "updated":
                     case "commentCreated":
-                        val = ttDate(val);
+                        val = '<span style="white-space: nowrap!important;">' + ttDate(val) + '</span>';
                         break;
 
                     case "workflowAction":
@@ -1057,11 +1057,11 @@
                                 return "<pre style='padding: 0px!important; margin: 0px!important;'>" + escapeHTML(JSON.stringify(val, null, 2)) + "</pre>";
                                 
                             case "datetime-local":
-                                val = ttDate(val);
+                                val = '<span style="white-space: nowrap!important;">' + ttDate(val) + '</span>';
                                 break;
 
                             case "date":
-                                val = ttDate(val, true);
+                                val = '<span style="white-space: nowrap!important;">' + ttDate(val, true) + '</span>';
                                 break;
                         }
                         
