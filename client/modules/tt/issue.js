@@ -888,18 +888,29 @@
                                 if (oo == nn) {
                                     continue;
                                 }
-                                h += "<tr class='tr-hoverable'>";
-                                h += "<td class='pl-2 td-journal nowrap'>";
-                                h += modules.tt.issueFieldTitle(k[j]) + ": ";
-                                h += "</td>";
-                                h += "<td class='pl-2 td-journal'>";
-                                h += oo;
-                                h += "</td>";
-                                h += "<td class='pl-2 td-journal'>" + sep + "</td>";
-                                h += "<td class='pl-2 td-journal' style='width: 100%;'>";
-                                h += nn;
-                                h += "</td>";
-                                h += "</tr>";
+                                if (k[j] == "workflowAction") {
+                                    h += "<tr class='tr-hoverable'>";
+                                    h += "<td class='pl-2 td-journal nowrap'>";
+                                    h += modules.tt.issueFieldTitle(k[j]) + ": ";
+                                    h += "</td>";
+                                    h += "<td class='pl-2 td-journal' colspan='3'>";
+                                    h += nn;
+                                    h += "</td>";
+                                    h += "</tr>";
+                                } else {
+                                    h += "<tr class='tr-hoverable'>";
+                                    h += "<td class='pl-2 td-journal nowrap'>";
+                                    h += modules.tt.issueFieldTitle(k[j]) + ": ";
+                                    h += "</td>";
+                                    h += "<td class='pl-2 td-journal'>";
+                                    h += oo;
+                                    h += "</td>";
+                                    h += "<td class='pl-2 td-journal'>" + sep + "</td>";
+                                    h += "<td class='pl-2 td-journal' style='width: 100%;'>";
+                                    h += nn;
+                                    h += "</td>";
+                                    h += "</tr>";
+                                }
                             }
                         }
                         if (!o && n) {
