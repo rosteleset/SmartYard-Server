@@ -1412,8 +1412,6 @@
              */
             public function addJournalRecord($issueId, $action, $old, $new, $workflowAction = false, $silent = false)
             {
-                $journal = loadBackend("tt_journal");
-
                 if (!$silent) {
                     try {
                         $issue = $this->getIssue($issueId);
@@ -1426,9 +1424,7 @@
                     }
                 }
 
-                if ($journal) {
-                    return $journal->journal($issueId, $action, $old, $new, $workflowAction);
-                }
+                return $this->journal($issueId, $action, $old, $new, $workflowAction);
 
                 return false;
             }
@@ -1439,17 +1435,11 @@
              */
             public function getJournal($issueId, $limit = false)
             {
-                $journal = loadBackend("tt_journal");
-
                 if (!$this->myRoles()[explode("-", $issueId)[0]]) {
                     return false;
                 }
 
-                if ($journal) {
-                    return $journal->get($issueId, $limit);
-                }
-
-                return false;
+                return $this->journalGet($issueId, $limit);
             }
 
             /**
@@ -2113,6 +2103,23 @@
              abstract public function getSuggestions($project, $field, $query);
 
             /**
+             * @param string $issueId
+             * @param string $action
+             * @param object $old
+             * @param object $new
+             * @param string $workflowAction
+             * @return boolean
+             */
+            public abstract function journal($issueId, $action, $old, $new, $workflowAction);
+
+            /**
+             * @param string $issueId
+             * @param mixed $limit
+             * @return mixed
+             */
+            public abstract function journalGet($issueId, $limit = false);
+
+            /**
              * @inheritDoc
              */
 
@@ -2133,10 +2140,6 @@
                 foreach ($tasks as $task) {
                     try {
                         $this->setCreds($task["uid"], $task["login"]);
-                        $journal = loadBackend("tt_journal");
-                        if ($journal) {
-                            $journal->setCreds($task["uid"], $task["login"]);
-                        }
                         $filter = @json_decode($this->getFilter($task["filter"]), true);
                         if ($filter) {
                             $skip = 0;
