@@ -7,6 +7,9 @@ zabbix_export:
     - uuid: 91bfd12a176a404dadb9b4a3254666f9
       template: Intercom_AKUVOX
       name: 'AKUVOX intercom by HTTP'
+      vendor:
+        name: SmartYard
+        version: 6.4-0
       description: 'AKUVOX Intercom panel monitoring'
       templates:
         - name: 'ICMP Ping'

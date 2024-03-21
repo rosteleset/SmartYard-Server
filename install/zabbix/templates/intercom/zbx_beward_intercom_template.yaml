@@ -7,6 +7,9 @@ zabbix_export:
     - uuid: 2bd845a58fb644cd906ada9bee7f7514
       template: Intercom_BEWARD
       name: 'BEWARD intercom by HTTP'
+      vendor:
+        name: SmartYard
+        version: 6.4-0
       description: 'BEWARD Intercom panel monitoring'
       templates:
         - name: 'ICMP Ping'
