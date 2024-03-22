@@ -1385,7 +1385,7 @@
                         } else {
                             filters += '<i class="fas fa-fw fa-globe-americas mr-2"></i>';
                         }
-                        filters += i + "</li>";
+                        filters += $.trim(i) + "</li>";
                         fcount++;
                     } else {
                         filters += `<li class="dropdown-item pointer submenu" style="width: 300px;"><i class="far fa-fw fa-folder mr-2"></i>${i}</li>`;
