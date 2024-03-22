@@ -722,57 +722,6 @@ class zabbix extends monitoring
         return $result;
     }
 
-    private function zbxObjectMapping($source): array
-    {
-        $mapped = [];
-        foreach ($source as $item) {
-            $mapped_item = [
-                "zbx_hostid" => $item["hostid"],
-                "status" => $item["status"] === "0",
-                "host" => $item["host"],
-                "name" => $item["name"],
-                "template" => $item["parentTemplates"][0]["host"],
-                "interface" => $item["interfaces"][0]["ip"]
-            ];
-
-            // mapping macros
-            foreach ($item['macros'] as $macros) {
-                if ($macros["macro"] === '{$INTERCOM_PASSWORD}'){
-                    $mapped_item["credentials"] = $macros["value"];
-                    break;
-                }
-            }
-
-            // mapping tags
-            if (count($item['tags']) > 0) {
-                foreach ($item['tags'] as $tag) {
-                    $mapped_item["tags"] = [$tag['tag'] => $tag['value']];
-                }
-            }
-
-            $mapped[] = $mapped_item;
-        }
-        return $mapped;
-    }
-
-    private function rbtObjectMapping($source): array
-    {
-        $mapped = [];
-        foreach ($source as $item) {
-            $mapped_item = [
-                'rbt_domophoneId' => $item['domophoneId'],
-                'status' => $item['enabled'] === 1,
-                'host' => $item['ip'],
-                'name' => $item['ip'] . ' | ' . $item['name'],
-                'template' => 'Intercom_' . $item['vendor'],
-                'interface' => $item['ip'],
-                'credentials' => $item['credentials']
-            ];
-            $mapped[] = $mapped_item;
-        }
-        return $mapped;
-    }
-
     private function getDomophonesFromRBT()
     {
         $intercoms = $this->getDomophones();
