@@ -1,16 +1,16 @@
 zabbix_export:
   version: '6.4'
   template_groups:
-    - uuid: 6b2da836ac5d4728b89105eb2ed04250
+    - uuid: 7cc79d6a377b42178af13d771911452b
       name: Templates/Intercoms
   templates:
     - uuid: 91bfd12a176a404dadb9b4a3254666f9
       template: Intercom_AKUVOX
       name: 'AKUVOX intercom by HTTP'
+      description: 'AKUVOX Intercom panel monitoring'
       vendor:
         name: SmartYard
         version: 6.4-0
-      description: 'AKUVOX Intercom panel monitoring'
       templates:
         - name: 'ICMP Ping'
       groups:
@@ -70,6 +70,12 @@ zabbix_export:
                 - $.data.Account1.Status
           master_item:
             key: akuvox_intercom.systeminfo
+          triggers:
+            - uuid: 5fd9dc8d1b7645bf8eaaff5d66628c37
+              expression: 'count(/Intercom_AKUVOX/akuvox_intercom.sipstatus,10m,,"0")>5'
+              name: 'SIP registration failure'
+              event_name: 'INTERCOM: {HOST.NAME} | SIP registration failure'
+              priority: WARNING
         - uuid: 31dbbe6ba58c4dd5a5cb21c86b651ea2
           name: 'AKUVOX Intercom: system info'
           type: HTTP_AGENT
