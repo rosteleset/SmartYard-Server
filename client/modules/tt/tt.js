@@ -160,7 +160,7 @@
                             already[modules.groups.meta[j].acronym] = true;
                             p.push({
                                 id: modules.groups.meta[j].acronym,
-                                text: modules.groups.meta[j].name?modules.groups.meta[j].name:modules.groups.meta[j].acronym,
+                                text: modules.groups.meta[j].name ? (modules.groups.meta[j].name + " [" + modules.groups.meta[j].acronym + "]") : modules.groups.meta[j].acronym,
                                 icon: "fas fa-fw fa-users",
                             });
                         }
@@ -176,7 +176,7 @@
                             if (project.users[i].level > 0) {
                                 p.push({
                                     id: modules.users.meta[j].login,
-                                    text: modules.users.meta[j].realName?modules.users.meta[j].realName:modules.users.meta[j].login,
+                                    text: modules.users.meta[j].realName ? (modules.users.meta[j].realName + " [" + modules.users.meta[j].login + "]") : modules.users.meta[j].login,
                                     icon: "fas fa-fw fa-user",
                                 });
                             }
