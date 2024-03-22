@@ -55,7 +55,8 @@ namespace backends\cameras
                 "md_height" => "mdHeight",
                 "common" => "common",
                 "comments" => "comments",
-                "sound" => "sound"
+                "sound" => "sound",
+                "ip" => "ip"
             ]);
         }
 

@@ -7,6 +7,9 @@ zabbix_export:
     - uuid: 569ee7c7edec4f1cb8772a86f910ef9b
       template: Intercom_QTECH
       name: 'QTECH intercom by HTTP'
+      vendor:
+        name: SmartYard
+        version: 6.4-0
       description: 'QTECH Intercom panel monitoring'
       templates:
         - name: 'ICMP Ping'

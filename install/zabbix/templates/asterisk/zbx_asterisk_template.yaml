@@ -6,6 +6,9 @@ zabbix_export:
   templates:
     - uuid: 5cdd133d126846538e5006cb3eddbaa1
       template: 'Asterisk RBT'
+      vendor:
+        name: SmartYard
+        version: 6.4-0
       name: 'Asterisk RBT'
       groups:
         - name: Templates/Telephony

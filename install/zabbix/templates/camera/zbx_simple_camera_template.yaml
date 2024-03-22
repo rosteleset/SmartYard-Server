@@ -1,0 +1,16 @@
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: 0dc1da9287cd4310a74fb94f3d979008
+      name: Templates/Cameras
+  templates:
+    - uuid: 59a318f11f524f2bb31e42fd6ffe4840
+      template: Camera_simple
+      name: 'Camera simple'
+      vendor:
+        name: SmartYard
+        version: 6.4-0
+      templates:
+        - name: 'ICMP Ping'
+      groups:
+        - name: Templates/Cameras

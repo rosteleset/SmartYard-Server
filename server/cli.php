@@ -426,10 +426,9 @@
         exit(1);
     }
     exit(0);
-}
+    }
 
-
-startup();
+    startup();
 
     check_if_pid_exists();
 
