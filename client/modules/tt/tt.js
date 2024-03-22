@@ -1828,7 +1828,7 @@
                     },
                 });
             } else {
-                $("#" + issuesListId + "-count").text(i18n("tt.noIssuesAvailable")).addClass("small");
+                $("#" + issuesListId + "-count").text("[" + x + "]: " + i18n("tt.noIssuesAvailable")).addClass("small");
             }
             if (!params.customSearch || params.customSearch === true || !params.filter || params.filter === true || params.filter == "empty") {
                 if (typeof callback === "undefined") {
