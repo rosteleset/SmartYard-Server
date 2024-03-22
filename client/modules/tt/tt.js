@@ -1310,7 +1310,7 @@
         let filters;
 
         if (target) {
-            filters = `<span class="text-bold ${params.class ? params.class : ''}">${(modules.tt.meta.filters[x] ? modules.tt.meta.filters[x] : i18n("tt.filter")).replaceAll("/", "<i class='fas fa-fw fa-xs fa-angle-double-right'></i>")}</span>` + " [" + x + "]";
+            filters = `<span class="text-bold ${params.class ? params.class : ''}">${(modules.tt.meta.filters[x] ? modules.tt.meta.filters[x] : i18n("tt.filter")).replaceAll("/", "<i class='fas fa-fw fa-xs fa-angle-double-right'></i>")}</span>`;
         } else {
             let fcount = 0;
             filters = `<span class="dropdown">`;
@@ -1788,7 +1788,7 @@
             });
 
             if (issues.issues && issues.issues.length) {
-                $("#" + issuesListId + "-count").text(i18n("tt.showCounts", parseInt(issues.skip) + 1, parseInt(issues.skip) + issues.issues.length, issues.count)).addClass("small");
+                $("#" + issuesListId + "-count").text("[" + x + "]: " + i18n("tt.showCounts", parseInt(issues.skip) + 1, parseInt(issues.skip) + issues.issues.length, issues.count)).addClass("small");
                 cardTable({
                     target: "#" + issuesListId,
                     columns: columns,
