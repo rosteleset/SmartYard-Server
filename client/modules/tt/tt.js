@@ -1369,6 +1369,7 @@
 
                 let hasSub = fMy.length || fFolders.length;
 
+                console.log(ts);
                 for (let sk in ts) {
                     let i = ts[sk];
                     if (t[i].filter) {
@@ -1390,7 +1391,6 @@
                     } else {
                         filters += `<li class="dropdown-item pointer submenu" style="width: 300px;"><i class="far fa-fw fa-folder mr-2"></i>${i}</li>`;
                         filters += '<div class="dropdown-menu" style="text-wrap: nowrap!important;">';
-                        console.log(t[i]);
                         hh(t[i]);
                         filters += '</div>';
                         filters += `</li>`;
