@@ -1,7 +1,7 @@
 ({
     meta: {},
 
-    defaultIssuesPerPage: 20,
+    defaultIssuesPerPage: 50,
     defaultPagerItemsCount: 10,
     menuItem: false,
 
@@ -1530,7 +1530,7 @@
             }
 
             if (target) {
-                if (target !== true) {
+                if (!$("#" + issuesListId).length) {
                     target.append(`<table class="mt-2 ml-2" style="width: 100%;"><tr><td style="width: 100%;">${filters}<br/><span id='${issuesListId + '-count'}'></span></td><td style="padding-right: 15px;">${pager(issuesListId)}</td></tr></table><div class="ml-2 mr-2" id="${issuesListId}"></div>`);
                 } else {
                     $(`.pager[data-target="${issuesListId}"]`).html(pager(issuesListId));
@@ -1544,13 +1544,13 @@
             });
 
             $(`.tt_pager[data-target="${issuesListId}"]`).off("click").on("click", function () {
+                params.skip = Math.max(0, (parseInt($(this).attr("data-page")) - 1) * limit);
+                params.limit = limit ? limit : modules.tt.defaultIssuesPerPage;
                 if (target) {
                     loadingStart();
-                    params.skip = Math.max(0, (parseInt($(this).attr("data-page")) - 1) * limit);
-                    params.limit = limit?limit:modules.tt.defaultIssuesPerPage;
                     modules.tt.renderIssues(params, target, issuesListId, callback);
                 } else {
-                    modules.tt.selectFilter(false);
+                    modules.tt.selectFilter(false, params.skip, params.limit);
                 }
             });
 
