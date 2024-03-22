@@ -1301,7 +1301,7 @@
             }
         } else {
             try {
-                x = params["filter"]?params["filter"]:lStore("_tt_issue_filter_" + current_project);
+                x = params["filter"] ? params["filter"] : lStore("_tt_issue_filter_" + current_project);
             } catch (e) {
                 //
             }
@@ -1310,14 +1310,14 @@
         let filters;
 
         if (target) {
-            filters = `<span class="text-bold ${params.class?params.class:''}">${(modules.tt.meta.filters[x]?modules.tt.meta.filters[x]:i18n("tt.filter")).replaceAll("/", "<i class='fas fa-fw fa-xs fa-angle-double-right'></i>")}</span>`;
+            filters = `<span class="text-bold ${params.class ? params.class : ''}">${(modules.tt.meta.filters[x] ? modules.tt.meta.filters[x] : i18n("tt.filter")).replaceAll("/", "<i class='fas fa-fw fa-xs fa-angle-double-right'></i>")}</span>` + " [" + x + "]";
         } else {
             let fcount = 0;
             filters = `<span class="dropdown">`;
     
             let filtersTree = {};
             for (let i in project.filters) {
-                let tree = (project.filters[i].filter?modules.tt.meta.filters[project.filters[i].filter]:project.filters[i].filter).split("/");
+                let tree = (project.filters[i].filter ? modules.tt.meta.filters[project.filters[i].filter] : project.filters[i].filter).split("/");
                 let f = filtersTree;
                 for (let j = 0; j < tree.length - 1; j++) {
                     tree[j] = tree[j].trim();
