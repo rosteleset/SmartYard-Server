@@ -171,7 +171,7 @@
                     return false;
                 }
 
-                $uids = $this->db->query("select * from (select uid from core_users_groups where gid = $gid union select admin from core_groups where gid = gid) as t1 group by uid", \PDO::FETCH_ASSOC)->fetchAll();
+                $uids = $this->db->query("select uid from (select uid from core_users_groups where gid = $gid union select admin from core_groups where gid = $gid) as t1 group by uid", \PDO::FETCH_ASSOC)->fetchAll();
 
                 $_users = [];
                 foreach ($uids as $uid) {
