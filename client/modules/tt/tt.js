@@ -559,7 +559,7 @@
                                 });
                             }
 
-                            console.log(prefferredValue, issue);
+                            console.log(prefferredValue, issue, (typeof prefferredValue !== "undefined") ? prefferredValue : ((issue && issue["_cf_" + fieldId]) ? issue["_cf_" + fieldId] : []));
 
                             return {
                                 id: "_cf_" + fieldId,
