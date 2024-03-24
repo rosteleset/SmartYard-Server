@@ -705,6 +705,8 @@
         fail(FAIL).
         done(modules.tt.tt).
         done(() => {
+            $(window).scrollTop(0);
+            
             let cfc = [];
             let a = {};
             for (let i in modules.tt.meta.customFields) {
