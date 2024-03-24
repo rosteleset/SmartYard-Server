@@ -559,6 +559,8 @@
                                 });
                             }
 
+                            console.log(prefferredValue, issue);
+
                             return {
                                 id: "_cf_" + fieldId,
                                 type: "select2",
@@ -569,7 +571,7 @@
                                 multiple: cf.format.indexOf("multiple") >= 0,
                                 tags: cf.format.indexOf("editable") >= 0,
                                 createTags: cf.format.indexOf("editable") >= 0,
-                                value: (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue["_cf_" + fieldId])?issue["_cf_" + fieldId]:[]),
+                                value: (typeof prefferredValue !== "undefined") ? prefferredValue : ((issue && issue["_cf_" + fieldId]) ? issue["_cf_" + fieldId] : []),
                                 validate: validate,
                                 ajax: (cf.format.indexOf("suggestions") >= 0) ? {
                                     delay: 1000,
