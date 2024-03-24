@@ -552,14 +552,26 @@
                             }
 
                         case "select":
+                            let already = {};
+                            
                             for (let i in cf.options) {
-                                options.push({
-                                    id: cf.options[i].option,
-                                    text: cf.options[i].optionDisplay,
-                                });
+                                if (!cf.options[i].option) {
+                                    already[cf.options[i].option] = 1;
+                                    options.push({
+                                        id: cf.options[i].option,
+                                        text: cf.options[i].optionDisplay,
+                                    });
+                                }
                             }
 
-                            console.log(prefferredValue, issue, (typeof prefferredValue !== "undefined") ? prefferredValue : ((issue && issue["_cf_" + fieldId]) ? issue["_cf_" + fieldId] : []));
+                            let value = (typeof prefferredValue !== "undefined") ? prefferredValue : ((issue && issue["_cf_" + fieldId]) ? issue["_cf_" + fieldId] : []);
+                            
+                            if (value && !already[value]) {
+                                options.push({
+                                    id: value,
+                                    text: value,
+                                });
+                            }
 
                             return {
                                 id: "_cf_" + fieldId,
@@ -571,7 +583,7 @@
                                 multiple: cf.format.indexOf("multiple") >= 0,
                                 tags: cf.format.indexOf("editable") >= 0,
                                 createTags: cf.format.indexOf("editable") >= 0,
-                                value: (typeof prefferredValue !== "undefined") ? prefferredValue : ((issue && issue["_cf_" + fieldId]) ? issue["_cf_" + fieldId] : []),
+                                value: value,
                                 validate: validate,
                                 ajax: (cf.format.indexOf("suggestions") >= 0) ? {
                                     delay: 1000,
