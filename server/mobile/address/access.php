@@ -80,8 +80,11 @@
         $households->setSubscriberFlats((int)$guest['subscriberId'], $f_list);
     } else {
         //добавление
-
-        if ($households->addSubscriber($guest_phone, "", "", $flat_id)) {
+        if ($households->addSubscriber($guest_phone, "", "", $flat_id,
+            [
+                'title' => 'Новый адрес',
+                'msg' => 'В вашу учётную запись добавлен новый адрес',
+            ])) {
             response();
         } else {
             response(422, false, false, "Операция не выполнена. Телефон уже есть в списке?");
