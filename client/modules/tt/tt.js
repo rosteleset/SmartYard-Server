@@ -904,6 +904,8 @@
                         }
     
                         val = escapeHTML(m);
+                        val = '<span style="white-space: nowrap!important;">' + val + '</span>';
+                        escaped = true;
                         break;
     
                     case "author":
