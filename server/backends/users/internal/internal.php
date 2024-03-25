@@ -37,7 +37,7 @@
                             "eMail" => $user["e_mail"],
                             "phone" => $user["phone"],
                             "tg" => $user["tg"],
-                            "notificarion" => $user["notificarion"],
+                            "notification" => $user["notification"],
                             "enabled" => $user["enabled"],
                             "lastLogin" => $withSessions ? $this->redis->get("last_login_" . md5($user["login"])) : false,
                             "lastAction" => $withSessions ? $this->redis->get("last_action_" . md5($user["login"])) : false,
