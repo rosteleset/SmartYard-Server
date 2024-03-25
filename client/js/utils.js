@@ -248,7 +248,10 @@ function convertLinks(input) {
 */
 
 function convertLinks(input) {
-    let options = { defaultProtocol: "https" };
+    let options = {
+        defaultProtocol: "https",
+        target: "_blank",
+    };
     return linkifyHtml(input, options);
 }
 
