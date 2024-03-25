@@ -26,7 +26,7 @@
                 }
 
                 try {
-                    $users = $this->db->query("select uid, login, real_name, e_mail, phone, tg, enabled, primary_group, acronym primary_group_acronym from core_users left join core_groups on core_users.primary_group = core_groups.gid order by real_name, login, uid", \PDO::FETCH_ASSOC)->fetchAll();
+                    $users = $this->db->query("select uid, login, real_name, e_mail, phone, tg, enabled, primary_group, acronym primary_group_acronym, notification from core_users left join core_groups on core_users.primary_group = core_groups.gid order by real_name, login, uid", \PDO::FETCH_ASSOC)->fetchAll();
                     $_users = [];
 
                     foreach ($users as $user) {
@@ -37,6 +37,7 @@
                             "eMail" => $user["e_mail"],
                             "phone" => $user["phone"],
                             "tg" => $user["tg"],
+                            "notificarion" => $user["notificarion"],
                             "enabled" => $user["enabled"],
                             "lastLogin" => $withSessions ? $this->redis->get("last_login_" . md5($user["login"])) : false,
                             "lastAction" => $withSessions ? $this->redis->get("last_action_" . md5($user["login"])) : false,
