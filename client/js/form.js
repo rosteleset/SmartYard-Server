@@ -2,7 +2,8 @@ function cardForm(params) {
     let _prefix = "modalForm-" + md5(guid()) + "-";
     
     let h = `<form id="${_prefix}form" autocomplete="off" onsubmit="return false;" action="">`;
-    h += `<input autocomplete="false" name="${_prefix}hidden" type="text" style="display:none;">`;
+    h += `<input autocomplete="false" name="${_prefix}hiddenText" type="text" style="display:none;">`;
+    h += `<input autocomplete="false" name="${_prefix}hiddenPassword" type="password" style="display:none;">`;
     
     let files = {};
 
