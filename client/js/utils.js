@@ -204,6 +204,7 @@ function parseFloatEx(f, r) {
     }
 }
 
+/*
 function convertLinks(input) {
     let text = input;
     const aLink = [];
@@ -223,7 +224,6 @@ function convertLinks(input) {
                 linkText = linkText.replace('www.', '');
             }
 
-/*
             if (linkText.match(/youtu/)) {
                 const youtubeID = replace.split('/').slice(-1)[0].split('=')[1];
 
@@ -233,11 +233,8 @@ function convertLinks(input) {
                     aLink.push('<span class="video-wrapper"><iframe src="https://www.youtube.com/embed/' + youtubeID + '" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></span>');
                 }
             } else {
-*/
                 aLink.push('<a onclick="xblur()" href="' + replace + '" target="_blank">' + linkText + '</a>');
-/*
             }
-*/
             text = text.split(linksFound[i]).map(item => {
                 return aLink[i].includes('iframe') ? item.trim() : item;
             }).join(aLink[i]);
@@ -247,6 +244,12 @@ function convertLinks(input) {
     } else {
         return input;
     }
+}
+*/
+
+function convertLinks(input) {
+    let options = { defaultProtocol: "https" };
+    return linkifyHtml(input, options);
 }
 
 function getMonthDifference(startDate, endDate) {
