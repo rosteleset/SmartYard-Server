@@ -882,8 +882,9 @@
                 return "";
             }
     
+            console.log(field);
+
             if (field.substring(0, 4) !== "_cf_") {
-                console.log(field);
                 
                 switch (field) {
                     case "description":
