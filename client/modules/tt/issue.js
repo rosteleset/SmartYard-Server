@@ -811,7 +811,7 @@
                 }
                 h += "</div>";
                 h += "<div class='ml-2 mb-2 mt-1'>";
-                h += nl2br($.trim(escapeHTML(issue.issue.comments[i].body)));
+                h += convertLinks(nl2br($.trim(escapeHTML(issue.issue.comments[i].body))));
                 h += "</div>";
                 h += "</td>";
                 h += "</tr>";
