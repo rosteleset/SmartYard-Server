@@ -561,9 +561,19 @@
                         for (let i = 0; i < response.users.length; i++) {
                             if (!parseInt(response.users[i].uid)) continue;
 
+                            let cl = (response.users[i].enabled == 1)?"bg-white":"bg-light text-decoration-line-through";
+
+                            if ((response.users[i].notification == "notificationEmailTg" || response.users[i].notification == "notificationTgEmail" || response.users[i].notification == "notificationEmail") && !(response.users[i].eMail && response.users[i].eMail != response.users[i].login)) {
+                                cl = "bg-warning";
+                            }
+                            
+                            if ((response.users[i].notification == "notificationTgEmail" || response.users[i].notification == "notificationEmailTg" || response.users[i].notification == "notificationTg") && !response.users[i].tg) {
+                                cl = "bg-warning";
+                            }
+                            
                             rows.push({
                                 uid: response.users[i].uid.toString(),
-                                class: (response.users[i].enabled == 1)?"bg-white":"bg-light text-decoration-line-through",
+                                class: cl,
                                 cols: [
                                     {
                                         data: response.users[i].uid,
