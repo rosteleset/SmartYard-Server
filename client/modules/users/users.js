@@ -571,7 +571,7 @@
                                 cl = "bg-warning";
                             }
 
-                            console.log(cl);
+                            console.log(response.users[i]);
                             
                             rows.push({
                                 uid: response.users[i].uid.toString(),
