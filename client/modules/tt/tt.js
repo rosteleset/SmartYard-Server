@@ -554,10 +554,8 @@
                         case "select":
                             let already = {};
 
-                            console.log(cf);
-                            
                             for (let i in cf.options) {
-                                if (!cf.options[i].option) {
+                                if (!already[cf.options[i].option]) {
                                     already[cf.options[i].option] = 1;
                                     options.push({
                                         id: cf.options[i].option,
@@ -574,8 +572,6 @@
                                     text: value,
                                 });
                             }
-
-                            console.log(options);
 
                             return {
                                 id: "_cf_" + fieldId,
