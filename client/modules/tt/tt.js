@@ -553,6 +553,8 @@
 
                         case "select":
                             let already = {};
+
+                            console.log(cf);
                             
                             for (let i in cf.options) {
                                 if (!cf.options[i].option) {
