@@ -570,6 +570,8 @@
                             if ((response.users[i].notification == "TgEmail" || response.users[i].notification == "EmailTg" || response.users[i].notification == "Tg") && !response.users[i].tg) {
                                 cl = "bg-warning";
                             }
+
+                            console.log(cl);
                             
                             rows.push({
                                 uid: response.users[i].uid.toString(),
