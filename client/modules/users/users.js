@@ -563,11 +563,11 @@
 
                             let cl = (response.users[i].enabled == 1)?"bg-white":"bg-light text-decoration-line-through";
 
-                            if ((response.users[i].notification == "notificationEmailTg" || response.users[i].notification == "notificationTgEmail" || response.users[i].notification == "notificationEmail") && !(response.users[i].eMail && response.users[i].eMail != response.users[i].login)) {
+                            if ((response.users[i].notification == "EmailTg" || response.users[i].notification == "TgEmail" || response.users[i].notification == "Email") && !(response.users[i].eMail && response.users[i].eMail != response.users[i].login)) {
                                 cl = "bg-warning";
                             }
                             
-                            if ((response.users[i].notification == "notificationTgEmail" || response.users[i].notification == "notificationEmailTg" || response.users[i].notification == "notificationTg") && !response.users[i].tg) {
+                            if ((response.users[i].notification == "TgEmail" || response.users[i].notification == "EmailTg" || response.users[i].notification == "Tg") && !response.users[i].tg) {
                                 cl = "bg-warning";
                             }
                             
