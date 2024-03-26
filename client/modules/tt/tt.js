@@ -1405,11 +1405,11 @@
                         } else {
                             filters += '<i class="fas fa-fw fa-globe-americas mr-2"></i>';
                         }
-                        filters += "<span>" + $.trim(i) + "</span>";
+                        filters += "<span>" + $.trim(i) + "&nbsp;</span>";
                         filters += "</li>";
                         fcount++;
                     } else {
-                        filters += `<li class="dropdown-item pointer submenu"><i class="far fa-fw fa-folder mr-2"></i><span>${i}</span></li>`;
+                        filters += `<li class="dropdown-item pointer submenu"><i class="far fa-fw fa-folder mr-2"></i><span>${i}&nbsp;</span></li>`;
                         filters += '<ul class="dropdown-menu">';
                         hh(t[i]);
                         filters += '</ul>';
