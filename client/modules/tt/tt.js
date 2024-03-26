@@ -1395,7 +1395,7 @@
                         if (x == t[i].filter) {
                             filters += `<li class="dropdown-item${hasSub?' nomenu':''} pointer tt_issues_filter font-weight-bold mr-4" data-filter-name="${t[i].filter}">`;
                         } else {
-                            filters += `<li class="dropdown-item${hasSub?' nomenu':''} pointer tt_issues_filter mr-5" data-filter-name="${t[i].filter}">`;
+                            filters += `<li class="dropdown-item${hasSub?' nomenu':''} pointer tt_issues_filter mr-4" data-filter-name="${t[i].filter}">`;
                         }
                         if (parseInt(t[i].personal) > 1000000) {
                             filters += '<i class="fas fa-fw fa-users mr-2"></i>';
