@@ -1393,7 +1393,7 @@
                     let i = ts[sk];
                     if (t[i].filter) {
                         if (x == t[i].filter) {
-                            filters += `<li class="dropdown-item${hasSub?' nomenu':''} pointer tt_issues_filter font-weight-bold mr-5" data-filter-name="${t[i].filter}">`;
+                            filters += `<li class="dropdown-item${hasSub?' nomenu':''} pointer tt_issues_filter font-weight-bold mr-4" data-filter-name="${t[i].filter}">`;
                         } else {
                             filters += `<li class="dropdown-item${hasSub?' nomenu':''} pointer tt_issues_filter mr-5" data-filter-name="${t[i].filter}">`;
                         }
@@ -1409,7 +1409,7 @@
                         filters += "</li>";
                         fcount++;
                     } else {
-                        filters += `<li class="dropdown-item pointer submenu mr-5"><i class="far fa-fw fa-folder mr-2"></i><span>${i}&nbsp;</span></li>`;
+                        filters += `<li class="dropdown-item pointer submenu mr-4"><i class="far fa-fw fa-folder mr-2"></i><span>${i}&nbsp;</span></li>`;
                         filters += '<ul class="dropdown-menu">';
                         hh(t[i]);
                         filters += '</ul>';
