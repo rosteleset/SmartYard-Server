@@ -1405,8 +1405,8 @@
                         filters += $.trim(i) + "</li>";
                         fcount++;
                     } else {
-                        filters += `<li class="dropdown-item pointer submenu" style="width: 350px;"><i class="far fa-fw fa-folder mr-2"></i>${i}</li>`;
-                        filters += '<ul class="dropdown-menu" style="width: 100%;">';
+                        filters += `<li class="dropdown-item pointer submenu"><i class="far fa-fw fa-folder mr-2"></i>${i}</li>`;
+                        filters += '<ul class="dropdown-submenu">';
                         hh(t[i]);
                         filters += '</ul>';
                         filters += `</li>`;
