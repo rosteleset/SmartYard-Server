@@ -440,7 +440,7 @@
         maintenance(true);
         wait_all();
 
-        backup_db();
+        backup_db(false);
         echo "\n";
 
         initDB(@$args["--skip"]);

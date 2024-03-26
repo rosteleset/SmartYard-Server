@@ -36,7 +36,7 @@
         ];
     }
 
-    function backup_db()
+    function backup_db($check_backup = true)
     {
         global $config;
 
@@ -60,7 +60,7 @@
                 break;
         }
 
-        if (filesize($file) < 1024) {
+        if ($check_backup && filesize($file) < 1024) {
             die("backup file is too small\n\n");
         }
 
