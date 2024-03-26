@@ -1346,7 +1346,7 @@
                 f[tree[tree.length - 1]] = project.filters[i];
             }
 
-            let filter_name =(modules.tt.meta.filters[x]?modules.tt.meta.filters[x]:i18n("tt.filter");
+            let filter_name = modules.tt.meta.filters[x]?modules.tt.meta.filters[x]:i18n("tt.filter");
             document.title = i18n("windowTitle") + " :: " + filter_name;
 
             filter_name = filter_name.replaceAll("/", "<i class='fas fa-fw fa-xs fa-angle-double-right'></i>");
