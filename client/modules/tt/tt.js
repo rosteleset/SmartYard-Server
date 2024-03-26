@@ -1405,10 +1405,10 @@
                         filters += $.trim(i) + "</li>";
                         fcount++;
                     } else {
-                        filters += `<li class="dropdown-item pointer submenu" style="max-width: 350px;"><i class="far fa-fw fa-folder mr-2"></i>${i}</li>`;
-                        filters += '<div class="dropdown-menu" style="width: 100%;">';
+                        filters += `<li class="dropdown-item pointer submenu" style="width1: 350px;"><i class="far fa-fw fa-folder mr-2"></i>${i}</li>`;
+                        filters += '<ul class="dropdown-menu" style="width: 100%;">';
                         hh(t[i]);
-                        filters += '</div>';
+                        filters += '</ul>';
                         filters += `</li>`;
                     }
                 }
