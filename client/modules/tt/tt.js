@@ -883,7 +883,6 @@
             }
     
             if (field.substring(0, 4) !== "_cf_") {
-                
                 switch (field) {
                     case "description":
                     case "subject":
@@ -1405,10 +1404,10 @@
                         filters += $.trim(i) + "</li>";
                         fcount++;
                     } else {
-                        filters += `<li class="dropdown-item pointer submenu"><i class="far fa-fw fa-folder mr-2"></i>${i}</li>`;
-                        filters += '<ul class="dropdown-menu dropdown-submenu">';
+                        filters += `<li class="dropdown-item pointer submenu" style="width: 300px;"><i class="far fa-fw fa-folder mr-2"></i>${i}</li>`;
+                        filters += '<div class="dropdown-menu" style="min-width: 350px;">';
                         hh(t[i]);
-                        filters += '</ul>';
+                        filters += '</div>';
                         filters += `</li>`;
                     }
                 }
