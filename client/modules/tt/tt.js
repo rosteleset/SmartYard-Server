@@ -1402,7 +1402,8 @@
                         } else {
                             filters += '<i class="fas fa-fw fa-globe-americas mr-2"></i>';
                         }
-                        filters += $.trim(i) + "</li>";
+                        filters += "<span>" + $.trim(i) + "</span>";
+                        filters += "</li>";
                         fcount++;
                     } else {
                         filters += `<li class="dropdown-item pointer submenu" style="width: 350px;"><i class="far fa-fw fa-folder mr-2"></i>${i}</li>`;
