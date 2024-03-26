@@ -1406,7 +1406,7 @@
                         filters += "</li>";
                         fcount++;
                     } else {
-                        filters += `<li class="dropdown-item pointer submenu" style="width: 350px;"><i class="far fa-fw fa-folder mr-2"></i>${i}</li>`;
+                        filters += `<li class="dropdown-item pointer submenu" style="width: 350px;"><i class="far fa-fw fa-folder mr-2"></i><span>${i}</span></li>`;
                         filters += '<ul class="dropdown-menu" style="width: 100%;">';
                         hh(t[i]);
                         filters += '</ul>';
