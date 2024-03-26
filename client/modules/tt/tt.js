@@ -1348,7 +1348,7 @@
 
             let filter_name = (modules.tt.meta.filters[x]?modules.tt.meta.filters[x]:i18n("tt.filter")).replaceAll("/", "<i class='fas fa-fw fa-xs fa-angle-double-right'></i>");
             filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" style="margin-left: -4px;"><i class="far fa-fw fa-caret-square-down mr-1"></i>${filter_name}</span>`;
-            filters += `<ul class="dropdown-menu" aria-labelledby="ttFilter">`;
+            filters += `<ul class="dropdown-menu" aria-labelledby="ttFilter" style="width: 100%;">`;
             document.title = i18n("windowTitle") + " :: " + (modules.tt.meta.filters[x]?modules.tt.meta.filters[x]:i18n("tt.filter"));
 
             (function hh(t) {
@@ -1406,7 +1406,7 @@
                         fcount++;
                     } else {
                         filters += `<li class="dropdown-item pointer submenu" style="width: 300px;"><i class="far fa-fw fa-folder mr-2"></i>${i}</li>`;
-                        filters += '<div class="dropdown-menu">';
+                        filters += '<div class="dropdown-menu" style="width: 100%;">';
                         hh(t[i]);
                         filters += '</div>';
                         filters += `</li>`;
