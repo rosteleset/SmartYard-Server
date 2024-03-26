@@ -336,22 +336,13 @@ body::-webkit-scrollbar-thumb {
 	content: '▸';
   text-align: right;
   float: right;
-	margin-left: 1rem;
 }
 
 .dropdown-item.nomenu::after {
 	content: '▸';
   text-align: right;
   float: right;
-	margin-left: 1rem;
   color: transparent;
-}
-
-.submenu-glyph::after {
-	content: '▸';
-  text-align: right;
-  float: right;
-	margin-left: 1rem;
 }
 
 .dropdown-item:hover + .dropdown-menu,
