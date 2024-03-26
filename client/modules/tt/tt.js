@@ -1406,7 +1406,7 @@
                         fcount++;
                     } else {
                         filters += `<li class="dropdown-item pointer submenu"><i class="far fa-fw fa-folder mr-2"></i>${i}</li>`;
-                        filters += '<ul class="dropdown-submenu">';
+                        filters += '<ul class="dropdown-menu dropdown-submenu">';
                         hh(t[i]);
                         filters += '</ul>';
                         filters += `</li>`;
