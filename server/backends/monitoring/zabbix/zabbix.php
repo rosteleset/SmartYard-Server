@@ -861,8 +861,6 @@ class zabbix extends monitoring
         $mapped = [];
         if (!$raw) return  null;
         foreach ($raw as $item) {
-//            $this->log("ZBX | getCamerasFromZBX >>>");
-//            $this->log(var_export($item, true));
             $mapped_item = [
                 "zbx_hostid" => $item["hostid"],
                 "status" => $item["status"] === "0",
