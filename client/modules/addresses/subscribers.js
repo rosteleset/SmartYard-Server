@@ -206,9 +206,6 @@
         }
 
         if (subscriber) {
-
-            console.log(subscriber);
-
             let flats = [];
 
             for (let i in subscriber.flats) {
@@ -221,12 +218,10 @@
                 }
 
                 try {
-                    voipEnabled = subscriber.flats[i].voipEnabled.toString() !== "1";
+                    voipEnabled = subscriber.flats[i].voipEnabled.toString() == "1";
                 } catch (e) {
-                    voipEnabled = true;
+                    voipEnabled = false;
                 }
-
-                console.log(voipEnabled);
 
                 let link = '';
 
