@@ -374,10 +374,12 @@
 
                     $subscribers = $households->getSubscribers("flatId", (int)$params);
 
-                    if ($subscribers && $subscribers["flats"]) {
-                        foreach ($subscribers["flats"] as $flat) {
-                            if ($flat["flatId"] == (int)$params) {
-                                $subscribers["voipEnabled"] = (int)($subscribers["voipEnabled"] && $flat["voipEnabled"]);
+                    if ($subscribers) {
+                        foreach ($subscribers as &$subscriber) {
+                            foreach ($subscriber["flats"] as $flat) {
+                                if ($flat["flatId"] == (int)$params) {
+                                    $subscriber["voipEnabled"] = (int)($subscriber["voipEnabled"] && $flat["voipEnabled"]);
+                                }
                             }
                         }
                     }
