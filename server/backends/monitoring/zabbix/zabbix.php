@@ -8,15 +8,21 @@ class zabbix extends monitoring
 {
     const hostGroups = ['Intercoms', 'Cameras'];
     const templateGroups = ['Templates/Intercoms', 'Templates/Cameras'];
-    const intercomTemplateNames = ['Intercom_AKUVOX', 'Intercom_BEWARD', 'Intercom_QTECH'];
+    const intercomTemplateNames = [
+        'Intercom_AKUVOX_E12',
+        'Intercom_BEWARD_DKS',
+        'Intercom_BEWARD_DS06',
+        'Intercom_QTECH_QDB-27C-H'
+    ];
     const cameraTemplateNames = ['Camera_simple'];
     const pluggedTemplateNames = ['ICMP Ping'];
     const intercomTemplateFiles = [
-        'zbx_beward_intercom_template.yaml',
-        'zbx_qtech_intercom_template.yaml',
-        'zbx_akuvox_intercom_template.yaml',
+        'zbx_intercom_template_beward_dks.yaml',
+        'zbx_intercom_template_beward_ds06.yaml',
+        'zbx_intercom_template_qtech_qbr-27c-h.yaml',
+        'zbx_intercom_template_akuvox_e12.yaml',
     ];
-    const cameraTemplateFiles = ['zbx_simple_camera_template.yaml'];
+    const cameraTemplateFiles = ['zbx_camera_template_simple.yaml'];
     const temolatesDir = __DIR__ . "/../../../../install/zabbix/templates";
     protected $zbxData = [];
     protected $zbxApi, $zbxToken;
@@ -215,10 +221,42 @@ class zabbix extends monitoring
         $domophonesModels = $configs->getDomophonesModels();
         $domophones = $households->getDomophones("all");
         foreach ($domophones as $domophone) {
+
             $subset [] = [
                 "enabled" => $domophone["enabled"],
                 "domophoneId" => $domophone["domophoneId"],
-                "vendor" => $domophonesModels[$domophone["model"]]["vendor"],
+                "vendor" => rtrim(
+                    $domophonesModels[$domophone["model"]]["vendor"]
+                    . "_"
+                    . $domophonesModels[$domophone["model"]]["model"],
+                    "*"
+                ),
+                "name" => $domophone["name"],
+                "ip" => $domophone["ip"],
+                "credentials" => $domophone["credentials"]
+            ];
+        }
+
+        return $subset;
+    }
+
+    private function getDomophones_feature(): array
+    {
+        $households = loadBackend("households");
+        $configs = loadBackend("configs");
+        $domophonesModels = $configs->getDomophonesModels();
+        $domophones = $households->getDomophones("all");
+        foreach ($domophones as $domophone) {
+
+            $subset [] = [
+                "enabled" => $domophone["enabled"],
+                "domophoneId" => $domophone["domophoneId"],
+                "vendor" => rtrim(
+                    $domophonesModels[$domophone["model"]]["vendor"]
+                    . "_"
+                    . $domophonesModels[$domophone["model"]]["model"],
+                    "*"
+                ),
                 "name" => $domophone["name"],
                 "ip" => $domophone["ip"],
                 "credentials" => $domophone["credentials"]
@@ -469,7 +507,6 @@ class zabbix extends monitoring
         ];
 
         return $this->apiCall($body);
-
     }
 
     /**
@@ -1038,6 +1075,17 @@ class zabbix extends monitoring
                 }
             }
         }
+    }
+
+    public function run()
+    {
+        $this->log("run");
+        $intercoms = $this->getDomophonesFromRBT_feature();
+        $this->log(var_export($intercoms, true));
+        $configs = loadBackend("configs");
+//        $domophonesModels = $configs->getDomophonesModels();
+//        $this->log(var_export($domophonesModels, true));
+
     }
 
     private function log(string $text): void

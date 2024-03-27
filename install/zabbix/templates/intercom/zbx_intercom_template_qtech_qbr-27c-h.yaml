@@ -1,25 +1,25 @@
 zabbix_export:
   version: '6.4'
   template_groups:
-    - uuid: 6b2da836ac5d4728b89105eb2ed04250
+    - uuid: 7cc79d6a377b42178af13d771911452b
       name: Templates/Intercoms
   templates:
-    - uuid: 569ee7c7edec4f1cb8772a86f910ef9b
-      template: Intercom_QTECH
-      name: 'QTECH intercom by HTTP'
+    - uuid: 4b1e045ce6f54de8b626da09c747bb5d
+      template: Intercom_QTECH_QDB-27C-H
+      name: 'Intercom | QTECH QDB-27C-H by HTTP'
+      description: 'Intercom QTECH QDB-27C-H panel monitoring'
       vendor:
         name: SmartYard
         version: 6.4-0
-      description: 'QTECH Intercom panel monitoring'
       templates:
         - name: 'ICMP Ping'
       groups:
         - name: Templates/Intercoms
       items:
-        - uuid: 84795b85391847c28e2a5d06c604e33e
+        - uuid: 644a5ce311644a858ee5062c9f0fc1e5
           name: 'QTECH Intercom: device model'
           type: DEPENDENT
-          key: qtech_intercom.devicemodel
+          key: intercom.devicemodel
           delay: '0'
           history: 7d
           trends: '0'
@@ -31,11 +31,11 @@ zabbix_export:
               parameters:
                 - $.model
           master_item:
-            key: qtech_intercom.systeminfo
-        - uuid: 2495bcbd2363402b9bad5e3bac9dfbcb
+            key: intercom.systeminfo
+        - uuid: f1c7651f6f494ab7a0a8960dc89a1b22
           name: 'QTECH Intercom: fw version'
           type: DEPENDENT
-          key: qtech_intercom.fwversion
+          key: intercom.fwversion
           delay: '0'
           history: 7d
           trends: '0'
@@ -47,19 +47,19 @@ zabbix_export:
               parameters:
                 - $.firmware
           master_item:
-            key: qtech_intercom.systeminfo
+            key: intercom.systeminfo
           triggers:
-            - uuid: 4a6eb5153c814364a282cdbed8f2859c
-              expression: 'last(/Intercom_QTECH/qtech_intercom.fwversion,#1)<>last(/Intercom_QTECH/qtech_intercom.fwversion,#2) and length(last(/Intercom_QTECH/qtech_intercom.fwversion))>0'
+            - uuid: cd2e037853044d1ba0ac795394494cfe
+              expression: 'last(/Intercom_QTECH_QDB-27C-H/intercom.fwversion,#1)<>last(/Intercom_QTECH_QDB-27C-H/intercom.fwversion,#2) and length(last(/Intercom_QTECH_QDB-27C-H/intercom.fwversion))>0'
               name: 'Firmware version has changed'
               event_name: 'INTERCOM: {HOST.NAME} | Firmvare version has changed (new version: {ITEM.VALUE})'
               priority: INFO
-        - uuid: a66e2cb5c2da4254959b7b978b58d853
+        - uuid: 8bf6e966c0184dcc8897a5a995d23453
           name: 'QTECH Intercom: SIP registration status'
           type: HTTP_AGENT
-          key: qtech_intercom.sipstatus
+          key: intercom.sipstatus
           history: 7d
-          trends: 90d
+          trends: '0'
           authtype: BASIC
           username: '{$INTERCOM_USERNAME}'
           password: '{$INTERCOM_PASSWORD}'
@@ -87,16 +87,16 @@ zabbix_export:
           post_type: JSON
           request_method: POST
           triggers:
-            - uuid: 1cff8206fcd64d0bb7aa709a84c8e657
-              expression: 'count(/Intercom_QTECH/qtech_intercom.sipstatus,10m,,"0")>5'
+            - uuid: e9ae3baa1af24263a5e18f77c11404bf
+              expression: 'count(/Intercom_QTECH_QDB-27C-H/intercom.sipstatus,10m,,"0")>5'
               name: 'SIP registration failure'
               event_name: 'INTERCOM: {HOST.NAME} | SIP registration failure'
               priority: WARNING
               description: 'Check SIP registration on device more 10 minutes'
-        - uuid: 472889788ce14fd29cc7ac5a80a95ddb
+        - uuid: 342f50176e7c4a6eb613db7559d6c4e7
           name: 'QTECH Intercom: system info'
           type: HTTP_AGENT
-          key: qtech_intercom.systeminfo
+          key: intercom.systeminfo
           history: 7d
           trends: '0'
           value_type: TEXT
@@ -118,10 +118,10 @@ zabbix_export:
           post_type: JSON
           request_method: POST
           output_format: JSON
-        - uuid: 08fe9b60a9b244a78e899232e275b139
+        - uuid: 253957306d7445638ddcbb18d4645f83
           name: 'QTECH Intercom: uptime'
           type: DEPENDENT
-          key: qtech_intercom.uptime
+          key: intercom.uptime
           delay: '0'
           history: 7d
           trends: 90d
@@ -146,12 +146,12 @@ zabbix_export:
                   const str2seconds = days2seconds + hours2seconds + minutes2seconds + seconds
                   return str2seconds
           master_item:
-            key: qtech_intercom.systeminfo
+            key: intercom.systeminfo
           triggers:
-            - uuid: 1cd98966a42848a387df2cb1b1e9ca2e
-              expression: last(/Intercom_QTECH/qtech_intercom.uptime)<10m
+            - uuid: fcb17a484fff4becb48cf7496effe107
+              expression: last(/Intercom_QTECH_QDB-27C-H/intercom.uptime)<10m
               recovery_mode: RECOVERY_EXPRESSION
-              recovery_expression: last(/Intercom_QTECH/qtech_intercom.uptime)>15m
+              recovery_expression: last(/Intercom_QTECH_QDB-27C-H/intercom.uptime)>15m
               name: 'Device has been restarted'
               event_name: 'INTERCOM: {HOST.NAME} | has been restarted (uptime < 10m)'
               priority: INFO
@@ -169,7 +169,7 @@ zabbix_export:
           value: admin
           description: 'WEB GUI | API username, default value admin'
       valuemaps:
-        - uuid: 47ccbde4409d4c7399ea4564bb0ecffd
+        - uuid: 30b36a8991f4426a85624e0aa6076db4
           name: 'SIP registration status'
           mappings:
             - value: '0'

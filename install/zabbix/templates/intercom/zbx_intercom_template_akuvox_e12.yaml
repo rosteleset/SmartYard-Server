@@ -4,10 +4,10 @@ zabbix_export:
     - uuid: 7cc79d6a377b42178af13d771911452b
       name: Templates/Intercoms
   templates:
-    - uuid: 91bfd12a176a404dadb9b4a3254666f9
-      template: Intercom_AKUVOX
-      name: 'AKUVOX intercom by HTTP'
-      description: 'AKUVOX Intercom panel monitoring'
+    - uuid: 38e9595b758a48c2a9b64a19485ec156
+      template: Intercom_AKUVOX_E12
+      name: 'Intercom | AKUVOX E12 by HTTP'
+      description: 'Intercom AKUVOX E12 panel monitoring'
       vendor:
         name: SmartYard
         version: 6.4-0
@@ -16,10 +16,10 @@ zabbix_export:
       groups:
         - name: Templates/Intercoms
       items:
-        - uuid: d6224634cd544c43b12220f488cdd0f4
+        - uuid: 522e1d0bfdd744c2aade5e48ccebbd65
           name: 'AKUVOX Intercom: device model'
           type: DEPENDENT
-          key: akuvox_intercom.devicemodel
+          key: intercom.devicemodel
           delay: '0'
           history: 7d
           trends: '0'
@@ -31,11 +31,11 @@ zabbix_export:
               parameters:
                 - $.data.Status.Model
           master_item:
-            key: akuvox_intercom.systeminfo
-        - uuid: 9da84f2b069349c9b2f2fdb433dcb160
+            key: intercom.systeminfo
+        - uuid: 2a499a8655524c55a82ca1a1906f477a
           name: 'AKUVOX Intercom: fw version'
           type: DEPENDENT
-          key: akuvox_intercom.fwversion
+          key: intercom.fwversion
           delay: '0'
           history: 7d
           trends: '0'
@@ -47,17 +47,17 @@ zabbix_export:
               parameters:
                 - $.data.Status.FirmwareVersion
           master_item:
-            key: akuvox_intercom.systeminfo
+            key: intercom.systeminfo
           triggers:
-            - uuid: 7e775913229240f18998958691462bf8
-              expression: 'last(/Intercom_AKUVOX/akuvox_intercom.fwversion,#1)<>last(/Intercom_AKUVOX/akuvox_intercom.fwversion,#2) and length(last(/Intercom_AKUVOX/akuvox_intercom.fwversion))>0'
+            - uuid: 88a1ade070464cffa35eb0e4dd7bf2c5
+              expression: 'last(/Intercom_AKUVOX_E12/intercom.fwversion,#1)<>last(/Intercom_AKUVOX_E12/intercom.fwversion,#2) and length(last(/Intercom_AKUVOX_E12/intercom.fwversion))>0'
               name: 'Firmware version has changed'
               event_name: 'INTERCOM: {HOST.NAME} | Firmvare version has changed (new version: {ITEM.VALUE})'
               priority: INFO
-        - uuid: c9d508fccc904dcd86556b3587cc676e
+        - uuid: ff82c3f504e64cc88b2f2e434721b456
           name: 'AKUVOX Intercom: SIP registration status'
           type: DEPENDENT
-          key: akuvox_intercom.sipstatus
+          key: intercom.sipstatus
           delay: '0'
           history: 7d
           trends: 90d
@@ -69,17 +69,17 @@ zabbix_export:
               parameters:
                 - $.data.Account1.Status
           master_item:
-            key: akuvox_intercom.systeminfo
+            key: intercom.systeminfo
           triggers:
-            - uuid: 5fd9dc8d1b7645bf8eaaff5d66628c37
-              expression: 'count(/Intercom_AKUVOX/akuvox_intercom.sipstatus,10m,,"0")>5'
+            - uuid: 49be10d2cc31437390e3f93e77daaef4
+              expression: 'count(/Intercom_AKUVOX_E12/intercom.sipstatus,10m,,"0")>5'
               name: 'SIP registration failure'
               event_name: 'INTERCOM: {HOST.NAME} | SIP registration failure'
               priority: WARNING
-        - uuid: 31dbbe6ba58c4dd5a5cb21c86b651ea2
+        - uuid: 9ac5fa36768146169a37b78cd033def4
           name: 'AKUVOX Intercom: system info'
           type: HTTP_AGENT
-          key: akuvox_intercom.systeminfo
+          key: intercom.systeminfo
           history: '0'
           trends: '0'
           value_type: CHAR
@@ -88,10 +88,10 @@ zabbix_export:
           password: '{$INTERCOM_PASSWORD}'
           description: 'Get system information from Akuvox SIP intercom'
           url: 'http://{HOST.CONN}/api/system/info'
-        - uuid: e5b3cea71c4442fd905c6b1d071ebd96
+        - uuid: 5c3dca9642e34e50b5751b7d11876936
           name: 'AKUVOX Intercom: system status'
           type: HTTP_AGENT
-          key: akuvox_intercom.systemstatus
+          key: intercom.systemstatus
           history: '0'
           trends: '0'
           authtype: DIGEST
@@ -103,21 +103,21 @@ zabbix_export:
               parameters:
                 - $.data.UpTime
           url: 'http://{HOST.CONN}/api/system/status'
-        - uuid: d0fa5f1893cc4038a8224229fb2d19c2
+        - uuid: 465125e71af844ca84bb07131a317ac9
           name: 'AKUVOX Intercom: uptime'
           type: DEPENDENT
-          key: akuvox_intercom.uptime
+          key: intercom.uptime
           delay: '0'
           history: 7d
           trends: 90d
           units: uptime
           master_item:
-            key: akuvox_intercom.systemstatus
+            key: intercom.systemstatus
           triggers:
-            - uuid: 5e880280658a461ca7b0cc55cb29a6b9
-              expression: last(/Intercom_AKUVOX/akuvox_intercom.uptime)<10m
+            - uuid: ac34af80a8c94c5d9752810f9c740423
+              expression: last(/Intercom_AKUVOX_E12/intercom.uptime)<10m
               recovery_mode: RECOVERY_EXPRESSION
-              recovery_expression: last(/Intercom_AKUVOX/akuvox_intercom.uptime)>15m
+              recovery_expression: last(/Intercom_AKUVOX_E12/intercom.uptime)>15m
               name: 'Device has been restarted'
               event_name: 'INTERCOM: {HOST.NAME} | has been restarted (uptime < 10m)'
               priority: INFO
@@ -134,7 +134,7 @@ zabbix_export:
           value: admin
           description: 'WEB GUI | API username, default value admin'
       valuemaps:
-        - uuid: a6583dafc93d419b8668e94baeb319ff
+        - uuid: 0954e785c8ef426bbc8affde11a937d6
           name: 'SIP registration status'
           mappings:
             - value: '2'
