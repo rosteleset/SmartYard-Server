@@ -1,0 +1,1 @@
+ALTER TABLE houses_flats_subscribers ADD COLUMN voip_enabled integer default 1;
