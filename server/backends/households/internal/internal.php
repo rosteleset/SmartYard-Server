@@ -1465,7 +1465,7 @@
                         "house_subscriber_id" => $subscriberId,
                         "house_flat_id" => $flatId,
                         "role" => $flat["role"] ? 0 : 1,
-                        "voip_enabled" => $flat["voipEnabled"] ? 0 : 1,
+                        "voip_enabled" => $flat["voipEnabled"] ? 1 : 0,
                     ]) !== false;
                 }
 
