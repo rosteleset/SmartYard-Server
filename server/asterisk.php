@@ -372,7 +372,17 @@
                 case "subscribers":
                     $households = loadBackend("households");
 
-                    echo json_encode($households->getSubscribers("flatId", (int)$params));
+                    $subscribers = $households->getSubscribers("flatId", (int)$params);
+
+                    if ($subscribers && $subscribers["flats"]) {
+                        foreach ($subscribers["flats"] as $flat) {
+                            if ($flat["flatId"] == (int)$params) {
+                                $subscribers["voipEnabled"] = (int)($subscribers["voipEnabled"] && $flat["voipEnabled"]);
+                            }
+                        }
+                    }
+
+                    echo json_encode($subscribers);
 
                     break;
 
