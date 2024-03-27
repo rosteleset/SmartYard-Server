@@ -207,6 +207,8 @@
 
         if (subscriber) {
 
+            console.log(subscriber);
+
             let flats = [];
 
             for (let i in subscriber.flats) {
