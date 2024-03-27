@@ -555,9 +555,9 @@
                             let already = {};
 
                             if (cf.format.indexOf("suggestions") >= 0) {
-                                already["0"] = 1;
+                                already[""] = 1;
                                 options.push({
-                                    id: "0",
+                                    id: "",
                                     text: "-",
                                 });
                             }
