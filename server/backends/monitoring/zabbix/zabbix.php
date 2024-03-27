@@ -37,7 +37,7 @@ class zabbix extends monitoring
             $this->initializeZabbixApi($config);
             $this->getActualIds();
         } catch (\Exception $e) {
-            $this->log("Zabbix Error: " . $e->getMessage());
+            $this->log("Error: " . $e->getMessage());
             throw $e;
         }
     }
@@ -48,7 +48,7 @@ class zabbix extends monitoring
     public function cron($part):bool
     {
         $result = true;
-        if ($part === "5min"){
+        if ($part === @$this->config['backends']['frs']['cron_sync_data_scheduler']){
             $this->handleIntercoms();
             $this->handleCameras();
         }
@@ -761,40 +761,6 @@ class zabbix extends monitoring
         return $this->apiCall($body);
     }
 
-    /**
-     * Find items missing in arr "b"
-     * @param array $a
-     * @param array $b
-     * @param string $compareKey
-     * @return array
-     */
-    private function compareArr(array $a, array $b, string $compareKey = 'host'): array
-    {
-        $result = [];
-        // check if arr "b" is empty
-        if (!empty($b)) {
-            foreach ($a as $a_item) {
-                $found = false;
-                // find item "a" in array "b"
-                foreach ($b as $b_item) {
-                    if ($a_item[$compareKey] === $b_item[$compareKey]) {
-                        $found = true;
-                        break;
-                    }
-                }
-                // If no matches are found, add the current element to the result
-                if (!$found) {
-                    $result[] = $a_item;
-                }
-            }
-        } else {
-            // If array $b is empty, add all items from array $a to result
-            $result = $a;
-        }
-
-        return $result;
-    }
-
     private function isAllKeysNotEmpty(array $array): bool
     {
         $keys = array_keys($array);
@@ -1075,17 +1041,6 @@ class zabbix extends monitoring
                 }
             }
         }
-    }
-
-    public function run()
-    {
-        $this->log("run");
-        $intercoms = $this->getDomophonesFromRBT_feature();
-        $this->log(var_export($intercoms, true));
-        $configs = loadBackend("configs");
-//        $domophonesModels = $configs->getDomophonesModels();
-//        $this->log(var_export($domophonesModels, true));
-
     }
 
     private function log(string $text): void
