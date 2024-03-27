@@ -248,10 +248,10 @@ function cardForm(params) {
 
             case "multiselect":
                 if (params.target) {
-                    h += `<div class="overflow-y-auto pl-1">`;
+                    h += `<div class="overflow-y-auto">`;
                 } else {
                     // TODO: Do something with this!!! (max-height)
-                    h += `<div class="overflow-y-auto pl-1" style="max-height: 400px; overflow-y: auto!important;">`;
+                    h += `<div class="overflow-y-auto" style="max-height: 400px; overflow-y: auto!important;">`;
                     // TODO: Do something with this!!! (max-height)
                 }
                 for (let j = 0; j < params.fields[i].options.length; j++) {
