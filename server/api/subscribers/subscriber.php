@@ -50,7 +50,6 @@ namespace api\subscribers
         public static function index()
         {
             return [
-                "GET" => "#same(addresses,house,GET)",
                 "PUT" => "#same(addresses,house,PUT)",
                 "POST" => "#same(addresses,house,POST)",
                 "DELETE" => "#same(addresses,house,DELETE)",

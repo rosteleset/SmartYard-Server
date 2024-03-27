@@ -210,12 +210,18 @@
             let flats = [];
 
             for (let i in subscriber.flats) {
-                let owner;
+                let owner, voipEnabled;
 
                 try {
                     owner = subscriber.flats[i].role.toString() !== "1";
                 } catch (e) {
                     owner = true;
+                }
+
+                try {
+                    voipEnabled = subscriber.flats[i].voipEnabled.toString() !== "1";
+                } catch (e) {
+                    voipEnabled = true;
                 }
 
                 let link = '';
@@ -228,10 +234,14 @@
                     link = `<a href='#addresses.subscribers&settlementId=${subscriber.flats[i].house.settlementId}&flatId=${subscriber.flats[i].flatId}&houseId=${subscriber.flats[i].house.houseId}&flat=${subscriber.flats[i].flat}&house=${encodeURIComponent(subscriber.flats[i].house.houseFull)}'><i class='fas fa-fw fa-xs fa-link'></i></a>`;
                 }
 
-                let role = `
+                let flat = `
                     <div class="custom-control custom-checkbox mb-0">
                         <input type="checkbox" class="custom-control-input" id="subscriber-role-flat-${subscriber.flats[i].flatId}"${owner?" checked":""}>
                         <label class="custom-control-label form-check-label" for="subscriber-role-flat-${subscriber.flats[i].flatId}">${i18n("addresses.subscriberFlatOwner")}</label>
+                    </div>
+                    <div class="custom-control custom-checkbox mb-0">
+                        <input type="checkbox" class="custom-control-input" id="subscriber-voip-flat-${subscriber.flats[i].flatId}"${voipEnabled?" checked":""}>
+                        <label class="custom-control-label form-check-label" for="subscriber-voip-flat-${subscriber.flats[i].flatId}">${i18n("addresses.voipEnabled")}</label>
                     </div>
                 `;
                 
@@ -239,7 +249,7 @@
                     "id": subscriber.flats[i].flatId,
                     "text": $.trim(subscriber.flats[i].house.houseFull + ", " + subscriber.flats[i].flat + " " + link),
                     "checked": true,
-                    "append": role,
+                    "append": flat,
                 });
             }
 
@@ -355,7 +365,10 @@
                         let f = {};
 
                         for (let i in result.flats) {
-                            f[result.flats[i]] = $("#subscriber-role-flat-" + result.flats[i]).prop("checked");
+                            f[result.flats[i]] = {
+                                role: $("#subscriber-role-flat-" + result.flats[i]).prop("checked"),
+                                voipEnabled: $("#subscriber-voip-flat-" + result.flats[i]).prop("checked"),
+                            };
                         }
 
                         result.flats = f;

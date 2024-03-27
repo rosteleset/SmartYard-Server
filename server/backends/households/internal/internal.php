@@ -1185,13 +1185,14 @@
                 $addresses = loadBackend("addresses");
 
                 foreach ($subscribers as &$subscriber) {
-                    $flats = $this->db->get("select house_flat_id, role, flat, address_house_id from houses_flats_subscribers left join houses_flats using (house_flat_id) where house_subscriber_id = :house_subscriber_id",
+                    $flats = $this->db->get("select house_flat_id, role, voip_enabled, flat, address_house_id from houses_flats_subscribers left join houses_flats using (house_flat_id) where house_subscriber_id = :house_subscriber_id",
                         [
                             "house_subscriber_id" => $subscriber["subscriberId"]
                         ],
                         [
                             "house_flat_id" => "flatId",
                             "role" => "role",
+                            "voip_enabled" => "voipEnabled",
                             "flat" => "flat",
                             "address_house_id" => "addressHouseId",
                         ]
@@ -1459,11 +1460,12 @@
 
                 $r = true;
 
-                foreach ($flats as $flatId => $owner) {
+                foreach ($flats as $flatId => $flat) {
                     $r = $r && $this->db->insert("insert into houses_flats_subscribers (house_subscriber_id, house_flat_id, role) values (:house_subscriber_id, :house_flat_id, :role)", [
                         "house_subscriber_id" => $subscriberId,
                         "house_flat_id" => $flatId,
-                        "role" => $owner?0:1,
+                        "role" => $flat["role"] ? 0 : 1,
+                        "voip_enabled" => $flat["voipEnabled"] ? 0 : 1,
                     ]) !== false;
                 }
 
