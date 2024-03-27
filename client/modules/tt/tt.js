@@ -554,6 +554,14 @@
                         case "select":
                             let already = {};
 
+                            if (cf.format.indexOf("suggestions") >= 0) {
+                                already["0"] = 1;
+                                options.push({
+                                    id: "0",
+                                    text: "-",
+                                });
+                            }
+
                             for (let i in cf.options) {
                                 if (!already[cf.options[i].option]) {
                                     already[cf.options[i].option] = 1;
