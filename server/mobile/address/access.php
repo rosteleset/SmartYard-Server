@@ -68,13 +68,17 @@
             response();
         }
 
-        //выпиливаем подселенца: из его спика идентификаторов квартир убираем $flat_id
+        //выпиливаем подселенца: из его списка идентификаторов квартир убираем $flat_id
         $f_list = [];
         foreach ($guest['flats'] as $item) {
             $f_id = (int)$item['flatId'];
-            $owner = (int)$item['role'] == 0;
+            $role = !$item['role'];
+            $voip_enabled = $item['voipEnabled'];
             if ($f_id > 0 && $f_id != $flat_id) {
-                $f_list[$f_id] = $owner;
+                $f_list[$f_id] = [
+                    "role" => $role,
+                    "voipEnabled" => $voip_enabled
+                ];
             }
         }
         $households->setSubscriberFlats((int)$guest['subscriberId'], $f_list);

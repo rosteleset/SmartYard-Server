@@ -65,10 +65,14 @@ foreach ($flats as $flat) {
         $f_list = [];
         foreach ($subscriber['flats'] as $item) {
             $f_id = (int)$item['flatId'];
-            $f_role = (int)$item['role'];
-            $f_list[$f_id] = ($f_role === 0);
+            $f_role = !$item['role'];
+            $f_voip_enabled = $item['voipEnabled'];
+            $f_list[$f_id] = [
+                "role" => $f_role,
+                "voipEnabled" => $f_voip_enabled
+            ];
         }
-        $f_list[$flat_id] = true;  //делаем пользователя владельцем квартиры
+        $f_list[$flat_id]["role"] = true;  //делаем пользователя владельцем квартиры
         $households->setSubscriberFlats($subscriber['subscriberId'], $f_list);
     }
 }

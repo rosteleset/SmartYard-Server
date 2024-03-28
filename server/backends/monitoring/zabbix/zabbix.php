@@ -8,15 +8,21 @@ class zabbix extends monitoring
 {
     const hostGroups = ['Intercoms', 'Cameras'];
     const templateGroups = ['Templates/Intercoms', 'Templates/Cameras'];
-    const intercomTemplateNames = ['Intercom_AKUVOX', 'Intercom_BEWARD', 'Intercom_QTECH'];
+    const intercomTemplateNames = [
+        'Intercom_AKUVOX_E12',
+        'Intercom_BEWARD_DKS',
+        'Intercom_BEWARD_DS06',
+        'Intercom_QTECH_QDB-27C-H'
+    ];
     const cameraTemplateNames = ['Camera_simple'];
     const pluggedTemplateNames = ['ICMP Ping'];
     const intercomTemplateFiles = [
-        'zbx_beward_intercom_template.yaml',
-        'zbx_qtech_intercom_template.yaml',
-        'zbx_akuvox_intercom_template.yaml',
+        'zbx_intercom_template_beward_dks.yaml',
+        'zbx_intercom_template_beward_ds06.yaml',
+        'zbx_intercom_template_qtech_qbr-27c-h.yaml',
+        'zbx_intercom_template_akuvox_e12.yaml',
     ];
-    const cameraTemplateFiles = ['zbx_simple_camera_template.yaml'];
+    const cameraTemplateFiles = ['zbx_camera_template_simple.yaml'];
     const temolatesDir = __DIR__ . "/../../../../install/zabbix/templates";
     protected $zbxData = [];
     protected $zbxApi, $zbxToken;
@@ -31,7 +37,7 @@ class zabbix extends monitoring
             $this->initializeZabbixApi($config);
             $this->getActualIds();
         } catch (\Exception $e) {
-            $this->log("Zabbix Error: " . $e->getMessage());
+            $this->log("Error: " . $e->getMessage());
             throw $e;
         }
     }
@@ -42,7 +48,7 @@ class zabbix extends monitoring
     public function cron($part):bool
     {
         $result = true;
-        if ($part === "5min"){
+        if ($part === @$this->config['backends']['frs']['cron_sync_data_scheduler']){
             $this->handleIntercoms();
             $this->handleCameras();
         }
@@ -215,10 +221,42 @@ class zabbix extends monitoring
         $domophonesModels = $configs->getDomophonesModels();
         $domophones = $households->getDomophones("all");
         foreach ($domophones as $domophone) {
+
             $subset [] = [
                 "enabled" => $domophone["enabled"],
                 "domophoneId" => $domophone["domophoneId"],
-                "vendor" => $domophonesModels[$domophone["model"]]["vendor"],
+                "vendor" => rtrim(
+                    $domophonesModels[$domophone["model"]]["vendor"]
+                    . "_"
+                    . $domophonesModels[$domophone["model"]]["model"],
+                    "*"
+                ),
+                "name" => $domophone["name"],
+                "ip" => $domophone["ip"],
+                "credentials" => $domophone["credentials"]
+            ];
+        }
+
+        return $subset;
+    }
+
+    private function getDomophones_feature(): array
+    {
+        $households = loadBackend("households");
+        $configs = loadBackend("configs");
+        $domophonesModels = $configs->getDomophonesModels();
+        $domophones = $households->getDomophones("all");
+        foreach ($domophones as $domophone) {
+
+            $subset [] = [
+                "enabled" => $domophone["enabled"],
+                "domophoneId" => $domophone["domophoneId"],
+                "vendor" => rtrim(
+                    $domophonesModels[$domophone["model"]]["vendor"]
+                    . "_"
+                    . $domophonesModels[$domophone["model"]]["model"],
+                    "*"
+                ),
                 "name" => $domophone["name"],
                 "ip" => $domophone["ip"],
                 "credentials" => $domophone["credentials"]
@@ -469,7 +507,6 @@ class zabbix extends monitoring
         ];
 
         return $this->apiCall($body);
-
     }
 
     /**
@@ -722,40 +759,6 @@ class zabbix extends monitoring
             'id' => 1
         ];
         return $this->apiCall($body);
-    }
-
-    /**
-     * Find items missing in arr "b"
-     * @param array $a
-     * @param array $b
-     * @param string $compareKey
-     * @return array
-     */
-    private function compareArr(array $a, array $b, string $compareKey = 'host'): array
-    {
-        $result = [];
-        // check if arr "b" is empty
-        if (!empty($b)) {
-            foreach ($a as $a_item) {
-                $found = false;
-                // find item "a" in array "b"
-                foreach ($b as $b_item) {
-                    if ($a_item[$compareKey] === $b_item[$compareKey]) {
-                        $found = true;
-                        break;
-                    }
-                }
-                // If no matches are found, add the current element to the result
-                if (!$found) {
-                    $result[] = $a_item;
-                }
-            }
-        } else {
-            // If array $b is empty, add all items from array $a to result
-            $result = $a;
-        }
-
-        return $result;
     }
 
     private function isAllKeysNotEmpty(array $array): bool

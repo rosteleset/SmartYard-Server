@@ -159,7 +159,8 @@ backends:
     backend: internal
   monitoring:
     backend: zabbix
-    zbx_api_url: "<!-- your zabbix APU URL here --!>"
+    cron_sync_data_scheduler: 5min
+    zbx_api_url: "<!-- your zabbix API URL here --!>"
     zbx_token: "<!-- your zabbix API token --!>"
     store_days: 7
 email:

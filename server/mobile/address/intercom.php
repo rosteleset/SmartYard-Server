@@ -113,13 +113,32 @@ if (@$postdata['settings']) {
     $households->modifyFlat($flat_id, $params);
 
     if (@$settings['VoIP']) {
-        $params = [];
-        $params['voipEnabled'] = ($settings['VoIP'] == 't') ? 1: 0;
-        $households->modifySubscriber($subscriber['subscriberId'], $params);
+        $f_list = [];
+        foreach ($subscriber['flats'] as $item) {
+            $f_id = (int)$item['flatId'];
+            $f_role = !$item['role'];
+            $f_voip_enabled = $item['voipEnabled'];
+            $f_list[$f_id] = [
+                "role" => $f_role,
+                "voipEnabled" => $f_voip_enabled
+            ];
+        }
+        $f_list[$flat_id]["voipEnabled"] = ($settings['VoIP'] == 't');
+        $households->setSubscriberFlats($subscriber['subscriberId'], $f_list);
     }
 }
 
+// for voipEnabled
 $subscriber = $households->getSubscribers('id', $subscriber['subscriberId'])[0];
+if ($subscriber && $subscriber["flats"]) {
+    foreach ($subscriber["flats"] as $flat) {
+        if ($flat["flatId"] == $flat_id) {
+            $subscriber["voipEnabled"] = (int)($subscriber["voipEnabled"] && $flat["voipEnabled"]);
+            break;
+        }
+    }
+}
+
 $flat = $households->getFlat($flat_id);
 /*
     "flatId": "1",

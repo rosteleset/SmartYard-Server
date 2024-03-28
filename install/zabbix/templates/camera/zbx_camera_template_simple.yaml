@@ -6,7 +6,7 @@ zabbix_export:
   templates:
     - uuid: 59a318f11f524f2bb31e42fd6ffe4840
       template: Camera_simple
-      name: 'Camera simple'
+      name: 'Camera | Simple check'
       vendor:
         name: SmartYard
         version: 6.4-0
