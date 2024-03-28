@@ -297,7 +297,8 @@
     "UNIQUE constraint failed: addresses_houses.address_settlement_id, addresses_houses.address_street_id, addresses_houses.house": "This house already exists",
     "UNIQUE constraint failed: houses_houses_entrances.house_entrance_id, houses_houses_entrances.prefix": "This prefix is already in use",
     "UNIQUE constraint failed: houses_entrances.domophone_id, houses_entrances.domophone_output": "This output is already occupied",
-    "UNIQUE constraint failed: houses_cameras_houses.camera_id, houses_cameras_houses.address_house_id": "This camera is already added for this house"
+    "UNIQUE constraint failed: houses_cameras_houses.camera_id, houses_cameras_houses.address_house_id": "This camera is already added for this house",
+    "ERROR:  duplicate key value violates unique constraint \"houses_flats_login\"": "Login already registered"
   },
   "methods": {
     "addresses": {

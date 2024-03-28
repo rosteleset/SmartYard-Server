@@ -275,7 +275,6 @@
         done((result, code, response) => {
             message(i18n("addresses.flatWasChanged"));
             if (response.getResponseHeader("x-last-error")) {
-                console.log(response.getResponseHeader("x-last-error"));
                 warning(i18n("errors.unknown" + " [" + i18n("errors." + response.getResponseHeader("x-last-error")) + "]"), i18n("errorCode", response.status), 30);
             }
         }).
