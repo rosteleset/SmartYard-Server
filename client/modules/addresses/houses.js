@@ -827,9 +827,9 @@
                 },
                 {
                     id: "autoOpen",
-                    type: "datetime",
+                    type: "datetime-local",
+                    sec: true,
                     title: i18n("addresses.autoOpen"),
-                    placeholder: date("Y-m-d H:i"),
                 },
                 {
                     id: "whiteRabbit",
@@ -1471,9 +1471,9 @@
                     },
                     {
                         id: "autoOpen",
-                        type: "datetime",
+                        type: "datetime-local",
+                        sec: true,
                         title: i18n("addresses.autoOpen"),
-                        placeholder: date("Y-m-d H:i"),
                         value: date("Y-m-d H:i", flat.autoOpen),
                     },
                     {
