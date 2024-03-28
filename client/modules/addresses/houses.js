@@ -274,9 +274,9 @@
         fail(FAIL).
         done((result, code, response) => {
             message(i18n("addresses.flatWasChanged"));
-            if (response.getResponseHeader("x-last-error")) {
-                warning(i18n("errors." + response.getResponseHeader("x-last-error")));
-            }
+//            if (response.getResponseHeader("x-last-error")) {
+//                warning(i18n("errors." + response.getResponseHeader("x-last-error")));
+//            }
         }).
         always(() => {
             if (flat.houseId) {
