@@ -1474,7 +1474,7 @@
                         type: "datetime-local",
                         sec: true,
                         title: i18n("addresses.autoOpen"),
-                        value: date("Y-m-d H:i", flat.autoOpen),
+                        value: flat.autoOpen,
                     },
                     {
                         id: "whiteRabbit",
