@@ -25,7 +25,7 @@ class zabbix extends monitoring
     const cameraTemplateFiles = ['zbx_camera_template_simple.yaml'];
     const temolatesDir = __DIR__ . "/../../../../install/zabbix/templates";
     protected $zbxData = [];
-    protected $zbxApi, $zbxToken;
+    protected $zbxApi, $zbxToken, $scheduler;
     protected int $zbxStoreDays;
 
     /**
@@ -34,6 +34,7 @@ class zabbix extends monitoring
     public function __construct($config, $db, $redis, $login = false)
     {
         try {
+            $this->scheduler = $config["backends"]["monitoring"]["cron_sync_data_scheduler"];
             $this->initializeZabbixApi($config);
             $this->getActualIds();
         } catch (\Exception $e) {
@@ -48,7 +49,7 @@ class zabbix extends monitoring
     public function cron($part):bool
     {
         $result = true;
-        if ($part === @$this->config['backends']['frs']['cron_sync_data_scheduler']){
+        if ($part === $this->scheduler){
             $this->handleIntercoms();
             $this->handleCameras();
         }
