@@ -827,7 +827,7 @@
                 },
                 {
                     id: "autoOpen",
-                    type: "text",
+                    type: "datetime",
                     title: i18n("addresses.autoOpen"),
                     placeholder: date("Y-m-d H:i"),
                 },
@@ -1471,7 +1471,7 @@
                     },
                     {
                         id: "autoOpen",
-                        type: "text",
+                        type: "datetime",
                         title: i18n("addresses.autoOpen"),
                         placeholder: date("Y-m-d H:i"),
                         value: date("Y-m-d H:i", flat.autoOpen),
