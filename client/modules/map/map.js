@@ -54,9 +54,48 @@
             }
         }
 
+        L.Util.isArray = Array.isArray || function (obj) {
+            return (Object.prototype.toString.call(obj) === '[object Array]');
+        };
+
+        L.bind = function (fn, obj) {
+            let slice = Array.prototype.slice;
+
+            if (fn.bind) {
+                return fn.bind.apply(fn, slice.call(arguments, 1));
+            }
+
+            let args = slice.call(arguments, 2);
+
+            return function () {
+                return fn.apply(obj, args.length ? args.concat(slice.call(arguments)) : arguments);
+            };
+        };
+
+        L.DomUtil.hasClass = function (el, name) {
+            if (el.classList !== undefined) {
+                return el.classList.contains(name);
+            }
+            let className = getClass(el);
+            return className.length > 0 && new RegExp('(^|\\s)' + name + '(\\s|$)').test(className);
+        };
+
+        let layer_markers = new L.markerClusterGroup({ spiderfyOnMaxZoom: false, disableClusteringAtZoom: 15, });
+
         if (typeof lon != "undefined" && typeof lat != "undefined") {
             modules.map.map.setView([lat, lon], zoom);
             L.marker([lat, lon]).addTo(modules.map.map);
+/*
+            let homeMarker = L.AwesomeMarkers.icon({
+                icon: 'home fas fa-fw fa-home', 
+                color: 'green'
+            });
+            for (let i = 0; i < 100; i++) {
+                L.marker([lat + Math.random(), lon + Math.random()], {icon: homeMarker}).addTo(layer_markers);
+            }
+            layer_markers.addTo(modules.map.map);
+            modules.map.map.fitBounds(layer_markers.getBounds());
+*/
         } else {
             if (!navigator.geolocation) {
                 modules.map.map.setView([lat, lon], zoom);
