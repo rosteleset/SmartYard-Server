@@ -16,6 +16,7 @@
         header('Content-Type: application/json');
 
         if (getLastError()) {
+            error_log("Last error: " . getLastError());
             header('X-Last-Error: ' . getLastError());
         }
 
