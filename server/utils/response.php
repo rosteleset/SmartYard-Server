@@ -17,7 +17,7 @@
 
         if (getLastError()) {
             error_log("Last error: " . getLastError());
-            header('X-Last-Error: ' . getLastError());
+            header('X-Last-Error: ' . trim(explode("\n", getLastError())[0]));
         }
 
         http_response_code($code);
