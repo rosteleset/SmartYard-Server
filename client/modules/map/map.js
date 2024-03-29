@@ -3,6 +3,33 @@
 
     init: function () {
         leftSide("fas fa-fw fa-map-marked-alt", i18n("map.map"), "?#map", "map");
+
+        L.Util.isArray = Array.isArray || function (obj) {
+            return (Object.prototype.toString.call(obj) === '[object Array]');
+        };
+
+        L.bind = function (fn, obj) {
+            let slice = Array.prototype.slice;
+
+            if (fn.bind) {
+                return fn.bind.apply(fn, slice.call(arguments, 1));
+            }
+
+            let args = slice.call(arguments, 2);
+
+            return function () {
+                return fn.apply(obj, args.length ? args.concat(slice.call(arguments)) : arguments);
+            };
+        };
+
+        L.DomUtil.hasClass = function (el, name) {
+            if (el.classList !== undefined) {
+                return el.classList.contains(name);
+            }
+            let className = getClass(el);
+            return className.length > 0 && new RegExp('(^|\\s)' + name + '(\\s|$)').test(className);
+        };
+
         moduleLoaded("map", this);
     },
 
@@ -54,33 +81,7 @@
             }
         }
 
-        L.Util.isArray = Array.isArray || function (obj) {
-            return (Object.prototype.toString.call(obj) === '[object Array]');
-        };
-
-        L.bind = function (fn, obj) {
-            let slice = Array.prototype.slice;
-
-            if (fn.bind) {
-                return fn.bind.apply(fn, slice.call(arguments, 1));
-            }
-
-            let args = slice.call(arguments, 2);
-
-            return function () {
-                return fn.apply(obj, args.length ? args.concat(slice.call(arguments)) : arguments);
-            };
-        };
-
-        L.DomUtil.hasClass = function (el, name) {
-            if (el.classList !== undefined) {
-                return el.classList.contains(name);
-            }
-            let className = getClass(el);
-            return className.length > 0 && new RegExp('(^|\\s)' + name + '(\\s|$)').test(className);
-        };
-
-        let layer_markers = new L.markerClusterGroup({ spiderfyOnMaxZoom: false, disableClusteringAtZoom: 15, });
+//        let layer_markers = new L.markerClusterGroup({ spiderfyOnMaxZoom: false, disableClusteringAtZoom: 15, });
 
         if (typeof lon != "undefined" && typeof lat != "undefined") {
             modules.map.map.setView([lat, lon], zoom);
