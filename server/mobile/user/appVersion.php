@@ -12,7 +12,7 @@
  * @apiParam {Number} version версия (build) приложения
  * @apiParam {String="ios","android"} platform тип устройства: ios, android
  *
- * @apiSuccess {String="none","upgrade","forceUpgrade"} [-="none"] требуемое действие
+ * @apiSuccess {String="none","upgrade","force_upgrade"} [-="none"] требуемое действие
  *
  * @apiErrorExample Ошибки
  * 403 требуется авторизация
