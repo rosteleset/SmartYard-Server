@@ -195,13 +195,11 @@ class zabbix extends monitoring
             $templates = $this->getTemplateIds([... self::intercomTemplateNames, ... self::cameraTemplateNames]);
             $groups = $this->getGroupIds(self::hostGroups);
 
-            if ($templates){
+            if ($templates || $groups) {
                 foreach ($templates as $template) {
                     $this->zbxData['templates'][$template['host']] = $template['templateid'];
                 }
-            }
 
-            if ($groups){
                 foreach ($groups as $group) {
                     $this->zbxData['groups'][$group['name']] = $group['groupid'];
                 }
@@ -216,32 +214,6 @@ class zabbix extends monitoring
      * @return array
      */
     private function getDomophones(): array
-    {
-        $households = loadBackend("households");
-        $configs = loadBackend("configs");
-        $domophonesModels = $configs->getDomophonesModels();
-        $domophones = $households->getDomophones("all");
-        foreach ($domophones as $domophone) {
-
-            $subset [] = [
-                "enabled" => $domophone["enabled"],
-                "domophoneId" => $domophone["domophoneId"],
-                "vendor" => rtrim(
-                    $domophonesModels[$domophone["model"]]["vendor"]
-                    . "_"
-                    . $domophonesModels[$domophone["model"]]["model"],
-                    "*"
-                ),
-                "name" => $domophone["name"],
-                "ip" => $domophone["ip"],
-                "credentials" => $domophone["credentials"]
-            ];
-        }
-
-        return $subset;
-    }
-
-    private function getDomophones_feature(): array
     {
         $households = loadBackend("households");
         $configs = loadBackend("configs");
@@ -905,10 +877,9 @@ class zabbix extends monitoring
         return null;
     }
 
-    private function deleteHostIfNeeded(array $item, int $deleteTimestamp)
+    private function deleteHostIfNeeded(array $item, int $deleteTimestamp): void
     {
         if ($deleteTimestamp < time()) {
-            $this->log("delete host > ". $item['name']);
             $this->deleteHost($item['zbx_hostid']);
         }
     }
