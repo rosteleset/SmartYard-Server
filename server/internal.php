@@ -10,6 +10,7 @@
     require_once "utils/api_exec.php";
     require_once "utils/api_response.php";
     require_once "utils/purifier.php";
+    require_once "utils/i18n.php";
 
     // load configuration
     try {
