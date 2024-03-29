@@ -4,6 +4,12 @@ namespace backends\monitoring;
 
 require_once __DIR__ . '/../../../utils/api_exec.php';
 
+enum HostGroup
+{
+    case Intercoms;
+    case Cameras;
+}
+
 class zabbix extends monitoring
 {
     const hostGroups = ['Intercoms', 'Cameras'];
@@ -23,7 +29,7 @@ class zabbix extends monitoring
         'zbx_intercom_template_akuvox_e12.yaml',
     ];
     const cameraTemplateFiles = ['zbx_camera_template_simple.yaml'];
-    const temolatesDir = __DIR__ . "/../../../../install/zabbix/templates";
+    const templatesDir = __DIR__ . "/../../../../install/zabbix/templates";
     protected $zbxData = [];
     protected $zbxApi, $zbxToken, $scheduler;
     protected int $zbxStoreDays;
@@ -91,57 +97,17 @@ class zabbix extends monitoring
          *  5 create target template
          *  6 import template from YAML file
          */
+        $this->createHostGroups(self::hostGroups);
+        $this->createTemplateGroups(self::templateGroups);
 
-        // 01 - Create hot groups
-        foreach (self::hostGroups as $hostGroup) {
-            $this->createHostGroup($hostGroup);
-        }
+        $this->getTemplateGroupIds(self::templateGroups);
+        $this->getPluggedTemplateIds(self::pluggedTemplateNames);
 
-        // 02 - Create template croups
-        foreach (self::templateGroups as $templateGroup){
-            $this->createTemplateGroup($templateGroup);
-        }
+        $this->createTargetTemplates(self::intercomTemplateNames, $this->zbxData['templateGroups']['Templates/Intercoms']);
+        $this->createTargetTemplates(self::cameraTemplateNames, $this->zbxData['templateGroups']['Templates/Cameras']);
 
-        // 03 - Get template group ids
-        $templateGroups = $this->getTemplateGroups(self::templateGroups);
-        foreach ($templateGroups as $templateGroup) {
-            $this->zbxData['templateGroups'][$templateGroup['name']] = $templateGroup['groupid'];
-        }
-
-        // 04 - get plugged template ids
-        $pluggetTemplates = $this->getTemplateIds(self::pluggedTemplateNames);
-        foreach ($pluggetTemplates as $pluggedTemplate){
-            $this->zbxData['pluggedTemplates'][$pluggedTemplate['host']] = $pluggedTemplate['templateid'];
-        }
-
-        // 05 - create target template
-        // TODO : refactor "templategoupid" on running createTemplate
-        foreach (self::intercomTemplateNames as $item) {
-            $this->createTemplate(
-                $item,
-                [$this->zbxData['templateGroups']['Templates/Intercoms']],
-                array_values($this->zbxData['pluggedTemplates'])
-            );
-        }
-
-        // Camera templates
-        foreach (self::cameraTemplateNames as $item) {
-            $this->createTemplate(
-                $item,
-                [$this->zbxData['templateGroups']['Templates/Cameras']],
-                array_values($this->zbxData['pluggedTemplates'])
-            );
-        }
-
-        // 06 - import config from YAML file
-        // TODO: refactor
-        foreach (self::intercomTemplateFiles as $fileName){
-            $this->importConfig(self::temolatesDir . "/intercom/" . $fileName);
-        }
-
-        foreach (self::cameraTemplateFiles as $fileName){
-            $this->importConfig(self::temolatesDir . "/camera/" . $fileName);
-        }
+        $this->importTemplateConfigFiles(self::intercomTemplateFiles, "intercom");
+        $this->importTemplateConfigFiles(self::cameraTemplateFiles, "camera");
 
         $this->log("Finish configure zabbix");
     }
@@ -178,6 +144,16 @@ class zabbix extends monitoring
         $this->zbxStoreDays = $config["backends"]["monitoring"]["store_days"];
         if (!$this->zbxApi || !$this->zbxToken || !$this->zbxStoreDays) {
             throw new \Exception("Zabbix API configuration is incomplete, check './server/config/config.json'");
+        }
+    }
+
+    /**
+     * Create host groups in Zabbix.
+     */
+    private function createHostGroups(array $hostGroups): void
+    {
+        foreach ($hostGroups as $hostGroup) {
+            $this->createHostGroup($hostGroup);
         }
     }
 
@@ -483,6 +459,17 @@ class zabbix extends monitoring
     }
 
     /**
+     * Import template configuration files in Zabbix.
+     */
+    private function importTemplateConfigFiles(array $templateFiles, string $type): void
+    {
+        $templateDir = self::templatesDir . "/" . $type;
+        foreach ($templateFiles as $fileName) {
+            $this->importConfig("$templateDir/$fileName");
+        }
+    }
+
+    /**
      *  Create host on Zabbix server
      * @param array $item
      * @param string $groupName
@@ -569,31 +556,6 @@ class zabbix extends monitoring
         return $this->apiCall($body);
     }
 
-    /**
-     * TODO: not used
-     * Create hots group
-     * @param array $groupNames
-     * @return void
-     * @example  ['Cameras', 'Intercoms']
-     */
-    private function createHostGroups(array $groupNames): void
-    {
-        $params = [];
-
-        foreach ($groupNames as $groupName) {
-            $params[] = ['name'=> $groupName];
-        }
-
-        $body = [
-            'jsonrpc' => '2.0',
-            'method' => 'hostgroup.create',
-            'params' => $params,
-            'id' => 1
-        ];
-
-        $this->apiCall('POST', $this->zbxApi, $body, 'application/json', $this->zbxToken);
-    }
-
     private function createHostGroup(string $groupName): void
     {
         $body = [
@@ -606,23 +568,14 @@ class zabbix extends monitoring
         $this->apiCall($body);
     }
 
-    // TODO: not used
-    private function createTemplateGroups(array $templateNames): void
+    /**
+     * Create template groups in Zabbix.
+     */
+    private function createTemplateGroups(array $templateGroups): void
     {
-        $params = [];
-
-        foreach ($templateNames as $templateName) {
-            $params[] = ['name'=> $templateName];
+        foreach ($templateGroups as $templateGroup) {
+            $this->createTemplateGroup($templateGroup);
         }
-
-        $body = [
-            'jsonrpc' => '2.0',
-            'method' => 'templategroup.create',
-            'params' => $params,
-            'id' => 1
-        ];
-
-        $this->apiCall($body);
     }
 
     /**
@@ -734,6 +687,20 @@ class zabbix extends monitoring
         return $this->apiCall($body);
     }
 
+    /**
+     * Create target templates in Zabbix.
+     */
+    private function createTargetTemplates(array $templateNames, int $templateGroupId): void
+    {
+        foreach ($templateNames as $templateName) {
+            $this->createTemplate(
+                $templateName,
+                [$templateGroupId],
+                array_values($this->zbxData['pluggedTemplates'])
+            );
+        }
+    }
+
     private function isAllKeysNotEmpty(array $array): bool
     {
         $keys = array_keys($array);
@@ -743,6 +710,28 @@ class zabbix extends monitoring
             }
         }
         return true;
+    }
+
+    /**
+     * Get template group IDs in Zabbix.
+     */
+    private function getTemplateGroupIds(array $templateGroups): void
+    {
+        $templateGroupsInfo = $this->getTemplateGroups($templateGroups);
+        foreach ($templateGroupsInfo as $templateGroup) {
+            $this->zbxData['templateGroups'][$templateGroup['name']] = $templateGroup['groupid'];
+        }
+    }
+
+    /**
+     * Get plugged template IDs in Zabbix.
+     */
+    private function getPluggedTemplateIds(array $pluggedTemplateNames): void
+    {
+        $pluggedTemplates = $this->getTemplateIds($pluggedTemplateNames);
+        foreach ($pluggedTemplates as $pluggedTemplate) {
+            $this->zbxData['pluggedTemplates'][$pluggedTemplate['host']] = $pluggedTemplate['templateid'];
+        }
     }
 
     /**
