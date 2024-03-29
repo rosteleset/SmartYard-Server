@@ -1,7 +1,7 @@
 zabbix_export:
   version: '6.4'
   template_groups:
-    - uuid: 7cc79d6a377b42178af13d771911452b
+    - uuid: 6b2da836ac5d4728b89105eb2ed04250
       name: Templates/Intercoms
   templates:
     - uuid: 4b1e045ce6f54de8b626da09c747bb5d
@@ -162,10 +162,10 @@ zabbix_export:
         - tag: target
           value: qtech
       macros:
-        - macro: '{$INTERCOM_PASSWORD}'
+        - macro: '{$HOST_PASSWORD}'
           value: admin
           description: 'WEB GUI | API password, default value admin'
-        - macro: '{$INTERCOM_USERNAME}'
+        - macro: '{$HOST_USERNAME}'
           value: admin
           description: 'WEB GUI | API username, default value admin'
       valuemaps:

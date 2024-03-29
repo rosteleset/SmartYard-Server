@@ -90,8 +90,6 @@ zabbix_export:
                 - name: 'Device has been restarted'
                   expression: last(/Intercom_BEWARD_DS06/intercom.uptime)<10m
                   recovery_expression: last(/Intercom_BEWARD_DS06/intercom.uptime)>15m
-#                - name: 'ICMP: Unavailable by ICMP ping'
-#                  expression: 'max(/Intercom_BEWARD/icmpping,#3)=0'
         - uuid: 4cd0ca8ed3244fd2a80568c25f060109
           name: 'BEWARD Intercom: system info'
           type: HTTP_AGENT
@@ -172,10 +170,10 @@ zabbix_export:
         - tag: target
           value: beward
       macros:
-        - macro: '{$INTERCOM_PASSWORD}'
+        - macro: '{$HOST_PASSWORD}'
           value: admin
           description: 'WEB GUI | API password, default value admin'
-        - macro: '{$INTERCOM_USERNAME}'
+        - macro: '{$HOST_USERNAME}'
           value: admin
           description: 'WEB GUI | API username, default value admin'
       valuemaps:
