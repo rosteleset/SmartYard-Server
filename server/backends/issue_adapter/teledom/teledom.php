@@ -160,12 +160,14 @@ namespace backends\issue_adapter {
             }
             switch ($issueType) {
                 case self::ISSUE_REQUEST_CALLBACK:
-                    $issue[self::F_DESCRIPTION] = "Выполнить звонок клиенту по запросу с приложения.";
+                    $issue[self::F_DESCRIPTION] = "ФИО: ${data[self::PARAM_USER_NAME]}\n"
+                        . "Выполнить звонок клиенту по запросу с приложения.";
                     break;
 
                 case self::ISSUE_REQUEST_FRAGMENT:
                     $issue[self::CF_CAMERA_ID] = strval($data[self::PARAM_CAMERA_ID]);
-                    $issue[self::F_DESCRIPTION] = "Обработать запрос на добавление видеофрагмента из архива видовой видеокамеры ${data[self::PARAM_CAMERA_NAME]}"
+                    $issue[self::F_DESCRIPTION] = "ФИО: ${data[self::PARAM_USER_NAME]}\n"
+                        . "Обработать запрос на добавление видеофрагмента из архива видовой видеокамеры ${data[self::PARAM_CAMERA_NAME]}"
                         . " (id = ${data[self::PARAM_CAMERA_ID]}) по парамертам:\n"
                         . "дата - ${data[self::PARAM_FRAGMENT_DATE]};\n"
                         . "время - ${data[self::PARAM_FRAGMENT_TIME]};\n"
@@ -214,7 +216,8 @@ namespace backends\issue_adapter {
                     break;
 
                 case self::ISSUE_REQUEST_CREDENTIALS:
-                    $issue[self::F_DESCRIPTION] = "Выполнить звонок клиенту для напоминания номера договора и пароля от личного кабинета.";
+                    $issue[self::F_DESCRIPTION] = "ФИО: ${data[self::PARAM_USER_NAME]}\n"
+                        . "Выполнить звонок клиенту для напоминания номера договора и пароля от личного кабинета.";
                     break;
 
                 default:
