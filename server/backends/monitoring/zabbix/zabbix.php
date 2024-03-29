@@ -548,7 +548,7 @@ class zabbix extends monitoring
         ],
         'macros' => [
             [
-                "macro" => '{$INTERCOM_PASSWORD}',
+                "macro" => '{$HOST_PASSWORD}',
                 "value" => $item['credentials'],
             ]
         ]
@@ -841,7 +841,7 @@ class zabbix extends monitoring
 
             // mapping macros
             foreach ($item['macros'] as $macros) {
-                if ($macros["macro"] === '{$INTERCOM_PASSWORD}'){
+                if ($macros["macro"] === '{$HOST_PASSWORD}'){
                     $mapped_item["credentials"] = $macros["value"];
                     break;
                 }
@@ -905,6 +905,14 @@ class zabbix extends monitoring
         return null;
     }
 
+    private function deleteHostIfNeeded(array $item, int $deleteTimestamp)
+    {
+        if ($deleteTimestamp < time()) {
+            $this->log("delete host > ". $item['name']);
+            $this->deleteHost($item['zbx_hostid']);
+        }
+    }
+
     /**
      * Handle sync intercoms with Zabbix server
      * @return void
@@ -913,64 +921,7 @@ class zabbix extends monitoring
     {
         $rbtIntercoms = $this->getDomophonesFromRBT();
         $zbxIntercoms = $this->getDomophonesFromZBX();
-
-        if ($rbtIntercoms){
-            /**
-             *  actions:
-             *  - create missing host
-             *  - enable host in monitoring
-             *  - set disable status for disabled host
-             *  - remove disabled host after expire store days
-             */
-            foreach ($rbtIntercoms as $rbtIntercom) {
-                $zbxIntercom = $this->findHostInArray($rbtIntercom, $zbxIntercoms);
-
-                // If host found in Zabbix server
-                if ($zbxIntercom) {
-                    if ($rbtIntercom['status'] === false && $zbxIntercom['status'] === true) {
-                        $this->disableHost($zbxIntercom);
-                    } elseif ($rbtIntercom['status'] === true && $zbxIntercom['status'] === false) {
-                        $this->enableHost($zbxIntercom);
-                    } elseif (
-                        $rbtIntercom['status'] === false
-                        && $zbxIntercom['status'] === false
-                        && isset($zbxIntercom['tags']['DISABLED'])
-                    ) {
-                        // Remove disabled host over storage days
-                        $disableTimestamp = (int)explode(' || ', $zbxIntercom['tags']['DISABLED'])[0];
-                        $deleteAfter = $disableTimestamp + ($this->zbxStoreDays * 24 * 60 * 60);
-                        if ($deleteAfter < time()){
-                            $this->deleteHost($zbxIntercom['zbx_hostid']);
-                        }
-                    }
-                } else {
-                    if ($rbtIntercom['status'] === true) {
-                        $this->createHost($rbtIntercom, "Intercoms");
-                    }
-                }
-            }
-
-            /**
-             *  actions:
-             *  - disable exclude host
-             *  - delete disabled host after expire store days
-             */
-            foreach ($zbxIntercoms as $zbxIntercom){
-                $host = $this->findHostInArray($zbxIntercom, $rbtIntercoms);
-                if (!$host ) {
-                    if ($zbxIntercom['status'] === true) {
-                        $this->disableHost($zbxIntercom);
-                    }
-                    if ($zbxIntercom['status'] === false &&  $zbxIntercom['tags']['DISABLED']) {
-                        $disableTimestamp = (int)explode(' || ', $zbxIntercom['tags']['DISABLED'])[0];
-                        $deleteAfter = $disableTimestamp + ($this->zbxStoreDays * 24 * 60 * 60);
-                        if ($deleteAfter < time()){
-                            $this->deleteHost($zbxIntercom['zbx_hostid']);
-                        }
-                    }
-                }
-            }
-        }
+        $this->handleDevices($rbtIntercoms, $zbxIntercoms, "Intercoms");
     }
 
     /**
@@ -981,63 +932,46 @@ class zabbix extends monitoring
     {
         $rbtCameras = $this->getCamerasFromRBT();
         $zbxCameras = $this->getCamerasFromZBX();
+        $this->handleDevices($rbtCameras, $zbxCameras, "Cameras");
+    }
 
-        if ($rbtCameras){
-            // First start, create all found cams
-            if (!$zbxCameras) {
-                foreach ($rbtCameras as $rbtCamera){
-                    $this->createHost($rbtCamera, "Cameras");
-                }
-                exit(0);
-            }
+    private function handleDevices(array $rbtDevices, array $zbxDevices, string $groupName): void
+    {
+        if ($rbtDevices) {
+            foreach ($rbtDevices as $rbtDevice) {
+                $zbxDevice = $this->findHostInArray($rbtDevice, $zbxDevices);
 
-            foreach ($rbtCameras as $rbtCamera) {
-            $zbxCamera = $this->findHostInArray($rbtCamera, $zbxCameras);
-
-            // If host found in Zabbix server
-            if ($zbxCamera) {
-                if ($rbtCamera['status'] === false && $zbxCamera['status'] === true) {
-                    // Set disabled status
-                    $this->disableHost($zbxCamera);
-                } elseif ($rbtCamera['status'] === true && $zbxCamera['status'] === false) {
-                    // Set enabled status
-                    $this->enableHost($zbxCamera);
-                } elseif (
-                    $rbtCamera['status'] === false
-                    && $zbxCamera['status'] === false
-                    && $zbxCamera['tags']['DISABLED']
-                ) {
-                    // Remove disabled host over storage days
-                    $disableTimestamp = (int)explode(' || ', $zbxCamera['tags']['DISABLED'])[0];
-                    $deleteAfter = $disableTimestamp + ($this->zbxStoreDays * 24 * 60 * 60);
-                    if ($deleteAfter < time()){
-                        $this->deleteHost($zbxCamera['zbx_hostid']);
-                    }
-                }
-            } else {
-                // Create missing host on Zabbix server
-                if ($rbtCamera['status'] === true) {
-                    $this->createHost($rbtCamera, "Cameras");
-                }
-            }
-            }
-
-            foreach ($zbxCameras as $zbxCamera) {
-                // find exclude host in RBT
-                $host = $this->findHostInArray($zbxCamera, $rbtCameras);
-                if (!$host) {
-                    // call disable host
-                    if ($zbxCamera['status'] === true){
-                        $this->disableHost($zbxCamera);
-                    }
-
-                    // handle disable host, delete after expire store days
-                    if ($zbxCamera['status'] === false && isset($zbxCamera['tags']['DISABLED'])){
-                        $disableTimestamp = (int)explode(' || ', $zbxCamera['tags']['DISABLED'])[0];
+                if ($zbxDevice) {
+                    if ($rbtDevice['status'] === false && $zbxDevice['status'] === true) {
+                        $this->disableHost($zbxDevice);
+                    } elseif ($rbtDevice['status'] === true && $zbxDevice['status'] === false) {
+                        $this->enableHost($zbxDevice);
+                    } elseif (
+                        $rbtDevice['status'] === false
+                        && $zbxDevice['status'] === false
+                        && isset($zbxDevice['tags']['DISABLED'])
+                    ) {
+                        $disableTimestamp = (int)explode(' || ', $zbxDevice['tags']['DISABLED'])[0];
                         $deleteAfter = $disableTimestamp + ($this->zbxStoreDays * 24 * 60 * 60);
-                        if ($deleteAfter < time()){
-                            $this->deleteHost($zbxCamera['zbx_hostid']);
-                        }
+                        $this->deleteHostIfNeeded($zbxDevice, $deleteAfter);
+                    }
+                } else {
+                    if ($rbtDevice['status'] === true) {
+                        $this->createHost($rbtDevice, $groupName);
+                    }
+                }
+            }
+
+            foreach ($zbxDevices as $zbxDevice) {
+                $device = $this->findHostInArray($zbxDevice, $rbtDevices);
+                if (!$device) {
+                    if ($zbxDevice['status'] === true) {
+                        $this->disableHost($zbxDevice);
+                    }
+                    if ($zbxDevice['status'] === false &&  $zbxDevice['tags']['DISABLED']) {
+                        $disableTimestamp = (int)explode(' || ', $zbxDevice['tags']['DISABLED'])[0];
+                        $deleteAfter = $disableTimestamp + ($this->zbxStoreDays * 24 * 60 * 60);
+                        $this->deleteHostIfNeeded($zbxDevice, $deleteAfter);
                     }
                 }
             }
