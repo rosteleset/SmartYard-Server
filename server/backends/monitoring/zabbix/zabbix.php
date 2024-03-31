@@ -2,6 +2,8 @@
 
 namespace backends\monitoring;
 
+use api\cameras\camera;
+
 require_once __DIR__ . '/../../../utils/api_exec.php';
 
 enum HostGroup
@@ -166,16 +168,15 @@ class zabbix extends monitoring
         /**
          * TODO: store data to redis, update every hour for example
          */
-
         try {
             $templates = $this->getTemplateIds([... self::intercomTemplateNames, ... self::cameraTemplateNames]);
             $groups = $this->getGroupIds(self::hostGroups);
-
-            if ($templates || $groups) {
+            if ($templates) {
                 foreach ($templates as $template) {
                     $this->zbxData['templates'][$template['host']] = $template['templateid'];
                 }
-
+            }
+            if ($groups) {
                 foreach ($groups as $group) {
                     $this->zbxData['groups'][$group['name']] = $group['groupid'];
                 }
@@ -881,7 +882,15 @@ class zabbix extends monitoring
     {
         $rbtIntercoms = $this->getDomophonesFromRBT();
         $zbxIntercoms = $this->getDomophonesFromZBX();
-        $this->handleDevices($rbtIntercoms, $zbxIntercoms, "Intercoms");
+
+        if ($rbtIntercoms && $zbxIntercoms) {
+            $this->handleDevices($rbtIntercoms, $zbxIntercoms, "Intercoms");
+        } elseif (!$zbxIntercoms) {
+            $this->log("first start, create intercom items");
+            foreach ($rbtIntercoms as $rbtIntercoms) {
+                $this->createHost($rbtIntercoms, "Intercoms");
+            }
+        }
     }
 
     /**
@@ -892,7 +901,15 @@ class zabbix extends monitoring
     {
         $rbtCameras = $this->getCamerasFromRBT();
         $zbxCameras = $this->getCamerasFromZBX();
-        $this->handleDevices($rbtCameras, $zbxCameras, "Cameras");
+
+        if ($rbtCameras && $zbxCameras) {
+            $this->handleDevices($rbtCameras, $zbxCameras, "Cameras");
+        } elseif (!$zbxCameras){
+            $this->log("first start, create camera items");
+            foreach ($rbtCameras as $rbtCamera) {
+                $this->createHost($rbtCamera, "Cameras");
+            }
+        }
     }
 
     private function handleDevices(array $rbtDevices, array $zbxDevices, string $groupName): void
