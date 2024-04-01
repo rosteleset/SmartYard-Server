@@ -25,14 +25,6 @@ class zabbix extends monitoring
     ];
     const cameraTemplateNames = ['Camera_simple'];
     const pluggedTemplateNames = ['ICMP Ping'];
-    const intercomTemplateFiles = [
-        'zbx_intercom_template_beward_dks.yaml',
-        'zbx_intercom_template_beward_ds06.yaml',
-        'zbx_intercom_template_qtech_qbr-27c-h.yaml',
-        'zbx_intercom_template_akuvox_e12.yaml',
-        'zbx_intercom_template_sokol_plus.yaml,'
-    ];
-    const cameraTemplateFiles = ['zbx_camera_template_simple.yaml'];
     const templatesDir = __DIR__ . "/../../../../install/zabbix/templates";
     protected $zbxData = [];
     protected $zbxApi, $zbxToken, $scheduler;
@@ -110,8 +102,8 @@ class zabbix extends monitoring
         $this->createTargetTemplates(self::intercomTemplateNames, $this->zbxData['templateGroups']['Templates/Intercoms']);
         $this->createTargetTemplates(self::cameraTemplateNames, $this->zbxData['templateGroups']['Templates/Cameras']);
 
-        $this->importTemplateConfigFiles(self::intercomTemplateFiles, "intercom");
-        $this->importTemplateConfigFiles(self::cameraTemplateFiles, "camera");
+        $this->importTemplateConfigFiles(self::templatesDir, "intercom");
+        $this->importTemplateConfigFiles(self::templatesDir, "camera");
 
         $this->log("Finish configure zabbix");
     }
@@ -472,13 +464,30 @@ class zabbix extends monitoring
 
     /**
      * Import template configuration files in Zabbix.
+     * @param $templatePath
+     * @param $templateDir
+     * @return void
      */
-    private function importTemplateConfigFiles(array $templateFiles, string $type): void
+    private function importTemplateConfigFiles($templatePath, $templateDir )
     {
-        $templateDir = self::templatesDir . "/" . $type;
-        foreach ($templateFiles as $fileName) {
-            $this->importConfig("$templateDir/$fileName");
+        $fullTemplateDir = rtrim($templatePath, '/') . '/' . $templateDir;
+        if (!is_dir($fullTemplateDir)) {
+            $this->log("error: '$fullTemplateDir' does not exist.");
+            return;
         }
+
+        // gel yaml files
+        $files = glob($fullTemplateDir . '/*.yaml');
+        if (empty($files)) {
+            $this->log("error: no YAML files found in directory '$fullTemplateDir'.");
+            return;
+        }
+
+        foreach ($files as $file) {
+            $this->importConfig($file);
+        }
+
+        $this->log("Import $templateDir templates finish");
     }
 
     /**
