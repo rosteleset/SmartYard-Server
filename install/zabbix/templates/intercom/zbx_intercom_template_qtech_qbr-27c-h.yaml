@@ -61,8 +61,8 @@ zabbix_export:
           history: 7d
           trends: '0'
           authtype: BASIC
-          username: '{$INTERCOM_USERNAME}'
-          password: '{$INTERCOM_PASSWORD}'
+          username: '{$HOST_USERNAME}'
+          password: '{$HOST_PASSWORD}'
           description: 'Check SIP registration'
           valuemap:
             name: 'SIP registration status'
@@ -101,8 +101,8 @@ zabbix_export:
           trends: '0'
           value_type: TEXT
           authtype: BASIC
-          username: '{$INTERCOM_USERNAME}'
-          password: '{$INTERCOM_PASSWORD}'
+          username: '{$HOST_USERNAME}'
+          password: '{$HOST_PASSWORD}'
           description: 'Get system information'
           preprocessing:
             - type: JSONPATH

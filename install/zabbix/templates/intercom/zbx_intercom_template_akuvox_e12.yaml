@@ -95,8 +95,8 @@ zabbix_export:
           history: '0'
           trends: '0'
           authtype: DIGEST
-          username: '{$INTERCOM_USERNAME}'
-          password: '{$INTERCOM_PASSWORD}'
+          username: '{$HOST_USERNAME}'
+          password: '{$HOST_PASSWORD}'
           description: 'Get system information from Akuvox SIP intercom'
           preprocessing:
             - type: JSONPATH
