@@ -20,7 +20,8 @@ class zabbix extends monitoring
         'Intercom_AKUVOX_E12',
         'Intercom_BEWARD_DKS',
         'Intercom_BEWARD_DS06',
-        'Intercom_QTECH_QDB-27C-H'
+        'Intercom_QTECH_QDB-27C-H',
+        'Intercom_Sokol_plus'
     ];
     const cameraTemplateNames = ['Camera_simple'];
     const pluggedTemplateNames = ['ICMP Ping'];
@@ -29,6 +30,7 @@ class zabbix extends monitoring
         'zbx_intercom_template_beward_ds06.yaml',
         'zbx_intercom_template_qtech_qbr-27c-h.yaml',
         'zbx_intercom_template_akuvox_e12.yaml',
+        'zbx_intercom_template_sokol_plus.yaml,'
     ];
     const cameraTemplateFiles = ['zbx_camera_template_simple.yaml'];
     const templatesDir = __DIR__ . "/../../../../install/zabbix/templates";
