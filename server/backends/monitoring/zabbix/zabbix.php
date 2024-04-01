@@ -297,9 +297,13 @@ class zabbix extends monitoring
         return null;
     }
 
+    /**
+     * Get monitored items from Zabbix server
+     * @param $name
+     * @return mixed|null
+     */
     private function getTemplateIds($name)
     {
-        // implement api call to get monitored items from zabbix
         $body = [
             'jsonrpc' => '2.0',
             'method' => 'template.get',
@@ -326,7 +330,7 @@ class zabbix extends monitoring
     }
 
     /**
-     * Get template groups
+     * Get template groups from Zabbix server
      * @param array $templateGroups
      * @return false|object
      */
@@ -353,6 +357,11 @@ class zabbix extends monitoring
         return null;
     }
 
+    /**
+     * Get hosts by "groupid" from Zabbix server
+     * @param $id
+     * @return mixed|null
+     */
     private function getHostsByGroupId($id){
         $body = [
             "jsonrpc" => "2.0",
@@ -524,7 +533,8 @@ class zabbix extends monitoring
         return $this->apiCall($body);
     }
 
-    /** Create template
+    /**
+     * Create template on Zabbix server
      * @param string $templateName
      * @param array $templategroups
      * @param array $pluggetTemplates
@@ -557,6 +567,11 @@ class zabbix extends monitoring
         return $this->apiCall($body);
     }
 
+    /**
+     * Create host group on Zabbix server
+     * @param string $groupName
+     * @return void
+     */
     private function createHostGroup(string $groupName): void
     {
         $body = [
@@ -689,7 +704,10 @@ class zabbix extends monitoring
     }
 
     /**
-     * Create target templates in Zabbix.
+     * Create target templates on Zabbix server
+     * @param array $templateNames
+     * @param int $templateGroupId
+     * @return void
      */
     private function createTargetTemplates(array $templateNames, int $templateGroupId): void
     {
@@ -702,6 +720,11 @@ class zabbix extends monitoring
         }
     }
 
+    /**
+     * Check array helper
+     * @param array $array
+     * @return bool
+     */
     private function isAllKeysNotEmpty(array $array): bool
     {
         $keys = array_keys($array);
@@ -714,7 +737,7 @@ class zabbix extends monitoring
     }
 
     /**
-     * Get template group IDs in Zabbix.
+     * Get template group IDs on Zabbix server
      */
     private function getTemplateGroupIds(array $templateGroups): void
     {
@@ -725,7 +748,9 @@ class zabbix extends monitoring
     }
 
     /**
-     * Get plugged template IDs in Zabbix.
+     * Get plugged template IDs on Zabbix server
+     * @param array $pluggedTemplateNames
+     * @return void
      */
     private function getPluggedTemplateIds(array $pluggedTemplateNames): void
     {
@@ -857,6 +882,12 @@ class zabbix extends monitoring
         return $mapped;
     }
 
+    /**
+     * Find host in array helper
+     * @param array $targetHost
+     * @param array $hostsArr
+     * @return array|null
+     */
     private function findHostInArray(array $targetHost, array $hostsArr): ?array
     {
         foreach ($hostsArr as $item) {
