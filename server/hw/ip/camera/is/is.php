@@ -5,9 +5,9 @@ namespace hw\ip\camera\is;
 use hw\ip\camera\camera;
 
 /**
- * Class representing an Intersvyaz (IS) camera.
+ * Abstract class representing an Intersvyaz (IS) camera.
  */
-class is extends camera
+abstract class is extends camera
 {
 
     use \hw\ip\common\is\is;
@@ -23,7 +23,7 @@ class is extends camera
         $this->apiCall('/camera/md', 'PUT', [
             'md_enable' => $left || $top || $width || $height,
             'md_frame_shift' => 1,
-            'md_area_thr' => 100000, // default from manual
+            'md_area_thr' => 100000, // For people at close range
             'md_rect_color' => '0xFF0000',
             'md_frame_int' => 30,
             'md_rects_enable' => false,
@@ -39,7 +39,48 @@ class is extends camera
         return $this->apiCall('/camera/snapshot');
     }
 
-    public function setOsdText(string $text = '')
+    public function transformDbConfig(array $dbConfig): array
+    {
+        $md = $dbConfig['motionDetection'];
+
+        $md_enable = ($md['left'] || $md['top'] || $md['width'] || $md['height']) ? 1 : 0;
+
+        $dbConfig['motionDetection'] = [
+            'left' => $md_enable,
+            'top' => $md_enable,
+            'width' => $md_enable,
+            'height' => $md_enable,
+        ];
+
+        return $dbConfig;
+    }
+
+    protected function getMotionDetectionConfig(): array
+    {
+        ['md_enable' => $mdEnabled] = $this->apiCall('/camera/md');
+
+        return [
+            'left' => ($mdEnabled) ? 1 : 0,
+            'top' => ($mdEnabled) ? 1 : 0,
+            'width' => ($mdEnabled) ? 1 : 0,
+            'height' => ($mdEnabled) ? 1 : 0,
+        ];
+    }
+
+    protected function getOsdText(): string
+    {
+        return $this->apiCall('/v2/camera/osd')[1]['text'];
+    }
+
+    /**
+     * Set OSD overlay text with specified position.
+     *
+     * @param string $text The text to display on the OSD.
+     * @param int $yPosOsd The y-coordinate position of the OSD.
+     *
+     * @return void
+     */
+    protected function setOsdTextWithPos(string $text, int $yPosOsd)
     {
         $this->apiCall('/v2/camera/osd', 'PUT', [
             [
@@ -77,67 +118,13 @@ class is extends camera
                 ],
                 'position' => [
                     'x' => 10,
-                    'y' => 693,
+                    'y' => $yPosOsd,
                 ],
                 'background' => [
                     'enable' => true,
                     'color' => '0x000000',
                 ],
             ],
-            [
-                'size' => 1,
-                'text' => '',
-                'color' => '0xFFFFFF',
-                'date' => [
-                    'enable' => false,
-                    'format' => '%d-%m-%Y',
-                ],
-                'time' => [
-                    'enable' => false,
-                    'format' => '%H:%M:%S',
-                ],
-                'position' => [
-                    'x' => 10,
-                    'y' => 693,
-                ],
-                'background' => [
-                    'enable' => false,
-                    'color' => '0x000000',
-                ],
-            ],
         ]);
-    }
-
-    public function transformDbConfig(array $dbConfig): array
-    {
-        $md = $dbConfig['motionDetection'];
-
-        $md_enable = ($md['left'] || $md['top'] || $md['width'] || $md['height']) ? 1 : 0;
-
-        $dbConfig['motionDetection'] = [
-            'left' => $md_enable,
-            'top' => $md_enable,
-            'width' => $md_enable,
-            'height' => $md_enable,
-        ];
-
-        return $dbConfig;
-    }
-
-    protected function getMotionDetectionConfig(): array
-    {
-        ['md_enable' => $mdEnabled] = $this->apiCall('/camera/md');
-
-        return [
-            'left' => ($mdEnabled) ? 1 : 0,
-            'top' => ($mdEnabled) ? 1 : 0,
-            'width' => ($mdEnabled) ? 1 : 0,
-            'height' => ($mdEnabled) ? 1 : 0,
-        ];
-    }
-
-    protected function getOsdText(): string
-    {
-        return $this->apiCall('/v2/camera/osd')[1]['text'];
     }
 }

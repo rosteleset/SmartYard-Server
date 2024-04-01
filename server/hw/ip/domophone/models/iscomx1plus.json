@@ -1,8 +1,8 @@
 {
-    "title": "IS ISCOM X1 rev.2 (Sokol)",
+    "title": "IS ISCOM X1 rev.5 (Sokol Plus)",
     "vendor": "IS",
-    "model": "ISCOM X1 rev.2",
-    "class": "iscomx1",
+    "model": "ISCOM X1 rev.5",
+    "class": "iscomx1plus",
     "eventServer": "is",
     "outputs": 1,
     "camera": "is",

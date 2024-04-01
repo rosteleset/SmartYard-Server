@@ -71,20 +71,12 @@ abstract class is extends domophone
             ],
             'soundOpenTh' => null, // inheritance from general settings
             'typeSound' => 3, // inheritance from general settings
+            'sipAccounts' => array_map('strval', $sipNumbers),
         ];
 
-        $countLevels = count($cmsLevels);
-
-        if ($countLevels === 4) {
-            $payload['resistances'] = [
-                'answer' => $cmsLevels[2],
-                'quiescent' => $cmsLevels[3],
-            ];
-        } elseif ($countLevels === 2) {
-            $payload['resistances'] = [
-                'answer' => $cmsLevels[0],
-                'quiescent' => $cmsLevels[1],
-            ];
+        $resistanceParams = $this->getApartmentResistanceParams($cmsLevels);
+        if ($resistanceParams !== null) {
+            $payload['resistances'] = $resistanceParams;
         }
 
         $this->apiCall('/panelCode' . $endpoint, $method, $payload);
@@ -93,11 +85,6 @@ abstract class is extends domophone
         if ($code) {
             $this->addOpenCode($code, $apartment);
         }
-    }
-
-    public function configureEncoding()
-    {
-        // Empty implementation
     }
 
     public function configureGate(array $links = [])
@@ -127,7 +114,7 @@ abstract class is extends domophone
 
         [, $capacity, $columns, $rows] = $this->cmsParams[$this->nowCms];
 
-        $zeroMatrix = array_fill(0, $columns, array_fill(0, $rows, null));
+        $zeroMatrix = array_fill(0, $columns, array_fill(0, $rows, 0));
         $fullMatrix = array_replace_recursive($zeroMatrix, $params);
 
         $this->apiCall('/switch/matrix/1', 'PUT', [
@@ -208,7 +195,6 @@ abstract class is extends domophone
         $this->configureRfidMode();
         $this->deleteApartment();
         $this->enableDdns(false);
-        $this->enableEchoCancellation(false); // FIXME: wait for fixes
     }
 
     public function setAudioLevels(array $levels)
@@ -230,20 +216,6 @@ abstract class is extends domophone
     public function setCallTimeout(int $timeout)
     {
         $this->apiCall('/sip/options', 'PUT', ['ringDuration' => $timeout]);
-    }
-
-    public function setCmsLevels(array $levels)
-    {
-        if (count($levels) === 4) {
-            $this->apiCall('/levels', 'PUT', [
-                'resistances' => [
-                    'break' => $levels[0],
-                    'error' => $levels[1],
-                    'quiescent' => $levels[2],
-                    'answer' => $levels[3],
-                ],
-            ]);
-        }
     }
 
     public function setCmsModel(string $model = '')
@@ -290,7 +262,6 @@ abstract class is extends domophone
 
     public function setSosNumber(int $sipNumber)
     {
-        // TODO: need to wait for custom SIP extensions
         $this->apiCall('/panelCode/settings', 'PUT', ['sosRoom' => (string)$sipNumber]);
         // $this->configure_apartment($number, false, false, [ $number ]);
     }
@@ -298,11 +269,6 @@ abstract class is extends domophone
     public function setTalkTimeout(int $timeout)
     {
         $this->apiCall('/sip/options', 'PUT', ['talkDuration' => $timeout]);
-    }
-
-    public function setTickerText(string $text = '')
-    {
-        // Empty implementation
     }
 
     public function setUnlockTime(int $time = 3)
@@ -325,15 +291,11 @@ abstract class is extends domophone
 
     public function transformDbConfig(array $dbConfig): array
     {
-        $dbConfig['tickerText'] = '';
-
         $dbConfig['sip']['stunEnabled'] = false;
         $dbConfig['sip']['stunServer'] = '';
         $dbConfig['sip']['stunPort'] = 3478;
 
         foreach ($dbConfig['apartments'] as &$apartment) {
-            $apartment['sipNumbers'] = [$apartment['apartment']];
-
             if (count($apartment['cmsLevels']) === 4) {
                 $apartment['cmsLevels'] = array_slice($apartment['cmsLevels'], 2, 2);
             }
@@ -397,13 +359,12 @@ abstract class is extends domophone
      * Disfigure a matrix if it matches specific CMS models.
      *
      * This method disfigures the input matrix to accommodate specific cases where the matrix structure
-     * does not match expected values for certain CMS models. This is a temporary workaround to handle
+     * does not match expected values for certain CMS models. This is a workaround to handle
      * inconsistencies in matrix data for the "METAKOM" and "FACTORIAL" CMS models.
      *
      * @param array $matrix The matrix to be disfigured.
      *
      * @return array The disfigured matrix, adjusted for specific CMS models.
-     * @fixme This should be fixed by the manufacturer
      */
     protected function disfigureMatrix(array $matrix): array
     {
@@ -489,15 +450,16 @@ abstract class is extends domophone
             $apartmentNumber = $apartment['panelCode'];
             $code = $openCodes[$apartmentNumber] ?? 0;
             $cmsEnabled = $apartment['callsEnabled']['handset'];
-            $cmsLevels = [
+            $cmsLevels = $this->getApartmentCmsParams(
                 $apartment['resistances']['answer'],
                 $apartment['resistances']['quiescent'],
-            ];
+            );
+            $sipNumbers = $apartment['sipAccounts'] ?? [$apartmentNumber];
 
             $apartments[$apartmentNumber] = [
                 'apartment' => $apartmentNumber,
                 'code' => $code,
-                'sipNumbers' => [$apartmentNumber],
+                'sipNumbers' => $sipNumbers,
                 'cmsEnabled' => $cmsEnabled,
                 'cmsLevels' => $cmsLevels,
             ];
@@ -513,7 +475,7 @@ abstract class is extends domophone
 
     protected function getCmsLevels(): array
     {
-        return array_values($this->apiCall('/levels')['resistances']);
+        return array_map('intval', array_values($this->apiCall('/levels')['resistances']));
     }
 
     protected function getCmsModel(): string
@@ -651,7 +613,7 @@ abstract class is extends domophone
 
     protected function getTickerText(): string
     {
-        return $this->apiCall('/panelDisplay/settings')['imgStr'];
+        return $this->apiCall('/panelDisplay/settings')['imgStr'] ?? '';
     }
 
     protected function getUnlocked(): bool
@@ -716,4 +678,23 @@ abstract class is extends domophone
 
         return $matrix;
     }
+
+    /**
+     * Retrieves CMS levels parameters based on the provided resistance levels.
+     *
+     * @param int|null $answer Answer CMS level value.
+     * @param int|null $quiescent Quiescent CMS level value.
+     *
+     * @return int[] An array containing the provided answer and quiescent values in the required order.
+     */
+    abstract protected function getApartmentCmsParams(?int $answer, ?int $quiescent): array;
+
+    /**
+     * Retrieves the resistance levels parameters based on the provided CMS levels.
+     *
+     * @param array $cmsLevels An array containing CMS levels.
+     *
+     * @return array|null The resistance levels parameters or null if CMS levels are not in the correct format.
+     */
+    abstract protected function getApartmentResistanceParams(array $cmsLevels): ?array;
 }

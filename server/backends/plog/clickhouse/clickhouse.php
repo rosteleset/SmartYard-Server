@@ -648,6 +648,15 @@
                     //забираем данные из сислога для звонка
                     $query_end_date = $row['date'];
                     $query_start_date = $query_end_date - $this->max_call_length;
+
+                    $whereClause = null;
+
+                    if ($ip !== null) {
+                        $whereClause = "IPv4NumToString(s.ip) = '$ip'";
+                    } elseif ($sub_id !== null) {
+                        $whereClause = "s.sub_id = '$sub_id'";
+                    }
+
                     $query = "
                         select
                             date,
@@ -656,13 +665,15 @@
                         from
                             syslog s
                         where
-                            (IPv4NumToString(s.ip) = '$ip' or s.sub_id = '$sub_id')
+                            $whereClause
                             and s.date > $query_start_date
                             and s.date <= $query_end_date
                         order by
                             date desc
                     ";
-                    $result = $this->clickhouse->select($query);
+
+                    $result = $this->clickhouse->select($query) ?? [];
+
                     foreach ($result as $item) {
                         $msg = $item['msg'];
                         $unit = $item['unit'];
@@ -788,26 +799,32 @@
                         // Call processing for IS panel
                         if ($unit == "is") {
                             $patterns_call = [
-                                // pattern         start  talk  open   call_from_panel
-                                ["/Calling sip:\d+@.* through account/", true, false, false, 1],
-                                ["/CMS handset is not connected for apartment \d+, aborting CMS call/", true, false, false, 0],
-                                ["/CMS handset call started for apartment \d+/", true, false, false, 0],
-                                ["/CMS handset talk started for apartment \d+/", false, true, false, 0],
-                                ["/Baresip event CALL_RINGING/", true, false, false, 1],
-                                ["/Baresip event CALL_ESTABLISHED/", false, true, false, 0],
-                                ["/Opening door by CMS handset for apartment \d+/", false, false, true, 0],
-                                ["/Open from handset!/", false, false, true, 0],
-                                ["/Open main door by DTMF/", false, false, true, 1],
-                                ["/CMS handset call done for apartment \d+, handset is down/", false, false, false, 0],
-                                ["/SIP call done for apartment \d+, handset is down/", false, false, false, 1],
-                                ["/All calls are done for apartment \d+/", false, false, false, 1],
+                                // pattern         start  talk  open  flat_info  call_from_panel
+                                ["/Calling sip:\d+@.* through account/", true, false, false, true, 1],
+                                ["/CMS handset is not connected for apartment \d+, aborting CMS call/", true, false, false, true, 0],
+                                ["/CMS handset call started for apartment \d+/", true, false, false, true, 0],
+                                ["/CMS handset talk started for apartment \d+/", false, true, false, true, 0],
+                                ["/Baresip event CALL_RINGING/", true, false, false, false, 1],
+                                ["/Baresip event CALL_ESTABLISHED/", false, true, false, false, 0],
+                                ["/Accept connection/", false, true, false, false, 0],
+                                ["/Authorization successful/", false, true, false, false, 0],
+                                ["/Generate new session ID/", false, true, false, false, 0],
+                                ["/SETUP finished/", false, true, false, false, 0],
+                                ["/micGain level is higher than permissible/", false, true, false, false, 0], // FIXME: WTF???
+                                ["/Opening door by CMS handset for apartment \d+/", false, true, true, true, 0],
+                                ["/Open from handset!/", false, true, true, false, 0],
+                                ["/DTMF event/", false, true, true, false, 1],
+                                ["/Open main door by DTMF/", false, true, true, false, 1],
+                                ["/CMS handset call done for apartment \d+, handset is down/", false, false, false, true, 0],
+                                ["/SIP call done for apartment \d+, handset is down/", false, false, false, true, 1],
+                                ["/All calls are done for apartment \d+/", false, false, false, true, 0],
 
                                 // Incoming call patterns
-                                ["/Baresip event CALL_INCOMING/", false, false, false, -1],
-                                ["/Incoming call to sip:\d+@.* \(\d+\)/", false, false, false, -1],
+                                ["/Baresip event CALL_INCOMING/", false, false, false, false, -1],
+                                ["/Incoming call to/", false, false, false, false, -1],
                             ];
 
-                            foreach ($patterns_call as [$pattern, $flag_start, $flag_talk_started, $flag_door_opened, $now_call_from_panel]) {
+                            foreach ($patterns_call as [$pattern, $flag_start, $flag_talk_started, $flag_door_opened, $flag_flat_info, $now_call_from_panel]) {
                                 unset($now_flat_id);
                                 unset($now_flat_number);
                                 unset($now_call_id);
@@ -823,24 +840,32 @@
                                     }
 
                                     // Get message parts
-                                    $msg_parts = array_map('trim', preg_split("/[,@:]|\s(?=\d)/", $msg));
+                                    if ($flag_flat_info) {
+                                        $msg_parts = array_map('trim', preg_split("/[,@:]|\s(?=\d)/", $msg));
 
-                                    // Get flat number and prefix
-                                    if (isset($msg_parts[1])) {
-                                        $number = $msg_parts[1];
+                                        // Get flat number and prefix
+                                        if (isset($msg_parts[1]) && is_numeric($msg_parts[1])) {
+                                            $number = $msg_parts[1];
+                                            $numberLength = strlen($number);
 
-                                        if (strlen($number) < 5) { // Apartment - ordinary panel
-                                            $now_flat_number = $number;
-                                        } else { // Gate panel - prefix and apartment
-                                            $prefix = substr($number, 0, 4);
-                                            $now_flat_number = substr($number, 4);
+                                            if ($numberLength < 10) {
+                                                if ($numberLength < 5) {
+                                                    // Apartment - ordinary panel (rev.2)
+                                                    $now_flat_number = $number;
+                                                } else {
+                                                    // Gate panel - prefix and apartment
+                                                    $prefix = substr($number, 0, 4);
+                                                    $now_flat_number = substr($number, 4);
+                                                }
+                                            } elseif ($numberLength === 10) {
+                                                // Apartment ID - ordinary panel (rev.5)
+                                                $now_flat_id = substr($number, 1);
+                                            }
                                         }
                                     }
 
                                     $call_start_lost = isset($now_flat_id) && isset($flat_id) && $now_flat_id != $flat_id
-                                        || isset($now_flat_number) && isset($flat_number) && $now_flat_number != $flat_number
-                                        || isset($now_sip_call_id) && isset($sip_call_id) && $now_sip_call_id != $sip_call_id
-                                        || isset($now_call_id) && isset($call_id) && $now_call_id != $call_id;
+                                        || isset($now_flat_number) && isset($flat_number) && $now_flat_number != $flat_number;
 
                                     if ($call_start_lost) {
                                         break;
@@ -848,12 +873,6 @@
 
                                     $event_data[self::COLUMN_DATE] = $item["date"];
 
-                                    if (isset($now_call_id) && !isset($call_id)) {
-                                        $call_id = $now_call_id;
-                                    }
-                                    if (isset($now_sip_call_id) && !isset($sip_call_id)) {
-                                        $sip_call_id = $now_sip_call_id;
-                                    }
                                     if (isset($now_flat_number) && !isset($flat_number)) {
                                         $flat_number = $now_flat_number;
                                     }

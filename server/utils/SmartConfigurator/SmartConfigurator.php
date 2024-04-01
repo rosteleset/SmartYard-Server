@@ -35,7 +35,7 @@ class SmartConfigurator
 
     public function makeConfiguration($retryCount = 0)
     {
-        $maxRetries = 2;
+        $maxRetries = 0;
         $difference = $this->getDifference();
 
         if (!$difference) {
@@ -80,7 +80,7 @@ class SmartConfigurator
         $nowDifference = $this->getDifference();
 
         if ($nowDifference) {
-            echo 'DIFFERENCE DETECTED, PLEASE FIND THE REASON AND FIX IT!' . PHP_EOL;
+            echo 'DIFFERENCE DETECTED!' . PHP_EOL;
 
             if ($retryCount < $maxRetries) {
                 echo '-------------------------------------------------------' . PHP_EOL;
