@@ -42,6 +42,9 @@ function b64_to_utf8(str) {
 }
 
 function trimStr(str, len, abbr) {
+    if (len < 0) {
+        return str;
+    }
     if (!len) {
         len = 33;
     }
