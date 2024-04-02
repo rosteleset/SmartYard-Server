@@ -12,7 +12,7 @@
 09. [ClickHouse](09.clickhouse.md)
 10. [Wetty | Optional](10.wetty.md)
 11. [FRS](11.frs.md)
-12. [Syslog](12.syslog.md)
+12. [Event](12.event.md)
 13. [Mosquitto](13.mosquitto.md)
 14. [ONLYOFFICE Document Builder](14.onlyoffice.md)
 15. [Post install](99.post_install.md)
