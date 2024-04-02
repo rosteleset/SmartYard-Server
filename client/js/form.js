@@ -234,9 +234,9 @@ function cardForm(params) {
                 if (typeof params.fields[i].options === "object") {
                     for (let j in params.fields[i].options) {
                         if (params.fields[i].options[j].value == params.fields[i].value || params.fields[i].options[j].selected) {
-                            h += `<option value="${params.fields[i].options[j].value}" selected data-icon="${params.fields[i].options[j].icon}">${params.fields[i].options[j].text}</option>`;
+                            h += `<option label="${escapeHTML(params.fields[i].options[j].text)}" value="${params.fields[i].options[j].value}" selected data-icon="${params.fields[i].options[j].icon}">${trimStr(params.fields[i].options[j].text, 32)}</option>`;
                         } else {
-                            h += `<option value="${params.fields[i].options[j].value}" data-icon="${params.fields[i].options[j].icon}">${params.fields[i].options[j].text}</option>`;
+                            h += `<option label="${escapeHTML(params.fields[i].options[j].text)}" value="${params.fields[i].options[j].value}" data-icon="${params.fields[i].options[j].icon}">${trimStr(params.fields[i].options[j].text, 32)}</option>`;
                         }
                     }
                 } else {
