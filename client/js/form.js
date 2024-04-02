@@ -26,7 +26,7 @@ function cardForm(params) {
 
     let s2maxLength = s2maxLengths[params.size] ? s2maxLengths[params.size] : -1;
 
-    console.log(params.size, s2maxLength);
+//    console.log(params.size, s2maxLength);
 
     if (!params.apply) {
         params.apply = "apply";
