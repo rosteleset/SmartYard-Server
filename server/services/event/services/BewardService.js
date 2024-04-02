@@ -1,5 +1,5 @@
 import { SyslogService } from "./index.js";
-import { API } from  "../utils/index.js";
+import { API } from "../utils/index.js";
 
 class BewardService extends SyslogService {
     constructor(unit, config, spamWords = []) {
@@ -41,10 +41,10 @@ class BewardService extends SyslogService {
         }
 
         // Opening a door by RFID key
-        if (/^Opening door by RFID [a-fA-F0-9]+, apartment \d+$/.test(msg)
-            || /^Opening door by external RFID [a-fA-F0-9]+, apartment \d+$/.test(msg)) {
-            const rfid = msg.split("RFID")[1].split(",")[0].trim();
-            const door = msg.includes("external") ? "1" : "0";
+        if (msg.includes("Opening door by RFID") || msg.includes("Opening door by external RFID")) {
+            const rfid = msg.match(/\b([0-9A-Fa-f]{14})\b/g)?.[0] || null;
+            const isExternalReader = msg.includes('external') || rfid && rfid[6] === '0' && rfid[7] === '0';
+            const door = isExternalReader ? 1 : 0;
             await API.openDoor({date: now, ip: host, door, detail: rfid, by: "rfid"});
         }
 
