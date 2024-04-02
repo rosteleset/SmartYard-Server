@@ -20,7 +20,7 @@ function cardForm(params) {
 
     let s2maxLengths = {
         "sm": 32,
-        "lg": 56,
+        "lg": 60,
         "xl": 80,
     };
 
