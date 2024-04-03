@@ -1,0 +1,7 @@
+/var/log/event_service/*.log {
+        daily
+        missingok
+        rotate 3
+        compress
+        notifempty
+}
