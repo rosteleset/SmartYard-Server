@@ -1307,7 +1307,21 @@
                 if (i.test(s)) {
                     window.location.href = "?#tt&issue=" + s.toUpperCase() + "&search=" + s.toUpperCase() + "&_=" + Math.random();
                 } else {
-                    modules.tt.selectFilter("#search", 0, modules.tt.defaultIssuesPerPage, s);
+//                    modules.tt.selectFilter("#search", 0, modules.tt.defaultIssuesPerPage, s);
+                    let query = {
+                        project: modules.tt.fin.project,
+                        filter: "#search",
+                        search: s,
+                        caption: i18n("tt.search"),
+                    };
+
+                    console.log(query);
+
+                    if (lStore("sortBy:" + query.filter)) {
+                        query.sort = lStore("sortBy:" + query.filter);
+                    }
+
+                    modules.tt.renderIssues(query, $("#mainForm"), modules.tt.fin.id);
                 }
             }
         });
