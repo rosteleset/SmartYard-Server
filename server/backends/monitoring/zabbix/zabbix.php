@@ -15,7 +15,7 @@ enum HostGroup
 class zabbix extends monitoring
 {
     const hostGroups = ['Intercoms', 'Cameras'];
-    const templateGroups = ['Templates/Intercoms', 'Templates/Cameras'];
+    const templateGroups = ['Templates/Intercoms', 'Templates/Cameras', 'SmartYard-Server'];
     const intercomTemplateNames = [
         'Intercom_AKUVOX_E12',
         'Intercom_BEWARD_DKS',
@@ -104,6 +104,8 @@ class zabbix extends monitoring
 
         $this->importTemplateConfigFiles(self::templatesDir, "intercom");
         $this->importTemplateConfigFiles(self::templatesDir, "camera");
+
+        $this->importTemplateConfigFiles(self::templatesDir, "services");
 
         $this->log("Finish configure zabbix");
     }
