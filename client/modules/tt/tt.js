@@ -1657,7 +1657,7 @@
                         params.limit = limit ? limit : modules.tt.defaultIssuesPerPage;
                         modules.tt.renderIssues(params, target, issuesListId, callback);
                     } else {
-                        modules.tt.selectFilter();
+                        modules.tt.selectFilter(params.filter ? params.filter : false);
                     }
                 }
             });
