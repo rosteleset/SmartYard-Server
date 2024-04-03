@@ -625,7 +625,7 @@ abstract class beward extends domophone
 
             $flats[$apartmentNumber] = [
                 'apartment' => $apartmentNumber,
-                'code' => $flatsParams["DoorCode$i"],
+                'code' => $flatsParams["DoorCodeActive$i"] === 'on' ? $flatsParams["DoorCode$i"] : 0,
                 'sipNumbers' => [
                     $flatsParams["Phone{$i}_1"],
                     $flatsParams["Phone{$i}_2"],
