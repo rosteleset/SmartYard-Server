@@ -559,7 +559,10 @@ abstract class beward extends domophone
             'paramstep' => '0',
             'paramreserved' => '0',
         ]);
+
         $this->setIntercom('DoorOpenMode', $unlocked ? 'on' : 'off');
+        $this->setIntercom('MainDoorOpenMode', $unlocked ? 'on' : 'off');
+        $this->setIntercom('AltDoorOpenMode', $unlocked ? 'on' : 'off');
     }
 
     /**
