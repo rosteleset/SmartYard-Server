@@ -1578,12 +1578,16 @@
             $(`.tt_pager[data-target="${issuesListId}"]`).off("click").on("click", function () {
                 params.skip = Math.max(0, (parseInt($(this).attr("data-page")) - 1) * limit);
                 params.limit = limit ? limit : modules.tt.defaultIssuesPerPage;
-                if (target) {
-                    // for workspaces
-                    loadingStart();
-                    modules.tt.renderIssues(params, target, issuesListId, callback);
+                if (params.pager && typeof params.pager == "function") {
+                    params.pager(params);
                 } else {
-                    modules.tt.selectFilter(params.filter ? params.filter : false, params.skip, params.limit, params.search);
+                    if (target) {
+                        // for workspaces
+                        loadingStart();
+                        modules.tt.renderIssues(params, target, issuesListId, callback);
+                    } else {
+                        modules.tt.selectFilter(params.filter ? params.filter : false, params.skip, params.limit, params.search);
+                    }
                 }
             });
 
