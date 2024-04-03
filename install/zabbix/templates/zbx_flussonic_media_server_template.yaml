@@ -259,7 +259,7 @@ zabbix_export:
             - uuid: 3f9e1e49785b400498172f2cb606c577
               name: 'Stream "{#STREAM_NAME}" alive status'
               type: DEPENDENT
-              key: 'stream[{#STREAM_NAME}.alive]'
+              key: 'stream[{#STREAM_NAME},alive]'
               delay: '0'
               description: 'Flussonic stream Input source status'
               preprocessing:
@@ -280,7 +280,7 @@ zabbix_export:
             - uuid: ed4c85ec50f844738bc74f7ec7fdb466
               name: 'Stream "{#STREAM_NAME}" errors'
               type: DEPENDENT
-              key: 'stream[{#STREAM_NAME}.input_error_rate]'
+              key: 'stream[{#STREAM_NAME},input_error_rate]'
               delay: '0'
               description: 'Flussonic stream errors rate'
               preprocessing:
@@ -298,7 +298,7 @@ zabbix_export:
             - uuid: e414dc89396949729c0b976ef1544ece
               name: 'Stream "{#STREAM_NAME}" running'
               type: DEPENDENT
-              key: 'stream[{#STREAM_NAME}.running]'
+              key: 'stream[{#STREAM_NAME},running]'
               delay: '0'
               description: 'Flussonic running stream status'
               preprocessing:
@@ -333,10 +333,13 @@ zabbix_export:
                   value: 'Flussonic streams - raw'
           trigger_prototypes:
             - uuid: 6cd6de0e562a406f8e2da17c167a980d
-              expression: 'avg(/Flussonic Media Server/stream[{#STREAM_NAME}.alive],#2)=0 and last(/Flussonic Media Server/stream[{#STREAM_NAME}.running])=1'
+              expression: 'avg(/Flussonic Media Server/stream[{#STREAM_NAME},alive],2)=0 and last(/Flussonic Media Server/stream[{#STREAM_NAME},running])=1'
               name: 'Stream "{#STREAM_NAME}" not working'
-              priority: INFO
+              priority: WARNING
               description: 'Flussonic stream not work, check source'
+              tags:
+                - tag: Application
+                  value: 'Flussonic streams - status fail'
           timeout: '60'
           url: '{$FL.TRANSFER.PROTOCOL}://{HOST.CONN}:{$FL.PORT}/flussonic/api/v3/streams?select=position,name,title&limit={$FL.LIMIT_STREAMS}'
           lld_macro_paths:
