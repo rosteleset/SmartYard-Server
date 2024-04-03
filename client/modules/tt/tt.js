@@ -4,6 +4,7 @@
     defaultIssuesPerPage: 50,
     defaultPagerItemsCount: 10,
     menuItem: false,
+    search: md5(guid()),
 
     specialActions: [
         "saAddComment",
@@ -1307,6 +1308,7 @@
                 if (i.test(s)) {
                     window.location.href = "?#tt&issue=" + s.toUpperCase() + "&search=" + s.toUpperCase() + "&_=" + Math.random();
                 } else {
+                    $("#mainForm").html("");
 //                    modules.tt.selectFilter("#search", 0, modules.tt.defaultIssuesPerPage, s);
                     let query = {
                         project: modules.tt.fin.project,
@@ -1321,7 +1323,7 @@
                         query.sort = lStore("sortBy:" + query.filter);
                     }
 
-                    modules.tt.renderIssues(query, $("#mainForm"), modules.tt.fin.id);
+                    modules.tt.renderIssues(query, $("#mainForm"), modules.tt.search);
                 }
             }
         });
