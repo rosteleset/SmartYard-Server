@@ -24,6 +24,3 @@ zabbix_export:
               expression: last(/FRS/listStreams)=0
               name: 'FRS: failure service'
               priority: WARNING
-      macros:
-        - macro: '{$FRS_API_PORT}'
-          value: '55099'
