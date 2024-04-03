@@ -1195,7 +1195,7 @@
 
     selectFilter: function (filter, skip, limit, search) {
         if (filter) {
-            if (filter !== "#search") {
+            if (filter[0] !== "#") {
                 lStore("_tt_issue_filter_" + $("#ttProjectSelect").val(), filter);
             }
         } else {
@@ -1580,7 +1580,7 @@
                     loadingStart();
                     modules.tt.renderIssues(params, target, issuesListId, callback);
                 } else {
-                    modules.tt.selectFilter(false, params.skip, params.limit);
+                    modules.tt.selectFilter(params.filter ? params.filter : false, params.skip, params.limit);
                 }
             });
 
