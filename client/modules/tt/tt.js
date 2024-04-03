@@ -1583,7 +1583,7 @@
                     loadingStart();
                     modules.tt.renderIssues(params, target, issuesListId, callback);
                 } else {
-                    modules.tt.selectFilter(params.filter ? params.filter : false, params.skip, params.limit);
+                    modules.tt.selectFilter(params.filter ? params.filter : false, params.skip, params.limit, params.search);
                 }
             });
 
@@ -1657,7 +1657,7 @@
                         params.limit = limit ? limit : modules.tt.defaultIssuesPerPage;
                         modules.tt.renderIssues(params, target, issuesListId, callback);
                     } else {
-                        modules.tt.selectFilter(params.filter ? params.filter : false);
+                        modules.tt.selectFilter(params.filter ? params.filter : false, params.skip, params.limit, params.search);
                     }
                 }
             });
