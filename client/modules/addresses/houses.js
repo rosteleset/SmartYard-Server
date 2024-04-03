@@ -1536,6 +1536,7 @@
                         title: i18n("addresses.sipEnabled"),
                         placeholder: i18n("addresses.sipEnabled"),
                         value: flat.sipEnabled,
+                        hint: parseInt(4000000000) + parseInt(flatId),
                         options: [
                             {
                                 id: "0",
