@@ -4,7 +4,6 @@
     defaultIssuesPerPage: 50,
     defaultPagerItemsCount: 10,
     menuItem: false,
-    search: md5(guid()),
 
     specialActions: [
         "saAddComment",
@@ -1308,22 +1307,7 @@
                 if (i.test(s)) {
                     window.location.href = "?#tt&issue=" + s.toUpperCase() + "&search=" + s.toUpperCase() + "&_=" + Math.random();
                 } else {
-                    $("#mainForm").html("");
-//                    modules.tt.selectFilter("#search", 0, modules.tt.defaultIssuesPerPage, s);
-                    let query = {
-                        project: modules.tt.fin.project,
-                        filter: "#search",
-                        search: s,
-                        caption: i18n("tt.search"),
-                    };
-
-                    console.log(query);
-
-                    if (lStore("sortBy:" + query.filter)) {
-                        query.sort = lStore("sortBy:" + query.filter);
-                    }
-
-                    modules.tt.renderIssues(query, $("#mainForm"), modules.tt.search);
+                    modules.tt.selectFilter("#search", 0, modules.tt.defaultIssuesPerPage, s);
                 }
             }
         });
@@ -1592,6 +1576,7 @@
                 params.skip = Math.max(0, (parseInt($(this).attr("data-page")) - 1) * limit);
                 params.limit = limit ? limit : modules.tt.defaultIssuesPerPage;
                 if (target) {
+                    // for workspaces
                     loadingStart();
                     modules.tt.renderIssues(params, target, issuesListId, callback);
                 } else {
@@ -1663,6 +1648,7 @@
                     }
                     lStore("sortBy:" + x, sort);
                     if (target) {
+                        // for workspaces
                         loadingStart();
                         params.skip = 0;
                         params.limit = limit ? limit : modules.tt.defaultIssuesPerPage;
