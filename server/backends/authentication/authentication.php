@@ -205,6 +205,34 @@
                     }
                 }
             }
+
+            /**
+             * @param string $otp one time password
+             */
+
+            public function totp($otp) {
+/*
+require_once 'GoogleAuthenticator.php';
+
+$ga = new PHPGangsta_GoogleAuthenticator();
+//$secret = $ga->createSecret();
+$secret = 'JIGEIIFBJFF4BCZB';
+echo "Secret is: ".$secret."\n\n";
+
+parse_str(parse_url($ga->getQRCodeGoogleUrl('SmartYard', $secret, 'RBT'), PHP_URL_QUERY), $qrCodeText);
+echo "QR-Code: ".$qrCodeText['data']."\n\n";
+
+$oneCode = $ga->getCode($secret);
+echo "Checking Code '$oneCode' and Secret '$secret':\n";
+
+$checkResult = $ga->verifyCode($secret, $oneCode, 2);    // 2 = 2*30sec clock tolerance
+if ($checkResult) {
+    echo 'OK';
+} else {
+    echo 'FAILED';
+}
+*/                
+            }
         }
     }
 
