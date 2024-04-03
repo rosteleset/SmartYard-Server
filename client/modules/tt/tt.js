@@ -1201,6 +1201,9 @@
         } else {
             filter = lStore("_tt_issue_filter_" + $("#ttProjectSelect").val());
         }
+        if (filter && search && search !== true) {
+            lStore('_tt_issue_search_' + filter, search);
+        }
         window.location.href = `?#tt&filter=${encodeURIComponent(filter)}&skip=${skip?skip:0}&limit=${limit?limit:modules.tt.defaultIssuesPerPage}&search=${encodeURIComponent(($.trim(search) && typeof search === "string")?$.trim(search):"")}&_=${Math.random()}`;
     },
 
@@ -1334,7 +1337,7 @@
 
         let filters;
 
-        if (target || $.trim(modules.tt.meta.filters[x])[0] == "#") {
+        if (target || $.trim(x)[0] == "#") {
             filters = `<span class="text-bold ${params.class ? params.class : ''}">${params.caption ? params.caption : ((modules.tt.meta.filters[x] ? modules.tt.meta.filters[x] : i18n("tt.filter")).replaceAll("/", "<i class='fas fa-fw fa-xs fa-angle-double-right'></i>"))}</span>`;
         } else {
             let fcount = 0;
