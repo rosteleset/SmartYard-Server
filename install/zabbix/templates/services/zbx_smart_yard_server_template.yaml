@@ -95,13 +95,13 @@ zabbix_export:
               priority: WARNING
         - uuid: e46157e7b3fa45ecadd2ffd93b823b63
           name: 'SmartYard-Server: event service akuvox'
-          key: 'systemd.unit.is-active[akuvox]'
+          key: 'systemd.unit.is-active[event_akuvox]'
           tags:
             - tag: Application
               value: Event
           triggers:
             - uuid: 49bce9f1284c4573a0a721a3d7fa4cb9
-              expression: 'last(/SmartYard-Server/systemd.unit.is-active[akuvox])<1'
+              expression: 'last(/SmartYard-Server/systemd.unit.is-active[event_akuvox])<1'
               name: 'Akuvox | Event service failure'
               priority: WARNING
         - uuid: 701d7f7da3014d0abb320a3ecaa63572
@@ -117,41 +117,46 @@ zabbix_export:
               priority: WARNING
         - uuid: a3473d0341f24963af8c7708043c37e0
           name: 'SmartYard-Server: event service beward_ds'
-          key: 'systemd.unit.is-active[event_beward_ds]'
+          key: 'systemd.unit.is-active[event_beward_ds06a]'
           tags:
             - tag: Application
               value: Event
           triggers:
             - uuid: aed2fa5d7c774c2eb6d3fd986862b8db
-              expression: 'last(/SmartYard-Server/systemd.unit.is-active[event_beward_ds])<1'
+              expression: 'last(/SmartYard-Server/systemd.unit.is-active[event_beward_ds06a])<1'
               name: 'Beward DS | Event service failure'
               priority: WARNING
         - uuid: 43a344d3503f47c2a947fc6d318fb3ec
           name: 'SmartYard-Server: event service is'
-          key: 'systemd.unit.is-active[is]'
+          key: 'systemd.unit.is-active[event_is]'
           tags:
             - tag: Application
               value: Event
+          triggers:
+            - uuid: a0ba05515cb94d7cb13f5caa1b80b172
+              expression: 'last(/SmartYard-Server/systemd.unit.is-active[event_is])<1'
+              name: 'IS | Event service failure'
+              priority: WARNING
         - uuid: 5cfd3b0710684546a54d6eb9d49820dd
           name: 'SmartYard-Server: event service qtech'
-          key: 'systemd.unit.is-active[qtech]'
+          key: 'systemd.unit.is-active[event_qtech]'
           tags:
             - tag: Application
               value: Event
           triggers:
             - uuid: 5ead7bb03d1e47d9b24fd65aff879e00
-              expression: 'last(/SmartYard-Server/systemd.unit.is-active[qtech])<1'
+              expression: 'last(/SmartYard-Server/systemd.unit.is-active[event_qtech])<1'
               name: 'Qtech | Event service failure'
               priority: WARNING
         - uuid: a1c2eb085974410babc1567e87e47209
           name: 'SmartYard-Server: event service sputnik_cloud'
-          key: 'systemd.unit.is-active[sputnik_cloud]'
+          key: 'systemd.unit.is-active[event_sputnik_cloud]'
           tags:
             - tag: Application
               value: Event
           triggers:
             - uuid: 932257bc45064d30a9163ef5d2e769c5
-              expression: 'last(/SmartYard-Server/systemd.unit.is-active[sputnik_cloud])<1'
+              expression: 'last(/SmartYard-Server/systemd.unit.is-active[event_sputnik_cloud])<1'
               name: 'Sputnic Cloud | Event service failure'
               priority: WARNING
       httptests:
