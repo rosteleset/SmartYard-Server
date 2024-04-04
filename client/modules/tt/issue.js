@@ -190,6 +190,8 @@
     },
 
     createIssueForm: function (current_project, workflow, catalog, parent) {
+        subTop();
+
         loadingStart();
         GET("tt", "tt").
         fail(FAIL).
