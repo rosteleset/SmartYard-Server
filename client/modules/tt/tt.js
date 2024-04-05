@@ -1214,7 +1214,7 @@
         window.location.href = `?#tt&project=${encodeURIComponent(project)}`;
     },
 
-    renderIssues: function (params, target, issuesListId, callback) {
+    renderIssues: function (params, target, issuesListId, callback, fail) {
         if (target === "undefined") {
             target = false;
         }
@@ -1880,28 +1880,32 @@
         }).
         fail(FAIL).
         fail((response) => {
-            if (target) {
-                let e = i18n("errors.unknown");
-                if (response && response.responseJSON && response.responseJSON.error) {
-                    e = i18n("errors." + response.responseJSON.error);
-                }
-                e = `<span class="text-danger text-bold">${e} [${params.filter}]<span/>`;
-                if (target !== true) {
-                    target.append(`<table class="mt-2 ml-2" style="width: 100%;"><tr><td style="width: 100%;">${e}</td></tr></table>`);
-                } else {
-                    $("#" + issuesListId).html(e);
-                }
-                if (typeof callback === "undefined") {
-                    loadingDone();
-                } else {
-                    callback();
-                }
+            if (typeof fail == "function") {
+                fail(response);
             } else {
-                lStore("_tt_issue_filter_" + $("#ttProjectSelect").val(), null);
-                lStore("_tt_issue_filter_" + lStore("_project"), null);
-                lStore("_project", null);
-                if (params["_"] != _) {
-                    window.location.href = `?#tt&_=${_}`;
+                if (target) {
+                    let e = i18n("errors.unknown");
+                    if (response && response.responseJSON && response.responseJSON.error) {
+                        e = i18n("errors." + response.responseJSON.error);
+                    }
+                    e = `<span class="text-danger text-bold">${e} [${params.filter}]<span/>`;
+                    if (target !== true) {
+                        target.append(`<table class="mt-2 ml-2" style="width: 100%;"><tr><td style="width: 100%;">${e}</td></tr></table>`);
+                    } else {
+                        $("#" + issuesListId).html(e);
+                    }
+                    if (typeof callback === "undefined") {
+                        loadingDone();
+                    } else {
+                        callback();
+                    }
+                } else {
+                    lStore("_tt_issue_filter_" + $("#ttProjectSelect").val(), null);
+                    lStore("_tt_issue_filter_" + lStore("_project"), null);
+                    lStore("_project", null);
+                    if (params["_"] != _) {
+                        window.location.href = `?#tt&_=${_}`;
+                    }
                 }
             }
         });
