@@ -18,6 +18,8 @@ zabbix_export:
           name: 'Triton Inference Server status'
           key: 'net.tcp.port[localhost,8000]'
           description: 'Check tcp port 8000 using Triton Inference Server on localhost'
+          valuemap:
+            name: 'Service status'
           tags:
             - tag: Application
               value: 'Triton Inference Server'
@@ -32,6 +34,8 @@ zabbix_export:
           name: 'MySQL running process'
           key: 'proc.num[mysqld]'
           description: 'Count running MySQL process'
+          valuemap:
+            name: 'Service status'
           tags:
             - tag: Application
               value: MySQL
@@ -46,6 +50,8 @@ zabbix_export:
           name: 'FRS running process'
           key: 'proc.num[run_frs]'
           description: 'Count running FRS process'
+          valuemap:
+            name: 'Service status'
           tags:
             - tag: Application
               value: FRS
@@ -56,3 +62,11 @@ zabbix_export:
               expression: 'last(/SmartYard-Server_FRS/proc.num[run_frs])<1'
               name: 'FRS: process failure'
               priority: WARNING
+      valuemaps:
+        - uuid: ab6d00266f9d4dc383eee6bca19e8309
+          name: 'Service status'
+          mappings:
+            - value: '1'
+              newvalue: Running
+            - value: '0'
+              newvalue: Stopped
