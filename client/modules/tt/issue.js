@@ -727,7 +727,7 @@
                 h += "</span>";
                 if (modules.tt.meta.myRoles[issue.issue.project] >= 20 && !modules.tt.meta.finalStatus[issue.issue.status]) {
                     if (modules.tt.meta.myRoles[issue.issue.project] >= 70 || issue.issue.attachments[i].metadata.attachman == lStore("_login")) {
-                        h += "<i class='far fa-trash-alt ml-2 pointer text-danger deleteAttachment'></i>";
+                        h += "<i class='far fa-trash-alt ml-2 pointer text-danger deleteFile'></i>";
                     }
                 }
                 h += "</div>";
@@ -1229,7 +1229,34 @@
             }).show();
         });
 
-        $(".deleteAttachment").off("click").on("click", function () {
+        $(".ttSaAddSingleFile").off("click").on("click", () => {
+            let mimeTypes;
+
+            let maxSize = parseInt(project.maxFileSize);
+
+            let files = [];
+
+            loadFile(mimeTypes, maxSize, file => {
+                if (file) {
+                    files.push(file);
+                    loadingStart();
+                    POST("tt", "file", false, { attachments: files }).
+                    fail(FAIL).
+                    fail(loadingDone).
+                    done(() => {
+                        modules.tt.route({
+                            issue: issue.issue.issueId,
+                            filter: filter,
+                            index: index,
+                            count: count,
+                            search: search,
+                        });
+                    });
+            }
+            });
+        });
+
+        $(".deleteFile").off("click").on("click", function () {
             let file = $.trim($(this).parent().next().text());
             mConfirm(i18n("tt.deleteFile", file), i18n("confirm"), i18n("delete"), () => {
                 loadingStart();

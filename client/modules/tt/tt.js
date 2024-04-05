@@ -8,6 +8,7 @@
     specialActions: [
         "saAddComment",
         "saAddFile",
+        "saAddSingleFile",
         "saAssignToMe",
         "saWatch",
         "saDelete",
