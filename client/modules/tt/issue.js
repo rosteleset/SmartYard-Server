@@ -375,6 +375,7 @@
                         if (modules.custom && typeof modules.custom[r.template] == "function") {
                             modules.custom[r.template](issue.issue, action, callback, prefferredValues, timeout);
                         } else {
+                            loadingDone();
                             error(i18n("errors.functionNotFound", r.template), i18n("error"), 30);
                         }
                     } else {
