@@ -27,7 +27,7 @@ function uploadForm(mimeTypes, button) {
     $("#uploadButton").text(button?button:i18n("doUpload"));
 }    
 
-function loadFile(mimeTypes, maxSize, callback, button) {
+function loadFile(mimeTypes, maxSize, callback, button, quick) {
     uploadForm(mimeTypes, button);
 
     let files = [];
@@ -84,6 +84,9 @@ function loadFile(mimeTypes, maxSize, callback, button) {
                     ${i18n("fileType")}: ${file.type}<br />
                 `).parent().show();
                 $("#uploadButton").show();
+                if (quick) {
+                    $("#uploadButton").click();
+                }
             }
         });
     });
@@ -115,9 +118,10 @@ function loadFile(mimeTypes, maxSize, callback, button) {
         }
     });
 
-    autoZ($('#uploadModal')).modal('show');
-
-    xblur();
+    if (!quick) {
+        autoZ($('#uploadModal')).modal('show');
+        xblur();
+    }
 
     $("#chooseFileToUpload").click();
 }

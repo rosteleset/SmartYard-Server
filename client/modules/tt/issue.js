@@ -1252,8 +1252,8 @@
                             search: search,
                         });
                     });
-            }
-            });
+                }
+            }, false, true);
         });
 
         $(".deleteFile").off("click").on("click", function () {
