@@ -111,6 +111,13 @@
                         "strtotime" => function (...$args) {
                             return [ strtotime(...$args) ];
                         },
+                        "json_decode" => function (...$args) {
+                            $args[] = true;
+                            return [ json_decode(...$args) ];
+                        },
+                        "json_encode" => function (...$args) {
+                            return [ json_encode(...$args) ];
+                        },
                     ]);
 
                     $sandbox->registerLibrary("rbt", [
