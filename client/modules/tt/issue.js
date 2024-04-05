@@ -1240,7 +1240,7 @@
                 if (file) {
                     files.push(file);
                     loadingStart();
-                    POST("tt", "file", false, { attachments: files }).
+                    POST("tt", "file", false, { issueId: issue.issue.issueId, attachments: files }).
                     fail(FAIL).
                     fail(loadingDone).
                     done(() => {
