@@ -7,7 +7,7 @@
     "scripts": {
         "start": "concurrently -k \"npm run start:*\"",
         "dev": "concurrently -k \"npm run dev:*\"",
-        "debug": "NODE_ENV=development concurrently -k \"npm run dev:*\"",
+        "debug": "NODE_ENV=debug concurrently -k \"npm run dev:*\"",
         "start:beward": "node index.js beward",
         "start:beward_ds": "node index.js beward_ds",
         "start:qtech": "node index.js qtech",

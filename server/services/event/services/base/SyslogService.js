@@ -1,9 +1,10 @@
 import syslogServer from "syslog-server";
 import { API, getTimestamp, isIpAddress, parseSyslogMessage } from "../../utils/index.js";
-import config from "../../config.json" assert { type: "json"}
+import config from "../../config.json" assert { type: "json" };
 
 const { topology } = config;
-const mode = process.env.NODE_ENV || "";
+const natEnabled = topology?.nat === true;
+const mode = process.env.NODE_ENV ?? 'normal';
 
 class SyslogService {
     constructor(unit, config, spamWords = []) {
@@ -28,7 +29,7 @@ class SyslogService {
      * @param msg
      */
     logToConsole(now, host, msg) {
-        console.log(`${ now } || ${ host } || ${ msg }`);
+        console.log(`${now} || ${host} || ${msg}`);
     }
 
     /**
@@ -42,6 +43,17 @@ class SyslogService {
         await API.sendLog({ date: now, ip: host, unit: this.unit, msg });
     }
 
+    /**
+     * Handles a syslog message.
+     * @param {number} date - The date that the syslog message was received by the server.
+     * @param {string} host - The host from which the syslog message originated.
+     * @param {string} message - The syslog message content.
+     * @throws {Error} - Throws an error if the method is not implemented.
+     */
+    async handleSyslogMessage(date, host, message) {
+        throw new Error('Method "handleSyslogMessage()" must be implemented');
+    }
+
     createSyslogServer() {
         const syslog = new syslogServer();
 
@@ -50,7 +62,7 @@ class SyslogService {
             let { hostname: addressFromMessageBody, message: msg } = parseSyslogMessage(message);
 
             //  Check hostname from syslog message body
-            if (topology?.nat && isIpAddress(addressFromMessageBody)) {
+            if (natEnabled && isIpAddress(addressFromMessageBody)) {
                 host = addressFromMessageBody;
             }
 
@@ -61,13 +73,13 @@ class SyslogService {
              */
             if (!msg) {
                 console.error("Parse message failed: " + message);
-                return
+                return;
             }
 
             /**
              * Filtering spam syslog messages in production mode
              */
-            if (mode !== "development" && this.isSpamMessage(msg)) {
+            if (mode !== "debug" && this.isSpamMessage(msg)) {
                 return;
             }
 
@@ -76,7 +88,7 @@ class SyslogService {
             await this.sendToSyslogStorage(now, host, msg);
 
             // Running handlers
-            this.handleSyslogMessage(now, host, msg);
+            await this.handleSyslogMessage(now, host, msg);
         });
 
         syslog.on("error", (err) => {
@@ -84,12 +96,12 @@ class SyslogService {
         });
 
         syslog.start({ port: this.config.port }).then(() => {
-            console.log(`${ this.unit.toUpperCase() } syslog server running on UDP port ${ this.config.port } || NAT is ${ topology?.nat || false } || mode: ${ mode }`);
+            console.log(
+                `${this.unit.toUpperCase()} syslog server running on UDP port ${this.config.port}` +
+                ` || NAT is ${natEnabled}` +
+                ` || mode: ${mode}`,
+            );
         });
-    }
-
-    handleSyslogMessage(now, host, msg) {
-        console.log("RUN handleSyslogMessage")
     }
 }
 
