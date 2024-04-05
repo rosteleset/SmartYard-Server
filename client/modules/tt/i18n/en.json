@@ -203,6 +203,7 @@
     "saAddComment": "Add comment",
     "saAddFile": "Attach file(s)",
     "saAddSingleFile": "Attach file",
+    "saAddSingleFileQuiet": "Attach file",
     "saDelete": "Delete issue",
     "saWatch": "Watch / Unwatch",
     "saAssignToMe": "Assign to Me",

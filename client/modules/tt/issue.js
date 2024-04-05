@@ -1253,6 +1253,33 @@
                         });
                     });
                 }
+            });
+        });
+
+        $(".ttSaAddSingleFileQuiet").off("click").on("click", () => {
+            let mimeTypes;
+
+            let maxSize = parseInt(project.maxFileSize);
+
+            let files = [];
+
+            loadFile(mimeTypes, maxSize, file => {
+                if (file) {
+                    files.push(file);
+                    loadingStart();
+                    POST("tt", "file", false, { issueId: issue.issue.issueId, attachments: files }).
+                    fail(FAIL).
+                    fail(loadingDone).
+                    done(() => {
+                        modules.tt.route({
+                            issue: issue.issue.issueId,
+                            filter: filter,
+                            index: index,
+                            count: count,
+                            search: search,
+                        });
+                    });
+                }
             }, false, true);
         });
 

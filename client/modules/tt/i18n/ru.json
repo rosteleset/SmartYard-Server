@@ -203,6 +203,7 @@
     "saAddComment": "Добавить комментарий",
     "saAddFile": "Приложить файл(ы)",
     "saAddSingleFile": "Приложить файл",
+    "saAddSingleFileQuiet": "Приложить файл",
     "saDelete": "Удалить задачу",
     "saWatch": "Наблюдать / перестать наблюдать",
     "saAssignToMe": "Забрать себе",

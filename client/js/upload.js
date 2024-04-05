@@ -27,7 +27,7 @@ function uploadForm(mimeTypes, button) {
     $("#uploadButton").text(button?button:i18n("doUpload"));
 }    
 
-function loadFile(mimeTypes, maxSize, callback, button, quick) {
+function loadFile(mimeTypes, maxSize, callback, button, quiet) {
     uploadForm(mimeTypes, button);
 
     let files = [];
@@ -84,7 +84,7 @@ function loadFile(mimeTypes, maxSize, callback, button, quick) {
                     ${i18n("fileType")}: ${file.type}<br />
                 `).parent().show();
                 $("#uploadButton").show();
-                if (quick) {
+                if (quiet) {
                     $("#uploadButton").click();
                 }
             }
@@ -118,7 +118,7 @@ function loadFile(mimeTypes, maxSize, callback, button, quick) {
         }
     });
 
-    if (!quick) {
+    if (!quiet) {
         autoZ($('#uploadModal')).modal('show');
         xblur();
     }

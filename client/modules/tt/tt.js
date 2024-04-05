@@ -9,6 +9,7 @@
         "saAddComment",
         "saAddFile",
         "saAddSingleFile",
+        "saAddSingleFileQuiet",
         "saAssignToMe",
         "saWatch",
         "saDelete",
