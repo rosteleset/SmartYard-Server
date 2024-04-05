@@ -12,8 +12,12 @@ const parseSyslogMessage = (str) => {
     // const regexBSB = /<(?<priority>\d{1,3})>(?<timestamp>\w+\s+\d{1,2}\s\d{2}:\d{2}:\d{2})\s(?<host>\S+)?\s(?<app>[\w.-]+)\s(?<pid>\S+):\s(?<message>.*)$/;
     const regexBSB = /<(?<priority>\d{1,3})>(?<timestamp>\w+\s+\d{1,2}\s\d{2}:\d{2}:\d{2})\s(?<host>\S+)?\s(?<app>[\w\s.]+)\s(?<pid>\S+):\s(?<message>.*)$/;
 
+    // ISComX1 rev.5
+    const regexSokolPlus = /<(?<priority>\d{1,3})>(?<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6}\+\d{2}:\d{2}) (?<hostname>\S+) (?<app>\w+)\[(?<pid>\d+)]: (?<message>.*)$/;
+
     const partsIETF = regexIETF.exec(str);
     const partsBSD = regexBSB.exec(str);
+    const partsSokolPlus = regexSokolPlus.exec(str);
 
     if (partsIETF) {
         const [, priority, version, timestamp, hostname, app, pid, msg_id, message] = partsIETF;
@@ -25,7 +29,7 @@ const parseSyslogMessage = (str) => {
             hostname,
             app,
             pid,
-            message
+            message,
         };
     } else if (partsBSD) {
         const [, priority, timestamp, host, app, pid, message] = partsBSD;
@@ -35,8 +39,19 @@ const parseSyslogMessage = (str) => {
             hostname: host,
             pid,
             app,
-            message
-        }
+            message,
+        };
+    } else if (partsSokolPlus) {
+        const [, priority, timestamp, hostname, app, pid, message] = partsSokolPlus;
+        return {
+            format: 'SokolPlus',
+            priority: Number(priority),
+            timestamp: getTimestamp(new Date(timestamp)),
+            hostname,
+            app,
+            pid,
+            message,
+        };
     } else return false;
 };
 
