@@ -1,17 +1,17 @@
 zabbix_export:
   version: '6.4'
   template_groups:
-    - uuid: 1d12408342854fd5a4436dd6d5d1bd4a
-      name: Templates/Telephony
+    - uuid: 441c5f644e5a41b98e9b8d9ab7ae94e8
+      name: Templates/SmartYard-Server
   templates:
     - uuid: 5cdd133d126846538e5006cb3eddbaa1
-      template: 'Asterisk RBT'
+      template: SmartYard-Server_Asterisk
+      name: 'SmartYard-Server | Asterisk'
       vendor:
         name: SmartYard
         version: 6.4-0
-      name: 'Asterisk RBT'
       groups:
-        - name: Templates/Telephony
+        - name: Templates/SmartYard-Server
       items:
         - uuid: fd0b534c219545e3afb7504235bd3865
           name: 'Asterisk_RBT: Active calls'
@@ -354,8 +354,20 @@ zabbix_export:
             - tag: component
               value: system
           triggers:
+            - uuid: 3bc3e206a83a4dd8a1ac6afc1a4af5b7
+              expression: 'nodata(/SmartYard-Server_Asterisk/asterisk_rbt.uptime,30m)=1'
+              name: 'Asterisk_RBT: Failed to fetch AMI page'
+              event_name: 'Asterisk_RBT: Failed to fetch AMI page (or no data for 30m)'
+              priority: WARNING
+              description: 'Zabbix has not received any data for items for the last 30 minutes.'
+              dependencies:
+                - name: 'Asterisk_RBT: Service is down'
+                  expression: 'last(/SmartYard-Server_Asterisk/net.tcp.service["tcp","{HOST.CONN}","{$AMI.PORT}"])=0'
+              tags:
+                - tag: scope
+                  value: availability
             - uuid: ef7e5efcad4c41108839ac7f1e6021af
-              expression: 'last(/Asterisk RBT/asterisk_rbt.uptime)<10m'
+              expression: last(/SmartYard-Server_Asterisk/asterisk_rbt.uptime)<10m
               name: 'Asterisk_RBT: Host has been restarted'
               event_name: 'Asterisk_RBT: {HOST.NAME} has been restarted (uptime < 10m)'
               priority: INFO
@@ -382,7 +394,7 @@ zabbix_export:
               value: system
           triggers:
             - uuid: 137d77df6cd6401ca5513f014cc3d14b
-              expression: 'last(/Asterisk RBT/asterisk_rbt.uptime_reload)<10m'
+              expression: last(/SmartYard-Server_Asterisk/asterisk_rbt.uptime_reload)<10m
               name: 'Asterisk_RBT: has been reloaded'
               event_name: 'Asterisk_RBT: {HOST.NAME} has been reloaded (uptime < 10m)'
               priority: INFO
@@ -437,7 +449,7 @@ zabbix_export:
               value: network
           triggers:
             - uuid: 40ddd546d5d04a4982c9268c2b997d0c
-              expression: 'last(/Asterisk RBT/net.tcp.service["tcp","{HOST.CONN}","{$AMI.PORT}"])=0'
+              expression: 'last(/SmartYard-Server_Asterisk/net.tcp.service["tcp","{HOST.CONN}","{$AMI.PORT}"])=0'
               name: 'Asterisk_RBT: Service is down'
               priority: AVERAGE
               tags:

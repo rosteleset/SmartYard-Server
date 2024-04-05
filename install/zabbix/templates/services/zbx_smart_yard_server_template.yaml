@@ -14,7 +14,7 @@ zabbix_export:
         - name: Templates/SmartYard-Server
       items:
         - uuid: aac3b12c39f84a7891643969dc6c091b
-          name: 'SmartYard-Server: ClickHouse running'
+          name: 'ClickHouse running status'
           key: 'proc.num[clickhouse-server]'
           description: 'ClickHouse running status'
           preprocessing:
@@ -30,7 +30,7 @@ zabbix_export:
               name: 'ClickHouse not running'
               priority: WARNING
         - uuid: 989b091c29dc4e1a9bd137d37f704ce9
-          name: 'SmartYard-Server: MongoDB running'
+          name: 'MongoDB running status'
           key: 'proc.num[mongod]'
           description: 'MongoDB running status'
           preprocessing:
@@ -46,7 +46,7 @@ zabbix_export:
               name: 'MongoDB not running'
               priority: WARNING
         - uuid: f9f81bdfb8f4431cbb457070190cc294
-          name: 'SmartYard-Server: PgBouncer running'
+          name: 'PgBouncer running status'
           key: 'proc.num[pgbouncer]'
           description: 'PgBouncer running status'
           preprocessing:
@@ -62,7 +62,7 @@ zabbix_export:
               name: 'PgBouncer not running'
               priority: WARNING
         - uuid: 4c33c400d9614af59e1c5d395aa786a1
-          name: 'SmartYard-Server: PostgreSQL running'
+          name: 'PostgreSQL running'
           key: 'proc.num[postgres]'
           description: 'PostgreSQL running status'
           preprocessing:
@@ -78,7 +78,7 @@ zabbix_export:
               name: 'PostgreSQL not running'
               priority: WARNING
         - uuid: fca708ce21064db788fca88827822f9c
-          name: 'SmartYard-Server: Redis-server running'
+          name: 'Redis-server running'
           key: 'proc.num[redis-server]'
           description: 'Redis-server running status'
           preprocessing:
@@ -94,70 +94,82 @@ zabbix_export:
               name: 'Redis server not running'
               priority: WARNING
         - uuid: e46157e7b3fa45ecadd2ffd93b823b63
-          name: 'SmartYard-Server: event service akuvox'
+          name: 'Akuvox event service status'
           key: 'systemd.unit.is-active[event_akuvox]'
+          valuemap:
+            name: 'Event service status'
           tags:
             - tag: Application
               value: Event
           triggers:
             - uuid: 49bce9f1284c4573a0a721a3d7fa4cb9
               expression: 'last(/SmartYard-Server/systemd.unit.is-active[event_akuvox])<1'
-              name: 'Akuvox | Event service failure'
+              name: 'Event | Akuvox event service failure'
               priority: WARNING
         - uuid: 701d7f7da3014d0abb320a3ecaa63572
-          name: 'SmartYard-Server: Beward DKS Event service status'
+          name: 'Beward DKS event service status'
           key: 'systemd.unit.is-active[event_beward]'
+          valuemap:
+            name: 'Event service status'
           tags:
             - tag: Application
               value: Event
           triggers:
             - uuid: 45d5bdb63b154106835982515f6a675b
               expression: 'last(/SmartYard-Server/systemd.unit.is-active[event_beward])<1'
-              name: 'Beward DKS | Event service failure'
+              name: 'Event | Beward DKS event service failure'
               priority: WARNING
         - uuid: a3473d0341f24963af8c7708043c37e0
-          name: 'SmartYard-Server: event service beward_ds'
+          name: 'Beward DS event service status'
           key: 'systemd.unit.is-active[event_beward_ds06a]'
+          valuemap:
+            name: 'Event service status'
           tags:
             - tag: Application
               value: Event
           triggers:
             - uuid: aed2fa5d7c774c2eb6d3fd986862b8db
               expression: 'last(/SmartYard-Server/systemd.unit.is-active[event_beward_ds06a])<1'
-              name: 'Beward DS | Event service failure'
+              name: 'Event | Beward DS event service failure'
               priority: WARNING
         - uuid: 43a344d3503f47c2a947fc6d318fb3ec
-          name: 'SmartYard-Server: event service is'
+          name: 'IS event service status'
           key: 'systemd.unit.is-active[event_is]'
+          valuemap:
+            name: 'Event service status'
           tags:
             - tag: Application
               value: Event
           triggers:
             - uuid: a0ba05515cb94d7cb13f5caa1b80b172
               expression: 'last(/SmartYard-Server/systemd.unit.is-active[event_is])<1'
-              name: 'IS | Event service failure'
+              name: 'Event | IS event service failure'
               priority: WARNING
         - uuid: 5cfd3b0710684546a54d6eb9d49820dd
-          name: 'SmartYard-Server: event service qtech'
+          name: 'QTECH event service status'
           key: 'systemd.unit.is-active[event_qtech]'
+          valuemap:
+            name: 'Event service status'
           tags:
             - tag: Application
               value: Event
           triggers:
             - uuid: 5ead7bb03d1e47d9b24fd65aff879e00
               expression: 'last(/SmartYard-Server/systemd.unit.is-active[event_qtech])<1'
-              name: 'Qtech | Event service failure'
+              name: 'Event | Qtech event service failure'
               priority: WARNING
         - uuid: a1c2eb085974410babc1567e87e47209
-          name: 'SmartYard-Server: event service sputnik_cloud'
+          name: 'Sputnik Cloud event service status'
           key: 'systemd.unit.is-active[event_sputnik_cloud]'
+          valuemap:
+            name: 'Event service status'
           tags:
             - tag: Application
               value: Event
           triggers:
             - uuid: 932257bc45064d30a9163ef5d2e769c5
               expression: 'last(/SmartYard-Server/systemd.unit.is-active[event_sputnik_cloud])<1'
-              name: 'Sputnic Cloud | Event service failure'
+              name: 'Event | Sputnic Cloud event service failure'
               priority: WARNING
       httptests:
         - uuid: d8b79d9025e04d34b7786f3e52a943af
@@ -171,6 +183,14 @@ zabbix_export:
           tags:
             - tag: Web
               value: 'Health check'
+      valuemaps:
+        - uuid: aa43a70e0ba14815b036946787d25121
+          name: 'Event service status'
+          mappings:
+            - value: '1'
+              newvalue: Running
+            - value: '0'
+              newvalue: Stopped
   triggers:
     - uuid: 2c05a091c62b47319fc043d6be27e08e
       expression: 'last(/SmartYard-Server/web.test.rspcode[Health check,Check health ping])<>200'

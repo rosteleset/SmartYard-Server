@@ -7,11 +7,11 @@ class IsService extends SyslogService {
         this.gateRabbits = [];
     }
 
-    async handleSyslogMessage(now, host, msg) {
-        // Motion detection: start
+    async handleSyslogMessage(date, host, msg) {
+        // Start motion detection
         if (msg.includes("EVENT: Detected motion")) {
-            await API.motionDetection({date: now, ip: host, motionActive: true});
-            await mdTimer({ip: host});
+            await API.motionDetection({ date: date, ip: host, motionActive: true });
+            await mdTimer({ ip: host });
         }
 
         // Call to an apartment
@@ -32,33 +32,33 @@ class IsService extends SyslogService {
         // Incoming DTMF for white rabbit: sending rabbit gate update
         if (msg.includes("Open main door by DTMF")) {
             if ((this.gateRabbits)[host]) {
-                const {ip, prefix, apartmentNumber} = this.gateRabbits[host];
-                await API.setRabbitGates({date: now, ip, prefix, apartmentNumber});
+                const { ip, prefix, apartmentNumber } = this.gateRabbits[host];
+                await API.setRabbitGates({ date: date, ip, prefix, apartmentNumber });
             }
         }
 
         // Opening a door by RFID key
         if (/^Opening door by RFID [a-fA-F0-9]+, apartment \d+$/.test(msg)) {
             const rfid = msg.split("RFID")[1].split(",")[0].trim();
-            await API.openDoor({date: now, ip: host, detail: rfid, by: "rfid"});
+            await API.openDoor({ date: date, ip: host, detail: rfid, by: "rfid" });
         }
 
         // Opening a door by personal code
         if (msg.includes("Opening door by code")) {
             const code = parseInt(msg.split("code")[1].split(",")[0]);
-            await API.openDoor({date: now, ip: host, detail: code, by: "code"});
+            await API.openDoor({ date: date, ip: host, detail: code, by: "code" });
         }
 
         // Opening a door by button pressed
         if (msg.includes("Main door button press")) {
-            await API.openDoor({date: now, ip: host, door: 0, detail: "main", by: "button"});
+            await API.openDoor({ date: date, ip: host, door: 0, detail: "main", by: "button" });
         }
 
         // All calls are done
         if (msg.includes("All calls are done")) {
-            await API.callFinished({date: now, ip: host});
+            await API.callFinished({ date: date, ip: host });
         }
     }
 }
 
-export { IsService }
+export { IsService };
