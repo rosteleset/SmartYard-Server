@@ -1249,10 +1249,7 @@
             for (let j in modules.tt.meta.myRoles) {
                 pc++;
                 if (j == current_project) {
-                    rtd += `<option selected="selected" value="${j}">${pn[j]} [${j}]</option>`;
                     ph = true;
-                } else {
-                    rtd += `<option value="${j}">${pn[j]} [${j}]</option>`;
                 }
             }
             if (ph && pc == 1) {
