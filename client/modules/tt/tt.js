@@ -1244,16 +1244,11 @@
             if (AVAIL("tt", "project", "POST")) {
                 cog = "";
             }
-            let ph = false;
             let pc = 0;
             for (let j in modules.tt.meta.myRoles) {
                 pc++;
-                if (j == current_project) {
-                    ph = true;
-                }
             }
-            console.log(current_project, pc, ph);
-            if (ph && pc == 1) {
+            if (pc == 1) {
                 rtd += `<div class="form-inline"><div class="input-group input-group-sm mr-2 ${cog}"><select id="ttProjectSelect" class="form-control select-arrow" style="display: none;">`;
             } else {
                 rtd += `<div class="form-inline"><div class="input-group input-group-sm mr-2 ${cog}"><select id="ttProjectSelect" class="form-control select-arrow">`;
