@@ -275,7 +275,7 @@
                         foreach ($uids as $uid) {
                             $gu[] = $users->getUser($uid)["login"];
                         }
-                        $preprocess["%%group::{$g['acronym']}"] = $gu;
+                        $preprocess["%%group::{$g['acronym']}"] = array_values($gu);
                     }
                 }
 
