@@ -391,8 +391,6 @@
                     $d = (int)$d;
                 }
 
-                error_log(print_r($query, true));
-
                 $issues = $this->mongo->$db->$collection->find($query, [
                     "projection" => $projection,
                     "skip" => (int)$skip,
@@ -521,7 +519,7 @@
                     }
 
                     $al = array_map(function ($indexInfo) {
-                        return ['v' => $indexInfo->getVersion(), 'key' => $indexInfo->getKey(), 'name' => $indexInfo->getName(), 'ns' => $indexInfo->getNamespace()];
+                        return [ 'v' => $indexInfo->getVersion(), 'key' => $indexInfo->getKey(), 'name' => $indexInfo->getName(), 'ns' => $indexInfo->getNamespace() ];
                     }, iterator_to_array($this->mongo->$db->$acr->listIndexes()));
 
                     $already = [];
