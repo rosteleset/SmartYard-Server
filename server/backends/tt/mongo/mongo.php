@@ -391,10 +391,6 @@
                     $d = (int)$d;
                 }
 
-                if ($this->login == "mmikel") {
-                    file_put_contents("/tmp/test", print_r($query, true));
-                }
-
                 $issues = $this->mongo->$db->$collection->find($query, [
                     "projection" => $projection,
                     "skip" => (int)$skip,
