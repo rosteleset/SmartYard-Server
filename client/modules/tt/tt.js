@@ -1244,7 +1244,22 @@
             if (AVAIL("tt", "project", "POST")) {
                 cog = "";
             }
-            rtd += `<div class="form-inline"><div class="input-group input-group-sm mr-2 ${cog}"><select id="ttProjectSelect" class="form-control select-arrow">`;
+            let ph = false;
+            let pc = 0;
+            for (let j in modules.tt.meta.myRoles) {
+                pc++;
+                if (j == current_project) {
+                    rtd += `<option selected="selected" value="${j}">${pn[j]} [${j}]</option>`;
+                    ph = true;
+                } else {
+                    rtd += `<option value="${j}">${pn[j]} [${j}]</option>`;
+                }
+            }
+            if (ph && pc == 1) {
+                rtd += `<div class="form-inline"><div class="input-group input-group-sm mr-2 ${cog}"><select id="ttProjectSelect" class="form-control select-arrow" style="display: none;">`;
+            } else {
+                rtd += `<div class="form-inline"><div class="input-group input-group-sm mr-2 ${cog}"><select id="ttProjectSelect" class="form-control select-arrow">`;
+            }
             for (let j in modules.tt.meta.myRoles) {
                 if (j == current_project) {
                     rtd += `<option selected="selected" value="${j}">${pn[j]} [${j}]</option>`;
