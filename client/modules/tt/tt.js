@@ -1230,7 +1230,7 @@
         if (target) {
             current_project = params.project;
         } else {
-            current_project = params.project?params.project:lStore("_project");
+            current_project = params.project ? params.project : lStore("_project");
         }
 
         let pn = {};
@@ -1252,7 +1252,7 @@
                     ph = true;
                 }
             }
-            console.log(pc, ph);
+            console.log(current_project, pc, ph);
             if (ph && pc == 1) {
                 rtd += `<div class="form-inline"><div class="input-group input-group-sm mr-2 ${cog}"><select id="ttProjectSelect" class="form-control select-arrow" style="display: none;">`;
             } else {
