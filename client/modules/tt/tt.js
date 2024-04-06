@@ -1252,6 +1252,7 @@
                     ph = true;
                 }
             }
+            console.log(pc, ph);
             if (ph && pc == 1) {
                 rtd += `<div class="form-inline"><div class="input-group input-group-sm mr-2 ${cog}"><select id="ttProjectSelect" class="form-control select-arrow" style="display: none;">`;
             } else {
