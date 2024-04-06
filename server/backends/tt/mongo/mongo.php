@@ -263,6 +263,22 @@
 
                 $primaryGroup = $this->myPrimaryGroup();
 
+                $groups = loadBackend("groups");
+                $users = loadBackend("users");
+
+                if ($users && $groups) {
+                    $gl = $groups->getGroups();
+
+                    foreach ($gl as $g) {
+                        $uids = $groups->getUsers($g["gid"]);
+                        $gu = [];
+                        foreach ($uids as $uid) {
+                            $gu[] = $users->getUser($uid)["login"];
+                        }
+                        $preprocess["%%group::{$g['acronym']}"] = $gu;
+                    }
+                }
+
                 $preprocess["%%me"] = $this->login;
                 $preprocess["%%my"] = $my;
                 $preprocess["%%primaryGroup"] = $primaryGroup;
