@@ -39,8 +39,8 @@
                             "tg" => $user["tg"],
                             "notification" => $user["notification"],
                             "enabled" => $user["enabled"],
-                            "lastLogin" => $withSessions ? $this->redis->get("last_login_" . md5($user["login"])) : false,
-                            "lastAction" => $withSessions ? $this->redis->get("last_action_" . md5($user["login"])) : false,
+                            "lastLogin" => $this->redis->get("last_login_" . md5($user["login"])),
+                            "lastAction" => $this->redis->get("last_action_" . md5($user["login"])),
                             "primaryGroup" => $user["primary_group"],
                             "primaryGroupAcronym" => $user["primary_group_acronym"],
                         ];
