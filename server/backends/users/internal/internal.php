@@ -21,6 +21,11 @@
 
                     $cache = $this->cacheGet("USERS");
                     if ($cache) {
+                        foreach ($cache as $i => $user) {
+                            $user["lastLogin"] = $this->redis->get("last_login_" . md5($user["login"]));
+                            $user["lastAction"] = $this->redis->get("last_action_" . md5($user["login"]));
+
+                        }
                         return $cache;
                     }
                 }
@@ -70,17 +75,17 @@
                                     $u["sessions"][] = $s;
                                 }
                             }
-                        } else {
-                            foreach ($_users as &$u) {
-                                unset($u["lastLogin"]);
-                                unset($u["lastAction"]);
-                            }
+//                        } else {
+//                            foreach ($_users as &$u) {
+//                                unset($u["lastLogin"]);
+ //                               unset($u["lastAction"]);
+ //                           }
                         }
-                    } else {
-                        foreach ($_users as &$u) {
-                            unset($u["lastLogin"]);
-                            unset($u["lastAction"]);
-                        }
+ //                   } else {
+ //                       foreach ($_users as &$u) {
+ //                           unset($u["lastLogin"]);
+ //                           unset($u["lastAction"]);
+ //                       }
                     }
 
                     if (!$withSessions) {
