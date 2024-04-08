@@ -75,17 +75,7 @@
                                     $u["sessions"][] = $s;
                                 }
                             }
-//                        } else {
-//                            foreach ($_users as &$u) {
-//                                unset($u["lastLogin"]);
- //                               unset($u["lastAction"]);
- //                           }
                         }
- //                   } else {
- //                       foreach ($_users as &$u) {
- //                           unset($u["lastLogin"]);
- //                           unset($u["lastAction"]);
- //                       }
                     }
 
                     if (!$withSessions) {
