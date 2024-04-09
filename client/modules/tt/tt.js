@@ -1676,10 +1676,12 @@
                 }
             });
 
-            let columns = [ {
+            let columns = [];
+
+            columns.push({
                 title: sortMenu,
                 nowrap: true,
-            } ];
+            });
 
             for (let i = 0; i < pKeys.length; i++) {
                 columns.push({

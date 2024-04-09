@@ -823,8 +823,11 @@
                 $_list = [];
                 foreach ($filters as $filter) {
                     try {
+                        $f = @json_decode($this->getFilter($filter["metadata"]["filter"]), true);
                         $_list[$filter["metadata"]["filter"]] = [
-                            "name" => @json_decode($this->getFilter($filter["metadata"]["filter"]), true)["name"],
+                            "name" => $f["name"],
+                            "sort" => $f["sort"],
+                            "customSort" => $f["customSort"],
                             "owner" => @$filter["metadata"]["owner"],
                         ];
                     } catch (\Exception $e) {
