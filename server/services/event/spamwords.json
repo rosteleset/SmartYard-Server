@@ -71,7 +71,8 @@
         "Interval",
         "[Server]",
         "Proguard start",
-        "UART"
+        "UART",
+        "HI_MPI_VENC"
     ],
     "qtech": [
         "Heart Beat",

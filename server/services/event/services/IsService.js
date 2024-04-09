@@ -1,10 +1,27 @@
 import { SyslogService } from "./index.js";
 import { API, mdTimer } from "../utils/index.js";
 
+/**
+ * Class representing an event handler for IS (Intersvyaz) devices.
+ * @class
+ * @augments SyslogService
+ */
 class IsService extends SyslogService {
     constructor(unit, config, spamWords = []) {
         super(unit, config, spamWords);
-        this.gateRabbits = [];
+        this.gateRabbits = {};
+
+        /**
+         * Object to store the timestamp of the last call done for each host.
+         * @type {Object.<string, number>}
+         */
+        this.lastCallDone = {};
+
+        /**
+         * Threshold value, in seconds, between different call done messages.
+         * @type {number}
+         */
+        this.callDoneThreshold = 2;
     }
 
     async handleSyslogMessage(date, host, msg) {
@@ -55,8 +72,11 @@ class IsService extends SyslogService {
         }
 
         // All calls are done
-        if (msg.includes("All calls are done")) {
-            await API.callFinished({ date: date, ip: host });
+        if (msg.includes("All calls are done") || msg.includes("CMS handset call done")) {
+            if (!this.lastCallDone[host] || date - this.lastCallDone[host] > this.callDoneThreshold) {
+                this.lastCallDone[host] = date;
+                await API.callFinished({ date: date, ip: host });
+            }
         }
     }
 }
