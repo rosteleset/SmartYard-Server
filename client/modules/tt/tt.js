@@ -1678,10 +1678,17 @@
 
             let columns = [];
 
-            columns.push({
-                title: sortMenu,
-                nowrap: true,
-            });
+            if (modules && modules.tt && modules.tt.meta && modules.tt.meta.filtersExt && modules.tt.meta.filtersExt[x] && modules.tt.meta.filtersExt[x].disableCustomSort) {
+                columns.push({
+                    title: i18n("tt.issueIndx"),
+                    nowrap: true,
+                });
+            } else {
+                columns.push({
+                    title: sortMenu,
+                    nowrap: true,
+                });
+            }
 
             for (let i = 0; i < pKeys.length; i++) {
                 columns.push({
