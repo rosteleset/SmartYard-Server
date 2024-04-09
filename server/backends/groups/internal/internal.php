@@ -222,6 +222,9 @@
                     ])) {
                         return false;
                     }
+
+                    $key = $uid?"GROUPSBY:$uid":"GROUPS";
+                    $this->redis->del($key);
                 }
 
                 return true;
@@ -270,7 +273,6 @@
                 }
 
                 $key = $uid?"GROUPSBY:$uid":"GROUPS";
-
                 $this->redis->del($key);
 
                 return true;
