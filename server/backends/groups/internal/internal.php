@@ -233,7 +233,7 @@
              * @return boolean
              */
 
-             public function setGroups($uid, $gids) {
+            public function setGroups($uid, $gids) {
                 $this->clearCache();
 
                 // TODO: add transaction, commint, rollback
@@ -268,6 +268,10 @@
                         return false;
                     }
                 }
+
+                $key = $uid?"GROUPSBY:$uid":"GROUPS";
+
+                $this->redis->del($key);
 
                 return true;
             }
