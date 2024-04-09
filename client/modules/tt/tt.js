@@ -852,8 +852,6 @@
     },
 
     issueField2Html: function (issue, field, val, target) {
-        console.log(field);
-        
         let members = {};
         let escaped = false;
 
@@ -901,9 +899,7 @@
                     case "subject":
                     case "commentBody":
                         escaped = true;
-                        console.log(val);
                         val = convertLinks(nl2br(escapeHTML(val)));
-                        console.log(val);
                         break;
     
                     case "assigned":
