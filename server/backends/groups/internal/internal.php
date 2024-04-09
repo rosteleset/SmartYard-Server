@@ -223,11 +223,11 @@
                         return false;
                     }
 
-                    $key = "GROUPSBY:$uid";
-                    $this->redis->del($key);
-                    
-                    $key = "USER:$uid";
-                    $this->redis->del($key);
+//                    $key = "GROUPSBY:$uid";
+//                    $this->redis->del($key);
+//
+//                    $key = "USER:$uid";
+//                    $this->redis->del($key);
                 }
 
                 return true;
@@ -275,11 +275,11 @@
                     }
                 }
 
-                $key = "GROUPSBY:$uid";
-                $this->redis->del($key);
-
-                $key = "USER:$uid";
-                $this->redis->del($key);
+//                $key = "GROUPSBY:$uid";
+//                $this->redis->del($key);
+//
+//                $key = "USER:$uid";
+//                $this->redis->del($key);
 
                 return true;
             }
