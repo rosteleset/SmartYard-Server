@@ -852,6 +852,8 @@
     },
 
     issueField2Html: function (issue, field, val, target) {
+        console.log(field);
+        
         let members = {};
         let escaped = false;
 
