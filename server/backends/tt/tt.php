@@ -827,7 +827,7 @@
                         $_list[$filter["metadata"]["filter"]] = [
                             "name" => $f["name"],
                             "sort" => $f["sort"],
-                            "customSort" => $f["customSort"],
+                            "disableCustomSort" => $f["disableCustomSort"],
                             "owner" => @$filter["metadata"]["owner"],
                         ];
                     } catch (\Exception $e) {
