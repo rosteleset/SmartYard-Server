@@ -445,6 +445,7 @@ local function handleOtherCases(context, extension)
                 if #flats == 1 then
                     flat = flats[1]
                     flatId = flat.flatId
+                    sipEnabled = flat.sipEnabled
                 end
             end
         end
