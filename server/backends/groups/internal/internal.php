@@ -228,6 +228,8 @@
 //
 //                    $key = "USER:$uid";
 //                    $this->redis->del($key);
+
+                    \clearCache($uid);
                 }
 
                 return true;
@@ -280,6 +282,8 @@
 //
 //                $key = "USER:$uid";
 //                $this->redis->del($key);
+
+                \clearCache($uid);
 
                 return true;
             }
