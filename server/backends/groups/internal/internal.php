@@ -222,15 +222,9 @@
                     ])) {
                         return false;
                     }
-
-//                    $key = "GROUPSBY:$uid";
-//                    $this->redis->del($key);
-//
-//                    $key = "USER:$uid";
-//                    $this->redis->del($key);
-
-                    \clearCache($uid);
                 }
+
+                clearCache(true);
 
                 return true;
             }
@@ -276,14 +270,8 @@
                         return false;
                     }
                 }
-
-//                $key = "GROUPSBY:$uid";
-//                $this->redis->del($key);
-//
-//                $key = "USER:$uid";
-//                $this->redis->del($key);
-
-                \clearCache($uid);
+                
+                clearCache($uid);
 
                 return true;
             }
