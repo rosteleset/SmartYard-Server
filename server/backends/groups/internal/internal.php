@@ -223,7 +223,10 @@
                         return false;
                     }
 
-                    $key = $uid?"GROUPSBY:$uid":"GROUPS";
+                    $key = "GROUPSBY:$uid";
+                    $this->redis->del($key);
+                    
+                    $key = "USER:$uid";
                     $this->redis->del($key);
                 }
 
@@ -272,7 +275,10 @@
                     }
                 }
 
-                $key = $uid?"GROUPSBY:$uid":"GROUPS";
+                $key = "GROUPSBY:$uid";
+                $this->redis->del($key);
+
+                $key = "USER:$uid";
                 $this->redis->del($key);
 
                 return true;
