@@ -898,6 +898,7 @@
                     case "description":
                     case "subject":
                     case "commentBody":
+                        escaped = true;
                         val = convertLinks(nl2br(escapeHTML(val)));
                         break;
     
