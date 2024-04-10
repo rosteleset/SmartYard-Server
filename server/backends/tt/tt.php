@@ -118,6 +118,9 @@
                         "json_encode" => function (...$args) {
                             return [ json_encode(...$args) ];
                         },
+                        "sprintf" => function (...$args) {
+                            return [ sprintf(...$args) ];
+                        },
                     ]);
 
                     $sandbox->registerLibrary("rbt", [
