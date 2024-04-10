@@ -17,6 +17,8 @@ zabbix_export:
           name: 'ClickHouse running status'
           key: 'proc.num[clickhouse-server]'
           description: 'ClickHouse running status'
+          valuemap:
+            name: 'Service status'
           preprocessing:
             - type: DISCARD_UNCHANGED_HEARTBEAT
               parameters:
@@ -33,6 +35,8 @@ zabbix_export:
           name: 'MongoDB running status'
           key: 'proc.num[mongod]'
           description: 'MongoDB running status'
+          valuemap:
+            name: 'Service status'
           preprocessing:
             - type: DISCARD_UNCHANGED_HEARTBEAT
               parameters:
@@ -44,6 +48,24 @@ zabbix_export:
             - uuid: 5fc1c5036c3044deb7d2c1f51abab795
               expression: 'last(/SmartYard-Server/proc.num[mongod])<1'
               name: 'MongoDB not running'
+              priority: WARNING
+        - uuid: c476d44f94ea41efb31536a98a6acca2
+          name: 'Mosquitto MQTT Broker status'
+          key: 'proc.num[mosquitto]'
+          description: 'Mosquitto MQTT Broker status'
+          valuemap:
+            name: 'Service status'
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 1h
+          tags:
+            - tag: Application
+              value: 'Mosquitto MQTT Broker'
+          triggers:
+            - uuid: 6eea5a91573a42ec93d2d9ef44ec83b9
+              expression: 'last(/SmartYard-Server/proc.num[mosquitto])<1'
+              name: 'Mosquitto not running'
               priority: WARNING
         - uuid: f9f81bdfb8f4431cbb457070190cc294
           name: 'PgBouncer running status'
@@ -65,6 +87,8 @@ zabbix_export:
           name: 'PostgreSQL running'
           key: 'proc.num[postgres]'
           description: 'PostgreSQL running status'
+          valuemap:
+            name: 'Service status'
           preprocessing:
             - type: DISCARD_UNCHANGED_HEARTBEAT
               parameters:
@@ -81,6 +105,8 @@ zabbix_export:
           name: 'Redis-server running'
           key: 'proc.num[redis-server]'
           description: 'Redis-server running status'
+          valuemap:
+            name: 'Service status'
           preprocessing:
             - type: DISCARD_UNCHANGED_HEARTBEAT
               parameters:
@@ -90,14 +116,14 @@ zabbix_export:
               value: Redis
           triggers:
             - uuid: a4eae0abc23b4a00af3529e24852610f
-              expression: 'last(/SmartYard-Server/proc.num[redis-server])<2'
+              expression: 'last(/SmartYard-Server/proc.num[redis-server])<1'
               name: 'Redis server not running'
               priority: WARNING
         - uuid: e46157e7b3fa45ecadd2ffd93b823b63
           name: 'Akuvox event service status'
           key: 'systemd.unit.is-active[event_akuvox]'
           valuemap:
-            name: 'Event service status'
+            name: 'Service status'
           tags:
             - tag: Application
               value: Event
@@ -110,7 +136,7 @@ zabbix_export:
           name: 'Beward DKS event service status'
           key: 'systemd.unit.is-active[event_beward]'
           valuemap:
-            name: 'Event service status'
+            name: 'Service status'
           tags:
             - tag: Application
               value: Event
@@ -123,7 +149,7 @@ zabbix_export:
           name: 'Beward DS event service status'
           key: 'systemd.unit.is-active[event_beward_ds06a]'
           valuemap:
-            name: 'Event service status'
+            name: 'Service status'
           tags:
             - tag: Application
               value: Event
@@ -136,7 +162,7 @@ zabbix_export:
           name: 'IS event service status'
           key: 'systemd.unit.is-active[event_is]'
           valuemap:
-            name: 'Event service status'
+            name: 'Service status'
           tags:
             - tag: Application
               value: Event
@@ -149,7 +175,7 @@ zabbix_export:
           name: 'QTECH event service status'
           key: 'systemd.unit.is-active[event_qtech]'
           valuemap:
-            name: 'Event service status'
+            name: 'Service status'
           tags:
             - tag: Application
               value: Event
@@ -162,7 +188,7 @@ zabbix_export:
           name: 'Sputnik Cloud event service status'
           key: 'systemd.unit.is-active[event_sputnik_cloud]'
           valuemap:
-            name: 'Event service status'
+            name: 'Service status'
           tags:
             - tag: Application
               value: Event
@@ -185,7 +211,7 @@ zabbix_export:
               value: 'Health check'
       valuemaps:
         - uuid: aa43a70e0ba14815b036946787d25121
-          name: 'Event service status'
+          name: 'Service status'
           mappings:
             - value: '1'
               newvalue: Running
