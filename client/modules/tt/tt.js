@@ -634,7 +634,6 @@
                                         } else {
                                             suggestions = options;
                                         }
-                                        console.log(suggestions);
                                         return {
                                             results: suggestions,
                                         };
