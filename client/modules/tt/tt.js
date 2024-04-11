@@ -30,6 +30,7 @@
         }
         loadSubModules("tt", [
             "issue",
+            "last",
             "settings",
             "workspaces",
         ], this);
