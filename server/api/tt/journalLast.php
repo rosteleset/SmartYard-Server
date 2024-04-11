@@ -21,7 +21,7 @@
                     return API::ERROR(500);
                 }
 
-                $journal = $tt->journalLast($params["_login"], @$params["limit"]);
+                $journal = $tt->journalLast($params["_login"], @$params["limit"] ? : 100);
 
                 return api::ANSWER($journal, "journal");
             }
