@@ -2133,6 +2133,13 @@
             public abstract function journalGet($issueId, $limit = false);
 
             /**
+             * @param string $login
+             * @param integer $limit
+             * @return mixed
+             */
+            public abstract function journalLast($login, $limit = 100);
+
+            /**
              * @inheritDoc
              */
 

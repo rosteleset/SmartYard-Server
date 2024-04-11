@@ -1195,5 +1195,15 @@
 
                 return $journal;
             }
+
+            /**
+             * @inheritDoc
+             */
+            public function journalLast($login, $limit = 100)
+            {
+                $limit = (int)$limit;
+
+                return $this->clickhouse->select("select issue from ttlog where login='$login' group by issue order by max(date) desc limit $limit");
+            }
         }
     }
