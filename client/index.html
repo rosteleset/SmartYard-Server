@@ -77,10 +77,10 @@
         }
 
         document.addEventListener("DOMContentLoaded", () => {
-            $.get("config/config.json?_=" . Math.random()).
+            $.get("config/config.json?_=" + Math.random()).
             done(cfg).
             fail(() => {
-                $.get("config/config.yml?_=" . Math.random()).
+                $.get("config/config.yml?_=" + Math.random()).
                 done(y => {
                     cfg(jsyaml.load(y));
                 }).
