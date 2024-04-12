@@ -21,7 +21,7 @@ class zabbix extends monitoring
         'Intercom_BEWARD_DKS',
         'Intercom_BEWARD_DS06',
         'Intercom_QTECH_QDB-27C-H',
-        'Intercom_Sokol_plus'
+        'Intercom_IS_ISCOM_X1_REV.5'
     ];
     const cameraTemplateNames = ['Camera_simple'];
     const pluggedTemplateNames = ['ICMP Ping'];
@@ -193,7 +193,6 @@ class zabbix extends monitoring
         $domophonesModels = $configs->getDomophonesModels();
         $domophones = $households->getDomophones("all");
         foreach ($domophones as $domophone) {
-
             $subset [] = [
                 "enabled" => $domophone["enabled"],
                 "domophoneId" => $domophone["domophoneId"],
@@ -811,7 +810,7 @@ class zabbix extends monitoring
                     'status' => $item['enabled'] === 1,
                     'host' => $item['ip'],
                     'name' => $item['ip'] . ' | ' . $item['name'],
-                    'template' => 'Intercom_' . $item['vendor'],
+                    'template' => 'Intercom_' . strtoupper(str_replace(' ', '_', $item['vendor'])),
                     'interface' => $item['ip'],
                     'credentials' => $item['credentials']
                 ];

@@ -5,9 +5,9 @@ zabbix_export:
       name: Templates/Intercoms
   templates:
     - uuid: 1d5ed10a31bc471ea4f93bd8ab980c18
-      template: Intercom_sokol-plus
-      name: 'Intercom | Sokol plus'
-      description: 'Intercom Sokol plus v5 panel monitoring'
+      template: Intercom_IS_ISCOM_X1_REV.5
+      name: 'Intercom | IS SOKOL plius'
+      description: 'Intercom IS ISCOM X1 rev.5 (Sokol plius) panel monitoring'
       vendor:
         name: SmartYard
         version: 6.4-0
@@ -50,7 +50,7 @@ zabbix_export:
             key: intercom.systemversions
           triggers:
             - uuid: 64a94aea0b85453f8aa612e71cb8f1da
-              expression: 'last(/Intercom_sokol-plius/intercom.fwversion,#1)<>last(/Intercom_sokol-plius/intercom.fwversion,#2) and length(last(/Intercom_sokol-plius/intercom.fwversion))>0'
+              expression: 'last(/Intercom_IS_ISCOM_X1_REV.5/intercom.fwversion,#1)<>last(/Intercom_IS_ISCOM_X1_REV.5/intercom.fwversion,#2) and length(last(/Intercom_IS_ISCOM_X1_REV.5/intercom.fwversion))>0'
               name: 'Firmware version has changed'
               event_name: 'INTERCOM: {HOST.NAME} | Firmvare version has changed (new version: {ITEM.VALUE})'
               priority: INFO
@@ -71,7 +71,7 @@ zabbix_export:
             key: intercom.systeminfo
           triggers:
             - uuid: 62ad991c141d4acd9caff26a8a750619
-              expression: 'count(/Intercom_sokol-plius/intercom.sipstatus,10m,,"0")>5'
+              expression: 'count(/Intercom_IS_ISCOM_X1_REV.5/intercom.sipstatus,10m,,"0")>5'
               name: 'SIP registration failure'
               event_name: 'INTERCOM: {HOST.NAME} | SIP registration failure'
               priority: WARNING
@@ -134,9 +134,9 @@ zabbix_export:
             key: intercom.systeminfo
           triggers:
             - uuid: 17e4940145484052b072aea569bbc3a2
-              expression: last(/Intercom_sokol-plius/intercom.uptime)<10m
+              expression: last(/Intercom_IS_ISCOM_X1_REV.5/intercom.uptime)<10m
               recovery_mode: RECOVERY_EXPRESSION
-              recovery_expression: last(/Intercom_sokol-plius/intercom.uptime)>15m
+              recovery_expression: last(/Intercom_IS_ISCOM_X1_REV.5/intercom.uptime)>15m
               name: 'Device has been restarted'
               event_name: 'INTERCOM: {HOST.NAME} | has been restarted (uptime < 10m)'
               priority: INFO
@@ -145,7 +145,7 @@ zabbix_export:
         - tag: class
           value: hardware
         - tag: target
-          value: qtech
+          value: is
       macros:
         - macro: '{$HOST_PASSWORD}'
           value: '123456'
