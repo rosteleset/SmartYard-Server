@@ -6,12 +6,6 @@ use api\cameras\camera;
 
 require_once __DIR__ . '/../../../utils/api_exec.php';
 
-enum HostGroup
-{
-    case Intercoms;
-    case Cameras;
-}
-
 class zabbix extends monitoring
 {
     const hostGroups = ['Intercoms', 'Cameras'];
@@ -21,7 +15,8 @@ class zabbix extends monitoring
         'Intercom_BEWARD_DKS',
         'Intercom_BEWARD_DS06',
         'Intercom_QTECH_QDB-27C-H',
-        'Intercom_IS_ISCOM_X1_REV.5'
+        'Intercom_IS_ISCOM_X1_REV.5',
+        'Intercom_DEMO',
     ];
     const cameraTemplateNames = ['Camera_simple'];
     const pluggedTemplateNames = ['ICMP Ping'];
@@ -48,12 +43,18 @@ class zabbix extends monitoring
     /**
      * @inheritDoc
      */
-    public function cron($part):bool
+    public function cron($part)
     {
-        $result = true;
-        if ($part === $this->scheduler){
-            $this->handleIntercoms();
-            $this->handleCameras();
+        try {
+            $result = false;
+            if ($part === $this->scheduler){
+                $this->handleIntercoms();
+                $this->handleCameras();
+                $result = true;
+                $this->log("cron task finish");
+            }
+        } catch (\Exception $e) {
+            $this->log($e);
         }
         return $result;
     }
@@ -137,10 +138,11 @@ class zabbix extends monitoring
      */
     private function initializeZabbixApi($config): void
     {
-        $this->zbxApi = $config["backends"]["monitoring"]["zbx_api_url"];
-        $this->zbxToken = $config["backends"]["monitoring"]["zbx_token"];
-        $this->zbxStoreDays = $config["backends"]["monitoring"]["store_days"];
-        if (!$this->zbxApi || !$this->zbxToken || !$this->zbxStoreDays) {
+        $this->zbxApi = @$config["backends"]["monitoring"]["zbx_api_url"];
+        $this->zbxToken = @$config["backends"]["monitoring"]["zbx_token"];
+        $this->zbxStoreDays = @$config["backends"]["monitoring"]["store_days"];
+        $this->scheduler = @$config["backends"]["monitoring"]["cron_sync_data_scheduler"];
+        if (!$this->zbxApi || !$this->zbxToken || !$this->zbxStoreDays || !$this->scheduler) {
             throw new \Exception("Zabbix API configuration is incomplete, check './server/config/config.json'");
         }
     }
