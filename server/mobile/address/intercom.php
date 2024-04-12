@@ -71,8 +71,7 @@ if (@$postdata['settings']) {
     }
 
     if (@$settings['autoOpen']) {
-        $d = date('Y-m-d H:i:s', strtotime($settings['autoOpen']));
-        $params['autoOpen'] = $d;
+        $params['autoOpen'] = strtotime($settings['autoOpen']);
     }
 
     if (array_key_exists('whiteRabbit', $settings)) {
