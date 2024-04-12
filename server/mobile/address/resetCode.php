@@ -37,6 +37,12 @@
     }
 
     // TODO: allowDoorCode будет использоваться?
+
+    $flat = $households->getFlat($flat_id);
+    if ((@$flat['openCode'] ?: '') == '') {
+        response(405);
+    }
+
     $params = [];
     $params['openCode'] = '!';
     $households->modifyFlat($flat_id, $params);
