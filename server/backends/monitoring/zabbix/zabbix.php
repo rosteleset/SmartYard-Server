@@ -8,7 +8,7 @@ require_once __DIR__ . '/../../../utils/api_exec.php';
 
 class zabbix extends monitoring
 {
-    const hostGroups = ['Intercoms', 'Cameras'];
+    const hostGroups = ['Intercoms', 'Cameras', 'TestDev'];
     const templateGroups = ['Templates/Intercoms', 'Templates/Cameras', 'SmartYard-Server'];
     const intercomTemplateNames = [
         'Intercom_AKUVOX_E12',
@@ -127,7 +127,26 @@ class zabbix extends monitoring
         $token = $this->zbxToken;
         $contentType = 'application/json';
         $response = apiExec($method, $url, $payload, $contentType, $token);
-        if ($response) return json_decode($response, true);
+
+        if (is_object($response)
+            && property_exists($response, 'message')
+            && property_exists($response, 'code')
+        ) {
+            throw new \Exception("api call error: " . $response->message . " (code: $response->code)");
+        }
+
+        $response = json_decode($response, true);
+
+        // Check Zabbix API jsonrpc error
+        if (isset($response['error'])) {
+            throw new \Exception("Zabbix API error: " . var_export($response['error'], true));
+        }
+
+        if ($response['result']) {
+            return $response['result'];
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -152,35 +171,55 @@ class zabbix extends monitoring
      */
     private function createHostGroups(array $hostGroups): void
     {
-        foreach ($hostGroups as $hostGroup) {
-            $this->createHostGroup($hostGroup);
+        /**
+         * TODO:
+         *  - get existing groups on zabbix server
+         *  - create missing groups
+         */
+        $this->log("RUN createHostGroups, groups:");
+
+        $existGroups = $this->getGroupIds($hostGroups);
+
+        foreach ($hostGroups as $hostGroupName) {
+            $groupExist = false;
+
+            // find target hot group name in existing groups
+            foreach ($existGroups as $existGroup) {
+               if ($existGroup['name'] === $hostGroupName){
+                   $groupExist = true;
+                   break;
+               }
+            }
+
+            // Create missing group
+            if (!$groupExist) {
+                $this->log("Create missing host group: " . $hostGroupName);
+                $this->createHostGroup($hostGroupName);
+            }
         }
     }
 
     /**
      * Get actual item id from zabbix api
      * @return void
+     * @throws \Exception
      */
     private function getActualIds(): void
     {
         /**
          * TODO: store data to redis, update every hour for example
          */
-        try {
-            $templates = $this->getTemplateIds([... self::intercomTemplateNames, ... self::cameraTemplateNames]);
-            $groups = $this->getGroupIds(self::hostGroups);
-            if ($templates) {
-                foreach ($templates as $template) {
-                    $this->zbxData['templates'][$template['host']] = $template['templateid'];
-                }
+        $templates = $this->getTemplateIds([... self::intercomTemplateNames, ... self::cameraTemplateNames]);
+        $groups = $this->getGroupIds(self::hostGroups);
+        if ($templates) {
+            foreach ($templates as $template) {
+                $this->zbxData['templates'][$template['host']] = $template['templateid'];
             }
-            if ($groups) {
-                foreach ($groups as $group) {
-                    $this->zbxData['groups'][$group['name']] = $group['groupid'];
-                }
+        }
+        if ($groups) {
+            foreach ($groups as $group) {
+                $this->zbxData['groups'][$group['name']] = $group['groupid'];
             }
-        } catch (\Exception $e) {
-            $this->log("Error fetching template and group IDs from API");
         }
     }
 
@@ -194,6 +233,8 @@ class zabbix extends monitoring
         $configs = loadBackend("configs");
         $domophonesModels = $configs->getDomophonesModels();
         $domophones = $households->getDomophones("all");
+        $subset = [];
+
         foreach ($domophones as $domophone) {
             $subset [] = [
                 "enabled" => $domophone["enabled"],
@@ -223,6 +264,8 @@ class zabbix extends monitoring
         $configs = loadBackend("configs");
         $camerasModels = $configs->getCamerasModels();
         $allCameras = $cameras->getCameras();
+        $subset = [];
+
         foreach ($allCameras as $camera) {
             $subset[] = [
                 "cameraId" => $camera["cameraId"],
@@ -231,43 +274,19 @@ class zabbix extends monitoring
                 "vendor" => $camerasModels[$camera["model"]]["vendor"],
                 "credentials" => $camera["credentials"],
                 "ip" => $camera["ip"],
-//                "stream" => $camera["stream"],
-//                "dvrStream" => $camera["dvrStream"],
+                // TODO: not used fields
+                //"stream" => $camera["stream"],
+                //"dvrStream" => $camera["dvrStream"],
             ];
         }
 
         return $subset;
     }
 
-    private function getItems()
-    {
-        // implement api call to get monitored items from zabbix
-        $body = [
-            "jsonrpc" => "2.0",
-            "method" => "hostgroup.get",
-            "params" => [
-                "output" => [
-                    "groupid",
-                    "name",
-                ],
-                "filter" => [
-                    "name" => [
-                        "Intercoms",
-                        "Cameras"
-                    ]
-                ]
-            ],
-            "id" => 1
-        ];
-
-        $response = $this->apiCall($body);
-        if ($response && $response['result']) {
-            return $response['result'];
-        }
-        return null;
-    }
-
-    private function getGroupIds(array $names): array|null
+    /**
+     * @throws \Exception
+     */
+    private function getGroupIds(array $names)
     {
         // implement api call to get monitored items from zabbix
         $body =  [
@@ -287,8 +306,8 @@ class zabbix extends monitoring
 
         $response = $this->apiCall($body);
 
-        if ($response && $response['result']) {
-            return $response['result'];
+        if ($response) {
+            return $response;
         }
 
         return null;
@@ -319,8 +338,8 @@ class zabbix extends monitoring
 
         $response = $this->apiCall($body);
 
-        if ($response['result']) {
-            return $response['result'];
+        if ($response) {
+            return $response;
         }
 
         return null;
@@ -349,7 +368,9 @@ class zabbix extends monitoring
         ];
         $response =  $this->apiCall($body);
 
-        if ($response['result']) return $response['result'];
+        if ($response) {
+            return $response;
+        }
 
         return null;
     }
@@ -380,8 +401,8 @@ class zabbix extends monitoring
         ];
         $response = $this->apiCall($body);
 
-        if ($response && $response['result']) {
-            return $response['result'];
+        if ($response) {
+            return $response;
         }
 
         return null;
@@ -408,8 +429,8 @@ class zabbix extends monitoring
             'id' => 1
         ];
         $response = $this->apiCall($body);
-        if ($response && $response['result']) {
-            return $response['result'][0]['groupid'];
+        if ($response) {
+            return $response[0]['groupid'];
         }
 
         return null;
@@ -419,14 +440,14 @@ class zabbix extends monitoring
      * Import Zabbix template from YAML file
      * @param $fileName
      * @return mixed
+     * @throws \Exception
      */
     private function importConfig(string $fileName)
     {
         $fileContent = file_get_contents($fileName);
         $templateData = yaml_parse($fileContent);
         if ($templateData === false) {
-            error_log("Error reading file: $fileName");
-            exit(1);
+            throw new \Exception("Error reading file: $fileName");
         }
 
         // yaml to string
@@ -600,11 +621,26 @@ class zabbix extends monitoring
 
     /**
      * Create template groups in Zabbix.
+     * @throws \Exception
      */
     private function createTemplateGroups(array $templateGroups): void
     {
+        $this->log("RUN createTemplateGroups, groups:");
+        $existTemplateGroups = $this->getTemplateGroups($templateGroups);
+
         foreach ($templateGroups as $templateGroup) {
-            $this->createTemplateGroup($templateGroup);
+            $groupExist = false;
+            foreach ($existTemplateGroups as $existTemplateGroup) {
+                if($existTemplateGroup['name'] === $templateGroup) {
+                    $groupExist = true;
+                    break;
+                }
+            }
+
+            if (!$groupExist) {
+                $this->log("Create missing template group: " . $templateGroup);
+                $this->createTemplateGroup($templateGroup);
+            }
         }
     }
 
@@ -722,15 +758,32 @@ class zabbix extends monitoring
      * @param array $templateNames
      * @param int $templateGroupId
      * @return void
+     * @throws \Exception
      */
     private function createTargetTemplates(array $templateNames, int $templateGroupId): void
     {
+        $this->log("RUN createTargetTemplates:");
+        $exitsTemplates = $this->getTemplateIds($templateNames);
+
         foreach ($templateNames as $templateName) {
-            $this->createTemplate(
-                $templateName,
-                [$templateGroupId],
-                array_values($this->zbxData['pluggedTemplates'])
-            );
+            $templateExist = false;
+            foreach ($exitsTemplates as $exitsTemplate) {
+                if ($exitsTemplate['host'] === $templateName){
+                    $templateExist = true;
+                    break;
+                }
+            }
+
+            if (!$templateExist){
+                $this->log("create template > " . $templateName);
+
+                $this->createTemplate(
+                    $templateName,
+                    [$templateGroupId],
+                    array_values($this->zbxData['pluggedTemplates'])
+                );
+
+            }
         }
     }
 
