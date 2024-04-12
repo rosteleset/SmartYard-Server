@@ -157,7 +157,10 @@ $flat = $households->getFlat($flat_id);
 // response(200, $flat);
 $ret = [];
 $ret['allowDoorCode'] = 't';
-$ret['doorCode'] = @$flat['openCode'] ?: '00000'; // TODO: разобраться с тем, как работает отключение кода
+$doorCode = @$flat['openCode'] ?: '00000';
+if ($doorCode != '00000') {
+    $ret['doorCode'] = $doorCode;
+}
 $ret['CMS'] = @$flat['cmsEnabled'] ? 't' : 'f';
 $ret['VoIP'] = @$subscriber['voipEnabled'] ? 't' : 'f';
 $ret['autoOpen'] = date('Y-m-d H:i:s', $flat['autoOpen']);
