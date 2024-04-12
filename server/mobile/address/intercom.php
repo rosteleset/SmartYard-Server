@@ -160,6 +160,8 @@ $ret['allowDoorCode'] = 't';
 $doorCode = @$flat['openCode'] ?: '00000';
 if ($doorCode != '00000') {
     $ret['doorCode'] = $doorCode;
+} else {
+    $ret['allowDoorCode'] = 'f';
 }
 $ret['CMS'] = @$flat['cmsEnabled'] ? 't' : 'f';
 $ret['VoIP'] = @$subscriber['voipEnabled'] ? 't' : 'f';
