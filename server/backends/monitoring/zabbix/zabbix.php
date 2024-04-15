@@ -8,22 +8,15 @@ require_once __DIR__ . '/../../../utils/api_exec.php';
 
 class zabbix extends monitoring
 {
-    const hostGroups = ['Intercoms', 'Cameras', 'TestDev'];
-    const templateGroups = ['Templates/Intercoms', 'Templates/Cameras', 'SmartYard-Server'];
-    const intercomTemplateNames = [
-        'Intercom_AKUVOX_E12',
-        'Intercom_BEWARD_DKS',
-        'Intercom_BEWARD_DS06',
-        'Intercom_QTECH_QDB-27C-H',
-        'Intercom_IS_ISCOM_X1_REV.5',
-        'Intercom_RUBETEK_RV-3434',
-    ];
-    const cameraTemplateNames = ['Camera_simple'];
-    const pluggedTemplateNames = ['ICMP Ping'];
-    const templatesDir = __DIR__ . "/../../../../install/zabbix/templates";
     protected $zbxData = [];
     protected $zbxApi, $zbxToken, $scheduler;
-    protected int $zbxStoreDays;
+    protected $zbxStoreDays;
+    protected $hostGroups = [];
+    protected $templateGroups = [];
+    protected $intercomTemplateNames = [];
+    protected $cameraTemplateNames = [];
+    protected $pluggedTemplateNames = [];
+    protected $templatesDir;
 
     /**
      * @throws \Exception
@@ -31,7 +24,6 @@ class zabbix extends monitoring
     public function __construct($config, $db, $redis, $login = false)
     {
         try {
-            $this->scheduler = $config["backends"]["monitoring"]["cron_sync_data_scheduler"];
             $this->initializeZabbixApi($config);
             $this->getActualIds();
         } catch (\Exception $e) {
@@ -82,6 +74,7 @@ class zabbix extends monitoring
     /**
      * Create start configuration on Zabbix server
      * @return void
+     * @throws \Exception
      */
     public function configureZbx(): void
     {
@@ -94,19 +87,19 @@ class zabbix extends monitoring
          *  5 create target template
          *  6 import template from YAML file
          */
-        $this->createHostGroups(self::hostGroups);
-        $this->createTemplateGroups(self::templateGroups);
+        $this->createHostGroups($this->hostGroups);
+        $this->createTemplateGroups($this->templateGroups);
 
-        $this->getTemplateGroupIds(self::templateGroups);
-        $this->getPluggedTemplateIds(self::pluggedTemplateNames);
+        $this->getTemplateGroupIds($this->templateGroups);
+        $this->getPluggedTemplateIds($this->pluggedTemplateNames);
 
-        $this->createTargetTemplates(self::intercomTemplateNames, $this->zbxData['templateGroups']['Templates/Intercoms']);
-        $this->createTargetTemplates(self::cameraTemplateNames, $this->zbxData['templateGroups']['Templates/Cameras']);
+        $this->createTargetTemplates($this->intercomTemplateNames, $this->zbxData['templateGroups']['Templates/Intercoms']);
+        $this->createTargetTemplates($this->cameraTemplateNames, $this->zbxData['templateGroups']['Templates/Cameras']);
 
-        $this->importTemplateConfigFiles(self::templatesDir, "intercom");
-        $this->importTemplateConfigFiles(self::templatesDir, "camera");
+        $this->importTemplateConfigFiles($this->templatesDir, "intercom");
+        $this->importTemplateConfigFiles($this->templatesDir, "camera");
 
-        $this->importTemplateConfigFiles(self::templatesDir, "services");
+        $this->importTemplateConfigFiles($this->templatesDir, "services");
 
         $this->log("Finish configure zabbix");
     }
@@ -157,13 +150,23 @@ class zabbix extends monitoring
      */
     private function initializeZabbixApi($config): void
     {
-        $this->zbxApi = @$config["backends"]["monitoring"]["zbx_api_url"];
-        $this->zbxToken = @$config["backends"]["monitoring"]["zbx_token"];
-        $this->zbxStoreDays = @$config["backends"]["monitoring"]["store_days"];
-        $this->scheduler = @$config["backends"]["monitoring"]["cron_sync_data_scheduler"];
-        if (!$this->zbxApi || !$this->zbxToken || !$this->zbxStoreDays || !$this->scheduler) {
+        if (!isset($config["backends"]["monitoring"])){
             throw new \Exception("Zabbix API configuration is incomplete, check './server/config/config.json'");
         }
+
+        $zbxConfig = $config["backends"]["monitoring"];
+
+        $this->zbxApi = $zbxConfig["zbx_api_url"];
+        $this->zbxToken = $zbxConfig["zbx_token"];
+        $this->zbxStoreDays = $zbxConfig["zbx_store_days"];
+        $this->scheduler = $zbxConfig["cron_sync_data_scheduler"];
+
+        $this->hostGroups = $zbxConfig["zbx_data_collection"]["host_groups"];
+        $this->templateGroups = $zbxConfig["zbx_data_collection"]["template_groups"];
+        $this->intercomTemplateNames = $zbxConfig["zbx_data_collection"]["intercom_template_names"];
+        $this->cameraTemplateNames = $zbxConfig["zbx_data_collection"]["camera_template_names"];
+        $this->pluggedTemplateNames = $zbxConfig["zbx_data_collection"]["plugged_template_names"];
+        $this->templatesDir = __DIR__ . "/../../../.." . $zbxConfig["zbx_data_collection"]["templates_dir"];
     }
 
     /**
@@ -209,8 +212,8 @@ class zabbix extends monitoring
         /**
          * TODO: store data to redis, update every hour for example
          */
-        $templates = $this->getTemplateIds([... self::intercomTemplateNames, ... self::cameraTemplateNames]);
-        $groups = $this->getGroupIds(self::hostGroups);
+        $templates = $this->getTemplateIds([... $this->intercomTemplateNames, ... $this->cameraTemplateNames]);
+        $groups = $this->getGroupIds($this->hostGroups);
         if ($templates) {
             foreach ($templates as $template) {
                 $this->zbxData['templates'][$template['host']] = $template['templateid'];
@@ -703,6 +706,7 @@ class zabbix extends monitoring
      * Enable monitoring. Enable host and remove tag "DISABLED"
      * @param array $item
      * @return void
+     * @throws \Exception
      */
     private function enableHost(array $item)
     {
@@ -843,7 +847,7 @@ class zabbix extends monitoring
                     'status' => $item['enabled'] === 1,
                     'host' => $item['ip'],
                     'name' => $item['ip'] . ' | ' . $item['name'],
-                    'template' => self::cameraTemplateNames[0],
+                    'template' => $this->cameraTemplateNames[0],
                     'interface' => $item['ip'],
                     'credentials' => $item['credentials']
                 ];
