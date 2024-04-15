@@ -16,7 +16,7 @@ class zabbix extends monitoring
         'Intercom_BEWARD_DS06',
         'Intercom_QTECH_QDB-27C-H',
         'Intercom_IS_ISCOM_X1_REV.5',
-        'Intercom_DEMO',
+        'Intercom_RUBETEK_RV-3434',
     ];
     const cameraTemplateNames = ['Camera_simple'];
     const pluggedTemplateNames = ['ICMP Ping'];

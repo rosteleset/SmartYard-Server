@@ -1,0 +1,39 @@
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: 6b2da836ac5d4728b89105eb2ed04250
+      name: Templates/Intercoms
+  templates:
+    - uuid: f5f60cb8e6c04543bf32905fdd8bbe67
+      template: Intercom_RUBETEK_RV-3434
+      name: 'Intercom | RUBETEK RV-3434 by HTTP'
+      description: 'Intercom RUBETEK RV-3434 panel monitoring'
+      vendor:
+        name: SmartYard
+        version: 6.4-0
+      templates:
+        - name: 'ICMP Ping'
+      groups:
+        - name: Templates/Intercoms
+      tags:
+        - tag: class
+          value: hardware
+        - tag: target
+          value: rubetek
+      macros:
+        - macro: '{$HOST_PASSWORD}'
+          value: admin
+          description: 'WEB GUI | API password, default value admin'
+        - macro: '{$HOST_USERNAME}'
+          value: admin
+          description: 'WEB GUI | API username, default value admin'
+      valuemaps:
+        - uuid: c0c2e9e9953b4034abe89d30132306d2
+          name: 'SIP registration status'
+          mappings:
+            - value: '0'
+              newvalue: Disable
+            - value: '1'
+              newvalue: Failure
+            - value: '2'
+              newvalue: Online
