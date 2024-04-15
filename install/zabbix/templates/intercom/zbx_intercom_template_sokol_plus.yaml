@@ -6,7 +6,7 @@ zabbix_export:
   templates:
     - uuid: 1d5ed10a31bc471ea4f93bd8ab980c18
       template: Intercom_IS_ISCOM_X1_REV.5
-      name: 'Intercom | IS SOKOL plius'
+      name: 'Intercom | IS SOKOL plius by HTTP'
       description: 'Intercom IS ISCOM X1 rev.5 (Sokol plius) panel monitoring'
       vendor:
         name: SmartYard
