@@ -49,7 +49,7 @@ function trimStr(str, len, abbr) {
         len = 33;
     }
     let sub = Math.floor((len - 3) / 2);
-    if (str.length > len) {
+    if (str && str.length > len) {
         if (abbr) {
             return "<abbr title='" + escapeHTML(str) + "'>" + str.substring(0, sub) + "..." + str.substring(str.length - sub) + "</abbr>";
         } else {
