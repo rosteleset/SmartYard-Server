@@ -584,6 +584,8 @@
                                 });
                             }
 
+                            console.log(options);
+
                             return {
                                 id: "_cf_" + fieldId,
                                 type: "select2",
