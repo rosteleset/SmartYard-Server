@@ -15,6 +15,15 @@ abstract class beward extends domophone
     use \hw\ip\common\beward\beward;
 
     /**
+     * @var array|string[] An array of device models affected by the black screen bug.
+     * @access protected
+     */
+    protected const BLACK_SCREEN_BUG = [
+        'DKS977957_rev5.5.3.9.2',
+        'DKS15105_rev5.5.6.8.5',
+    ];
+
+    /**
      * @var array|string[] Mapping of CMS models between database and Beward names.
      * @access protected
      */
@@ -219,6 +228,8 @@ abstract class beward extends domophone
         int    $stunPort = 3478
     )
     {
+        $model = $this->getSysinfo()['DeviceModel'] ?? null;
+
         $params = [
             'cksip' => 1,
             'sipname' => $login,
@@ -231,7 +242,7 @@ abstract class beward extends domophone
             'regport' => $port,
             'sipserver' => $server,
             'sipserverport' => $port,
-            'streamtype' => 0,
+            'streamtype' => in_array($model, self::BLACK_SCREEN_BUG) ? 1 : 0,
             'packettype' => 1,
             'dtfmmod' => 0,
             'passchanged' => 1,
