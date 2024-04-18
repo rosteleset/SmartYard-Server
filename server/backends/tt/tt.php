@@ -828,9 +828,9 @@
                     try {
                         $f = @json_decode($this->getFilter($filter["metadata"]["filter"]), true);
                         $_list[$filter["metadata"]["filter"]] = [
-                            "name" => $f["name"],
-                            "sort" => $f["sort"],
-                            "disableCustomSort" => $f["disableCustomSort"],
+                            "name" => @$f["name"],
+                            "sort" => @$f["sort"],
+                            "disableCustomSort" => @$f["disableCustomSort"],
                             "owner" => @$filter["metadata"]["owner"],
                         ];
                     } catch (\Exception $e) {
