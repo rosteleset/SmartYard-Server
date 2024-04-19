@@ -1609,6 +1609,8 @@
                 pKeys = Object.keys(issues.projection);
             }
 
+            console.log(modules.tt.meta.filtersExt[x]);
+
             let sortMenuItems = [
                 {
                     text: "-",
@@ -1874,7 +1876,7 @@
                             rows.push({
                                 uid: utf8_to_b64(JSON.stringify({
                                     id: issues.issues[i]["issueId"],
-                                    filter: x?x:"",
+                                    filter: x ? x : "",
                                     index: i + skip + 1,
                                     count: parseInt(issues.count)?parseInt(issues.count):modules.tt.defaultIssuesPerPage,
                                     search: ($.trim(params.search) && params.search !== true)?$.trim(params.search):"",
