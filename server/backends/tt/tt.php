@@ -121,6 +121,9 @@
                         "sprintf" => function (...$args) {
                             return [ sprintf(...$args) ];
                         },
+                        "preg_replace" => function (...$args) {
+                            return [ preg_replace(...$args) ];
+                        },
                     ]);
 
                     $sandbox->registerLibrary("rbt", [
