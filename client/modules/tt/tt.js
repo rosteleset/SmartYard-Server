@@ -1609,7 +1609,11 @@
                 pKeys = Object.keys(issues.projection);
             }
 
-            console.log(modules.tt.meta.filtersExt[x]);
+            if (pKeys && modules.tt.meta.filtersExt && x && modules.tt.meta.filtersExt[x] && modules.tt.meta.filtersExt[x].hide) {
+                for (let i in pKeys) {
+                    console.log(pKeys[i]);
+                }
+            }
 
             let sortMenuItems = [
                 {
