@@ -1610,9 +1610,13 @@
             }
 
             if (pKeys && modules.tt.meta.filtersExt && x && modules.tt.meta.filtersExt[x] && modules.tt.meta.filtersExt[x].hide) {
+                let t = [];
                 for (let i in pKeys) {
-                    console.log(pKeys[i]);
+                    if (modules.tt.meta.filtersExt[x].hide.indexOf(pKeys[i]) < 0) {
+                        t.push(pKeys[i]);
+                    }
                 }
+                pKeys = t;
             }
 
             let sortMenuItems = [
