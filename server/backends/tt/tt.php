@@ -833,6 +833,7 @@
                         $_list[$filter["metadata"]["filter"]] = [
                             "name" => @$f["name"],
                             "sort" => @$f["sort"],
+                            "hide" => @$f["hide"],
                             "disableCustomSort" => @$f["disableCustomSort"],
                             "owner" => @$filter["metadata"]["owner"],
                         ];
