@@ -21,6 +21,7 @@
             if (parseInt(myself.uid)) {
                 $("#altForm").hide();
                 $("#mainForm").html("").show();
+                GET("tt", "journalLast").done(console.log);
                 loadingDone();
             } else {
                 window.location.href = "?#tt.settings";
