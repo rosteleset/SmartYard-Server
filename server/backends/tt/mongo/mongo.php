@@ -404,12 +404,17 @@
 
                 error_log(print_r($sort, true));
 
-                $issues = $this->mongo->$db->$collection->find($query, [
+                $options = [
                     "projection" => $projection,
                     "skip" => (int)$skip,
                     "limit" => (int)$limit,
-                    "sort" => $sort
-                ]);
+                ];
+
+                if ($sort) {
+                    $options["sort"] = $sort;
+                }
+
+                $issues = $this->mongo->$db->$collection->find($query, $options);
   
                 $i = [];
 
