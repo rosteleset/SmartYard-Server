@@ -1337,7 +1337,7 @@
              * @param array $types
              * @return mixed
              */
-            abstract public function getIssues($collection, $query, $fields = [], $sort = [ "issueId" => 1 ], $skip = 0, $limit = 100, $preprocess = [], $types = []);
+            abstract public function getIssues($collection, $query, $fields = [], $sort = [ "issueId" => 1 ], $skip = 0, $limit = 100, $preprocess = [], $types = [], $byPipeline = false);
 
             /**
              * @param $issueId

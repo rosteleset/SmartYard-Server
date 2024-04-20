@@ -248,7 +248,7 @@
             /**
              * @inheritDoc
              */
-            public function getIssues($collection, $query, $fields = [], $sort = [ "created" => 1 ], $skip = 0, $limit = 100, $preprocess = [], $types = [])
+            public function getIssues($collection, $query, $fields = [], $sort = [ "created" => 1 ], $skip = 0, $limit = 100, $preprocess = [], $types = [], $byPipeline = false)
             {
                 $db = $this->dbName;
 
@@ -412,9 +412,14 @@
                     $options["sort"] = $sort;
                 }
 
-                error_log(print_r($options, true));
-
-                $issues = $this->mongo->$db->$collection->find($query, $options);
+                if (!$byPipeline) {
+                    $issues = $this->mongo->$db->$collection->find($query, $options);
+                } else {
+                    $query[] = [ '$project' => $projection ];
+                    $query[] = [ '$skip' => (int)$skip ];
+                    $query[] = [ '$limit' => (int)$limit ];
+                    $issues = $this->mongo->$db->$collection->aggregate($query);
+                }
   
                 $i = [];
 
