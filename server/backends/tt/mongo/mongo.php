@@ -374,8 +374,12 @@
                 $types["%%timestamp-3years"] = "int";
 
                 $preprocess["%%last"] = function () {
-                    error_log(print_r($this->journalLast($this->login), true));
-                    return array_values($this->journalLast($this->login));
+                    $last = $this->journalLast($this->login);
+                    $issues = [];
+                    foreach ($last as $issue) {
+                        $issues[] = $issue["issue"];
+                    }
+                    return array_values();
                 };
                 
                 $query = $this->preprocessFilter($query, $preprocess, $types);
