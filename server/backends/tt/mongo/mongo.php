@@ -1233,7 +1233,7 @@
             /**
              * @inheritDoc
              */
-            public function journalLast($login, $limit = 100)
+            public function journalLast($login, $limit = 1024)
             {
                 $limit = (int)$limit;
 
