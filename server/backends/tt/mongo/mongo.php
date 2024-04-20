@@ -402,8 +402,6 @@
                     $d = (int)$d;
                 }
 
-                error_log(print_r($sort, true));
-
                 $options = [
                     "projection" => $projection,
                     "skip" => (int)$skip,
@@ -413,6 +411,8 @@
                 if ($sort) {
                     $options["sort"] = $sort;
                 }
+
+                error_log(print_r($options, true));
 
                 $issues = $this->mongo->$db->$collection->find($query, $options);
   
