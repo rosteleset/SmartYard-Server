@@ -379,8 +379,7 @@
                     foreach ($last as $issue) {
                         $issues[] = $issue["issue"];
                     }
-                    error_log(print_r($issues, true));
-                    return array_values();
+                    return array_values($issues);
                 };
                 
                 $query = $this->preprocessFilter($query, $preprocess, $types);
