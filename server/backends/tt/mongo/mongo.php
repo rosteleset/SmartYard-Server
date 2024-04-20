@@ -374,6 +374,7 @@
                 $types["%%timestamp-3years"] = "int";
 
                 $preprocess["%%last"] = function () {
+                    error_log(print_r($this->journalLast($this->login), true));
                     return array_values($this->journalLast($this->login));
                 };
                 
