@@ -372,6 +372,10 @@
 
                 $preprocess["%%timestamp-3years"] = strtotime(date("Y-m-d", strtotime("-3 year")));
                 $types["%%timestamp-3years"] = "int";
+
+                $preprocess["%%last"] = function () {
+                    return array_values(journalLast($this->login));
+                };
                 
                 $query = $this->preprocessFilter($query, $preprocess, $types);
 

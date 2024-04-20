@@ -1540,7 +1540,11 @@
                             } else {
                                 $cast = false;
                             }
-                            $item = $params[$item];
+                            if (is_callable($params[$item])) {
+                                $item = $params[$item]();
+                            } else {
+                                $item = $params[$item];
+                            }
                             if ($cast) {
                                 settype($item, $cast);
                             }
