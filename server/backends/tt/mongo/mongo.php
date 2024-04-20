@@ -402,6 +402,8 @@
                     $d = (int)$d;
                 }
 
+                error_log(print_r($sort, true));
+
                 $issues = $this->mongo->$db->$collection->find($query, [
                     "projection" => $projection,
                     "skip" => (int)$skip,
