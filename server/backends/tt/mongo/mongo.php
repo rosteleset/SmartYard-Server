@@ -419,6 +419,7 @@
                     $query[] = [ '$skip' => (int)$skip ];
                     $query[] = [ '$limit' => (int)$limit ];
                     error_log(print_r($query, true));
+                    file_put_contents("/tmp/test_aggregate", serialize($query));
                     $issues = $this->mongo->$db->$collection->aggregate($query);
                 }
   
