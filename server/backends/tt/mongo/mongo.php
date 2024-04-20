@@ -412,13 +412,26 @@
                     $options["sort"] = $sort;
                 }
 
-                if (!$byPipeline) {
-                    $issues = $this->mongo->$db->$collection->find($query, $options);
+                $count = 0;
+
+                if ($byPipeline) {
+                    $_query = json_decode(json_encode($query), true);
+                    $_query[] = [ '$project' => $projection ];
+                    $_query[] = [ '$skip' => (int)$skip ];
+                    $_query[] = [ '$limit' => (int)$limit ];
+                    $issues = $this->mongo->$db->$collection->aggregate($_query);
+
+                    $_query = json_decode(json_encode($query), true);
+                    $_query[] = [ '$group' => [ '_id' => null, 'countDocuments' => [ '$sum' => 1 ] ] ];
+                    $_query[] = [ '$project' => [ '_id' => 0 ] ];
+                    $cursor = $this->mongo->$db->$collection->aggregate($_query);
+                    foreach ($cursor as $document) {
+                        $count = $document["countDocuments"];
+                    }
                 } else {
-//                    $query[] = [ '$project' => $projection ];
-//                    $query[] = [ '$skip' => (int)$skip ];
-//                    $query[] = [ '$limit' => (int)$limit ];
-                    $issues = $this->mongo->$db->$collection->aggregate($query);
+                    $issues = $this->mongo->$db->$collection->find($query, $options);
+
+                    $count = $this->mongo->$db->$collection->countDocuments($query);
                 }
   
                 $i = [];
@@ -444,7 +457,7 @@
                     "sort" => $sort,
                     "skip" => $skip,
                     "limit" => $limit,
-                    "count" => $this->mongo->$db->$collection->countDocuments($query),
+                    "count" => $count,
                 ];
             }
 
