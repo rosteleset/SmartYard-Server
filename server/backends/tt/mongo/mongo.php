@@ -379,6 +379,7 @@
                     foreach ($last as $issue) {
                         $issues[] = $issue["issue"];
                     }
+                    error_log(print_r($issues, true));
                     return array_values();
                 };
                 
