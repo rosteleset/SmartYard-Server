@@ -418,6 +418,7 @@
                     $query[] = [ '$project' => $projection ];
                     $query[] = [ '$skip' => (int)$skip ];
                     $query[] = [ '$limit' => (int)$limit ];
+                    error_log(print_r($query, true));
                     $issues = $this->mongo->$db->$collection->aggregate($query);
                 }
   
