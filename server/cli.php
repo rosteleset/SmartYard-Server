@@ -33,6 +33,7 @@
     require_once "utils/purifier.php";
     require_once "utils/reindex.php";
     require_once "utils/response.php";
+    require_once "utils/generate_password.php";
 
 
     require_once "backends/backend.php";
