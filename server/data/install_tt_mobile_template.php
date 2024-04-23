@@ -76,7 +76,7 @@ function installTTMobileTemplate(): void
         $uid = $users->addUser($login);
     }
     $user = $users->getUser($uid);
-    $token = $user['persistentToken'];
+    $token = @$user['persistentToken'];
     if (!$token) {
         $token = md5(GUIDv4());
         $users->modifyUser($uid, $persistentToken = $token);
