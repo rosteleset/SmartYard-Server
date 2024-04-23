@@ -270,7 +270,7 @@ function cardForm(params) {
                     h += `
                         <div class="custom-control custom-checkbox${(j !== params.fields[i].options.length - 1)?" mb-3":""}">
                         <input type="checkbox" class="checkBoxOption-${params.fields[i].id} custom-control-input" id="${id}" data-id="${params.fields[i].options[j].id}"${c?" checked":""}${params.fields[i].options[j].disabled?" disabled":""}/>
-                        <label for="${id}" class="custom-control-label form-check-label">${params.fields[i].options[j].text}</label>
+                        <label for="${id}" class="custom-control-label form-check-label">${trimStr(params.fields[i].options[j].text, s2maxLengths)}</label>
                     `;
                     if (params.fields[i].options[j].append) {
                         h += params.fields[i].options[j].append;
