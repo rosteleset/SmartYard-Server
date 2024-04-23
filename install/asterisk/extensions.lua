@@ -353,7 +353,7 @@ local function handleMobileApp(context, extension)
 
     local dest = mobile_intercom(flatId, -1, -1)
 
-    if dest ~= "" then
+    if dest and dest ~= "" then
         log_debug("dialing: " .. dest)
         app.Dial(dest, 120, "m")
     else
