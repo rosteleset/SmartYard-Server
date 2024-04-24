@@ -604,12 +604,13 @@
                         "password" => "password",
                     ], $params);
 
+                    $queue = loadBackend("queue");
+
                     if ($mod !== false && array_key_exists("flat", $params) && array_key_exists("entrances", $params) && array_key_exists("apartmentsAndLevels", $params) && is_array($params["entrances"]) && is_array($params["apartmentsAndLevels"])) {
                         $entrances = $params["entrances"];
                         $apartmentsAndLevels = $params["apartmentsAndLevels"];
 
                         // TODO: we need to do something about this
-                        $queue = loadBackend("queue");
                         if ($queue) {
                             $queue->changed("flat", $flatId);
                         }
@@ -646,6 +647,10 @@
                         }
 
                         return true;
+                    }
+
+                    if ($queue) {
+                        $queue->changed("flat", $flatId);
                     }
                 } else {
                     setLastError("cantModifyFlat");
