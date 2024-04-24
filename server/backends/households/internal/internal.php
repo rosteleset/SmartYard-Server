@@ -1431,12 +1431,12 @@
                 }
 
                 $r = $r && $this->db->modify("update houses_subscribers_mobile set last_seen = :last_seen where house_subscriber_id = $subscriberId", [ "last_seen" => time() ]) !== false;
-
+/*
                 $queue = loadBackend("queue");
                 if ($queue) {
                     $queue->changed("subscriber", $subscriberId);
                 }
-
+*/
                 if (!$r) {
                     setLastError("cantModifySubscriber");
                 }
