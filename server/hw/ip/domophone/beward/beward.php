@@ -21,6 +21,7 @@ abstract class beward extends domophone
     protected const BLACK_SCREEN_BUG = [
         'DKS977957_rev5.5.3.9.2',
         'DKS15105_rev5.5.6.8.5',
+        'DKS15135_rev5.5.6.8.5',
     ];
 
     /**
