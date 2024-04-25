@@ -250,24 +250,44 @@ body::-webkit-scrollbar-thumb {
   border-radius: 100px;
 }
 
-.nodec:link {
+body:not(.dark-mode) .nodec:link {
   text-decoration: none;
   color: black;
 }
 
-.nodec:visited {
+body.dark-mode .nodec:link {
+  text-decoration: none;
+  color: white;
+}
+
+body:not(.dark-mode) .nodec:visited {
   text-decoration: none;
   color: black;
 }
 
-.nodec:active {
+body.dark-mode .nodec:visited {
+  text-decoration: none;
+  color: white;
+}
+
+body:not(.dark-mode) .nodec:active {
   text-decoration: none;
   color: black;
 }
 
-.nodec:hover {
+body.dark-mode .nodec:active {
+  text-decoration: none;
+  color: white;
+}
+
+body:not(.dark-mode) .nodec:hover {
   text-decoration: underline;
   color: black;
+}
+
+body.dark-mode .nodec:hover {
+  text-decoration: underline;
+  color: white;
 }
 
 .tr-hoverable:hover {
