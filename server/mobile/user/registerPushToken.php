@@ -71,8 +71,8 @@ if (!$push) {
         $payload = [
             "token" => $old_push,
             "messageId" => $md5,
-            "title" => urlencode("Внимание!"),
-            "msg" => urlencode("Произведена авторизация на другом устройстве"),
+            "title" => "Внимание!",
+            "msg" => "Произведена авторизация на другом устройстве",
             "badge" => "1",
             "pushAction" => "logout"
         ];
