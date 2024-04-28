@@ -284,6 +284,45 @@ function findBootstrapEnvironment() {
     return curEnv;
 }
 
+$.deparam = function (query) {
+    let setValue = function (root, path, value) {
+        if (path.length > 1) {
+            let  dir = path.shift();
+            if (typeof root[dir] == 'undefined') {
+                root[dir] = path[0] == '' ? [] : {};
+            }
+            arguments.callee(root[dir], path, value);
+        } else {
+            if (root instanceof Array) {
+                root.push(value);
+            } else {
+                root[path] = value;
+            }
+        }
+    };
+
+    let nvp = query.split('&');
+    let data = {};
+
+    for (let i = 0 ; i < nvp.length ; i++) {
+        let pair = nvp[i].split('=');
+        let name = decodeURIComponent(pair[0]);
+        let value = decodeURIComponent(pair[1]);
+  
+        let path = name.match(/(^[^\[]+)(\[.*\]$)?/);
+        let first = path[1];
+        if (path[2]) {
+            path = path[2].match(/(?=\[(.*)\]$)/)[1].split('][')
+        } else {
+            path = [];
+        }
+        path.unshift(first);
+        setValue(data, path, value);
+    }
+    
+    return data;
+}
+
 Object.defineProperty(Array.prototype, "assoc", {
     value: function (key, target, val) {
         let arr = this;
