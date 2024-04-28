@@ -40,7 +40,7 @@ trait sputnik
     public function getSysinfo(): array
     {
         $intercom = $this->apiCall('query', 'intercom', ['motherboardID' => $this->motherboardID], ['uuid']);
-        $this->uuid = $uuid = $intercom['data']['intercom']['uuid'];
+        $this->uuid = $uuid = $intercom['data']['intercom']['uuid'] ?? '';
         return ['DeviceID' => $uuid];
     }
 
