@@ -26,6 +26,7 @@
     "cloneSheet": "Клонировать",
     "confirmUnReserve": "Снять с резерва?",
     "comment": "Комментарий",
+    "noPart": "Общий",
     "methods": {
         "cs": {
             "_title": "Лист координации",

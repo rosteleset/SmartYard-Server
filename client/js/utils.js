@@ -323,6 +323,20 @@ $.deparam = function (query) {
     return data;
 }
 
+function refreshUrl() {
+    let [ route, params ] = hashParse();
+
+    params["_"] = Math.random();
+
+    return "?#" + route + "&" + $.param(params);
+}
+
+function navigateUrl(route, params) {
+    params["_"] = Math.random();
+
+    return "?#" + route + "&" + $.param(params);
+}
+
 Object.defineProperty(Array.prototype, "assoc", {
     value: function (key, target, val) {
         let arr = this;

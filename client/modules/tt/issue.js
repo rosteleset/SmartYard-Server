@@ -349,7 +349,8 @@
             issue: issue,
         }).
         done(result => {
-            modules.tt.issue.viewIssue(utf8_to_b64(JSON.stringify(result)));
+            console.log(result);
+            window.location.href = navigateUrl("tt", { issue: result.id });
         }).
         fail(FAIL).
         always(loadingDone);
@@ -467,11 +468,6 @@
                 fail(loadingDone);
             });
         });
-    },
-
-    viewIssue: function (issue) {
-        issue = JSON.parse(b64_to_utf8(issue));
-        window.location.href = `?#tt&issue=${encodeURIComponent(issue.id)}&filter=${encodeURIComponent(issue.filter?issue.filter:"")}&index=${issue.index?issue.index:""}&count=${issue.count?issue.count:""}&search=${encodeURIComponent(($.trim(issue.search) && typeof issue.search === "string")?$.trim(issue.search):"")}&_=${Math.random()}`;
     },
 
     renderIssue: function (issue, filter, index, count, search) {
@@ -676,13 +672,11 @@
             h += "<tr>";
             h += "<td style='vertical-align: top; width: 100%;'>";
             h += "<div class='pt-1 pb-1 small'>";
-            let t = "";
             for (let i in issue.issue.tags) {
-                let fg = (tags[issue.issue.tags[i]] && tags[issue.issue.tags[i]].foreground)?tags[issue.issue.tags[i]].foreground:"#666666";
-                let bg = (tags[issue.issue.tags[i]] && tags[issue.issue.tags[i]].background)?tags[issue.issue.tags[i]].background:"#ffffff";
-                t += `<span class="mr-1 text-bold" style='border: solid thin #cbccce; padding-left: 6px; padding-right: 5px; padding-top: 2px; padding-bottom: 2px; color: ${fg}; border-radius: 4px; background: ${bg};'><i class="fas fa-tag mr-2"></i>${issue.issue.tags[i]}</span>`;
+                let fg = (tags[issue.issue.tags[i]] && tags[issue.issue.tags[i]].foreground) ? tags[issue.issue.tags[i]].foreground : "#666666";
+                let bg = (tags[issue.issue.tags[i]] && tags[issue.issue.tags[i]].background) ? tags[issue.issue.tags[i]].background : "#ffffff";
+                h += `<span class="mr-1 text-bold" style='border: solid thin #cbccce; padding-left: 6px; padding-right: 5px; padding-top: 2px; padding-bottom: 2px; color: ${fg}; border-radius: 4px; background: ${bg};'><i class="fas fa-tag mr-2"></i>${escapeHTML(issue.issue.tags[i])}</span>`;
             }
-            h += $.trim(t);
             h += "</div>";
             h += "</td>";
             h += "</tr>";
@@ -1048,6 +1042,8 @@
             let action = $(this).text();
 
             modules.tt.issue.issueAction(issue.issue.issueId, action, () => {
+                location.href = refreshUrl();
+/*
                 modules.tt.route({
                     issue: issue.issue.issueId,
                     filter: filter,
@@ -1055,6 +1051,7 @@
                     count: count,
                     search: search,
                 });
+*/
             });
         });
 
@@ -1096,6 +1093,8 @@
                     fail(FAIL).
                     fail(loadingDone).
                     done(() => {
+                        location.href = refreshUrl();
+/*
                         modules.tt.route({
                             issue: issue.issue.issueId,
                             filter: filter,
@@ -1103,6 +1102,7 @@
                             count: count,
                             search: search,
                         });
+*/
                     });
                 },
             }).show();
@@ -1158,6 +1158,8 @@
                         fail(FAIL).
                         fail(loadingDone).
                         done(() => {
+                            location.href = refreshUrl();
+/*
                             modules.tt.route({
                                 issue: issue.issue.issueId,
                                 filter: filter,
@@ -1165,6 +1167,7 @@
                                 count: count,
                                 search: search,
                             });
+*/
                         });
                     } else {
                         loadingStart();
@@ -1172,6 +1175,8 @@
                         fail(FAIL).
                         fail(loadingDone).
                         done(() => {
+                            location.href = refreshUrl();
+/*
                             modules.tt.route({
                                 issue: issue.issue.issueId,
                                 filter: filter,
@@ -1179,6 +1184,7 @@
                                 count: count,
                                 search: search,
                             });
+*/
                         });
                     }
                 },
@@ -1217,6 +1223,8 @@
                         fail(FAIL).
                         fail(loadingDone).
                         done(() => {
+                            location.href = refreshUrl();
+/*
                             modules.tt.route({
                                 issue: issue.issue.issueId,
                                 filter: filter,
@@ -1224,6 +1232,7 @@
                                 count: count,
                                 search: search,
                             });
+*/
                         });
                     }
                 },
@@ -1245,6 +1254,8 @@
                     fail(FAIL).
                     fail(loadingDone).
                     done(() => {
+                        location.href = refreshUrl();
+/*
                         modules.tt.route({
                             issue: issue.issue.issueId,
                             filter: filter,
@@ -1252,6 +1263,7 @@
                             count: count,
                             search: search,
                         });
+*/
                     });
                 }
             });
@@ -1272,6 +1284,8 @@
                     fail(FAIL).
                     fail(loadingDone).
                     done(() => {
+                        location.href = refreshUrl();
+/*
                         modules.tt.route({
                             issue: issue.issue.issueId,
                             filter: filter,
@@ -1279,6 +1293,7 @@
                             count: count,
                             search: search,
                         });
+*/
                     });
                 }
             }, false, true);
@@ -1296,6 +1311,8 @@
                 fail(loadingDone).
                 done(() => {
                     message(i18n("tt.fileWasDeleted"));
+                    location.href = refreshUrl();
+/*
                     modules.tt.route({
                         issue: issue.issue.issueId,
                         filter: filter,
@@ -1303,6 +1320,7 @@
                         count: count,
                         search: search,
                     });
+*/
                 });
             });
         });
@@ -1316,6 +1334,8 @@
                 fail(FAIL).
                 fail(loadingDone).
                 done(() => {
+                    location.href = refreshUrl();
+/*
                     modules.tt.route({
                         issue: issue.issue.issueId,
                         filter: filter,
@@ -1323,6 +1343,7 @@
                         count: count,
                         search: search,
                     });
+*/
                 });
             });
         });
@@ -1336,6 +1357,8 @@
                 fail(FAIL).
                 fail(loadingDone).
                 done(() => {
+                    location.href = refreshUrl();
+/*
                     modules.tt.route({
                         issue: issue.issue.issueId,
                         filter: filter,
@@ -1343,6 +1366,7 @@
                         count: count,
                         search: search,
                     });
+*/
                 });
             });
         });
@@ -1431,6 +1455,8 @@
                     fail(FAIL).
                     fail(loadingDone).
                     done(() => {
+                        location.href = refreshUrl();
+/*
                         modules.tt.route({
                             issue: issue.issue.issueId,
                             filter: filter,
@@ -1438,6 +1464,7 @@
                             count: count,
                             search: search,
                         });
+*/
                     });
                 },
             }).show();
@@ -1453,6 +1480,8 @@
                 fail(FAIL).
                 fail(loadingDone).
                 done(() => {
+                    location.href = refreshUrl();
+/*
                     modules.tt.route({
                         issue: issue.issue.issueId,
                         filter: filter,
@@ -1460,6 +1489,7 @@
                         count: count,
                         search: search,
                     });
+*/
                 });
             });
         });
@@ -1517,13 +1547,13 @@
                 "search": search,
             }, true).
             done(response => {
-                modules.tt.issue.viewIssue(utf8_to_b64(JSON.stringify({
-                    id: response.issues.issues[0]["issueId"],
+                window.location.href = navigateUrl("tt", {
+                    issue: response.issues.issues[0]["issueId"],
                     filter: filter,
                     index: parseInt(response.issues.skip) + 1,
                     count: parseInt(response.issues.count),
                     search: search,
-                })));
+                });
             }).
             fail(FAIL).
             fail(loadingDone);
@@ -1539,13 +1569,13 @@
                 "search": search,
             }, true).
             done(response => {
-                modules.tt.issue.viewIssue(utf8_to_b64(JSON.stringify({
-                    id: response.issues.issues[0]["issueId"],
+                window.location.href = navigateUrl("tt", {
+                    issue: response.issues.issues[0]["issueId"],
                     filter: filter,
                     index: parseInt(response.issues.skip) + 1,
                     count: parseInt(response.issues.count),
                     search: search,
-                })));
+                });
             }).
             fail(FAIL).
             fail(loadingDone);

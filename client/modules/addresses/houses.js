@@ -72,7 +72,7 @@
                         done(result => {
                             message(i18n("addresses.houseWasAdded"));
                             if (result && result.house && (result.house.streetId || result.house.settlementId)) {
-                                let [ route, params, hash ] = hashParse();
+                                let [ route, params ] = hashParse();
                                 if (result.house.streetId) {
                                     if (route == "addresses" && params["show"] == "street" && params["streetId"] == result.house.streetId) {
                                         modules.addresses.renderStreet(result.house.streetId);
@@ -1957,8 +1957,7 @@
                                         icon: "fas fa-key",
                                         title: i18n("addresses.keys"),
                                         click: entranceId => {
-                                            let [ route, params, hash ] = hashParse();
-                                            location.href = "?#addresses.keys&query=" + entranceId + "&by=3&backStr=" + encodeURIComponent(modules.addresses.houses.meta.house.houseFull + ", " + entrances[entranceId].entrance) + "&back=" + encodeURIComponent(hash.join("&"));
+                                            location.href = "?#addresses.keys&query=" + entranceId + "&by=3&backStr=" + encodeURIComponent(modules.addresses.houses.meta.house.houseFull + ", " + entrances[entranceId].entrance) + "&back=" + encodeURIComponent(hashParse("hash"));
                                         },
                                     },
                                 ],

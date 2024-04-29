@@ -471,7 +471,7 @@
                 for (let i in s) {
                     if (modules.cs.cols.indexOf(s[i].col) < 0 && s[i].col.charAt(0) != "#") {
                         if (typeof s[i].part == "undefined") {
-                            s[i].part = -1;
+                            s[i].part = i18n("cs.noPart");
                         }
                         if (!parts[s[i].part]) {
                             parts[s[i].part] = [];

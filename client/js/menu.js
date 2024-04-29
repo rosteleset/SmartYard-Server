@@ -34,14 +34,10 @@ function menu(config) {
                 c += " text-bold";
             }
             c = c.trim();
-            if (config.items[i].disabled || config.items[i].selected) {
-                h += `<li class="dropdown-item ${c}">${config.items[i].text}</li>`;
+            if (config.items[i].data) {
+                h += `<li class="pointer dropdown-item ${c}" onclick="contextMenuGlobalHandler('${xid + ":" + (config.items[i].id ? config.items[i].id : config.items[i].text)}', $(this).attr('data-menu'))" data-menu="${config.items[i].data}">${config.items[i].text}</li>`;
             } else {
-                if (config.items[i].data) {
-                    h += `<li class="pointer dropdown-item ${c}" onclick="contextMenuGlobalHandler('${xid + ":" + (config.items[i].id ? config.items[i].id : config.items[i].text)}', $(this).attr('data-menu'))" data-menu="${config.items[i].data}">${config.items[i].text}</li>`;
-                } else {
-                    h += `<li class="pointer dropdown-item ${c}" onclick="contextMenuGlobalHandler('${xid + ":" + (config.items[i].id ? config.items[i].id : config.items[i].text)}')">${config.items[i].text}</li>`;
-                }
+                h += `<li class="pointer dropdown-item ${c}" onclick="contextMenuGlobalHandler('${xid + ":" + (config.items[i].id ? config.items[i].id : config.items[i].text)}')">${config.items[i].text}</li>`;
             }
         }
     }

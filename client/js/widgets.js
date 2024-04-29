@@ -291,7 +291,7 @@ function leftSide(button, title, target, group, withibleOnlyWhenActive) {
         `);
     }
 
-    let [ route ] = hashParse();
+    let route = hashParse("route");
 
     let id = md5(guid());
 

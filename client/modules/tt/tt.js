@@ -904,20 +904,19 @@
     
                     case "assigned":
                     case "watchers":
-                        let m = "";
+                        let m = [];
     
                         for (let i in val) {
-                            m += members[val[i]]?members[val[i]]:val[i];
-                            m += ", ";
+                            m.push += '<span style="white-space: nowrap!important;">' + escapeHTML(members[val[i]] ? members[val[i]] : val[i]) + '</span>';
                         }
     
-                        if (m) {
-                            m = m.substring(0, m.length - 2);
+                        if (m.length) {
+                            val = m.join(", ");
+                            escaped = true;
+                        } else {
+                            val = "";
                         }
-    
-                        val = escapeHTML(m);
-                        val = '<span style="white-space: nowrap!important;">' + val + '</span>';
-                        escaped = true;
+
                         break;
     
                     case "author":
@@ -931,6 +930,7 @@
                     case "status":
                         if (val) {
                             val = escapeHTML(val);
+                            escaped = true;
                         } else {
                             val = '';
                         }
@@ -939,6 +939,7 @@
                     case "resolution":
                         if (val) {
                             val = escapeHTML(val);
+                            escaped = true;
                         } else {
                             val = '';
                         }
@@ -1240,14 +1241,12 @@
             pn[modules.tt.meta.projects[i].acronym] = modules.tt.meta.projects[i].project;
         }
 
-        if (Object.keys(modules.tt.meta.myRoles).length) {
+        let pc = Object.keys(modules.tt.meta.myRoles).length;
+
+        if (pc) {
             let cog = "mt-1";
             if (AVAIL("tt", "project", "POST")) {
                 cog = "";
-            }
-            let pc = 0;
-            for (let j in modules.tt.meta.myRoles) {
-                pc++;
             }
             if (pc == 1) {
                 rtd += `<div class="form-inline"><div class="input-group input-group-sm mr-2 ${cog}"><select id="ttProjectSelect" class="form-control select-arrow" style="display: none;">`;
@@ -1625,55 +1624,43 @@
                 },
             ];
 
-            let sortDir = false;
-            let sortBy = false;
+            let sort = lStore("sortBy:" + x);
+            if (!sort) {
+                sort = {};
+            }
 
             for (let i = 0; i < pKeys.length; i++) {
-                let sort = lStore("sortBy:" + x);
-                if (!sort) {
-                    sort = {};
-                }
                 if (sort[pKeys[i]]) {
-                    sortDir = parseInt(sort[pKeys[i]]);
-                    sortBy = pKeys[i];
+                    sortMenuItems.push({
+                        id: pKeys[i],
+                        text: ((parseInt(sort[pKeys[i]]) == 1) ? '<i class="fas fa-fw fa-arrow-down mr-2"></i>' : '<i class="fas fa-fw fa-arrow-up mr-2"></i>') + modules.tt.issueFieldTitle(pKeys[i]),
+                        selected: true,
+                    });
+                } else {
+                    sortMenuItems.push({
+                        id: pKeys[i],
+                        text: '<i class="fas fa-fw mr-2"></i>' + modules.tt.issueFieldTitle(pKeys[i]),
+                    });
                 }
-                sortMenuItems.push({
-                    id: pKeys[i],
-                    text: modules.tt.issueFieldTitle(pKeys[i]),
-                    selected: sort[pKeys[i]],
-                });
             };
-
-            sortMenuItems = sortMenuItems.concat([
-                {
-                    text: "-",
-                    hint: i18n("tt.sortDir"),
-                },
-                {
-                    id: "_sort_asc",
-                    text: i18n("tt.sortAsc"),
-                    selected: sortDir == 1,
-                },
-                {
-                    id: "_sort_desc",
-                    text: i18n("tt.sortDesc"),
-                    selected: sortDir == -1,
-                },
-            ]);
 
             let sortMenu = menu({
                 button: "<i class='fas fa-fw fa-bars pointer'></i>",
                 items: sortMenuItems,
                 click: function (id) {
-                    let sort = {};
-                    if (id == "_sort_asc") {
-                        sort[sortBy] = 1;
-                    } else
-                    if (id == "_sort_desc") {
-                        sort[sortBy] = -1;
+                    if (sort && sort[id]) {
+                        if (sort[id] == 1) {
+                            sort = {};
+                            sort[id] = -1;
+                        } else
+                        if (sort[id] == -1) {
+                            sort = null;
+                        }
                     } else {
+                        sort = {};
                         sort[id] = 1;
                     }
+                    console.log(sort);
                     lStore("sortBy:" + x, sort);
                     if (target) {
                         // for workspaces
@@ -1868,14 +1855,34 @@
                             let cols = [ {
                                 data: i + skip + 1,
                                 nowrap: true,
-                                click: modules.tt.issue.viewIssue,
+                                click: (issue) => {
+                                    issue = JSON.parse(b64_to_utf8(issue));
+
+                                    window.location.href = navigateUrl("tt", {
+                                        issue: issue.id,
+                                        filter: issue.filter ? issue.filter : "",
+                                        index: issue.index ? issue.index : "",
+                                        count: issue.count ? issue.count : "",
+                                        search: ($.trim(issue.search) && typeof issue.search === "string") ? $.trim(issue.search) : "",
+                                    });
+                                },
                             } ];
 
                             for (let j = 0; j < pKeys.length; j++) {
                                 cols.push({
                                     data: modules.tt.issueField2Html(issues.issues[i], pKeys[j], undefined, "list"),
                                     nowrap: true,
-                                    click: modules.tt.issue.viewIssue,
+                                    click: (issue) => {
+                                        issue = JSON.parse(b64_to_utf8(issue));
+
+                                        window.location.href = navigateUrl("tt", {
+                                            issue: issue.id,
+                                            filter: issue.filter ? issue.filter : "",
+                                            index: issue.index ? issue.index : "",
+                                            count: issue.count ? issue.count : "",
+                                            search: ($.trim(issue.search) && typeof issue.search === "string") ? $.trim(issue.search) : "",
+                                        });
+                                    },
                                     fullWidth: j == pKeys.length - 1,
                                 });
                             }
@@ -1885,8 +1892,8 @@
                                     id: issues.issues[i]["issueId"],
                                     filter: x ? x : "",
                                     index: i + skip + 1,
-                                    count: parseInt(issues.count)?parseInt(issues.count):modules.tt.defaultIssuesPerPage,
-                                    search: ($.trim(params.search) && params.search !== true)?$.trim(params.search):"",
+                                    count: parseInt(issues.count) ? parseInt(issues.count) : modules.tt.defaultIssuesPerPage,
+                                    search: ($.trim(params.search) && params.search !== true) ? $.trim(params.search) : "",
                                 })),
                                 cols: cols,
                             });
@@ -1949,10 +1956,6 @@
             $("#altForm").hide();
         }
 
-        if (modules.tt.menuItem) {
-            $("#" + modules.tt.menuItem).children().first().attr("href", "?#tt&_=" + Math.random());
-        }
-
         GET("tt", "tt", false, true).
         done(modules.tt.tt).
         done(() => {
@@ -1973,6 +1976,10 @@
                 }).
                 fail(FAILPAGE);
             } else {
+                if (modules.tt.menuItem) {
+                    $("#" + modules.tt.menuItem).children().first().attr("href", refreshUrl());
+                }
+        
                 document.title = i18n("windowTitle") + " :: " + i18n("tt.filters");
 
                 if (parseInt(myself.uid)) {

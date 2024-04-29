@@ -8,6 +8,7 @@ function showLoginForm() {
 
     $("#loginBoxLogin").val(lStore("_login"));
     $("#loginBoxServer").val(lStore("_server"));
+
     if (!$("#loginBoxServer").val()) {
         $("#loginBoxServer").val(config.defaultServer);
     }
@@ -24,11 +25,13 @@ function showLoginForm() {
 
     loadingDone(true);
 
-    if ($("#loginBoxLogin").val()) {
-        $("#loginBoxPassword").focus();
-    } else {
-        $("#loginBoxLogin").focus();
-    }
+    setTimeout(() => {
+        if ($("#loginBoxLogin").val()) {
+            $("#loginBoxPassword").focus();
+        } else {
+            $("#loginBoxLogin").focus();
+        }
+    }, 100);
 }
 
 function showForgotPasswordForm() {

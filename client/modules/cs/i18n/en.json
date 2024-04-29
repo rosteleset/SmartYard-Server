@@ -26,6 +26,7 @@
     "cloneSheet": "Clone",
     "confirmUnReserve": "Remove from the reserve?",
     "comment": "Comment",
+    "noPart": "Common",
     "methods": {
         "cs": {
             "_title": "Coordination sheet",

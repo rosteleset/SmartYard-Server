@@ -44,7 +44,7 @@
 
             let showAlt = false;
             let workspace = [];
-            let currentWorkspace = params.workspace?params.workspace:lStore("_tt_workspace");
+            let currentWorkspace = params.workspace ? params.workspace : lStore("_tt_workspace");
             if (!currentWorkspace && result.files.length) {
                 currentWorkspace = result.files[0].filename;
             }
@@ -74,6 +74,12 @@
                 } else {
                     h += "<option>" + escapeHTML(result.files[i].filename) + "</option>";
                 }
+            }
+
+            $("#ttWorkspaceSelect").attr("disabled", !h);
+
+            if (!h) {
+                h = "<option>" + i18n("tt.noWorkspacesAvailable") + "</option>";
             }
 
             $("#ttWorkspaceSelect").html(h);

@@ -16,7 +16,7 @@
             message(i18n("addresses.subscriberWasAdded"));
         }).
         always(() => {
-            modules.addresses.subscribers.route(hashParse()[1]);
+            modules.addresses.subscribers.route(hashParse("params"));
         });
     },
 
@@ -28,7 +28,7 @@
             message(i18n("addresses.keyWasAdded"));
         }).
         always(() => {
-            modules.addresses.subscribers.route(hashParse()[1]);
+            modules.addresses.subscribers.route(hashParse("params"));
         });
     },
 
@@ -40,7 +40,7 @@
             message(i18n("addresses.cameraWasAdded"));
         }).
         always(() => {
-            modules.addresses.subscribers.route(hashParse()[1]);
+            modules.addresses.subscribers.route(hashParse("params"));
         });
     },
 
@@ -52,7 +52,7 @@
             message(i18n("addresses.subscriberWasChanged"));
         }).
         always(() => {
-            modules.addresses.subscribers.route(hashParse()[1]);
+            modules.addresses.subscribers.route(hashParse("params"));
         });
     },
 
@@ -64,7 +64,7 @@
             message(i18n("addresses.keyWasChanged"));
         }).
         always(() => {
-            modules.addresses.subscribers.route(hashParse()[1]);
+            modules.addresses.subscribers.route(hashParse("params"));
         });
     },
 
@@ -76,7 +76,7 @@
             message(i18n("addresses.subscriberWasDeleted"));
         }).
         always(() => {
-            modules.addresses.subscribers.route(hashParse()[1]);
+            modules.addresses.subscribers.route(hashParse("params"));
         });
     },
 
@@ -88,7 +88,7 @@
             message(i18n("addresses.subscriberWasDeleted"));
         }).
         always(() => {
-            modules.addresses.subscribers.route(hashParse()[1]);
+            modules.addresses.subscribers.route(hashParse("params"));
         });
     },
 
@@ -100,7 +100,7 @@
             message(i18n("addresses.keyWasDeleted"));
         }).
         always(() => {
-            modules.addresses.subscribers.route(hashParse()[1]);
+            modules.addresses.subscribers.route(hashParse("params"));
         });
     },
 
@@ -112,7 +112,7 @@
             message(i18n("addresses.cameraWasDeleted"));
         }).
         always(() => {
-            modules.addresses.subscribers.route(hashParse()[1]);
+            modules.addresses.subscribers.route(hashParse("params"));
         });
     },
 
@@ -147,7 +147,7 @@
                 },
             ],
             callback: function (result) {
-                let params = hashParse()[1];
+                let params = hashParse("params");
 
                 if (params.flatId) {
                     result.flatId = params.flatId;
@@ -183,7 +183,7 @@
                 },
             ],
             callback: function (result) {
-                let params = hashParse()[1];
+                let params = hashParse("params");
 
                 if (params.flatId) {
                     result.accessType = 2;
@@ -355,7 +355,7 @@
                     if (parseInt(result.delete) == 1) {
                         modules.addresses.subscribers.deleteSubscriber(flatId, subscriberId);
                     } else {
-                        let params = hashParse()[1];
+                        let params = hashParse("params");
 
                         if (params.flatId) {
                             result.flatId = params.flatId;
@@ -456,7 +456,7 @@
     },
 
     renderSubscribers: function (list, flatId, title) {
-        let params = hashParse()[1];
+        let params = hashParse("params");
 
         cardTable({
             target: "#mainForm",
@@ -528,8 +528,7 @@
                                     icon: "fas fa-key",
                                     title: i18n("addresses.keys"),
                                     click: subscriberId => {
-                                        let [ route, params, hash ] = hashParse();
-                                        location.href = "?#addresses.keys&query=" + subscriberId + "&by=1&backStr=" + encodeURIComponent(title + " [" + subscribers[subscriberId] + "]") + "&back=" + encodeURIComponent(hash.join("&"));
+                                        location.href = "?#addresses.keys&query=" + subscriberId + "&by=1&backStr=" + encodeURIComponent(title + " [" + subscribers[subscriberId] + "]") + "&back=" + encodeURIComponent(hashParse("hash"));
                                     },
                                 },
                             ],
@@ -543,7 +542,7 @@
     },
 
     renderKeys: function (list) {
-        let params = hashParse()[1];
+        let params = hashParse("params");
 
         cardTable({
             target: "#altForm",
@@ -662,7 +661,7 @@
                     },
                 ],
                 callback: result => {
-                    let params = hashParse()[1];
+                    let params = hashParse("params");
                     result.flatId = params.flatId;
                     modules.addresses.subscribers.doAddCamera(result);
                 },
@@ -675,7 +674,7 @@
     },
 
     renderCameras: function (list) {
-        let params = hashParse()[1];
+        let params = hashParse("params");
 
         cardTable({
             target: "#altForm",

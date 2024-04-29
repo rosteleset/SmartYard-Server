@@ -20,6 +20,9 @@ var currentAceEditor = false;
 var currentAceEditorOriginalValue = false;
 
 function hashChange() {
+    $('.dropdownMenu').collapse('hide');
+    $('.modal').modal('hide');
+
     let [ route, params, hash ] = hashParse();
 
     if (hash !== lastHash) {
@@ -565,25 +568,40 @@ function loadCustomSubModules(parent, subModules) {
     }
 }
 
-function hashParse() {
-    let hash = location.href.split('#')[1];
-    hash = hash?('#' + hash):'';
+function hashParse(part) {
+    let u = new URL(location.href);
 
-    $('.dropdownMenu').collapse('hide');
-    $('.modal').modal('hide');
+    let hash = u.hash;
+
+    if (hash && hash[0] == "#") {
+        hash = hash.substring(1);
+    }
 
     let params = {};
-    let route;
+    let route = "default";
 
     try {
-        hash = hash.split('#')[1].split('&');
-        route = hash[0]?hash[0]:"default";
-        for (let i = 1; i < hash.length; i++) {
-            let sp = hash[i].split('=');
-            params[sp[0]] = sp[1]?decodeURIComponent(sp[1]):true;
-        }
+        let t = $.deparam(hash);
+        let k = Object.keys(t);
+        route = k[0];
+        k.shift();
+        for (let i in k) {
+            params[k[i]] = t[k[i]];
+        } 
     } catch (e) {
         route = "default";
+    }
+
+    if (part == "route") {
+        return route;
+    }
+
+    if (part == "params") {
+        return params;
+    }
+
+    if (part == "hash") {
+        return hash;
     }
 
     return [ route, params, hash ];

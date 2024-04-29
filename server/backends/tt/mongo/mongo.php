@@ -445,7 +445,7 @@
                     if ($files && (!$fields || !count($fields) || in_array("attachments", $fields))) {
                         $x["attachments"] = $files->searchFiles([
                             "metadata.issue" => true,
-                            "metadata.issueId" => $issue["issueId"],
+                            "metadata.issueId" => $x["issueId"],
                         ]);
                     }
                     $i[] = $x;

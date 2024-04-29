@@ -252,8 +252,7 @@
                                         icon: "fas fa-key",
                                         title: i18n("addresses.objectKeys", i18n("addresses.keysType5")),
                                         click: companyId => {
-                                            let [ route, params, hash ] = hashParse();
-                                            location.href = "?#addresses.keys&query=" + companyId + "&by=5&backStr=" + encodeURIComponent(companies[companyId]) + "&back=" + encodeURIComponent(hash.join("&"));
+                                            location.href = "?#addresses.keys&query=" + companyId + "&by=5&backStr=" + encodeURIComponent(companies[companyId]) + "&back=" + encodeURIComponent(hashParse("hash"));
                                         },
                                     },
                                 ],
