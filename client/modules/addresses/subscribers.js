@@ -521,14 +521,14 @@
                                     icon: "far fa-envelope",
                                     title: i18n("addresses.subscriberInbox"),
                                     click: subscriberId => {
-                                        location.href = "?#addresses.subscriberInbox&subscriberId=" + subscriberId;
+                                        window.location.href = "?#addresses.subscriberInbox&subscriberId=" + subscriberId;
                                     },
                                 },
                                 {
                                     icon: "fas fa-key",
                                     title: i18n("addresses.keys"),
                                     click: subscriberId => {
-                                        location.href = "?#addresses.keys&query=" + subscriberId + "&by=1&backStr=" + encodeURIComponent(title + " [" + subscribers[subscriberId] + "]") + "&back=" + encodeURIComponent(hashParse("hash"));
+                                        window.location.href = "?#addresses.keys&query=" + subscriberId + "&by=1&backStr=" + encodeURIComponent(title + " [" + subscribers[subscriberId] + "]") + "&back=" + encodeURIComponent(hashParse("hash"));
                                     },
                                 },
                             ],

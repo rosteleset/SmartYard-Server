@@ -306,7 +306,7 @@
             if (regionId == targetRegionId) {
                 modules.addresses.renderRegion(regionId);
             } else {
-                location.href = "?#addresses&show=region&regionId=" + regionId;
+                window.location.href = "?#addresses&show=region&regionId=" + regionId;
             }
         });
     },
@@ -332,13 +332,13 @@
                 if (regionId == targetRegionId) {
                     modules.addresses.renderRegion(regionId);
                 } else {
-                    location.href = "?#addresses&show=region&regionId=" + targetRegionId + "&_=" + Math.random();
+                    window.location.href = "?#addresses&show=region&regionId=" + targetRegionId + "&_=" + Math.random();
                 }
             } else {
                 if (areaId == targetAreaId) {
                     modules.addresses.renderArea(areaId);
                 } else {
-                    location.href = "?#addresses&show=area&areaId=" + targetAreaId + "&_=" + Math.random();
+                    window.location.href = "?#addresses&show=area&areaId=" + targetAreaId + "&_=" + Math.random();
                 }
             }
         });
@@ -365,13 +365,13 @@
                 if (areaId == targetAreaId) {
                     modules.addresses.renderArea(areaId);
                 } else {
-                    location.href = "?#addresses&show=area&areaId=" + areaId;
+                    window.location.href = "?#addresses&show=area&areaId=" + areaId;
                 }
             } else {
                 if (cityId == targetCityId) {
                     modules.addresses.renderCity(cityId);
                 } else {
-                    location.href = "?#addresses&show=city&cityId=" + cityId;
+                    window.location.href = "?#addresses&show=city&cityId=" + cityId;
                 }
             }
         });
@@ -398,13 +398,13 @@
                 if (cityId == targetCityId) {
                     modules.addresses.renderCity(cityId);
                 } else {
-                    location.href = "?#addresses&show=city&cityId=" + cityId;
+                    window.location.href = "?#addresses&show=city&cityId=" + cityId;
                 }
             } else {
                 if (settlementId == targetSettlementId) {
                     modules.addresses.renderSettlement(settlementId);
                 } else {
-                    location.href = "?#addresses&show=settlement&settlementId=" + settlementId;
+                    window.location.href = "?#addresses&show=settlement&settlementId=" + settlementId;
                 }
             }
         });
@@ -432,13 +432,13 @@
                 if (settlementId == targetSettlementId) {
                     modules.addresses.renderSettlement(settlementId);
                 } else {
-                    location.href = "?#addresses&show=settlement&settlementId=" + settlementId;
+                    window.location.href = "?#addresses&show=settlement&settlementId=" + settlementId;
                 }
             } else {
                 if (streetId == targetStreetId) {
                     modules.addresses.renderStreet(streetId);
                 } else {
-                    location.href = "?#addresses&show=street&streetId=" + streetId;
+                    window.location.href = "?#addresses&show=street&streetId=" + streetId;
                 }
             }
         });
@@ -2007,7 +2007,7 @@
                                         icon: "fas fa-key",
                                         title: i18n("addresses.objectKeys", i18n("addresses.keysType4")),
                                         click: houseId => {
-                                            location.href = "?#addresses.keys&query=" + houseId + "&by=4&backStr=" + encodeURIComponent(houses[houseId]) + "&back=" + encodeURIComponent(hashParse("hash"));
+                                            window.location.href = "?#addresses.keys&query=" + houseId + "&by=4&backStr=" + encodeURIComponent(houses[houseId]) + "&back=" + encodeURIComponent(hashParse("hash"));
                                         },
                                     },
                                 ]

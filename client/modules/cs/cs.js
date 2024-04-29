@@ -878,7 +878,7 @@
 
                 $(".csIssueSpan").off("click").on("click", function (e) {
                     let cell = $(this);
-                    location.href = "?#tt&issue=" + cell.text();
+                    window.location.href = "?#tt&issue=" + cell.text();
                     e.stopPropagation();
                 });
 
@@ -979,7 +979,7 @@
                             fail(FAIL).
                             done(() => {
                                 message(i18n("cs.sheetWasSaved"));
-                                location.href = "?#cs&_=" + Math.random();
+                                window.location.href = "?#cs&_=" + Math.random();
                             }).
                             always(() => {
                                 loadingDone();
@@ -1030,14 +1030,14 @@
                         callback: result => {
                             lStore("_sheet_name", result.sheet);
                             lStore("_sheet_date", result.date);
-                            location.href = "?#cs.sheet&sheet=" + encodeURIComponent(result.sheet) + "&date=" + encodeURIComponent(result.date);
+                            window.location.href = "?#cs.sheet&sheet=" + encodeURIComponent(result.sheet) + "&date=" + encodeURIComponent(result.date);
                         },
                     }).show();
                 });
     
                 $("#editCSsheet").off("click").on("click", () => {
                     if ($("#csSheet").val() && $("#csDate").val()) {
-                        location.href = "?#cs.sheet&sheet=" + encodeURIComponent($("#csSheet").val()) + "&date=" + encodeURIComponent($("#csDate").val());
+                        window.location.href = "?#cs.sheet&sheet=" + encodeURIComponent($("#csSheet").val()) + "&date=" + encodeURIComponent($("#csDate").val());
                     }
                 });
     

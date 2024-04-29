@@ -1208,12 +1208,19 @@
         if (filter && search && search !== true) {
             lStore('_tt_issue_search_' + filter, search);
         }
-        window.location.href = `?#tt&filter=${encodeURIComponent(filter)}&skip=${skip?skip:0}&limit=${limit?limit:modules.tt.defaultIssuesPerPage}&search=${encodeURIComponent(($.trim(search) && typeof search === "string")?$.trim(search):"")}&_=${Math.random()}`;
+        window.location.href = navigateUrl("tt", {
+            filter: filter,
+            skip: skip ? skip : 0,
+            limit: limit ? limit : modules.tt.defaultIssuesPerPage,
+            search: ($.trim(search) && typeof search === "string") ? $.trim(search) : "",
+        });
     },
 
     selectProject: function (project) {
         lStore("_project", project);
-        window.location.href = `?#tt&project=${encodeURIComponent(project)}`;
+        window.location.href = navigateUrl("tt", {
+            project: project,
+        });
     },
 
     renderIssues: function (params, target, issuesListId, callback, fail) {
@@ -1310,7 +1317,7 @@
         });
 
         $(".ttFilterCustom").off("click").on("click", () => {
-            location.href = '?#tt&filter=empty&customSearch=yes&_=' + Math.random();
+            window.location.href = '?#tt&filter=empty&customSearch=yes&_=' + Math.random();
         });
 
         $("#ttSearchButton").off("click").on("click", () => {
@@ -1802,7 +1809,7 @@
                             message(i18n("tt.filterWasSaved"));
                             lStore("_tt_issue_filter_" + current_project, n);
                             currentAceEditorOriginalValue = currentAceEditor.getValue();
-                            location.href = '?#tt&filter=' + n + '&customSearch=yes&_=' + Math.random();
+                            window.location.href = '?#tt&filter=' + n + '&customSearch=yes&_=' + Math.random();
                         }).
                         fail(FAIL).
                         fail(loadingDone);
@@ -1828,7 +1835,7 @@
             }
 
             $(".customFilterEdit").off("click").on("click", function () {
-                location.href = '?#tt&filter=' + $(this).attr("data-filter") + '&customSearch=yes&_=' + Math.random();
+                window.location.href = '?#tt&filter=' + $(this).attr("data-filter") + '&customSearch=yes&_=' + Math.random();
             });
 
             $(".customFilterDelete").off("click").on("click", function () {
@@ -1839,7 +1846,7 @@
                     done(() => {
                         message(i18n("tt.filterWasDeleted"));
                         lStore("_tt_issue_filter_" + current_project, null);
-                        location.href = '?#tt&_=' + Math.random();
+                        window.location.href = '?#tt&_=' + Math.random();
                     }).
                     fail(FAIL).
                     fail(loadingDone);

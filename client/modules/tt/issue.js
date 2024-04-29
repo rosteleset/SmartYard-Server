@@ -315,7 +315,7 @@
                         fields: fields,
                         callback: modules.tt.issue.doCreateIssue,
                         cancel: () => {
-                            location.href = "?#tt&_=" + Math.random();
+                            window.location.href = "?#tt&_=" + Math.random();
                         },
                     });
     
@@ -323,7 +323,7 @@
                 }).
                 fail(FAIL).
                 fail(() => {
-                    location.href = "?#tt&_=" + Math.random();
+                    window.location.href = "?#tt&_=" + Math.random();
                 });
             }
     
@@ -823,7 +823,7 @@
         $("#mainForm").html(h);
 
         $(".ttIssue").off("click").on("click", function () {
-            location.href = "?#tt&issue=" + encodeURIComponent($(this).text());
+            window.location.href = "?#tt&issue=" + encodeURIComponent($(this).text());
         });
 
         $(".ttJournal").off("click").on("click", () => {
@@ -951,7 +951,7 @@
                     }
                     $("#issueJournal").html(h).show();
                     $(".ttIssue").off("click").on("click", function () {
-                        location.href = "?#tt&issue=" + encodeURIComponent($(this).text());
+                        window.location.href = "?#tt&issue=" + encodeURIComponent($(this).text());
                     });
                 }).
                 always(loadingDone);          
@@ -1042,16 +1042,7 @@
             let action = $(this).text();
 
             modules.tt.issue.issueAction(issue.issue.issueId, action, () => {
-                location.href = refreshUrl();
-/*
-                modules.tt.route({
-                    issue: issue.issue.issueId,
-                    filter: filter,
-                    index: index,
-                    count: count,
-                    search: search,
-                });
-*/
+                window.location.href = refreshUrl();
             });
         });
 
@@ -1093,16 +1084,7 @@
                     fail(FAIL).
                     fail(loadingDone).
                     done(() => {
-                        location.href = refreshUrl();
-/*
-                        modules.tt.route({
-                            issue: issue.issue.issueId,
-                            filter: filter,
-                            index: index,
-                            count: count,
-                            search: search,
-                        });
-*/
+                        window.location.href = refreshUrl();
                     });
                 },
             }).show();
@@ -1158,16 +1140,7 @@
                         fail(FAIL).
                         fail(loadingDone).
                         done(() => {
-                            location.href = refreshUrl();
-/*
-                            modules.tt.route({
-                                issue: issue.issue.issueId,
-                                filter: filter,
-                                index: index,
-                                count: count,
-                                search: search,
-                            });
-*/
+                            window.location.href = refreshUrl();
                         });
                     } else {
                         loadingStart();
@@ -1175,16 +1148,7 @@
                         fail(FAIL).
                         fail(loadingDone).
                         done(() => {
-                            location.href = refreshUrl();
-/*
-                            modules.tt.route({
-                                issue: issue.issue.issueId,
-                                filter: filter,
-                                index: index,
-                                count: count,
-                                search: search,
-                            });
-*/
+                            window.location.href = refreshUrl();
                         });
                     }
                 },
@@ -1223,16 +1187,7 @@
                         fail(FAIL).
                         fail(loadingDone).
                         done(() => {
-                            location.href = refreshUrl();
-/*
-                            modules.tt.route({
-                                issue: issue.issue.issueId,
-                                filter: filter,
-                                index: index,
-                                count: count,
-                                search: search,
-                            });
-*/
+                            window.location.href = refreshUrl();
                         });
                     }
                 },
@@ -1254,16 +1209,7 @@
                     fail(FAIL).
                     fail(loadingDone).
                     done(() => {
-                        location.href = refreshUrl();
-/*
-                        modules.tt.route({
-                            issue: issue.issue.issueId,
-                            filter: filter,
-                            index: index,
-                            count: count,
-                            search: search,
-                        });
-*/
+                        window.location.href = refreshUrl();
                     });
                 }
             });
@@ -1284,16 +1230,7 @@
                     fail(FAIL).
                     fail(loadingDone).
                     done(() => {
-                        location.href = refreshUrl();
-/*
-                        modules.tt.route({
-                            issue: issue.issue.issueId,
-                            filter: filter,
-                            index: index,
-                            count: count,
-                            search: search,
-                        });
-*/
+                        window.location.href = refreshUrl();
                     });
                 }
             }, false, true);
@@ -1311,16 +1248,7 @@
                 fail(loadingDone).
                 done(() => {
                     message(i18n("tt.fileWasDeleted"));
-                    location.href = refreshUrl();
-/*
-                    modules.tt.route({
-                        issue: issue.issue.issueId,
-                        filter: filter,
-                        index: index,
-                        count: count,
-                        search: search,
-                    });
-*/
+                    window.location.href = refreshUrl();
                 });
             });
         });
@@ -1334,16 +1262,7 @@
                 fail(FAIL).
                 fail(loadingDone).
                 done(() => {
-                    location.href = refreshUrl();
-/*
-                    modules.tt.route({
-                        issue: issue.issue.issueId,
-                        filter: filter,
-                        index: index,
-                        count: count,
-                        search: search,
-                    });
-*/
+                    window.location.href = refreshUrl();
                 });
             });
         });
@@ -1357,16 +1276,7 @@
                 fail(FAIL).
                 fail(loadingDone).
                 done(() => {
-                    location.href = refreshUrl();
-/*
-                    modules.tt.route({
-                        issue: issue.issue.issueId,
-                        filter: filter,
-                        index: index,
-                        count: count,
-                        search: search,
-                    });
-*/
+                    window.location.href = refreshUrl();
                 });
             });
         });
@@ -1455,16 +1365,7 @@
                     fail(FAIL).
                     fail(loadingDone).
                     done(() => {
-                        location.href = refreshUrl();
-/*
-                        modules.tt.route({
-                            issue: issue.issue.issueId,
-                            filter: filter,
-                            index: index,
-                            count: count,
-                            search: search,
-                        });
-*/
+                        window.location.href = refreshUrl();
                     });
                 },
             }).show();
@@ -1480,23 +1381,14 @@
                 fail(FAIL).
                 fail(loadingDone).
                 done(() => {
-                    location.href = refreshUrl();
-/*
-                    modules.tt.route({
-                        issue: issue.issue.issueId,
-                        filter: filter,
-                        index: index,
-                        count: count,
-                        search: search,
-                    });
-*/
+                    window.location.href = refreshUrl();
                 });
             });
         });
 
         $(".ttSaCoordinate").off("click").on("click", () => {
             lStore("_coordinate_issue", issue.issue["issueId"]);
-            location.href = "?#cs";
+            window.location.href = "?#cs";
         });
 
         $(".ttIssuePrint").off("click").on("click", function () {

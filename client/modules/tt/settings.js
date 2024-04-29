@@ -2234,7 +2234,7 @@
                 },
             ],
             callback: f => {
-                location.href = "?#tt.settings&section=workflow&workflow=" + encodeURIComponent(f.file);
+                window.location.href = "?#tt.settings&section=workflow&workflow=" + encodeURIComponent(f.file);
             },
         }).show();
     },
@@ -2264,7 +2264,7 @@
                     },
                 ],
                 edit: workflow => {
-                    location.href = "?#tt.settings&section=workflow&workflow=" + encodeURIComponent(workflow);
+                    window.location.href = "?#tt.settings&section=workflow&workflow=" + encodeURIComponent(workflow);
                 },
                 rows: () => {
                     let rows = [];
@@ -2416,7 +2416,7 @@
                 },
             ],
             callback: f => {
-                location.href = "?#tt.settings&section=lib&lib=" + encodeURIComponent(f.file);
+                window.location.href = "?#tt.settings&section=lib&lib=" + encodeURIComponent(f.file);
             },
         }).show();
     },
@@ -2443,7 +2443,7 @@
                     },
                 ],
                 edit: lib => {
-                    location.href = "?#tt.settings&section=lib&lib=" + encodeURIComponent(lib);
+                    window.location.href = "?#tt.settings&section=lib&lib=" + encodeURIComponent(lib);
                 },
                 rows: () => {
                     let rows = [];
@@ -2906,7 +2906,7 @@
                         PUT("tt", "filter", filter, { "body": JSON.stringify(f, true, 4) }).
                         done(() => {
                             message(i18n("tt.filterWasSaved"));
-                            location.href = '?#tt.settings&section=filter&filter=' + encodeURIComponent(filter) + '&_=' + Math.random();                        
+                            window.location.href = '?#tt.settings&section=filter&filter=' + encodeURIComponent(filter) + '&_=' + Math.random();                        
                         }).
                         fail(FAIL).
                         fail(loadingDone);
@@ -2956,7 +2956,7 @@
                 },
             ],
             callback: f => {
-                location.href = "?#tt.settings&section=filter&filter=" + encodeURIComponent(f.file);
+                window.location.href = "?#tt.settings&section=filter&filter=" + encodeURIComponent(f.file);
             },
         }).show();
     },
@@ -2998,7 +2998,7 @@
                         },
                     ],
                     edit: filter => {
-                        location.href = "?#tt.settings&section=filter&filter=" + encodeURIComponent(filter);
+                        window.location.href = "?#tt.settings&section=filter&filter=" + encodeURIComponent(filter);
                     },
                     rows: () => {
                         let rows = [];
@@ -3401,7 +3401,7 @@
                     },
                 ],
                 callback: r => {
-                    location.href = `?#tt.settings&section=viewer&field=${encodeURIComponent(r.field)}&name=${encodeURIComponent(r.name)}`;
+                    window.location.href = `?#tt.settings&section=viewer&field=${encodeURIComponent(r.field)}&name=${encodeURIComponent(r.name)}`;
                 },
             }).show();
         }).
@@ -3542,7 +3542,7 @@
                         },
                     ],
                     edit: k => {
-                        location.href = `?#tt.settings&section=viewer&field=${encodeURIComponent(v[k].field)}&name=${encodeURIComponent(v[k].name)}`;
+                        window.location.href = `?#tt.settings&section=viewer&field=${encodeURIComponent(v[k].field)}&name=${encodeURIComponent(v[k].name)}`;
                     },
                     rows: () => {
                         let rows = [];
@@ -3596,11 +3596,11 @@
     },
 
     modifyPrintData: function (printId) {
-        location.href = `?#tt.settings&section=printData&printId=${printId}`;
+        window.location.href = `?#tt.settings&section=printData&printId=${printId}`;
     },
 
     modifyPrintFormatter: function (printId) {
-        location.href = `?#tt.settings&section=printFormatter&printId=${printId}`;
+        window.location.href = `?#tt.settings&section=printFormatter&printId=${printId}`;
     },
 
     uploadPrintTemplate: function (printId) {

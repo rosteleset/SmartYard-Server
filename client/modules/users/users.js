@@ -290,7 +290,7 @@
                             button: {
                                 class: "fas fa-bookmark",
                                 click: prefix => {
-                                    $(`#${prefix}defaultRoute`).val("#" + location.href.split("#")[1]);
+                                    $(`#${prefix}defaultRoute`).val("#" + window.location.href.split("#")[1]);
                                 },
                             },
                             validate: (v) => {
