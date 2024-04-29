@@ -1631,9 +1631,10 @@
 
             for (let i = 0; i < pKeys.length; i++) {
                 if (sort[pKeys[i]]) {
+                    console.log(pKeys[i], sort[pKeys[i]], (parseInt(sort[pKeys[i]]) == 1));
                     sortMenuItems.push({
                         id: pKeys[i],
-                        text: ((parseInt(sort[pKeys[i]]) == 1) ? '<i class="fas fa-fw fa-arrow-down mr-2"></i>' : '<i class="fas fa-fw fa-arrow-up mr-2"></i>') + modules.tt.issueFieldTitle(pKeys[i]),
+                        text: ((parseInt(sort[pKeys[i]]) == 1) ? '<i class="fas fa-fw fa-sort-alpha-down mr-2"></i>' : '<i class="fas fa-fw fa-sort-alpha-up-alt mr-2"></i>') + modules.tt.issueFieldTitle(pKeys[i]),
                         selected: true,
                     });
                 } else {
@@ -1660,7 +1661,6 @@
                         sort = {};
                         sort[id] = 1;
                     }
-                    console.log(sort);
                     lStore("sortBy:" + x, sort);
                     if (target) {
                         // for workspaces
