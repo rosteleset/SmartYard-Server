@@ -1876,8 +1876,6 @@
                                     window.location.href = navigateUrl("tt", {
                                         issue: issue.id,
                                         filter: issue.filter ? issue.filter : "",
-                                        index: issue.index ? issue.index : "",
-                                        count: issue.count ? issue.count : "",
                                         search: ($.trim(issue.search) && typeof issue.search === "string") ? $.trim(issue.search) : "",
                                     });
                                 },
@@ -1893,8 +1891,6 @@
                                         window.location.href = navigateUrl("tt", {
                                             issue: issue.id,
                                             filter: issue.filter ? issue.filter : "",
-                                            index: issue.index ? issue.index : "",
-                                            count: issue.count ? issue.count : "",
                                             search: ($.trim(issue.search) && typeof issue.search === "string") ? $.trim(issue.search) : "",
                                         });
                                     },
@@ -1906,8 +1902,6 @@
                                 uid: utf8_to_b64(JSON.stringify({
                                     id: issues.issues[i]["issueId"],
                                     filter: x ? x : "",
-                                    index: i + skip + 1,
-                                    count: parseInt(issues.count) ? parseInt(issues.count) : modules.tt.defaultIssuesPerPage,
                                     search: ($.trim(params.search) && params.search !== true) ? $.trim(params.search) : "",
                                 })),
                                 cols: cols,
@@ -1980,12 +1974,12 @@
                     if (modules.groups) {
                         modules.users.loadUsers(() => {
                             modules.groups.loadGroups(() => {
-                                modules.tt.issue.renderIssue(r.issue, params["filter"], params["index"], params["count"], params["search"]);
+                                modules.tt.issue.renderIssue(r.issue, params["filter"], params["search"]);
                             });
                         });
                     } else {
                         modules.users.loadUsers(() => {
-                            modules.tt.issue.renderIssue(r.issue, params["filter"], params["index"], params["count"], params["search"]);
+                            modules.tt.issue.renderIssue(r.issue, params["filter"], params["search"]);
                         });
                     }
                 }).

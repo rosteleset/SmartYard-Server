@@ -470,8 +470,30 @@
         });
     },
 
-    renderIssue: function (issue, filter, index, count, search) {
+    renderIssue: function (issue, filter, search) {
         modules.tt.issue.callsLoaded = false;
+
+        let count = false;
+        let index = false;
+        let next = false;
+        let prev = false;
+
+        if (filter) {
+            let f = lStore("tt_issue_filter_list:" + filter);
+
+            if (f) {
+                count = f.length;
+                for (let i in f) {
+                    i = parseInt(i);
+                    if (issue && issue.issue && issue.issue.issueId && f[i] == issue.issue.issueId) {
+                        next = f[i + 1];
+                        prev = f[i - 1];
+                        index = i + 1;
+                        break;
+                    }
+                }
+            }
+        }
 
         $("#leftTopDynamic").html("");
         $("#rightTopDynamic").html("");
@@ -1431,6 +1453,12 @@
 
         $("#stepPrev").off("click").on("click", () => {
             loadingStart();
+            window.location.href = navigateUrl("tt", {
+                issue: prev,
+                filter: filter,
+                search: search,
+            });
+/*
             QUERY("tt", "issues", {
                 "project": issue.issue.project,
                 "filter": filter,
@@ -1449,10 +1477,17 @@
             }).
             fail(FAIL).
             fail(loadingDone);
+*/
         });
 
         $("#stepNext").off("click").on("click", () => {
             loadingStart();
+            window.location.href = navigateUrl("tt", {
+                issue: next,
+                filter: filter,
+                search: search,
+            });
+/*
             QUERY("tt", "issues", {
                 "project": issue.issue.project,
                 "filter": filter,
@@ -1471,6 +1506,7 @@
             }).
             fail(FAIL).
             fail(loadingDone);
+*/
         });
 
         $("#stepOf").off("click").on("click", () => {
