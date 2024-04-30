@@ -492,6 +492,29 @@ db.getCollection('RTL')
                     $i[] = $x;
                 }
 
+                $projection = [ "issueId" => 1 ];
+
+                $options = [
+                    "projection" => $projection,
+                ];
+
+                if ($sort) {
+                    $options["sort"] = $sort;
+                }
+
+                if ($byPipeline) {
+                    $_query = json_decode(json_encode($query), true);
+                    $_query[] = [ '$project' => $projection ];
+                    $issues = $this->mongo->$db->$collection->aggregate($_query);
+                } else {
+                    $issues = $this->mongo->$db->$collection->find($query, $options);
+                }
+
+                $a = [];
+                foreach ($issues as $issue) {
+                    $a[] = $issue["issueId"];
+                }
+
                 return [
                     "issues" => $i,
                     "projection" => $projection,
@@ -499,6 +522,7 @@ db.getCollection('RTL')
                     "skip" => $skip,
                     "limit" => $limit,
                     "count" => $count,
+                    "all" => $a,
                 ];
             }
 

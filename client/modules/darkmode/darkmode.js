@@ -5,7 +5,7 @@
     init: function () {
         moduleLoaded("darkmode", this);
 
-        const currentTheme = lStore('_theme')
+        const currentTheme = lStore('theme')
         const mainHeader = document.querySelector('.main-header')
 
         modules.darkmode.currentTheme = currentTheme;
@@ -65,7 +65,7 @@
             modules.darkmode.currentTheme = 'light'
         }
 
-        lStore('_theme', modules.darkmode.currentTheme);
+        lStore('theme', modules.darkmode.currentTheme);
     }
 
 }).init();

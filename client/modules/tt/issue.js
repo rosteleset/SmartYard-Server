@@ -34,7 +34,7 @@
                                     w.push({
                                         id: modules.tt.meta.projects[i].workflows[j],
                                         text: wn,
-                                        selected: lStore("_workflow") == modules.tt.meta.projects[i].workflows[j],
+                                        selected: lStore("workflow") == modules.tt.meta.projects[i].workflows[j],
                                     });
                                 }
                             }
@@ -107,7 +107,7 @@
                 projects.push({
                     id: modules.tt.meta.projects[i].acronym,
                     text: $.trim(modules.tt.meta.projects[i].project?modules.tt.meta.projects[i].project:modules.tt.meta.projects[i].acronym),
-                    selected: current_project == modules.tt.meta.projects[i].acronym || lStore("_project") == modules.tt.meta.projects[i].acronym,
+                    selected: current_project == modules.tt.meta.projects[i].acronym || lStore("project") == modules.tt.meta.projects[i].acronym,
                 });
             }
 
@@ -178,8 +178,8 @@
                 },
                 callback: function (result) {
                     if (result.project && result.workflow) {
-                        lStore("_project", result.project);
-                        lStore("_workflow", result.workflow);
+                        lStore("project", result.project);
+                        lStore("workflow", result.workflow);
                     }
                     modules.tt.issue.createIssueForm(result.project, result.workflow, result.catalog, (!!parent)?encodeURIComponent(parent):"");
                 },

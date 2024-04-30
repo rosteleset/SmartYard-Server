@@ -1200,13 +1200,13 @@
     selectFilter: function (filter, skip, limit, search) {
         if (filter) {
             if (filter[0] !== "#") {
-                lStore("_tt_issue_filter_" + $("#ttProjectSelect").val(), filter);
+                lStore("tt_issue_filter_" + $("#ttProjectSelect").val(), filter);
             }
         } else {
-            filter = lStore("_tt_issue_filter_" + $("#ttProjectSelect").val());
+            filter = lStore("tt_issue_filter_" + $("#ttProjectSelect").val());
         }
         if (filter && search && search !== true) {
-            lStore('_tt_issue_search_' + filter, search);
+            lStore('tt_issue_search_' + filter, search);
         }
         window.location.href = navigateUrl("tt", {
             filter: filter,
@@ -1217,7 +1217,7 @@
     },
 
     selectProject: function (project) {
-        lStore("_project", project);
+        lStore("project", project);
         window.location.href = navigateUrl("tt", {
             project: project,
         });
@@ -1239,7 +1239,7 @@
         if (target) {
             current_project = params.project;
         } else {
-            current_project = params.project ? params.project : lStore("_project");
+            current_project = params.project ? params.project : lStore("project");
         }
 
         let pn = {};
@@ -1346,7 +1346,7 @@
             }
         } else {
             try {
-                x = params["filter"] ? params["filter"] : lStore("_tt_issue_filter_" + current_project);
+                x = params["filter"] ? params["filter"] : lStore("tt_issue_filter_" + current_project);
             } catch (e) {
                 //
             }
@@ -1499,6 +1499,10 @@
 
         QUERY("tt", "issues", query, true).
         done(response => {
+            if (response && response.issues && response.issues.all) {
+                lStore("tt_issue_filter_list:" + x, response.issues.all);
+            }
+
             if (response.issues.exception) {
                 error(i18n("errors." + response.issues.exception), i18n("error"), 30);
             }
@@ -1807,7 +1811,7 @@
                         }).
                         done(() => {
                             message(i18n("tt.filterWasSaved"));
-                            lStore("_tt_issue_filter_" + current_project, n);
+                            lStore("tt_issue_filter_" + current_project, n);
                             currentAceEditorOriginalValue = currentAceEditor.getValue();
                             window.location.href = '?#tt&filter=' + n + '&customSearch=yes&_=' + Math.random();
                         }).
@@ -1845,7 +1849,7 @@
                     DELETE("tt", "customFilter", f, { "project": current_project }).
                     done(() => {
                         message(i18n("tt.filterWasDeleted"));
-                        lStore("_tt_issue_filter_" + current_project, null);
+                        lStore("tt_issue_filter_" + current_project, null);
                         window.location.href = '?#tt&_=' + Math.random();
                     }).
                     fail(FAIL).
@@ -1946,9 +1950,9 @@
                         callback();
                     }
                 } else {
-                    lStore("_tt_issue_filter_" + $("#ttProjectSelect").val(), null);
-                    lStore("_tt_issue_filter_" + lStore("_project"), null);
-                    lStore("_project", null);
+                    lStore("tt_issue_filter_" + $("#ttProjectSelect").val(), null);
+                    lStore("tt_issue_filter_" + lStore("project"), null);
+                    lStore("project", null);
                     if (params["_"] != _) {
                         window.location.href = `?#tt&_=${_}`;
                     }
