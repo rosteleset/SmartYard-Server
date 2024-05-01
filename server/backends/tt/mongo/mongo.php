@@ -498,8 +498,8 @@ db.getCollection('RTL')
                     "projection" => $projection_all,
                 ];
 
-                if ($sort_all) {
-                    $options_all["sort"] = $sort_all;
+                if ($sort) {
+                    $options_all["sort"] = $sort;
                 }
 
                 if ($byPipeline) {
