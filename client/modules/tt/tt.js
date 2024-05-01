@@ -904,6 +904,8 @@
     
                     case "assigned":
                     case "watchers":
+                        console.log(val);
+                        
                         let m = [];
     
                         for (let i in val) {
