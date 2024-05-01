@@ -1205,9 +1205,6 @@
         } else {
             filter = lStore("tt_issue_filter_" + $("#ttProjectSelect").val());
         }
-        if (filter && search && search !== true) {
-            lStore('tt_issue_search_' + filter, search);
-        }
         window.location.href = navigateUrl("tt", {
             filter: filter,
             skip: skip ? skip : 0,
@@ -1912,7 +1909,11 @@
                     },
                 });
             } else {
-                $("#" + issuesListId + "-count").text("[" + x + "]: " + i18n("tt.noIssuesAvailable")).addClass("small");
+                if (x) {
+                    $("#" + issuesListId + "-count").text("[" + x + "]: " + i18n("tt.noIssuesAvailable")).addClass("small");
+                }  else {
+                    $("#" + issuesListId + "-count").text(i18n("tt.noIssuesAvailable")).addClass("small");
+                }
             }
             if (!params.customSearch || params.customSearch === true || !params.filter || params.filter === true || params.filter == "empty") {
                 if (typeof callback === "undefined") {
