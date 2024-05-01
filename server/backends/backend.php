@@ -174,7 +174,7 @@
 
             /**
              * @param $key
-             * @return mixed
+             * @return void
              */
             public function unCache($key)
             {
