@@ -904,13 +904,10 @@
     
                     case "assigned":
                     case "watchers":
-                        console.log(val);
-
                         let m = [];
     
                         for (let i in val) {
-                            console.log(i);
-                            m.push += '<span style="white-space: nowrap!important;">' + escapeHTML(members[val[i]] ? members[val[i]] : val[i]) + '</span>';
+                            m.push('<span style="white-space: nowrap!important;">' + escapeHTML(members[val[i]] ? members[val[i]] : val[i]) + '</span>');
                         }
     
                         if (m.length) {
