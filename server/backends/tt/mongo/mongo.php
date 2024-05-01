@@ -373,6 +373,9 @@
                 $preprocess["%%timestamp-3years"] = strtotime(date("Y-m-d", strtotime("-3 year")));
                 $types["%%timestamp-3years"] = "int";
 
+                $preprocess["%%timestamp-startOfMonth"] = strtotime(date("Y-m-1"));
+                $types["%%timestamp-startOfMonth"] = "int";
+
                 $preprocess["%%last"] = function () {
                     $last = $this->journalLast($this->login);
                     $issues = [];
