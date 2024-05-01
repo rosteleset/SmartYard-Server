@@ -678,7 +678,7 @@
             } else {
                 h += "<i class='fas fa-fw fa-chevron-left text-muted'></i>"
             }
-            h += "<span class='hoverable pointer ml-2 mr-2' id='stepOf'>" + index + " " + i18n("tt.of") + " " + count + "</span>";
+            h += `<span class='hoverable pointer ml-2 mr-2' id='stepOf' title='${i18n("tt.backToList")}'>${index} ${i18n("tt.of")} ${count} </span>`;
             if (parseInt(index) < parseInt(count)) {
                 h += "<i id='stepNext' class='fas fa-fw fa-chevron-right pointer'></i>"
             } else {

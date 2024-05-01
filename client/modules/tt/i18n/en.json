@@ -314,6 +314,7 @@
     "sortDir": "Order direction:",
     "sortAsc": "Ascending",
     "sortDesc": "Descending",
+    "backToList": "Back to list",
     "methods": {
         "tt": {
             "_title": "Task Manager",
