@@ -135,14 +135,14 @@
              */
             public function cacheGet($key)
             {
+                $key = "CACHE:" . strtoupper($this->backend) . ":" . $key . ":" . $this->uid;
+
+                $value = @$this->cache[$key];
+                if ($value) {
+                    return json_decode($value, true);
+                }
+
                 if ((int)$this->uid > 0) {
-                    $key = "CACHE:" . strtoupper($this->backend) . ":" . $key . ":" . $this->uid;
-
-                    $value = @$this->cache[$key];
-                    if ($value) {
-                        return json_decode($value, true);
-                    }
-
                     $value = $this->redis->get($key);
                     if ($value) {
                         $this->cache[$key] = $value;
@@ -156,23 +156,20 @@
             /**
              * @param $key
              * @param $value
-             * @return mixed
+             * @return void
              */
             public function cacheSet($key, $value)
             {
-                if ((int)$this->uid > 0) {
-                    $key = "CACHE:" . strtoupper($this->backend) . ":" . $key . ":" . $this->uid;
+                $key = "CACHE:" . strtoupper($this->backend) . ":" . $key . ":" . $this->uid;
 
-                    $value = json_encode($value);
-                    
-                    if ($value != @$this->cache[$key]) {
-                        $this->cache[$key] = $value;
+                $value = json_encode($value);
+                
+                if ($value != @$this->cache[$key]) {
+                    $this->cache[$key] = $value;
+                    if ((int)$this->uid > 0) {
                         $this->redis->setex($key, @$this->config["redis"]["backends_cache_ttl"] ? : ( 3 * 24 * 60 * 60 ), $value);
-                        return false;
                     }
                 }
-
-                return false;
             }
 
             /**
@@ -181,15 +178,12 @@
              */
             public function unCache($key)
             {
+                $key = "CACHE:" . strtoupper($this->backend) . ":" . $key . ":" . $this->uid;
+                unset($this->cache[$key]);
+
                 if ((int)$this->uid > 0) {
-                    $key = "CACHE:" . strtoupper($this->backend) . ":" . $key . ":" . $this->uid;
-
-                    unset($this->cache[$key]);
                     $this->redis->del($key);
-                    return false;
                 }
-
-                return false;
             }
 
             /**
