@@ -332,6 +332,9 @@ function refreshUrl() {
 }
 
 function navigateUrl(route, params) {
+    if (!params) {
+        params = {};
+    }
     params["_"] = Math.random();
 
     return "?#" + route + "&" + $.param(params);

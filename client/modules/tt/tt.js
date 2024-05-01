@@ -1155,7 +1155,7 @@
             }
         }
 
-        if (val === false) {
+        if (val === false || typeof val === "undefined") {
             val = "";
         }
 
@@ -1986,7 +1986,11 @@
                 fail(FAILPAGE);
             } else {
                 if (modules.tt.menuItem) {
-                    $("#" + modules.tt.menuItem).children().first().attr("href", refreshUrl());
+                    if (params  && params.filter && params.filter[0] == "#") {
+                        $("#" + modules.tt.menuItem).children().first().attr("href", navigateUrl("tt"));
+                    } else {
+                        $("#" + modules.tt.menuItem).children().first().attr("href", refreshUrl());
+                    }
                 }
         
                 document.title = i18n("windowTitle") + " :: " + i18n("tt.filters");
