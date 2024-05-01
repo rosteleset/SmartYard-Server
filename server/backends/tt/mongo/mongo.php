@@ -492,22 +492,22 @@ db.getCollection('RTL')
                     $i[] = $x;
                 }
 
-                $projection = [ "issueId" => 1 ];
+                $projection_all = [ "issueId" => 1 ];
 
-                $options = [
-                    "projection" => $projection,
+                $options_all = [
+                    "projection" => $projection_all,
                 ];
 
-                if ($sort) {
-                    $options["sort"] = $sort;
+                if ($sort_all) {
+                    $options_all["sort"] = $sort_all;
                 }
 
                 if ($byPipeline) {
                     $_query = json_decode(json_encode($query), true);
-                    $_query[] = [ '$project' => $projection ];
+                    $_query[] = [ '$project' => $projection-all ];
                     $issues = $this->mongo->$db->$collection->aggregate($_query);
                 } else {
-                    $issues = $this->mongo->$db->$collection->find($query, $options);
+                    $issues = $this->mongo->$db->$collection->find($query, $options_all);
                 }
 
                 $a = [];
