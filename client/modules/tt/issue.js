@@ -1458,26 +1458,6 @@
                 filter: filter,
                 search: search,
             });
-/*
-            QUERY("tt", "issues", {
-                "project": issue.issue.project,
-                "filter": filter,
-                "skip": Math.max(parseInt(index) - 2, 0),
-                "limit": 1,
-                "search": search,
-            }, true).
-            done(response => {
-                window.location.href = navigateUrl("tt", {
-                    issue: response.issues.issues[0]["issueId"],
-                    filter: filter,
-                    index: parseInt(response.issues.skip) + 1,
-                    count: parseInt(response.issues.count),
-                    search: search,
-                });
-            }).
-            fail(FAIL).
-            fail(loadingDone);
-*/
         });
 
         $("#stepNext").off("click").on("click", () => {
@@ -1487,26 +1467,6 @@
                 filter: filter,
                 search: search,
             });
-/*
-            QUERY("tt", "issues", {
-                "project": issue.issue.project,
-                "filter": filter,
-                "skip": index,
-                "limit": 1,
-                "search": search,
-            }, true).
-            done(response => {
-                window.location.href = navigateUrl("tt", {
-                    issue: response.issues.issues[0]["issueId"],
-                    filter: filter,
-                    index: parseInt(response.issues.skip) + 1,
-                    count: parseInt(response.issues.count),
-                    search: search,
-                });
-            }).
-            fail(FAIL).
-            fail(loadingDone);
-*/
         });
 
         $("#stepOf").off("click").on("click", () => {
