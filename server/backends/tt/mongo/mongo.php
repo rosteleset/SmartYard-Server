@@ -1212,6 +1212,7 @@ db.getCollection('RTL')
                 if ($part == "5min") {
                     $success = $this->reCreateIndexes();
                 }
+                
                 return $success && parent::cron($part);
             }
 
