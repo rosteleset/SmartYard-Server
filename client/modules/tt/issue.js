@@ -1511,7 +1511,7 @@
 
         $("#stepOf").off("click").on("click", () => {
             loadingStart();
-            modules.tt.selectFilter(filter, Math.floor(index / modules.tt.defaultIssuesPerPage) * modules.tt.defaultIssuesPerPage, modules.tt.defaultIssuesPerPage, search);
+            modules.tt.selectFilter(filter, Math.floor((index - 1) / modules.tt.defaultIssuesPerPage) * modules.tt.defaultIssuesPerPage, modules.tt.defaultIssuesPerPage, search);
         });
 
         (new ClipboardJS('.cc', {
