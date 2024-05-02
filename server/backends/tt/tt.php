@@ -2145,7 +2145,7 @@
              * @param integer $limit
              * @return mixed
              */
-            public abstract function journalLast($login, $limit = 1024);
+            public abstract function journalLast($login, $limit = 4096);
 
             /**
              * @inheritDoc

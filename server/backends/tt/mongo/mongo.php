@@ -1302,7 +1302,7 @@ db.getCollection('RTL')
             /**
              * @inheritDoc
              */
-            public function journalLast($login, $limit = 1024)
+            public function journalLast($login, $limit = 4096)
             {
                 $limit = (int)$limit;
 
