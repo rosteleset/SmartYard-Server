@@ -1445,10 +1445,14 @@
 
             for (let o in filter_names) {
                 filters += `<span class="dropdown">`;
-                filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold mr-3" id="ttFilter-${o}" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" style="margin-left: -4px;"><i class="far fa-fw fa-caret-square-down"></i>${filter_names[o].trim()}</span>`;
+                filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter-${o}" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" style="margin-left: -4px;"><i class="far fa-fw fa-caret-square-down"></i>${filter_names[o].trim()}</span>`;
                 filters += `<ul class="dropdown-menu" aria-labelledby="ttFilter-${o}">`;
                 filters += hh(filtersTree);
                 filters += "</ul></span>";
+
+                if (o < filter_names.length - 1) {
+                    filters += "<i class='fas fa-fw fa-xs fa-angle-double-right ml-2 mr-3'></i>";
+                }
 
                 filtersTree = filtersTree[filter_names[o].trim()];
             }
@@ -1463,11 +1467,11 @@
     
             if (x != "#search") {
                 if (md5(md5($.trim(modules.tt.meta.filters[x])) + "-" + md5(lStore("_login"))) == x && fp == myself.uid) {
-                    filters += '<span class="ml-1 hoverable customFilterEdit text-info" data-filter="' + x + '"><i class="far fa-fw fa-edit"></i></span><span class="ml-1 hoverable customFilterEdit text-info" data-filter="' + x + '">' + i18n("tt.customFilterEdit") + '</span>';
+                    filters += '<span class="ml-3 hoverable customFilterEdit text-info" data-filter="' + x + '"><i class="far fa-fw fa-edit"></i></span><span class="ml-1 hoverable customFilterEdit text-info" data-filter="' + x + '">' + i18n("tt.customFilterEdit") + '</span>';
                     filters += '<span class="ml-2 hoverable customFilterDelete text-danger" data-filter="' + x + '"><i class="far fa-fw fa-trash-alt"></i></span><span class="ml-1 hoverable customFilterDelete text-danger" data-filter="' + x + '">' + i18n("tt.customFilterDelete") + '</span>';
                 } else {
                     if (AVAIL("tt", "customFilter") && x) {
-                        filters += '<span class="ml-1 hoverable customFilterEdit text-info" data-filter="' + x + '"><i class="far fa-fw fa-edit"></i></span><span class="ml-1 hoverable customFilterEdit text-info" data-filter="' + x + '">' + i18n("tt.customFilterEdit") + '</span>';
+                        filters += '<span class="ml-3 hoverable customFilterEdit text-info" data-filter="' + x + '"><i class="far fa-fw fa-edit"></i></span><span class="ml-1 hoverable customFilterEdit text-info" data-filter="' + x + '">' + i18n("tt.customFilterEdit") + '</span>';
                     }
                 }
             }
