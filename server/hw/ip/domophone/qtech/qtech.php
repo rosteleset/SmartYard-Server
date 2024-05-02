@@ -208,8 +208,10 @@ abstract class qtech extends domophone
             'Config.Account1.STUN.Enable' => (int)$stunEnabled,
             'Config.Account1.STUN.Server' => $stunServer,
             'Config.Account1.STUN.Port' => $stunPort,
-            'Config.Account1.AUTO_ANSWER.Enable' => 0,
         ]);
+
+        // Separate call, otherwise this param will not apply
+        $this->setParams(['Config.Account1.AUTO_ANSWER.Enable' => 0]);
     }
 
     public function configureUserAccount(string $password)
