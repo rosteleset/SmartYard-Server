@@ -274,7 +274,9 @@
                         $uids = $groups->getUsers($g["gid"]);
                         if ($uids) {
                             foreach ($uids as $uid) {
-                                $gu[] = $users->getUser((int)$uid)["login"];
+                                if ($uid) {
+                                    $gu[] = $users->getUser((int)$uid)["login"];
+                                }
                             }
                         }
                         $preprocess["%%group::{$g['acronym']}"] = array_values($gu);
