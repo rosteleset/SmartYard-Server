@@ -1349,13 +1349,12 @@
             }
         }
 
-        let filters;
+        let filters = '';
 
         if (target || $.trim(x)[0] == "#") {
             filters = `<span class="text-bold ${params.class ? params.class : ''}">${params.caption ? params.caption : ((modules.tt.meta.filters[x] ? modules.tt.meta.filters[x] : i18n("tt.filter")).replaceAll("/", "<i class='fas fa-fw fa-xs fa-angle-double-right'></i>"))}</span>`;
         } else {
             let fcount = 0;
-            filters = `<span class="dropdown">`;
     
             let filtersTree = {};
             for (let i in project.filters) {
@@ -1368,18 +1367,15 @@
                     }
                     f = f[tree[j]];
                 }
-                f[tree[tree.length - 1]] = project.filters[i];
+                f[tree[tree.length - 1].trim()] = project.filters[i];
             }
 
-            let filter_name = modules.tt.meta.filters[x]?modules.tt.meta.filters[x]:i18n("tt.filter");
+            let filter_name = modules.tt.meta.filters[x] ? modules.tt.meta.filters[x] : i18n("tt.filter");
             document.title = i18n("windowTitle") + " :: " + filter_name;
 
-            filter_name = filter_name.replaceAll("/", "<i class='fas fa-fw fa-xs fa-angle-double-right'></i>");
+            function hh(t) {
+                let filters = '';
 
-            filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" style="margin-left: -4px;"><i class="far fa-fw fa-caret-square-down mr-1"></i>${filter_name}</span>`;
-            filters += `<ul class="dropdown-menu" aria-labelledby="ttFilter">`;
-
-            (function hh(t) {
                 let fMy = [];
                 let fFolders = [];
                 let fPersonal = [];
@@ -1436,14 +1432,26 @@
                     } else {
                         filters += `<li class="dropdown-item pointer submenu mr-4"><i class="far fa-fw fa-folder mr-2"></i><span>${i}&nbsp;</span></li>`;
                         filters += '<ul class="dropdown-menu">';
-                        hh(t[i]);
+                        filters += hh(t[i]);
                         filters += '</ul>';
                         filters += `</li>`;
                     }
                 }
-            })(filtersTree);
-    
-            filters += "</ul></span>";
+
+                return filters;
+            }
+
+            filter_names = filter_name.split("/");
+
+            for (let o in filter_names) {
+                filters += `<span class="dropdown">`;
+                filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold mr-3" id="ttFilter-${o}" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" style="margin-left: -4px;"><i class="far fa-fw fa-caret-square-down"></i>${filter_names[o].trim()}</span>`;
+                filters += `<ul class="dropdown-menu" aria-labelledby="ttFilter-${o}">`;
+                filters += hh(filtersTree);
+                filters += "</ul></span>";
+
+                filtersTree = filtersTree[filter_names[o].trim()];
+            }
     
             let fp = -1;
             for (let i in project.filters) {
@@ -1455,11 +1463,11 @@
     
             if (x != "#search") {
                 if (md5(md5($.trim(modules.tt.meta.filters[x])) + "-" + md5(lStore("_login"))) == x && fp == myself.uid) {
-                    filters += '<span class="ml-4 hoverable customFilterEdit text-info" data-filter="' + x + '"><i class="far fa-fw fa-edit"></i></span><span class="ml-1 hoverable customFilterEdit text-info" data-filter="' + x + '">' + i18n("tt.customFilterEdit") + '</span>';
+                    filters += '<span class="ml-1 hoverable customFilterEdit text-info" data-filter="' + x + '"><i class="far fa-fw fa-edit"></i></span><span class="ml-1 hoverable customFilterEdit text-info" data-filter="' + x + '">' + i18n("tt.customFilterEdit") + '</span>';
                     filters += '<span class="ml-2 hoverable customFilterDelete text-danger" data-filter="' + x + '"><i class="far fa-fw fa-trash-alt"></i></span><span class="ml-1 hoverable customFilterDelete text-danger" data-filter="' + x + '">' + i18n("tt.customFilterDelete") + '</span>';
                 } else {
                     if (AVAIL("tt", "customFilter") && x) {
-                        filters += '<span class="ml-4 hoverable customFilterEdit text-info" data-filter="' + x + '"><i class="far fa-fw fa-edit"></i></span><span class="ml-1 hoverable customFilterEdit text-info" data-filter="' + x + '">' + i18n("tt.customFilterEdit") + '</span>';
+                        filters += '<span class="ml-1 hoverable customFilterEdit text-info" data-filter="' + x + '"><i class="far fa-fw fa-edit"></i></span><span class="ml-1 hoverable customFilterEdit text-info" data-filter="' + x + '">' + i18n("tt.customFilterEdit") + '</span>';
                     }
                 }
             }
