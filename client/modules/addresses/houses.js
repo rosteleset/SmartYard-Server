@@ -130,7 +130,7 @@
             text: i18n("addresses.domophoneOutputPrimary"),
             selected: parseInt(selected) === 0,
         });
-        
+
         for (let i = 1; i < 32; i++) {
             if (domophoneModel && modules.addresses.houses.meta.domophoneModels[domophoneModel] && i < parseInt(modules.addresses.houses.meta.domophoneModels[domophoneModel].outputs)) {
                 o.push({
@@ -171,7 +171,7 @@
 
         modules.addresses.houses.cmsSelect(el, id, prefix);
     },
-    
+
     cmsSelect: (el, id, prefix) => {
         if (parseInt($("#" + prefix + "cms").val()) !== 0 && $("#" + prefix + "cms:visible").length) {
             $("#" + prefix + "cmsType").parent().parent().parent().show();
@@ -274,9 +274,9 @@
         fail(FAIL).
         done((result, code, response) => {
             message(i18n("addresses.flatWasChanged"));
-//            if (response.getResponseHeader("x-last-error")) {
-//                warning(i18n("errors." + response.getResponseHeader("x-last-error")));
-//            }
+            if (response.getResponseHeader("x-last-error")) {
+                warning(i18n("errors." + response.getResponseHeader("x-last-error")));
+            }
         }).
         always(() => {
             if (flat.houseId) {
@@ -699,7 +699,7 @@
                     </div>
                 `;
                 if (modules.addresses.houses.meta.entrances[i].cms.toString() !== "0") {
-                    inputs += `                        
+                    inputs += `
                         <div class="col">
                             <input type="text" class="form-control form-control-sm ${prefx}-apartmentLevels" data-entrance-id="${modules.addresses.houses.meta.entrances[i].entranceId}" placeholder="${i18n("addresses.apartmentLevels")}">
                         </div>
@@ -999,7 +999,7 @@
 
                 if (entrance) {
                     let domophones = [];
-    
+
                     for (let i in response.domophones.domophones) {
                         modules.addresses.houses.meta.domophoneModelsById[response.domophones.domophones[i].domophoneId] = response.domophones.domophones[i].model;
                     }
@@ -1010,7 +1010,7 @@
                             text: i18n("no"),
                         });
                     }
-    
+
                     for (let i in response.domophones.domophones) {
                         let url;
                         try {
@@ -1039,7 +1039,7 @@
                             text: text,
                         });
                     }
-    
+
                     cardForm({
                         title: i18n("addresses.editEntrance"),
                         footer: true,
@@ -1862,7 +1862,7 @@
                             "gate": 2,
                             "barrier": 3,
                         }
-    
+
                         if (et[a.entranceType] > et[b.entranceType]) {
                             return 1;
                         }
