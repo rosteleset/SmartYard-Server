@@ -32,7 +32,7 @@
                     <a class="dropdown-item theme-select" href="#" id="dark-theme-select">${i18n('darkmode.dark')}</a>
                     <a class="dropdown-item theme-select" href="#" id="light-theme-select">${i18n('darkmode.light')}</a>
                 </div>
-            </li>   
+            </li>
         `).insertAfter("#rightTopDynamic");
 
         $('.theme-select').on("click", modules.darkmode.switchTheme)
@@ -42,7 +42,7 @@
         e.preventDefault();
 
         const id = $(e.target).attr("id");
-        
+
         if (id === 'dark-theme-select') {
             if (!document.body.classList.contains('dark-mode')) {
                 document.body.classList.add("dark-mode");

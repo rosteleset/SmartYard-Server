@@ -196,7 +196,7 @@
                 GET("accounts", "groupUsers", gid, true).done(uids => {
                     let users_list = [];
                     let defaults = [];
-    
+
                     for (let i in users.users) {
                         if (users.users[i].uid) {
                             if (parseInt(users.users[i].uid) == parseInt(group.group.admin) || parseInt(users.users[i].primaryGroup) == parseInt(gid)) {
@@ -210,11 +210,11 @@
                             });
                         }
                     }
-    
+
                     users_list.sort((a, b) => {
                         return a.text.localeCompare(b.text);
                     });
-    
+
                     cardForm({
                         title: i18n("groups.users") + " " + i18n("groups.gid") + gid,
                         footer: true,
@@ -356,7 +356,7 @@
                         modules.groups.startPage = page;
                     },
                 });
-                
+
                 loadingDone();
             }).
             fail(FAIL).
