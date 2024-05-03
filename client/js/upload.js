@@ -25,7 +25,7 @@ function uploadForm(mimeTypes, button) {
     $("#uploadModalCancel").attr("title", i18n("cancel"));
     $("#chooseFileToUpload").text(i18n("chooseFile"));
     $("#uploadButton").text(button?button:i18n("doUpload"));
-}    
+}
 
 function loadFile(mimeTypes, maxSize, callback, button, quiet) {
     uploadForm(mimeTypes, button);

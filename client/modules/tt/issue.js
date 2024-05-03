@@ -51,9 +51,9 @@
                     id: "-",
                     text: "-",
                 }];
-                
+
                 let x = false;
-                
+
                 for (let i in modules.tt.meta.workflows) {
                     if (i == workflow) {
                         if (modules.tt.meta.workflows[i].catalog) {
@@ -202,9 +202,9 @@
 
             $("#leftTopDynamic").html("");
             $("#rightTopDynamic").html("");
-    
+
             loadingStart();
-    
+
             function ciForm(current_project, workflow, catalog, parent) {
                 QUERY("tt", "issueTemplate", {
                     _id: workflow,
@@ -212,17 +212,17 @@
                 }, true).
                 done(response => {
                     document.title = i18n("windowTitle") + " :: " + i18n("tt.createIssue");
-    
+
                     let workflows = [];
-    
+
                     for (let i in modules.tt.meta.workflows) {
                         workflows[i] = (modules.tt.meta.workflows[i].name?modules.tt.meta.workflows[i].name:i);
                     }
-    
+
                     let projectName = "";
                     let project = false;
                     let projectId = -1;
-    
+
                     for (let i in modules.tt.meta.projects) {
                         if (modules.tt.meta.projects[i].acronym == current_project) {
                             project = modules.tt.meta.projects[i];
@@ -230,7 +230,7 @@
                             projectId = modules.tt.meta.projects[i].projectId;
                         }
                     }
-    
+
                     let fields = [
                         {
                             id: "projectName",
@@ -263,7 +263,7 @@
                             hidden: true,
                         },
                     ];
-    
+
                     if (catalog && catalog !== "-" && catalog !== true) {
                         fields.push({
                             id: "catalog",
@@ -273,7 +273,7 @@
                             value: catalog,
                         });
                     }
-    
+
                     if (parent && parent !== "-" && parent !== true) {
                         fields.push({
                             id: "parent",
@@ -283,10 +283,10 @@
                             value: parent,
                         });
                     }
-    
+
                     let kx = [];
                     let ky = {};
-        
+
                     for (let i in response.template.fields) {
                         let fx = ((typeof response.template.fields[i] == "string")?response.template.fields[i]:i).toString();
                         if (fx.charAt(0) == '%') {
@@ -318,7 +318,7 @@
                             window.location.href = "?#tt&_=" + Math.random();
                         },
                     });
-    
+
                     loadingDone();
                 }).
                 fail(FAIL).
@@ -326,7 +326,7 @@
                     window.location.href = "?#tt&_=" + Math.random();
                 });
             }
-    
+
             modules.users.loadUsers(() => {
                 if (modules.groups) {
                     modules.groups.loadGroups(() => {
@@ -383,20 +383,20 @@
                         loadingDone();
 
                         let fields = [];
-        
+
                         let project;
-            
+
                         for (let i in modules.tt.meta.projects) {
                             if (modules.tt.meta.projects[i].acronym == issue.issue.project) {
                                 project = modules.tt.meta.projects[i];
                             }
                         }
-            
+
                         let n = 0;
-            
+
                         let kx = [];
                         let ky = {};
-            
+
                         for (let i in r.template) {
                             let fx = ((typeof r.template[i] == "string")?r.template[i]:i).toString();
                             if (fx.charAt(0) == '%') {
@@ -408,7 +408,7 @@
                                 ky[fx] = (typeof r.template[i] == "string")?false:r.template[i];
                             }
                         }
-            
+
                         for (let i in kx) {
                             let fi = modules.tt.issueField2FormFieldEditor(issue.issue, kx[i], project.projectId, ky[kx[i]], prefferredValues ? prefferredValues[kx[i]] : prefferredValues);
                             if (fi) {
@@ -424,7 +424,7 @@
                                 n++;
                             }
                         }
-            
+
                         if (n) {
                             cardForm({
                                 title: modules.tt.displayAction(action),
@@ -499,7 +499,7 @@
         $("#rightTopDynamic").html("");
 
         search = ($.trim(search) && typeof search === "string")?$.trim(search):"";
-        
+
         try {
             document.title = i18n("windowTitle") + " :: " + i18n("tt.tt") + " :: " + issue.issue["issueId"];
         } catch (e) {
@@ -724,7 +724,7 @@
         h += "</table>";
         h += "</td>";
         h += "</tr>";
-        
+
         let members = {};
 
         for (let i in modules.users.meta) {
@@ -976,7 +976,7 @@
                         window.location.href = "?#tt&issue=" + encodeURIComponent($(this).text());
                     });
                 }).
-                always(loadingDone);          
+                always(loadingDone);
             } else {
                 $(".ttJournal").text(i18n("tt.journal"));
                 $("#issueJournal").hide();

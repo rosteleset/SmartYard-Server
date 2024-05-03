@@ -139,7 +139,7 @@ function escapeHTML(str) {
     if (typeof str == "undefined" || !str) {
         return "";
     }
-    
+
     str = str.toString();
 
     let escapeChars = {
@@ -308,7 +308,7 @@ $.deparam = function (query) {
         let pair = nvp[i].split('=');
         let name = decodeURIComponent(pair[0]);
         let value = decodeURIComponent(pair[1]);
-  
+
         let path = name.match(/(^[^\[]+)(\[.*\]$)?/);
         let first = path[1];
         if (path[2]) {
@@ -319,7 +319,7 @@ $.deparam = function (query) {
         path.unshift(first);
         setValue(data, path, value);
     }
-    
+
     return data;
 }
 
@@ -355,4 +355,3 @@ Object.defineProperty(Array.prototype, "assoc", {
         }
     }
 });
-

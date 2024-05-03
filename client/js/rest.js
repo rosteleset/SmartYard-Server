@@ -86,4 +86,3 @@ function PUT(api, method, id, query) {
 function DELETE(api, method, id, query) {
     return AJAX(arguments.callee.name.toString(), api, method, id, query);
 }
-

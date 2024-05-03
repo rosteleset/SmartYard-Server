@@ -189,8 +189,8 @@ function doLogout(all) {
 
 function logout() {
     mYesNo(
-        i18n("logoutQuestion"), 
-        i18n("logout"), 
+        i18n("logoutQuestion"),
+        i18n("logout"),
         () => {
             doLogout("single");
         },
@@ -587,7 +587,7 @@ function hashParse(part) {
         k.shift();
         for (let i in k) {
             params[k[i]] = t[k[i]];
-        } 
+        }
     } catch (e) {
         route = "default";
     }
@@ -610,7 +610,7 @@ function hashParse(part) {
 function lStore(key, val) {
     if (!lStoreEngine) {
         let wdb;
-        
+
         let t = guid();
 
         try {
@@ -650,7 +650,7 @@ function lStore(key, val) {
                 error(i18n("errors.cantStoreCookie"), i18n("error"), 30);
                 return false;
             }
-        
+
             $.cookie("test", null);
 
             lStoreEngine = "cookie";

@@ -213,7 +213,7 @@ function loadingStart() {
 
 function loadingDone(stayHidden) {
     xblur();
-    
+
     $('#loading').modal('hide');
 
     if (stayHidden === true) {
@@ -349,7 +349,7 @@ setInterval(() => {
             $(".saveButton").removeClass("text-primary");
         }
     }
-    
+
     $("form").off("submit").on("submit", ev => {
         ev.preventDefault();
         return false;

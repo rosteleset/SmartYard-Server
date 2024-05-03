@@ -504,7 +504,7 @@
                 if ($cache) {
                     return $cache;
                 }
-                
+
                 try {
                     $resolutions = $this->db->query("select issue_resolution_id, resolution from tt_issue_resolutions order by resolution", \PDO::FETCH_ASSOC)->fetchAll();
                     $_resolutions = [];
@@ -710,11 +710,11 @@
 
                 try {
                     $sth = $this->db->prepare("
-                        insert into 
+                        insert into
                             tt_issue_custom_fields (catalog, type, field, field_display)
                         values (:catalog, :type, :field, :field_display)
                     ");
-                    
+
                     if (!$sth->execute([
                         ":catalog" => $catalog,
                         ":type" => $type,
@@ -921,7 +921,7 @@
                     $sth = $this->db->prepare("
                         update
                             tt_issue_custom_fields
-                        set 
+                        set
                             catalog = :catalog,
                             field_display = :field_display,
                             field_description = :field_description,
@@ -1169,7 +1169,7 @@
                 $cache = $this->cacheGet($key);
                 if ($cache) {
                     return $cache;
-                } 
+                }
 
                 if ($uid === false) {
                     $uid = $this->uid;
@@ -1390,4 +1390,3 @@
             }
         }
     }
-

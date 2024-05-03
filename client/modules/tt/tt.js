@@ -19,7 +19,7 @@
     ],
 
     init: function () {
-        
+
         if (AVAIL("tt", "tt")) {
             if (parseInt(myself.uid) == 0) {
                 leftSide("fas fa-fw fa-tasks", i18n("tt.tt"), "?#tt.settings", "tt");
@@ -34,7 +34,7 @@
             "workspaces",
         ], this);
     },
-    
+
     issueFieldTitle: function (field) {
         let fieldId;
 
@@ -61,7 +61,7 @@
 
                 case "optionalComment":
                     return i18n("tt.comment");
-    
+
                 case "resolution":
                     return i18n("tt.resolution");
 
@@ -76,10 +76,10 @@
 
                 case "watchers":
                     return i18n("tt.watchers");
-    
+
                 case "links":
                     return i18n("tt.links");
-        
+
                 case "attachments":
                     return i18n("tt.attachments");
 
@@ -91,7 +91,7 @@
 
                 case "author":
                     return i18n("tt.author");
-    
+
                 case "project":
                     return i18n("tt.project");
 
@@ -103,26 +103,26 @@
 
                 case "commentBody":
                     return i18n("tt.commentBody");
-    
+
                 case "commentCreated":
                     return i18n("tt.commentCreated");
-            
+
                 case "commentPrivate":
                     return i18n("tt.commentPrivate");
-        
+
                 case "attachmentFilename":
                     return i18n("tt.attachmentFilename");
-    
+
                 case "catalog":
                     return i18n("tt.catalog");
-        
+
                 case "parent":
                     return i18n("tt.parent");
 
                 // virtual journal field
                 case "workflowAction":
                     return i18n("tt.workflowAction");
-        
+
                 default:
                     return fieldId;
             }
@@ -137,7 +137,7 @@
                     break;
                 }
             }
-            
+
             if (cf) {
                 return cf.fieldDisplay;
             } else {
@@ -291,7 +291,7 @@
                         title: modules.tt.issueFieldTitle(field),
                         placeholder: modules.tt.issueFieldTitle(field),
                     };
-    
+
                 case "resolution":
                     let resolutions = [];
 
@@ -456,10 +456,10 @@
                     for (let i in modules.tt.meta.workflows) {
                         workflows[i] = modules.tt.meta.workflows[i].name?modules.tt.meta.workflows[i].name:i;
                     }
-        
+
                     function workflowsByProject(project) {
                         let w;
-        
+
                         if (project) {
                             for (let i in modules.tt.meta.projects) {
                                 if (modules.tt.meta.projects[i].acronym == project) {
@@ -477,7 +477,7 @@
                                 }
                             }
                         }
-        
+
                         return w;
                     }
 
@@ -505,7 +505,7 @@
 
                 if (cf && cf.type !== "virtual") {
                     let validate = false;
-                    
+
                     if (cf.required && !cf.regex) {
                         validate = new Function ("v", `return v && $.trim(v) !== "";`);
                     } else
@@ -536,7 +536,7 @@
                                     val = '';
                                 }
                             }
-                            
+
                             if ([ "text", "number", "area", "email", "tel", "date", "time", "datetime-local", "yesno", "noyes", "json" ].indexOf(cf.editor) < 0) {
                                 cf.editor = "text";
                             }
@@ -575,7 +575,7 @@
                             }
 
                             let value = (typeof prefferredValue !== "undefined") ? prefferredValue : ((issue && issue["_cf_" + fieldId]) ? issue["_cf_" + fieldId] : []);
-                            
+
                             if (value && !already[value]) {
                                 options.push({
                                     id: value,
@@ -694,7 +694,7 @@
                                 }
                                 return 0;
                             });
-                            
+
                             return {
                                 id: "_cf_" + fieldId,
                                 type: "select2",
@@ -708,10 +708,10 @@
                                 value: (typeof prefferredValue !== "undefined")?prefferredValue:(ax?ax:[]),
                                 validate: validate,
                             }
-    
+
                         case "geo":
                             let vx;
-                            
+
                             if (issue && issue["_cf_" + fieldId]) {
                                 vx = issue["_cf_" + fieldId];
                                 options = [
@@ -721,7 +721,7 @@
                                     },
                                 ];
                             }
-                            
+
                             return {
                                 id: "_cf_" + fieldId,
                                 type: "select2",
@@ -768,7 +768,7 @@
                                     },
                                 },
                             }
-        
+
                         case "issues":
                             let vi = [];
                             options = [];
@@ -891,9 +891,9 @@
             if (val == null || val == "&nbsp;") {
                 return "";
             }
-    
+
             if (field.substring(0, 4) !== "_cf_") {
-                
+
                 switch (field) {
                     case "description":
                     case "subject":
@@ -901,15 +901,15 @@
                         escaped = true;
                         val = convertLinks(nl2br(escapeHTML(val)));
                         break;
-    
+
                     case "assigned":
                     case "watchers":
                         let m = [];
-    
+
                         for (let i in val) {
                             m.push('<span style="white-space: nowrap!important;">' + escapeHTML(members[val[i]] ? members[val[i]] : val[i]) + '</span>');
                         }
-    
+
                         if (m.length) {
                             val = m.join(", ");
                             escaped = true;
@@ -918,15 +918,15 @@
                         }
 
                         break;
-    
+
                     case "author":
                         val = escapeHTML(members[val]?members[val]:val);
                         break;
-    
+
                     case "commentPrivate":
                         val = val ? i18n("yes") : i18n("no");
                         break;
-        
+
                     case "status":
                         if (val) {
                             val = escapeHTML(val);
@@ -935,7 +935,7 @@
                             val = '';
                         }
                         break;
-    
+
                     case "resolution":
                         if (val) {
                             val = escapeHTML(val);
@@ -944,7 +944,7 @@
                             val = '';
                         }
                         break;
-                    
+
                     case "project":
                         for (let i in modules.tt.meta.projects) {
                             if (modules.tt.meta.projects[i].acronym == val) {
@@ -969,7 +969,7 @@
                     case "parent":
                         val = `<span class='hoverable ttIssue text-bold'>${val}</span>`;
                         break;
-    
+
                     case "created":
                     case "updated":
                     case "commentCreated":
@@ -986,7 +986,7 @@
 
                 let cf = {};
                 let multiple = false;
-                
+
                 for (let i in modules.tt.meta.customFields) {
                     if (modules.tt.meta.customFields[i].field == field) {
                         cf = modules.tt.meta.customFields[i];
@@ -1018,7 +1018,7 @@
                                 let subject = $.trim(val[i].substring(val[i].indexOf("]") + 1));
                                 t += `<a href="?#tt&issue=${encodeURIComponent(issueId)}" class="hoverable">[ ${issueId} ]: ${escapeHTML(subject)}</a><br/>`;
                             }
-    
+
                             val = t;
                         } else {
                             val = '';
@@ -1051,11 +1051,11 @@
 
                             if (target != "journal") {
                                 t = "<ul class='mb-1'>";
-                            
+
                                 for (let i in vt) {
                                     t += `<li>${escapeHTML(vt[i])}</li>`;
                                 }
-        
+
                                 t += "</ul>";
                             } else {
                                 for (let i in vt) {
@@ -1072,7 +1072,7 @@
                             val = '';
                         }
                         break;
-        
+
                     case "text":
                         if (cf.format) {
                             val = sprintf(cf.format, val);
@@ -1086,7 +1086,7 @@
 
                             case "json":
                                 return "<pre style='padding: 0px!important; margin: 0px!important;'>" + escapeHTML(JSON.stringify(val, null, 2)) + "</pre>";
-                                
+
                             case "datetime-local":
                                 val = '<span style="white-space: nowrap!important;">' + ttDate(val) + '</span>';
                                 escaped = true;
@@ -1097,7 +1097,7 @@
                                 escaped = true;
                                 break;
                         }
-                        
+
                         if (!escaped) {
                             val = nl2br(escapeHTML(val));
                         }
@@ -1112,11 +1112,11 @@
                         if (multiple) {
                             let s = "";
                             let x = [];
-    
+
                             for (let i in val) {
                                 x.push(val[i]);
                             }
-    
+
                             for (let i in cf.options) {
                                 if (x.indexOf(cf.options[i].option) >= 0) {
                                     s += '<i class="far fa-fw fa-check-square mr-1"></i>';
@@ -1125,7 +1125,7 @@
                                 }
                                 s += cf.options[i].optionDisplay + "<br/>";
                             }
-    
+
                             val = s;
                         }
                         break;
@@ -1133,16 +1133,16 @@
                     case "users":
                         if (typeof val == "array" || typeof val == "object") {
                             let m = "";
-    
+
                             for (let i in val) {
                                 m += members[val[i]]?members[val[i]]:val[i];
                                 m += ", ";
                             }
-        
+
                             if (m) {
                                 m = m.substring(0, m.length - 2);
                             }
-        
+
                             val = escapeHTML(m);
                         } else {
                             val = escapeHTML(members[val]?members[val]:val);
@@ -1224,7 +1224,7 @@
         if (target === "undefined") {
             target = false;
         }
-        
+
         if (issuesListId === "undefined" || !issuesListId) {
             issuesListId = md5(guid());
         }
@@ -1232,7 +1232,7 @@
         let rtd = '';
 
         let current_project;
-        
+
         if (target) {
             current_project = params.project;
         } else {
@@ -1355,7 +1355,7 @@
             filters = `<span class="text-bold ${params.class ? params.class : ''}">${params.caption ? params.caption : ((modules.tt.meta.filters[x] ? modules.tt.meta.filters[x] : i18n("tt.filter")).replaceAll("/", "<i class='fas fa-fw fa-xs fa-angle-double-right'></i>"))}</span>`;
         } else {
             let fcount = 0;
-    
+
             let filtersTree = {};
             for (let i in project.filters) {
                 let tree = (project.filters[i].filter ? modules.tt.meta.filters[project.filters[i].filter] : project.filters[i].filter).split("/");
@@ -1460,7 +1460,7 @@
 
                 filtersTree = filtersTree[filter_names[o].trim()];
             }
-    
+
             let fp = -1;
             for (let i in project.filters) {
                 if (project.filters[i].filter == x) {
@@ -1468,7 +1468,7 @@
                     break;
                 }
             }
-    
+
             if (x != "#search") {
                 if (md5(md5($.trim(modules.tt.meta.filters[x])) + "-" + md5(lStore("_login"))) == x && fp == myself.uid) {
                     filters += '<span class="ml-4 hoverable customFilterEdit text-info" data-filter="' + x + '"><i class="far fa-fw fa-edit"></i></span><span class="ml-1 hoverable customFilterEdit text-info" data-filter="' + x + '">' + i18n("tt.customFilterEdit") + '</span>';
@@ -1479,7 +1479,7 @@
                     }
                 }
             }
-    
+
             if (!fcount) {
                 filters = `<span class="text-bold text-warning">${i18n('tt.noFiltersAvailable')}</span>`;
             }
@@ -1568,7 +1568,7 @@
                         h += `<li class="page-item pointer tt_pager" data-page="${i}" data-target="${issuesListId}"><span class="page-link">${i}</span></li>`;
                     }
                 }
-                
+
                 if (last < pages) {
                     h += `<li class="page-item pointer tt_pager" data-page="${pages}" data-target="${issuesListId}"><span class="page-link"><span aria-hidden="true">&raquo;</span></li>`;
                 } else {
@@ -1649,7 +1649,7 @@
             ];
 
             let sort = response.issues.sort;
-            
+
             if (!sort) {
                 sort = lStore("sortBy:" + x);
             }
@@ -1767,7 +1767,7 @@
                     name: "removeline",
                     description: "Remove line",
                     bindKey: {
-                        win: "Ctrl-Y", 
+                        win: "Ctrl-Y",
                         mac: "Cmd-Y"
                     },
                     exec: function (editor) { editor.removeLines(); },
@@ -1786,7 +1786,7 @@
                 editor.commands.addCommand({
                     name: 'save',
                     bindKey: {
-                        win: "Ctrl-S", 
+                        win: "Ctrl-S",
                         mac: "Cmd-S"
                     },
                     exec: (() => {
@@ -1796,7 +1796,7 @@
                 editor.commands.addCommand({
                     name: 'run',
                     bindKey: {
-                        win: "Ctrl-R", 
+                        win: "Ctrl-R",
                         mac: "Cmd-R"
                     },
                     exec: (() => {
@@ -2009,7 +2009,7 @@
                         $("#" + modules.tt.menuItem).children().first().attr("href", refreshUrl());
                     }
                 }
-        
+
                 document.title = i18n("windowTitle") + " :: " + i18n("tt.filters");
 
                 if (parseInt(myself.uid)) {

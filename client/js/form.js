@@ -1,11 +1,11 @@
 function cardForm(params) {
     let _prefix = "modalForm-" + md5(guid()) + "-";
-    
+
     let h = `<form id="${_prefix}form" autocomplete="off" onsubmit="return false;" action="">`;
     h += `<input autocomplete="off" name="${_prefix}hiddenText" type="text" style="display:none;">`;
     h += `<input autocomplete="off" name="${_prefix}hiddenPassword" type="password" style="display:none;">`;
     h += `<input autocomplete="new-password" name="${_prefix}hiddenNewPassword" type="password" style="display:none;">`;
-    
+
     let files = {};
 
     if (params.target) {
@@ -308,7 +308,7 @@ function cardForm(params) {
                 h += `</pre>`;
                 h += `</div>`;
                 break;
-        
+
             case "text":
             case "email":
             case "number":
@@ -413,7 +413,7 @@ function cardForm(params) {
                 } else {
                     return strtotime($(`#${_prefix}${params.fields[i].id}`).val()) * 1000;
                 }
-    
+
             case "multiselect":
                 let o = [];
                 $(`.checkBoxOption-${params.fields[i].id}`).each(function () {
@@ -433,14 +433,14 @@ function cardForm(params) {
 
             case "code":
                 return $.trim(params.fields[i].editor.getValue());
-    
+
             case "json":
                 try {
                     return JSON.parse($.trim(params.fields[i].editor.getValue()));
                 } catch (e) {
                     return false;
                 }
-        
+
             case "files":
                 return files[_prefix + params.fields[i].id];
         }
@@ -599,7 +599,7 @@ function cardForm(params) {
                         $(`#${_prefix}${params.fields[i].id}`).val(date('Y-m-d', params.fields[i].value / 1000) + 'T' + date('H:i', params.fields[i].value / 1000));
                     }
                     break;
-    
+
                 case "multiselect":
                     $(`.checkBoxOption-${params.fields[i].id}`).prop("checked", false);
                     for (let j in params.fields[i].value) {
@@ -722,7 +722,7 @@ function cardForm(params) {
                 name: "removeline",
                 description: "Remove line",
                 bindKey: {
-                    win: "Ctrl-Y", 
+                    win: "Ctrl-Y",
                     mac: "Cmd-Y"
                 },
                 exec: function (editor) { editor.removeLines(); },
@@ -761,7 +761,7 @@ function cardForm(params) {
                 name: "removeline",
                 description: "Remove line",
                 bindKey: {
-                    win: "Ctrl-Y", 
+                    win: "Ctrl-Y",
                     mac: "Cmd-Y"
                 },
                 exec: function (editor) { editor.removeLines(); },
@@ -799,7 +799,7 @@ function cardForm(params) {
                                 }
                             } while (found);
                         }
-    
+
                         $("#" + id).html("");
                         for (let j in files[id]) {
                             $("#" + id).append("<option>" + files[id][j].name + "</option>");

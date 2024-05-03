@@ -598,7 +598,7 @@ function timezonesOptions () {
         "W-SU",
         "Zulu",
     ];
-    
+
     let tz = [{
         id: "-",
         text: "-",

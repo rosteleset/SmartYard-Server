@@ -31,4 +31,3 @@ function i18n(msg, ...args) {
         return msg;
     }
 }
-

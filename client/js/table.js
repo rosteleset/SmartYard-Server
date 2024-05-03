@@ -13,7 +13,7 @@ function cardTable(params) {
             h += '<td>';
             h += `<button id="${titleButton}" type="button" class="btn btn-primary btn-sm mr-2" title="${params.title.button.caption}"><i class="fa-fw ${icon}"></i></button>`;
             h += '</td>';
-        }   
+        }
         h += '<td width="100%">';
         if (params.title.caption) {
             h += `<h3 class="card-title" style="margin-bottom: 0rem!important">`;
@@ -274,7 +274,7 @@ function cardTable(params) {
         } else {
             h += `<li class="page-item disabled"><span class="page-link"><span aria-hidden="true">&laquo;</span></li>`;
         }
-        
+
         for (let i = first; i <= last; i++) {
             if (currentPage == i) {
                 h += `<li class="page-item pointer font-weight-bold ${tableClass}-navButton" page="${i}"><span class="page-link">${i}</span></li>`;
@@ -282,7 +282,7 @@ function cardTable(params) {
                 h += `<li class="page-item pointer ${tableClass}-navButton" page="${i}"><span class="page-link">${i}</span></li>`;
             }
         }
-        
+
         if (last < pages) {
             h += `<li class="page-item pointer ${tableClass}-navButton" page="${pages}"><span class="page-link" aria-label="Next"><span aria-hidden="true">&raquo;</span><span class="sr-only">Next</span></></li>`;
         } else {
@@ -391,7 +391,7 @@ function cardTable(params) {
 
         $("." + editClass).off("click").on("click", function () {
             params.edit($(this).attr("uid"))
-        });     
+        });
     }
 
     if (params.target) {

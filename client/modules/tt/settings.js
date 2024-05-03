@@ -706,7 +706,7 @@
         done(modules.tt.tt).
         done(() => {
             $(window).scrollTop(0);
-            
+
             let cfc = [];
             let a = {};
             for (let i in modules.tt.meta.customFields) {
@@ -1384,7 +1384,7 @@
             if (modules.groups) {
                 modules.groups.loadGroups(() => {
                     let personals = {};
-    
+
                     for (let i in modules.groups.meta) {
                         if (modules.groups.meta[i].gid) {
                             personals[1000000 + parseInt(modules.groups.meta[i].gid)] = $.trim(modules.groups.meta[i].name + " [" + modules.groups.meta[i].acronym + "]");
@@ -2157,7 +2157,7 @@
                 name: "removeline",
                 description: "Remove line",
                 bindKey: {
-                    win: "Ctrl-Y", 
+                    win: "Ctrl-Y",
                     mac: "Cmd-Y"
                 },
                 exec: function (editor) { editor.removeLines(); },
@@ -2176,7 +2176,7 @@
             editor.commands.addCommand({
                 name: 'save',
                 bindKey: {
-                    win: "Ctrl-S", 
+                    win: "Ctrl-S",
                     mac: "Cmd-S"
                 },
                 exec: (() => {
@@ -2339,7 +2339,7 @@
                 name: "removeline",
                 description: "Remove line",
                 bindKey: {
-                    win: "Ctrl-Y", 
+                    win: "Ctrl-Y",
                     mac: "Cmd-Y"
                 },
                 exec: function (editor) { editor.removeLines(); },
@@ -2358,7 +2358,7 @@
             editor.commands.addCommand({
                 name: 'save',
                 bindKey: {
-                    win: "Ctrl-S", 
+                    win: "Ctrl-S",
                     mac: "Cmd-S"
                 },
                 exec: (() => {
@@ -2853,7 +2853,7 @@
                     ]
                 };
                 template.name = filter;
-                
+
                 editor.setValue((trim(f.body) == "{}")?JSON.stringify(template, null, 4):f.body , -1);
                 currentAceEditor = editor;
                 currentAceEditorOriginalValue = currentAceEditor.getValue();
@@ -2867,7 +2867,7 @@
                     name: "removeline",
                     description: "Remove line",
                     bindKey: {
-                        win: "Ctrl-Y", 
+                        win: "Ctrl-Y",
                         mac: "Cmd-Y"
                     },
                     exec: function (editor) { editor.removeLines(); },
@@ -2886,7 +2886,7 @@
                 editor.commands.addCommand({
                     name: 'save',
                     bindKey: {
-                        win: "Ctrl-S", 
+                        win: "Ctrl-S",
                         mac: "Cmd-S"
                     },
                     exec: (() => {
@@ -2906,7 +2906,7 @@
                         PUT("tt", "filter", filter, { "body": JSON.stringify(f, true, 4) }).
                         done(() => {
                             message(i18n("tt.filterWasSaved"));
-                            window.location.href = '?#tt.settings&section=filter&filter=' + encodeURIComponent(filter) + '&_=' + Math.random();                        
+                            window.location.href = '?#tt.settings&section=filter&filter=' + encodeURIComponent(filter) + '&_=' + Math.random();
                         }).
                         fail(FAIL).
                         fail(loadingDone);
@@ -3447,7 +3447,7 @@
                 name: "removeline",
                 description: "Remove line",
                 bindKey: {
-                    win: "Ctrl-Y", 
+                    win: "Ctrl-Y",
                     mac: "Cmd-Y"
                 },
                 exec: function (editor) { editor.removeLines(); },
@@ -3466,7 +3466,7 @@
             editor.commands.addCommand({
                 name: 'save',
                 bindKey: {
-                    win: "Ctrl-S", 
+                    win: "Ctrl-S",
                     mac: "Cmd-S"
                 },
                 exec: (() => {
@@ -3814,7 +3814,7 @@
                 name: "removeline",
                 description: "Remove line",
                 bindKey: {
-                    win: "Ctrl-Y", 
+                    win: "Ctrl-Y",
                     mac: "Cmd-Y"
                 },
                 exec: function (editor) { editor.removeLines(); },
@@ -3833,7 +3833,7 @@
             editor.commands.addCommand({
                 name: 'save',
                 bindKey: {
-                    win: "Ctrl-S", 
+                    win: "Ctrl-S",
                     mac: "Cmd-S"
                 },
                 exec: (() => {
@@ -3897,7 +3897,7 @@
                 name: "removeline",
                 description: "Remove line",
                 bindKey: {
-                    win: "Ctrl-Y", 
+                    win: "Ctrl-Y",
                     mac: "Cmd-Y"
                 },
                 exec: function (editor) { editor.removeLines(); },
@@ -3916,7 +3916,7 @@
             editor.commands.addCommand({
                 name: 'save',
                 bindKey: {
-                    win: "Ctrl-S", 
+                    win: "Ctrl-S",
                     mac: "Cmd-S"
                 },
                 exec: (() => {
@@ -3996,7 +3996,7 @@
             case "lib":
                 modules.tt.settings.renderWorkflowLib(params["lib"]);
                 break;
-    
+
             case "filters":
                 modules.tt.settings.renderFilters();
                 break;
@@ -4036,15 +4036,15 @@
             case "prints":
                 modules.tt.settings.renderPrints();
                 break;
-    
+
             case "printData":
                 modules.tt.settings.renderPrintData(params["printId"]);
                 break;
-        
+
             case "printFormatter":
                 modules.tt.settings.renderPrintFormatter(params["printId"]);
                 break;
-            
+
             default:
                 modules.tt.settings.renderProjects();
                 break;

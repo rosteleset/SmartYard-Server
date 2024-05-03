@@ -24,17 +24,17 @@
                 $flat = $this->db->get("
                     select
                         house_flat_id,
-                        floor, 
+                        floor,
                         flat,
                         code,
                         plog,
-                        coalesce(manual_block, 0) manual_block, 
+                        coalesce(manual_block, 0) manual_block,
                         coalesce(admin_block, 0) admin_block,
-                        coalesce(auto_block, 0) auto_block, 
-                        open_code, 
-                        auto_open, 
-                        white_rabbit, 
-                        sip_enabled, 
+                        coalesce(auto_block, 0) auto_block,
+                        open_code,
+                        auto_open,
+                        white_rabbit,
+                        sip_enabled,
                         sip_password,
                         last_opened,
                         cms_enabled,
@@ -73,11 +73,11 @@
                     $entrances = $this->db->get("
                         select
                             house_entrance_id,
-                            house_domophone_id, 
-                            apartment, 
+                            house_domophone_id,
+                            apartment,
                             coalesce(houses_entrances_flats.cms_levels, houses_entrances.cms_levels, '') cms_levels,
                             (select count(*) from houses_entrances_cmses where houses_entrances_cmses.house_entrance_id = houses_entrances_flats.house_entrance_id and houses_entrances_cmses.apartment = houses_entrances_flats.apartment) matrix
-                        from 
+                        from
                             houses_entrances_flats
                                 left join houses_entrances using (house_entrance_id)
                         where house_flat_id = {$flat["flatId"]}
@@ -582,7 +582,7 @@
                         $params["login"] = null;
                         $params["password"] = null;
                     }
-                    
+
                     $params["floor"] = (int)@$params["floor"];
 
                     $mod = $this->db->modifyEx("update houses_flats set %s = :%s where house_flat_id = $flatId", [
@@ -2103,13 +2103,13 @@
                 function cliUsage()
                 {
                     global $argv;
-            
+
                     echo formatUsage("usage: {$argv[0]} households
-                    
+
                         rfid:
                             [--rf-import=<filename.csv> --house-id=<id> [--rf-first]]
                     ");
-            
+
                     exit(1);
                 }
 
@@ -2123,11 +2123,11 @@
                     foreach ($f1 as $f) {
                         $f2[$f["flat"]] = $f["flatId"];
                     }
-    
+
                     if (!count($f2)) {
                         die("no flats found\n");
                     }
-    
+
                     if (!file_exists($args["--rf-import"])) {
                         die("file not found\n");
                     }
@@ -2145,7 +2145,7 @@
                         }
                         if ($k && $f) {
                             $r2[$k] = $f;
-                        } 
+                        }
                     }
 
                     if (!count($r2)) {
