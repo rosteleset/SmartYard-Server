@@ -139,7 +139,7 @@
                         }
                         if (@$params["_id"] == $params["_uid"]) {
                             $sth = $this->db->prepare("
-                                select 
+                                select
                                     count(*) as allow
                                 from
                                     core_api_methods_personal
@@ -148,7 +148,7 @@
                                         select
                                             aid
                                         from
-                                            core_api_methods    
+                                            core_api_methods
                                         where
                                             api = :api and
                                             method = :method and
@@ -209,9 +209,9 @@
                                             or
                                             gid in (select gid from core_groups where admin = :uid)
                                         )
-                                    ) or 
+                                    ) or
                                     aid in (select aid from core_api_methods_common) or
-                                    aid in (select aid from core_api_methods_personal) or   
+                                    aid in (select aid from core_api_methods_personal) or
                                     -- will be passed to backend
                                     aid in (select aid from core_api_methods_by_backend)
                                 ) as t1 where

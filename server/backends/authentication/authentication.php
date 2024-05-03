@@ -106,51 +106,51 @@
 
                     foreach ($keys as $key) {
                         $auth = json_decode($this->redis->get($key), true);
-    
+
                         if ($ua) {
                             $auth["ua"] = $ua;
                         }
-    
+
                         if ($ip) {
                             $auth["ip"] = $ip;
                         }
-    
+
                         $auth["updated"] = time();
 
                         $auth["token"] = $token;
-    
+
                         $this->redis->set($key, json_encode($auth));
-    
+
                         $users = loadBackend("users");
-    
+
                         if ($users->getUidByLogin($auth["login"]) == $auth["uid"]) {
                             return $auth;
                         } else {
                             $this->redis->del($key);
                         }
                     }
-    
+
                     $keys = $this->redis->keys("auth_" . $token . "_*");
-    
+
                     foreach ($keys as $key) {
                         $auth = json_decode($this->redis->get($key), true);
-    
+
                         if ($ua) {
                             $auth["ua"] = $ua;
                         }
-    
+
                         if ($ip) {
                             $auth["ip"] = $ip;
                         }
-    
+
                         $auth["updated"] = time();
-    
+
                         $auth["token"] = $token;
 
                         $this->redis->setex($key, $auth["persistent"]?(7 * 24 * 60 * 60):$this->config["redis"]["token_idle_ttl"], json_encode($auth));
-    
+
                         $users = loadBackend("users");
-    
+
                         if ($users->getUidByLogin($auth["login"]) == $auth["uid"]) {
                             return $auth;
                         } else {
@@ -231,8 +231,7 @@ if ($checkResult) {
 } else {
     echo 'FAILED';
 }
-*/                
+*/
             }
         }
     }
-

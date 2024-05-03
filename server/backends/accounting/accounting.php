@@ -36,4 +36,3 @@
             public abstract function get($query);
         }
     }
-

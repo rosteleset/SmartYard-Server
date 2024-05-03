@@ -40,7 +40,7 @@
                             from
                                 core_api_methods
                             where
-                                aid not in (select aid from core_api_methods_common) and 
+                                aid not in (select aid from core_api_methods_common) and
                                 aid not in (select aid from core_api_methods_by_backend) and
                                 coalesce(permissions_same, '') = ''
                         ", \PDO::FETCH_ASSOC)->fetchAll();
@@ -107,7 +107,7 @@
                 if ($api) {
                     return $available && @$available[$api];
                 }
-                
+
                 return false;
             }
         }
