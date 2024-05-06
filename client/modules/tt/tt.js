@@ -653,7 +653,6 @@
                             }
 
                             let vu = (typeof prefferredValue !== "undefined") ? prefferredValue : ((issue && issue["_cf_" + fieldId]) ? issue["_cf_" + fieldId] : []);
-                            console.log(vu);
 
                             return {
                                 id: "_cf_" + fieldId,
