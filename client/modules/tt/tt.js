@@ -1926,7 +1926,8 @@
                                             icon: "fas fa-external-link-alt text-primary",
                                             title: i18n("tt.openIssueNewWindow"),
                                             click: uid => {
-                                                console.log(uid);
+                                                let i = b64_to_utf8(uid);
+                                                window.open(navigateUrl("tt", { issue: i.id }), '_blank');
                                             }
                                         },
                                     ],
