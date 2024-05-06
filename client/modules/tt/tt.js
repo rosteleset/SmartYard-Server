@@ -663,7 +663,7 @@
                                 hint: cf.fieldDescription?cf.fieldDescription:false,
                                 options: select2Filter(options, filter),
                                 multiple: cf.format.indexOf("multiple") >= 0,
-                                value: vu,
+                                value: object2array(vu),
                                 validate: validate,
                             }
 

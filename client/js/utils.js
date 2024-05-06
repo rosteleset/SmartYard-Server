@@ -340,6 +340,31 @@ function navigateUrl(route, params) {
     return "?#" + route + "&" + $.param(params);
 }
 
+function object2array(obj) {
+    let possible = true;
+
+    let keys = Object.keys(obj);
+
+    for (let i in keys) {
+        if (i != keys[i]) {
+            possible = false;
+            break;
+        }
+    }
+
+    if (!possible) {
+        return obj;
+    }
+
+    let arr = [];
+
+    for (let i in keys) {
+        arr.push(obj[keys[i]]);
+    }
+
+    return arr;
+}
+
 Object.defineProperty(Array.prototype, "assoc", {
     value: function (key, target, val) {
         let arr = this;
