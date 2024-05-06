@@ -79,6 +79,7 @@ class akuvox extends camera
 
     protected function getOsdText(): string
     {
-        return $this->getConfigParams(['Config.DoorSetting.RTSP.OSDText'])[0];
+        $a = $this->getConfigParams(['Config.DoorSetting.RTSP.OSDText']);
+        return  (empty($a[0])) ? "":$a[0];
     }
 }
