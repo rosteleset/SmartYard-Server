@@ -1923,7 +1923,7 @@
                                 dropDown: {
                                     items: [
                                         {
-                                            icon: "fas fa-external-link-alt",
+                                            icon: "fas fa-external-link-alt text-primary",
                                             title: i18n("tt.openIssueNewWindow"),
                                             click: uid => {
                                                 console.log(uid);
