@@ -341,6 +341,14 @@ function navigateUrl(route, params) {
 }
 
 function object2array(obj) {
+    if (typeof obj !== "object") {
+        return obj;
+    }
+
+    if (Array.isArray(obj)) {
+        return obj;
+    }
+
     let possible = true;
 
     let keys = Object.keys(obj);
