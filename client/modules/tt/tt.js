@@ -652,6 +652,9 @@
                                 options = peoples(project, true, true);
                             }
 
+                            let vu = (typeof prefferredValue !== "undefined") ? prefferredValue : ((issue && issue["_cf_" + fieldId]) ? issue["_cf_" + fieldId] : []);
+                            console.log(vu);
+
                             return {
                                 id: "_cf_" + fieldId,
                                 type: "select2",
@@ -660,7 +663,7 @@
                                 hint: cf.fieldDescription?cf.fieldDescription:false,
                                 options: select2Filter(options, filter),
                                 multiple: cf.format.indexOf("multiple") >= 0,
-                                value: (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue["_cf_" + fieldId])?issue["_cf_" + fieldId]:[]),
+                                value: vu,
                                 validate: validate,
                             }
 
