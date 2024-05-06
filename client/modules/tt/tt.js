@@ -1920,6 +1920,17 @@
                                     search: ($.trim(params.search) && params.search !== true) ? $.trim(params.search) : "",
                                 })),
                                 cols: cols,
+                                dropDown: {
+                                    items: [
+                                        {
+                                            icon: "fas fa-external-link-alt",
+                                            title: i18n("tt.openIssueNewWindow"),
+                                            click: uid => {
+                                                console.log(uid);
+                                            }
+                                        },
+                                    ],
+                                },
                             });
                         }
 
