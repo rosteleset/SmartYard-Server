@@ -315,6 +315,7 @@
     "sortAsc": "По возрастанию",
     "sortDesc": "По убыванию",
     "backToList": "Назад к списку",
+    "openIssueNewWindow": "Открыть заявку в новом окне",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",
