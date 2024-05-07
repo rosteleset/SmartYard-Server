@@ -425,6 +425,7 @@ abstract class beward extends domophone
         $this->setIntercom('ExtReaderNotify', 'off');
         $this->setIntercom('IndividualLevels', 'on');
         $this->setIntercom('SosDelay', 0);
+        $this->configureGate(); // Set "Mode 2" for incoming calls to work correctly
     }
 
     public function setAudioLevels(array $levels)
