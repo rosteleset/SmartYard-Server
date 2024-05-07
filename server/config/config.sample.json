@@ -72,7 +72,7 @@
             "backend": "dadata",
             "token": "<!-- your dadata token here --!>"
         },
-        
+
         "files": {
             "backend": "mongo"
         },
@@ -207,14 +207,6 @@
 
         "queue": {
             "backend": "internal"
-        },
-
-        "monitoring": {
-            "backend": "zabbix",
-            "cron_sync_data_scheduler": "5min",
-            "zbx_api_url": "<!-- your zabbix API URL here --!>",
-            "zbx_token": "<!-- your zabbix API token --!>",
-            "store_days": 7
         }
     },
 
