@@ -5,8 +5,8 @@ After=network.target
 
 [Service]
 Type=simple
-WorkingDirectory=/opt/rbt/services/event
-ExecStart=/usr/bin/node /opt/rbt/services/event/index.js rubetek
+WorkingDirectory=/opt/rbt/server/services/event/
+ExecStart=/usr/bin/node /opt/rbt/server/services/event/index.js rubetek
 RestartSec=10
 Restart=always
 User=rbt
