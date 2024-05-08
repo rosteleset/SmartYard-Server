@@ -312,6 +312,13 @@
                         readonly: true,
                     },
                     {
+                        id: "platform",
+                        type: "text",
+                        title: i18n("addresses.platform"),
+                        value: subscriber.platform === null ? "-" : (subscriber.platform === 0 ? "android" : (subscriber.platform === 1 ? "ios" : (subscriber.platform === 2 ? "other" : "-"))),
+                        readonly: true,
+                    },
+                    {
                         id: "voipEnabled",
                         type: "select",
                         title: i18n("addresses.voipEnabled"),
@@ -416,7 +423,7 @@
                         readonly: true,
                         value: key.rfId,
                     },
-                {
+                    {
                         id: "comments",
                         type: "text",
                         title: i18n("addresses.comments"),
@@ -457,7 +464,6 @@
 
     renderSubscribers: function (list, flatId, title) {
         let params = hashParse("params");
-
         cardTable({
             target: "#mainForm",
             title: {
@@ -478,6 +484,14 @@
                     title: i18n("addresses.mobile"),
                     nowrap: true,
                     fullWidth: true,
+                },
+                {
+                    title: i18n("addresses.platform"),
+                    nowrap: true,
+                },
+                {
+                    title: i18n("addresses.lastSeen"),
+                    nowrap: true,
                 },
                 {
                     title: i18n("addresses.subscriberFlatOwner"),
@@ -510,6 +524,13 @@
                             },
                             {
                                 data: list[i].mobile,
+                            },
+                            {
+                                data: list[i].platform === null ? "-" : (list[i].platform === 0 ? "android" : (list[i].platform === 1 ? "ios" : (list[i].platform === 2 ? "other" : "-"))),
+                            },
+                            {
+                                data: list[i].lastSeen ? ttDate(list[i].lastSeen) : "",
+                                nowrap: true,
                             },
                             {
                                 data: owner?i18n("yes"):i18n("no"),
