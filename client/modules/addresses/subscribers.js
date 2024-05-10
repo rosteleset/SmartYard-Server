@@ -243,7 +243,7 @@
                         <label class="custom-control-label form-check-label" for="subscriber-voip-flat-${subscriber.flats[i].flatId}">${i18n("addresses.voipEnabled")}</label>
                     </div>
                 `;
-                
+
                 flats.push({
                     "id": subscriber.flats[i].flatId,
                     "text": trimStr($.trim(subscriber.flats[i].house.houseFull + ", " + subscriber.flats[i].flat), 64, true) + " " + link,
