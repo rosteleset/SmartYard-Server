@@ -498,10 +498,10 @@
         $("#leftTopDynamic").html("");
         $("#rightTopDynamic").html("");
 
-        search = ($.trim(search) && typeof search === "string")?$.trim(search):"";
+        search = ($.trim(search) && typeof search === "string") ? $.trim(search) : "";
 
         try {
-            document.title = issue.issue["issueId"];
+            document.title = issue.issue["issueId"] + ": " + issue.issue["subject"];
         } catch (e) {
             document.title = i18n("windowTitle") + " :: " + i18n("tt.tt");
             FAILPAGE();
