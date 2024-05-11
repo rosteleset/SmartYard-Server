@@ -501,7 +501,7 @@
         search = ($.trim(search) && typeof search === "string")?$.trim(search):"";
 
         try {
-            document.title = i18n("windowTitle") + " :: " + i18n("tt.tt") + " :: " + issue.issue["issueId"];
+            document.title = issue.issue["issueId"];
         } catch (e) {
             document.title = i18n("windowTitle") + " :: " + i18n("tt.tt");
             FAILPAGE();
