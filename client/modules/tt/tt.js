@@ -529,10 +529,20 @@
                             }
 
                             let ro = cf.editor == "text-ro";
-                            let val = (issue && issue["_cf_" + fieldId]) ? issue["_cf_" + fieldId] : ((typeof prefferredValue !== "undefined") ? prefferredValue : "");
+                            let val;
 
                             if (ro && typeof prefferredValue !== "undefined") {
                                 val = prefferredValue;
+                            } else {
+                                if (issue && issue["_cf_" + fieldId]) {
+                                    val = issue["_cf_" + fieldId];
+                                } else {
+                                    if (typeof prefferredValue !== "undefined") {
+                                        val = prefferredValue;
+                                    } else {
+                                        val = "";
+                                    }
+                                }
                             }
 
                             if (cf.editor == "date" || cf.editor == "datetime-local") {
