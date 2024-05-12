@@ -76,7 +76,7 @@ function hashChange() {
             if (module) {
                 $("#page404").hide();
                 $("#pageError").hide();
-                $("#topMenuLeft").html(`<li class="ml-3 mr-3 nav-item d-none d-sm-inline-block text-bold text-lg">${i18n(route.split('.')[0] + "." + route.split('.')[0])}</li>`);
+                $("#topMenuLeft").html(`<li id="topMenuLeftCaption" class="ml-3 mr-3 nav-item d-none d-sm-inline-block text-bold text-lg">${i18n(route.split('.')[0] + "." + route.split('.')[0])}</li>`);
                 if (currentModule != module) {
                     $("#leftTopDynamic").html("");
                     $("#rightTopDynamic").html("");
