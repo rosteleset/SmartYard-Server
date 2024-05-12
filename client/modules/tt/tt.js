@@ -245,7 +245,7 @@
                         type: "text",
                         title: modules.tt.issueFieldTitle(field),
                         placeholder: modules.tt.issueFieldTitle(field),
-                        value: (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue.issueId)?issue.issueId:""),
+                        value: (typeof prefferredValue !== "undefined") ? prefferredValue : ((issue && issue.issueId) ? issue.issueId : ""),
                         hidden: true,
                     };
 
@@ -255,7 +255,7 @@
                         type: "text",
                         title: modules.tt.issueFieldTitle(field),
                         placeholder: modules.tt.issueFieldTitle(field),
-                        value: (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue.subject)?issue.subject:""),
+                        value: (typeof prefferredValue !== "undefined") ? prefferredValue : ((issue && issue.subject) ? issue.subject : ""),
                         validate: v => {
                             return $.trim(v) !== "";
                         },
@@ -267,7 +267,7 @@
                         type: "area",
                         title: modules.tt.issueFieldTitle(field),
                         placeholder: modules.tt.issueFieldTitle(field),
-                        value: (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue.description)?issue.description:""),
+                        value: (typeof prefferredValue !== "undefined") ? prefferredValue : ((issue && issue.description) ? issue.description : ""),
                         validate: v => {
                             return $.trim(v) !== "";
                         },
@@ -309,7 +309,7 @@
                     type: "select2",
                     title: modules.tt.issueFieldTitle(field),
                     options: select2Filter(resolutions, filter),
-                    value: (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue.resolution)?issue.resolution:-1),
+                    value: (typeof prefferredValue !== "undefined") ? prefferredValue : ((issue && issue.resolution) ? issue.resolution : -1),
                     validate: v => {
                         return $.trim(v) !== "";
                     },
@@ -330,7 +330,7 @@
                         type: "select2",
                         title: modules.tt.issueFieldTitle(field),
                         options: select2Filter(statuses, filter),
-                        value: (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue.status)?issue.status:-1),
+                        value: (typeof prefferredValue !== "undefined") ? prefferredValue : ((issue && issue.status) ? issue.status : -1),
                     };
 
                 case "tags":
@@ -342,7 +342,7 @@
                         title: modules.tt.issueFieldTitle(field),
                         placeholder: modules.tt.issueFieldTitle(field),
                         options: select2Filter(tags, filter),
-                        value: (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue.tags)?Object.values(issue.tags):[]),
+                        value: (typeof prefferredValue !== "undefined") ? prefferredValue : ((issue && issue.tags) ? Object.values(issue.tags) : []),
                     };
 
                 case "assigned":
@@ -353,7 +353,7 @@
                         title: modules.tt.issueFieldTitle(field),
                         placeholder: modules.tt.issueFieldTitle(field),
                         options: select2Filter(peoples(project, [0, 2, 3, 5].indexOf(parseInt(project.assigned)) >= 0, [0, 1, 3, 4].indexOf(parseInt(project.assigned)) >= 0), filter),
-                        value: (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue.assigned)?Object.values(issue.assigned):[]),
+                        value: (typeof prefferredValue !== "undefined") ? prefferredValue : ((issue && issue.assigned) ? Object.values(issue.assigned) : []),
                     };
 
                 case "watchers":
@@ -364,7 +364,7 @@
                         title: modules.tt.issueFieldTitle(field),
                         placeholder: modules.tt.issueFieldTitle(field),
                         options: select2Filter(peoples(project, false, true), filter),
-                        value: (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue.watchers)?Object.values(issue.watchers):[]),
+                        value: (typeof prefferredValue !== "undefined") ? prefferredValue:((issue && issue.watchers) ? Object.values(issue.watchers) : []),
                     };
 
                 case "links":
@@ -395,7 +395,7 @@
                         placeholder: modules.tt.issueFieldTitle(field),
                         options: select2Filter(options, filter),
                         multiple: true,
-                        value: (typeof prefferredValue !== "undefined")?prefferredValue:vi,
+                        value: (typeof prefferredValue !== "undefined") ? prefferredValue : vi,
                         ajax: {
                             delay: 1000,
                             transport: function (params, success) {
@@ -454,7 +454,7 @@
                     let workflows = [];
 
                     for (let i in modules.tt.meta.workflows) {
-                        workflows[i] = modules.tt.meta.workflows[i].name?modules.tt.meta.workflows[i].name:i;
+                        workflows[i] = modules.tt.meta.workflows[i].name ? modules.tt.meta.workflows[i].name : i;
                     }
 
                     function workflowsByProject(project) {
@@ -464,7 +464,7 @@
                             for (let i in modules.tt.meta.projects) {
                                 if (modules.tt.meta.projects[i].acronym == project) {
                                     for (let j in modules.tt.meta.projects[i].workflows) {
-                                        let wn = $.trim(workflows[modules.tt.meta.projects[i].workflows[j]]?workflows[modules.tt.meta.projects[i].workflows[j]]:modules.tt.meta.projects[i].workflows[j]);
+                                        let wn = $.trim(workflows[modules.tt.meta.projects[i].workflows[j]] ? workflows[modules.tt.meta.projects[i].workflows[j]] : modules.tt.meta.projects[i].workflows[j]);
                                         if (wn.charAt(0) == "#") {
                                             wn = wn.substring(1);
                                         }
@@ -529,7 +529,11 @@
                             }
 
                             let ro = cf.editor == "text-ro";
-                            let val = (issue && issue["_cf_" + fieldId]) ? issue["_cf_" + fieldId] : ((typeof prefferredValue !== "undefined") ? prefferredValue :  "");
+                            let val = (issue && issue["_cf_" + fieldId]) ? issue["_cf_" + fieldId] : ((typeof prefferredValue !== "undefined") ? prefferredValue : "");
+
+                            if (ro && typeof prefferredValue !== "undefined") {
+                                val = prefferredValue;
+                            }
 
                             if (cf.editor == "date" || cf.editor == "datetime-local") {
                                 if (parseInt(val) <= 0) {
