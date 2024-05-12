@@ -333,14 +333,6 @@ $(window).off("resize").on("resize", () => {
     }
 });
 
-$('.modal').on('shown.bs.modal', function (e) {
-    jQuery("html").addClass("modal-open");
-});
-
-$('.modal').on('hide.bs.modal', function (e) {
-    jQuery("html").removeClass("modal-open");
-});
-
 setInterval(() => {
     if (hasUnsavedChanges || ($("#editorContainer").length && currentAceEditor && currentAceEditorOriginalValue !== false && currentAceEditor.getValue() != currentAceEditorOriginalValue)) {
         if (typeof window.onbeforeunload != "function") {

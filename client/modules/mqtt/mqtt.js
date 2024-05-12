@@ -21,10 +21,15 @@
                     }
                 });
 
-                modules.mqtt.client.on("connect", () => {
+                modules.mqtt.client.on("connect", connack => {
+                    console.log("mqtt connect", connack);
                     for (let t in modules.mqtt.subscribers) {
                         modules.mqtt.client.subscribe(t);
                     }
+                });
+
+                modules.mqtt.client.on("reconnect", () => {
+                    console.log("mqtt reconnect");
                 });
             }).
             fail(FAIL);

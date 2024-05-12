@@ -126,7 +126,12 @@ select {
 }
 
 .modal-backdrop {
-  background-color: transparent;
+  background-color: gray;
+}
+
+body {
+  overflow: -moz-scrollbars-vertical;
+  overflow-y: scroll!important;
 }
 
 .note-statusbar {
