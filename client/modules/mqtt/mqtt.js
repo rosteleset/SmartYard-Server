@@ -9,6 +9,7 @@
             GET("mqtt", "config").
             done(response => {
                 modules.mqtt.client = mqtt.connect(response.config.ws, {
+                    keepalive: 30,
                     username: response.config.username,
                     password: response.config.password,
                 });
