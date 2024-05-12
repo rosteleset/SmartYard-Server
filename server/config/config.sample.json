@@ -199,6 +199,7 @@
         "mqtt": {
             "backend": "internal",
             "agent": "http://127.0.0.1:8082/broadcast",
+            "by": "mqtt",
             "ws": "wss://example.com/mqtt",
             "mqtt": "mqtt://127.0.0.1:1883",
             "username": "rbt",
