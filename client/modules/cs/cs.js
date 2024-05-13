@@ -27,6 +27,11 @@
             moduleLoaded("cs", this);
         }
 
+        modules.mqtt.subscribe("_connect", () => {
+            console.log("_connect", new Date());
+            modules.cs.mqttSheetChanged();
+        });
+
         modules.mqtt.subscribe("cs/cell", modules.cs.mqttCellMsg);
         modules.mqtt.subscribe("redis/expire", modules.cs.mqttRedisExpireMsg);
         modules.mqtt.subscribe("issue/changed", modules.cs.mqttIssueChanged);
@@ -265,10 +270,14 @@
 
     mqttSheetChanged: function (topic, payload) {
         if ($("#csSheet:visible").length) {
-            if (modules.cs.currentSheet && modules.cs.currentSheet.sheet) {
-                if (modules.cs.currentSheet.sheet.sheet == payload.sheet && modules.cs.currentSheet.sheet.date == payload.date) {
-                    modules.cs.csChanged();
+            if (payload) {
+                if (modules.cs.currentSheet && modules.cs.currentSheet.sheet) {
+                    if (modules.cs.currentSheet.sheet.sheet == payload.sheet && modules.cs.currentSheet.sheet.date == payload.date) {
+                        modules.cs.csChanged();
+                    }
                 }
+            } else {
+                modules.cs.csChanged();
             }
         }
     },
@@ -400,9 +409,9 @@
                             let installers = r.issues.issues[i][modules.cs.currentSheet.sheet.fields.assigned];
                             let done = modules.cs.issueDone(r.issues.issues[i]);
                             let closed = modules.cs.issueClosed(r.issues.issues[i]);
-    
+
                             let start = -1;
-    
+
                             for (let j in modules.cs.currentSheet.sheet.data) {
                                 if (modules.cs.currentSheet.sheet.data[j].col == col) {
                                     let rs;
@@ -638,7 +647,7 @@
                     }
                 }
                 h += '</table>';
-                
+
                 $("#mainForm").html(h);
 
                 $(".colMenuSetAssigners").off("click").on("click", function () {
@@ -734,7 +743,7 @@
                         mAlert(i18n("cs.loginsNotSet"));
                     }
                 });
-                
+
                 $(".colClearAssigners").off("click").on("click", function () {
                     let col = $(this).attr("data-col");
 
@@ -783,7 +792,7 @@
                         if (AVAIL("cs", "reserveCell", "DELETE") && cell.attr("data-login") != lStore("_login")) {
                             mYesNo(i18n("cs.confirmUnReserve"), i18n("cs.action"), () => {
                                 cell.addClass("spinner-small");
-                                
+
                                 DELETE("cs", "reserveCell", false, {
                                     action: "release-force",
                                     sheet: md5($("#csSheet").val()),
@@ -793,7 +802,7 @@
                                     uid: cell.attr("data-uid"),
                                     sid: modules.cs.sid,
                                 }).
-                                fail(FAIL). 
+                                fail(FAIL).
                                 fail(() => {
                                     modules.cs.idle = true;
                                     cell.removeClass("spinner-small");
@@ -805,7 +814,7 @@
                                 modules.cs.coordinate(cell);
                             }, () => {
                                 cell.addClass("spinner-small");
-                                
+
                                 PUT("cs", "cell", false, {
                                     action: "release",
                                     sheet: md5($("#csSheet").val()),
@@ -869,7 +878,7 @@
                         case "claimed":
                             $(".dataCell[data-uid=" + modules.cs.currentSheet.cells[i].uid + "]").addClass(modules.cs.currentSheet.sheet.blockedClass).attr("data-login", modules.cs.currentSheet.cells[i].login).attr("data-login-display", modules.users.login2name(modules.cs.currentSheet.cells[i].login));
                             break;
-                        
+
                         case "reserved":
                             $(".dataCell[data-uid=" + modules.cs.currentSheet.cells[i].uid + "]").addClass(modules.cs.currentSheet.sheet.reservedClass).attr("data-login", modules.cs.currentSheet.cells[i].login).attr("data-login-display", modules.users.login2name(modules.cs.currentSheet.cells[i].login) + (modules.cs.currentSheet.cells[i].comment?(" [" + modules.cs.currentSheet.cells[i].comment + "]"):""));
                             break;
@@ -914,7 +923,7 @@
 
                 sheets.sort();
                 dates.sort();
-    
+
                 sheetsOptions = "";
                 for (let i in sheets) {
                     if (sheets[i] == lStore("_sheet_name")) {
@@ -923,7 +932,7 @@
                         sheetsOptions += "<option>" + escapeHTML(sheets[i]) + "</option>";
                     }
                 }
-    
+
                 datesOptions = "";
                 for (let i in dates) {
                     if (dates[i] == lStore("_sheet_date")) {
@@ -932,21 +941,21 @@
                         datesOptions += "<option>" + escapeHTML(dates[i]) + "</option>";
                     }
                 }
-    
+
                 let rtd = "<div class='form-inline'>";
-    
+
                 rtd += `<div class="input-group input-group-sm mr-2" style="width: 200px;"><select id="csSheet" class="form-control select-arrow">${sheetsOptions}</select></div>`;
                 rtd += `<div class="input-group input-group-sm" style="width: 150px;"><select id="csDate" class="form-control select-arrow">${datesOptions}</select></div>`;
-        
+
                 if (AVAIL("cs", "sheet", "PUT")) {
                     rtd += `<div class="nav-item mr-0 pr-0"><span id="cloneCSsheet" class="nav-link text-info mr-1 pr-0" role="button" style="cursor: pointer" title="${i18n("cs.cloneSheet")}"><i class="fas fa-lg fa-fw fa-clone"></i></span></div>`;
                     rtd += `<div class="nav-item mr-0 pr-0"><span id="addCSsheet" class="nav-link text-success mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("cs.addSheet")}"><i class="fas fa-lg fa-fw fa-plus-square"></i></span></div>`;
                     rtd += `<div class="nav-item mr-0 pr-0"><span id="editCSsheet" class="nav-link text-primary mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("cs.editSheet")}"><i class="fas fa-lg fa-fw fa-pen-square"></i></span></div>`;
                     rtd += `<div class="nav-item mr-0 pr-0"><span id="deleteCSsheet" class="nav-link text-danger mr-1 pr-0" role="button" style="cursor: pointer" title="${i18n("cs.deleteSheet")}"><i class="fas fa-lg fa-fw fa-minus-square"></i></span></div>`;
                 }
-        
+
                 rtd += "</span>";
-        
+
                 $("#rightTopDynamic").html(rtd);
 
                 $("#cloneCSsheet").off("click").on("click", () => {
@@ -987,7 +996,7 @@
                         },
                     }).show();
                 });
-        
+
                 $("#addCSsheet").off("click").on("click", () => {
                     let sheetsOptions = [];
 
@@ -1034,13 +1043,13 @@
                         },
                     }).show();
                 });
-    
+
                 $("#editCSsheet").off("click").on("click", () => {
                     if ($("#csSheet").val() && $("#csDate").val()) {
                         window.location.href = "?#cs.sheet&sheet=" + encodeURIComponent($("#csSheet").val()) + "&date=" + encodeURIComponent($("#csDate").val());
                     }
                 });
-    
+
                 $("#deleteCSsheet").off("click").on("click", () => {
                     if ($("#csSheet").val() && $("#csDate").val()) {
                         mConfirm(i18n("cs.confirmDeleteSheet", $("#csSheet").val(), $("#csDate").val()), i18n("confirm"), i18n("delete"), () => {
@@ -1093,19 +1102,19 @@
                         } else {
                             modules.cs.cellExpired = new Function ("sheetDate", "cellTime", `return false;`);
                         }
-            
+
                         if (modules.cs.currentSheet && modules.cs.currentSheet.sheet && modules.cs.currentSheet.sheet.doneCondition) {
                             modules.cs.issueDone = new Function ("issue", `return ${modules.cs.currentSheet.sheet.doneCondition};`);
                         } else {
                             modules.cs.issueDone = new Function ("issue", `return false;`);
                         }
-            
+
                         if (modules.cs.currentSheet && modules.cs.currentSheet.sheet && modules.cs.currentSheet.sheet.closedCondition) {
                             modules.cs.issueClosed = new Function ("issue", `return ${modules.cs.currentSheet.sheet.closedCondition};`);
                         } else {
                             modules.cs.issueClosed = new Function ("issue", `return false;`);
                         }
-            
+
                         loadIssues(() => {
                             renderSheet(response);
                         });

@@ -9,28 +9,30 @@
             GET("mqtt", "config").
             done(response => {
                 modules.mqtt.client = mqtt.connect(response.config.ws, {
-                    keepalive: 30,
+                    keepalive: 0,
                     username: response.config.username,
                     password: response.config.password,
                 });
 
                 modules.mqtt.client.on("message", (msg, payload) => {
-                    if (modules.mqtt.subscribers[msg]) {
+                    if (modules.mqtt.subscribers && modules.mqtt.subscribers[msg]) {
                         for (let i in modules.mqtt.subscribers[msg]) {
-                            modules.mqtt.subscribers[msg][i](msg, JSON.parse(payload.toString()))
+                            modules.mqtt.subscribers[msg][i](msg, JSON.parse(payload.toString()));
                         }
                     }
                 });
 
-                modules.mqtt.client.on("connect", connack => {
-                    console.log("mqtt connect", connack);
-                    for (let t in modules.mqtt.subscribers) {
-                        modules.mqtt.client.subscribe(t);
+                modules.mqtt.client.on("connect", () => {
+                    if (modules.mqtt.subscribers) {
+                        for (let t in modules.mqtt.subscribers) {
+                            modules.mqtt.client.subscribe(t);
+                        }
+                        if (modules.mqtt.subscribers["_connect"]) {
+                            for (let i in modules.mqtt.subscribers["_connect"]) {
+                                modules.mqtt.subscribers["_connect"][i]("_connect");
+                            }
+                        }
                     }
-                });
-
-                modules.mqtt.client.on("reconnect", () => {
-                    console.log("mqtt reconnect");
                 });
             }).
             fail(FAIL);
