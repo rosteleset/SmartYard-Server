@@ -255,7 +255,7 @@ body::-webkit-scrollbar-thumb {
   border-radius: 3px;
 }
 
-::-webkit-scrollbar {
+body::-webkit-scrollbar {
   width: 8px;
   height: 10px;
 }
