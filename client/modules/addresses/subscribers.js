@@ -312,13 +312,6 @@
                         readonly: true,
                     },
                     {
-                        id: "platform",
-                        type: "text",
-                        title: i18n("addresses.platform"),
-                        value: subscriber.platform === null ? "-" : (subscriber.platform === 0 ? "android" : (subscriber.platform === 1 ? "ios" : (subscriber.platform === 2 ? "other" : "-"))),
-                        readonly: true,
-                    },
-                    {
                         id: "voipEnabled",
                         type: "select",
                         title: i18n("addresses.voipEnabled"),
