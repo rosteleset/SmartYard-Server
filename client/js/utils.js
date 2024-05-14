@@ -158,7 +158,7 @@ function escapeHTML(str) {
 
     let regexString = '[';
 
-    for(let key in escapeChars) {
+    for (let key in escapeChars) {
         regexString += key;
     }
 
