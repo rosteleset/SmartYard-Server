@@ -209,9 +209,9 @@ function cardForm(params) {
                 h += `>`;
                 for (let j in params.fields[i].options) {
                     if (params.fields[i].options[j].value == params.fields[i].value || params.fields[i].options[j].selected) {
-                        h += `<option value="${params.fields[i].options[j].value}" selected>${params.fields[i].options[j].text}</option>`;
+                        h += `<option value="${escapeHTML(params.fields[i].options[j].value)}" selected>${escapeHTML(params.fields[i].options[j].text)}</option>`;
                     } else {
-                        h += `<option value="${params.fields[i].options[j].value}">${params.fields[i].options[j].text}</option>`;
+                        h += `<option value="${escapeHTML(params.fields[i].options[j].value)}">${escapeHTML(params.fields[i].options[j].text)}</option>`;
                     }
                 }
                 h += `</select>`;
@@ -802,7 +802,7 @@ function cardForm(params) {
 
                         $("#" + id).html("");
                         for (let j in files[id]) {
-                            $("#" + id).append("<option>" + files[id][j].name + "</option>");
+                            $("#" + id).append("<option>" + escapeHTML(files[id][j].name) + "</option>");
                         }
                     });
                 }
@@ -832,7 +832,7 @@ function cardForm(params) {
                         });
 
                         if (!already) {
-                            $("#" + id).append("<option>" + file.name + "</option>");
+                            $("#" + id).append("<option>" + escapeHTML(file.name) + "</option>");
                             if (!files[id]) {
                                 files[id] = [];
                             }
