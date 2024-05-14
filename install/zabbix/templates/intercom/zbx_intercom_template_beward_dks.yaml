@@ -52,7 +52,7 @@ zabbix_export:
             - uuid: 350f1a533ab349aeb460c108b25cbe88
               expression: 'last(/Intercom_BEWARD_DKS/intercom.fwversion,#1)<>last(/Intercom_BEWARD_DKS/intercom.fwversion,#2) and length(last(/Intercom_BEWARD_DKS/intercom.fwversion))>0'
               name: 'Firmware version has changed'
-              event_name: 'INTERCOM: {HOST.NAME} | Firmvare version has changed (new version: {ITEM.VALUE})'
+              event_name: 'INTERCOM: {HOST.NAME} | Firmware version has changed (new version: {ITEM.VALUE})'
               priority: INFO
         - uuid: e80beda3e9904dcdb7aba7a5abc20f53
           name: 'BEWARD Intercom: SIP registration status'

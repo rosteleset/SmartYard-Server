@@ -31,7 +31,7 @@ zabbix_export:
               value: '{$FL.LIMIT_STREAMS}'
           tags:
             - tag: Application
-              value: raw
+              value: Flussonic
             - tag: component
               value: raw
         - uuid: 208db29fbd294a138c8fb672fc3e06b0
@@ -58,7 +58,7 @@ zabbix_export:
               value: '{$FL.LIMIT_STREAMS}'
           tags:
             - tag: Application
-              value: raw
+              value: Flussonic
             - tag: component
               value: raw
         - uuid: 82ef571aa83b4b0a9675a87196d52915
@@ -81,7 +81,7 @@ zabbix_export:
             key: flussonic.get_serverinfo
           tags:
             - tag: Application
-              value: 'Flussonic information'
+              value: Flussonic
         - uuid: edadde7fea71478f9081921db29433fa
           name: 'Flussonic: license type'
           type: DEPENDENT
@@ -102,7 +102,7 @@ zabbix_export:
             key: flussonic.get_serverinfo
           tags:
             - tag: Application
-              value: 'Flussonic information'
+              value: Flussonic
         - uuid: 1362dbfeeb784188bbe42f034bdcd697
           name: 'Flussonic: streams online'
           type: DEPENDENT
@@ -122,7 +122,7 @@ zabbix_export:
             key: flussonic.get_serverinfo
           tags:
             - tag: Application
-              value: 'Flussonic information'
+              value: Flussonic
         - uuid: 9e166254bec944b3b08a4cada2bdfd21
           name: 'Flussonic: speed output'
           type: DEPENDENT
@@ -143,7 +143,7 @@ zabbix_export:
             key: flussonic.get_serverinfo
           tags:
             - tag: Application
-              value: 'Flussonic information'
+              value: Flussonic
         - uuid: f8c5943e823b4b6fa33dfdfa9a4d748e
           name: 'Flussonic: streamer status'
           type: DEPENDENT
@@ -164,7 +164,7 @@ zabbix_export:
             key: flussonic.get_serverinfo
           tags:
             - tag: Application
-              value: 'Flussonic information'
+              value: Flussonic
         - uuid: bbb30f833797482aabe83e4e4f10a986
           name: 'Flussonic: clients total'
           type: DEPENDENT
@@ -184,7 +184,7 @@ zabbix_export:
             key: flussonic.get_serverinfo
           tags:
             - tag: Application
-              value: 'Flussonic information'
+              value: Flussonic
         - uuid: 439f480afd504bad8d9a1df69a4b0ec8
           name: 'Flussonic: streams total'
           type: DEPENDENT
@@ -204,7 +204,7 @@ zabbix_export:
             key: flussonic.get_serverinfo
           tags:
             - tag: Application
-              value: 'Flussonic information'
+              value: Flussonic
         - uuid: 1ef0038466924fd38a1341d28234c7cb
           name: 'Flussonic: version'
           type: DEPENDENT
@@ -225,7 +225,7 @@ zabbix_export:
             key: flussonic.get_serverinfo
           tags:
             - tag: Application
-              value: 'Flussonic information'
+              value: Flussonic
         - uuid: a9fcce6f0a5441368b80adf2fc5ec1fa
           name: 'Flussonic: version next'
           type: DEPENDENT
@@ -246,7 +246,7 @@ zabbix_export:
             key: flussonic.get_serverinfo
           tags:
             - tag: Application
-              value: 'Flussonic information'
+              value: Flussonic
       discovery_rules:
         - uuid: 674e8f45b31f4476afe8d63381bad471
           name: 'Flussonic stream discovery'
@@ -262,6 +262,8 @@ zabbix_export:
               key: 'stream[{#STREAM_NAME},alive]'
               delay: '0'
               description: 'Flussonic stream Input source status'
+              valuemap:
+                name: Status
               preprocessing:
                 - type: JSONPATH
                   parameters:
@@ -301,6 +303,8 @@ zabbix_export:
               key: 'stream[{#STREAM_NAME},running]'
               delay: '0'
               description: 'Flussonic running stream status'
+              valuemap:
+                name: Status
               preprocessing:
                 - type: JSONPATH
                   parameters:
@@ -366,3 +370,11 @@ zabbix_export:
           description: 'Transfer protocol, default value HTTPS'
         - macro: '{$FL.USER}'
           description: 'Flussonic Media Server API username'
+      valuemaps:
+        - uuid: 387aa6128e4e4bf2ad14e4a61e7d2320
+          name: Status
+          mappings:
+            - value: '0'
+              newvalue: Failure
+            - value: '1'
+              newvalue: Running
