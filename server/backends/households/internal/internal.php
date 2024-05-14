@@ -403,6 +403,10 @@
                     ":video" => $video,
                 ]) !== false;
 
+                if (!$cms) {
+                    $this->setCms($entranceId, []);
+                }
+
                 $queue = loadBackend("queue");
                 if ($queue) {
                     $queue->changed("entrance", $entranceId);
@@ -410,10 +414,6 @@
 
                 if (!$r1 || !$r2) {
                     setLastError("cantModifyEntrance");
-                }
-
-                if (!$cms) {
-                    $this->setCms($entranceId, []);
                 }
 
                 return $r1 && $r2;
