@@ -374,6 +374,9 @@
         h += `<li class="dropdown-divider"></li>`;
         h += `<li class="pointer dropdown-item colMenuAssignAll" data-col="${md5(col)}">${i18n("cs.assignAll")}</li>`;
         h += `<li class="pointer dropdown-item colClearAssigners" data-col="${md5(col)}">${i18n("cs.clearAssigners")}</li>`;
+        h += `<li class="dropdown-divider"></li>`;
+        h += `<li class="pointer dropdown-item colMenuRename" data-col="${md5(col)}">${i18n("cs.colRename")}</li>`;
+        h += `<li class="pointer dropdown-item colMenuRows" data-col="${md5(col)}">${i18n("cs.colRows")}</li>`;
         h += `</ul></span>`;
 
         return h;

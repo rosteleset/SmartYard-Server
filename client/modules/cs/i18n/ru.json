@@ -27,6 +27,8 @@
     "confirmUnReserve": "Снять с резерва?",
     "comment": "Комментарий",
     "noPart": "Общий",
+    "colRename": "Переименовать",
+    "colRows": "Строки",
     "methods": {
         "cs": {
             "_title": "Лист координации",
