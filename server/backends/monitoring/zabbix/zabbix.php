@@ -496,12 +496,12 @@ class zabbix extends monitoring
                     "valueMaps" => [
                         "createMissing" => true,
                         "deleteMissing" => true,
-                        "updateExisting" => false
+                        "updateExisting" => true
                     ],
                     "httptests" => [
                         "createMissing" => true,
                         "deleteMissing" => true,
-                        "updateExisting" => false
+                        "updateExisting" => true
                     ]
                 ],
                 "source" => $templateDataStr
