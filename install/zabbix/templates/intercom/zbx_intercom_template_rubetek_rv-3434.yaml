@@ -15,6 +15,116 @@ zabbix_export:
         - name: 'ICMP Ping'
       groups:
         - name: Templates/Intercoms
+      items:
+        - uuid: 94b7effad8f74167b157f3998f136b48
+          name: 'RUBETEK Intercom: device model'
+          type: DEPENDENT
+          key: intercom.devicemodel
+          delay: '0'
+          history: 7d
+          trends: '0'
+          value_type: TEXT
+          inventory_link: HARDWARE
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.model
+          master_item:
+            key: intercom.systeminfo
+        - uuid: cd2bc48b11524af2ad30a8d56d572d1a
+          name: 'RUBETEK Intercom: fw version'
+          type: DEPENDENT
+          key: intercom.fwversion
+          delay: '0'
+          history: 7d
+          trends: '0'
+          value_type: TEXT
+          inventory_link: SOFTWARE
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.firmware_version
+          master_item:
+            key: intercom.systeminfo
+          triggers:
+            - uuid: 0001da76cb794033934d041d09b0bcb7
+              expression: 'last(/Intercom_RUBETEK_RV-3434/intercom.fwversion,#1)<>last(/Intercom_RUBETEK_RV-3434/intercom.fwversion,#2) and length(last(/Intercom_RUBETEK_RV-3434/intercom.fwversion))>0'
+              name: 'Firmware version has changed'
+              event_name: 'INTERCOM: {HOST.NAME} | Firmvare version has changed (new version: {ITEM.VALUE})'
+              priority: INFO
+        - uuid: 512eb22d944b4ae7b54c98a6fc6b6094
+          name: 'RUBETEK Intercom: SIP registration status'
+          type: HTTP_AGENT
+          key: intercom.sipstatus
+          authtype: BASIC
+          username: '{$HOST_USERNAME}'
+          password: '{$HOST_PASSWORD}'
+          valuemap:
+            name: 'SIP registration status'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.acc1_register_status
+            - type: STR_REPLACE
+              parameters:
+                - unregistered
+                - '0'
+            - type: STR_REPLACE
+              parameters:
+                - failed
+                - '0'
+            - type: STR_REPLACE
+              parameters:
+                - registered
+                - '1'
+          url: 'http://{HOST.CONN}/api/v1/reg_status'
+          tags:
+            - tag: component
+              value: raw
+          triggers:
+            - uuid: 6561eda8062b4bbe9e083cf4ef89bce7
+              expression: 'count(/Intercom_RUBETEK_RV-3434/intercom.sipstatus,10m,,"0")>5'
+              name: 'SIP registration failure'
+              event_name: 'INTERCOM: {HOST.NAME} | SIP registration failure'
+              priority: WARNING
+        - uuid: 21094f26dbc34f5fb01b7e7bf44aef4c
+          name: 'RUBETEK Intercom: system info'
+          type: HTTP_AGENT
+          key: intercom.systeminfo
+          history: '0'
+          trends: '0'
+          value_type: TEXT
+          authtype: BASIC
+          username: '{$HOST_USERNAME}'
+          password: '{$HOST_PASSWORD}'
+          url: 'http://{HOST.CONN}/api/v1/version'
+          tags:
+            - tag: component
+              value: raw
+        - uuid: 6f70e2267a0f4f02b7c47c7166c8e991
+          name: 'RUBETEK Intercom: uptime'
+          type: HTTP_AGENT
+          key: intercom.uptime
+          history: 7d
+          trends: 90d
+          units: uptime
+          authtype: BASIC
+          username: '{$HOST_USERNAME}'
+          password: '{$HOST_PASSWORD}'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.uptime
+          url: 'http://{HOST.CONN}/api/v1/intercom/check_status'
+          tags:
+            - tag: component
+              value: raw
+          triggers:
+            - uuid: 0510f748f4044645ac6baf8125189fb6
+              expression: last(/Intercom_RUBETEK_RV-3434/intercom.uptime)<10m
+              name: 'Device has been restarted'
+              event_name: 'INTERCOM: {HOST.NAME} | has been restarted (uptime < 10m)'
+              priority: INFO
       tags:
         - tag: class
           value: hardware
@@ -22,18 +132,16 @@ zabbix_export:
           value: rubetek
       macros:
         - macro: '{$HOST_PASSWORD}'
-          value: admin
-          description: 'WEB GUI | API password, default value admin'
+          value: qwerty123
+          description: 'API password'
         - macro: '{$HOST_USERNAME}'
-          value: admin
-          description: 'WEB GUI | API username, default value admin'
+          value: api_user
+          description: 'API username, default value api_user'
       valuemaps:
         - uuid: c0c2e9e9953b4034abe89d30132306d2
           name: 'SIP registration status'
           mappings:
             - value: '0'
-              newvalue: Disable
+              newvalue: Offline
             - value: '1'
-              newvalue: Failure
-            - value: '2'
               newvalue: Online
