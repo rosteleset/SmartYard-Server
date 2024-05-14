@@ -403,6 +403,10 @@
                     ":video" => $video,
                 ]) !== false;
 
+                if (!$cms) {
+                    $this->setCms($entranceId, []);
+                }
+
                 $queue = loadBackend("queue");
                 if ($queue) {
                     $queue->changed("entrance", $entranceId);

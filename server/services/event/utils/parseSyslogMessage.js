@@ -15,9 +15,13 @@ const parseSyslogMessage = (str) => {
     // ISComX1 rev.5
     const regexSokolPlus = /<(?<priority>\d{1,3})>(?<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6}\+\d{2}:\d{2}) (?<hostname>\S+) (?<app>\w+)\[(?<pid>\d+)]: (?<message>.*)$/;
 
+    // Rubetek
+    const regexRubetek = /<(?<priority>\d{1,3})>(?<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+\d{2}:\d{2}) (?<hostname>\S+) (?<app>\S+) (?<message>.*)$/;
+
     const partsIETF = regexIETF.exec(str);
     const partsBSD = regexBSB.exec(str);
     const partsSokolPlus = regexSokolPlus.exec(str);
+    const partsRubetek = regexRubetek.exec(str);
 
     if (partsIETF) {
         const [, priority, version, timestamp, hostname, app, pid, msg_id, message] = partsIETF;
@@ -52,7 +56,18 @@ const parseSyslogMessage = (str) => {
             pid,
             message,
         };
-    } else return false;
+    } else if (partsRubetek) {
+        const [, priority, timestamp, hostname, app, message] = partsRubetek;
+        return {
+            format: 'Rubetek',
+            priority: Number(priority),
+            timestamp: getTimestamp(new Date(timestamp)),
+            hostname,
+            app,
+            message,
+        };
+    }
+    return false;
 };
 
 export { parseSyslogMessage };

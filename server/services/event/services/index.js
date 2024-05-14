@@ -1,4 +1,4 @@
-export { SyslogService, WebHookService } from "./base/index.js"
+export { SyslogService, WebHookService } from "./base/index.js";
 export { BewardService } from "./BewardService.js";
 export { BewardServiceDS } from "./BewardServiceDS.js";
 export { QtechService } from "./QtechService.js";

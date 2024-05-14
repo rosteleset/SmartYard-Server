@@ -82,6 +82,7 @@
         "tokenNotFound": "Срок действия токена истек",
         "noToken": "Token не указан",
         "userNotFound": "Пользователь не найден",
-        "permissionDenied": "В доступе отказано"
+        "permissionDenied": "В доступе отказано",
+        "notAcceptable": "Действие невозможно"
     }
 }

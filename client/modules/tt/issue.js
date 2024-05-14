@@ -372,72 +372,87 @@
                     _id: issue.issue.issueId,
                     action: action,
                 }, true).done(r => {
-                    if (typeof r.template == "string") {
-                        if (modules.custom && typeof modules.custom[r.template] == "function") {
-                            modules.custom[r.template](issue.issue, action, callback, prefferredValues, timeout);
+                    if (r && r.template) {
+                        if (typeof r.template == "string") {
+                            if (modules.custom && typeof modules.custom[r.template] == "function") {
+                                modules.custom[r.template](issue.issue, action, callback, prefferredValues, timeout);
+                            } else {
+                                loadingDone();
+                                error(i18n("errors.functionNotFound", r.template), i18n("error"), 30);
+                            }
                         } else {
                             loadingDone();
-                            error(i18n("errors.functionNotFound", r.template), i18n("error"), 30);
-                        }
-                    } else {
-                        loadingDone();
 
-                        let fields = [];
+                            let fields = [];
 
-                        let project;
+                            let project;
 
-                        for (let i in modules.tt.meta.projects) {
-                            if (modules.tt.meta.projects[i].acronym == issue.issue.project) {
-                                project = modules.tt.meta.projects[i];
-                            }
-                        }
-
-                        let n = 0;
-
-                        let kx = [];
-                        let ky = {};
-
-                        for (let i in r.template) {
-                            let fx = ((typeof r.template[i] == "string")?r.template[i]:i).toString();
-                            if (fx.charAt(0) == '%') {
-                                fx = fx.split('%');
-                                kx[fx[1]] = fx[2];
-                                ky[fx[2]] = (typeof r.template[i] == "string")?false:r.template[i];
-                            } else {
-                                kx.push(fx);
-                                ky[fx] = (typeof r.template[i] == "string")?false:r.template[i];
-                            }
-                        }
-
-                        for (let i in kx) {
-                            let fi = modules.tt.issueField2FormFieldEditor(issue.issue, kx[i], project.projectId, ky[kx[i]], prefferredValues ? prefferredValues[kx[i]] : prefferredValues);
-                            if (fi) {
-                                fields.push(fi);
-                                if (kx[i] == "comment" || kx[i] == "optionalComment") {
-                                    fields.push({
-                                        id: "commentPrivate",
-                                        type: "yesno",
-                                        title: i18n("tt.commentPrivate"),
-                                        value: "1",
-                                    });
+                            for (let i in modules.tt.meta.projects) {
+                                if (modules.tt.meta.projects[i].acronym == issue.issue.project) {
+                                    project = modules.tt.meta.projects[i];
                                 }
-                                n++;
                             }
-                        }
 
-                        if (n) {
-                            cardForm({
-                                title: modules.tt.displayAction(action),
-                                apply: modules.tt.displayAction(action),
-                                fields: fields,
-                                footer: true,
-                                borderless: true,
-                                size: "lg",
-                                timeout: timeout,
-                                callback: r => {
+                            let n = 0;
+
+                            let kx = [];
+                            let ky = {};
+
+                            for (let i in r.template) {
+                                let fx = ((typeof r.template[i] == "string")?r.template[i]:i).toString();
+                                if (fx.charAt(0) == '%') {
+                                    fx = fx.split('%');
+                                    kx[fx[1]] = fx[2];
+                                    ky[fx[2]] = (typeof r.template[i] == "string")?false:r.template[i];
+                                } else {
+                                    kx.push(fx);
+                                    ky[fx] = (typeof r.template[i] == "string")?false:r.template[i];
+                                }
+                            }
+
+                            for (let i in kx) {
+                                let fi = modules.tt.issueField2FormFieldEditor(issue.issue, kx[i], project.projectId, ky[kx[i]], prefferredValues ? prefferredValues[kx[i]] : prefferredValues);
+                                if (fi) {
+                                    fields.push(fi);
+                                    if (kx[i] == "comment" || kx[i] == "optionalComment") {
+                                        fields.push({
+                                            id: "commentPrivate",
+                                            type: "yesno",
+                                            title: i18n("tt.commentPrivate"),
+                                            value: "1",
+                                        });
+                                    }
+                                    n++;
+                                }
+                            }
+
+                            if (n) {
+                                cardForm({
+                                    title: modules.tt.displayAction(action),
+                                    apply: modules.tt.displayAction(action),
+                                    fields: fields,
+                                    footer: true,
+                                    borderless: true,
+                                    size: "lg",
+                                    timeout: timeout,
+                                    callback: r => {
+                                        loadingStart();
+                                        PUT("tt", "action", issue.issue.issueId, {
+                                            set: r,
+                                            action: action,
+                                        }).
+                                        fail(FAIL).
+                                        always(() => {
+                                            if (typeof callback === "function") {
+                                                callback();
+                                            }
+                                        });
+                                    },
+                                });
+                            } else {
+                                mConfirm(action + " \"" + issue.issue.issueId + "\"?", i18n("confirm"), modules.tt.displayAction(action), () => {
                                     loadingStart();
                                     PUT("tt", "action", issue.issue.issueId, {
-                                        set: r,
                                         action: action,
                                     }).
                                     fail(FAIL).
@@ -446,22 +461,12 @@
                                             callback();
                                         }
                                     });
-                                },
-                            });
-                        } else {
-                            mConfirm(action + " \"" + issue.issue.issueId + "\"?", i18n("confirm"), modules.tt.displayAction(action), () => {
-                                loadingStart();
-                                PUT("tt", "action", issue.issue.issueId, {
-                                    action: action,
-                                }).
-                                fail(FAIL).
-                                always(() => {
-                                    if (typeof callback === "function") {
-                                        callback();
-                                    }
                                 });
-                            });
+                            }
                         }
+                    } else {
+                        loadingDone();
+                        error(i18n("tt.actionNotAvailable"), 30);
                     }
                 }).
                 fail(FAIL).
@@ -498,10 +503,10 @@
         $("#leftTopDynamic").html("");
         $("#rightTopDynamic").html("");
 
-        search = ($.trim(search) && typeof search === "string")?$.trim(search):"";
+        search = ($.trim(search) && typeof search === "string") ? $.trim(search) : "";
 
         try {
-            document.title = i18n("windowTitle") + " :: " + i18n("tt.tt") + " :: " + issue.issue["issueId"];
+            document.title = issue.issue["issueId"] + ": " + issue.issue["subject"];
         } catch (e) {
             document.title = i18n("windowTitle") + " :: " + i18n("tt.tt");
             FAILPAGE();

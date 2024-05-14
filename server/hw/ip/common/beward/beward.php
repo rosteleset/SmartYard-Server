@@ -229,7 +229,7 @@ trait beward
      *
      * @param string $resource Section from which to get parameters (like "sip_cgi", "ntp_cgi", etc.).
      *
-     * @return void
+     * @return array
      */
     protected function getParams(string $resource): array
     {

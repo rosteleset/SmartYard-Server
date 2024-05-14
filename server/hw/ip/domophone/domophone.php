@@ -307,9 +307,9 @@ abstract class domophone extends ip
      *
      * @param int $apartment Apartment number for diagnostics.
      *
-     * @return int|string Electrical parameters of the line or verbal description.
+     * @return string|int|float Electrical parameters of the line or verbal description.
      */
-    abstract public function getLineDiagnostics(int $apartment);
+    abstract public function getLineDiagnostics(int $apartment): string|int|float;
 
     /**
      * Open lock.

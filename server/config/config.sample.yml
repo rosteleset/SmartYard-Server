@@ -145,6 +145,7 @@ backends:
   mqtt:
     backend: internal
     agent: http://127.0.0.1:8082/broadcast
+    by: mqtt
     ws: wss://example.com/mqtt
     mqtt: mqtt://127.0.0.1:1883
     username: rbt
@@ -157,12 +158,6 @@ backends:
       similar issue (hint 86400 - one day) --!>"
   queue:
     backend: internal
-  monitoring:
-    backend: zabbix
-    cron_sync_data_scheduler: 5min
-    zbx_api_url: "<!-- your zabbix API URL here --!>"
-    zbx_token: "<!-- your zabbix API token --!>"
-    store_days: 7
 email:
   server: 127.0.0.1
   port: 587

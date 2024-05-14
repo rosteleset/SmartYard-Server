@@ -194,6 +194,7 @@
   "rfId": "RFID",
   "authToken": "Authorization Token",
   "pushToken": "Push Token",
+  "platform": "Platform",
   "subscriberFlats": "Flats (Offices)",
   "subscriberFlatOwner": "Owner",
   "addKey": "Add Key",

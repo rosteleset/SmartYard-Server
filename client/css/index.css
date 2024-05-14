@@ -48,7 +48,7 @@
 
 .pointer-input-group:hover {
   cursor: pointer;
-  background-color: #e9ecef!important;
+  background-color: #e9ecef !important;
 }
 
 .pointer-input-group {
@@ -126,7 +126,7 @@ select {
 }
 
 .modal-backdrop {
-  background-color: transparent;
+  background-color: gray;
 }
 
 .note-statusbar {
@@ -241,13 +241,23 @@ select {
   height: 100%;
 }
 
+body {
+  overflow: -moz-scrollbars-vertical;
+  overflow-y: scroll !important;
+}
+
 body::-webkit-scrollbar-track {
-  background-color: rgba(161, 161, 161, 0);
+  background-color: lightgray;
 }
 
 body::-webkit-scrollbar-thumb {
-  box-shadow: inset 0 0 6px rgb(0, 0, 255);
-  border-radius: 100px;
+  box-shadow: inset 0 0 6px #343a40;
+  border-radius: 3px;
+}
+
+body::-webkit-scrollbar {
+  width: 8px;
+  height: 10px;
 }
 
 body:not(.dark-mode) .nodec:link {
@@ -291,7 +301,7 @@ body.dark-mode .nodec:hover {
 }
 
 .tr-hoverable:hover {
-  background: #ccc!important;
+  background: #ccc !important;
 }
 
 .td-journal {
@@ -304,11 +314,11 @@ body.dark-mode .nodec:hover {
 }
 
 .bg-lightgray, .bg-lightgray>a {
-  color: #0000!important;
+  color: #0000 !important;
 }
 
 .bg-lightgray {
-  background-color: #cfcfcf!important;
+  background-color: #cfcfcf !important;
 }
 
 .spinner-small {

@@ -21,6 +21,7 @@ abstract class beward extends domophone
     protected const BLACK_SCREEN_BUG = [
         'DKS977957_rev5.5.3.9.2',
         'DKS15105_rev5.5.6.8.5',
+        'DKS15135_rev5.5.6.8.2',
         'DKS15135_rev5.5.6.8.5',
     ];
 
@@ -424,6 +425,7 @@ abstract class beward extends domophone
         $this->setIntercom('ExtReaderNotify', 'off');
         $this->setIntercom('IndividualLevels', 'on');
         $this->setIntercom('SosDelay', 0);
+        $this->configureGate(); // Set "Mode 2" for incoming calls to work correctly
     }
 
     public function setAudioLevels(array $levels)

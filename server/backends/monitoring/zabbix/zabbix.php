@@ -2,8 +2,6 @@
 
 namespace backends\monitoring;
 
-use api\cameras\camera;
-
 require_once __DIR__ . '/../../../utils/api_exec.php';
 
 class zabbix extends monitoring
@@ -24,6 +22,9 @@ class zabbix extends monitoring
     public function __construct($config, $db, $redis, $login = false)
     {
         try {
+            parent::__construct($config, $db, $redis, $login);
+            require_once __DIR__ . '/../../../utils/api_exec.php';
+
             $this->initializeZabbixApi($config);
             $this->getActualIds();
         } catch (\Exception $e) {
@@ -150,23 +151,39 @@ class zabbix extends monitoring
      */
     private function initializeZabbixApi($config): void
     {
-        if (!isset($config["backends"]["monitoring"])){
-            throw new \Exception("Zabbix API configuration is incomplete, check './server/config/config.json'");
-        }
-
         $zbxConfig = $config["backends"]["monitoring"];
+        $requiredConfigKeys = [
+            'cron_sync_data_scheduler',
+            'zbx_api_url',
+            'zbx_token',
+            'zbx_store_days',
+            'cron_sync_data_scheduler',
+            'zbx_data_collection',
+        ];
+
+        foreach ($requiredConfigKeys as $key) {
+            if (!isset($zbxConfig[$key])) {
+                throw new \Exception("Required key '$key' is missing in Zabbix API configuration. Check config.");
+            }
+        }
 
         $this->zbxApi = $zbxConfig["zbx_api_url"];
         $this->zbxToken = $zbxConfig["zbx_token"];
         $this->zbxStoreDays = $zbxConfig["zbx_store_days"];
         $this->scheduler = $zbxConfig["cron_sync_data_scheduler"];
+        $this->useCashe = $zbxConfig["use_cache"];
 
         $this->hostGroups = $zbxConfig["zbx_data_collection"]["host_groups"];
         $this->templateGroups = $zbxConfig["zbx_data_collection"]["template_groups"];
         $this->intercomTemplateNames = $zbxConfig["zbx_data_collection"]["intercom_template_names"];
         $this->cameraTemplateNames = $zbxConfig["zbx_data_collection"]["camera_template_names"];
         $this->pluggedTemplateNames = $zbxConfig["zbx_data_collection"]["plugged_template_names"];
-        $this->templatesDir = __DIR__ . "/../../../.." . $zbxConfig["zbx_data_collection"]["templates_dir"];
+
+        $templatePath = __DIR__ . "/../../../.." . $zbxConfig["zbx_data_collection"]["templates_dir"];
+        if (!is_dir($templatePath)) {
+           throw new Exception("Error: template directory does not exist: $templatePath");
+        }
+        $this->templatesDir = realpath($templatePath);
     }
 
     /**
@@ -478,7 +495,13 @@ class zabbix extends monitoring
                     ],
                     "valueMaps" => [
                         "createMissing" => true,
-                        "updateExisting" => false
+                        "deleteMissing" => true,
+                        "updateExisting" => true
+                    ],
+                    "httptests" => [
+                        "createMissing" => true,
+                        "deleteMissing" => true,
+                        "updateExisting" => true
                     ]
                 ],
                 "source" => $templateDataStr

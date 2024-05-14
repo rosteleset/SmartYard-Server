@@ -76,6 +76,7 @@
         "tokenNotFound": "Token",
         "noToken": "Token is not specified",
         "userNotFound": "User is not found",
-        "permissionDenied": "Access denied"
+        "permissionDenied": "Access denied",
+        "notAcceptable": "Not acceptable"
     }
 }

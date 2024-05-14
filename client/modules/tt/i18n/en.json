@@ -315,6 +315,8 @@
     "sortAsc": "Ascending",
     "sortDesc": "Descending",
     "backToList": "Back to list",
+    "openIssueNewWindow": "Open issue in a new window",
+    "actionNotAvailable": "Action not available",
     "methods": {
         "tt": {
             "_title": "Task Manager",

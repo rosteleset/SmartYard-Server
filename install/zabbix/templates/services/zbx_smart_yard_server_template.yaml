@@ -220,5 +220,5 @@ zabbix_export:
   triggers:
     - uuid: 2c05a091c62b47319fc043d6be27e08e
       expression: 'last(/SmartYard-Server/web.test.rspcode[Health check,Check health ping])<>200'
-      name: 'RBT: server failure'
+      name: 'SmartYard-Server: server failure'
       priority: AVERAGE

@@ -509,7 +509,7 @@ db.getCollection('RTL')
 
                 if ($byPipeline) {
                     $_query = json_decode(json_encode($query), true);
-                    $_query[] = [ '$project' => $projection-all ];
+                    $_query[] = [ '$project' => $projection ];
                     $issues = $this->mongo->$db->$collection->aggregate($_query);
                 } else {
                     $issues = $this->mongo->$db->$collection->find($query, $options_all);

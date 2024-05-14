@@ -297,9 +297,9 @@ abstract class hikvision extends domophone
         return [];
     }
 
-    public function getLineDiagnostics(int $apartment)
+    public function getLineDiagnostics(int $apartment): int
     {
-        // Empty implementation
+        return 0;
     }
 
     public function getRfids(): array

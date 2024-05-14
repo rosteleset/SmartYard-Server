@@ -8,9 +8,13 @@ const fs = require('fs');
 
 const config = JSON.parse(fs.readFileSync(__dirname + "/../../config/config.json").toString());
 
-const client = mqtt.connect(config.ws, {
+const client = mqtt.connect((config.backends.mqtt.by == "ws") ? config.backends.mqtt.ws : config.backends.mqtt.mqtt, {
     username: config.backends.mqtt.username,
     password: config.backends.mqtt.password,
+});
+
+client.on("error", error => {
+    console.log("mqtt connect", error);
 });
 
 function redisInit() {

@@ -188,7 +188,7 @@ class sputnik extends domophone
         $this->rfidKeysToBeDeleted[] = $this->flipRfid($code);
     }
 
-    public function getLineDiagnostics(int $apartment)
+    public function getLineDiagnostics(int $apartment): float
     {
         $lineData = $this->apiCall('mutation', 'lineTest', [
             'intercomID' => $this->uuid,

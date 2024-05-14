@@ -77,5 +77,8 @@
     "qtech": [
         "Heart Beat",
         "IP CHANGED"
+    ],
+    "rubetek": [
+        "Successfully registered at SIP server"
     ]
 }

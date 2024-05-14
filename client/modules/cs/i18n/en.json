@@ -27,6 +27,8 @@
     "confirmUnReserve": "Remove from the reserve?",
     "comment": "Comment",
     "noPart": "Common",
+    "colRename": "Rename",
+    "colRows": "Rows",
     "methods": {
         "cs": {
             "_title": "Coordination sheet",
