@@ -412,6 +412,10 @@
                     setLastError("cantModifyEntrance");
                 }
 
+                if (!$cms) {
+                    $this->setCms($entranceId, []);
+                }
+
                 return $r1 && $r2;
             }
 
