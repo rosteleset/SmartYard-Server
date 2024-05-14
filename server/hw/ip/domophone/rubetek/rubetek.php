@@ -71,7 +71,7 @@ abstract class rubetek extends domophone
         // Multiple calls to work correctly
         $videoSettings = $this->apiCall('/settings/video');
 
-        $videoSettings['channel1']['fps'] = '15fps';
+        $videoSettings['channel1']['fps'] = '30fps';
         $videoSettings['channel1']['bitrate'] = '1Mbps';
         $videoSettings['channel1']['resolution'] = '1280x720';
         $this->apiCall('/settings/video', 'PATCH', $videoSettings);
@@ -81,7 +81,7 @@ abstract class rubetek extends domophone
         $videoSettings['channel2']['resolution'] = '720x480';
         $this->apiCall('/settings/video', 'PATCH', $videoSettings);
 
-        $videoSettings['channel3']['fps'] = '25fps';
+        $videoSettings['channel3']['fps'] = '15fps';
         $videoSettings['channel3']['bitrate'] = '0.5Mbps';
         $videoSettings['channel3']['resolution'] = '640x480';
         $this->apiCall('/settings/video', 'PATCH', $videoSettings);
@@ -113,6 +113,9 @@ abstract class rubetek extends domophone
     {
         $this->clearMatrix();
 
+        $minAnalogNumber = 500;
+        $maxAnalogNumber = 1;
+
         foreach ($matrix as $matrixCell) {
             [
                 'hundreds' => $hundreds,
@@ -121,7 +124,14 @@ abstract class rubetek extends domophone
                 'apartment' => $apartment,
             ] = $matrixCell;
 
-            $analogNumber = (string)($hundreds * 100 + $tens * 10 + $units);
+            $analogNumber = $hundreds * 100 + $tens * 10 + $units;
+
+            if ($analogNumber % 100 === 0) {
+                $analogNumber += 100;
+            }
+
+            $minAnalogNumber = min($analogNumber, $minAnalogNumber);
+            $maxAnalogNumber = max($analogNumber, $maxAnalogNumber);
 
             $dialplan = $this->dialplans[$apartment] ?? [
                 'id' => "$apartment",
@@ -140,6 +150,12 @@ abstract class rubetek extends domophone
                 $dialplan['access_codes'],
             );
         }
+
+        $analogSettings = $this->apiCall('/settings/analog');
+        // FIXME: currently doesn't work correctly if first_location_id isn't 1
+        $analogSettings['first_location_id'] = 1; // $minAnalogNumber;
+        $analogSettings['last_location_id'] = $maxAnalogNumber;
+        $this->apiCall('/configuration', 'PATCH', ['analog' => $analogSettings]);
     }
 
     public function configureSip(
@@ -645,6 +661,10 @@ abstract class rubetek extends domophone
 
             if ($analogNumber === '') {
                 continue;
+            }
+
+            if ($analogNumber % 100 === 0) {
+                $analogNumber -= 100;
             }
 
             [$hundreds, $tens, $units] = str_split(str_pad($analogNumber, 3, '0', STR_PAD_LEFT));

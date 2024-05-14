@@ -1,13 +1,13 @@
 zabbix_export:
   version: '6.4'
   template_groups:
-    - uuid: 6b2da836ac5d4728b89105eb2ed04250
+    - uuid: 31a284c9b73f49729ae0a88caff2063d
       name: Templates/Intercoms
   templates:
-    - uuid: 1d5ed10a31bc471ea4f93bd8ab980c18
-      template: Intercom_IS_ISCOM_X1_REV.5
-      name: 'Intercom | IS SOKOL plius by HTTP'
-      description: 'Intercom IS ISCOM X1 rev.5 (Sokol plius) panel monitoring'
+    - uuid: 6a9fffb80a26444495920fe4210985bf
+      template: Intercom_IS_ISCOM_X1_REV.2
+      name: 'Intercom | IS SOKOL V2 by HTTP'
+      description: 'Intercom IS ISCOM X1 rev.2 panel monitoring'
       vendor:
         name: SmartYard
         version: 6.4-0
@@ -16,7 +16,7 @@ zabbix_export:
       groups:
         - name: Templates/Intercoms
       items:
-        - uuid: 9ffb484b281d4d89aa502280b63a2394
+        - uuid: 6a3ac86b542d462a80bb4644a9abec36
           name: 'Sokol Intercom: device model'
           type: DEPENDENT
           key: intercom.devicemodel
@@ -32,7 +32,7 @@ zabbix_export:
                 - $.model
           master_item:
             key: intercom.systeminfo
-        - uuid: 4c03ea3fba9149f8980a7e02f5f9b479
+        - uuid: cd96d52161d245c6b4bc5be2b969e54c
           name: 'Sokol Intercom: fw version'
           type: DEPENDENT
           key: intercom.fwversion
@@ -49,12 +49,12 @@ zabbix_export:
           master_item:
             key: intercom.systemversions
           triggers:
-            - uuid: 64a94aea0b85453f8aa612e71cb8f1da
-              expression: 'last(/Intercom_IS_ISCOM_X1_REV.5/intercom.fwversion,#1)<>last(/Intercom_IS_ISCOM_X1_REV.5/intercom.fwversion,#2) and length(last(/Intercom_IS_ISCOM_X1_REV.5/intercom.fwversion))>0'
+            - uuid: f21a5dfe789148028c94dbdd04d41fa1
+              expression: 'last(/Intercom_IS_ISCOM_X1_REV.2/intercom.fwversion,#1)<>last(/Intercom_IS_ISCOM_X1_REV.2/intercom.fwversion,#2) and length(last(/Intercom_IS_ISCOM_X1_REV.2/intercom.fwversion))>0'
               name: 'Firmware version has changed'
               event_name: 'INTERCOM: {HOST.NAME} | Firmvare version has changed (new version: {ITEM.VALUE})'
               priority: INFO
-        - uuid: 603818b71c5947d9af9245cbeea830fd
+        - uuid: 2eb21951b0b541709c7d95fcdae3cfc5
           name: 'Sokol Intercom: SIP registration status'
           type: DEPENDENT
           key: intercom.sipstatus
@@ -70,13 +70,13 @@ zabbix_export:
           master_item:
             key: intercom.systeminfo
           triggers:
-            - uuid: 62ad991c141d4acd9caff26a8a750619
-              expression: 'count(/Intercom_IS_ISCOM_X1_REV.5/intercom.sipstatus,10m,,"0")>5'
+            - uuid: 93390ba4bfc14d12adc4c2821bdb5507
+              expression: 'count(/Intercom_IS_ISCOM_X1_REV.2/intercom.sipstatus,10m,,"0")>5'
               name: 'SIP registration failure'
               event_name: 'INTERCOM: {HOST.NAME} | SIP registration failure'
               priority: WARNING
               description: 'Check SIP registration on device more 10 minutes'
-        - uuid: 8165b46c43c44c78812d6bdb8a62385f
+        - uuid: 81f5a995aa1e497a805d630da80ec8b3
           name: 'Sokol Intercom: system info'
           type: HTTP_AGENT
           key: intercom.systeminfo
@@ -96,7 +96,7 @@ zabbix_export:
           tags:
             - tag: component
               value: raw
-        - uuid: 01a513ec0b1142fb98604f56b42ba2fa
+        - uuid: a6049607ab5d48b0b5d85c2871cf594e
           name: 'Sokol Intercom: system versions'
           type: HTTP_AGENT
           key: intercom.systemversions
@@ -116,7 +116,7 @@ zabbix_export:
           tags:
             - tag: component
               value: raw
-        - uuid: d9d928f3c02d4c48a20cfb72acccce49
+        - uuid: 8e7bb30af071464a90c583877d5c0ad0
           name: 'Sokol Intercom: uptime'
           type: DEPENDENT
           key: intercom.uptime
@@ -133,10 +133,10 @@ zabbix_export:
           master_item:
             key: intercom.systeminfo
           triggers:
-            - uuid: 17e4940145484052b072aea569bbc3a2
-              expression: last(/Intercom_IS_ISCOM_X1_REV.5/intercom.uptime)<10m
+            - uuid: fb23377339b74aff8a3974d0b6821a1e
+              expression: last(/Intercom_IS_ISCOM_X1_REV.2/intercom.uptime)<10m
               recovery_mode: RECOVERY_EXPRESSION
-              recovery_expression: last(/Intercom_IS_ISCOM_X1_REV.5/intercom.uptime)>15m
+              recovery_expression: last(/Intercom_IS_ISCOM_X1_REV.2/intercom.uptime)>15m
               name: 'Device has been restarted'
               event_name: 'INTERCOM: {HOST.NAME} | has been restarted (uptime < 10m)'
               priority: INFO
@@ -154,7 +154,7 @@ zabbix_export:
           value: root
           description: 'WEB GUI | API username, default value admin'
       valuemaps:
-        - uuid: 84e3fde322dc4b78beb7a22557b46533
+        - uuid: 823c141c31704821bfba3d970afad679
           name: 'SIP registration status'
           mappings:
             - value: '0'
