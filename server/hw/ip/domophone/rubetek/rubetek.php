@@ -125,6 +125,11 @@ abstract class rubetek extends domophone
             ] = $matrixCell;
 
             $analogNumber = $hundreds * 100 + $tens * 10 + $units;
+
+            if ($analogNumber % 100 === 0) {
+                $analogNumber += 100;
+            }
+
             $minAnalogNumber = min($analogNumber, $minAnalogNumber);
             $maxAnalogNumber = max($analogNumber, $maxAnalogNumber);
 
@@ -656,6 +661,10 @@ abstract class rubetek extends domophone
 
             if ($analogNumber === '') {
                 continue;
+            }
+
+            if ($analogNumber % 100 === 0) {
+                $analogNumber -= 100;
             }
 
             [$hundreds, $tens, $units] = str_split(str_pad($analogNumber, 3, '0', STR_PAD_LEFT));
