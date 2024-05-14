@@ -113,6 +113,9 @@ abstract class rubetek extends domophone
     {
         $this->clearMatrix();
 
+        $minAnalogNumber = 500;
+        $maxAnalogNumber = 1;
+
         foreach ($matrix as $matrixCell) {
             [
                 'hundreds' => $hundreds,
@@ -121,7 +124,9 @@ abstract class rubetek extends domophone
                 'apartment' => $apartment,
             ] = $matrixCell;
 
-            $analogNumber = (string)($hundreds * 100 + $tens * 10 + $units);
+            $analogNumber = $hundreds * 100 + $tens * 10 + $units;
+            $minAnalogNumber = min($analogNumber, $minAnalogNumber);
+            $maxAnalogNumber = max($analogNumber, $maxAnalogNumber);
 
             $dialplan = $this->dialplans[$apartment] ?? [
                 'id' => "$apartment",
@@ -140,6 +145,12 @@ abstract class rubetek extends domophone
                 $dialplan['access_codes'],
             );
         }
+
+        $analogSettings = $this->apiCall('/settings/analog');
+        // FIXME: currently doesn't work correctly if first_location_id isn't 1
+        $analogSettings['first_location_id'] = 1; // $minAnalogNumber;
+        $analogSettings['last_location_id'] = $maxAnalogNumber;
+        $this->apiCall('/configuration', 'PATCH', ['analog' => $analogSettings]);
     }
 
     public function configureSip(
