@@ -540,6 +540,7 @@
         GET("cameras", "cameras", false, true).
         done(response => {
             modules.addresses.cameras.meta = response.cameras;
+            console.log(modules.addresses.cameras.meta)
 
             cardTable({
                 target: "#mainForm",
@@ -558,6 +559,9 @@
                     },
                     {
                         title: i18n("addresses.url"),
+                    },
+                    {
+                        title: i18n("addresses.model"),
                     },
                     {
                         title: i18n("addresses.cameraName"),
@@ -581,6 +585,10 @@
                                 },
                                 {
                                     data: modules.addresses.cameras.meta.cameras[i].url,
+                                    nowrap: true,
+                                },
+                                {
+                                    data: modules.addresses.cameras.meta.models[modules.addresses.cameras.meta.cameras[i].model].title,
                                     nowrap: true,
                                 },
                                 {
