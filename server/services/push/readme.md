@@ -27,6 +27,7 @@
         rotate 3
         compress
         notifempty
+        create 0644 rbt rbt
     }' | tee /etc/logrotate.d/rbt_push
     ```
     Restart service
@@ -53,7 +54,9 @@
     KillMode=process
     StandardOutput=file:/var/log/rbt_push_service/push_service.log
     StandardError=file:/var/log/rbt_push_service/push_service.error.log
-    
+    SyslogIdentifier=rbt_push_service
+    Permissions=0644
+
     [Install]
     WantedBy=multi-user.target" | sudo tee /etc/systemd/system/rbt_push.service
     ```   
