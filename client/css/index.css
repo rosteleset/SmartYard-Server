@@ -412,9 +412,11 @@ body.dark-mode .nodec:hover {
 }
 
 [data-toggle="collapse"] .fa:before {
-  content: "\f139";
+  content: "\f0d7";
+  padding-right: 3px;
 }
 
 [data-toggle="collapse"].collapsed .fa:before {
-  content: "\f13a";
+  content: "\f0da";
+  padding-right: 3px;
 }
