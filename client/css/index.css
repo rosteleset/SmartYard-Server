@@ -410,3 +410,11 @@ body.dark-mode .nodec:hover {
 .datatable th {
   padding: 3px; text-align: left; cursor: default;
 }
+
+[data-toggle="collapse"] .fa:before {
+  content: "\f139";
+}
+
+[data-toggle="collapse"].collapsed .fa:before {
+  content: "\f13a";
+}
