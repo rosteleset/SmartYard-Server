@@ -18,16 +18,6 @@ function cardForm(params) {
         }
     }
 
-    let s2maxLengths = {
-        "sm": 32,
-        "lg": 60,
-        "xl": 80,
-    };
-
-    let s2maxLength = s2maxLengths[params.size] ? s2maxLengths[params.size] : -1;
-
-//    console.log(params.size, s2maxLength);
-
     if (!params.apply) {
         params.apply = "apply";
     }
@@ -244,9 +234,9 @@ function cardForm(params) {
                 if (typeof params.fields[i].options === "object") {
                     for (let j in params.fields[i].options) {
                         if (params.fields[i].options[j].value == params.fields[i].value || params.fields[i].options[j].selected) {
-                            h += `<option label="${escapeHTML(params.fields[i].options[j].text)}" value="${escapeHTML(params.fields[i].options[j].value)}" selected data-icon="${params.fields[i].options[j].icon}">${escapeHTML(params.fields[i].options[j].text, s2maxLength)}</option>`;
+                            h += `<option label="${escapeHTML(params.fields[i].options[j].text)}" value="${escapeHTML(params.fields[i].options[j].value)}" selected data-icon="${params.fields[i].options[j].icon}">${escapeHTML(params.fields[i].options[j].text)}</option>`;
                         } else {
-                            h += `<option label="${escapeHTML(params.fields[i].options[j].text)}" value="${escapeHTML(params.fields[i].options[j].value)}" data-icon="${params.fields[i].options[j].icon}">${escapeHTML(params.fields[i].options[j].text, s2maxLength)}</option>`;
+                            h += `<option label="${escapeHTML(params.fields[i].options[j].text)}" value="${escapeHTML(params.fields[i].options[j].value)}" data-icon="${params.fields[i].options[j].icon}">${escapeHTML(params.fields[i].options[j].text)}</option>`;
                         }
                     }
                 } else {
