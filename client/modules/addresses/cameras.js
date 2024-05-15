@@ -540,7 +540,6 @@
         GET("cameras", "cameras", false, true).
         done(response => {
             modules.addresses.cameras.meta = response.cameras;
-            console.log(modules.addresses.cameras.meta)
 
             cardTable({
                 target: "#mainForm",
