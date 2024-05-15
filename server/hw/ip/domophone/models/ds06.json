@@ -1,7 +1,7 @@
 {
     "title": "BEWARD DS06*",
     "vendor": "BEWARD",
-    "model": "DS06*",
+    "model": "DS06",
     "class": "ds06",
     "eventServer": "beward_ds",
     "outputs": 3,
