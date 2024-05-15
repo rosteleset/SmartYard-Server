@@ -344,6 +344,10 @@ body.dark-mode .nodec:hover {
   background-size: 18px;
 }
 
+.select2-selection { overflow: hidden; }
+.select2-selection__rendered { white-space: normal; word-break: break-all; width: 100%!important; }
+.select2-selection__rendered span { white-space: normal; word-break: break-all; width: 100%!important; }
+
 .text-decoration-line-through {
   text-decoration: line-through;
 }
