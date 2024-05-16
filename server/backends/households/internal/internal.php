@@ -2018,7 +2018,7 @@
                 $n = $this->db->modify("delete from houses_subscribers_mobile where house_subscriber_id not in (select house_subscriber_id from houses_flats_subscribers)");
                 $n = $this->db->modify("delete from houses_cameras_subscribers where house_subscriber_id not in (select house_subscriber_id from houses_subscribers_mobile)");
 
-//                $n += $this->db->modify("delete from houses_subscribers_mobile where house_subscriber_id not in (select house_subscriber_id from houses_flats_subscribers union select house_subscriber_id from houses_cameras_subscribers) and last_seen + (31 * 24 * 60 * 60) < " . time());
+                //$n += $this->db->modify("delete from houses_subscribers_mobile where house_subscriber_id not in (select house_subscriber_id from houses_flats_subscribers union select house_subscriber_id from houses_cameras_subscribers) and last_seen + (31 * 24 * 60 * 60) < " . time());
 
                 $n += $this->db->modify("delete from houses_entrances_flats where house_flat_id not in (select house_flat_id from houses_flats)");
                 $n += $this->db->modify("delete from houses_flats_subscribers where house_flat_id not in (select house_flat_id from houses_flats)");
@@ -2180,6 +2180,98 @@
                 cliUsage();
 
                 return true;
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function getDevices($by, $query)
+            {
+                $q = "";
+                $p = false;
+
+                switch ($by) {
+                    case "flat":
+                        $q = "select * from houses_subscribers_devices where subscriber_device_id in (select subscriber_device_id from houses_flats_devices where house_flat_id = :house_flat_id)";
+                        $p = [
+                            "house_flat_id" => (int)$query,
+                        ];
+                        break;
+
+                    case "subscriber":
+                        $q = "select * from houses_subscribers_devices where house_subscriber_id = :house_subscriber_id";
+                        $p = [
+                            "house_subscriber_id" => $query,
+                        ];
+                        break;
+
+                    case "id":
+                        $q = "select * from houses_subscribers_devices where subscriber_device_id = :subscriber_device_id";
+                        $p = [
+                            "subscriber_device_id" => (int)$query,
+                        ];
+                        break;
+
+                    case "deviceToken":
+                        $q = "select * from houses_subscribers_devices where device_token = :device_token";
+                        $p = [
+                            "device_token" => $query,
+                        ];
+                        break;
+                    case "authToken":
+                        $q = "select * from houses_subscribers_devices where auth_token = :auth_token";
+                        $p = [
+                            "auth_token" => $query,
+                        ];
+                        break;
+                }
+
+                $devices = $this->db->get($q, $p, [
+                    "subscriber_device_id" => "deviceId",
+                    "house_subscriber_id" => "subscriberId",
+                    "device_token" => "deviceToken",
+                    "auth_token" => "authToken",
+                    "platform" => "platform",
+                    "push_token" => "pushToken",
+                    "push_token_type" => "tokenType",
+                    "voip_token" => "voipToken",
+                    "registered" => "registered",
+                    "last_seen" => "lastSeen",
+                    "voip_enabled" => "voipEnabled",
+                ]);
+
+                foreach ($devices as &$device) {
+                    $flats = $this->db->get("select house_flat_id, voip_enabled, flat, address_house_id from houses_flats_devices left join houses_flats using (house_flat_id) where subscriber_device_id = :subscriber_device_id",
+                        [
+                            "subscriber_device_id" => $device["deviceId"]
+                        ],
+                        [
+                            "house_flat_id" => "flatId",
+                            "voip_enabled" => "voipEnabled",
+                            "flat" => "flat",
+                            "address_house_id" => "addressHouseId",
+                        ]
+                    );
+                    $device["flats"] = $flats;
+                }
+
+                return $devices;
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function addDevice($subscriber, $deviceToken, $platform)
+            {
+                
+                $deviceId = $this->db->insert("insert into houses_subscribers_devices (house_subscriber_id, device_token, platform, registered, voip_enabled) values (:house_subscriber_id, :device_token, :platform, :registered, 1)", [
+                    "house_subscriber_id" => $subscriber,
+                    "device_token" => $deviceToken,
+                    "platform" => $platform,
+                    "registered" => time(),
+                ]);
+
+                return $deviceId;
             }
         }
     }

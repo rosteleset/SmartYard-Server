@@ -333,7 +333,7 @@
             abstract public function unlinkCamera($from, $id, $cameraId);
 
             /**
-             * @param $by - "id", "subscriber", "flat"
+             * @param $by - "id", "subscriber", "flat", "authToken"
              * @param $query
              * @return false|array
              */
