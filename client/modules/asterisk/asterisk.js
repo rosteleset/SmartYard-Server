@@ -8,7 +8,7 @@
     registered: false,
     beepBeep: 0,
     beepAmplify: 500,
-    
+
     init: function () {
         if (config.asterisk && config.asterisk.ws && config.asterisk.ice && config.asterisk.sipDomain && myself.webRtcExtension && myself.webRtcPassword) {
             moduleLoaded("asterisk", this);
@@ -131,14 +131,40 @@
     },
 
     onRegistrationFailed: function () {
-        modules.asterisk.ready = false;
-        modules.asterisk.currentSession = false;
-        modules.asterisk.holdedSession = false;
-        modules.asterisk.registered = false;
-        setTimeout(() => {
-            modules.asterisk.ua.register();
-        }, 5000);
-        modules.asterisk.updateButton();
+        return GET("authentication", "whoAmI", false, force).done(_me => {
+            if (_me && _me.user) {
+                myself.webRtcExtension = _me.user.webRtcExtension;
+                myself.webRtcPassword = _me.user.webRtcPassword;
+
+                modules.asterisk.ready = false;
+                modules.asterisk.currentSession = false;
+                modules.asterisk.holdedSession = false;
+                modules.asterisk.registered = false;
+
+                setTimeout(() => {
+                    console.log("refreshing sip ua");
+
+                    modules.asterisk.ua = new JsSIP.UA({
+                        sockets: [ new JsSIP.WebSocketInterface(config.asterisk.ws) ],
+                        uri: "sip:" + myself.webRtcExtension + "@" + config.asterisk.sipDomain,
+                        password : myself.webRtcPassword,
+                    });
+
+                    modules.asterisk.ua.on('newRTCSession', modules.asterisk.newRTCSession);
+
+                    modules.asterisk.ua.on('connected', modules.asterisk.onConnectionBroken);
+                    modules.asterisk.ua.on('disconnected', modules.asterisk.onConnectionBroken);
+                    modules.asterisk.ua.on('unregistered', modules.asterisk.onConnectionBroken);
+
+                    modules.asterisk.ua.on('registered', modules.asterisk.onRegistered);
+                    modules.asterisk.ua.on('registrationFailed', modules.asterisk.onRegistrationFailed);
+
+                    modules.asterisk.ua.start();
+                }, 5000);
+
+                modules.asterisk.updateButton();
+            }
+        })
     },
 
     onRegistered: function () {
