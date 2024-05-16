@@ -370,7 +370,7 @@
                                     data: modules.addresses.domophones.meta.domophones[i].url,
                                     nowrap: true,
                                 },
-                                {   data: modules.addresses.domophones.meta.models[modules.addresses.domophones.meta.domophones[i].model].model,
+                                {   data: modules.addresses.domophones.meta.models[modules.addresses.domophones.meta.domophones[i].model].title,
                                     nowrap: true,
                                 },
                                 {
