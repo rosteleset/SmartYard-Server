@@ -2348,5 +2348,56 @@
 
                 return $r;
             }
+
+            /**
+             * @inheritDoc
+             */
+            public function deleteDevice($deviceId)
+            {
+                if (!checkInt($deviceId)) {
+                    return false;
+                }
+
+                $result = $this->db->modify("delete from houses_subscribers_devices where subscriber_device_id = $deviceId");
+
+                if ($result === false) {
+                    return false;
+                } else {
+                    return $this->db->modify("delete from houses_flats_devices where subscriber_device_id = $deviceId");
+                }
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function setDeviceFlat($deviceId, $flat)
+            {
+                if (!checkInt($deviceId)) {
+                    setLastError("invalidParams");
+                    return false;
+                }
+
+                // Используем ON DUPLICATE KEY UPDATE для обновления записи, если она существует, или вставки новой записи, если её нет
+                $query = "
+                    INSERT INTO houses_flats_devices (subscriber_device_id, house_flat_id, voip_enabled) 
+                    VALUES (:subscriber_device_id, :house_flat_id, :voip_enabled)
+                    ON DUPLICATE KEY UPDATE 
+                        voip_enabled = VALUES(voip_enabled)
+                ";
+
+                $params = [
+                    "subscriber_device_id" => $deviceId,
+                    "house_flat_id" => $flat["flatId"],
+                    "voip_enabled" => $flat["voipEnabled"] ? 1 : 0,
+                ];
+
+                $r = $this->db->insert($query, $params) !== false;
+
+                if (!$r) {
+                    setLastError("cantSetSubscribersFlats");
+                }
+
+                return $r;
+            }
         }
     }
