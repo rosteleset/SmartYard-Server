@@ -2273,5 +2273,80 @@
 
                 return $deviceId;
             }
+
+            /**
+             * @inheritDoc
+             */
+            public function modifyDevice($deviceId, $params = [])
+            {
+                if (!checkInt($deviceId)) {
+                    return false;
+                }
+
+                if (@$params["authToken"]) {
+                    if (!checkStr($params["authToken"])) {
+                        setLastError("invalidParams");
+                        return false;
+                    }
+
+                    if ($this->db->modify("update houses_subscribers_devices set auth_token = :auth_token where subscriber_device_id = $deviceId", [ "auth_token" => $params["authToken"] ]) === false) {
+                        return false;
+                    }
+                }
+
+                if (array_key_exists("platform", $params)) {
+                    if (!checkInt($params["platform"])) {
+                        setLastError("invalidParams");
+                        return false;
+                    }
+
+                    if ($this->db->modify("update houses_subscribers_devices set platform = :platform where subscriber_device_id = $deviceId", [ "platform" => $params["platform"] ]) === false) {
+                        return false;
+                    }
+                }
+
+                if (@$params["pushToken"]) {
+                    if (!checkStr($params["pushToken"])) {
+                        setLastError("invalidParams");
+                        return false;
+                    }
+
+                    if ($this->db->modify("update houses_subscribers_devices set push_token = :push_token where subscriber_device_id = $deviceId", [ "push_token" => $params["pushToken"] ]) === false) {
+                        return false;
+                    }
+                }
+
+                if (array_key_exists("tokenType", $params)) {
+                    if (!checkInt($params["tokenType"])) {
+                        setLastError("invalidParams");
+                        return false;
+                    }
+
+                    if ($this->db->modify("update houses_subscribers_devices set push_token_type = :push_token_type where subscriber_device_id = $deviceId", [ "push_token_type" => $params["tokenType"] ]) === false) {
+                        return false;
+                    }
+                }
+
+                if (@$params["voipToken"]) {
+                    if (!checkStr($params["voipToken"])) {
+                        setLastError("invalidParams");
+                        return false;
+                    }
+
+                    if ($this->db->modify("update houses_subscribers_devices set voip_token = :voip_token where subscriber_device_id = $deviceId", [ "voip_token" => $params["voipToken"] ]) === false) {
+                        return false;
+                    }
+                }
+
+                $r = true;
+
+                $r = $r && $this->db->modify("update houses_subscribers_devices set last_seen = :last_seen where subscriber_device_id = $deviceId", [ "last_seen" => time() ]) !== false;
+
+                if (!$r) {
+                    setLastError("cantModifySubscriber");
+                }
+
+                return $r;
+            }
         }
     }
