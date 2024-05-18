@@ -775,13 +775,6 @@
                                 },
                             },
                             {
-                                id: "colWeight",
-                                type: "text",
-                                title: i18n("cs.colWeight"),
-                                placeholder: i18n("cs.colWeight"),
-                                value: modules.cs.currentSheet.sheet.weights[colName],
-                            },
-                            {
                                 id: "colName",
                                 type: "text",
                                 title: i18n("cs.colName"),
@@ -790,6 +783,13 @@
                                 validate: v => {
                                     return $.trim(v) !== "" && !cols[$.trim(v)];
                                 },
+                            },
+                            {
+                                id: "colWeight",
+                                type: "text",
+                                title: i18n("cs.colWeight"),
+                                placeholder: i18n("cs.colWeight"),
+                                value: modules.cs.currentSheet.sheet.weights[colName],
                             },
                             {
                                 id: "colRows",
