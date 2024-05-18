@@ -780,9 +780,6 @@
                                 title: i18n("cs.colWeight"),
                                 placeholder: i18n("cs.colWeight"),
                                 value: modules.cs.currentSheet.sheet.weights[colName],
-                                validate: v => {
-                                    return $.trim(v) !== "" && !cols[$.trim(v)];
-                                },
                             },
                             {
                                 id: "colName",
