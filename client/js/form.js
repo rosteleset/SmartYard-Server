@@ -158,6 +158,13 @@ function cardForm(params) {
                 if (params.fields[i].options[j].id && !params.fields[i].options[j].value) {
                     params.fields[i].options[j].value = params.fields[i].options[j].id;
                 }
+                if (params.fields[i].options[j].value && !params.fields[i].options[j].id) {
+                    params.fields[i].options[j].id = params.fields[i].options[j].value;
+                }
+                if (!params.fields[i].options[j].id && !params.fields[i].options[j].value && params.fields[i].options[j].text) {
+                    params.fields[i].options[j].id = params.fields[i].options[j].text;
+                    params.fields[i].options[j].value = params.fields[i].options[j].text;
+                }
             }
         }
         if (params.fields[i].hidden || params.fields[i].tab_hidden) {
