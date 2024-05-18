@@ -587,9 +587,9 @@
                     for (let i in modules.cs.rows) {
                         h += '<tr>';
                         if (response.sheet.sheet.timeClass) {
-                            h += '<td class="' + response.sheet.sheet.timeClass + '">' + escapeHTML(modules.cs.rows[i]) + '</td>';
+                            h += '<td class="timeCell ' + response.sheet.sheet.timeClass + '">' + escapeHTML(modules.cs.rows[i]) + '</td>';
                         } else {
-                            h += '<td>' + escapeHTML(modules.cs.rows[i]) + '</td>';
+                            h += '<td class="timeCell">' + escapeHTML(modules.cs.rows[i]) + '</td>';
                         }
                         cCols = 0;
                         for (let j in modules.cs.cols) {
@@ -739,12 +739,62 @@
                                 title: i18n("cs.colName"),
                                 placeholder: i18n("cs.colName"),
                                 value: colName,
+                                validate: v => {
+                                    return $.trim(v) !== "" && !cols[$.trim(v)];
+                                },
                             },
                         ],
                         callback: result => {
                             for (let i in modules.cs.currentSheet.sheet.data) {
                                 if (md5(modules.cs.currentSheet.sheet.data[i].col) == col) {
-                                    modules.cs.currentSheet.sheet.data[i].col = result.colName;
+                                    modules.cs.currentSheet.sheet.data[i].col = $.trim(result.colName);
+                                    loadingStart();
+                                    PUT("cs", "sheet", false, {
+                                        "sheet": modules.cs.currentSheet.sheet.sheet,
+                                        "date": modules.cs.currentSheet.sheet.date,
+                                        "data": $.trim(JSON.stringify(modules.cs.currentSheet.sheet, null, 4)),
+                                    }).
+                                    fail(FAIL).
+                                    done(() => {
+                                        message(i18n("cs.sheetWasSaved"));
+                                    });
+                                    break;
+                                }
+                            }
+                        },
+                    }).show();
+                });
+
+                $(".colMenuRows").off("click").on("click", function () {
+                    let col = $(this).attr("data-col");
+
+                    let hours = {};
+
+                    for (let i in modules.cs.currentSheet.sheet.data) {
+                        if (modules.cs.currentSheet.sheet.data[i].col) {
+                            cols[modules.cs.currentSheet.sheet.data[i].col] = true;
+                        }
+                        if (md5(modules.cs.currentSheet.sheet.data[i].col) == col) {
+                            colName = modules.cs.currentSheet.sheet.data[i].col;
+                        }
+                    }
+
+                    cardForm({
+                        title: i18n("cs.setColName"),
+                        footer: true,
+                        borderless: true,
+                        topApply: true,
+                        fields: [
+                            {
+                                id: "colRows",
+                                type: "multiselect",
+                                title: i18n("cs.colRows"),
+                            },
+                        ],
+                        callback: result => {
+                            for (let i in modules.cs.currentSheet.sheet.data) {
+                                if (md5(modules.cs.currentSheet.sheet.data[i].col) == col) {
+                                    modules.cs.currentSheet.sheet.data[i].col = $.trim(result.colName);
                                     loadingStart();
                                     PUT("cs", "sheet", false, {
                                         "sheet": modules.cs.currentSheet.sheet.sheet,
