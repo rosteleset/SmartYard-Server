@@ -768,19 +768,36 @@
                 $(".colMenuRows").off("click").on("click", function () {
                     let col = $(this).attr("data-col");
 
-                    let hours = {};
+                    let rows = [];
+                    let t = {};
+
+                    $(".timeCell").each(function () {
+                        t[$(this).text] = true;
+                    });
+
+                    for (let i in t) {
+                        rows.push(i);
+                    }
+
+                    rows.sort();
+
+                    t = rows;
+                    rows = [];
 
                     for (let i in modules.cs.currentSheet.sheet.data) {
-                        if (modules.cs.currentSheet.sheet.data[i].col) {
-                            cols[modules.cs.currentSheet.sheet.data[i].col] = true;
-                        }
                         if (md5(modules.cs.currentSheet.sheet.data[i].col) == col) {
+                            for (let j in t) {
+                                rows.push({
+                                    id: t[i],
+                                    checked: modules.cs.currentSheet.sheet.data[i].rows.indexOf(t[i]) >= 0,
+                                });
+                            }
                             colName = modules.cs.currentSheet.sheet.data[i].col;
                         }
                     }
 
                     cardForm({
-                        title: i18n("cs.setColName"),
+                        title: i18n("cs.setColRows"),
                         footer: true,
                         borderless: true,
                         topApply: true,
@@ -789,9 +806,11 @@
                                 id: "colRows",
                                 type: "multiselect",
                                 title: i18n("cs.colRows"),
+                                options: rows,
                             },
                         ],
                         callback: result => {
+                            return console.log(result);
                             for (let i in modules.cs.currentSheet.sheet.data) {
                                 if (md5(modules.cs.currentSheet.sheet.data[i].col) == col) {
                                     modules.cs.currentSheet.sheet.data[i].col = $.trim(result.colName);
