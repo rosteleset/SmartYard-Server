@@ -781,8 +781,12 @@
 
                     rows.sort();
 
+                    console.log(rows);
+
                     t = rows;
                     rows = [];
+
+                    console.log(t);
 
                     for (let i in modules.cs.currentSheet.sheet.data) {
                         if (md5(modules.cs.currentSheet.sheet.data[i].col) == col) {
@@ -794,6 +798,8 @@
                             }
                         }
                     }
+
+                    console.log(rows);
 
                     cardForm({
                         title: i18n("cs.setColRows"),
