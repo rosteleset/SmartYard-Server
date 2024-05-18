@@ -375,8 +375,7 @@
         h += `<li class="pointer dropdown-item colMenuAssignAll" data-col="${md5(col)}">${i18n("cs.assignAll")}</li>`;
         h += `<li class="pointer dropdown-item colClearAssigners" data-col="${md5(col)}">${i18n("cs.clearAssigners")}</li>`;
         h += `<li class="dropdown-divider"></li>`;
-        h += `<li class="pointer dropdown-item colMenuRename" data-col="${md5(col)}">${i18n("cs.colRename")}</li>`;
-        h += `<li class="pointer dropdown-item colMenuRows" data-col="${md5(col)}">${i18n("cs.colRows")}</li>`;
+        h += `<li class="pointer dropdown-item colSettings" data-col="${md5(col)}">${i18n("cs.colSettings")}</li>`;
         h += `</ul></span>`;
 
         return h;
@@ -712,69 +711,11 @@
                     }).show();
                 });
 
-                $(".colMenuRename").off("click").on("click", function () {
+                $(".colSettings").off("click").on("click", function () {
                     let col = $(this).attr("data-col");
 
                     let cols = {};
                     let colName = "";
-//                    let colsOptions = [];
-
-                    for (let i in modules.cs.currentSheet.sheet.data) {
-                        if (modules.cs.currentSheet.sheet.data[i].col) {
-                            cols[modules.cs.currentSheet.sheet.data[i].col] = true;
-                        }
-                        if (md5(modules.cs.currentSheet.sheet.data[i].col) == col) {
-                            colName = modules.cs.currentSheet.sheet.data[i].col;
-                        }
-//                        colsOptions.push({
-//                            id: modules.cs.currentSheet.sheet.data[i].col,
-//                            text: modules.cs.currentSheet.sheet.data[i].col,
-//                        })
-                    }
-
-                    cardForm({
-                        title: i18n("cs.setColName"),
-                        footer: true,
-                        borderless: true,
-                        topApply: true,
-                        fields: [
-                            {
-                                id: "colName",
-                                type: "text",
-                                title: i18n("cs.colName"),
-                                placeholder: i18n("cs.colName"),
-                                value: colName,
-//                                options: colsOptions,
-//                                tags: true,
-//                                createTags: true,
-                                validate: v => {
-                                    return $.trim(v) !== "" && !cols[$.trim(v)];
-                                },
-                            },
-                        ],
-                        callback: result => {
-                            for (let i in modules.cs.currentSheet.sheet.data) {
-                                if (md5(modules.cs.currentSheet.sheet.data[i].col) == col) {
-                                    modules.cs.currentSheet.sheet.data[i].col = $.trim(result.colName);
-                                    loadingStart();
-                                    PUT("cs", "sheet", false, {
-                                        "sheet": modules.cs.currentSheet.sheet.sheet,
-                                        "date": modules.cs.currentSheet.sheet.date,
-                                        "data": $.trim(JSON.stringify(modules.cs.currentSheet.sheet, null, 4)),
-                                    }).
-                                    fail(FAIL).
-                                    done(() => {
-                                        message(i18n("cs.sheetWasSaved"));
-                                    });
-                                    break;
-                                }
-                            }
-                        },
-                    }).show();
-                });
-
-                $(".colMenuRows").off("click").on("click", function () {
-                    let col = $(this).attr("data-col");
 
                     let rows = [];
                     let t = {};
@@ -791,7 +732,11 @@
                     rows = [];
 
                     for (let i in modules.cs.currentSheet.sheet.data) {
+                        if (modules.cs.currentSheet.sheet.data[i].col) {
+                            cols[modules.cs.currentSheet.sheet.data[i].col] = true;
+                        }
                         if (md5(modules.cs.currentSheet.sheet.data[i].col) == col) {
+                            colName = modules.cs.currentSheet.sheet.data[i].col;
                             for (let j in t) {
                                 rows.push({
                                     id: t[j],
@@ -803,11 +748,21 @@
                     }
 
                     cardForm({
-                        title: i18n("cs.setColRows"),
+                        title: i18n("cs.setColName"),
                         footer: true,
                         borderless: true,
                         topApply: true,
                         fields: [
+                            {
+                                id: "colName",
+                                type: "text",
+                                title: i18n("cs.colName"),
+                                placeholder: i18n("cs.colName"),
+                                value: colName,
+                                validate: v => {
+                                    return $.trim(v) !== "" && !cols[$.trim(v)];
+                                },
+                            },
                             {
                                 id: "colRows",
                                 type: "multiselect",
@@ -818,6 +773,7 @@
                         callback: result => {
                             for (let i in modules.cs.currentSheet.sheet.data) {
                                 if (md5(modules.cs.currentSheet.sheet.data[i].col) == col) {
+                                    modules.cs.currentSheet.sheet.data[i].col = $.trim(result.colName);
                                     modules.cs.currentSheet.sheet.data[i].rows = result.colRows;
                                     loadingStart();
                                     PUT("cs", "sheet", false, {

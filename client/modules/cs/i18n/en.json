@@ -27,9 +27,8 @@
     "confirmUnReserve": "Remove from the reserve?",
     "comment": "Comment",
     "noPart": "Common",
-    "colRename": "Rename",
     "colRows": "Rows",
-    "setColName": "Set column name",
+    "colSettings": "Column settings",
     "colName": "Column name",
     "setColRows": "Set column rows",
     "methods": {
