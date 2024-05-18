@@ -24,10 +24,10 @@
     echo '/var/log/rbt_push_service/*.log {
         daily
         missingok
-        rotate 3
+        rotate 7
         compress
         notifempty
-        create 0644 rbt rbt
+        copytruncate
     }' | tee /etc/logrotate.d/rbt_push
     ```
     Restart service
