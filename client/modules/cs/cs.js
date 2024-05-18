@@ -796,8 +796,6 @@
                         }
                     }
 
-                    console.log(rows);
-
                     cardForm({
                         title: i18n("cs.setColRows"),
                         footer: true,
@@ -812,10 +810,9 @@
                             },
                         ],
                         callback: result => {
-                            return console.log(result);
                             for (let i in modules.cs.currentSheet.sheet.data) {
                                 if (md5(modules.cs.currentSheet.sheet.data[i].col) == col) {
-                                    modules.cs.currentSheet.sheet.data[i].col = $.trim(result.colName);
+                                    modules.cs.currentSheet.sheet.data[i].rows = result.colRows;
                                     loadingStart();
                                     PUT("cs", "sheet", false, {
                                         "sheet": modules.cs.currentSheet.sheet.sheet,
