@@ -712,6 +712,56 @@
                     }).show();
                 });
 
+                $(".colMenuRename").off("click").on("click", function () {
+                    let col = $(this).attr("data-col");
+
+                    let cols = {};
+                    let colName = "";
+
+                    for (let i in modules.cs.currentSheet.sheet.data) {
+                        if (modules.cs.currentSheet.sheet.data[i].col) {
+                            cols[modules.cs.currentSheet.sheet.data[i].col] = true;
+                        }
+                        if (md5(modules.cs.currentSheet.sheet.data[i].col) == col) {
+                            colName = modules.cs.currentSheet.sheet.data[i].col;
+                        }
+                    }
+
+                    cardForm({
+                        title: i18n("cs.setColName"),
+                        footer: true,
+                        borderless: true,
+                        topApply: true,
+                        fields: [
+                            {
+                                id: "colName",
+                                type: "text",
+                                title: i18n("cs.colName"),
+                                placeholder: i18n("cs.colName"),
+                                value: colName,
+                            },
+                        ],
+                        callback: result => {
+                            for (let i in modules.cs.currentSheet.sheet.data) {
+                                if (md5(modules.cs.currentSheet.sheet.data[i].col) == col) {
+                                    modules.cs.currentSheet.sheet.data[i].col = result.colName;
+                                    loadingStart();
+                                    PUT("cs", "sheet", false, {
+                                        "sheet": modules.cs.currentSheet.sheet.sheet,
+                                        "date": modules.cs.currentSheet.sheet.date,
+                                        "data": $.trim(JSON.stringify(modules.cs.currentSheet.sheet, null, 4)),
+                                    }).
+                                    fail(FAIL).
+                                    done(() => {
+                                        message(i18n("cs.sheetWasSaved"));
+                                    });
+                                    break;
+                                }
+                            }
+                        },
+                    }).show();
+                });
+
                 $(".colMenuAssignAll").off("click").on("click", function () {
                     let col = $(this).attr("data-col");
 
