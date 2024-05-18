@@ -28,7 +28,7 @@
     "comment": "Комментарий",
     "noPart": "Общий",
     "colRows": "Строки",
-    "colSettings": "Column settings",
+    "colSettings": "Настройки столбца",
     "colName": "Наименование столбца",
     "methods": {
         "cs": {
