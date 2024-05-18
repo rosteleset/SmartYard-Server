@@ -779,8 +779,6 @@
                         rows.push(i);
                     }
 
-                    console.log(rows);
-
                     t = rows;
                     rows = [];
 

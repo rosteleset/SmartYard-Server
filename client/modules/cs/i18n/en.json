@@ -29,6 +29,9 @@
     "noPart": "Common",
     "colRename": "Rename",
     "colRows": "Rows",
+    "setColName": "Set column name",
+    "colName": "Column name",
+    "setColRows": "Set column rows",
     "methods": {
         "cs": {
             "_title": "Coordination sheet",
