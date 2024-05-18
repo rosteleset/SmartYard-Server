@@ -733,9 +733,6 @@
                     rows = [];
 
                     for (let i in modules.cs.currentSheet.sheet.data) {
-                        if (modules.cs.currentSheet.sheet.data[i].col) {
-                            cols[modules.cs.currentSheet.sheet.data[i].col] = true;
-                        }
                         if (md5(modules.cs.currentSheet.sheet.data[i].col) == col) {
                             colName = modules.cs.currentSheet.sheet.data[i].col;
                             colPart = modules.cs.currentSheet.sheet.data[i].part;
@@ -745,6 +742,10 @@
                                     text: t[j],
                                     checked: modules.cs.currentSheet.sheet.data[i].rows.indexOf(t[j]) >= 0,
                                 });
+                            }
+                        } else {
+                            if (modules.cs.currentSheet.sheet.data[i].col) {
+                                cols[modules.cs.currentSheet.sheet.data[i].col] = true;
                             }
                         }
                     }
