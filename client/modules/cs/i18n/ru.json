@@ -27,8 +27,8 @@
     "confirmUnReserve": "Снять с резерва?",
     "comment": "Комментарий",
     "noPart": "Общий",
-    "colRename": "Переименовать",
     "colRows": "Строки",
+    "colSettings": "Column settings",
     "colName": "Наименование столбца",
     "methods": {
         "cs": {
