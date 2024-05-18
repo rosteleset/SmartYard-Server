@@ -788,11 +788,10 @@
                         if (md5(modules.cs.currentSheet.sheet.data[i].col) == col) {
                             for (let j in t) {
                                 rows.push({
-                                    id: t[i],
-                                    checked: modules.cs.currentSheet.sheet.data[i].rows.indexOf(t[i]) >= 0,
+                                    id: t[j],
+                                    checked: modules.cs.currentSheet.sheet.data[i].rows.indexOf(t[j]) >= 0,
                                 });
                             }
-                            colName = modules.cs.currentSheet.sheet.data[i].col;
                         }
                     }
 
