@@ -748,7 +748,7 @@
                     }
 
                     cardForm({
-                        title: i18n("cs.setColName"),
+                        title: i18n("cs.colSettings"),
                         footer: true,
                         borderless: true,
                         topApply: true,
