@@ -772,7 +772,7 @@
                     let t = {};
 
                     $(".timeCell").each(function () {
-                        t[$(this).text] = true;
+                        t[$(this).text()] = true;
                     });
 
                     for (let i in t) {
