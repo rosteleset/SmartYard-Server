@@ -793,6 +793,7 @@
                             for (let j in t) {
                                 rows.push({
                                     id: t[j],
+                                    text: t[j],
                                     checked: modules.cs.currentSheet.sheet.data[i].rows.indexOf(t[j]) >= 0,
                                 });
                             }
