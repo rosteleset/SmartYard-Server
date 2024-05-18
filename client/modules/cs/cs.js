@@ -506,13 +506,21 @@
                 }
 
                 function sf(a, b) {
+                    let aw = 0;
+                    let bw = 0;
                     if (modules.cs.currentSheet && modules.cs.currentSheet.sheet && modules.cs.currentSheet.sheet.weights) {
                         if (typeof modules.cs.currentSheet.sheet.weights[a] !== "undefined") {
-                            a = modules.cs.currentSheet.sheet.weights[a];
+                            aw = modules.cs.currentSheet.sheet.weights[a];
                         }
                         if (typeof modules.cs.currentSheet.sheet.weights[b] !== "undefined") {
-                            b = modules.cs.currentSheet.sheet.weights[b];
+                            bw = modules.cs.currentSheet.sheet.weights[b];
                         }
+                    }
+                    if (aw > bw) {
+                        return 1;
+                    }
+                    if (aw > bw) {
+                        return 1;
                     }
                     if (a > b) {
                         return 1;
