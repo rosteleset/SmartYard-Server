@@ -506,8 +506,8 @@
                 }
 
                 function sf(a, b) {
-                    let aw = 0;
-                    let bw = 0;
+                    let aw = "0";
+                    let bw = "0";
                     if (modules.cs.currentSheet && modules.cs.currentSheet.sheet && modules.cs.currentSheet.sheet.weights) {
                         if (typeof modules.cs.currentSheet.sheet.weights[a] !== "undefined") {
                             aw = modules.cs.currentSheet.sheet.weights[a];
@@ -519,8 +519,8 @@
                     if (aw > bw) {
                         return 1;
                     }
-                    if (aw > bw) {
-                        return 1;
+                    if (aw < bw) {
+                        return -1;
                     }
                     if (a > b) {
                         return 1;
