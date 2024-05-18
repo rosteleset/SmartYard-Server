@@ -30,6 +30,7 @@
     "colRows": "Rows",
     "colSettings": "Column settings",
     "colName": "Column name",
+    "colPart": "Group",
     "methods": {
         "cs": {
             "_title": "Coordination sheet",

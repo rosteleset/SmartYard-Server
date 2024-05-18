@@ -719,6 +719,7 @@
 
                     let rows = [];
                     let t = {};
+                    let colPart = "";
 
                     $(".timeCell").each(function () {
                         t[$(this).text()] = true;
@@ -737,6 +738,7 @@
                         }
                         if (md5(modules.cs.currentSheet.sheet.data[i].col) == col) {
                             colName = modules.cs.currentSheet.sheet.data[i].col;
+                            colPart = modules.cs.currentSheet.sheet.data[i].part;
                             for (let j in t) {
                                 rows.push({
                                     id: t[j],
@@ -753,6 +755,16 @@
                         borderless: true,
                         topApply: true,
                         fields: [
+                            {
+                                id: "colPart",
+                                type: "text",
+                                title: i18n("cs.colPart"),
+                                placeholder: i18n("cs.colPart"),
+                                value: colPart,
+                                validate: v => {
+                                    return $.trim(v) !== "";
+                                },
+                            },
                             {
                                 id: "colName",
                                 type: "text",
@@ -775,6 +787,7 @@
                                 if (md5(modules.cs.currentSheet.sheet.data[i].col) == col) {
                                     modules.cs.currentSheet.sheet.data[i].col = $.trim(result.colName);
                                     modules.cs.currentSheet.sheet.data[i].rows = result.colRows;
+                                    modules.cs.currentSheet.sheet.data[i].part = result.colPart;
                                     loadingStart();
                                     PUT("cs", "sheet", false, {
                                         "sheet": modules.cs.currentSheet.sheet.sheet,
