@@ -251,7 +251,7 @@ function cardForm(params) {
                     h += `<div class="overflow-y-auto">`;
                 } else {
                     // TODO: Do something with this!!! (max-height)
-                    h += `<div class="overflow-y-auto" style="max-height: 460px; overflow-y: auto!important;">`;
+                    h += `<div class="overflow-y-auto" style="max-height: 480px; overflow-y: auto!important;">`;
                     // TODO: Do something with this!!! (max-height)
                 }
                 for (let j = 0; j < params.fields[i].options.length; j++) {
