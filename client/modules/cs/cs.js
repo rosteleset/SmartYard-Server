@@ -717,7 +717,7 @@
 
                     let cols = {};
                     let colName = "";
-                    let colsOptions = [];
+//                    let colsOptions = [];
 
                     for (let i in modules.cs.currentSheet.sheet.data) {
                         if (modules.cs.currentSheet.sheet.data[i].col) {
@@ -726,10 +726,10 @@
                         if (md5(modules.cs.currentSheet.sheet.data[i].col) == col) {
                             colName = modules.cs.currentSheet.sheet.data[i].col;
                         }
-                        colsOptions.push({
-                            id: modules.cs.currentSheet.sheet.data[i].col,
-                            text: modules.cs.currentSheet.sheet.data[i].col,
-                        })
+//                        colsOptions.push({
+//                            id: modules.cs.currentSheet.sheet.data[i].col,
+//                            text: modules.cs.currentSheet.sheet.data[i].col,
+//                        })
                     }
 
                     cardForm({
@@ -740,13 +740,13 @@
                         fields: [
                             {
                                 id: "colName",
-                                type: "select2",
+                                type: "text",
                                 title: i18n("cs.colName"),
                                 placeholder: i18n("cs.colName"),
                                 value: colName,
-                                options: colsOptions,
-                                tags: true,
-                                createTags: true,
+//                                options: colsOptions,
+//                                tags: true,
+//                                createTags: true,
                                 validate: v => {
                                     return $.trim(v) !== "" && !cols[$.trim(v)];
                                 },
