@@ -767,6 +767,16 @@
                                 },
                             },
                             {
+                                id: "colWeight",
+                                type: "text",
+                                title: i18n("cs.Weight"),
+                                placeholder: i18n("cs.Weight"),
+                                value: modules.cs.currentSheet.sheet.weights[colName],
+                                validate: v => {
+                                    return $.trim(v) !== "" && !cols[$.trim(v)];
+                                },
+                            },
+                            {
                                 id: "colName",
                                 type: "text",
                                 title: i18n("cs.colName"),
@@ -789,6 +799,16 @@
                                     modules.cs.currentSheet.sheet.data[i].col = $.trim(result.colName);
                                     modules.cs.currentSheet.sheet.data[i].rows = result.colRows;
                                     modules.cs.currentSheet.sheet.data[i].part = $.trim(result.colPart);
+                                    for (let i in modules.cs.currentSheet.sheet.weights) {
+                                        if (!cols[i]) {
+                                            delete modules.cs.currentSheet.sheet.weights[i];
+                                        }
+                                    }
+                                    if ($.trim(result.colWeight)) {
+                                        modules.cs.currentSheet.sheet.weights[$.trim(result.colName)] = $.trim(result.colWeight);
+                                    } else {
+                                        delete modules.cs.currentSheet.sheet.weights[$.trim(result.colName)];
+                                    }
                                     loadingStart();
                                     PUT("cs", "sheet", false, {
                                         "sheet": modules.cs.currentSheet.sheet.sheet,
