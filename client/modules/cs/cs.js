@@ -788,7 +788,7 @@
                                 if (md5(modules.cs.currentSheet.sheet.data[i].col) == col) {
                                     modules.cs.currentSheet.sheet.data[i].col = $.trim(result.colName);
                                     modules.cs.currentSheet.sheet.data[i].rows = result.colRows;
-                                    modules.cs.currentSheet.sheet.data[i].part = result.colPart;
+                                    modules.cs.currentSheet.sheet.data[i].part = $.trim(result.colPart);
                                     loadingStart();
                                     PUT("cs", "sheet", false, {
                                         "sheet": modules.cs.currentSheet.sheet.sheet,
