@@ -814,6 +814,13 @@
                                     modules.cs.currentSheet.sheet.data[i].rows = result.colRows;
                                     modules.cs.currentSheet.sheet.data[i].part = $.trim(result.colPart);
                                     modules.cs.currentSheet.sheet.data[i].hidden = parseInt(result.colHidden) === 1;
+                                    try {
+                                        if (!modules.cs.currentSheet.sheet.weights.length) {
+                                            modules.cs.currentSheet.sheet.weights = {};
+                                        }
+                                    } catch (e) {
+                                        modules.cs.currentSheet.sheet.weights = {};
+                                    }
                                     for (let i in modules.cs.currentSheet.sheet.weights) {
                                         if (!cols[i]) {
                                             delete modules.cs.currentSheet.sheet.weights[i];
