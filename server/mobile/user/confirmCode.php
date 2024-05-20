@@ -30,6 +30,7 @@
     $platform = @$postdata['platform'];
     $pin = @$postdata['smsCode'];
     $isdn = loadBackend("isdn");
+    $inbox = loadBackend("inbox");
     $households = loadBackend("households");
     $confirmMethod = @$config["backends"]["isdn"]["confirm_method"] ?: "outgoingCall";
 
@@ -75,6 +76,7 @@
                     $households->modifyDevice($device["deviceId"], [ "authToken" => $token ]);
                 } else {
                     $households->addDevice($subscriber_id, $device_token, $platform);
+                    $inbox->sendMessage($subscriber_id, "Внимание!", "Произведена авторизация на новом устройстве", $action = "inbox");
                 }
                 response(200, [ 'accessToken' => $token, 'names' => $names ]);
             }
