@@ -480,7 +480,7 @@
                 let parts = {};
                 let cp;
                 for (let i in s) {
-                    if (modules.cs.cols.indexOf(s[i].col) < 0 && s[i].col.charAt(0) != "#") {
+                    if (modules.cs.cols.indexOf(s[i].col) < 0 && s[i].col.charAt(0) != "#" && !s[i].hidden) {
                         if (typeof s[i].part == "undefined") {
                             s[i].part = i18n("cs.noPart");
                         }
@@ -547,7 +547,7 @@
                 for (let p in parts) {
                     if (p != cp) {
                         if (parseInt(p) >= 0 || p) {
-                            h += "<tr><td>&nbsp;</td><td style='border: none!important; font-weight: bold;' class='text-primary' colspan='" + maxCols.toString() + "'>" + p + "</td></tr>";
+                            h += "<tr><td>&nbsp;</td><td style='border: none!important; font-weight: bold;' class='text-primary' colspan='" + maxCols.toString() + "'><span class='hoverable csPart'>" + p + "</span></td></tr>";
                         }
                         cp = p;
                     }
@@ -729,6 +729,8 @@
                     let t = {};
                     let colPart = "";
 
+                    let colHidden = false;
+
                     $(".timeCell").each(function () {
                         t[$(this).text()] = true;
                     });
@@ -744,6 +746,7 @@
                         if (md5(modules.cs.currentSheet.sheet.data[i].col) == col) {
                             colName = modules.cs.currentSheet.sheet.data[i].col;
                             colPart = modules.cs.currentSheet.sheet.data[i].part;
+                            colHidden = modules.cs.currentSheet.sheet.data[i].hidden === true;
                             for (let j in t) {
                                 rows.push({
                                     id: t[j],
@@ -792,6 +795,12 @@
                                 value: modules.cs.currentSheet.sheet.weights[colName],
                             },
                             {
+                                id: "colHidden",
+                                type: "noyes",
+                                title: i18n("cs.colHidden"),
+                                value: colHidden ? "1" : "0",
+                            },
+                            {
                                 id: "colRows",
                                 type: "multiselect",
                                 title: i18n("cs.colRows"),
@@ -804,6 +813,7 @@
                                     modules.cs.currentSheet.sheet.data[i].col = $.trim(result.colName);
                                     modules.cs.currentSheet.sheet.data[i].rows = result.colRows;
                                     modules.cs.currentSheet.sheet.data[i].part = $.trim(result.colPart);
+                                    modules.cs.currentSheet.sheet.data[i].hidden = parseInt(result.colHidden) === 1;
                                     for (let i in modules.cs.currentSheet.sheet.weights) {
                                         if (!cols[i]) {
                                             delete modules.cs.currentSheet.sheet.weights[i];
@@ -1011,6 +1021,67 @@
                     let cell = $(this);
                     window.location.href = "?#tt&issue=" + cell.text();
                     e.stopPropagation();
+                });
+
+                $(".csPart").off("click").on("click", function () {
+                    let part = $(this).text();
+
+                    let cols = [];
+
+                    for (let i in modules.cs.currentSheet.sheet.data) {
+                        if (modules.cs.currentSheet.sheet.data[i].part == part) {
+                            cols.push({
+                                id: modules.cs.currentSheet.sheet.data[i].col,
+                                text: modules.cs.currentSheet.sheet.data[i].col,
+                                checked: modules.cs.currentSheet.sheet.data[i].hidden !== true,
+                            });
+                        }
+                    }
+
+                    cols.sort((a, b) => {
+                        if (a.id > b.id) {
+                            return 1;
+                        }
+                        if (a.id < b.id) {
+                            return -1;
+                        }
+                        return 0;
+                    });
+
+                    cardForm({
+                        title: i18n("cs.partCols"),
+                        footer: true,
+                        borderless: true,
+                        topApply: true,
+                        fields: [
+                            {
+                                id: "partCols",
+                                type: "multiselect",
+                                title: i18n("cs.cols"),
+                                options: cols,
+                                validate: v => {
+                                    return v.length >= 1;
+                                }
+                            },
+                        ],
+                        callback: result => {
+                            for (let i in modules.cs.currentSheet.sheet.data) {
+                                if (modules.cs.currentSheet.sheet.data[i].part == part) {
+                                    modules.cs.currentSheet.sheet.data[i].hidden = result.partCols.indexOf(modules.cs.currentSheet.sheet.data[i].col) < 0;
+                                }
+                            }
+                            loadingStart();
+                            PUT("cs", "sheet", false, {
+                                "sheet": modules.cs.currentSheet.sheet.sheet,
+                                "date": modules.cs.currentSheet.sheet.date,
+                                "data": $.trim(JSON.stringify(modules.cs.currentSheet.sheet, null, 4)),
+                            }).
+                            fail(FAIL).
+                            done(() => {
+                                message(i18n("cs.sheetWasSaved"));
+                            });
+                        },
+                    }).show();
                 });
 
                 modules.cs.idle = true;

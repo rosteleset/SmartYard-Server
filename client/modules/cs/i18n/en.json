@@ -32,6 +32,7 @@
     "colName": "Column name",
     "colPart": "Group",
     "colWeight": "\"Weight\"",
+    "colHidden": "Hidden",
     "methods": {
         "cs": {
             "_title": "Coordination sheet",

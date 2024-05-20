@@ -255,10 +255,10 @@ function cardForm(params) {
 
             case "multiselect":
                 if (params.target) {
-                    h += `<div class="overflow-y-auto" style="position: relative;">`;
+                    h += `<div name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" class="overflow-y-auto pl-2" style="position: relative; border: solid thin transparent; border-radius: 3px;">`;
                 } else {
                     // TODO: Do something with this!!! (max-height)
-                    h += `<div class="overflow-y-auto" style="max-height: 400px; overflow-y: auto!important; position: relative;">`;
+                    h += `<div name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" class="overflow-y-auto pl-2" style="max-height: 400px; overflow-y: auto!important; position: relative; border: solid thin transparent; border-radius: 3px;">`;
                     // TODO: Do something with this!!! (max-height)
                 }
                 for (let j = 0; j < params.fields[i].options.length; j++) {
@@ -266,7 +266,7 @@ function cardForm(params) {
                     let c = params.fields[i].options[j].checked || (typeof params.fields[i].value === "object" && Array.isArray(params.fields[i].value) && params.fields[i].value.indexOf(params.fields[i].options[j].id) >= 0);
                     h += `
                         <div class="custom-control custom-checkbox${(j !== params.fields[i].options.length - 1)?" mb-3":""}">
-                        <input type="checkbox" class="checkBoxOption-${params.fields[i].id} custom-control-input" id="${id}" data-id="${params.fields[i].options[j].id}"${c?" checked":""}${params.fields[i].options[j].disabled?" disabled":""}/>
+                        <input type="checkbox" class="ml-1 checkBoxOption-${params.fields[i].id} custom-control-input" id="${id}" data-id="${params.fields[i].options[j].id}"${c?" checked":""}${params.fields[i].options[j].disabled?" disabled":""}/>
                         <label for="${id}" class="custom-control-label form-check-label">${params.fields[i].options[j].text}</label>
                     `;
                     if (params.fields[i].options[j].append) {
@@ -483,6 +483,10 @@ function cardForm(params) {
                         break;
                     case "rich":
                         $(`#${_prefix}${params.fields[invalid[i]].id}`).next().addClass("border-color-invalid");
+                        break;
+                    case "multiselect":
+                        console.log(`#${_prefix}${params.fields[invalid[i]].id}`);
+                        $(`#${_prefix}${params.fields[invalid[i]].id}`).addClass("border-color-invalid");
                         break;
                     case "code":
                     case "json":
