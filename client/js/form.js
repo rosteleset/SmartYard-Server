@@ -277,8 +277,8 @@ function cardForm(params) {
                     `;
                 }
                 h += `<span style='position: absolute; right: 0px; top: 0px;'>`;
-                h += `<span class="pointer checkAll" title="${i18n("checkAll")}"><i class="far fa-fw fa-check-square pr-4 text-primary"></i></span>`;
-                h += `<span class="pointer unCheckAll" title="${i18n("unCheckAll")}"><i class="far fa-fw fa-square text-primary"></i></span>`;
+                h += `<span class="pointer checkAll" title="${i18n("checkAll")}"><i class="far fa-fw fa-check-square pr-3 text-primary"></i></span>`;
+                h += `<span class="pointer unCheckAll" title="${i18n("unCheckAll")}"><i class="far fa-fw fa-square pr-2 text-primary"></i></span>`;
                 h += `</span>`;
                 h += `</div>`;
                 break;
