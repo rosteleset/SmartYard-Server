@@ -255,10 +255,10 @@ function cardForm(params) {
 
             case "multiselect":
                 if (params.target) {
-                    h += `<div class="overflow-y-auto">`;
+                    h += `<div class="overflow-y-auto" style="position: relative;">`;
                 } else {
                     // TODO: Do something with this!!! (max-height)
-                    h += `<div class="overflow-y-auto" style="max-height: 400px; overflow-y: auto!important;">`;
+                    h += `<div class="overflow-y-auto" style="max-height: 400px; overflow-y: auto!important; position: relative;">`;
                     // TODO: Do something with this!!! (max-height)
                 }
                 for (let j = 0; j < params.fields[i].options.length; j++) {
@@ -276,6 +276,10 @@ function cardForm(params) {
                         </div>
                     `;
                 }
+                h += `<span style='position: absolute; right: 0px; top: 0px;'>`;
+                h += `<span class="pointer checkAll" title="${i18n("checkAll")}"><i class="far fa-fw fa-check-square pr-4 text-primary"></i></span>`;
+                h += `<span class="pointer unCheckAll" title="${i18n("unCheckAll")}"><i class="far fa-fw fa-square text-primary"></i></span>`;
+                h += `</span>`;
                 h += `</div>`;
                 break;
 
@@ -857,6 +861,26 @@ function cardForm(params) {
                 s2.css("width", s2.css("width"));
             });
         }, 100);
+    });
+
+    setTimeout(() => {
+        $(".checkAll").parent().css("z-index", parseIntEx($(".checkAll").parent().parent().css("z-index")) + 1);
+    }, 100);
+
+    $(".checkAll").off("click").on("click", function () {
+        $(this).parent().parent().children().each(function () {
+            if ($(this).children()[0].nodeName == "INPUT" && !$(this).children().prop('disabled')) {
+                $(this).children().prop("checked", true);
+            }
+        });
+    });
+
+    $(".unCheckAll").off("click").on("click", function () {
+        $(this).parent().parent().children().each(function () {
+            if ($(this).children()[0].nodeName == "INPUT" && !$(this).children().prop('disabled')) {
+                $(this).children().prop("checked", false);
+            }
+        });
     });
 
     if (typeof params.done == "function") {

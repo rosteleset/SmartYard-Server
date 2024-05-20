@@ -63,6 +63,8 @@
     "clipboard": "Буфер обмена",
     "domophone": "Домофон",
     "camera": "Камера",
+    "checkAll": "Отметить все",
+    "unCheckAll": "Снять все",
     "tz": {
         "Europe/Moscow": "Европа/Москва"
     },
