@@ -33,6 +33,8 @@
     "colPart": "Group",
     "colWeight": "\"Weight\"",
     "colHidden": "Hidden",
+    "partCols": "Show columns",
+    "cols": "Columns",
     "methods": {
         "cs": {
             "_title": "Coordination sheet",
