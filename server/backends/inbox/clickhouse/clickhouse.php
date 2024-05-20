@@ -37,70 +37,52 @@
              */
             public function sendMessage($subscriberId, $title, $msg, $action = "inbox")
             {
-                $subscriber = $this->db->get("select id, platform, push_token, push_token_type from houses_subscribers_mobile where house_subscriber_id = :house_subscriber_id", [
-                    "house_subscriber_id" => $subscriberId,
-                ], [
-                    "id" => "id",
-                    "platform" => "platform",
-                    "push_token" => "token",
-                    "push_token_type" => "tokenType"
-                ], [ "singlify" ]);
+                $households = loadBackend("households");
+                $isdn = loadBackend("isdn");
+                $devices = $households->getDevices("subscriber", $subscriberId);
 
-                if (!checkInt($subscriber["platform"]) || !checkInt($subscriber["tokenType"]) || !$subscriber["id"] || !$subscriber["token"]) {
+                if (!@$devices) {
                     setLastError("mobileSubscriberNotRegistered");
                     return false;
                 }
 
-                if ($subscriber) {
-                    $msgId = $this->db->insert("insert into inbox (id, house_subscriber_id, date, title, msg, action, expire, delivered, readed, code) values (:id, :house_subscriber_id, :date, :title, :msg, :action, :expire, 0, 0, null)", [
-                        "id" => $subscriber["id"],
-                        "house_subscriber_id" => $subscriberId,
-                        "date" => time(),
-                        "title" => $title,
-                        "msg" => $msg,
-                        "action" => $action,
-                        "expire" => time() + 7 * 60 * 60 * 60,
-                    ]);
+                $msgId = $this->db->insert("insert into inbox (id, house_subscriber_id, date, title, msg, action, expire, delivered, readed, code) values (:id, :house_subscriber_id, :date, :title, :msg, :action, :expire, 0, 0, null)", [
+                    "id" => $devices[0]["subscriber"]["id"],
+                    "house_subscriber_id" => $subscriberId,
+                    "date" => time(),
+                    "title" => $title,
+                    "msg" => $msg,
+                    "action" => $action,
+                    "expire" => time() + 7 * 60 * 60 * 60,
+                ]);
 
-                    $unreaded = $this->unreaded($subscriberId);
+                if (!$msgId) {
+                    setLastError("cantStoreMessage");
+                    return false;
+                }
 
-                    if (!$msgId) {
-                        setLastError("cantStoreMessage");
-                        return false;
-                    }
+                $unreaded = $this->unreaded($subscriberId);
 
-                    $isdn = loadBackend("isdn");
-                    if ($isdn) {
+                foreach ($devices as $device) {
+                    if ($isdn && checkInt($device["platform"]) && checkInt($device["tokenType"]) && $device["token"]) {
                         $result = $isdn->push([
-                            "token" => $subscriber["token"],
-                            "type" => $subscriber["tokenType"],
+                            "token" => $device["token"],
+                            "type" => $device["tokenType"],
                             "timestamp" => time(),
                             "ttl" => 30,
-                            "platform" => (int)$subscriber["platform"]?"ios":"android",
+                            "platform" => (int)$device["platform"]?"ios":"android", // there should be a web here too
                             "title" => $title,
                             "msg" => $msg,
                             "badge" => $unreaded,
                             "sound" => "default",
                             "pushAction" => $action,
                         ]);
-                        $result = explode(":", $result);
-                        if ($this->db->modify("update inbox set code = :code, push_message_id = :push_message_id where msg_id = :msg_id", [
-                            "msg_id" => $msgId,
-                            "code" => $result[0],
-                            "push_message_id" => $result[0]?:"unknown",
-                        ])) {
-                            return $msgId;
-                        } else {
-                            setLastError("errorSendingPush: " . $result[1]?$result[1]:$result[0]);
-                            return false;
-                        }
+
+                        // figure out what to do with push_message_id
                     } else {
                         setLastError("pushCantBeSent");
                         return false;
                     }
-                } else {
-                    setLastError("subscriberNotFound");
-                    return false;
                 }
             }
 
