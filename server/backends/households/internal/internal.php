@@ -2273,13 +2273,14 @@
             /**
              * @inheritDoc
              */
-            public function addDevice($subscriber, $deviceToken, $platform)
+            public function addDevice($subscriber, $deviceToken, $platform, $authToken)
             {
                 
-                $deviceId = $this->db->insert("insert into houses_subscribers_devices (house_subscriber_id, device_token, platform, registered, voip_enabled) values (:house_subscriber_id, :device_token, :platform, :registered, 1)", [
+                $deviceId = $this->db->insert("insert into houses_subscribers_devices (house_subscriber_id, device_token, platform, auth_token, registered, voip_enabled) values (:house_subscriber_id, :device_token, :platform, :auth_token, :registered, 1)", [
                     "house_subscriber_id" => $subscriber,
                     "device_token" => $deviceToken,
                     "platform" => $platform,
+                    "auth_token" => $authToken,
                     "registered" => time(),
                 ]);
 

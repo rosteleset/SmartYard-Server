@@ -342,10 +342,11 @@
             /**
              * @param $subscriber
              * @param $deviceToken
-             * @param $platform
+             * @param $platformauthToken
+             * @param $authToken
              * @return boolean|integer
              */
-            abstract public function addDevice($subscriber, $deviceToken, $platform);
+            abstract public function addDevice($subscriber, $deviceToken, $platform, $authToken);
 
             /**
              * @param $deviceId

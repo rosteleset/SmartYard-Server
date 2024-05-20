@@ -8,6 +8,8 @@
  * @apiGroup User
  *
  * @apiParam {String{11}} userPhone номер телефона
+ * @apiParam {String} deviceToken токен устройства
+ * @apiParam {Number=0,1,2} platform тип клиента 0 - android, 1 - ios, 2 - web
  * @apiParam {String{4}} smsCode код подтверждения
  *
  * @apiErrorExample Ошибки
@@ -24,6 +26,8 @@
     if ($user_phone[0] == '8') { 
         $user_phone[0] = '7'; 
     }
+    $device_token = @$postdata['deviceToken'] ?: '1';
+    $platform = @$postdata['platform'];
     $pin = @$postdata['smsCode'];
     $isdn = loadBackend("isdn");
     $households = loadBackend("households");
@@ -51,16 +55,26 @@
                 $redis->del("userpin.attempts_".$user_phone);
                 $token = GUIDv4();
                 $subscribers = $households->getSubscribers("mobile", $user_phone);
+                $devices = $households->getDevices("deviceToken", $device_token);
+                $subscriber_id = false;
                 $names = [ "name" => "", "patronymic" => "" ];
                 if ($subscribers) {
                     $subscriber = $subscribers[0];
                     // Пользователь найден
                     $households->modifySubscriber($subscriber["subscriberId"], [ "authToken" => $token ]);
+                    $subscriber_id = $subscriber["subscriberId"];
                     $names = [ "name" => $subscriber["subscriberName"], "patronymic" => $subscriber["subscriberPatronymic"] ];
                 } else {
                     // Пользователь не найден - создаём
-                    $id = $households->addSubscriber($user_phone, "", "");
-                    $households->modifySubscriber($id, [ "authToken" => $token ]);
+                    $subscriber_id = $households->addSubscriber($user_phone, "", "");
+                    $households->modifySubscriber($subscriber_id, [ "authToken" => $token ]);
+                }
+
+                if ($devices) {
+                    $device = $devices[0];
+                    $households->modifyDevice($device["deviceId"], [ "authToken" => $token ]);
+                } else {
+                    $households->addDevice($subscriber_id, $device_token, $platform);
                 }
                 response(200, [ 'accessToken' => $token, 'names' => $names ]);
             }

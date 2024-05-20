@@ -8,6 +8,8 @@
  * @apiGroup User
  *
  * @apiParam {String{11}} userPhone номер телефона с кодом страны без "+"
+ * @apiParam {String} deviceToken токен устройства
+ * @apiParam {Number=0,1,2} platform тип клиента 0 - android, 1 - ios, 2 - web
  *
  * @apiErrorExample Ошибки
  * 401 неверный код подтверждения
@@ -20,6 +22,8 @@
  * @apiSuccess {String} names.patronymic отчество
  */
     $user_phone = @$postdata['userPhone'];
+    $device_token = @$postdata['deviceToken'] ?: '1';
+    $platform = @$postdata['platform'];
     $households = loadBackend("households");
 
     $isdn = loadBackend("isdn");
@@ -35,18 +39,28 @@
     if ($result || $user_phone == "79123456781" || $user_phone == "79123456782") {
         $token = GUIDv4();
         $subscribers = $households->getSubscribers("mobile", $user_phone);
-            $names = [ "name" => "", "patronymic" => "" ];
-            if ($subscribers) {
-                $subscriber = $subscribers[0];
-                // Пользователь найден
-                $households->modifySubscriber($subscriber["subscriberId"], [ "authToken" => $token ]);
-                $names = [ "name" => $subscriber["subscriberName"], "patronymic" => $subscriber["subscriberPatronymic"] ];
-            } else {
-                // Пользователь не найден - создаём
-                $id = $households->addSubscriber($user_phone, "", "");
-                $households->modifySubscriber($id, [ "authToken" => $token ]);
-            }
-            response(200, [ 'accessToken' => $token, 'names' => $names ]);
+        $devices = $households->getDevices("deviceToken", $device_token);
+        $subscriber_id = false;
+        $names = [ "name" => "", "patronymic" => "" ];
+        if ($subscribers) {
+            $subscriber = $subscribers[0];
+            // Пользователь найден
+            $households->modifySubscriber($subscriber["subscriberId"], [ "authToken" => $token ]);
+            $subscriber_id = $subscriber["subscriberId"];
+            $names = [ "name" => $subscriber["subscriberName"], "patronymic" => $subscriber["subscriberPatronymic"] ];
+        } else {
+            // Пользователь не найден - создаём
+            $subscriber_id = $households->addSubscriber($user_phone, "", "");
+            $households->modifySubscriber($subscriber_id, [ "authToken" => $token ]);
+        }
+
+        if ($devices) {
+            $device = $devices[0];
+            $households->modifyDevice($device["deviceId"], [ "authToken" => $token ]);
+        } else {
+            $households->addDevice($subscriber_id, $device_token, $platform);
+        }
+        response(200, [ 'accessToken' => $token, 'names' => $names ]);
     } else {
         response(401);
     }
