@@ -230,7 +230,7 @@ function auth($_response_cache_ttl = -1) {
             response(401, false, "Не авторизован", "Не авторизован");
         }
         // обновление последнего использования токена пользователем
-        $households->modifySubscriber($subscriber["subscriberId"]);
+        $households->modifyDevice($devices["deviceId"]);
     }
 }
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
