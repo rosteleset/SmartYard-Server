@@ -2241,6 +2241,17 @@
                 ]);
 
                 foreach ($devices as &$device) {
+                    $subscriber = $this->db->get("select * from houses_subscribers_mobile where house_subscriber_id = :house_subscriber_id",
+                        [
+                            "house_subscriber_id" => $device["subscriberId"]
+                        ],
+                        [
+                            "house_subscriber_id" => "subscriberId",
+                            "id" => "mobile",
+                            "subscriber_name" => "subscriberName",
+                            "subscriber_patronymic" => "subscriberPatronymic",
+                        ]
+                    )[0];
                     $flats = $this->db->get("select house_flat_id, voip_enabled, flat, address_house_id from houses_flats_devices left join houses_flats using (house_flat_id) where subscriber_device_id = :subscriber_device_id",
                         [
                             "subscriber_device_id" => $device["deviceId"]
@@ -2252,6 +2263,7 @@
                             "address_house_id" => "addressHouseId",
                         ]
                     );
+                    $device["subscriber"] = $subscriber;
                     $device["flats"] = $flats;
                 }
 
