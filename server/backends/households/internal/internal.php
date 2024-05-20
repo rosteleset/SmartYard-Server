@@ -1167,41 +1167,26 @@
                             "house_subscriber_id" => (int)$query,
                         ];
                         break;
-
-                    case "authToken":
-                        $q = "select * from houses_subscribers_mobile where auth_token = :auth_token";
-                        $p = [
-                            "auth_token" => $query,
-                        ];
-                        break;
                 }
 
                 $subscribers = $this->db->get($q, $p, [
                     "house_subscriber_id" => "subscriberId",
                     "id" => "mobile",
-                    "auth_token" => "authToken",
-                    "platform" => "platform",
-                    "push_token" => "pushToken",
-                    "push_token_type" => "tokenType",
-                    "voip_token" => "voipToken",
                     "registered" => "registered",
-                    "last_seen" => "lastSeen",
                     "subscriber_name" => "subscriberName",
                     "subscriber_patronymic" => "subscriberPatronymic",
-                    "voip_enabled" => "voipEnabled",
                 ]);
 
                 $addresses = loadBackend("addresses");
 
                 foreach ($subscribers as &$subscriber) {
-                    $flats = $this->db->get("select house_flat_id, role, voip_enabled, flat, address_house_id from houses_flats_subscribers left join houses_flats using (house_flat_id) where house_subscriber_id = :house_subscriber_id",
+                    $flats = $this->db->get("select house_flat_id, role, flat, address_house_id from houses_flats_subscribers left join houses_flats using (house_flat_id) where house_subscriber_id = :house_subscriber_id",
                         [
                             "house_subscriber_id" => $subscriber["subscriberId"]
                         ],
                         [
                             "house_flat_id" => "flatId",
                             "role" => "role",
-                            "voip_enabled" => "voipEnabled",
                             "flat" => "flat",
                             "address_house_id" => "addressHouseId",
                         ]
@@ -1373,74 +1358,9 @@
                     }
                 }
 
-                if (@$params["authToken"]) {
-                    if (!checkStr($params["authToken"])) {
-                        setLastError("invalidParams");
-                        return false;
-                    }
-
-                    if ($this->db->modify("update houses_subscribers_mobile set auth_token = :auth_token where house_subscriber_id = $subscriberId", [ "auth_token" => $params["authToken"] ]) === false) {
-                        return false;
-                    }
-                }
-
-                if (array_key_exists("platform", $params)) {
-                    if (!checkInt($params["platform"])) {
-                        setLastError("invalidParams");
-                        return false;
-                    }
-
-                    if ($this->db->modify("update houses_subscribers_mobile set platform = :platform where house_subscriber_id = $subscriberId", [ "platform" => $params["platform"] ]) === false) {
-                        return false;
-                    }
-                }
-
-                if (@$params["pushToken"]) {
-                    if (!checkStr($params["pushToken"])) {
-                        setLastError("invalidParams");
-                        return false;
-                    }
-
-                    if ($this->db->modify("update houses_subscribers_mobile set push_token = :push_token where house_subscriber_id = $subscriberId", [ "push_token" => $params["pushToken"] ]) === false) {
-                        return false;
-                    }
-                }
-
-                if (array_key_exists("tokenType", $params)) {
-                    if (!checkInt($params["tokenType"])) {
-                        setLastError("invalidParams");
-                        return false;
-                    }
-
-                    if ($this->db->modify("update houses_subscribers_mobile set push_token_type = :push_token_type where house_subscriber_id = $subscriberId", [ "push_token_type" => $params["tokenType"] ]) === false) {
-                        return false;
-                    }
-                }
-
-                if (@$params["voipToken"]) {
-                    if (!checkStr($params["voipToken"])) {
-                        setLastError("invalidParams");
-                        return false;
-                    }
-
-                    if ($this->db->modify("update houses_subscribers_mobile set voip_token = :voip_token where house_subscriber_id = $subscriberId", [ "voip_token" => $params["voipToken"] ]) === false) {
-                        return false;
-                    }
-                }
-
                 $r = true;
 
-                if (array_key_exists("voipEnabled", $params)) {
-                    if (!checkInt($params["voipEnabled"])) {
-                        setLastError("invalidParams");
-                        $r = false;
-                    }
-
-                    $r = $this->db->modify("update houses_subscribers_mobile set voip_enabled = :voip_enabled where house_subscriber_id = $subscriberId", [ "voip_enabled" => $params["voipEnabled"] ]) !== false;
-                }
-
-                $r = $r && $this->db->modify("update houses_subscribers_mobile set last_seen = :last_seen where house_subscriber_id = $subscriberId", [ "last_seen" => time() ]) !== false;
-/*
+                /*
                 $queue = loadBackend("queue");
                 if ($queue) {
                     $queue->changed("subscriber", $subscriberId);
