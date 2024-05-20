@@ -28,6 +28,8 @@
         compress
         notifempty
         copytruncate
+        dateext
+        dateformat -%Y-%m-%d
     }' | tee /etc/logrotate.d/rbt_push
     ```
     Restart service
