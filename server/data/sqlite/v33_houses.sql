@@ -1,0 +1,1 @@
+ALTER TABLE houses_subscribers_mobile ADD COLUMN subscriber_last text;

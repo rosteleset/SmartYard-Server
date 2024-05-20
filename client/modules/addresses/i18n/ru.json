@@ -179,6 +179,7 @@
     "mobile": "Телефон",
     "subscriberName": "Имя",
     "subscriberPatronymic": "Отчество",
+    "subscriberLast": "Фамилия",
     "addSubscriber": "Добавить абонента",
     "editSubscriber": "Редактирование абонента",
     "subscriberWasAdded": "Абонент добавлен",

@@ -1188,6 +1188,7 @@
                     "last_seen" => "lastSeen",
                     "subscriber_name" => "subscriberName",
                     "subscriber_patronymic" => "subscriberPatronymic",
+                    "subscriber_last" => "subscriberLast",
                     "voip_enabled" => "voipEnabled",
                 ]);
 
@@ -1218,12 +1219,13 @@
             /**
              * @inheritDoc
              */
-            public function addSubscriber($mobile, $name, $patronymic, $flatId = false, $message = false)
+            public function addSubscriber($mobile, $name, $patronymic, $last, $flatId = false, $message = false)
             {
                 if (
                     !checkStr($mobile, [ "minLength" => 6, "maxLength" => 32, "validChars" => [ '+', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' ] ]) ||
                     !checkStr($name, [ "maxLength" => 32 ]) ||
-                    !checkStr($patronymic, [ "maxLength" => 32 ])
+                    !checkStr($patronymic, [ "maxLength" => 32 ]) ||
+                    !checkStr($last, [ "maxLength" => 32 ])
                 ) {
                     setLastError("invalidParams");
                     return false;
@@ -1238,16 +1240,18 @@
                 ]);
 
                 if (!$subscriberId) {
-                    $subscriberId = $this->db->insert("insert into houses_subscribers_mobile (id, subscriber_name, subscriber_patronymic, registered, voip_enabled) values (:mobile, :subscriber_name, :subscriber_patronymic, :registered, 1)", [
+                    $subscriberId = $this->db->insert("insert into houses_subscribers_mobile (id, subscriber_name, subscriber_patronymic, subscriber_last, registered, voip_enabled) values (:mobile, :subscriber_name, :subscriber_patronymic, :subscriber_last, :registered, 1)", [
                         "mobile" => $mobile,
                         "subscriber_name" => $name,
                         "subscriber_patronymic" => $patronymic,
+                        "subscriber_last" => $last,
                         "registered" => time(),
                     ]);
                 } else {
                     $this->modifySubscriber($subscriberId, [
                         "subscriberName" => $name,
                         "subscriberPatronymic" => $patronymic,
+                        "subscriberLast" => $last,
                     ]);
                 }
 
@@ -1369,6 +1373,17 @@
                     }
 
                     if ($this->db->modify("update houses_subscribers_mobile set subscriber_patronymic = :subscriber_patronymic where house_subscriber_id = $subscriberId", [ "subscriber_patronymic" => $params["subscriberPatronymic"] ]) === false) {
+                        return false;
+                    }
+                }
+
+                if (@$params["subscriberLast"] || @$params["forceNames"]) {
+                    if (!checkStr($params["subscriberLast"], [ "maxLength" => 32 ])) {
+                        setLastError("invalidParams");
+                        return false;
+                    }
+
+                    if ($this->db->modify("update houses_subscribers_mobile set subscriber_last = :subscriber_last where house_subscriber_id = $subscriberId", [ "subscriber_last" => $params["subscriberLast"] ]) === false) {
                         return false;
                     }
                 }

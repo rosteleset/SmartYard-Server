@@ -145,6 +145,12 @@
                     title: i18n("addresses.subscriberPatronymic"),
                     placeholder: i18n("addresses.subscriberPatronymic"),
                 },
+                {
+                    id: "subscriberLast",
+                    type: "text",
+                    title: i18n("addresses.subscriberLast"),
+                    placeholder: i18n("addresses.subscriberLast"),
+                },
             ],
             callback: function (result) {
                 let params = hashParse("params");
@@ -290,6 +296,13 @@
                         title: i18n("addresses.subscriberPatronymic"),
                         placeholder: i18n("addresses.subscriberPatronymic"),
                         value: subscriber.subscriberPatronymic,
+                    },
+                    {
+                        id: "subscriberLast",
+                        type: "text",
+                        title: i18n("addresses.subscriberLast"),
+                        placeholder: i18n("addresses.subscriberLast"),
+                        value: subscriber.subscriberLast,
                     },
                     {
                         id: "flats",
