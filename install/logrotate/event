@@ -4,4 +4,7 @@
         rotate 3
         compress
         notifempty
+        copytruncate
+        dateext
+        dateformat -%Y-%m-%d
 }
