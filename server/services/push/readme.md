@@ -24,9 +24,12 @@
     echo '/var/log/rbt_push_service/*.log {
         daily
         missingok
-        rotate 3
+        rotate 7
         compress
         notifempty
+        copytruncate
+        dateext
+        dateformat -%Y-%m-%d
     }' | tee /etc/logrotate.d/rbt_push
     ```
     Restart service
@@ -53,7 +56,8 @@
     KillMode=process
     StandardOutput=file:/var/log/rbt_push_service/push_service.log
     StandardError=file:/var/log/rbt_push_service/push_service.error.log
-    
+    SyslogIdentifier=rbt_push_service
+
     [Install]
     WantedBy=multi-user.target" | sudo tee /etc/systemd/system/rbt_push.service
     ```   

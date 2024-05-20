@@ -818,15 +818,17 @@
                 h += "<tr class='issueComment' data-time='" + issue.issue.comments[i].created + "'>";
                 h += "<td class='pl-1' style='font-size: 14px;'>";
                 h += "<div>";
-                h += "#" + (parseInt(i) + 1) + " ";
-                h += ttDate(issue.issue.comments[i].created);
-                h += "<span class='ml-2 text-info text-bold'>";
+                h += "<span class='text-bold'>";
                 h += members[issue.issue.comments[i].author]?members[issue.issue.comments[i].author]:issue.issue.comments[i].author;
                 h += "</span>";
+                h += " ";
+                h += i18n("tt.commented");
+                h += " [#" + (parseInt(i) + 1) + "]: ";
+                h += ttDate(issue.issue.comments[i].created);
                 if (issue.issue.comments[i].private) {
-                    h += "<i class='fas fa-fw fa-eye-slash ml-2 text-warning'></i>";
+                    h += "<i class='ml-2 fas fa-fw fa-eye-slash text-warning'></i>";
                 } else {
-                    h += "<i class='fas fa-fw fa-eye ml-2 text-success'></i>";
+                    h += "<i class='ml-2 fas fa-fw fa-eye text-success'></i>";
                 }
                 if (modules.tt.meta.myRoles[issue.issue.project] >= 20 && !modules.tt.meta.finalStatus[issue.issue.status]) {
                     if (modules.tt.meta.myRoles[issue.issue.project] >= 70 || issue.issue.comments[i].author == lStore("_login")) {

@@ -1,7 +1,7 @@
 zabbix_export:
   version: '6.4'
   template_groups:
-    - uuid: 31a284c9b73f49729ae0a88caff2063d
+    - uuid: 6b2da836ac5d4728b89105eb2ed04250
       name: Templates/Intercoms
   templates:
     - uuid: 6a9fffb80a26444495920fe4210985bf
@@ -60,13 +60,16 @@ zabbix_export:
           key: intercom.sipstatus
           delay: '0'
           history: 7d
-          trends: '0'
-          value_type: TEXT
           description: 'Check SIP registration'
+          valuemap:
+            name: 'SIP registration status'
           preprocessing:
             - type: JSONPATH
               parameters:
                 - $.registerStatus
+            - type: BOOL_TO_DECIMAL
+              parameters:
+                - ''
           master_item:
             key: intercom.systeminfo
           triggers:
@@ -158,8 +161,6 @@ zabbix_export:
           name: 'SIP registration status'
           mappings:
             - value: '0'
-              newvalue: Disable
+              newvalue: Offline
             - value: '1'
-              newvalue: Failure
-            - value: '2'
               newvalue: Online

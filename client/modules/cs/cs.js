@@ -375,8 +375,7 @@
         h += `<li class="pointer dropdown-item colMenuAssignAll" data-col="${md5(col)}">${i18n("cs.assignAll")}</li>`;
         h += `<li class="pointer dropdown-item colClearAssigners" data-col="${md5(col)}">${i18n("cs.clearAssigners")}</li>`;
         h += `<li class="dropdown-divider"></li>`;
-        h += `<li class="pointer dropdown-item colMenuRename" data-col="${md5(col)}">${i18n("cs.colRename")}</li>`;
-        h += `<li class="pointer dropdown-item colMenuRows" data-col="${md5(col)}">${i18n("cs.colRows")}</li>`;
+        h += `<li class="pointer dropdown-item colSettings" data-col="${md5(col)}">${i18n("cs.colSettings")}</li>`;
         h += `</ul></span>`;
 
         return h;
@@ -481,7 +480,7 @@
                 let parts = {};
                 let cp;
                 for (let i in s) {
-                    if (modules.cs.cols.indexOf(s[i].col) < 0 && s[i].col.charAt(0) != "#") {
+                    if (modules.cs.cols.indexOf(s[i].col) < 0 && s[i].col.charAt(0) != "#" && !s[i].hidden) {
                         if (typeof s[i].part == "undefined") {
                             s[i].part = i18n("cs.noPart");
                         }
@@ -507,13 +506,21 @@
                 }
 
                 function sf(a, b) {
+                    let aw = "0";
+                    let bw = "0";
                     if (modules.cs.currentSheet && modules.cs.currentSheet.sheet && modules.cs.currentSheet.sheet.weights) {
                         if (typeof modules.cs.currentSheet.sheet.weights[a] !== "undefined") {
-                            a = modules.cs.currentSheet.sheet.weights[a];
+                            aw = modules.cs.currentSheet.sheet.weights[a];
                         }
                         if (typeof modules.cs.currentSheet.sheet.weights[b] !== "undefined") {
-                            b = modules.cs.currentSheet.sheet.weights[b];
+                            bw = modules.cs.currentSheet.sheet.weights[b];
                         }
+                    }
+                    if (aw > bw) {
+                        return 1;
+                    }
+                    if (aw < bw) {
+                        return -1;
                     }
                     if (a > b) {
                         return 1;
@@ -540,7 +547,7 @@
                 for (let p in parts) {
                     if (p != cp) {
                         if (parseInt(p) >= 0 || p) {
-                            h += "<tr><td>&nbsp;</td><td style='border: none!important; font-weight: bold;' class='text-primary' colspan='" + maxCols.toString() + "'>" + p + "</td></tr>";
+                            h += "<tr><td>&nbsp;</td><td style='border: none!important; font-weight: bold;' class='text-primary' colspan='" + maxCols.toString() + "'><span class='hoverable csPart'>" + p + "</span></td></tr>";
                         }
                         cp = p;
                     }
@@ -587,9 +594,9 @@
                     for (let i in modules.cs.rows) {
                         h += '<tr>';
                         if (response.sheet.sheet.timeClass) {
-                            h += '<td class="' + response.sheet.sheet.timeClass + '">' + escapeHTML(modules.cs.rows[i]) + '</td>';
+                            h += '<td class="timeCell ' + response.sheet.sheet.timeClass + '">' + escapeHTML(modules.cs.rows[i]) + '</td>';
                         } else {
-                            h += '<td>' + escapeHTML(modules.cs.rows[i]) + '</td>';
+                            h += '<td class="timeCell">' + escapeHTML(modules.cs.rows[i]) + '</td>';
                         }
                         cCols = 0;
                         for (let j in modules.cs.cols) {
@@ -695,6 +702,135 @@
                             for (let i in modules.cs.currentSheet.sheet.data) {
                                 if (md5(modules.cs.currentSheet.sheet.data[i].col) == col) {
                                     modules.cs.currentSheet.sheet.data[i].logins = result.logins;
+                                    loadingStart();
+                                    PUT("cs", "sheet", false, {
+                                        "sheet": modules.cs.currentSheet.sheet.sheet,
+                                        "date": modules.cs.currentSheet.sheet.date,
+                                        "data": $.trim(JSON.stringify(modules.cs.currentSheet.sheet, null, 4)),
+                                    }).
+                                    fail(FAIL).
+                                    done(() => {
+                                        message(i18n("cs.sheetWasSaved"));
+                                    });
+                                    break;
+                                }
+                            }
+                        },
+                    }).show();
+                });
+
+                $(".colSettings").off("click").on("click", function () {
+                    let col = $(this).attr("data-col");
+
+                    let cols = {};
+                    let colName = "";
+
+                    let rows = [];
+                    let t = {};
+                    let colPart = "";
+
+                    let colHidden = false;
+
+                    $(".timeCell").each(function () {
+                        t[$(this).text()] = true;
+                    });
+
+                    for (let i in t) {
+                        rows.push(i);
+                    }
+
+                    t = rows;
+                    rows = [];
+
+                    for (let i in modules.cs.currentSheet.sheet.data) {
+                        if (md5(modules.cs.currentSheet.sheet.data[i].col) == col) {
+                            colName = modules.cs.currentSheet.sheet.data[i].col;
+                            colPart = modules.cs.currentSheet.sheet.data[i].part;
+                            colHidden = modules.cs.currentSheet.sheet.data[i].hidden === true;
+                            for (let j in t) {
+                                rows.push({
+                                    id: t[j],
+                                    text: t[j],
+                                    checked: modules.cs.currentSheet.sheet.data[i].rows.indexOf(t[j]) >= 0,
+                                });
+                            }
+                        } else {
+                            if (modules.cs.currentSheet.sheet.data[i].col) {
+                                cols[modules.cs.currentSheet.sheet.data[i].col] = true;
+                            }
+                        }
+                    }
+
+                    cardForm({
+                        title: i18n("cs.colSettings"),
+                        footer: true,
+                        borderless: true,
+                        topApply: true,
+                        fields: [
+                            {
+                                id: "colPart",
+                                type: "text",
+                                title: i18n("cs.colPart"),
+                                placeholder: i18n("cs.colPart"),
+                                value: colPart,
+                                validate: v => {
+                                    return $.trim(v) !== "";
+                                },
+                            },
+                            {
+                                id: "colName",
+                                type: "text",
+                                title: i18n("cs.colName"),
+                                placeholder: i18n("cs.colName"),
+                                value: colName,
+                                validate: v => {
+                                    return $.trim(v) !== "" && !cols[$.trim(v)];
+                                },
+                            },
+                            {
+                                id: "colWeight",
+                                type: "text",
+                                title: i18n("cs.colWeight"),
+                                placeholder: i18n("cs.colWeight"),
+                                value: modules.cs.currentSheet.sheet.weights[colName],
+                            },
+                            {
+                                id: "colHidden",
+                                type: "noyes",
+                                title: i18n("cs.colHidden"),
+                                value: colHidden ? "1" : "0",
+                            },
+                            {
+                                id: "colRows",
+                                type: "multiselect",
+                                title: i18n("cs.colRows"),
+                                options: rows,
+                            },
+                        ],
+                        callback: result => {
+                            for (let i in modules.cs.currentSheet.sheet.data) {
+                                if (md5(modules.cs.currentSheet.sheet.data[i].col) == col) {
+                                    modules.cs.currentSheet.sheet.data[i].col = $.trim(result.colName);
+                                    modules.cs.currentSheet.sheet.data[i].rows = result.colRows;
+                                    modules.cs.currentSheet.sheet.data[i].part = $.trim(result.colPart);
+                                    modules.cs.currentSheet.sheet.data[i].hidden = parseInt(result.colHidden) === 1;
+                                    try {
+                                        if (!modules.cs.currentSheet.sheet.weights.length) {
+                                            modules.cs.currentSheet.sheet.weights = {};
+                                        }
+                                    } catch (e) {
+                                        modules.cs.currentSheet.sheet.weights = {};
+                                    }
+                                    for (let i in modules.cs.currentSheet.sheet.weights) {
+                                        if (!cols[i]) {
+                                            delete modules.cs.currentSheet.sheet.weights[i];
+                                        }
+                                    }
+                                    if ($.trim(result.colWeight)) {
+                                        modules.cs.currentSheet.sheet.weights[$.trim(result.colName)] = $.trim(result.colWeight);
+                                    } else {
+                                        delete modules.cs.currentSheet.sheet.weights[$.trim(result.colName)];
+                                    }
                                     loadingStart();
                                     PUT("cs", "sheet", false, {
                                         "sheet": modules.cs.currentSheet.sheet.sheet,
@@ -892,6 +1028,67 @@
                     let cell = $(this);
                     window.location.href = "?#tt&issue=" + cell.text();
                     e.stopPropagation();
+                });
+
+                $(".csPart").off("click").on("click", function () {
+                    let part = $(this).text();
+
+                    let cols = [];
+
+                    for (let i in modules.cs.currentSheet.sheet.data) {
+                        if (modules.cs.currentSheet.sheet.data[i].part == part) {
+                            cols.push({
+                                id: modules.cs.currentSheet.sheet.data[i].col,
+                                text: modules.cs.currentSheet.sheet.data[i].col,
+                                checked: modules.cs.currentSheet.sheet.data[i].hidden !== true,
+                            });
+                        }
+                    }
+
+                    cols.sort((a, b) => {
+                        if (a.id > b.id) {
+                            return 1;
+                        }
+                        if (a.id < b.id) {
+                            return -1;
+                        }
+                        return 0;
+                    });
+
+                    cardForm({
+                        title: i18n("cs.partCols"),
+                        footer: true,
+                        borderless: true,
+                        topApply: true,
+                        fields: [
+                            {
+                                id: "partCols",
+                                type: "multiselect",
+                                title: i18n("cs.cols"),
+                                options: cols,
+                                validate: v => {
+                                    return v.length >= 1;
+                                }
+                            },
+                        ],
+                        callback: result => {
+                            for (let i in modules.cs.currentSheet.sheet.data) {
+                                if (modules.cs.currentSheet.sheet.data[i].part == part) {
+                                    modules.cs.currentSheet.sheet.data[i].hidden = result.partCols.indexOf(modules.cs.currentSheet.sheet.data[i].col) < 0;
+                                }
+                            }
+                            loadingStart();
+                            PUT("cs", "sheet", false, {
+                                "sheet": modules.cs.currentSheet.sheet.sheet,
+                                "date": modules.cs.currentSheet.sheet.date,
+                                "data": $.trim(JSON.stringify(modules.cs.currentSheet.sheet, null, 4)),
+                            }).
+                            fail(FAIL).
+                            done(() => {
+                                message(i18n("cs.sheetWasSaved"));
+                            });
+                        },
+                    }).show();
                 });
 
                 modules.cs.idle = true;
