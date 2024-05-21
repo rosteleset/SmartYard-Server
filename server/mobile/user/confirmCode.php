@@ -16,9 +16,11 @@
  * 422 неверный формат данных
  *
  * @apiSuccess {String} accessToken токен авторизации
- * @apiSuccess {Object[]} names имя и отчество
+ * @apiSuccess {Object[]} names фамилия, имя, отчество
+ * @apiSuccess {String} names.last фамилия
  * @apiSuccess {String} names.name имя
  * @apiSuccess {String} names.patronymic отчество
+
  */
     $user_phone = @$postdata['userPhone'];
     if ($user_phone[0] == '8') { 
@@ -56,7 +58,7 @@
                     $subscriber = $subscribers[0];
                     // Пользователь найден
                     $households->modifySubscriber($subscriber["subscriberId"], [ "authToken" => $token ]);
-                    $names = [ "name" => $subscriber["subscriberName"], "patronymic" => $subscriber["subscriberPatronymic"] ];
+                    $names = [ "name" => $subscriber["subscriberName"], "patronymic" => $subscriber["subscriberPatronymic"], "last" => $subscriber["subscriberLast"] ];
                 } else {
                     // Пользователь не найден - создаём
                     $id = $households->addSubscriber($user_phone, "", "");
