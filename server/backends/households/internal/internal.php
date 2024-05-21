@@ -255,6 +255,13 @@
                             "password" => $params["password"],
                         ];
                         break;
+
+                    case "contract":
+                        $q = "select house_flat_id from houses_flats where contract = :contract";
+                        $p = [
+                            "contract" => $params,
+                        ];
+                        break;
                 }
 
                 $flats = $this->db->get($q, $p);
