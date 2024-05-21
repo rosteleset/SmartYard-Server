@@ -2165,7 +2165,7 @@
                 foreach ($devices as &$device) {
                     $subscriber = $this->db->get("select * from houses_subscribers_mobile where house_subscriber_id = :house_subscriber_id",
                         [
-                            "house_subscriber_id" => $device["subscriberId"]
+                            "house_subscriber_id" => (int)$device["subscriberId"]
                         ],
                         [
                             "house_subscriber_id" => "subscriberId",

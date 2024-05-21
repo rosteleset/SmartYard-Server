@@ -47,7 +47,7 @@
                 }
 
                 $msgId = $this->db->insert("insert into inbox (id, house_subscriber_id, date, title, msg, action, expire, delivered, readed, code) values (:id, :house_subscriber_id, :date, :title, :msg, :action, :expire, 0, 0, null)", [
-                    "id" => $devices[0]["subscriber"]["id"],
+                    "id" => $devices[0]["subscriber"]["mobile"],
                     "house_subscriber_id" => $subscriberId,
                     "date" => time(),
                     "title" => $title,
@@ -64,7 +64,7 @@
                 $unreaded = $this->unreaded($subscriberId);
 
                 foreach ($devices as $device) {
-                    if ($isdn && checkInt($device["platform"]) && checkInt($device["tokenType"]) && $device["token"]) {
+                    if ($isdn && checkInt($device["platform"]) && checkInt($device["tokenType"]) && $device["pushToken"]) {
                         $result = $isdn->push([
                             "token" => $device["token"],
                             "type" => $device["tokenType"],
