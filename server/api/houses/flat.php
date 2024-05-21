@@ -10,7 +10,7 @@
         use api\api;
 
         /**
-         * house method
+         * flat method
          */
 
         class flat extends api
