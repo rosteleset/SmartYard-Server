@@ -2308,7 +2308,7 @@
             /**
              * @inheritDoc
              */
-            public function setDeviceFlat($deviceId, $flat)
+            public function setDeviceFlat($deviceId, $flat, $voipEnabled)
             {
                 if (!checkInt($deviceId)) {
                     setLastError("invalidParams");
@@ -2319,14 +2319,15 @@
                 $query = "
                     INSERT INTO houses_flats_devices (subscriber_device_id, house_flat_id, voip_enabled) 
                     VALUES (:subscriber_device_id, :house_flat_id, :voip_enabled)
-                    ON DUPLICATE KEY UPDATE 
-                        voip_enabled = VALUES(voip_enabled)
+                    ON CONFLICT (subscriber_device_id, house_flat_id) 
+                    DO UPDATE SET 
+                        voip_enabled = :voip_enabled
                 ";
 
                 $params = [
                     "subscriber_device_id" => $deviceId,
-                    "house_flat_id" => $flat["flatId"],
-                    "voip_enabled" => $flat["voipEnabled"] ? 1 : 0,
+                    "house_flat_id" => $flat,
+                    "voip_enabled" => $voipEnabled ? 1 : 0,
                 ];
 
                 $r = $this->db->insert($query, $params) !== false;

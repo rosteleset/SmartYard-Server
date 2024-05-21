@@ -26,7 +26,7 @@
 
     if (ctype_digit($user_phone)) {
 
-        $confirmMethod = @$postdata['method	'] ?: @$config["backends"]["isdn"]["confirm_method"] ?: "outgoingCall";
+        $confirmMethod = @$postdata['method'] ?: @$config["backends"]["isdn"]["confirm_method"] ?: "outgoingCall";
         
         switch ($confirmMethod) {
             case 'outgoingCall':
@@ -48,7 +48,7 @@
                         $pin = explode(":", $isdn->sendCode($user_phone))[0];
                     }
                     $redis->setex("userpin_".$user_phone, 60, $pin);
-                    response();
+                    response(200, [ "method" => $confirmMethod]);
                 }
                 break;
         }

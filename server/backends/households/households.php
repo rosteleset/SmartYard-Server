@@ -366,6 +366,6 @@
              * @param $flat
              * @return boolean
              */
-            abstract public function setDeviceFlat($deviceId, $flats);
+            abstract public function setDeviceFlat($deviceId, $flat, $voipEnabled);
         }
     }
