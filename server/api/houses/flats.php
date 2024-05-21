@@ -19,7 +19,7 @@
             {
                 $households = loadBackend("households");
 
-                $flats = $households->getFlat($params["by"], $params);
+                $flats = $households->getFlats($params["by"], $params);
 
                 return api::ANSWER($flats, ($flats !== false)?"flats":"notAcceptable");
             }
