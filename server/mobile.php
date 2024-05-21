@@ -225,12 +225,12 @@ function auth($_response_cache_ttl = -1) {
         if ($devices) {
             $device = $devices[0];
             $bearer = $device["authToken"];
-            $subscriber = $device["subscriber"];
+            $subscriber = $households->getSubscribers("id", $device["subscriberId"])[0];
         } else {
             response(401, false, "Не авторизован", "Не авторизован");
         }
         // обновление последнего использования токена пользователем
-        $households->modifyDevice($devices["deviceId"]);
+        $households->modifyDevice($device["deviceId"]);
     }
 }
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {

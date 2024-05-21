@@ -1223,7 +1223,7 @@
                 ]);
 
                 if (!$subscriberId) {
-                    $subscriberId = $this->db->insert("insert into houses_subscribers_mobile (id, subscriber_name, subscriber_patronymic, registered, voip_enabled) values (:mobile, :subscriber_name, :subscriber_patronymic, :registered, 1)", [
+                    $subscriberId = $this->db->insert("insert into houses_subscribers_mobile (id, subscriber_name, subscriber_patronymic, registered) values (:mobile, :subscriber_name, :subscriber_patronymic, :registered)", [
                         "mobile" => $mobile,
                         "subscriber_name" => $name,
                         "subscriber_patronymic" => $patronymic,
@@ -2160,6 +2160,8 @@
                     "voip_enabled" => "voipEnabled",
                 ]);
 
+                if (!@$devices)
+                    return false;
                 foreach ($devices as &$device) {
                     $subscriber = $this->db->get("select * from houses_subscribers_mobile where house_subscriber_id = :house_subscriber_id",
                         [
@@ -2170,8 +2172,11 @@
                             "id" => "mobile",
                             "subscriber_name" => "subscriberName",
                             "subscriber_patronymic" => "subscriberPatronymic",
+                        ],
+                        [
+                            "singlify"
                         ]
-                    )[0];
+                    );
                     $flats = $this->db->get("select house_flat_id, voip_enabled, flat, address_house_id from houses_flats_devices left join houses_flats using (house_flat_id) where subscriber_device_id = :subscriber_device_id",
                         [
                             "subscriber_device_id" => $device["deviceId"]
