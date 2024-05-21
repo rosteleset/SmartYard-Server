@@ -57,7 +57,7 @@ foreach ($flats as $flat) {
         continue;
     }
 
-    if ($households->addSubscriber($subscriber["mobile"], null, null, $flat_id,
+    if ($households->addSubscriber($subscriber["mobile"], null, null, null, $flat_id,
         [
             'title' => 'Новый адрес',
             'msg' => 'В вашу учётную запись добавлен новый адрес',

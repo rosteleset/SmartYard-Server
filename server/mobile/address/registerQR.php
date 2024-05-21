@@ -50,7 +50,7 @@ foreach($subscriber['flats'] as $item) {
     }
 }
 
-if ($households->addSubscriber($subscriber["mobile"], null, null, $flat_id)) {
+if ($households->addSubscriber($subscriber["mobile"], null, null, null, $flat_id)) {
     response(200, "Ваш запрос принят и будет обработан в течение одной минуты, пожалуйста подождите");
 } else {
     response(422);

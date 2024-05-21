@@ -46,7 +46,7 @@
     $is_owner = ((int)$flat['role'] == 0);
 
     $guest_phone = @$postdata['guestPhone'];
-    
+
     if (array_key_exists('expire', $postdata)) {
         $expire = strtotime($postdata['expire']);
         if (!$expire) {
@@ -84,7 +84,7 @@
         $households->setSubscriberFlats((int)$guest['subscriberId'], $f_list);
     } else {
         //добавление
-        if ($households->addSubscriber($guest_phone, "", "", $flat_id,
+        if ($households->addSubscriber($guest_phone, "", "", "", $flat_id,
             [
                 'title' => 'Новый адрес',
                 'msg' => 'В вашу учётную запись добавлен новый адрес',

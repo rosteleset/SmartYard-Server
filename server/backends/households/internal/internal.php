@@ -1228,7 +1228,7 @@
             /**
              * @inheritDoc
              */
-            public function addSubscriber($mobile, $name, $patronymic, $last, $flatId = false, $message = false)
+            public function addSubscriber($mobile, $name, $patronymic, $last = '', $flatId = false, $message = false)
             {
                 if (
                     !checkStr($mobile, [ "minLength" => 6, "maxLength" => 32, "validChars" => [ '+', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' ] ]) ||
