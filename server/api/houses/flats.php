@@ -21,7 +21,7 @@
 
                 $flats = $households->getFlats($params["by"], $params);
 
-                return api::ANSWER($flats, ($flats !== false)?"flats":"notAcceptable");
+                return api::ANSWER($flats, ($flats !== false) ? "flats" : "notAcceptable");
             }
 
             public static function index()
