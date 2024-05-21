@@ -62,20 +62,18 @@
                 if ($subscribers) {
                     $subscriber = $subscribers[0];
                     // Пользователь найден
-                    $households->modifySubscriber($subscriber["subscriberId"], [ "authToken" => $token ]);
                     $subscriber_id = $subscriber["subscriberId"];
                     $names = [ "name" => $subscriber["subscriberName"], "patronymic" => $subscriber["subscriberPatronymic"] ];
                 } else {
                     // Пользователь не найден - создаём
                     $subscriber_id = $households->addSubscriber($user_phone, "", "");
-                    $households->modifySubscriber($subscriber_id, [ "authToken" => $token ]);
                 }
 
                 if ($devices) {
                     $device = $devices[0];
                     $households->modifyDevice($device["deviceId"], [ "authToken" => $token ]);
                 } else {
-                    $households->addDevice($subscriber_id, $device_token, $platform);
+                    $households->addDevice($subscriber_id, $device_token, $platform, $token);
                     $inbox->sendMessage($subscriber_id, "Внимание!", "Произведена авторизация на новом устройстве", $action = "inbox");
                 }
                 response(200, [ 'accessToken' => $token, 'names' => $names ]);
