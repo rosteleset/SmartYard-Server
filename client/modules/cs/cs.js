@@ -1024,13 +1024,13 @@
                     }
                 }
 
-/*
                 $(".csIssueSpan").off("click").on("click", function (e) {
+/*
                     let cell = $(this);
                     window.location.href = "?#tt&issue=" + cell.text();
+*/
                     e.stopPropagation();
                 });
-*/
 
                 $(".csPart").off("click").on("click", function () {
                     let part = $(this).text();
