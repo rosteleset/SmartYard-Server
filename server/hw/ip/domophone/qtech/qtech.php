@@ -13,13 +13,18 @@ abstract class qtech extends domophone
     use \hw\ip\common\qtech\qtech;
 
     /**
-     * @var array|null $dialplans An array that holds dialplan information,
+     * @var string The value indicating that the analog number is empty.
+     */
+    protected const EMPTY_ANALOG_REPLACE = '0';
+
+    /**
+     * @var array|null An array that holds dialplan information,
      * which may be null if not loaded.
      */
     protected ?array $dialplans = null;
 
     /**
-     * @var array|null $personalCodes An array that holds personal access codes information,
+     * @var array|null An array that holds personal access codes information,
      * which may be null if not loaded.
      */
     protected ?array $personalCodes = null;
@@ -60,7 +65,7 @@ abstract class qtech extends domophone
         $this->loadDialplans();
         $this->loadPersonalCodes();
 
-        $dialplan = $this->dialplans[$apartment] ?? ['id' => null, 'replace1' => '0'];
+        $dialplan = $this->dialplans[$apartment] ?? ['id' => null, 'replace1' => self::EMPTY_ANALOG_REPLACE];
         $personalCode = $this->personalCodes[$apartment] ?? ['id' => null];
 
         $this->updateDialplan(
@@ -233,7 +238,7 @@ abstract class qtech extends domophone
             if ($dialplan) {
                 $analogReplace = $dialplan['replace1'];
 
-                if ($analogReplace === '0') {
+                if ($analogReplace === self::EMPTY_ANALOG_REPLACE) {
                     $this->deleteDialplan($apartment);
                 } else {
                     $this->updateDialplan($dialplan['id'], $apartment, $analogReplace, '', 0);
@@ -537,7 +542,7 @@ abstract class qtech extends domophone
                 $this->updateDialplan(
                     $dialplan['id'],
                     $dialplan['prefix'],
-                    '',
+                    self::EMPTY_ANALOG_REPLACE,
                     $dialplan['replace2'],
                     $dialplan['tags']
                 );
@@ -819,7 +824,7 @@ abstract class qtech extends domophone
         foreach ($this->dialplans as $dialplan) {
             $analogReplace = $dialplan['replace1'];
 
-            if ($analogReplace === '') {
+            if ($analogReplace === self::EMPTY_ANALOG_REPLACE) {
                 continue;
             }
 

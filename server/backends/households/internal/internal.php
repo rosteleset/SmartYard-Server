@@ -237,6 +237,7 @@
                     case "houseId":
                         $q = "select house_flat_id from houses_flats where address_house_id = :address_house_id order by flat";
                         $p = [
+                        // TODO: must be $params["houseId"]
                             "address_house_id" => $params,
                         ];
                         break;
@@ -244,6 +245,7 @@
                     case "domophoneId":
                         $q = "select house_flat_id from houses_flats left join houses_entrances_flats using (house_flat_id) left join houses_entrances using (house_entrance_id) where house_domophone_id = :house_domophone_id group by house_flat_id order by flat";
                         $p = [
+                        // TODO: must be $params["domophoneId"]
                             "house_domophone_id" => $params,
                         ];
                         break;
@@ -253,6 +255,13 @@
                         $p = [
                             "login" => $params["login"],
                             "password" => $params["password"],
+                        ];
+                        break;
+
+                    case "contract":
+                        $q = "select house_flat_id from houses_flats where contract = :contract";
+                        $p = [
+                            "contract" => $params["contract"],
                         ];
                         break;
                 }
@@ -1219,7 +1228,7 @@
             /**
              * @inheritDoc
              */
-            public function addSubscriber($mobile, $name, $patronymic, $last, $flatId = false, $message = false)
+            public function addSubscriber($mobile, $name, $patronymic, $last = '', $flatId = false, $message = false)
             {
                 if (
                     !checkStr($mobile, [ "minLength" => 6, "maxLength" => 32, "validChars" => [ '+', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' ] ]) ||

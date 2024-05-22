@@ -1,5 +1,5 @@
-import config from "./config.json" assert { type: "json" };
-import spamWords from "./spamwords.json" assert { type: "json" };
+import config from "./config.json" with { type: "json" };
+import spamWords from "./spamwords.json" with { type: "json" };
 
 import {
     AkuvoxService,

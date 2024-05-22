@@ -9,7 +9,8 @@
  *
  * @apiHeader {String} authorization токен авторизации
  *
- * @apiSuccess {Object[]} names имя и отчество
+ * @apiSuccess {Object[]} names фамилия, имя, отчество
+ * @apiSuccess {String} names.last фамилия
  * @apiSuccess {String} names.name имя
  * @apiSuccess {String} names.patronymic отчество
  *
@@ -26,9 +27,8 @@ auth();
 
 $households = loadBackend("households");
 
-
 if ($subscriber) {
-    $names = ["name" => $subscriber["subscriberName"], "patronymic" => $subscriber["subscriberPatronymic"]];
+    $names = ["name" => $subscriber["subscriberName"], "patronymic" => $subscriber["subscriberPatronymic"], "last" => $subscriber["subscriberLast"]];
 
     response(200, $names);
 } else {

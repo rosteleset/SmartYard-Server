@@ -1,6 +1,6 @@
 import syslogServer from "syslog-server";
 import { API, getTimestamp, isIpAddress, parseSyslogMessage } from "../../utils/index.js";
-import config from "../../config.json" assert { type: "json" };
+import config from "../../config.json" with { type: "json" };
 
 const { topology } = config;
 const natEnabled = topology?.nat === true;

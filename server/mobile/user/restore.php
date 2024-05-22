@@ -29,8 +29,13 @@
  */
 
     auth();
-    response();
+    $custom = @loadBackend('custom');
 
+    if ($custom && method_exists($custom, "userRestorePassword")) {
+        $custom->userRestorePassword($postdata);
+    } else {
+        response();
+    }
 /*
     $contract = trim(@$postdata['contract']);
 
