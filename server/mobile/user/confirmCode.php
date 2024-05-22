@@ -26,7 +26,7 @@
     if ($user_phone[0] == '8') { 
         $user_phone[0] = '7'; 
     }
-    $device_token = @$postdata['deviceToken'] ?: '1';
+    $device_token = @$postdata['deviceToken'] ?: 'default';
     $platform = @$postdata['platform'];
     $pin = @$postdata['smsCode'];
     $isdn = loadBackend("isdn");

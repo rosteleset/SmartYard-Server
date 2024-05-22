@@ -66,7 +66,7 @@
                 foreach ($devices as $device) {
                     if ($isdn && checkInt($device["platform"]) && checkInt($device["tokenType"]) && $device["pushToken"]) {
                         $result = $isdn->push([
-                            "token" => $device["token"],
+                            "token" => $device["pushToken"],
                             "type" => $device["tokenType"],
                             "timestamp" => time(),
                             "ttl" => 30,
@@ -78,12 +78,12 @@
                             "pushAction" => $action,
                         ]);
 
-                        // figure out what to do with push_message_id
+                        // !!! figure out what to do with result & push_message_id
                     } else {
                         setLastError("pushCantBeSent");
-                        return false;
                     }
                 }
+                return $msgId;
             }
 
             /**

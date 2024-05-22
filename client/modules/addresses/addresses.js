@@ -11,6 +11,7 @@
             "cameras",
             "subscribers", // and keys
             "subscriberInbox",
+            "subscriberDevices"
         ], this);
     },
 

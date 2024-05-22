@@ -243,7 +243,7 @@
                         <label class="custom-control-label form-check-label" for="subscriber-voip-flat-${subscriber.flats[i].flatId}">${i18n("addresses.voipEnabled")}</label>
                     </div>
                 `;
-
+                
                 flats.push({
                     "id": subscriber.flats[i].flatId,
                     "text": trimStr($.trim(subscriber.flats[i].house.houseFull + ", " + subscriber.flats[i].flat), 64, true) + " " + link,
@@ -416,7 +416,7 @@
                         readonly: true,
                         value: key.rfId,
                     },
-                    {
+                {
                         id: "comments",
                         type: "text",
                         title: i18n("addresses.comments"),
@@ -457,6 +457,7 @@
 
     renderSubscribers: function (list, flatId, title) {
         let params = hashParse("params");
+
         cardTable({
             target: "#mainForm",
             title: {
@@ -477,14 +478,6 @@
                     title: i18n("addresses.mobile"),
                     nowrap: true,
                     fullWidth: true,
-                },
-                {
-                    title: i18n("addresses.platform"),
-                    nowrap: true,
-                },
-                {
-                    title: i18n("addresses.lastSeen"),
-                    nowrap: true,
                 },
                 {
                     title: i18n("addresses.subscriberFlatOwner"),
@@ -519,13 +512,6 @@
                                 data: list[i].mobile,
                             },
                             {
-                                data: list[i].platform === null ? "-" : (list[i].platform === 0 ? "android" : (list[i].platform === 1 ? "ios" : (list[i].platform === 2 ? "other" : "-"))),
-                            },
-                            {
-                                data: list[i].lastSeen ? ttDate(list[i].lastSeen) : "",
-                                nowrap: true,
-                            },
-                            {
                                 data: owner?i18n("yes"):i18n("no"),
                             },
                         ],
@@ -543,6 +529,13 @@
                                     title: i18n("addresses.keys"),
                                     click: subscriberId => {
                                         window.location.href = "?#addresses.keys&query=" + subscriberId + "&by=1&backStr=" + encodeURIComponent(title + " [" + subscribers[subscriberId] + "]") + "&back=" + encodeURIComponent(hashParse("hash"));
+                                    },
+                                },
+                                {
+                                    icon: "fas fa-mobile",
+                                    title: i18n("addresses.devices"),
+                                    click: subscriberId => {
+                                        location.href = "?#addresses.subscriberDevices&subscriberId=" + subscriberId;
                                     },
                                 },
                             ],

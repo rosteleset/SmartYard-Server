@@ -2276,6 +2276,15 @@
                     }
                 }
 
+                if (array_key_exists("voipEnabled", $params)) {
+                    if (!checkInt($params["voipEnabled"])) {
+                        setLastError("invalidParams");
+                        $r = false;
+                    }
+
+                    $r = $this->db->modify("update houses_subscribers_devices set voip_enabled = :voip_enabled where subscriber_device_id = $deviceId", [ "voip_enabled" => $params["voipEnabled"] ]) !== false;
+                }
+
                 $r = true;
 
                 $r = $r && $this->db->modify("update houses_subscribers_devices set last_seen = :last_seen where subscriber_device_id = $deviceId", [ "last_seen" => time() ]) !== false;

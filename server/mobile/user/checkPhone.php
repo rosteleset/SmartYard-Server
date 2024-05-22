@@ -22,7 +22,7 @@
  * @apiSuccess {String} names.patronymic отчество
  */
     $user_phone = @$postdata['userPhone'];
-    $device_token = @$postdata['deviceToken'] ?: '1';
+    $device_token = @$postdata['deviceToken'] ?: 'default';
     $platform = @$postdata['platform'] ?: '0';
     $households = loadBackend("households");
 
