@@ -30,7 +30,11 @@
 
     auth();
     response();
+    $custom = @loadBackend('custom');
 
+    if ($custom && method_exists($custom, "userRestorePassword")) {
+        $custom->userRestorePassword($postdata);
+    }
 /*
     $contract = trim(@$postdata['contract']);
 
