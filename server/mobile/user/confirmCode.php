@@ -69,12 +69,19 @@
                     $subscriber_id = $households->addSubscriber($user_phone, "", "");
                 }
 
+                // temporary solution
                 if ($devices) {
                     $device = $devices[0];
-                    $households->modifyDevice($device["deviceId"], [ "authToken" => $token ]);
+                    if ($device["subscriberId"] != $subscriber_id) {
+                        $households->deleteDevice($device["deviceId"]);
+                        $households->addDevice($subscriber_id, $device_token, $platform, $token);
+                        $inbox->sendMessage($subscriber_id, "Внимание!", "Произведена авторизация на новом устройстве", $action = "inbox");
+                    } else {
+                        $households->modifyDevice($device["deviceId"], [ "authToken" => $token ]);
+                    }
                 } else {
                     $households->addDevice($subscriber_id, $device_token, $platform, $token);
-                    // $inbox->sendMessage($subscriber_id, "Внимание!", "Произведена авторизация на новом устройстве", $action = "inbox");
+                    $inbox->sendMessage($subscriber_id, "Внимание!", "Произведена авторизация на новом устройстве", $action = "inbox");
                 }
                 response(200, [ 'accessToken' => $token, 'names' => $names, "s" =>$subscriber_id ]);
             }
