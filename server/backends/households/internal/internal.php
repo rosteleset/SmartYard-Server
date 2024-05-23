@@ -891,12 +891,6 @@
 	                            ) group by house_domophone_id
                               ) order by house_domophone_id";
                         break;
-
-                    case "id":
-                        $query = (int)$query;
-
-                        $q = "select * from houses_domophones where house_domophone_id = '$query'";
-                        break;
                 }
 
                 $monitoring = loadBackend("monitoring");
