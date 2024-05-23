@@ -36,7 +36,7 @@ abstract class is extends camera
 
     public function getCamshot(): string
     {
-        return $this->apiCall('/camera/snapshot');
+        return $this->apiCall('/camera/snapshot', 'GET', [], 3);
     }
 
     public function transformDbConfig(array $dbConfig): array
