@@ -58,10 +58,11 @@ trait is
      * @param string $resource API endpoint.
      * @param string $method (Optional) HTTP method. Default is "GET".
      * @param array $payload (Optional) Request body as an array. Empty array by default.
+     * @param int $timeout (Optional) The maximum number of seconds to allow cURL functions to execute.
      *
      * @return array|bool|string API response.
      */
-    protected function apiCall(string $resource, string $method = 'GET', array $payload = [])
+    protected function apiCall(string $resource, string $method = 'GET', array $payload = [], int $timeout = 0)
     {
         $req = $this->url . $resource;
 
@@ -72,6 +73,7 @@ trait is
         curl_setopt($ch, CURLOPT_USERPWD, "$this->login:$this->password");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_VERBOSE, false);
+        curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
 
         if ($payload) {
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
