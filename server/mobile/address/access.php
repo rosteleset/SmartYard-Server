@@ -73,11 +73,9 @@
         foreach ($guest['flats'] as $item) {
             $f_id = (int)$item['flatId'];
             $role = !$item['role'];
-            $voip_enabled = $item['voipEnabled'];
             if ($f_id > 0 && $f_id != $flat_id) {
                 $f_list[$f_id] = [
-                    "role" => $role,
-                    "voipEnabled" => $voip_enabled
+                    "role" => $role
                 ];
             }
         }
