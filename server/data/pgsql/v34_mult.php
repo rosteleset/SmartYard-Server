@@ -32,7 +32,7 @@ function v34_mult($db) {
                     voip_enabled
                 ) VALUES (
                     :house_subscriber_id,
-                    'default',  -- устанавливаем значение по умолчанию для device_token
+                    'default',  -- setting default value for device_token
                     :auth_token,
                     :platform,
                     :push_token,
@@ -44,7 +44,7 @@ function v34_mult($db) {
                 )
             ");
 
-        // Переменная для подсчета количества вставленных строк
+        // Variable to count created rows
         $createdRows = 0;
 
         foreach ($subscribers as $subscriber) {
@@ -60,7 +60,7 @@ function v34_mult($db) {
                 ':voip_enabled' => $subscriber['voip_enabled']
             ]);
 
-            // Увеличиваем счетчик вставленных строк
+            // Increase row count
             $createdRows += $stmt->rowCount();
         }
 
@@ -68,7 +68,8 @@ function v34_mult($db) {
         return true;
 
     } catch (PDOException $e) {
-        echo "Ошибка при выполнении запроса: " . $e->getMessage();
+        // Throw the error up for handling in the calling code
+        echo "Error executing query: " . $e->getMessage();
         return false;
     }
 }
