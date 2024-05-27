@@ -107,7 +107,8 @@
     "32": [
         "v32_core.sql"
     ],
-    "33": [
-        "v33_mult.sql"
+    "34": [
+        "v34_mult.php",
+        "v34_mult.sql"
     ]
 }
