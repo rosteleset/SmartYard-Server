@@ -78,6 +78,7 @@
                     unset($issue["attachments"]);
 
                     $issue["created"] = time();
+                    $issue["updated"] = time();
                     $issue["author"] = $this->login;
 
                     try {
