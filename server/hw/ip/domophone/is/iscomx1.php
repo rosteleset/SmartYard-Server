@@ -10,11 +10,6 @@ class iscomx1 extends is
 
     use \hw\ip\common\is\iscomx1;
 
-    public function configureEncoding()
-    {
-        // Empty implementation
-    }
-
     public function prepare()
     {
         parent::prepare();
