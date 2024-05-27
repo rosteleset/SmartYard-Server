@@ -6,7 +6,6 @@ use backends\addresses\addresses;
 use backends\configs\configs;
 use backends\households\households;
 use backends\sip\sip;
-use DateTime;
 use utils\SmartConfigurator\ConfigurationBuilder\DomophoneConfigurationBuilder;
 
 class DomophoneDbConfigCollector implements IDbConfigCollector
@@ -352,7 +351,7 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
      *
      * This method attempts to find the timezone from various levels of the address hierarchy,
      * starting from the city and falling back to the area and region if necessary.
-     * If no timezone is found, it defaults to the system timezone.
+     * If the timezone is not set, then "Europe/Moscow" will be used.
      *
      * @return string The timezone identifier.
      */
@@ -370,10 +369,8 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
 
         $timezone = $city['timezone'] ?? $area['timezone'] ?? $region['timezone'] ?? null;
 
-        if (!$timezone) {
-            $date = new DateTime();
-            $tz = $date->getTimezone();
-            $timezone = $tz->getName();
+        if ($timezone === null) {
+            $timezone = 'Europe/Moscow';
         }
 
         return $timezone;
