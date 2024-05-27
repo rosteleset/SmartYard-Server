@@ -1,28 +1,3 @@
-INSERT INTO houses_subscribers_devices (
-    house_subscriber_id,
-    device_token,
-    auth_token,
-    platform,
-    push_token,
-    push_token_type,
-    voip_token,
-    registered,
-    last_seen,
-    voip_enabled
-)
-SELECT
-    house_subscriber_id,
-    'default',  -- устанавливаем значение по умолчанию для device_token
-    auth_token,
-    platform,
-    push_token,
-    push_token_type,
-    voip_token,
-    registered,
-    last_seen,
-    voip_enabled
-FROM houses_subscribers_mobile;
-
 -- changa mobile subscribers
 ALTER TABLE houses_subscribers_mobile
     DROP COLUMN auth_token,
