@@ -1463,9 +1463,9 @@
             for (let o in filter_names) {
                 filters += `<span class="dropdown">`;
                 if (o == 0) {
-                    filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter-${o}" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" style="margin-left: -4px;"><i class="far fa-fw fa-caret-square-down"></i>${filter_names[o].trim()}</span>`;
+                    filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter-${o}" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" style="margin-left: -4px;"><i class="far fa-fw fa-caret-square-down mr-1"></i>${filter_names[o].trim()}</span>`;
                 } else {
-                    filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter-${o}" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false"><i class="far fa-fw fa-caret-square-down"></i>${filter_names[o].trim()}</span>`;
+                    filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter-${o}" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false"><i class="far fa-fw fa-caret-square-down mr-1"></i>${filter_names[o].trim()}</span>`;
                 }
                 filters += `<ul class="dropdown-menu" aria-labelledby="ttFilter-${o}">`;
                 filters += hh(filtersTree);
@@ -1900,21 +1900,23 @@
                             let cols = [ {
                                 data: i + skip + 1,
                                 nowrap: true,
-                                click: (issue) => {
-                                    issue = JSON.parse(b64_to_utf8(issue));
-
-                                    window.location.href = navigateUrl("tt", {
-                                        issue: issue.id,
-                                        filter: issue.filter ? issue.filter : "",
-                                        search: ($.trim(issue.search) && typeof issue.search === "string") ? $.trim(issue.search) : "",
-                                    });
-                                },
+                                click: navigateUrl("tt", {
+                                    issue: issues.issues[i]["issueId"],
+                                    filter: x ? x : "",
+                                    search: ($.trim(params.search) && params.search !== true) ? $.trim(params.search) : "",
+                                }),
                             } ];
 
                             for (let j = 0; j < pKeys.length; j++) {
                                 cols.push({
                                     data: modules.tt.issueField2Html(issues.issues[i], pKeys[j], undefined, "list"),
                                     nowrap: true,
+                                    click: navigateUrl("tt", {
+                                        issue: issues.issues[i]["issueId"],
+                                        filter: x ? x : "",
+                                        search: ($.trim(params.search) && params.search !== true) ? $.trim(params.search) : "",
+                                    }),
+/*
                                     click: (issue) => {
                                         issue = JSON.parse(b64_to_utf8(issue));
 
@@ -1924,6 +1926,7 @@
                                             search: ($.trim(issue.search) && typeof issue.search === "string") ? $.trim(issue.search) : "",
                                         });
                                     },
+*/
                                     fullWidth: j == pKeys.length - 1,
                                 });
                             }

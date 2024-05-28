@@ -159,8 +159,6 @@ select {
   color: black;
   text-align: left;
   height: 1.5em;
-  opacity: 0.5;
-  font-size: 8pt;
 }
 
 .hr-text::before {
@@ -171,6 +169,7 @@ select {
   top: 50%;
   width: 100%;
   height: 1px;
+  opacity: 0.5;
 }
 
 .hr-text::after {
@@ -180,8 +179,10 @@ select {
   padding-left: 0;
   padding-right: 0.5em;
   line-height: 1.5em;
-  color: #000;
+  color: #17a2b8 !important;
+  font-weight: bold;
   background-color: #f4f6f9;
+  opacity: 1 !important;
 }
 
 .hr-text-white {
@@ -408,4 +409,14 @@ body.dark-mode .nodec:hover {
 
 .datatable th {
   padding: 3px; text-align: left; cursor: default;
+}
+
+[data-toggle="collapse"] .fa:before {
+  content: "\f0d7";
+  padding-right: 3px;
+}
+
+[data-toggle="collapse"].collapsed .fa:before {
+  content: "\f0da";
+  padding-right: 3px;
 }

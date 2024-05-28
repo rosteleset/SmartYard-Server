@@ -237,6 +237,7 @@
                     case "houseId":
                         $q = "select house_flat_id from houses_flats where address_house_id = :address_house_id order by flat";
                         $p = [
+                        // TODO: must be $params["houseId"]
                             "address_house_id" => $params,
                         ];
                         break;
@@ -244,6 +245,7 @@
                     case "domophoneId":
                         $q = "select house_flat_id from houses_flats left join houses_entrances_flats using (house_flat_id) left join houses_entrances using (house_entrance_id) where house_domophone_id = :house_domophone_id group by house_flat_id order by flat";
                         $p = [
+                        // TODO: must be $params["domophoneId"]
                             "house_domophone_id" => $params,
                         ];
                         break;
@@ -253,6 +255,13 @@
                         $p = [
                             "login" => $params["login"],
                             "password" => $params["password"],
+                        ];
+                        break;
+
+                    case "contract":
+                        $q = "select house_flat_id from houses_flats where contract = :contract";
+                        $p = [
+                            "contract" => $params["contract"],
                         ];
                         break;
                 }
@@ -316,11 +325,13 @@
                     return false;
                 }
 
-                return $this->db->modify("insert into houses_houses_entrances (address_house_id, house_entrance_id, prefix) values (:address_house_id, :house_entrance_id, :prefix)", [
+                $result = $this->db->modify("insert into houses_houses_entrances (address_house_id, house_entrance_id, prefix) values (:address_house_id, :house_entrance_id, :prefix)", [
                     ":address_house_id" => $houseId,
                     ":house_entrance_id" => $entranceId,
                     ":prefix" => $prefix,
                 ]);
+
+                return $result !== false ? $entranceId : false;
             }
 
             /**
@@ -1175,6 +1186,7 @@
                     "registered" => "registered",
                     "subscriber_name" => "subscriberName",
                     "subscriber_patronymic" => "subscriberPatronymic",
+                    "subscriber_last" => "subscriberLast",
                 ]);
 
                 $addresses = loadBackend("addresses");
@@ -1203,12 +1215,13 @@
             /**
              * @inheritDoc
              */
-            public function addSubscriber($mobile, $name, $patronymic, $flatId = false, $message = false)
+            public function addSubscriber($mobile, $name, $patronymic, $last = '', $flatId = false, $message = false)
             {
                 if (
                     !checkStr($mobile, [ "minLength" => 6, "maxLength" => 32, "validChars" => [ '+', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' ] ]) ||
                     !checkStr($name, [ "maxLength" => 32 ]) ||
-                    !checkStr($patronymic, [ "maxLength" => 32 ])
+                    !checkStr($patronymic, [ "maxLength" => 32 ]) ||
+                    !checkStr($last, [ "maxLength" => 32 ])
                 ) {
                     setLastError("invalidParams");
                     return false;
@@ -1223,16 +1236,18 @@
                 ]);
 
                 if (!$subscriberId) {
-                    $subscriberId = $this->db->insert("insert into houses_subscribers_mobile (id, subscriber_name, subscriber_patronymic, registered) values (:mobile, :subscriber_name, :subscriber_patronymic, :registered)", [
+                    $subscriberId = $this->db->insert("insert into houses_subscribers_mobile (id, subscriber_name, subscriber_patronymic, subscriber_last, registered) values (:mobile, :subscriber_name, :subscriber_patronymic, :subscriber_last, :registered)", [
                         "mobile" => $mobile,
                         "subscriber_name" => $name,
                         "subscriber_patronymic" => $patronymic,
+                        "subscriber_last" => $last,
                         "registered" => time(),
                     ]);
                 } else {
                     $this->modifySubscriber($subscriberId, [
                         "subscriberName" => $name,
                         "subscriberPatronymic" => $patronymic,
+                        "subscriberLast" => $last,
                     ]);
                 }
 
@@ -1354,6 +1369,17 @@
                     }
 
                     if ($this->db->modify("update houses_subscribers_mobile set subscriber_patronymic = :subscriber_patronymic where house_subscriber_id = $subscriberId", [ "subscriber_patronymic" => $params["subscriberPatronymic"] ]) === false) {
+                        return false;
+                    }
+                }
+              
+              if (@$params["subscriberLast"] || @$params["forceNames"]) {
+                    if (!checkStr($params["subscriberLast"], [ "maxLength" => 32 ])) {
+                        setLastError("invalidParams");
+                        return false;
+                    }
+
+                    if ($this->db->modify("update houses_subscribers_mobile set subscriber_last = :subscriber_last where house_subscriber_id = $subscriberId", [ "subscriber_last" => $params["subscriberLast"] ]) === false) {
                         return false;
                     }
                 }

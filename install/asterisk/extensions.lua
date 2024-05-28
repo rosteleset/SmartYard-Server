@@ -143,6 +143,7 @@ local function push(token, tokenType, platform, extension, hash, callerId, flatI
         uniq = channel.CDR("uniqueid"):get(),
         flatNumber = flatNumber,
         domophoneId = domophoneId,
+        ttl = 60,
     })
 end
 

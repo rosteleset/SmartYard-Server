@@ -317,6 +317,7 @@
     "backToList": "Back to list",
     "openIssueNewWindow": "Open issue in a new window",
     "actionNotAvailable": "Action not available",
+    "commented": "commented",
     "methods": {
         "tt": {
             "_title": "Task Manager",

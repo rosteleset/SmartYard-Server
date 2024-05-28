@@ -4,6 +4,7 @@ Documentation=https://github.com/rosteleset/SmartYard-Server/tree/main/install
 After=network.target
 
 [Service]
+SyslogIdentifier=event_is
 Type=simple
 WorkingDirectory=/opt/rbt/server/services/event/
 ExecStart=/usr/bin/node /opt/rbt/server/services/event/index.js is
@@ -13,8 +14,9 @@ User=rbt
 Group=rbt
 LimitCORE=infinity
 KillMode=process
-#StandardOutput=file:/var/log/event_service/syslog_intercom_is.log
-StandardError=file:/var/log/event_service/syslog_intercom_is.error.log
+StandardOutput=null
+#StandardOutput=file:/var/log/event_service/event_is.log
+StandardError=file:/var/log/event_service/event_is.error.log
 
 [Install]
 WantedBy=multi-user.target

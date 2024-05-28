@@ -27,8 +27,14 @@
     "confirmUnReserve": "Remove from the reserve?",
     "comment": "Comment",
     "noPart": "Common",
-    "colRename": "Rename",
     "colRows": "Rows",
+    "colSettings": "Column settings",
+    "colName": "Column name",
+    "colPart": "Group",
+    "colWeight": "\"Weight\"",
+    "colHidden": "Hidden",
+    "partCols": "Show columns",
+    "cols": "Columns",
     "methods": {
         "cs": {
             "_title": "Coordination sheet",

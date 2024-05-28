@@ -179,6 +179,7 @@
   "mobile": "Mobile",
   "subscriberName": "Name",
   "subscriberPatronymic": "Patronymic",
+  "subscriberLast": "Last name",
   "addSubscriber": "Add Subscriber",
   "editSubscriber": "Edit Subscriber",
   "subscriberWasAdded": "Subscriber Added",

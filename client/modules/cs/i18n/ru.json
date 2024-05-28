@@ -27,8 +27,14 @@
     "confirmUnReserve": "Снять с резерва?",
     "comment": "Комментарий",
     "noPart": "Общий",
-    "colRename": "Переименовать",
     "colRows": "Строки",
+    "colSettings": "Настройки столбца",
+    "colName": "Наименование столбца",
+    "colPart": "Группа",
+    "colWeight": "\"Вес\"",
+    "colHidden": "Скрытый",
+    "partCols": "Показывать колонки",
+    "cols": "Колонки",
     "methods": {
         "cs": {
             "_title": "Лист координации",

@@ -272,7 +272,7 @@ function whoAmI(force) {
             }
             $("#userCard").html(userCard);
         }
-    })
+    });
 }
 
 function initAll() {
@@ -336,24 +336,6 @@ function initAll() {
     $("#searchButton").off("click").on("click", () => {
         modules[currentPage].search($("#searchInput").val());
     });
-
-    /*
-        $("#confirmModal").draggable({
-            handle: "#confirmModalHeader",
-        });
-
-        $("#yesnoModal").draggable({
-            handle: "#yesnoModalHeader",
-        });
-
-        $("#alertModal").draggable({
-            handle: "#alertModalHeader",
-        });
-
-        $("#uploadModalBody").draggable({
-            handle: "#uploadModalHeader",
-        });
-    */
 
     if (lStoreEngine && lStoreEngine !== "cookie") {
         lStore("_cookie", "1");

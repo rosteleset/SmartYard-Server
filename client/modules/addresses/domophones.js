@@ -346,6 +346,9 @@
                         title: i18n("addresses.url"),
                     },
                     {
+                        title: i18n("addresses.model"),
+                    },
+                    {
                         title: i18n("addresses.domophoneName"),
                     },
                     {
@@ -365,6 +368,9 @@
                                 },
                                 {
                                     data: modules.addresses.domophones.meta.domophones[i].url,
+                                    nowrap: true,
+                                },
+                                {   data: modules.addresses.domophones.meta.models[modules.addresses.domophones.meta.domophones[i].model].title,
                                     nowrap: true,
                                 },
                                 {

@@ -317,6 +317,7 @@
     "backToList": "Назад к списку",
     "openIssueNewWindow": "Открыть заявку в новом окне",
     "actionNotAvailable": "Действие недоступно",
+    "commented": "прокомментировал",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",

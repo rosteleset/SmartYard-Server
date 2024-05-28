@@ -235,11 +235,12 @@
              * @param $mobile
              * @param $name
              * @param $patronymic
+             * @param $last
              * @param bool $flatId
              * @param null $message
              * @return boolean|integer
              */
-            abstract public function addSubscriber($mobile, $name, $patronymic, $flatId = false, $message = false);
+            abstract public function addSubscriber($mobile, $name, $patronymic, $last = '', $flatId = false, $message = false);
 
             /**
              * @param $subscriberId

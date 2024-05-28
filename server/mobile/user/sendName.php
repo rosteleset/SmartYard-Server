@@ -9,6 +9,7 @@
  *
  * @apiHeader {String} authorization токен авторизации
  *
+ * @apiParam {String} [last] фамилия
  * @apiParam {String} name имя
  * @apiParam {String} [patronymic] отчество
  *
@@ -34,13 +35,16 @@ if (!$name) {
 }
 
 if ($subscriber) {
-    if ($patronymic) { 
-        $households->modifySubscriber($subscriber["subscriberId"], [ "subscriberName" => $name, "subscriberPatronymic" => $patronymic ]);
-    } else {
-        $households->modifySubscriber($subscriber["subscriberId"], [ "subscriberName" => $name ]);
+    $full_name = [];
+    if ($last) {
+         $full_name["subscriberLast"] = $last;
     }
+    if ($patronymic) {
+         $full_name["subscriberPatronymic"] = $patronymic;
+    }
+    $full_name["subscriberName"] = $name;
+    $households->modifySubscriber($subscriber["subscriberId"], $full_name);
     response();
 } else {
     response(400);
 }
-

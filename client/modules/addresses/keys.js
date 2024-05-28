@@ -7,7 +7,7 @@
         }
         moduleLoaded("addresses.keys", this);
     },
-    
+
     renderKeys: function (params) {
         loadingStart();
         QUERY("subscribers", "keys", {
@@ -89,7 +89,7 @@
                     return rows;
                 },
             }).show();
-    
+
             loadingDone();
         });
     },
@@ -166,7 +166,7 @@
                     break;
                 }
             }
-    
+
             if (key) {
                 cardForm({
                     title: i18n("addresses.editKey"),
@@ -226,6 +226,8 @@
 
         if (params.backStr && params.back) {
             subTop(`<a href="?#${params.back}">${params.backStr}</a>`);
+        } else {
+            subTop();
         }
 
         if (parseInt(params.by)) {

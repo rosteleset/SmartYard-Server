@@ -4,6 +4,7 @@ Documentation=https://github.com/rosteleset/SmartYard-Server/tree/main/install
 After=network.target
 
 [Service]
+SyslogIdentifier=event_rubetek
 Type=simple
 WorkingDirectory=/opt/rbt/server/services/event/
 ExecStart=/usr/bin/node /opt/rbt/server/services/event/index.js rubetek
@@ -13,6 +14,7 @@ User=rbt
 Group=rbt
 LimitCORE=infinity
 KillMode=process
+StandardOutput=null
 #StandardOutput=file:/var/log/event_service/event_rubetek.log
 StandardError=file:/var/log/event_service/event_rubetek.error.log
 
