@@ -1458,8 +1458,8 @@
                     {
                         id: "autoBlock",
                         type: "select",
-                        title: i18n("addresses.adminBlock"),
-                        placeholder: i18n("addresses.adminBlock"),
+                        title: i18n("addresses.autoBlock"),
+                        placeholder: i18n("addresses.autoBlock"),
                         value: flat.adminBlock,
                         readonly: true,
                         options: [
