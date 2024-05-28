@@ -1456,6 +1456,24 @@
                         ]
                     },
                     {
+                        id: "autoBlock",
+                        type: "select",
+                        title: i18n("addresses.adminBlock"),
+                        placeholder: i18n("addresses.adminBlock"),
+                        value: flat.adminBlock,
+                        readonly: true,
+                        options: [
+                            {
+                                id: "0",
+                                text: i18n("no"),
+                            },
+                            {
+                                id: "1",
+                                text: i18n("yes"),
+                            },
+                        ]
+                    },
+                    {
                         id: "openCode",
                         type: "text",
                         title: i18n("addresses.openCode"),
