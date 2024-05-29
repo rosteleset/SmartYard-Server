@@ -9,7 +9,8 @@
         "asterisk",
         "addresses",
         "queues",
-        "about"
+        "about",
+        "darkmode"
     ],
     "asterisk": {
         "ws": "wss://example.com/wss",

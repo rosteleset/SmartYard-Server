@@ -19,7 +19,7 @@
             cardTable({
                 target: "#mainForm",
                 title: {
-                    caption: i18n("addresses.keys"),
+                    caption: i18n("addresses.superKeys"),
                     button: {
                         caption: i18n("addresses.addKey"),
                         click: () => {
