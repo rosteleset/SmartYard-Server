@@ -1,71 +1,128 @@
 ({
     currentTheme: '',
-    mainHeader: false,
+    mainHeader: null,
+    mediaQuery: null,
 
-    init: function () {
+    // Инициализация модуля
+    init() {
         moduleLoaded("darkmode", this);
 
-        const currentTheme = lStore('theme')
-        const mainHeader = document.querySelector('.main-header')
+        // Загрузка текущей темы из локального хранилища
+        this.currentTheme = lStore('theme');
+        this.mainHeader = document.querySelector('.main-header');
 
-        modules.darkmode.currentTheme = currentTheme;
-        modules.darkmode.mainHeader = mainHeader;
+        // Применение текущей темы
+        this.applyTheme(this.currentTheme);
 
-        if (currentTheme) {
-            if (currentTheme === 'dark') {
-                if (!document.body.classList.contains('dark-mode')) {
-                    document.body.classList.add("dark-mode");
-                }
-                if (mainHeader.classList.contains('navbar-light')) {
-                    mainHeader.classList.add('navbar-dark');
-                    mainHeader.classList.remove('navbar-light');
-                }
-            }
-        }
+        // Создание выпадающего меню для выбора темы
+        this.createThemeDropdown();
 
+        // Привязка событий к элементам выбора темы
+        this.attachEventListeners();
+    },
+
+    // Создание выпадающего меню для выбора темы
+    createThemeDropdown() {
         $(`
             <li class="nav-item dropdown">
                 <span class="nav-link pointer" data-toggle="dropdown">
                     <i class="fas fa-lg fa-fw fa-moon"></i>
                 </span>
                 <div class="dropdown-menu">
-                    <a class="dropdown-item theme-select" href="#" id="dark-theme-select">${i18n('darkmode.dark')}</a>
-                    <a class="dropdown-item theme-select" href="#" id="light-theme-select">${i18n('darkmode.light')}</a>
+                    <a class="dropdown-item theme-select ${!this.currentTheme || this.currentTheme === 'auto' ? 'active' : ''}" href="#" data-theme="auto">${i18n('darkmode.auto')}</a>
+                    <a class="dropdown-item theme-select ${this.currentTheme === 'dark' ? 'active' : ''}" href="#" data-theme="dark">${i18n('darkmode.dark')}</a>
+                    <a class="dropdown-item theme-select ${this.currentTheme === 'light' ? 'active' : ''}" href="#" data-theme="light">${i18n('darkmode.light')}</a>
                 </div>
             </li>
         `).insertAfter("#rightTopDynamic");
-
-        $('.theme-select').on("click", modules.darkmode.switchTheme)
     },
 
+    // Привязка событий к элементам выбора темы
+    attachEventListeners() {
+        $('.theme-select').on("click", (e) => this.switchTheme(e));
+    },
+
+    // Применение выбранной темы
+    applyTheme(theme) {
+        switch (theme) {
+            case 'dark':
+                this.setDark();
+                break;
+            case 'light':
+                this.setLight();
+                break;
+            case 'auto':
+            default:
+                this.setAuto();
+                break;
+        }
+    },
+
+    // Установка темной темы
+    setDark(updateStore = true) {
+        document.body.classList.add("dark-mode");
+        this.updateNavbar('dark');
+
+        if (updateStore) {
+            this.currentTheme = 'dark';
+            lStore('theme', this.currentTheme);
+        }
+    },
+
+    // Установка светлой темы
+    setLight(updateStore = true) {
+        document.body.classList.remove("dark-mode");
+        this.updateNavbar('light');
+
+        if (updateStore) {
+            this.currentTheme = 'light';
+            lStore('theme', this.currentTheme);
+        }
+    },
+
+    // Обновление темы в зависимости от системных настроек
+    updateMedia(media) {
+        if (media.matches) {
+            this.setDark(false);
+        } else {
+            this.setLight(false);
+        }
+    },
+
+    // Автоматическое применение темы в зависимости от системных настроек
+    setAuto() {
+        this.mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+        this.updateMedia(this.mediaQuery);
+        this.mediaQuery.onchange = (e) => this.updateMedia(e);
+
+        this.currentTheme = 'auto';
+        lStore('theme', this.currentTheme);
+    },
+
+    // Обновление классов навигационного меню в зависимости от темы
+    updateNavbar(theme) {
+        if (theme === 'dark') {
+            this.mainHeader.classList.add('navbar-dark');
+            this.mainHeader.classList.remove('navbar-light');
+        } else {
+            this.mainHeader.classList.add('navbar-light');
+            this.mainHeader.classList.remove('navbar-dark');
+        }
+    },
+
+    // Переключение темы
     switchTheme(e) {
         e.preventDefault();
+        $('.theme-select').removeClass('active');
+        $(e.target).addClass('active');
+        const theme = $(e.target).data("theme");
 
-        const id = $(e.target).attr("id");
-
-        if (id === 'dark-theme-select') {
-            if (!document.body.classList.contains('dark-mode')) {
-                document.body.classList.add("dark-mode");
-            }
-            if (modules.darkmode.mainHeader.classList.contains('navbar-light')) {
-                modules.darkmode.mainHeader.classList.add('navbar-dark');
-                modules.darkmode.mainHeader.classList.remove('navbar-light');
-            }
-
-            modules.darkmode.currentTheme = 'dark'
-        } else {
-            if (document.body.classList.contains('dark-mode')) {
-                document.body.classList.remove("dark-mode");
-            }
-            if (modules.darkmode.mainHeader.classList.contains('navbar-dark')) {
-                modules.darkmode.mainHeader.classList.add('navbar-light');
-                modules.darkmode.mainHeader.classList.remove('navbar-dark');
-            }
-
-            modules.darkmode.currentTheme = 'light'
+        // Отключение слушателя изменений темы при ручном выборе
+        if (this.mediaQuery && theme && theme !== 'auto') {
+            this.mediaQuery.onchange = null;
         }
 
-        lStore('theme', modules.darkmode.currentTheme);
+        this.applyTheme(theme);
     }
-
 }).init();
