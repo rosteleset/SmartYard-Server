@@ -1,9 +1,9 @@
 {
-    "title": "IS ISCOM X1 rev.2 (Sokol)",
+    "title": "IS DOMOPHONE CAMERA",
     "vendor": "IS",
-    "model": "ISCOM X1 rev.2",
+    "model": false,
     "version": false,
     "eventServer": "is",
-    "class": "iscomx1",
+    "class": "is",
     "useSmartConfigurator": true
 }

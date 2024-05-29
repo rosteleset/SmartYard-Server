@@ -8,8 +8,6 @@ namespace hw\ip\domophone\is;
 class iscomx1plus extends is
 {
 
-    use \hw\ip\common\is\iscomx1plus;
-
     public function configureApartment(
         int   $apartment,
         int   $code = 0,
