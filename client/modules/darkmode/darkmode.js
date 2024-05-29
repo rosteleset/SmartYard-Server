@@ -3,25 +3,25 @@
     mainHeader: null,
     mediaQuery: null,
 
-    // Инициализация модуля
+    // Module initialization
     init() {
         moduleLoaded("darkmode", this);
 
-        // Загрузка текущей темы из локального хранилища
+        // Load the current theme from local storage
         this.currentTheme = lStore('theme');
         this.mainHeader = document.querySelector('.main-header');
 
-        // Применение текущей темы
+        // Apply the current theme
         this.applyTheme(this.currentTheme);
 
-        // Создание выпадающего меню для выбора темы
+        // Create the theme selection dropdown menu
         this.createThemeDropdown();
 
-        // Привязка событий к элементам выбора темы
+        // Attach event listeners to the theme selection elements
         this.attachEventListeners();
     },
 
-    // Создание выпадающего меню для выбора темы
+    // Create the theme selection dropdown menu
     createThemeDropdown() {
         $(`
             <li class="nav-item dropdown">
@@ -37,12 +37,12 @@
         `).insertAfter("#rightTopDynamic");
     },
 
-    // Привязка событий к элементам выбора темы
+    // Attach event listeners to the theme selection elements
     attachEventListeners() {
         $('.theme-select').on("click", (e) => this.switchTheme(e));
     },
 
-    // Применение выбранной темы
+    // Apply the selected theme
     applyTheme(theme) {
         switch (theme) {
             case 'dark':
@@ -58,7 +58,7 @@
         }
     },
 
-    // Установка темной темы
+    // Set the dark theme
     setDark(updateStore = true) {
         document.body.classList.add("dark-mode");
         this.updateNavbar('dark');
@@ -69,7 +69,7 @@
         }
     },
 
-    // Установка светлой темы
+    // Set the light theme
     setLight(updateStore = true) {
         document.body.classList.remove("dark-mode");
         this.updateNavbar('light');
@@ -80,7 +80,7 @@
         }
     },
 
-    // Обновление темы в зависимости от системных настроек
+    // Update the theme based on system settings
     updateMedia(media) {
         if (media.matches) {
             this.setDark(false);
@@ -89,7 +89,7 @@
         }
     },
 
-    // Автоматическое применение темы в зависимости от системных настроек
+    // Automatically apply the theme based on system settings
     setAuto() {
         this.mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
@@ -100,7 +100,7 @@
         lStore('theme', this.currentTheme);
     },
 
-    // Обновление классов навигационного меню в зависимости от темы
+    // Update the navbar classes based on the theme
     updateNavbar(theme) {
         if (theme === 'dark') {
             this.mainHeader.classList.add('navbar-dark');
@@ -111,14 +111,14 @@
         }
     },
 
-    // Переключение темы
+    // Switch the theme
     switchTheme(e) {
         e.preventDefault();
         $('.theme-select').removeClass('active');
         $(e.target).addClass('active');
         const theme = $(e.target).data("theme");
 
-        // Отключение слушателя изменений темы при ручном выборе
+        // Disable the media query listener when manually selecting a theme
         if (this.mediaQuery && theme && theme !== 'auto') {
             this.mediaQuery.onchange = null;
         }
