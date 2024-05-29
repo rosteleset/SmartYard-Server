@@ -531,6 +531,31 @@
         });
     },
 
+    handleDeviceStatus: function (status) {
+        let statusClass;
+        switch (status) {
+            case 'OK':
+                statusClass = 'status-ok';
+                break;
+            case 'Offline':
+                statusClass = 'status-offline';
+                break;
+            case 'Disabled':
+                statusClass = 'status-disabled';
+                break;
+            default:
+                statusClass = 'status-unknown';
+                status = 'unknown'
+        }
+        return `
+        <div class="status-container">
+            <span class="status-indicator ${statusClass}">
+                <div class="status-tooltip">${status}</div>
+            </span>
+        </div>  
+    `;
+    },
+
     route: function (params) {
         subTop();
         $("#altForm").hide();
@@ -557,6 +582,9 @@
                         title: i18n("addresses.cameraIdList"),
                     },
                     {
+                        title: i18n("addresses.status"),
+                    },
+                    {
                         title: i18n("addresses.url"),
                     },
                     {
@@ -581,6 +609,14 @@
                             cols: [
                                 {
                                     data: modules.addresses.cameras.meta.cameras[i].cameraId,
+                                },
+                                {
+                                    data: modules.addresses.cameras.meta.cameras[i].enabled
+                                        ? modules.addresses.cameras.handleDeviceStatus(
+                                            modules.addresses.cameras.meta.cameras[i].status
+                                                ? modules.addresses.cameras.meta.cameras[i].status.status : "Unknown")
+                                        : modules.addresses.cameras.handleDeviceStatus("Disabled"),
+                                    nowrap: true,
                                 },
                                 {
                                     data: modules.addresses.cameras.meta.cameras[i].url,

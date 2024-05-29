@@ -420,3 +420,63 @@ body.dark-mode .nodec:hover {
   content: "\f0da";
   padding-right: 3px;
 }
+
+.status-container {
+  min-width: 75px;
+}
+
+.status-indicator {
+  margin-top: 5px;
+  position: relative;
+  display: flex;
+  cursor: pointer;
+  align-items: start;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  margin-right: 5px;
+}
+
+.status-tooltip {
+  visibility: hidden;
+  background-color: black;
+  padding: 5px;
+  color: whitesmoke;
+  text-wrap: inherit;
+  text-align: center;
+  border-radius: 5px;
+  position: absolute;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.3s;
+  left: 110%;
+  top: -50%;
+}
+
+.status-indicator:hover .status-tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
+.status-ok {
+  background-color: green;
+}
+
+.status-offline {
+  background-color: red;
+}
+
+.status-sip-failure {
+  background-color: orange;
+}
+
+.status-disabled {
+  background-color: mediumpurple;
+}
+
+.status-unknown {
+  background-color: darkgrey;
+}
+
+
+
