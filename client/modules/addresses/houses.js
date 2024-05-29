@@ -1460,7 +1460,7 @@
                         type: "select",
                         title: i18n("addresses.autoBlock"),
                         placeholder: i18n("addresses.autoBlock"),
-                        value: flat.adminBlock,
+                        value: flat.autoBlock,
                         readonly: true,
                         options: [
                             {
@@ -1601,6 +1601,7 @@
                     },
                 ],
                 callback: result => {
+                    delete result.autoBlock;
                     let apartmentsAndLevels = {};
                     for (let i in entrances) {
                         if ($(`.${prefx}-apartment[data-entrance-id="${entrances[i].id}"]`).length) {
