@@ -1772,7 +1772,7 @@
                     for (let i in modules.addresses.houses.meta.flats) {
                         rows.push({
                             uid: modules.addresses.houses.meta.flats[i].flatId,
-                            class: (modules.addresses.houses.meta.flats[i].manualBlock || modules.addresses.houses.meta.flats[i].autoBlock || modules.addresses.houses.meta.flats[i].adminBlock) ? "disabled" : "",
+                            class: (parseInt(modules.addresses.houses.meta.flats[i].manualBlock) || parseInt(modules.addresses.houses.meta.flats[i].autoBlock) || parseInt(modules.addresses.houses.meta.flats[i].adminBlock)) ? "text-secondary" : "",
                             cols: [
                                 {
                                     data: modules.addresses.houses.meta.flats[i].flatId,
