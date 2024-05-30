@@ -71,7 +71,7 @@
         "Interval",
         "[Server]",
         "Proguard start",
-        "UART",
+        "UART_EV",
         "HI_MPI_VENC"
     ],
     "qtech": [
