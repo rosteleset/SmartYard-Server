@@ -1,4 +1,4 @@
-import syslogServer from "syslog-server";
+import SyslogServer from "syslog-server";
 import { API, getTimestamp, isIpAddress, parseSyslogMessage } from "../../utils/index.js";
 import config from "../../config.json" with { type: "json" };
 
@@ -6,8 +6,16 @@ const { topology } = config;
 const natEnabled = topology?.nat === true;
 const mode = process.env.NODE_ENV ?? 'normal';
 
+/**
+ * Abstract class representing a syslog event handler.
+ * @abstract
+ */
 class SyslogService {
     constructor(unit, config, spamWords = []) {
+        if (this.constructor === SyslogService) {
+            throw new Error('Abstract class SyslogService cannot be instantiated');
+        }
+
         this.unit = unit;
         this.config = config;
         this.spamWords = spamWords;
@@ -23,72 +31,44 @@ class SyslogService {
     }
 
     /**
-     * Local logging, used server timestamp
-     * @param now
-     * @param host
-     * @param msg
-     */
-    logToConsole(now, host, msg) {
-        console.log(`${now} || ${host} || ${msg}`);
-    }
-
-    /**
-     * Send an event message to remote storage
-     * @param now timestamp
-     * @param host IP address
-     * @param msg event message
-     * @returns {Promise<void>}
-     */
-    async sendToSyslogStorage(now, host, msg) {
-        await API.sendLog({ date: now, ip: host, unit: this.unit, msg });
-    }
-
-    /**
      * Handles a syslog message.
-     * @param {number} date - The date that the syslog message was received by the server.
-     * @param {string} host - The host from which the syslog message originated.
+     * @param {number} date - The date the syslog message was received by the server, in timestamp format.
+     * @param {string} host - The host from which the syslog message came.
      * @param {string} message - The syslog message content.
      * @throws {Error} - Throws an error if the method is not implemented.
+     * @abstract
      */
     async handleSyslogMessage(date, host, message) {
         throw new Error('Method "handleSyslogMessage()" must be implemented');
     }
 
     createSyslogServer() {
-        const syslog = new syslogServer();
+        const syslog = new SyslogServer();
 
-        syslog.on("message", async ({ date, host, message }) => {
-            const now = getTimestamp(date);// Get server timestamp
-            let { hostname: addressFromMessageBody, message: msg } = parseSyslogMessage(message);
+        syslog.on("message", async ({ date, host, message: rawMessage }) => {
+            // Skip spam message if not in debug mode
+            if (mode !== "debug" && this.isSpamMessage(rawMessage)) {
+                return;
+            }
 
-            //  Check hostname from syslog message body
+            const { hostname: addressFromMessageBody, message: message } = parseSyslogMessage(rawMessage);
+
+            // Return if message parsing fails
+            if (!message) {
+                mode === 'debug' && console.error("Parse message failed: " + rawMessage);
+                return;
+            }
+
+            // Get host from message body if NAT is enabled
             if (natEnabled && isIpAddress(addressFromMessageBody)) {
                 host = addressFromMessageBody;
             }
 
-            /**
-             * TODO:
-             *      - refactor syslog parser for BSD syslog messages.
-             *      - temporarily use handler
-             */
-            if (!msg) {
-                console.error("Parse message failed: " + message);
-                return;
-            }
+            console.log(`${date.toLocaleString()} || ${host} || ${message}`);
 
-            /**
-             * Filtering spam syslog messages in production mode
-             */
-            if (mode !== "debug" && this.isSpamMessage(msg)) {
-                return;
-            }
-
-            // Local and remote logging
-            this.logToConsole(now, host, msg);
-            await this.sendToSyslogStorage(now, host, msg);
-
-            // Running handlers
-            await this.handleSyslogMessage(now, host, msg);
+            const timestamp = getTimestamp(date);
+            await API.sendLog({ date: timestamp, ip: host, unit: this.unit, msg: message });
+            await this.handleSyslogMessage(timestamp, host, message);
         });
 
         syslog.on("error", (err) => {
