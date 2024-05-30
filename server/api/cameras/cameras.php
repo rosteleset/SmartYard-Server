@@ -20,7 +20,7 @@
                 $frs = loadBackend("frs");
 
                 $response = [
-                    "cameras" => $cameras->getCameras(),
+                    "cameras" => $cameras->getCameras(false, false, true),
                     "models" => $configs->getCamerasModels(),
                     "frsServers" => $frs?$frs->servers():[],
                 ];

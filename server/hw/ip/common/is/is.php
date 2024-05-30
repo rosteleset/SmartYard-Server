@@ -8,6 +8,24 @@ namespace hw\ip\common\is;
 trait is
 {
 
+    public function configureEventServer(string $url)
+    {
+        // Until better times...
+//        ['host' => $server, 'port' => $port] = parse_url_ext($url);
+//
+//        $this->apiCall('/v1/network/syslog', 'PUT', [
+//            'addr' => $server,
+//            'port' => (int)$port,
+//        ]);
+
+        ['host' => $server, 'port' => $port] = parse_url_ext($url);
+
+        $template = file_get_contents(__DIR__ . '/templates/custom.conf');
+        $template .= "*.*;cron.none     @$server:$port;ProxyForwardFormat";
+        $host = parse_url($this->url)['host'];
+        exec(__DIR__ . "/scripts/upload_syslog_conf $host $this->login $this->password '$template'");
+    }
+
     public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow')
     {
         $this->apiCall('/system/settings', 'PUT', [
@@ -90,6 +108,19 @@ trait is
         }
 
         return $array_res;
+    }
+
+    protected function getEventServer(): string
+    {
+        // Until better times...
+//        ['addr' => $server, 'port' => $port] = $this->apiCall('/v1/network/syslog');
+//        return 'syslog.udp' . ':' . $server . ':' . $port;
+
+        $host = parse_url($this->url)['host'];
+        exec(__DIR__ . "/scripts/get_syslog_conf $host $this->login $this->password", $output);
+        [$server, $port] = explode(':', explode(';', explode('@', $output[7])[1])[0]);
+
+        return 'syslog.udp' . ':' . $server . ':' . $port;
     }
 
     protected function getNtpConfig(): array

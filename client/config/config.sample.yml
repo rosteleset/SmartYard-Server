@@ -9,6 +9,7 @@ modules:
 - addresses
 - queues
 - about
+- darkmode
 asterisk:
   ws: wss://example.com/wss
   ice:

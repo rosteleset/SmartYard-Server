@@ -15,11 +15,10 @@
     {
         /**
          * @param string $deviceType
-         * @param int    $deviceId
-         *
+         * @param string $ip
          * @return bool|mixed
          */
-        abstract public function deviceStatus($deviceType, $deviceId);
+        abstract public function deviceStatus($deviceType, $ip);
 
         /**
          * @return mixed
