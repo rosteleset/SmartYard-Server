@@ -14,11 +14,13 @@ $cam = $cameras->getCamera($camera_id);
 if (!$cam)
     response(404);
 
-$model = loadDevice('camera', $cam["model"], $cam["url"], $cam["credentials"]);
-if (!$model)
+try {
+    $model = loadDevice('camera', $cam["model"], $cam["url"], $cam["credentials"]);
+    header('Content-Type: image/jpeg');
+    echo $model->getCamshot();
+} catch (Exception $e) {
+    error_log("Error getting snapshot ($camera_id): " . $e->getMessage());
     response(404);
-
-header('Content-Type: image/jpeg');
-echo $model->getCamshot();
+}
 
 exit;

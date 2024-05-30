@@ -415,16 +415,20 @@
                             $cameras = $households->getCameras("id", $entrances[0]["cameraId"]);
 
                             if ($cameras && $cameras[0]) {
-                                $model = loadDevice('camera', $cameras[0]["model"], $cameras[0]["url"], $cameras[0]["credentials"]);
+                                try {
+                                    $model = loadDevice('camera', $cameras[0]["model"], $cameras[0]["url"], $cameras[0]["credentials"]);
 
-                                $redis->setex("shot_" . $params["hash"], 3 * 60, $model->getCamshot());
-                                $redis->setex("live_" . $params["hash"], 3 * 60, json_encode([
-                                    "model" => $cameras[0]["model"],
-                                    "url" => $cameras[0]["url"],
-                                    "credentials" => $cameras[0]["credentials"],
-                                ]));
+                                    $redis->setex("shot_" . $params["hash"], 3 * 60, $model->getCamshot());
+                                    $redis->setex("live_" . $params["hash"], 3 * 60, json_encode([
+                                        "model" => $cameras[0]["model"],
+                                        "url" => $cameras[0]["url"],
+                                        "credentials" => $cameras[0]["credentials"],
+                                    ]));
 
-                                echo $params["hash"];
+                                    echo $params["hash"];
+                                } catch (Exception $e) {
+                                    error_log($e->getMessage());
+                                }
                             }
                         }
                     } else {

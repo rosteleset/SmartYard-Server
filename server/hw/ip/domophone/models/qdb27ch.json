@@ -6,7 +6,6 @@
     "eventServer": "qtech",
     "outputs": 3,
     "camera": "qtech",
-    "useSmartConfigurator": true,
     "cmses": [
         "bk-100",
         "com-100u",

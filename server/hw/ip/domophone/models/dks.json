@@ -6,7 +6,6 @@
     "eventServer": "beward",
     "outputs": 3,
     "camera": "beward",
-    "useSmartConfigurator": true,
     "cmses": [
         "bk-100",
         "com-25u",

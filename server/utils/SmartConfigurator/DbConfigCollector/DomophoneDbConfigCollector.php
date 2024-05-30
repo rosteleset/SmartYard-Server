@@ -12,14 +12,14 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
 {
 
     /**
-     * @var array The application configuration.
+     * @var array Global server configuration.
      */
-    private array $appConfig;
+    private array $serverConfig;
 
     /**
-     * @var array The domophone data.
+     * @var array Device data.
      */
-    private array $domophoneData;
+    private array $deviceData;
 
     /**
      * @var DomophoneConfigurationBuilder The builder used to construct domophone configuration.
@@ -29,32 +29,32 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
     /**
      * @var array Array of entrances associated with domophone.
      */
-    private $entrances;
+    private array $entrances;
 
     /**
      * @var array Main entrance associated with domophone.
      */
-    private $mainEntrance;
+    private array $mainEntrance;
 
     /**
-     * @var mixed
+     * @var bool
      */
-    private $entranceIsShared;
+    private bool $entranceIsShared;
 
     /**
      * Construct a new DomophoneDbConfigCollector instance.
      *
-     * @param array $appConfig The application configuration.
-     * @param array $domophoneData The domophone data.
-     * @param households|false $householdsBackend Households backend object.
+     * @param array $serverConfig Global server configuration.
+     * @param array $deviceData Device data.
+     * @param households $householdsBackend Households backend object.
      */
-    public function __construct(array $appConfig, array $domophoneData, households $householdsBackend)
+    public function __construct(array $serverConfig, array $deviceData, households $householdsBackend)
     {
-        $this->appConfig = $appConfig;
-        $this->domophoneData = $domophoneData;
+        $this->serverConfig = $serverConfig;
+        $this->deviceData = $deviceData;
 
         $this->entrances = $householdsBackend->getEntrances('domophoneId', [
-            'domophoneId' => $domophoneData['domophoneId'],
+            'domophoneId' => $deviceData['domophoneId'],
             'output' => '0',
         ]) ?? [];
 
@@ -101,7 +101,7 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
         /** @var households $households */
         $households = loadBackend('households');
 
-        $domophoneId = $this->domophoneData['domophoneId'];
+        $domophoneId = $this->deviceData['domophoneId'];
         $offset = 0; // For shared domophones that must contain apartments from several houses
         $gateLinks = [];
 
@@ -219,7 +219,7 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
      */
     private function addDtmf(): self
     {
-        $this->builder->addDtmf($this->domophoneData['dtmf'], 2, 3, 1);
+        $this->builder->addDtmf($this->deviceData['dtmf'], 2, 3, 1);
         return $this;
     }
 
@@ -230,7 +230,7 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
      */
     private function addEventServer(): self
     {
-        $url = $this->appConfig['syslog_servers'][$this->domophoneData['json']['eventServer']][0];
+        $url = $this->serverConfig['syslog_servers'][$this->deviceData['json']['eventServer']][0];
         $this->builder->addEventServer($url);
         return $this;
     }
@@ -262,7 +262,7 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
      */
     private function addNtp(): self
     {
-        $ntp = parse_url_ext($this->appConfig['ntp_servers'][0]);
+        $ntp = parse_url_ext($this->serverConfig['ntp_servers'][0]);
         $server = $ntp['host'];
         $port = $ntp['port'] ?? 123;
         $timezone = $this->findTimezone();
@@ -281,7 +281,7 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
         /** @var households $households */
         $households = loadBackend('households');
 
-        $keys = $households->getKeys('domophoneId', $this->domophoneData['domophoneId']);
+        $keys = $households->getKeys('domophoneId', $this->deviceData['domophoneId']);
         foreach ($keys as $key) {
             $this->builder->addRfid($key['rfId']);
         }
@@ -304,7 +304,7 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
             'domophoneId' => $domophoneId,
             'credentials' => $password,
             'nat' => $natEnabled
-        ] = $this->domophoneData;
+        ] = $this->deviceData;
 
         $port = $sip->server('ip', $server)['sip_udp_port'] ?? 5060;
         $login = sprintf("1%05d", $domophoneId);
@@ -343,7 +343,7 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
      */
     private function addUnlocked(): void
     {
-        $this->builder->addUnlocked($this->domophoneData['locksAreOpen']);
+        $this->builder->addUnlocked($this->deviceData['locksAreOpen']);
     }
 
     /**

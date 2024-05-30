@@ -62,6 +62,7 @@
             }
         }
         catch (\Exception $e) {
+            error_log("Error opening lock via mobile API ($domophone_id): " . $e->getMessage());
             response(404, false, 'Ошибка', 'Домофон недоступен');
         }
         response();

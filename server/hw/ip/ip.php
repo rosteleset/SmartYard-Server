@@ -53,7 +53,7 @@ abstract class ip extends hw
         $this->password = $firstTime ? ($this->defaultPassword ?? $password) : $password;
 
         if (!$this->ping()) {
-            throw new Exception("Device at $this->url is unavailable");
+            throw new Exception("Device is unavailable");
         }
 
         if ($firstTime) {

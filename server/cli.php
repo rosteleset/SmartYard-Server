@@ -12,7 +12,6 @@
     require_once "data/install.php";
     require_once "data/install_tt_mobile_template.php";
     require_once "utils/autoconfigure_device.php";
-    require_once "utils/autoconfigure_domophone.php";
     require_once "utils/checkint.php";
     require_once "utils/checkstr.php";
     require_once "utils/cleanup.php";
@@ -567,32 +566,6 @@
         exit(0);
     }
 
-    // TODO: deprecated, dont forget to delete
-    if ((count($args) == 1 || count($args) == 2) && array_key_exists("--autoconfigure-domophone", $args) && isset($args["--autoconfigure-domophone"])) {
-        $domophone_id = $args["--autoconfigure-domophone"];
-
-        $first_time = false;
-
-        if (count($args) == 2) {
-            if (array_key_exists("--first-time", $args)) {
-                $first_time = true;
-            } else {
-                usage();
-            }
-        }
-
-        if (checkInt($domophone_id)) {
-            $idPart = "--id=$domophone_id";
-            $firstTimePart = $first_time ? " --first-time'" : "'";
-            echo "!!! Deprecated. Use '--autoconfigure-device=domophone $idPart$firstTimePart next time !!!\n\n";
-
-            autoconfigure_domophone($domophone_id, $first_time);
-            exit(0);
-        } else {
-            usage();
-        }
-    }
-
     if ((count($args) === 2 || count($args) === 3) && isset($args["--autoconfigure-device"], $args["--id"])) {
         $device_type = $args["--autoconfigure-device"];
         $device_id = $args["--id"];
@@ -613,7 +586,7 @@
                 exit(0);
             } catch (Exception $e) {
                 $script_result = 'fail';
-                echo "!!! FAILED: " . $e->getMessage() . " !!!\n\n";
+                echo "Autoconfig failed ($device_type, $device_id): " . $e->getMessage() . PHP_EOL;
                 exit(1);
             }
         }
