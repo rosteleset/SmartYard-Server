@@ -2026,8 +2026,8 @@
                                 uid: modules.addresses.houses.meta.cameras[i].cameraId,
                                 cols: [
                                     {
-                                        data: modules.addresses.houses.meta.cameras[i].cameraId?modules.addresses.houses.meta.cameras[i].cameraId:i18n("addresses.deleted"),
-                                        click: modules.addresses.houses.meta.cameras[i].cameraId?("#addresses.cameras&filter=" + modules.addresses.houses.meta.cameras[i].cameraId):false,
+                                        data: modules.addresses.houses.meta.cameras[i].cameraId ? modules.addresses.houses.meta.cameras[i].cameraId : i18n("addresses.deleted"),
+                                        click: modules.addresses.houses.meta.cameras[i].cameraId ? ("#addresses.cameras&filter=" + modules.addresses.houses.meta.cameras[i].cameraId) : false,
                                     },
                                     {
                                         data: modules.addresses.houses.meta.cameras[i].url?modules.addresses.houses.meta.cameras[i].url:"",
