@@ -273,13 +273,12 @@ namespace backends\cameras
 
         protected function updateDeviceIds($deviceId, $model, $url, $credentials) {
             if ($model === 'sputnik.json') {
-                $device = loadDevice('camera', $model, $url, $credentials);
-
-                if ($device) {
-                    $query = "update cameras
-                              set sub_id = :sub_id
-                              where camera_id = " . $deviceId;
+                try {
+                    $device = loadDevice('camera', $model, $url, $credentials);
+                    $query = "update cameras set sub_id = :sub_id where camera_id = " . $deviceId;
                     $this->db->modify($query, ["sub_id" => $device->uuid]);
+                } catch (\Exception $e) {
+                    error_log("Error updating camera sub ID ($deviceId): " . $e->getMessage());
                 }
             } else {
                 $ip = gethostbyname(parse_url($url, PHP_URL_HOST));

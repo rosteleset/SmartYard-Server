@@ -58,6 +58,7 @@ foreach ($entrances as $entrance) {
         }
     }
     catch (\Exception $e) {
+        error_log("Error opening lock via FRS callback ($domophone_id): " . $e->getMessage());
         response(404, false, 'Ошибка', 'Домофон недоступен');
     }
 }

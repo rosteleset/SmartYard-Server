@@ -2024,13 +2024,12 @@
 
             protected function updateDeviceIds($deviceId, $model, $url, $credentials) {
                 if ($model === 'sputnik.json') {
-                    $device = loadDevice('domophone', $model, $url, $credentials);
-
-                    if ($device) {
+                    try {
+                        $device = loadDevice('domophone', $model, $url, $credentials);
                         $query = "update houses_domophones set sub_id = :sub_id where house_domophone_id = " . $deviceId;
-                        $this->db->modify($query, [
-                            "sub_id" => $device->uuid
-                        ]);
+                        $this->db->modify($query, ["sub_id" => $device->uuid]);
+                    } catch (\Exception $e) {
+                        error_log("Error updating domophone sub ID ($deviceId): " . $e->getMessage());
                     }
                 } else {
                     $ip = gethostbyname(parse_url($url, PHP_URL_HOST));

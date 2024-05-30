@@ -4,6 +4,5 @@
     "model": false,
     "version": false,
     "eventServer": "akuvox",
-    "class": "akuvox",
-    "useSmartConfigurator": true
+    "class": "akuvox"
 }

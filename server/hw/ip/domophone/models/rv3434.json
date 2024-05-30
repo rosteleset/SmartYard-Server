@@ -6,7 +6,6 @@
     "eventServer": "rubetek",
     "outputs": 3,
     "camera": "rubetek",
-    "useSmartConfigurator": true,
     "cmses": [
         "digital",
         "kkm-100s2",

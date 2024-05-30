@@ -111,8 +111,6 @@
              */
             public function autoconfigureDevices()
             {
-                global $script_filename;
-
                 $deviceTypes = ['domophone', 'camera'];
                 $pid = getmypid();
 
@@ -125,11 +123,17 @@
                         $deviceId = $task['deviceId'];
 
                         $this->db->modify("delete from tasks_changes where task_change_id = $taskChangeId");
+                        $isUnavailable = false;
 
                         if ($objectType === 'domophone') {
-                            $this->autoconfigureDomophone($deviceId, $script_filename, $pid);
+                            $isUnavailable = !$this->autoconfigureDomophone($deviceId, $pid);
                         } elseif ($objectType === 'camera') {
-                            $this->autoconfigureCamera($deviceId, $script_filename, $pid);
+                            $isUnavailable = !$this->autoconfigureCamera($deviceId, $pid);
+                        }
+
+                        // TODO: [Temporary] solution that recreates tasks if the device is unavailable
+                        if ($isUnavailable) {
+                            $this->changed($deviceType, $deviceId);
                         }
                     }
                 }
@@ -165,33 +169,46 @@
                 ]);
             }
 
-            private function autoconfigureDomophone($domophoneId, $script_filename, $pid)
+            private function autoconfigureDomophone($domophoneId, $pid): bool
             {
                 $households = loadBackend('households');
                 $domophone = $households->getDomophone($domophoneId);
 
-                if (!$domophone || !$domophone['json']['useSmartConfigurator']) {
-                    return;
+                if (!$domophone || !($domophone['json']['useSmartConfigurator'] ?? true)) {
+                    return true;
                 }
 
                 $command = (int)$domophone['firstTime']
-                    ? " --autoconfigure-device=domophone --id={$domophone["domophoneId"]} --first-time --parent-pid=$pid"
-                    : " --autoconfigure-device=domophone --id={$domophone["domophoneId"]} --parent-pid=$pid";
+                    ? "--autoconfigure-device=domophone --id={$domophone["domophoneId"]} --first-time --parent-pid=$pid"
+                    : "--autoconfigure-device=domophone --id={$domophone["domophoneId"]} --parent-pid=$pid";
 
-                shell_exec(PHP_BINARY . ' ' . $script_filename . $command . " 1>/dev/null 2>&1 &");
+                return $this->executeCommand($command);
             }
 
-            private function autoconfigureCamera($cameraId, $script_filename, $pid)
+            private function autoconfigureCamera($cameraId, $pid): bool
             {
                 $cameras = loadBackend('cameras');
                 $camera = $cameras->getCamera($cameraId);
 
-                if (!$camera || !$camera['json']['useSmartConfigurator']) {
-                    return;
+                if (!$camera || !($camera['json']['useSmartConfigurator'] ?? true)) {
+                    return true;
                 }
 
-                $command = " --autoconfigure-device=camera --id={$camera["cameraId"]} --parent-pid=$pid";
-                shell_exec(PHP_BINARY . ' ' . $script_filename . $command . " 1>/dev/null 2>&1 &");
+                $command = "--autoconfigure-device=camera --id={$camera["cameraId"]} --parent-pid=$pid";
+                return $this->executeCommand($command);
+            }
+
+            private function executeCommand(string $command): bool
+            {
+                global $script_filename;
+
+                exec(PHP_BINARY . ' ' . $script_filename . ' ' . $command, $output, $resultCode);
+
+                if ($resultCode !== 0 && str_contains($output[0], 'Device is unavailable')) {
+                    return false;
+                }
+
+                return true;
             }
         }
     }

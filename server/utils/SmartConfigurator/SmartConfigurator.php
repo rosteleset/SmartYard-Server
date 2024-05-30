@@ -2,6 +2,7 @@
 
 namespace utils\SmartConfigurator;
 
+use Exception;
 use utils\SmartConfigurator\DbConfigCollector\IDbConfigCollector;
 
 class SmartConfigurator
@@ -33,9 +34,11 @@ class SmartConfigurator
         return $difference;
     }
 
-    public function makeConfiguration($retryCount = 0)
+    /**
+     * @throws Exception
+     */
+    public function makeConfiguration()
     {
-        $maxRetries = 0;
         $difference = $this->getDifference();
 
         if (!$difference) {
@@ -80,12 +83,7 @@ class SmartConfigurator
         $nowDifference = $this->getDifference();
 
         if ($nowDifference) {
-            echo 'DIFFERENCE DETECTED!' . PHP_EOL;
-
-            if ($retryCount < $maxRetries) {
-                echo '-------------------------------------------------------' . PHP_EOL;
-                $this->makeConfiguration($retryCount + 1);
-            }
+            throw new Exception('Configuration mismatch after autoconfig' . PHP_EOL . print_r($nowDifference, true));
         }
     }
 

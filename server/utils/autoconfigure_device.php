@@ -15,15 +15,19 @@ function autoconfigure_device(string $deviceType, int $deviceId, bool $firstTime
 
     $householdsBackend = loadBackend('households');
 
+    if ($householdsBackend === false) {
+        throw new Exception('Error loading households backend');
+    }
+
     switch ($deviceType) {
         case 'domophone':
             $deviceData = $householdsBackend->getDomophone($deviceId);
 
-            if (!$deviceData) {
+            if ($deviceData === false) {
                 throw new Exception("Device '$deviceType' with ID $deviceId not found");
             }
 
-            if (!$deviceData['enabled']) {
+            if ($deviceData['enabled'] === 0) {
                 echo 'Device is disabled' . PHP_EOL;
                 exit(0);
             }
@@ -33,13 +37,18 @@ function autoconfigure_device(string $deviceType, int $deviceId, bool $firstTime
 
         case 'camera':
             $camerasBackend = loadBackend('cameras');
+
+            if ($camerasBackend === false) {
+                throw new Exception('Error loading cameras backend');
+            }
+
             $deviceData = $camerasBackend->getCamera($deviceId);
 
-            if (!$deviceData) {
+            if ($deviceData === false) {
                 throw new Exception("Device '$deviceType' with ID $deviceId not found");
             }
 
-            if (!$deviceData['enabled']) {
+            if ($deviceData['enabled'] === 0) {
                 echo 'Device is disabled' . PHP_EOL;
                 exit(0);
             }
@@ -59,9 +68,10 @@ function autoconfigure_device(string $deviceType, int $deviceId, bool $firstTime
         $firstTime
     );
 
-    if ($device) {
-        $configurator = new SmartConfigurator($device, $dbConfigCollector);
-        $configurator->makeConfiguration();
+    $configurator = new SmartConfigurator($device, $dbConfigCollector);
+    $configurator->makeConfiguration();
+
+    if ($deviceType === 'domophone') {
         $householdsBackend->autoconfigDone($deviceId);
     }
 }

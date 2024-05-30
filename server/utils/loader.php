@@ -1,6 +1,6 @@
 <?php
 
-    /**
+/**
      * loads backend module by config, returns false if backend not found or can't be loaded
      *
      * @param string $backend module name
@@ -41,20 +41,21 @@
     }
 
     /**
-    * Loads a device class and returns an instance of the class, or false if not found.
-    *
-    * This function is used to load and initialize hardware device classes dynamically
-    * based on the device type and model specified in a JSON file.
-    *
-    * @param string $type Device type (e.g., "domophone" or "camera").
-    * @param string $model The filename of the JSON model configuration.
-    * @param string $url The URL for the device.
-    * @param string $password The password for the device.
-    * @param bool $firstTime Indicates if it's the first time using the device. Default is false.
-    *
-    * @return false|object Returns an object instance of the device class if found and loaded successfully,
-    * or false if there was an error loading the class.
-    */
+     * Loads a device class and returns an instance of the class.
+     *
+     * This function is used to load and initialize hardware device classes dynamically
+     * based on the device type and model specified in a JSON file.
+     *
+     * @param string $type Device type (e.g., "domophone" or "camera").
+     * @param string $model The filename of the JSON model configuration.
+     * @param string $url The URL for the device.
+     * @param string $password The password for the device.
+     * @param bool $firstTime Indicates if it's the first time using the device. Default is false.
+     *
+     * @return object An object instance of the device class if found and loaded successfully.
+     *
+     * @throws Exception If there was an error loading the class.
+     */
     function loadDevice(string $type, string $model, string $url, string $password, bool $firstTime = false) {
         require_once __DIR__ . '/parse_url_ext.php';
         require_once __DIR__ . '/../hw/autoload.php';
@@ -63,32 +64,34 @@
 
         if (!in_array($type, $availableTypes)) {
             $availableTypesString = implode(', ', array_map(fn($type) => "'$type'", $availableTypes));
-            throw new ValueError("Invalid device type: '$type'. Available types: $availableTypesString");
+            throw new Exception("Invalid device type: '$type'. Available types: $availableTypesString");
         }
 
         $pathToModel = __DIR__ . "/../hw/ip/$type/models/$model";
 
         if (!file_exists($pathToModel)) {
-            throw new Error("Model '$model' not found for type '$type'");
+            throw new Exception("Model '$model' not found for type '$type'");
         }
 
         $data = json_decode(file_get_contents($pathToModel), true);
-        $class = $data['class'];
-        $vendor = strtolower($data['vendor']);
-
-        $directory = new RecursiveDirectoryIterator(__DIR__ . "/../hw/ip/$type/");
-        $iterator = new RecursiveIteratorIterator($directory);
-
-        foreach ($iterator as $file) {
-            if ($file->getFilename() == "$class.php") {
-                $pathToClass = $file->getPath() . '/' . $class . '.php';
-                require_once $pathToClass;
-                $className = "hw\\ip\\$type\\$vendor\\$class";
-                return new $className($url, $password, $firstTime);
-            }
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new Exception("Error decoding JSON for model '$model': " . json_last_error_msg());
         }
 
-        return false;
+        $class = $data['class'] ?? null;
+        $vendor = strtolower($data['vendor'] ?? '');
+        if (!$class || !$vendor) {
+            throw new Exception("Invalid model configuration for '$model'");
+        }
+
+        $className = "hw\\ip\\$type\\$vendor\\$class";
+        $classPath = __DIR__ . "/../hw/ip/$type/$vendor/$class.php";
+
+        if (file_exists($classPath) && class_exists($className)) {
+            return new $className($url, $password, $firstTime);
+        }
+
+        throw new Exception("Class '$className' not found for model '$model'");
     }
 
     /**

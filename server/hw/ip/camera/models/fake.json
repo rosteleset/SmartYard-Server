@@ -4,6 +4,5 @@
     "model": false,
     "version": false,
     "eventServer": false,
-    "class": "fake",
-    "useSmartConfigurator": false
+    "class": "fake"
 }

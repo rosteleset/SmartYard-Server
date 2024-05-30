@@ -4,6 +4,5 @@
     "model": false,
     "version": false,
     "eventServer": "beward",
-    "class": "beward",
-    "useSmartConfigurator": true
+    "class": "beward"
 }
