@@ -11,7 +11,7 @@ enum Triggers: string
 class zabbix extends monitoring
 {
     protected $zbxData = [];
-    protected $zbxApi, $zbxToken, $scheduler, $useCashe;
+    protected $zbxApi, $zbxToken, $scheduler, $useCache;
     protected $zbxStoreDays;
     protected $hostGroups = [];
     protected $templateGroups = [];
@@ -216,7 +216,7 @@ class zabbix extends monitoring
         $this->zbxToken = $zbxConfig["zbx_token"];
         $this->zbxStoreDays = $zbxConfig["zbx_store_days"];
         $this->scheduler = $zbxConfig["cron_sync_data_scheduler"];
-        $this->useCashe = $zbxConfig["use_cache"];
+        $this->useCache = $zbxConfig["use_cache"];
 
         $this->hostGroups = $zbxConfig["zbx_data_collection"]["host_groups"];
         $this->templateGroups = $zbxConfig["zbx_data_collection"]["template_groups"];
@@ -267,58 +267,83 @@ class zabbix extends monitoring
     }
 
     /**
-     * Get actual item ID from Zabbix API
-     * store data to redis, update every timeout
+     * Get actual item IDs from Zabbix API and update local cache if necessary
      * @return void
      * @throws \Exception
      */
     private function getActualIds(): void
     {
-        $templates = null;
-        $groups = null;
+        $templates = $this->getTemplatesData();
+        $groups = $this->getGroupsData();
 
-        if ($this->useCashe){
-            // Get IDs from cache
-            $cashedTemplates = $this->getFromRedis('zbx_templates');
-            $cashedGroups = $this->getFromRedis('zbx_groups');
-            if(!$cashedTemplates || !$cashedGroups){
-                $this->log('Cache miss. Fetching data from Zabbix API.');
-                $templates = $this->getTemplateIds(array_merge($this->intercomTemplateNames, $this->cameraTemplateNames));
-                $groups = $this->getGroupIds($this->hostGroups);
+        $this->updateZbxData($templates, $groups);
 
-                // Save fetched data to Redis cache
-                $this->saveToRedis("zbx_templates", $templates);
-                $this->saveToRedis("zbx_groups", $groups);
+        $this->log('Successfully updated Zabbix data.');
+    }
+
+    /**
+     * Get templates data from cache or API
+     * @return array
+     * @throws \Exception
+     */
+    private function getTemplatesData(): array
+    {
+        if ($this->useCache) {
+            $cachedTemplates = $this->getFromRedis('zbx_templates');
+            if ($cachedTemplates) {
+                $this->log('Cache hit for templates.');
+                return $cachedTemplates;
             }
-            else {
-                $this->log('Cache hit. Using cached data.');
-                $templates = $cashedTemplates;
-                $groups = $cashedGroups;
-            }
-        } else {
-            // Get IDs directly from API
-            $this->log('Fetching data from Zabbix API.');
-            $templates = $this->getTemplateIds(array_merge($this->intercomTemplateNames, $this->cameraTemplateNames));
-            $groups = $this->getGroupIds($this->hostGroups);
+            $this->log('Cache miss for templates. Fetching from API.');
         }
+        $templates = $this->getTemplateIds(array_merge($this->intercomTemplateNames, $this->cameraTemplateNames));
+        if ($this->useCache) {
+            $this->saveToRedis("zbx_templates", $templates);
+        }
+        return $templates;
+    }
 
-        // Check if the data was fetched successfully
+    /**
+     * Get groups data from cache or API
+     * @return array
+     * @throws \Exception
+     */
+    private function getGroupsData(): array
+    {
+        if ($this->useCache) {
+            $cachedGroups = $this->getFromRedis('zbx_groups');
+            if ($cachedGroups) {
+                $this->log('Cache hit for groups.');
+                return $cachedGroups;
+            }
+            $this->log('Cache miss for groups. Fetching from API.');
+        }
+        $groups = $this->getGroupIds($this->hostGroups);
+        if ($this->useCache) {
+            $this->saveToRedis("zbx_groups", $groups);
+        }
+        return $groups;
+    }
+
+    /**
+     * Update Zabbix data with fetched templates and groups
+     * @param array $templates
+     * @param array $groups
+     * @return void
+     */
+    private function updateZbxData(array $templates, array $groups): void
+    {
         if (!$templates || !$groups) {
-            $this->log("Failed to fetch template or group IDs from Zabbix API.");
-//            throw new \Exception("Failed to fetch template or group IDs from Zabbix API.");
+            throw new \Exception("Failed to fetch template or group IDs from Zabbix API.");
         }
 
-        // Process templates
         foreach ($templates as $template) {
             $this->zbxData['templates'][$template['host']] = $template['templateid'];
         }
 
-        // Process groups
         foreach ($groups as $group) {
             $this->zbxData['groups'][$group['name']] = $group['groupid'];
         }
-
-        $this->log('Successfully updated Zabbix data.');
     }
 
     /**
