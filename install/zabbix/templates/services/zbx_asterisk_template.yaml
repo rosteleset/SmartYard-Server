@@ -1,7 +1,7 @@
 zabbix_export:
   version: '6.4'
   template_groups:
-    - uuid: 441c5f644e5a41b98e9b8d9ab7ae94e8
+    - uuid: f781ffa99c56461cb45e316580182ed4
       name: Templates/SmartYard-Server
   templates:
     - uuid: 5cdd133d126846538e5006cb3eddbaa1
@@ -28,6 +28,8 @@ zabbix_export:
           master_item:
             key: asterisk_rbt.get_stats
           tags:
+            - tag: Application
+              value: Asterisk
             - tag: component
               value: calls
         - uuid: 4e8454da8a4e41af8733b10be43f5ba0
@@ -45,6 +47,8 @@ zabbix_export:
           master_item:
             key: asterisk_rbt.get_stats
           tags:
+            - tag: Application
+              value: Asterisk
             - tag: component
               value: channels
         - uuid: a99f30c9cc9b48baa561824053f74af0
@@ -62,6 +66,8 @@ zabbix_export:
           master_item:
             key: asterisk_rbt.get_stats
           tags:
+            - tag: Application
+              value: Asterisk
             - tag: component
               value: calls
         - uuid: e503d5a37bba4bdbbfc8c8801d8aa876
@@ -264,6 +270,8 @@ zabbix_export:
               value: '{$AMI.SECRET}'
           retrieve_mode: HEADERS
           tags:
+            - tag: Application
+              value: Asterisk
             - tag: component
               value: raw
         - uuid: a9e35e7660514a74b42520b5029e6f90
@@ -281,6 +289,8 @@ zabbix_export:
           master_item:
             key: asterisk_rbt.get_stats
           tags:
+            - tag: Application
+              value: Asterisk
             - tag: component
               value: peers
         - uuid: 1d120bffd609459fb7220b9ce00bd05d
@@ -298,6 +308,8 @@ zabbix_export:
           master_item:
             key: asterisk_rbt.get_stats
           tags:
+            - tag: Application
+              value: Asterisk
             - tag: component
               value: peers
         - uuid: 7e4d05e31ad740f59060e753366c42bc
@@ -315,6 +327,8 @@ zabbix_export:
           master_item:
             key: asterisk_rbt.get_stats
           tags:
+            - tag: Application
+              value: Asterisk
             - tag: component
               value: peers
         - uuid: 89491f0bdf9d49de95eda14a0fa834db
@@ -332,6 +346,8 @@ zabbix_export:
           master_item:
             key: asterisk_rbt.get_stats
           tags:
+            - tag: Application
+              value: Asterisk
             - tag: component
               value: peers
         - uuid: f7ac2bab6fa341d580810483c20caa0b
@@ -351,6 +367,8 @@ zabbix_export:
           master_item:
             key: asterisk_rbt.get_stats
           tags:
+            - tag: Application
+              value: Asterisk
             - tag: component
               value: system
           triggers:
@@ -390,6 +408,8 @@ zabbix_export:
           master_item:
             key: asterisk_rbt.get_stats
           tags:
+            - tag: Application
+              value: Asterisk
             - tag: component
               value: system
           triggers:
@@ -417,6 +437,8 @@ zabbix_export:
           master_item:
             key: asterisk_rbt.get_stats
           tags:
+            - tag: Application
+              value: Asterisk
             - tag: component
               value: application
         - uuid: 5213b6674b2d4c5297fab17922827690
@@ -428,6 +450,8 @@ zabbix_export:
           value_type: FLOAT
           description: 'Asterisk Manager API performance.'
           tags:
+            - tag: Application
+              value: Asterisk
             - tag: component
               value: network
         - uuid: 8fbd50d2580540ca855f2e38dd5a1a23
@@ -443,6 +467,8 @@ zabbix_export:
               parameters:
                 - 10m
           tags:
+            - tag: Application
+              value: Asterisk
             - tag: component
               value: health
             - tag: component
