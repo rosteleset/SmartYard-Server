@@ -19,6 +19,7 @@ class zabbix extends monitoring
     protected $cameraTemplateNames = [];
     protected $pluggedTemplateNames = [];
     protected $templatesDir;
+    protected $cameraVendor = 'FAKE';
 
     /**
      * @throws \Exception
@@ -31,7 +32,7 @@ class zabbix extends monitoring
 
             $this->initializeZabbixApi($config);
             $this->checkApiConnection();
-            $this->getActualIds();
+//            $this->getActualIds();
         } catch (\Exception $e) {
             $this->log("Error: " . $e->getMessage());
             throw $e;
@@ -60,13 +61,15 @@ class zabbix extends monitoring
         try {
             $result = false;
             if ($part === $this->scheduler){
+//             TODO: test
+                $this->getActualIds();
                 $this->handleIntercoms();
                 $this->handleCameras();
                 $result = true;
-                $this->log("cron task finish");
+                $this->log("Сron task finish");
             }
         } catch (\Exception $e) {
-            $this->log('cron err >> ' . $e->getMessage());
+            $this->log('Сron err >> ' . $e->getMessage());
         }
         return $result;
     }
@@ -100,20 +103,17 @@ class zabbix extends monitoring
 
     /**
      * Create start configuration on Zabbix server
+     * 1 create host group
+     * 2 create template group
+     * 3 get template group ids
+     * 4 get plugged template ids
+     * 5 create target template
+     * 6 import template from YAML file
      * @return void
      * @throws \Exception
      */
     public function configureZbx(): void
     {
-        /** TODO:
-         *  - implement starter zabbix template, groups ...
-         *  1 create host group
-         *  2 create template group
-         *  3 get template group ids
-         *  4 get plugged template ids
-         *  5 create target template
-         *  6 import template from YAML file
-         */
         $this->createHostGroups($this->hostGroups);
         $this->createTemplateGroups($this->templateGroups);
 
@@ -125,7 +125,6 @@ class zabbix extends monitoring
 
         $this->importTemplateConfigFiles($this->templatesDir, "intercom");
         $this->importTemplateConfigFiles($this->templatesDir, "camera");
-
         $this->importTemplateConfigFiles($this->templatesDir, "services");
 
         $this->log("Finish configure zabbix");
@@ -241,9 +240,18 @@ class zabbix extends monitoring
     {
         $existGroups = $this->getGroupIds($hostGroups);
 
+        // First start, missing target groups
+        if (!$existGroups) {
+            // Create missing groups
+            foreach ($hostGroups as $hostGroupName) {
+                $this->log("Init. Create missing host group: " . $hostGroupName);
+                $this->createHostGroup($hostGroupName);
+            }
+            return;
+        }
+
         foreach ($hostGroups as $hostGroupName) {
             $groupExist = false;
-
             // find target hot group name in existing groups
             foreach ($existGroups as $existGroup) {
                if ($existGroup['name'] === $hostGroupName){
@@ -298,7 +306,8 @@ class zabbix extends monitoring
 
         // Check if the data was fetched successfully
         if (!$templates || !$groups) {
-            throw new \Exception("Failed to fetch template or group IDs from Zabbix API.");
+            $this->log("Failed to fetch template or group IDs from Zabbix API.");
+//            throw new \Exception("Failed to fetch template or group IDs from Zabbix API.");
         }
 
         // Process templates
@@ -728,8 +737,17 @@ class zabbix extends monitoring
      */
     private function createTemplateGroups(array $templateGroups): void
     {
-        $this->log("RUN createTemplateGroups, groups:");
         $existTemplateGroups = $this->getTemplateGroups($templateGroups);
+
+        // First start, missing target template groups
+        if (!$existTemplateGroups) {
+            // Create missing template groups
+            foreach ($templateGroups as $templateGroup) {
+                $this->log("Init. Create missing template group: " . $templateGroup);
+                $this->createTemplateGroup($templateGroup);
+            }
+            return;
+        }
 
         foreach ($templateGroups as $templateGroup) {
             $groupExist = false;
@@ -786,7 +804,7 @@ class zabbix extends monitoring
             'id' => 1
         ];
 
-        $this->log("disable: " . $item['name']);
+        $this->log("Disable host: " . $item['name']);
         return $this->apiCall($body);
     }
 
@@ -824,7 +842,7 @@ class zabbix extends monitoring
             'id' => 1
         ];
 
-        $this->log("enable: " . $item['name']);
+        $this->log("Enable host: " . $item['name']);
         return $this->apiCall($body);
     }
 
@@ -864,8 +882,19 @@ class zabbix extends monitoring
      */
     private function createTargetTemplates(array $templateNames, int $templateGroupId): void
     {
-        $this->log("RUN createTargetTemplates:");
         $exitsTemplates = $this->getTemplateIds($templateNames);
+
+        if (!$exitsTemplates) {
+            foreach ($templateNames as $templateName) {
+                $this->log("Init. Create missing template >> " . $templateName);
+                $this->createTemplate(
+                    $templateName,
+                    [$templateGroupId],
+                    array_values($this->zbxData['pluggedTemplates'])
+                );
+            }
+            return;
+        }
 
         foreach ($templateNames as $templateName) {
             $templateExist = false;
@@ -877,14 +906,12 @@ class zabbix extends monitoring
             }
 
             if (!$templateExist){
-                $this->log("create template > " . $templateName);
-
+                $this->log("create missing template >> " . $templateName);
                 $this->createTemplate(
                     $templateName,
                     [$templateGroupId],
                     array_values($this->zbxData['pluggedTemplates'])
                 );
-
             }
         }
     }
@@ -939,7 +966,7 @@ class zabbix extends monitoring
         $mapped = [];
         foreach ($cameras as $item) {
             // FIXME: only vendor "FAKE"
-            if ($item['vendor'] === 'FAKE' && $this->isAllKeysNotEmpty($item)){
+            if ($item['vendor'] === $this->cameraVendor && $this->isAllKeysNotEmpty($item)){
                 $mapped_item = [
                     'rbt_cameraId' => $item['cameraId'],
                     'status' => $item['enabled'] === 1,
