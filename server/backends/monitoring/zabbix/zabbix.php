@@ -87,8 +87,6 @@ class zabbix extends monitoring
                     ];
             }
 
-            $this->log("DEBUG :: get " . strtoupper($deviceType) . " status ipaddr > " . $ip);
-
             switch ($deviceType) {
                 case 'domophone':
                 case 'camera':
