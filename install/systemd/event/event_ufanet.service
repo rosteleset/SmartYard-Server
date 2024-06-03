@@ -1,0 +1,22 @@
+[Unit]
+Description=Event service for Ufanet intercom syslog messages
+Documentation=https://github.com/rosteleset/SmartYard-Server/tree/main/install
+After=network.target
+
+[Service]
+SyslogIdentifier=event_ufanet
+Type=simple
+WorkingDirectory=/opt/rbt/server/services/event/
+ExecStart=/usr/bin/node /opt/rbt/server/services/event/index.js ufanet
+RestartSec=10
+Restart=always
+User=rbt
+Group=rbt
+LimitCORE=infinity
+KillMode=process
+StandardOutput=null
+#StandardOutput=append:/var/log/event_service/event_ufanet.log
+StandardError=append:/var/log/event_service/event_ufanet.error.log
+
+[Install]
+WantedBy=multi-user.target

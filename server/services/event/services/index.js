@@ -8,3 +8,4 @@ export { RubetekService } from "./RubetekService.js";
 export { NonameWebHookService } from "./NonameWebHookService.js";
 export { SputnikCloudService } from "./SputnikCloudService.js";
 export { OmnyWebHookService } from "./OmnyWebHookService.js";
+export { UfanetService } from "./UfanetService.js";

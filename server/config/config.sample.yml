@@ -184,5 +184,7 @@ syslog_servers:
   - syslog.udp:127.0.0.1:45456
   sputnik:
   - https://example.com:55457/smart-yard
+  ufanet:
+  - syslog.udp:127.0.0.1:45459"
 ntp_servers:
 - ntp:<-- your ntp server ip here -->:123

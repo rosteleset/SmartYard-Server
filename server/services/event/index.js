@@ -11,6 +11,7 @@ import {
     QtechService,
     RubetekService,
     SputnikCloudService,
+    UfanetService,
 } from "./services/index.js";
 
 import {
@@ -23,6 +24,7 @@ import {
     SERVICE_QTECH,
     SERVICE_RUBETEK,
     SERVICE_SPUTNIK_CLOUD,
+    SERVICE_UFANET,
 } from "./constants.js";
 
 const { hw } = config;
@@ -70,6 +72,11 @@ switch (serviceParam) {
     case SERVICE_RUBETEK:
         const rubetekService = new RubetekService(SERVICE_RUBETEK, serviceConfig, spamWords[SERVICE_RUBETEK]);
         rubetekService.createSyslogServer();
+        break;
+
+    case SERVICE_UFANET:
+        const ufanetService = new UfanetService(SERVICE_UFANET, serviceConfig, spamWords[SERVICE_UFANET]);
+        ufanetService.createSyslogServer();
         break;
 
     case SERVICE_NONAME_WEBHOOK:

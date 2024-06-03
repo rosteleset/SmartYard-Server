@@ -272,6 +272,9 @@
         ],
         "sputnik": [
             "https://example.com:55457/smart-yard"
+        ],
+        "ufanet": [
+            "syslog.udp:127.0.0.1:45459"
         ]
     },
 

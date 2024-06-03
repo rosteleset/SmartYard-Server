@@ -1,0 +1,9 @@
+{
+    "title": "UFANET DOMOPHONE CAMERA",
+    "vendor": "UFANET",
+    "model": false,
+    "version": false,
+    "eventServer": "ufanet",
+    "class": "ufanet",
+    "useSmartConfigurator": true
+}
