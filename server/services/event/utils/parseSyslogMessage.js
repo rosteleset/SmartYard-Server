@@ -13,14 +13,14 @@ const parseSyslogMessage = (str) => {
     const regexBSB = /<(?<priority>\d{1,3})>(?<timestamp>\w+\s+\d{1,2}\s\d{2}:\d{2}:\d{2})\s(?<host>\S+)?\s(?<app>[\w\s.]+)\s(?<pid>\S+):\s(?<message>.*)$/;
 
     // ISComX1 rev.5
-    const regexSokolPlus = /<(?<priority>\d{1,3})>(?<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6}\+\d{2}:\d{2}) (?<hostname>\S+) (?<app>\w+)\[(?<pid>\d+)]: (?<message>.*)$/;
+    // const regexSokolPlus = /<(?<priority>\d{1,3})>(?<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6}\+\d{2}:\d{2}) (?<hostname>\S+) (?<app>\w+)\[(?<pid>\d+)]: (?<message>.*)$/;
 
     // Rubetek
     const regexRubetek = /<(?<priority>\d{1,3})>(?<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+\d{2}:\d{2}) (?<hostname>\S+) (?<app>\S+) (?<message>.*)$/;
 
     const partsIETF = regexIETF.exec(str);
     const partsBSD = regexBSB.exec(str);
-    const partsSokolPlus = regexSokolPlus.exec(str);
+    // const partsSokolPlus = regexSokolPlus.exec(str);
     const partsRubetek = regexRubetek.exec(str);
 
     if (partsIETF) {
@@ -45,17 +45,17 @@ const parseSyslogMessage = (str) => {
             app,
             message,
         };
-    } else if (partsSokolPlus) {
-        const [, priority, timestamp, hostname, app, pid, message] = partsSokolPlus;
-        return {
-            format: 'SokolPlus',
-            priority: Number(priority),
-            timestamp: getTimestamp(new Date(timestamp)),
-            hostname,
-            app,
-            pid,
-            message,
-        };
+        // } else if (partsSokolPlus) {
+        //     const [, priority, timestamp, hostname, app, pid, message] = partsSokolPlus;
+        //     return {
+        //         format: 'SokolPlus',
+        //         priority: Number(priority),
+        //         timestamp: getTimestamp(new Date(timestamp)),
+        //         hostname,
+        //         app,
+        //         pid,
+        //         message,
+        //     };
     } else if (partsRubetek) {
         const [, priority, timestamp, hostname, app, message] = partsRubetek;
         return {

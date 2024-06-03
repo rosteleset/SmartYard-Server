@@ -130,6 +130,10 @@ trait hikvision
         $res = curl_exec($ch);
         curl_close($ch);
 
+        if (str_starts_with(curl_getinfo($ch, CURLINFO_CONTENT_TYPE), 'image')) {
+            return (string) $res;
+        }
+
         if (curl_getinfo($ch, CURLINFO_CONTENT_TYPE) == 'application/xml') {
             return json_decode(json_encode(simplexml_load_string($res)), true);
         }

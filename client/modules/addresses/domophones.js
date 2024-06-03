@@ -310,6 +310,34 @@
         });
     },
 
+    handleDeviceStatus: function (status) {
+        let statusClass;
+        switch (status) {
+            case 'OK':
+                statusClass = 'status-ok';
+                break;
+            case 'Offline':
+                statusClass = 'status-offline';
+                break;
+            case 'SIP error':
+                statusClass = 'status-sip-failure';
+                break;
+            case 'Disabled':
+                statusClass = 'status-disabled';
+                break;
+            default:
+                statusClass = 'status-unknown';
+                status = 'unknown'
+        }
+        return `
+        <div class="status-container">
+            <span class="status-indicator ${statusClass}">
+                <div class="status-tooltip">${status}</div>
+            </span>
+        </div>  
+    `;
+    },
+
     route: function (params) {
         $("#altForm").hide();
         subTop();
@@ -343,6 +371,9 @@
                         title: i18n("addresses.domophoneIdList"),
                     },
                     {
+                        title: i18n("addresses.status"),
+                    },
+                    {
                         title: i18n("addresses.url"),
                     },
                     {
@@ -360,12 +391,21 @@
                     let rows = [];
 
                     for (let i in modules.addresses.domophones.meta.domophones) {
+
                         rows.push({
                             uid: modules.addresses.domophones.meta.domophones[i].domophoneId,
                             cols: [
                                 {
                                     data: modules.addresses.domophones.meta.domophones[i].domophoneId,
                                 },
+                                {
+                                    data: modules.addresses.domophones.meta.domophones[i].enabled
+                                        ? modules.addresses.domophones.handleDeviceStatus(
+                                            modules.addresses.domophones.meta.domophones[i].status
+                                                ? modules.addresses.domophones.meta.domophones[i].status.status : "Unknown")
+                                        : modules.addresses.domophones.handleDeviceStatus("Disabled"),
+                                    nowrap: true,
+                                 },
                                 {
                                     data: modules.addresses.domophones.meta.domophones[i].url,
                                     nowrap: true,

@@ -2,8 +2,7 @@ import { SyslogService } from "./index.js";
 import { API, mdTimer } from "../utils/index.js";
 
 /**
- * Class representing an event handler for IS (Intersvyaz) devices.
- * @class
+ * Class representing a syslog event handler for IS (Intersvyaz) devices.
  * @augments SyslogService
  */
 class IsService extends SyslogService {
@@ -54,10 +53,18 @@ class IsService extends SyslogService {
             }
         }
 
-        // Opening a door by RFID key
+        // Opening a door by RFID key (rev.2, rev.5 old fw)
         if (/^Opening door by RFID [a-fA-F0-9]+, apartment \d+$/.test(msg)) {
             const rfid = msg.split("RFID")[1].split(",")[0].trim();
             await API.openDoor({ date: date, ip: host, detail: rfid, by: "rfid" });
+        }
+
+        // Opening a door by RFID key (rev.5 new fw)
+        if (/^(Main door|Second door).*?UUID ([A-Fa-f0-9]{14})/.test(msg)) {
+            const matches = msg.match(/^(Main door|Second door).*?UUID ([A-Fa-f0-9]{14})/);
+            const door = matches[1] === 'Second door' ? 1 : 0;
+            const rfid = matches[2];
+            await API.openDoor({ date: date, ip: host, door: door, detail: rfid, by: "rfid" });
         }
 
         // Opening a door by personal code

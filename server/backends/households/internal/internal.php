@@ -901,7 +901,7 @@
                     $domophones = $this->db->get($q, false, $r);
 
                     foreach ($domophones as &$domophone) {
-                        $domophone["status"] = $monitoring->deviceStatus("domophone", $domophone["domophoneId"]);
+                        $domophone["status"] = $monitoring->deviceStatus("domophone", $domophone["ip"]);
                     }
 
                     return $domophones;
@@ -1140,7 +1140,7 @@
                     $monitoring = loadBackend("monitoring");
 
                     if ($monitoring) {
-                        $domophone["status"] = $monitoring->deviceStatus("domophone", $domophone["domophoneId"]);
+                        $domophone["status"] = $monitoring->deviceStatus("domophone", $domophone["ip"]);
                     }
 
                     $domophone["json"] = json_decode(file_get_contents(__DIR__ . "/../../../hw/ip/domophone/models/" . $domophone["model"]), true);

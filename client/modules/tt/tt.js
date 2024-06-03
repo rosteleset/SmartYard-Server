@@ -1322,16 +1322,16 @@
             $("#ttProjectSelect").css("width", $("#ttSearch").parent().css("width"));
         }
 
+        $(".ttFilterCustom").off("click").on("click", () => {
+            window.location.href = '?#tt&filter=empty&customSearch=yes&_=' + Math.random();
+        });
+
         $("#ttSearch").off("keypress").on("keypress", ev => {
             if (ev.keyCode == 13) {
                 $("#ttSearchButton").click();
                 ev.preventDefault();
                 return false;
             }
-        });
-
-        $(".ttFilterCustom").off("click").on("click", () => {
-            window.location.href = '?#tt&filter=empty&customSearch=yes&_=' + Math.random();
         });
 
         $("#ttSearchButton").off("click").on("click", () => {

@@ -5,9 +5,9 @@ namespace hw\ip\camera\is;
 use hw\ip\camera\camera;
 
 /**
- * Abstract class representing an Intersvyaz (IS) camera.
+ * Class representing an Intersvyaz (IS) camera.
  */
-abstract class is extends camera
+class is extends camera
 {
 
     use \hw\ip\common\is\is;
@@ -37,6 +37,57 @@ abstract class is extends camera
     public function getCamshot(): string
     {
         return $this->apiCall('/camera/snapshot', 'GET', [], 3);
+    }
+
+    public function setOsdText(string $text = '')
+    {
+        $hwVer = floor($this->getSysinfo()['HardwareVersion'] ?? 0);
+
+        $firstStringParams = [
+            'size' => 1,
+            'text' => $hwVer == 5 ? $text : '',
+            'color' => '0xFFFFFF',
+            'date' => [
+                'enable' => true,
+                'format' => '%d-%m-%Y',
+            ],
+            'time' => [
+                'enable' => true,
+                'format' => '%H:%M:%S',
+            ],
+            'position' => [
+                'x' => 2,
+                'y' => 2,
+            ],
+            'background' => [
+                'enable' => true,
+                'color' => '0x000000',
+            ],
+        ];
+
+        $secondStringParams = $hwVer == 5 ? [] : [
+            'size' => 1,
+            'text' => $text,
+            'color' => '0xFFFFFF',
+            'date' => [
+                'enable' => false,
+                'format' => '%d-%m-%Y',
+            ],
+            'time' => [
+                'enable' => false,
+                'format' => '%H:%M:%S',
+            ],
+            'position' => [
+                'x' => 2,
+                'y' => 702,
+            ],
+            'background' => [
+                'enable' => true,
+                'color' => '0x000000',
+            ],
+        ];
+
+        $this->apiCall('/v2/camera/osd', 'PUT', [$firstStringParams, $secondStringParams]);
     }
 
     public function transformDbConfig(array $dbConfig): array
@@ -69,62 +120,7 @@ abstract class is extends camera
 
     protected function getOsdText(): string
     {
-        return $this->apiCall('/v2/camera/osd')[1]['text'];
-    }
-
-    /**
-     * Set OSD overlay text with specified position.
-     *
-     * @param string $text The text to display on the OSD.
-     * @param int $yPosOsd The y-coordinate position of the OSD.
-     *
-     * @return void
-     */
-    protected function setOsdTextWithPos(string $text, int $yPosOsd)
-    {
-        $this->apiCall('/v2/camera/osd', 'PUT', [
-            [
-                'size' => 1,
-                'text' => '',
-                'color' => '0xFFFFFF',
-                'date' => [
-                    'enable' => true,
-                    'format' => '%d-%m-%Y',
-                ],
-                'time' => [
-                    'enable' => true,
-                    'format' => '%H:%M:%S',
-                ],
-                'position' => [
-                    'x' => 10,
-                    'y' => 10,
-                ],
-                'background' => [
-                    'enable' => true,
-                    'color' => '0x000000',
-                ],
-            ],
-            [
-                'size' => 1,
-                'text' => $text,
-                'color' => '0xFFFFFF',
-                'date' => [
-                    'enable' => false,
-                    'format' => '%d-%m-%Y',
-                ],
-                'time' => [
-                    'enable' => false,
-                    'format' => '%H:%M:%S',
-                ],
-                'position' => [
-                    'x' => 10,
-                    'y' => $yPosOsd,
-                ],
-                'background' => [
-                    'enable' => true,
-                    'color' => '0x000000',
-                ],
-            ],
-        ]);
+        $osdParams = $this->apiCall('/v2/camera/osd');
+        return $osdParams[0]['text'] ?: $osdParams[1]['text'];
     }
 }

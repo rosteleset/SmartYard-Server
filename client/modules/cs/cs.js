@@ -437,16 +437,16 @@
                                                     modules.cs.issuesInSheet[uid] = "";
                                                 }
                                                 if (closed) {
-                                                    modules.cs.issuesInSheet[uid] += `<a class="csIssueSpan pointer pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueClosedClass}" href="?#tt&issue=${r.issues.issues[i].issueId}">${r.issues.issues[i].issueId}</a><br />`;
+                                                    modules.cs.issuesInSheet[uid] += `<span class="${modules.cs.currentSheet.sheet.issueClosedClass}"><a class="csIssueSpan pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}">${r.issues.issues[i].issueId}</a></span><br />`;
                                                 } else
                                                 if (installers && installers.length && !done) {
-                                                    modules.cs.issuesInSheet[uid] += `<a class="csIssueSpan pointer pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueAssignedClass}" href="?#tt&issue=${r.issues.issues[i].issueId}">${r.issues.issues[i].issueId}</a><br />`;
+                                                    modules.cs.issuesInSheet[uid] += `<span class="${modules.cs.currentSheet.sheet.issueAssignedClass}"><a class="csIssueSpan pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}">${r.issues.issues[i].issueId}</a></span><br />`;
                                                 } else
                                                 if ((!installers || !installers.length) && done) {
-                                                    modules.cs.issuesInSheet[uid] += `<a class="csIssueSpan pointer pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueDoneClass}" href="?#tt&issue=${r.issues.issues[i].issueId}">${r.issues.issues[i].issueId}</a><br />`;
+                                                    modules.cs.issuesInSheet[uid] += `<span class="${modules.cs.currentSheet.sheet.issueDoneClass}"><a class="csIssueSpan pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}">${r.issues.issues[i].issueId}</a></span><br />`;
                                                 } else
                                                 if (installers && installers.length && done) {
-                                                    modules.cs.issuesInSheet[uid] += `<a class="csIssueSpan pointer pl-1 pr-1 ${modules.cs.currentSheet.sheet.issueAssignedClass} ${modules.cs.currentSheet.sheet.issueDoneClass}" href="?#tt&issue=${r.issues.issues[i].issueId}">${r.issues.issues[i].issueId}</a><br />`;
+                                                    modules.cs.issuesInSheet[uid] += `<span class="${modules.cs.currentSheet.sheet.issueAssignedClass} ${modules.cs.currentSheet.sheet.issueDoneClass}"><a class="csIssueSpan pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}">${r.issues.issues[i].issueId}</a></span><br />`;
                                                 } else {
                                                     modules.cs.issuesInSheet[uid] += `<a class="csIssueSpan pointer text-dark pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}">${r.issues.issues[i].issueId}</a><br />`;
                                                 }

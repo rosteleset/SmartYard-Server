@@ -23,7 +23,7 @@
                     return api::ERROR();
                 } else {
                     $response = [
-                        "domophones" => $households->getDomophones(),
+                        "domophones" => $households->getDomophones("all", false, true),
                         "models" => $configs->getDomophonesModels(),
                         "servers" => $sip->server("all"),
                     ];

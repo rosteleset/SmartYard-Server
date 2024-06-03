@@ -112,6 +112,7 @@
     ],
     "34": [
         "v34_mult.php",
-        "v34_mult.sql"
+        "v34_mult.sql",
+        "v34_cameras.sql"
     ]
 }
