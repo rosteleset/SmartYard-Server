@@ -28,7 +28,6 @@
         }
 
         modules.mqtt.subscribe("_connect", () => {
-            console.log("_connect", new Date());
             modules.cs.mqttSheetChanged();
         });
 

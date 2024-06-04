@@ -1691,7 +1691,7 @@
             };
 
             let sortMenu = menu({
-                button: "<i class='fas fa-fw fa-bars pointer'></i>",
+                button: "<i class='fas fa-fw fa-sort pointer'></i>",
                 items: sortMenuItems,
                 click: function (id) {
                     if (sort && sort[id]) {

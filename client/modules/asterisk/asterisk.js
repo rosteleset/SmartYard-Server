@@ -142,8 +142,6 @@
                 modules.asterisk.registered = false;
 
                 setTimeout(() => {
-                    console.log("refreshing sip ua");
-
                     modules.asterisk.ua = new JsSIP.UA({
                         sockets: [ new JsSIP.WebSocketInterface(config.asterisk.ws) ],
                         uri: "sip:" + myself.webRtcExtension + "@" + config.asterisk.sipDomain,
