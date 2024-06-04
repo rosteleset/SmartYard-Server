@@ -834,9 +834,9 @@
                             "name" => @$f["name"],
                             "sort" => @$f["sort"],
                             "hide" => @$f["hide"],
-                            "disableCustomSort" => @$f["disableCustomSort"],
-                            "owner" => @$filter["metadata"]["owner"],
+                            "disableCustomSort" => !!@$f["disableCustomSort"],
                             "pipeline" => !!@$f["pipeline"],
+                            "owner" => @$filter["metadata"]["owner"],
                         ];
                     } catch (\Exception $e) {
                         $_list[$filter["metadata"]["filter"]] = [
