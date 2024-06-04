@@ -3020,7 +3020,7 @@
                                         nowrap: true,
                                     },
                                 ],
-                                class: modules.tt.meta.filtersExt[i].pipeline ? 'text-secondary' : '',
+                                class: modules.tt.meta.filtersExt[i].pipeline ? 'text-info' : '',
                                 dropDown: {
                                     items: [
                                         {
