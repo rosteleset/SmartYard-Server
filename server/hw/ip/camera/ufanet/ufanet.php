@@ -25,18 +25,21 @@ class ufanet extends camera
 
     public function getCamshot(): string
     {
-        // TODO: Implement getCamshot() method.
-        return '';
+        return $this->apiCall('/image.jpg', ['width' => 1920, 'height' => 1080]);
     }
 
     public function setOsdText(string $text = '')
     {
-        // TODO: Implement setOsdText() method.
+        $this->apiCall('/cgi-bin/configManager.cgi', [
+            'action' => 'setConfig',
+            'Locales.TimeFormat' => "\"%d.%m.%y %H:%M:%S $text\"",
+            'VideoWidget[0].TimeTitle.Rect[0]' => 0,
+            'VideoWidget[0].TimeTitle.Rect[1]' => 0,
+        ]);
     }
 
     public function transformDbConfig(array $dbConfig): array
     {
-        // TODO: Implement transformDbConfig() method.
         return $dbConfig;
     }
 
