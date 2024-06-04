@@ -388,6 +388,12 @@
                     }
                 }
 
+                if (!$sort) {
+                    $sort = [];
+                }
+
+                $sort["_id"] = -1;
+
                 foreach ($sort as $s => &$d) {
                     $d = (int)$d;
                 }
@@ -402,8 +408,6 @@
                     $options["sort"] = $sort;
                 }
 
-                $options["sort"]["_id"] = 1;
-
                 $projection_all = [ "issueId" => 1 ];
 
                 $options_all = [
@@ -413,8 +417,6 @@
                 if ($sort) {
                     $options_all["sort"] = $sort;
                 }
-
-                $options_all["sort"]["_id"] = 1;
 
                 $count = 0;
 
