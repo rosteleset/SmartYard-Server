@@ -6,7 +6,7 @@ export const EVENT = {
     "OPEN_BY_FACE_ID": 5,
     "OPEN_BY_CODE": 6,
     "OPEN_BY_CALL": 7,
-    "OPEN_BY_BUTTON": 8
+    "OPEN_BY_BUTTON": 8,
 };
 
 // services names:
@@ -19,3 +19,4 @@ export const SERVICE_AKUVOX = "akuvox";
 export const SERVICE_RUBETEK = "rubetek";
 export const SERVICE_NONAME_WEBHOOK = "noname";
 export const SERVICE_OMNY = "omny";
+export const SERVICE_UFANET = "ufanet";

@@ -41,6 +41,9 @@
     "omny": {
       "port": 45458,
       "apiEndpoint": "/webhook/omny"
+    },
+    "ufanet": {
+      "port": 45459
     }
   }
 }
