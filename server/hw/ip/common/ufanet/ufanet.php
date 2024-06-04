@@ -15,7 +15,17 @@ trait ufanet
 
     public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow')
     {
-        // TODO: Implement configureNtp() method.
+        $this->apiCall('/cgi-bin/configManager.cgi', [
+            'action' => 'setConfig',
+            'NTP.Address' => "$server:$port",
+            'NTP.TimeZone' => $timezone,
+        ]);
+
+        $this->reboot();
+        $this->wait();
+
+        // Sync time now
+        $this->apiCall('/cgi-bin/j/sync-time.cgi');
     }
 
     public function getSysinfo(): array
@@ -53,7 +63,7 @@ trait ufanet
 
     public function syncData()
     {
-        // TODO: Implement syncData() method.
+        // Empty implementation
     }
 
     /**
@@ -68,7 +78,7 @@ trait ufanet
     protected function apiCall(string $resource, array $payload = [], string $method = 'GET')
     {
         if (!empty($payload) && $method === 'GET') {
-            $queryString = http_build_query($payload);
+            $queryString = urldecode(http_build_query($payload));
             $resource .= '?' . $queryString;
         }
 
@@ -97,6 +107,27 @@ trait ufanet
         return json_decode($res, true) ?? trim($res);
     }
 
+    /**
+     * Convert response string to array.
+     *
+     * @param string $response Response string.
+     *
+     * @return array Associative array with parsed parameters.
+     */
+    protected function convertResponseToArray(string $response): array
+    {
+        $responseArray = [];
+        $lines = explode("\n", trim($response));
+
+        foreach ($lines as $line) {
+            [$longKey, $value] = explode('=', trim($line), 2);
+            $longKeyArray = explode('.', $longKey);
+            $responseArray[end($longKeyArray)] = $value;
+        }
+
+        return $responseArray;
+    }
+
     protected function getEventServer(): string
     {
         // TODO: Implement getEventServer() method.
@@ -105,8 +136,15 @@ trait ufanet
 
     protected function getNtpConfig(): array
     {
-        // TODO: Implement getNtpConfig() method.
-        return [];
+        $rawParams = $this->apiCall('/cgi-bin/configManager.cgi', ['action' => 'getConfig', 'name' => 'NTP']);
+        ['Address' => $address, 'TimeZone' => $timezone] = $this->convertResponseToArray($rawParams);
+        $addressParts = explode(':', $address, 2);
+
+        return [
+            'server' => $addressParts[0],
+            'port' => $addressParts[1] ?? 123,
+            'timezone' => $timezone,
+        ];
     }
 
     protected function initializeProperties()
