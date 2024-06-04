@@ -1916,17 +1916,6 @@
                                         filter: x ? x : "",
                                         search: ($.trim(params.search) && params.search !== true) ? $.trim(params.search) : "",
                                     }),
-/*
-                                    click: (issue) => {
-                                        issue = JSON.parse(b64_to_utf8(issue));
-
-                                        window.location.href = navigateUrl("tt", {
-                                            issue: issue.id,
-                                            filter: issue.filter ? issue.filter : "",
-                                            search: ($.trim(issue.search) && typeof issue.search === "string") ? $.trim(issue.search) : "",
-                                        });
-                                    },
-*/
                                     fullWidth: j == pKeys.length - 1,
                                 });
                             }
