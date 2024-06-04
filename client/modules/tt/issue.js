@@ -349,7 +349,6 @@
             issue: issue,
         }).
         done(result => {
-            console.log(result);
             window.location.href = navigateUrl("tt", { issue: result.id });
         }).
         fail(FAIL).
