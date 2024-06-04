@@ -420,47 +420,6 @@
 
                 $count = 0;
 
-/*
-// Search for documents in the current collection.
-db.getCollection('RTL')
-  .aggregate(
-    [
-        {
-            "$match": {
-                "$or": [
-                    {
-                        "status": {
-                            "$exists": false
-                        }
-                    },
-                    {
-                        "status": "Открыта"
-                    }
-                ]
-            }
-        },
-        {
-            $setWindowFields: {
-               sortBy: { created: 1 },
-               output: {
-                  index: {
-                     $documentNumber: {}
-                  },
-                  count: {
-                    $sum: 1,
-                  }
-               }
-            }
-        },
-        {
-            "$match": {
-                "issueId": "RTL-2694"
-            }
-        },
-    ]
-  );
-*/
-
                 if ($byPipeline) {
                     $_query = json_decode(json_encode($query), true);
                     $_query[] = [ '$project' => $projection ];

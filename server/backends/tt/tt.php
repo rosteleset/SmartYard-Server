@@ -30,7 +30,7 @@
                 if (!$files) {
                     return false;
                 }
-                
+
                 $cache = $this->cacheGet("WORKFLOWS");
                 if ($cache) {
                     return $cache;
@@ -275,7 +275,7 @@
                             return [ $custom->DELETE($params) ];
                         },
                     ]);
-                    
+
                     $sandbox->registerLibrary("mb", [
                         "substr" => function (...$args) {
                             return [ mb_substr(...$args) ];
@@ -312,7 +312,7 @@
                     $this->unCache("WORKFLOW:$workflow");
                     return false;
                 }
-                
+
                 $cache = $this->cacheGet("WORKFLOW:$workflow");
                 if ($cache) {
                     return $cache;
@@ -356,7 +356,7 @@
                 if (!$workflow) {
                     return false;
                 }
-                
+
                 $workflows = $files->searchFiles([
                     "metadata.type" => "workflow",
                     "metadata.workflow" => $workflow,
@@ -384,7 +384,7 @@
                 if (!$files) {
                     return false;
                 }
-                
+
                 $workflows = $files->searchFiles([
                     "metadata.type" => "workflow",
                     "metadata.workflow" => $workflow,
@@ -411,7 +411,7 @@
                 if (!$files) {
                     return false;
                 }
-                
+
                 $cache = $this->cacheGet("WORKFLOW:LIBS");
                 if ($cache) {
                     return $cache;
@@ -439,7 +439,7 @@
                 if (!$files) {
                     return false;
                 }
-                
+
                 $libs = $files->searchFiles([
                     "metadata.type" => "workflow.lib",
                 ]);
@@ -465,7 +465,7 @@
                 if (!$files) {
                     return false;
                 }
-                
+
                 $libs = $files->searchFiles([
                     "metadata.type" => "workflow.lib",
                     "metadata.lib" => $lib,
@@ -489,7 +489,7 @@
              * @param $body
              * @return boolean
              */
-            public function putWorkflowLib($lib, $body) 
+            public function putWorkflowLib($lib, $body)
             {
                 $files = loadBackend("files");
 
@@ -500,7 +500,7 @@
                 if (!$lib) {
                     return false;
                 }
-                
+
                 $libs = $files->searchFiles([
                     "metadata.type" => "workflow.lib",
                     "metadata.lib" => $lib,
@@ -520,14 +520,14 @@
              * @param $workflow
              * @return boolean
              */
-            public function deleteWorkflowLib($lib) 
+            public function deleteWorkflowLib($lib)
             {
                 $files = loadBackend("files");
 
                 if (!$files) {
                     return false;
                 }
-                
+
                 $libs = $files->searchFiles([
                     "metadata.type" => "workflow.lib",
                     "metadata.lib" => $lib,
@@ -626,9 +626,9 @@
               * @param $statusId
               * @return boolean
               */
- 
+
              abstract public function deleteStatus($statusId);
- 
+
             /**
              * @return false|array
              */
@@ -792,7 +792,7 @@
                 if ($cache) {
                     return $cache;
                 }
-                
+
                 $filters = $files->searchFiles([ "metadata.type" => "filter" ]);
 
                 $_list = [];
@@ -818,7 +818,7 @@
                     $this->unCache("FILTERS-EXT");
                     return false;
                 }
-                
+
                 $cache = $this->cacheGet("FILTERS-EXT");
                 if ($cache) {
                     return $cache;
@@ -836,6 +836,7 @@
                             "hide" => @$f["hide"],
                             "disableCustomSort" => @$f["disableCustomSort"],
                             "owner" => @$filter["metadata"]["owner"],
+                            "pipeline" => !!@$f["pipeline"],
                         ];
                     } catch (\Exception $e) {
                         $_list[$filter["metadata"]["filter"]] = [
@@ -859,7 +860,7 @@
                 if (!$files) {
                     return false;
                 }
-                
+
                 if ($owner) {
                     $filters = $files->searchFiles([
                         "metadata.type" => "filter",
@@ -911,11 +912,11 @@
                         "metadata.filter" => $filter,
                         "metadata.owner" => $owner,
                     ]);
-    
+
                     foreach ($filters as $f) {
                         $files->deleteFile($f["id"]);
                     }
-    
+
                     return $files->addFile($filter . ".json", $files->contentsToStream($body), [
                         "type" => "filter",
                         "filter" => $filter,
@@ -926,11 +927,11 @@
                         "metadata.type" => "filter",
                         "metadata.filter" => $filter,
                     ]);
-    
+
                     foreach ($filters as $f) {
                         $files->deleteFile($f["id"]);
                     }
-    
+
                     return $files->addFile($filter . ".json", $files->contentsToStream($body), [
                         "type" => "filter",
                         "filter" => $filter,
@@ -1064,7 +1065,7 @@
                         "name" => $v["metadata"]["name"],
                         "field" => $v["metadata"]["field"],
                         "code" => $files->streamToContents($files->getFileStream($v["id"])) ? : "//function subject_v1 (value, field, issue, target) {\n\treturn val;\n//}\n",
-                    ]; 
+                    ];
                 }
 
                 $this->cacheSet("VIEWERS", $_vs);
@@ -1115,7 +1116,7 @@
                 }
                 return array_keys($a) === range(0, count($a) - 1);
             }
-            
+
             /**
              * @param $a
              * @return boolean
@@ -1123,7 +1124,7 @@
             private static function an($a){
                 return ctype_digit(implode('', array_keys($a)));
             }
-            
+
             /**
              * @param $a
              * @return mixed
@@ -1630,11 +1631,11 @@
                 if ($needModify1) {
                     $success = $success && $this->modifyIssue($issue1);
                 }
-                
+
                 if ($needModify2) {
                     $success = $success && $this->modifyIssue($issue2);
                 }
-                
+
                 return $success;
             }
 
@@ -1711,11 +1712,11 @@
                 if ($needModify1) {
                     $success = $success && $this->modifyIssue($issue1);
                 }
-                
+
                 if ($needModify2) {
                     $success = $success && $this->modifyIssue($issue2);
                 }
-                
+
                 return $success;
             }
 
@@ -2156,7 +2157,7 @@
                 $success = true;
 
                 $tasks = $this->db->get("select acronym, filter, action, uid, login from tt_crontabs left join tt_projects using (project_id) left join core_users using (uid) where crontab = :crontab and enabled = 1", [
-                    "crontab" => $part,                    
+                    "crontab" => $part,
                 ], [
                     "acronym" => "acronym",
                     "filter" => "filter",
