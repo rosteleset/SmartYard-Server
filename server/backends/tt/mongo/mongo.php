@@ -418,6 +418,16 @@
                     $options["sort"] = $sort;
                 }
 
+                $projection_all = [ "issueId" => 1 ];
+
+                $options_all = [
+                    "projection" => $projection_all,
+                ];
+
+                if ($sort) {
+                    $options_all["sort"] = $sort;
+                }
+
                 $count = 0;
 
                 if ($byPipeline) {
@@ -457,19 +467,9 @@
                     $i[] = $x;
                 }
 
-                $projection_all = [ "issueId" => 1 ];
-
-                $options_all = [
-                    "projection" => $projection_all,
-                ];
-
-                if ($sort) {
-                    $options_all["sort"] = $sort;
-                }
-
                 if ($byPipeline) {
                     $_query = json_decode(json_encode($query), true);
-                    $_query[] = [ '$project' => $projection ];
+                    $_query[] = [ '$project' => $projection_all ];
                     $issues = $this->mongo->$db->$collection->aggregate($_query);
                 } else {
                     $issues = $this->mongo->$db->$collection->find($query, $options_all);
