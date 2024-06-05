@@ -32,7 +32,7 @@ class ufanet extends camera
     {
         $this->apiCall('/cgi-bin/configManager.cgi', [
             'action' => 'setConfig',
-            'Locales.TimeFormat' => "\"%d.%m.%y %H:%M:%S $text\"",
+            'Locales.TimeFormat' => "%22%d.%m.%y%20%H:%M:%S%20$text%22",
             'VideoWidget[0].TimeTitle.Rect[0]' => 0,
             'VideoWidget[0].TimeTitle.Rect[1]' => 0,
         ]);
@@ -51,7 +51,12 @@ class ufanet extends camera
 
     protected function getOsdText(): string
     {
-        // TODO: Implement getOsdText() method.
-        return '';
+        $rawParams = $this->apiCall('/cgi-bin/configManager.cgi', [
+            'action' => 'getConfig',
+            'name' => 'Locales'
+        ]);
+
+        ['TimeFormat' => $timeFormat] = $this->convertResponseToArray($rawParams);
+        return explode(' ', $timeFormat, 3)[2];
     }
 }
