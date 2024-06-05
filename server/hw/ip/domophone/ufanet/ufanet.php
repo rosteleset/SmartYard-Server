@@ -84,7 +84,13 @@ abstract class ufanet extends domophone
 
     public function openLock(int $lockNumber = 0)
     {
-        // TODO: Implement openLock() method.
+        $lockNumber++;
+        $this->apiCall("/api/v1/doors/$lockNumber/open", [], 'POST');
+    }
+
+    public function prepare()
+    {
+        $this->setNetwork();
     }
 
     public function setAudioLevels(array $levels)
@@ -227,5 +233,14 @@ abstract class ufanet extends domophone
     {
         // TODO: Implement getUnlocked() method.
         return false;
+    }
+
+    protected function setNetwork()
+    {
+        $this->apiCall('/cgi-bin/configManager.cgi', [
+            'action' => 'setConfig',
+            'RTSP.Block' => 'false',
+            'Agent.Enable' => 'false',
+        ]);
     }
 }
