@@ -85,12 +85,13 @@ abstract class ufanet extends domophone
     public function openLock(int $lockNumber = 0)
     {
         $lockNumber++;
-        $this->apiCall("/api/v1/doors/$lockNumber/open", [], 'POST');
+        $this->apiCall("/api/v1/doors/$lockNumber/open", 'POST');
     }
 
     public function prepare()
     {
         $this->setNetwork();
+        $this->setDisplayLocalization();
     }
 
     public function setAudioLevels(array $levels)
@@ -150,7 +151,7 @@ abstract class ufanet extends domophone
 
     public function setTickerText(string $text = '')
     {
-        // TODO: Implement setTickerText() method.
+        $this->apiCall('/api/v1/configuration', 'PUT', ['display' => ['labels' => [$text, '', '']]]);
     }
 
     public function setUnlockTime(int $time = 3)
@@ -235,9 +236,36 @@ abstract class ufanet extends domophone
         return false;
     }
 
+    protected function setDisplayLocalization()
+    {
+        $this->apiCall('/api/v1/configuration', 'PUT', [
+            'display' => [
+                'localization' => [
+                    'ENTER_APARTMENT' => 'НАБЕРИТЕ НОМЕР КВАРТИРЫ',
+                    'ENTER_PREFIX' => 'НАБЕРИТЕ ПРЕФИКС',
+                    'CALL' => 'ИДЁТ ВЫЗОВ',
+                    'CALL_GATE' => 'ЗАНЯТО',
+                    'CONNECT' => 'ГОВОРИТЕ',
+                    'OPEN' => 'ОТКРЫТО',
+                    'FAIL_NO_CLIENT' => 'НЕВЕРНЫЙ НОМЕР КВАРТИРЫ',
+                    'FAIL_NO_APP_AND_FLAT' => 'АБОНЕНТ НЕДОСТУПЕН',
+                    'FAIL_LONG_SPEAK' => 'ВРЕМЯ ВЫШЛО',
+                    'FAIL_NO_ANSWER' => 'НЕ ОТВЕЧАЕТ',
+                    'FAIL_UNKNOWN' => 'ОШИБКА',
+                    'FAIL_BLACK_LIST' => 'АБОНЕНТ ЗАБЛОКИРОВАН',
+                    'FAIL_LINE_BUSY' => 'ЛИНИЯ ЗАНЯТА',
+                    'KEY_DUPLICATE_ERROR' => 'ДУБЛИКАТ КЛЮЧА ЗАБЛОКИРОВАН',
+                    'KEY_READ_ERROR' => 'ОШИБКА ЧТЕНИЯ КЛЮЧА',
+                    'KEY_BROKEN_ERROR' => 'КЛЮЧ ВЫШЕЛ ИЗ СТРОЯ',
+                    'KEY_UNSUPPORTED_ERROR' => 'КЛЮЧ НЕ ПОДДЕРЖИВАЕТСЯ'
+                ],
+            ],
+        ]);
+    }
+
     protected function setNetwork()
     {
-        $this->apiCall('/cgi-bin/configManager.cgi', [
+        $this->apiCall('/cgi-bin/configManager.cgi', 'GET', [
             'action' => 'setConfig',
             'RTSP.Block' => 'false',
             'Agent.Enable' => 'false',

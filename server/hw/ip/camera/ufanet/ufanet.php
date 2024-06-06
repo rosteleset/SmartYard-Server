@@ -20,7 +20,7 @@ class ufanet extends camera
         int $sensitivity = 0
     )
     {
-        $this->apiCall('/cgi-bin/configManager.cgi', [
+        $this->apiCall('/cgi-bin/configManager.cgi', 'GET', [
             'action' => 'setConfig',
             'MotionDetect[0].Enable' => $left || $top || $width || $height ? 'true' : 'false',
             'MotionDetect[0].MotionDetectWindow[0].ROI' => "{$left}x{$top}x{$width}x$height",
@@ -29,12 +29,12 @@ class ufanet extends camera
 
     public function getCamshot(): string
     {
-        return $this->apiCall('/image.jpg', ['width' => 1920, 'height' => 1080]);
+        return $this->apiCall('/image.jpg', 'GET', ['width' => 1920, 'height' => 1080]);
     }
 
     public function setOsdText(string $text = '')
     {
-        $this->apiCall('/cgi-bin/configManager.cgi', [
+        $this->apiCall('/cgi-bin/configManager.cgi', 'GET', [
             'action' => 'setConfig',
             'Locales.TimeFormat' => "%22%d.%m.%y%20%H:%M:%S%20$text%22",
             'VideoWidget[0].TimeTitle.Rect[0]' => 0,
@@ -49,7 +49,7 @@ class ufanet extends camera
 
     protected function getMotionDetectionConfig(): array
     {
-        $rawParams = $this->apiCall('/cgi-bin/configManager.cgi', [
+        $rawParams = $this->apiCall('/cgi-bin/configManager.cgi', 'GET', [
             'action' => 'getConfig',
             'name' => 'MotionDetect',
         ]);
@@ -67,7 +67,7 @@ class ufanet extends camera
 
     protected function getOsdText(): string
     {
-        $rawParams = $this->apiCall('/cgi-bin/configManager.cgi', [
+        $rawParams = $this->apiCall('/cgi-bin/configManager.cgi', 'GET', [
             'action' => 'getConfig',
             'name' => 'Locales'
         ]);

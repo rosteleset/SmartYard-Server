@@ -15,7 +15,7 @@ trait ufanet
 
     public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow')
     {
-        $this->apiCall('/cgi-bin/configManager.cgi', [
+        $this->apiCall('/cgi-bin/configManager.cgi', 'GET', [
             'action' => 'setConfig',
             'NTP.Address' => "$server:$port",
             'NTP.TimeZone' => $timezone,
@@ -30,7 +30,7 @@ trait ufanet
 
     public function getSysinfo(): array
     {
-        $serialNumber = $this->apiCall('/cgi-bin/magicBox.cgi', ['action' => 'getSerialNo']);
+        $serialNumber = $this->apiCall('/cgi-bin/magicBox.cgi', 'GET', ['action' => 'getSerialNo']);
 
         if ($serialNumber !== null) {
             return ['DeviceID' => $serialNumber];
@@ -41,17 +41,17 @@ trait ufanet
 
     public function reboot()
     {
-        $this->apiCall('/cgi-bin/magicBox.cgi', ['action' => 'reboot']);
+        $this->apiCall('/cgi-bin/magicBox.cgi', 'GET', ['action' => 'reboot']);
     }
 
     public function reset()
     {
-        $this->apiCall('/cgi-bin/magicBox.cgi', ['action' => 'resetSystemEx']);
+        $this->apiCall('/cgi-bin/magicBox.cgi', 'GET', ['action' => 'resetSystemEx']);
     }
 
     public function setAdminPassword(string $password)
     {
-        $this->apiCall('/cgi-bin/userManager.cgi', [
+        $this->apiCall('/cgi-bin/userManager.cgi', 'GET', [
             'action' => 'modifyPassword',
             'name' => $this->login,
             'pwd' => $password,
@@ -70,12 +70,12 @@ trait ufanet
      * Make an API call.
      *
      * @param string $resource API endpoint.
-     * @param array $payload (Optional) Query params or request body. Empty array by default.
      * @param string $method (Optional) HTTP method. Default is "GET".
+     * @param array $payload (Optional) Query params or request body. Empty array by default.
      *
      * @return array|string|null API response or null if an error occurred.
      */
-    protected function apiCall(string $resource, array $payload = [], string $method = 'GET')
+    protected function apiCall(string $resource, string $method = 'GET', array $payload = [])
     {
         if (!empty($payload) && $method === 'GET') {
             $queryString = urldecode(http_build_query($payload));
@@ -93,7 +93,7 @@ trait ufanet
 
         if (!empty($payload) && $method !== 'GET') {
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload, JSON_UNESCAPED_UNICODE));
-            curl_setopt($ch, CURLOPT_HTTPHEADER, 'Content-Type: application/json');
+            curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
         }
 
         $res = curl_exec($ch);
@@ -136,7 +136,7 @@ trait ufanet
 
     protected function getNtpConfig(): array
     {
-        $rawParams = $this->apiCall('/cgi-bin/configManager.cgi', ['action' => 'getConfig', 'name' => 'NTP']);
+        $rawParams = $this->apiCall('/cgi-bin/configManager.cgi', 'GET', ['action' => 'getConfig', 'name' => 'NTP']);
         ['Address' => $address, 'TimeZone' => $timezone] = $this->convertResponseToArray($rawParams);
         $addressParts = explode(':', $address, 2);
 
