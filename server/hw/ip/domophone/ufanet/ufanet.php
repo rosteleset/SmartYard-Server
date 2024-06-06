@@ -58,12 +58,18 @@ abstract class ufanet extends domophone
         int    $stunPort = 3478
     )
     {
-        // TODO: Implement configureSip() method.
+        $this->apiCall('/api/v1/configuration', 'PATCH', [
+            'sip' => [
+                'domain' => "$server:$port",
+                'user' => $login,
+                'password' => $password,
+            ],
+        ]);
     }
 
     public function configureUserAccount(string $password)
     {
-        // TODO: Implement configureUserAccount() method.
+        // Empty implementation
     }
 
     public function deleteApartment(int $apartment = 0)
@@ -78,7 +84,6 @@ abstract class ufanet extends domophone
 
     public function getLineDiagnostics(int $apartment): string|int|float
     {
-        // TODO: Implement getLineDiagnostics() method.
         return 0;
     }
 
@@ -96,17 +101,24 @@ abstract class ufanet extends domophone
 
     public function setAudioLevels(array $levels)
     {
-        // TODO: Implement setAudioLevels() method.
+        if (count($levels) === 2) {
+            $this->apiCall('/api/v1/configuration', 'PATCH', [
+                'volume' => [
+                    'speaker' => $levels[0],
+                    'mic' => $levels[1],
+                ],
+            ]);
+        }
     }
 
     public function setCallTimeout(int $timeout)
     {
-        // TODO: Implement setCallTimeout() method.
+        // Empty implementation
     }
 
     public function setCmsLevels(array $levels)
     {
-        // TODO: Implement setCmsLevels() method.
+        // Empty implementation
     }
 
     public function setCmsModel(string $model = '')
@@ -131,12 +143,12 @@ abstract class ufanet extends domophone
 
     public function setLanguage(string $language = 'ru')
     {
-        // TODO: Implement setLanguage() method.
+        // Empty implementation
     }
 
     public function setPublicCode(int $code = 0)
     {
-        // TODO: Implement setPublicCode() method.
+        // Empty implementation
     }
 
     public function setSosNumber(int $sipNumber)
@@ -146,27 +158,30 @@ abstract class ufanet extends domophone
 
     public function setTalkTimeout(int $timeout)
     {
-        // TODO: Implement setTalkTimeout() method.
+        // Empty implementation
     }
 
     public function setTickerText(string $text = '')
     {
-        $this->apiCall('/api/v1/configuration', 'PUT', ['display' => ['labels' => [$text, '', '']]]);
+        $this->apiCall('/api/v1/configuration', 'PATCH', ['display' => ['labels' => [$text, '', '']]]);
     }
 
     public function setUnlockTime(int $time = 3)
     {
-        // TODO: Implement setUnlockTime() method.
+        $this->apiCall('/api/v1/configuration', 'PATCH', ['door' => ['open_time' => $time]]);
     }
 
     public function setUnlocked(bool $unlocked = true)
     {
-        // TODO: Implement setUnlocked() method.
+        $this->apiCall('/api/v1/configuration', 'PATCH', [
+            'door' => [
+                'unlock' => $unlocked ? '3000-01-01 00:00:00' : '',
+            ],
+        ]);
     }
 
     public function transformDbConfig(array $dbConfig): array
     {
-        // TODO: Implement transformDbConfig() method.
         return $dbConfig;
     }
 
@@ -178,13 +193,12 @@ abstract class ufanet extends domophone
 
     protected function getAudioLevels(): array
     {
-        // TODO: Implement getAudioLevels() method.
-        return [];
+        $volume = $this->apiCall('/api/v1/configuration')['volume'];
+        return [$volume['speaker'], $volume['mic']];
     }
 
     protected function getCmsLevels(): array
     {
-        // TODO: Implement getCmsLevels() method.
         return [];
     }
 
@@ -220,25 +234,38 @@ abstract class ufanet extends domophone
 
     protected function getSipConfig(): array
     {
-        // TODO: Implement getSipConfig() method.
-        return [];
+        [
+            'domain' => $domain,
+            'user' => $user,
+            'password' => $password,
+        ] = $this->apiCall('/api/v1/configuration')['sip'];
+
+        [$server, $port] = explode(':', $domain, 2);
+
+        return [
+            'server' => $server,
+            'port' => $port,
+            'login' => $user,
+            'password' => $password,
+            'stunEnabled' => false,
+            'stunServer' => '',
+            'stunPort' => 3478,
+        ];
     }
 
     protected function getTickerText(): string
     {
-        // TODO: Implement getTickerText() method.
-        return '';
+        return $this->apiCall('/api/v1/configuration')['display']['labels'][0] ?? '';
     }
 
     protected function getUnlocked(): bool
     {
-        // TODO: Implement getUnlocked() method.
-        return false;
+        return $this->apiCall('/api/v1/configuration')['door']['unlock'] !== '';
     }
 
     protected function setDisplayLocalization()
     {
-        $this->apiCall('/api/v1/configuration', 'PUT', [
+        $this->apiCall('/api/v1/configuration', 'PATCH', [
             'display' => [
                 'localization' => [
                     'ENTER_APARTMENT' => 'НАБЕРИТЕ НОМЕР КВАРТИРЫ',
