@@ -14,12 +14,15 @@ abstract class ufanet extends domophone
 
     public function addRfid(string $code, int $apartment = 0)
     {
-        // TODO: Implement addRfid() method.
+        $decCode = hexdec(substr($code, 8));
+        $this->apiCall("/api/v1/rfids/$decCode", 'POST', '');
     }
 
     public function addRfids(array $rfids)
     {
-        // TODO: Implement addRfids() method.
+        foreach ($rfids as $rfid) {
+            $this->addRfid($rfid);
+        }
     }
 
     public function configureApartment(
@@ -79,7 +82,8 @@ abstract class ufanet extends domophone
 
     public function deleteRfid(string $code = '')
     {
-        // TODO: Implement deleteRfid() method.
+        $decCode = hexdec(substr($code, 8));
+        $this->apiCall("/api/v1/rfids/$decCode", 'DELETE');
     }
 
     public function getLineDiagnostics(int $apartment): string|int|float
@@ -138,7 +142,7 @@ abstract class ufanet extends domophone
         string $codeCms = '1'
     )
     {
-        // TODO: Implement setDtmfCodes() method.
+        // Empty implementation
     }
 
     public function setLanguage(string $language = 'ru')
@@ -210,7 +214,6 @@ abstract class ufanet extends domophone
 
     protected function getDtmfConfig(): array
     {
-        // TODO: Implement getDtmfConfig() method.
         return [];
     }
 
@@ -228,8 +231,15 @@ abstract class ufanet extends domophone
 
     protected function getRfids(): array
     {
-        // TODO: Implement getRfids() method.
-        return [];
+        $rfids = [];
+        $rawRfids = $this->apiCall('/api/v1/rfids');
+
+        foreach ($rawRfids as $rawRfid => $description) {
+            $hexCode = '00000000' . strtoupper(dechex($rawRfid));
+            $rfids[$hexCode] = $hexCode;
+        }
+
+        return $rfids;
     }
 
     protected function getSipConfig(): array

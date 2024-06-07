@@ -71,11 +71,11 @@ trait ufanet
      *
      * @param string $resource API endpoint.
      * @param string $method (Optional) HTTP method. Default is "GET".
-     * @param array $payload (Optional) Query params or request body. Empty array by default.
+     * @param array|string $payload (Optional) Query params or request body. Empty array by default.
      *
      * @return array|string|null API response or null if an error occurred.
      */
-    protected function apiCall(string $resource, string $method = 'GET', array $payload = [])
+    protected function apiCall(string $resource, string $method = 'GET', array|string $payload = [])
     {
         if (!empty($payload) && $method === 'GET') {
             $queryString = urldecode(http_build_query($payload));
@@ -91,7 +91,7 @@ trait ufanet
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_VERBOSE, false);
 
-        if (!empty($payload) && $method !== 'GET') {
+        if ((is_string($payload) || (is_array($payload) && !empty($payload))) && $method !== 'GET') {
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload, JSON_UNESCAPED_UNICODE));
             curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
         }
