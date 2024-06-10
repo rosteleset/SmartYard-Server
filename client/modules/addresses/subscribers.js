@@ -347,8 +347,8 @@
                         title: i18n("addresses.deleteSubscriber"),
                         options: [
                             {
-                                id: "0",
-                                text: "&nbsp;",
+                                id: "",
+                                text: "",
                             },
                             {
                                 id: "1",
