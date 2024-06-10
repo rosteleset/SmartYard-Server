@@ -12,13 +12,19 @@ abstract class ufanet extends domophone
 
     use \hw\ip\common\ufanet\ufanet;
 
+    /**
+     * @var array|null $dialplans An array that holds dialplan information,
+     * which may be null if not loaded.
+     */
+    protected ?array $dialplans = null;
+
     public function addRfid(string $code, int $apartment = 0)
     {
         $decCode = hexdec(substr($code, 8));
         $this->apiCall("/api/v1/rfids/$decCode", 'POST', '');
     }
 
-    public function addRfids(array $rfids)
+    public function addRfids(array $rfids) // TODO: PUT
     {
         foreach ($rfids as $rfid) {
             $this->addRfid($rfid);
@@ -33,7 +39,14 @@ abstract class ufanet extends domophone
         array $cmsLevels = []
     )
     {
-        // TODO: Implement configureApartment() method.
+        $this->loadDialplans();
+
+        $this->dialplans[$apartment] = [
+            'sip_number' => $sipNumbers[0] ?? '',
+            'sip' => true,
+            'analog' => $cmsEnabled,
+            'map' => $this->dialplans[$apartment]['map'] ?? 0,
+        ];
     }
 
     public function configureEncoding()
@@ -77,7 +90,8 @@ abstract class ufanet extends domophone
 
     public function deleteApartment(int $apartment = 0)
     {
-        // TODO: Implement deleteApartment() method.
+        $this->loadDialplans();
+        unset($this->dialplans[$apartment]);
     }
 
     public function deleteRfid(string $code = '')
@@ -132,7 +146,12 @@ abstract class ufanet extends domophone
 
     public function setConciergeNumber(int $sipNumber)
     {
-        // TODO: Implement setConciergeNumber() method.
+        $this->apiCall('/api/v1/apartments/CONS', 'DELETE');
+        $this->apiCall('/api/v1/apartments/CONS', 'POST', [
+            'sip_number' => "$sipNumber",
+            'analog' => false,
+            'sip' => true,
+        ]);
     }
 
     public function setDtmfCodes(
@@ -157,7 +176,12 @@ abstract class ufanet extends domophone
 
     public function setSosNumber(int $sipNumber)
     {
-        // TODO: Implement setSosNumber() method.
+        $this->apiCall('/api/v1/apartments/SOS', 'DELETE');
+        $this->apiCall('/api/v1/apartments/SOS', 'POST', [
+            'sip_number' => "$sipNumber",
+            'analog' => false,
+            'sip' => true,
+        ]);
     }
 
     public function setTalkTimeout(int $timeout)
@@ -184,6 +208,11 @@ abstract class ufanet extends domophone
         ]);
     }
 
+    public function syncData()
+    {
+        $this->uploadDialplans();
+    }
+
     public function transformDbConfig(array $dbConfig): array
     {
         return $dbConfig;
@@ -191,8 +220,21 @@ abstract class ufanet extends domophone
 
     protected function getApartments(): array
     {
-        // TODO: Implement getApartments() method.
-        return [];
+        $this->loadDialplans();
+
+        $apartments = [];
+
+        foreach ($this->dialplans as $apartmentNumber => $dialplan) {
+            $apartments[$apartmentNumber] = [
+                'apartment' => $apartmentNumber,
+                'code' => 0,
+                'sipNumbers' => [$dialplan['sip_number']],
+                'cmsEnabled' => $dialplan['analog'],
+                'cmsLevels' => [],
+            ];
+        }
+
+        return $apartments;
     }
 
     protected function getAudioLevels(): array
@@ -273,6 +315,24 @@ abstract class ufanet extends domophone
         return $this->apiCall('/api/v1/configuration')['door']['unlock'] !== '';
     }
 
+    /**
+     * Load and cache dialplans from the API if they haven't been loaded already.
+     *
+     * @return void
+     */
+    protected function loadDialplans()
+    {
+        if ($this->dialplans === null) {
+            $rawApartments = $this->apiCall('/api/v1/apartments');
+            $this->dialplans = array_filter($rawApartments, fn($key) => is_numeric($key), ARRAY_FILTER_USE_KEY);
+        }
+    }
+
+    /**
+     * Set the display text for service messages.
+     *
+     * @return void
+     */
     protected function setDisplayLocalization()
     {
         $this->apiCall('/api/v1/configuration', 'PATCH', [
@@ -300,6 +360,11 @@ abstract class ufanet extends domophone
         ]);
     }
 
+    /**
+     * Set network params.
+     *
+     * @return void
+     */
     protected function setNetwork()
     {
         $this->apiCall('/cgi-bin/configManager.cgi', 'GET', [
@@ -307,5 +372,15 @@ abstract class ufanet extends domophone
             'RTSP.Block' => 'false',
             'Agent.Enable' => 'false',
         ]);
+    }
+
+    /**
+     * Upload the dialplan from the cache into the intercom.
+     *
+     * @return void
+     */
+    protected function uploadDialplans()
+    {
+        $this->apiCall('/api/v1/apartments', 'PUT', $this->dialplans);
     }
 }

@@ -42,6 +42,11 @@ class ufanet extends camera
         ]);
     }
 
+    public function syncData()
+    {
+        // Empty implementation
+    }
+
     public function transformDbConfig(array $dbConfig): array
     {
         return $dbConfig;

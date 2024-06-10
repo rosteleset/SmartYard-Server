@@ -61,11 +61,6 @@ trait ufanet
         sleep(5);
     }
 
-    public function syncData()
-    {
-        // Empty implementation
-    }
-
     /**
      * Make an API call.
      *
