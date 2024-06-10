@@ -267,8 +267,30 @@ abstract class ufanet extends domophone
 
     protected function getMatrix(): array
     {
-        // TODO: Implement getMatrix() method.
-        return [];
+        $this->loadDialplans();
+
+        $matrix = [];
+
+        foreach ($this->dialplans as $apartmentNumber => $dialplan) {
+            $analogNumber = $dialplan['map'];
+
+            if ($analogNumber === 0) {
+                continue;
+            }
+
+            $hundreds = intdiv($analogNumber, 100);
+            $tens = intdiv($analogNumber % 100, 10);
+            $units = $analogNumber % 10;
+
+            $matrix[$hundreds . $tens . $units] = [
+                'hundreds' => $hundreds,
+                'tens' => $tens,
+                'units' => $units,
+                'apartment' => $apartmentNumber,
+            ];
+        }
+
+        return $matrix;
     }
 
     protected function getRfids(): array
