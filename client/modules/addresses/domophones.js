@@ -405,7 +405,7 @@
                                                 ? modules.addresses.domophones.meta.domophones[i].status.status : "Unknown")
                                         : modules.addresses.domophones.handleDeviceStatus("Disabled"),
                                     nowrap: true,
-                                 },
+                                },
                                 {
                                     data: modules.addresses.domophones.meta.domophones[i].url,
                                     nowrap: true,
