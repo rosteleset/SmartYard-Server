@@ -334,7 +334,7 @@
             <span class="status-indicator ${statusClass}">
                 <div class="status-tooltip">${status}</div>
             </span>
-        </div>  
+        </div>
     `;
     },
 
@@ -410,7 +410,8 @@
                                     data: modules.addresses.domophones.meta.domophones[i].url,
                                     nowrap: true,
                                 },
-                                {   data: modules.addresses.domophones.meta.models[modules.addresses.domophones.meta.domophones[i].model].title,
+                                {
+                                    data: (modules.addresses.domophones.meta.domophones[i].model && modules.addresses.domophones.meta.models[modules.addresses.domophones.meta.domophones[i].model]) ? modules.addresses.domophones.meta.models[modules.addresses.domophones.meta.domophones[i].model].title : modules.addresses.domophones.meta.domophones[i].model,
                                     nowrap: true,
                                 },
                                 {
