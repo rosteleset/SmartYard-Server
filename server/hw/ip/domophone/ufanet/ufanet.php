@@ -61,7 +61,22 @@ abstract class ufanet extends domophone
 
     public function configureMatrix(array $matrix)
     {
-        // TODO: Implement configureMatrix() method.
+        $this->loadDialplans();
+
+        foreach ($matrix as ['hundreds' => $hundreds, 'tens' => $tens, 'units' => $units, 'apartment' => $apartment]) {
+            $analogNumber = $hundreds * 100 + $tens * 10 + $units;
+
+            if (isset($this->dialplans[$apartment])) {
+                $this->dialplans[$apartment]['map'] = $analogNumber;
+            } else {
+                $this->dialplans[$apartment] = [
+                    'sip_number' => '',
+                    'sip' => false,
+                    'analog' => true,
+                    'map' => $analogNumber,
+                ];
+            }
+        }
     }
 
     public function configureSip(
@@ -225,6 +240,10 @@ abstract class ufanet extends domophone
         $apartments = [];
 
         foreach ($this->dialplans as $apartmentNumber => $dialplan) {
+            if ($dialplan['sip'] === false) {
+                continue;
+            }
+
             $apartments[$apartmentNumber] = [
                 'apartment' => $apartmentNumber,
                 'code' => 0,
