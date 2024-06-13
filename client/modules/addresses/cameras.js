@@ -98,6 +98,9 @@
                     placeholder: "http://",
                     validate: v => {
                         try {
+                            if (v && !/^https?:\/\/.+/.test(v)) {
+                                throw new Error();;
+                            }
                             new URL(v);
                             return true;
                         } catch (_) {
@@ -114,6 +117,9 @@
                     validate: v => {
                         if (v) {
                             try {
+                                if (!/^https?:\/\/.+/.test(v)) {
+                                    throw new Error();
+                                }
                                 new URL(v);
                                 return true;
                             } catch (_) {
@@ -150,6 +156,9 @@
                     validate: v => {
                         if (v) {
                             try {
+                                if (!/^https?:\/\/.+/.test(v)) {
+                                    throw new Error();
+                                }
                                 new URL(v);
                                 return true;
                             } catch (_) {
@@ -345,6 +354,9 @@
                         value: camera.url,
                         validate: v => {
                             try {
+                                if (v && !/^https?:\/\/.+/.test(v)) {
+                                    throw new Error();
+                                }
                                 new URL(v);
                                 return true;
                             } catch (_) {
@@ -362,6 +374,9 @@
                         validate: v => {
                             if (v) {
                                 try {
+                                    if (!/^rtsp:\/\/.+/.test(v)) {
+                                        throw new Error();
+                                    }
                                     new URL(v);
                                     return true;
                                 } catch (_) {
@@ -401,6 +416,9 @@
                         validate: v => {
                             if (v) {
                                 try {
+                                    if (!/^https?:\/\/.+/.test(v)) {
+                                        throw new Error();
+                                    }
                                     new URL(v);
                                     return true;
                                 } catch (_) {
@@ -588,6 +606,9 @@
                         title: i18n("addresses.url"),
                     },
                     {
+                        title: i18n("addresses.common"),
+                    },
+                    {
                         title: i18n("addresses.model"),
                     },
                     {
@@ -620,6 +641,10 @@
                                 },
                                 {
                                     data: modules.addresses.cameras.meta.cameras[i].url,
+                                    nowrap: true,
+                                },
+                                {
+                                    data: modules.addresses.cameras.meta.cameras[i].common ? i18n("addresses.yes") : i18n("addresses.no"),
                                     nowrap: true,
                                 },
                                 {

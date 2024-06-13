@@ -96,6 +96,9 @@
                     placeholder: "http://",
                     validate: v => {
                         try {
+                            if (!/^https?:\/\/.+/.test(v)) {
+                                throw new Error();
+                            }
                             new URL(v);
                             return true;
                         } catch (_) {
@@ -225,6 +228,9 @@
                         value: domophone.url,
                         validate: v => {
                             try {
+                                if (!/^https?:\/\/.+/.test(v)) {
+                                    throw new Error();
+                                }
                                 new URL(v);
                                 return true;
                             } catch (_) {
