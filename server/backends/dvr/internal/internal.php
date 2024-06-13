@@ -36,11 +36,11 @@
             /**
              * @inheritDoc
              */
-            public function getDVRServerByStream($url)
+            public function getDVRServerForCam($cam)
             {
                 $dvr_servers = $this->getDVRServers();
 
-                $url = parse_url($url);
+                $url = parse_url($cam['dvrStream']);
                 $scheme = $url["scheme"] ?: 'http';
                 $port = @((int)$url["port"]) ?: false;
 
@@ -75,7 +75,7 @@
                 // Implemetnation for static token for dvr server written in config
                 // You should override this method, if you have dynamic tokens or have unique static tokens for every subscriber
 
-                $dvrServer = $this->getDVRServerByStream($cam['dvrStream']);
+                $dvrServer = $this->getDVRServerForCam($cam);
 
                 $result = '';
 
@@ -83,7 +83,78 @@
                     $result = strval(@$dvrServer['token'] ?: '');
                 }
 
+                // Если токен явно присутствует в DVR-URL Flussonic, то используем его.
+                if ($dvrServer['type'] == 'flussonic') {
+
+                    $parsed_url = parse_url($cam['dvrStream']);
+                    
+                    $scheme   = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
+                    $host     = isset($parsed_url['host']) ? $parsed_url['host'] : '';
+                    $port     = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
+                    $user     = isset($parsed_url['user']) ? $parsed_url['user'] : '';
+                    $pass     = isset($parsed_url['pass']) ? ':' . $parsed_url['pass']  : '';
+                    $pass     = ($user || $pass) ? "$pass@" : '';
+                    $path     = isset($parsed_url['path']) ? $parsed_url['path'] : '';
+                    $query    = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
+                    
+                    if ($path && $path[0] == '/') {
+                        $path = substr($path, 1);
+                    }
+                
+                    $path = explode("/", $path);
+                    
+                    $stream_name = $path[0];
+
+                    $token = false;
+                    if (isset($parsed_url['query'])) {
+                        parse_str($parsed_url['query'], $parsed_query);
+                        $token = isset($parsed_query['token']) ? $parsed_query['token'] : false;
+                    }
+
+                    // Если токен явно присутствует в URL, то возвращаем его.
+                    if (!$token) {
+                        return $token;
+                    }
+                }
+                // по умолчанию возвращаем токен, заданный для DVR сервера
                 return $result;
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function getDVRStreamURLForCam($cam)
+            {
+                
+                $dvrStream = $cam['dvrStream'];
+                $dvrServer = $this->getDVRServerForCam($cam);
+
+                // для Flussonic приводим URL к виду: https://host/stream_name
+                if ($dvrServer['type'] == 'flussonic') {
+                    $parsed_url = parse_url($dvrStream);
+                    
+                    $scheme   = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
+                    $host     = isset($parsed_url['host']) ? $parsed_url['host'] : '';
+                    $port     = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
+                    $user     = isset($parsed_url['user']) ? $parsed_url['user'] : '';
+                    $pass     = isset($parsed_url['pass']) ? ':' . $parsed_url['pass']  : '';
+                    $pass     = ($user || $pass) ? "$pass@" : '';
+                    $path     = isset($parsed_url['path']) ? $parsed_url['path'] : '';
+                    $query    = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
+                    
+                    if ($path && $path[0] == '/') {
+                        $path = substr($path, 1);
+                    }
+                
+                    $path = explode("/", $path);
+                    
+                    $stream_name = $path[0];
+
+                    $dvrStream = "$scheme$user$pass$host$port/$stream_name";
+
+                }
+
+                return $dvrStream;
             }
 
             /**
@@ -98,7 +169,7 @@
              * @inheritDoc
              */
             public function getUrlOfRecord($cam, $subscriberId, $start, $finish) {
-                $dvr = $this->getDVRServerByStream($cam['dvrStream']);
+                $dvr = $this->getDVRServerForCam($cam);
                 $request_url = false;
                 switch ($dvr['type']) {
                 case 'nimble':
@@ -345,7 +416,8 @@
                     $flussonic_token = $this->getDVRTokenForCam($cam, $subscriberId);
                     $from = $start;
                     $duration = (int)$finish - (int)$start;
-                    $request_url = $cam['dvrStream']."/archive-$from-$duration.mp4?token=$flussonic_token";
+
+                    $request_url = $this->getDVRStreamURLForCam($cam)."/archive-$from-$duration.mp4?token=$flussonic_token";
                 }
                 return $request_url;
             }
@@ -354,10 +426,10 @@
              * @inheritDoc
              */
             public function getUrlOfScreenshot($cam, $time = null) {
-                $prefix = $cam['dvrStream'];
+                $prefix = $this->getDVRStreamURLForCam($cam);
                 if ($time === null)
                     $time = now();
-                $dvr = loadBackend("dvr")->getDVRServerByStream($prefix);
+                $dvr = loadBackend("dvr")->getDVRServerForCam($cam);
                 $type = $dvr['type'];
                 
                 switch($type) {
@@ -487,7 +559,7 @@
              * @inheritDoc
              */
             public function getRanges($cam, $subscriberId) {
-                $dvr = $this->getDVRServerByStream($cam['dvrStream']);
+                $dvr = $this->getDVRServerForCam($cam);
                 if ($dvr['type'] == 'nimble') {
                     // Nimble Server
                     $path = parse_url($cam['dvrStream'], PHP_URL_PATH);
@@ -557,7 +629,7 @@
                 } else {
                     // Flussonic Server by default
                     $flussonic_token = $this->getDVRTokenForCam($cam, $subscriberId);
-                    $request_url = $cam['dvrStream']."/recording_status.json?from=1525186456&token=$flussonic_token";
+                    $request_url = $this->getDVRStreamURLForCam($cam)."/recording_status.json?from=1525186456&token=$flussonic_token";
                     $ranges = json_decode(file_get_contents($request_url), true);
                 }
                 return $ranges;
