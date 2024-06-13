@@ -1,5 +1,5 @@
 [Unit]
-Description=Intercom syslog service for Beward DS06A
+Description=Intercom syslog service for Beward DS
 Documentation=https://github.com/rosteleset/SmartYard-Server/tree/main/install
 After=network.target
 
@@ -13,8 +13,8 @@ User=isyslog
 Group=isyslog
 LimitCORE=infinity
 KillMode=process
-#StandardOutput=file:/var/log/syslog_intercom/syslog_intercom_beward_ds06a.log
-StandardError=file:/var/log/syslog_intercom/syslog_intercom_beward_ds06a.error.log
+#StandardOutput=file:/var/log/syslog_intercom/syslog_intercom_beward_ds.log
+StandardError=file:/var/log/syslog_intercom/syslog_intercom_beward_ds.error.log
 
 [Install]
 WantedBy=multi-user.target
