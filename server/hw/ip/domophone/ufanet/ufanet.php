@@ -12,10 +12,24 @@ abstract class ufanet extends domophone
 
     use \hw\ip\common\ufanet\ufanet;
 
-    /**
-     * @var array|null $dialplans An array that holds dialplan information,
-     * which may be null if not loaded.
-     */
+    /** @var array Set of parameters sent to the intercom for different CMS models. */
+    protected const CMS_PARAMS = [
+        'BK-100' => ['type' => 'VIZIT', 'mode' => 2], // TODO: check mode 1 and mode 2
+        'BK-400' => ['type' => 'VIZIT', 'mode' => 3],
+        'COM-25U' => ['type' => 'METAKOM'],
+        'COM-100U' => ['type' => 'METAKOM'],
+        'COM-220U' => ['type' => 'METAKOM'],
+        'FACTORIAL 8x8' => ['type' => 'FACTORIAL'],
+        'KM20-1' => ['type' => 'ELTIS', 'mode' => 1],
+        'KM100-7.1' => ['type' => 'ELTIS', 'mode' => 1],
+        'KM100-7.2' => ['type' => 'ELTIS', 'mode' => 1],
+        'KM100-7.3' => ['type' => 'ELTIS', 'mode' => 1],
+        'KM100-7.5' => ['type' => 'ELTIS', 'mode' => 1],
+        'KMG-100' => ['type' => 'CYFRAL', 'mode' => 1],
+        'QAD-100' => ['type' => 'DIGITAL'],
+    ];
+
+    /** @var array|null $dialplans An array that holds dialplan information, which may be null if not loaded. */
     protected ?array $dialplans = null;
 
     public function addRfid(string $code, int $apartment = 0)
@@ -183,7 +197,7 @@ abstract class ufanet extends domophone
 
     public function setCmsModel(string $model = '')
     {
-        // TODO: Implement setCmsModel() method.
+        $this->apiCall('/api/v1/configuration', 'PATCH', ['commutator' => self::CMS_PARAMS[$model] ?? []]);
     }
 
     public function setConciergeNumber(int $sipNumber)
@@ -296,8 +310,19 @@ abstract class ufanet extends domophone
 
     protected function getCmsModel(): string
     {
-        // TODO: Implement getCmsModel() method.
-        return '';
+        ['type' => $rawType, 'mode' => $mode] = $this->apiCall('/api/v1/configuration')['commutator'];
+
+        return match ($rawType) {
+            'DIGITAL' => 'QAD-100',
+            'CYFRAL' => 'KMG-100',
+            'FACTORIAL' => 'FACTORIAL 8x8',
+            'VIZIT' => match ($mode) {
+                2 => 'BK-100',
+                3 => 'BK-400',
+                default => $rawType,
+            },
+            default => $rawType,
+        };
     }
 
     protected function getDtmfConfig(): array
