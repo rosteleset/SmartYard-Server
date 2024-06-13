@@ -590,7 +590,7 @@
 
                             let value = (typeof prefferredValue !== "undefined") ? prefferredValue : ((issue && issue["_cf_" + fieldId]) ? issue["_cf_" + fieldId] : []);
 
-                            if (value && !already[value]) {
+                            if (value && $.trim(value) && !already[value]) {
                                 options.push({
                                     id: value,
                                     text: value,
