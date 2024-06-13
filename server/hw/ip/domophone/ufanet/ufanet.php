@@ -51,7 +51,34 @@ abstract class ufanet extends domophone
 
     public function configureEncoding()
     {
-        // TODO: Implement configureEncoding() method.
+        $this->apiCall('/cgi-bin/configManager.cgi', 'GET', [
+            'action' => 'setConfig',
+
+            // Audio stream
+            'Encode[0].MainFormat[0].AudioEnable' => 'true',
+            'Encode[0].MainFormat[0].Audio.Compression' => 'alaw',
+            'Encode[0].MainFormat[0].Audio.Frequency' => 8000,
+
+            // Video main stream
+            'Encode[0].MainFormat[0].VideoEnable' => 'true',
+            'Encode[0].MainFormat[0].Video.Compression' => 'h264',
+            'Encode[0].MainFormat[0].Video.resolution' => '1280x720',
+            'Encode[0].MainFormat[0].Video.FPS' => 15,
+            'Encode[0].MainFormat[0].Video.GOP' => 1,
+            'Encode[0].MainFormat[0].Video.GOPmode' => 'normal',
+            'Encode[0].MainFormat[0].Video.BitRate' => 1024,
+            'Encode[0].MainFormat[0].Video.BitRateControl' => 'vbr',
+
+            // Video extra stream
+            'Encode[0].ExtraFormat[0].VideoEnable' => 'true',
+            'Encode[0].ExtraFormat[0].Video.Compression' => 'h264',
+            'Encode[0].ExtraFormat[0].Video.resolution' => '640x352',
+            'Encode[0].ExtraFormat[0].Video.FPS' => 25,
+            'Encode[0].ExtraFormat[0].Video.GOP' => 0.5,
+            'Encode[0].ExtraFormat[0].Video.GOPmode' => 'normal',
+            'Encode[0].ExtraFormat[0].Video.BitRate' => 348,
+            'Encode[0].ExtraFormat[0].Video.BitRateControl' => 'avbr',
+        ]);
     }
 
     public function configureGate(array $links = [])
