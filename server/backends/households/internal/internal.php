@@ -898,10 +898,19 @@
                 $monitoring = loadBackend("monitoring");
 
                 if ($monitoring && $withStatus) {
+                    $targetHosts = [];
                     $domophones = $this->db->get($q, false, $r);
 
+                    foreach ($domophones as $domophone) {
+                        $targetHosts[] = [
+                            'hostId' => $domophone['domophoneId'],
+                            'ip' => $domophone['ip'],
+                        ];
+                    }
+
+                    $targetStatus = $monitoring->devicesStatus("domophone", $targetHosts);
                     foreach ($domophones as &$domophone) {
-                        $domophone["status"] = $monitoring->deviceStatus("domophone", $domophone["ip"]);
+                        $domophone["status"] = $targetStatus[$domophone["domophoneId"]]['status'];
                     }
 
                     return $domophones;
