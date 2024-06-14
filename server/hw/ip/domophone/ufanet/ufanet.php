@@ -38,8 +38,8 @@ abstract class ufanet extends domophone
     public function addRfid(string $code, int $apartment = 0)
     {
         $this->loadRfids();
-        $key = hexdec(substr($code, 8));
-        $this->rfids[$key] = $apartment ?: '';
+        $decCode = hexdec(substr($code, 8));
+        $this->rfids[$decCode] = $apartment ?: '';
     }
 
     public function addRfids(array $rfids)
@@ -157,7 +157,13 @@ abstract class ufanet extends domophone
     public function deleteRfid(string $code = '')
     {
         $this->loadRfids();
-        unset($this->dialplans[$code]);
+
+        if ($code === '') {
+            $this->rfids = [];
+        } else {
+            $decCode = hexdec(substr($code, 8));
+            unset($this->rfids[$decCode]);
+        }
     }
 
     public function getLineDiagnostics(int $apartment): string|int|float
@@ -372,8 +378,8 @@ abstract class ufanet extends domophone
     protected function getRfids(): array
     {
         $this->loadRfids();
-        $keys = array_keys($this->rfids);
-        return array_combine($keys, $keys);
+        $hexCodes = array_map(fn($decCode) => sprintf('%014X', $decCode), array_keys($this->rfids));
+        return array_combine($hexCodes, $hexCodes);
     }
 
     protected function getSipConfig(): array
@@ -428,13 +434,7 @@ abstract class ufanet extends domophone
     protected function loadRfids()
     {
         if ($this->rfids === null) {
-            $rawRfids = $this->apiCall('/api/v1/rfids');
-            $this->rfids = [];
-
-            foreach ($rawRfids as $rawRfid => $description) {
-                $hexCode = sprintf('%014X', $rawRfid);
-                $this->rfids[$hexCode] = $description;
-            }
+            $this->rfids = $this->apiCall('/api/v1/rfids') ?: [];
         }
     }
 
