@@ -29,15 +29,15 @@ $common_cameras = $cameras->getCameras("common");
 $resp = [];
 
 foreach ($common_cameras as $camera) {
-    $hlsMode = $dvr->getDVRServerByStream($camera['dvrStream'])["hlsMode"];
+    $hlsMode = $dvr->getDVRServerForCam($camera)["hlsMode"];
     $item = [
         "id" => $camera["cameraId"],
         "name" => $camera["name"],
         "lat" => strval($camera['lat']),
         "lon" => strval($camera['lon']),
-        "url" => $camera['dvrStream'],
+        "url" => $dvr->getDVRStreamURLForCam($camera),
         "token" => $dvr->getDVRTokenForCam($camera, $subscriber['subscriberId']),
-        "serverType" => $dvr->getDVRServerByStream($camera['dvrStream'])["type"],
+        "serverType" => $dvr->getDVRServerForCam($camera)["type"],
         "hasSound" => boolval($camera['sound']),
     ];
 

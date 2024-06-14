@@ -124,12 +124,12 @@ foreach($houses as $house_key => $h) {
     $houses[$house_key]['doors'] = array_values($h['doors']);
     unset( $houses[$house_key]['cameras']);
     foreach($h['cameras'] as $camera) {
-        $dvr = loadBackend("dvr")->getDVRServerByStream($camera['dvrStream']);
+        $dvr = loadBackend("dvr")->getDVRServerForCam($camera);
         $item = [
             "id" => $camera['cameraId'],
             "name" => $camera['name'],
             "lat" => strval($camera['lat']),
-            "url" => $camera['dvrStream'],
+            "url" => loadBackend("dvr")->getDVRStreamURLForCam($camera),
             "token" => loadBackend("dvr")->getDVRTokenForCam($camera, $subscriber['subscriberId']),
             "lon" => strval($camera['lon']),
             "serverType" => $dvr['type'],
