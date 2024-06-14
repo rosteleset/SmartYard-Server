@@ -1,7 +1,7 @@
 zabbix_export:
   version: '6.4'
   template_groups:
-    - uuid: 441c5f644e5a41b98e9b8d9ab7ae94e8
+    - uuid: f781ffa99c56461cb45e316580182ed4
       name: Templates/SmartYard-Server
   templates:
     - uuid: 5133aab0224149059f0f8fbf8c23f5a5
@@ -147,7 +147,7 @@ zabbix_export:
               priority: WARNING
         - uuid: a3473d0341f24963af8c7708043c37e0
           name: 'Beward DS event service status'
-          key: 'systemd.unit.is-active[event_beward_ds06a]'
+          key: 'systemd.unit.is-active[event_beward_ds]'
           valuemap:
             name: 'Service status'
           tags:
@@ -155,7 +155,7 @@ zabbix_export:
               value: Event
           triggers:
             - uuid: aed2fa5d7c774c2eb6d3fd986862b8db
-              expression: 'last(/SmartYard-Server/systemd.unit.is-active[event_beward_ds06a])<1'
+              expression: 'last(/SmartYard-Server/systemd.unit.is-active[event_beward_ds])<1'
               name: 'Event | Beward DS event service failure'
               priority: WARNING
         - uuid: 43a344d3503f47c2a947fc6d318fb3ec
