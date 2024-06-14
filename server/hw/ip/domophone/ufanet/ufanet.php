@@ -32,13 +32,17 @@ abstract class ufanet extends domophone
     /** @var array|null $dialplans An array that holds dialplan information, which may be null if not loaded. */
     protected ?array $dialplans = null;
 
+    /** @var array|null $rfids An array that holds RFID codes information, which may be null if not loaded. */
+    protected ?array $rfids = null;
+
     public function addRfid(string $code, int $apartment = 0)
     {
-        $decCode = hexdec(substr($code, 8));
-        $this->apiCall("/api/v1/rfids/$decCode", 'POST', '');
+        $this->loadRfids();
+        $key = hexdec(substr($code, 8));
+        $this->rfids[$key] = $apartment ?: '';
     }
 
-    public function addRfids(array $rfids) // TODO: PUT
+    public function addRfids(array $rfids)
     {
         foreach ($rfids as $rfid) {
             $this->addRfid($rfid);
@@ -144,7 +148,7 @@ abstract class ufanet extends domophone
         // Empty implementation
     }
 
-    public function deleteApartment(int $apartment = 0)
+    public function deleteApartment(int $apartment = 0) // TODO: check matrix
     {
         $this->loadDialplans();
         unset($this->dialplans[$apartment]);
@@ -152,8 +156,8 @@ abstract class ufanet extends domophone
 
     public function deleteRfid(string $code = '')
     {
-        $decCode = hexdec(substr($code, 8));
-        $this->apiCall("/api/v1/rfids/$decCode", 'DELETE');
+        $this->loadRfids();
+        unset($this->dialplans[$code]);
     }
 
     public function getLineDiagnostics(int $apartment): string|int|float
@@ -267,6 +271,7 @@ abstract class ufanet extends domophone
     public function syncData()
     {
         $this->uploadDialplans();
+        $this->uploadRfids();
     }
 
     public function transformDbConfig(array $dbConfig): array
@@ -366,15 +371,9 @@ abstract class ufanet extends domophone
 
     protected function getRfids(): array
     {
-        $rfids = [];
-        $rawRfids = $this->apiCall('/api/v1/rfids');
-
-        foreach ($rawRfids as $rawRfid => $description) {
-            $hexCode = '00000000' . strtoupper(dechex($rawRfid));
-            $rfids[$hexCode] = $hexCode;
-        }
-
-        return $rfids;
+        $this->loadRfids();
+        $keys = array_keys($this->rfids);
+        return array_combine($keys, $keys);
     }
 
     protected function getSipConfig(): array
@@ -418,6 +417,24 @@ abstract class ufanet extends domophone
         if ($this->dialplans === null) {
             $rawApartments = $this->apiCall('/api/v1/apartments');
             $this->dialplans = array_filter($rawApartments, fn($key) => is_numeric($key), ARRAY_FILTER_USE_KEY);
+        }
+    }
+
+    /**
+     * Load and cache RFID codes from the API if they haven't been loaded already.
+     *
+     * @return void
+     */
+    protected function loadRfids()
+    {
+        if ($this->rfids === null) {
+            $rawRfids = $this->apiCall('/api/v1/rfids');
+            $this->rfids = [];
+
+            foreach ($rawRfids as $rawRfid => $description) {
+                $hexCode = sprintf('%014X', $rawRfid);
+                $this->rfids[$hexCode] = $description;
+            }
         }
     }
 
@@ -474,6 +491,20 @@ abstract class ufanet extends domophone
      */
     protected function uploadDialplans()
     {
-        $this->apiCall('/api/v1/apartments', 'PUT', $this->dialplans);
+        if ($this->dialplans !== null) {
+            $this->apiCall('/api/v1/apartments', 'PUT', $this->dialplans);
+        }
+    }
+
+    /**
+     * Upload RFID codes from the cache into the intercom.
+     *
+     * @return void
+     */
+    protected function uploadRfids()
+    {
+        if ($this->rfids !== null) {
+            $this->apiCall('/api/v1/rfids', 'PUT', $this->rfids);
+        }
     }
 }
