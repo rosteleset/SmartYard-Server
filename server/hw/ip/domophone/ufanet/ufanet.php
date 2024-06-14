@@ -179,6 +179,7 @@ abstract class ufanet extends domophone
 
     public function prepare()
     {
+        parent::prepare();
         $this->setNetwork();
         $this->setDisplayLocalization();
     }
