@@ -15,7 +15,7 @@ namespace backends\cameras
         /**
          * @inheritDoc
          */
-        public function getCameras($by = false, $params = false)
+        public function getCameras($by = false, $params = false, $withStatus = false)
         {
             $q = "select * from cameras order by camera_id";
             $p = false;
@@ -33,7 +33,10 @@ namespace backends\cameras
                     break;
             }
 
-            return $this->db->get($q, $p, [
+
+            $monitoring = loadBackend("monitoring");
+
+            $cameras = $this->db->get($q, $p, [
                 "camera_id" => "cameraId",
                 "enabled" => "enabled",
                 "model" => "model",
@@ -58,6 +61,26 @@ namespace backends\cameras
                 "sound" => "sound",
                 "ip" => "ip"
             ]);
+
+            if ($monitoring && $withStatus) {
+                $targetHosts = [];
+
+                foreach ($cameras as $camera) {
+                        $targetHosts[] = [
+                            'hostId' => $camera['cameraId'],
+                            'ip' => $camera['ip'],
+                        ];
+                }
+
+                //get status
+                $targetStatus = $monitoring->devicesStatus("camera", $targetHosts);
+
+                foreach ($cameras as &$camera) {
+                        $camera["status"] = $targetStatus[$camera["cameraId"]]['status'];
+                }
+            }
+
+            return $cameras;
         }
 
         /**

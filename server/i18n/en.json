@@ -1,0 +1,20 @@
+{
+    "dvr": {
+        "videoReady": "Video is ready to be uploaded",
+        "threeDays": "%s/cctv/download/%s\nAttention! Files on the server will be available for 3 days"
+    },
+
+    "sip": {
+        "incomingTitle": "Incoming Call",
+        "callFailedTitle": "Missed Call"
+    },
+
+    "monitoring": {
+        "unknown": "Status Unknown",
+        "offline": "Unavailable, please check the device connection",
+        "online": "Available",
+        "sipRegistrationFail": "SIP registration missing"
+    },
+
+    "cantLoadBackend": "Failed to load module %s"
+}

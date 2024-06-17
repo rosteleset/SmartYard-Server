@@ -1212,35 +1212,35 @@
                     break;
                 }
             }
-    
+
             let settlements = [];
-    
+
             settlements.push({
                 id: "0",
                 text: "-",
             });
-    
+
             for (let i in modules.addresses.meta.settlements) {
                 settlements.push({
                     id: modules.addresses.meta.settlements[i].settlementId,
                     text: modules.addresses.meta.settlements[i].settlementWithType,
                 });
             }
-    
+
             let streets = [];
-    
+
             streets.push({
                 id: "0",
                 text: "-",
             });
-    
+
             for (let i in modules.addresses.meta.streets) {
                 streets.push({
                     id: modules.addresses.meta.streets[i].streetId,
                     text: modules.addresses.meta.streets[i].streetWithType,
                 });
             }
-    
+
             if (house) {
                 cardForm({
                     title: i18n("addresses.editHouse"),
@@ -1360,7 +1360,7 @@
                     id: "0",
                     text: "-",
                 });
-    
+
                 for (let i in result.companies) {
                     companies.push({
                         id: result.companies[i].companyId,
@@ -1796,7 +1796,7 @@
                     id: "0",
                     text: "-",
                 });
-    
+
                 for (let i in result.companies) {
                     companies.push({
                         id: result.companies[i].companyId,
@@ -1849,7 +1849,7 @@
                                 {
                                     data: modules.addresses.meta.cities[i].cityWithType,
                                     nowrap: true,
-                                    click: "#addresses&show=city&cityId=%s",
+                                    click: "#addresses&show=city&cityId=" + modules.addresses.meta.cities[i].cityId,
                                 },
                             ],
                         });
@@ -1898,7 +1898,7 @@
                                 {
                                     data: modules.addresses.meta.settlements[i].settlementWithType,
                                     nowrap: true,
-                                    click: "#addresses&show=settlement&settlementId=%s",
+                                    click: "#addresses&show=settlement&settlementId=" + modules.addresses.meta.settlements[i].settlementId,
                                 },
                             ],
                         });
@@ -1947,7 +1947,7 @@
                                 {
                                     data: modules.addresses.meta.streets[i].streetWithType,
                                     nowrap: true,
-                                    click: "#addresses&show=street&streetId=%s",
+                                    click: "#addresses&show=street&streetId=" + modules.addresses.meta.streets[i].streetId,
                                 },
                             ],
                         });
@@ -1998,7 +1998,7 @@
                                 {
                                     data: modules.addresses.meta.houses[i].houseFull,
                                     nowrap: true,
-                                    click: "#addresses.houses&houseId=%s",
+                                    click: "#addresses.houses&houseId=" + modules.addresses.meta.houses[i].houseId,
                                 },
                             ],
                             dropDown: {
@@ -2052,7 +2052,7 @@
 
                     for (let i in modules.addresses.meta.regions) {
                         rows.push({
-                            uid: modules.addresses.meta.regions[i].regionId.toString(),
+                            uid: modules.addresses.meta.regions[i].regionId,
                             cols: [
                                 {
                                     data: modules.addresses.meta.regions[i].regionId,
@@ -2060,7 +2060,7 @@
                                 {
                                     data: modules.addresses.meta.regions[i].regionWithType,
                                     nowrap: true,
-                                    click: "#addresses&show=region&regionId=%s",
+                                    click: "#addresses&show=region&regionId=" + modules.addresses.meta.regions[i].regionId,
                                 },
                             ],
                         });
@@ -2134,7 +2134,7 @@
                                     {
                                         data: modules.addresses.meta.areas[i].areaWithType,
                                         nowrap: true,
-                                        click: "#addresses&show=area&areaId=%s",
+                                        click: "#addresses&show=area&areaId=" + modules.addresses.meta.areas[i].areaId,
                                     },
                                 ],
                             });

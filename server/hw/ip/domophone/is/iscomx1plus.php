@@ -8,8 +8,6 @@ namespace hw\ip\domophone\is;
 class iscomx1plus extends is
 {
 
-    use \hw\ip\common\is\iscomx1plus;
-
     public function configureApartment(
         int   $apartment,
         int   $code = 0,
@@ -20,48 +18,9 @@ class iscomx1plus extends is
     {
         parent::configureApartment($apartment, $code, $sipNumbers, $cmsEnabled, $cmsLevels);
 
-        // This crutch is here because at the moment SIP numbers aren't set when creating a new apartment
+        // FIXME: This crutch is here because at the moment SIP numbers aren't set when creating a new apartment
         $this->apiCall("/panelCode/$apartment", 'PUT', [
             'sipAccounts' => array_map('strval', $sipNumbers)
-        ]);
-    }
-
-    public function configureEncoding()
-    {
-        $this->apiCall('/camera/audio', 'PUT', [
-            'aac_enable' => false,
-            'format' => 'PCMA',
-        ]);
-
-        $this->apiCall('/camera/codec', 'PUT', [
-            'Channels' => [
-                [
-                    'Channel' => 0,
-                    'Type' => 'H264',
-                    'Profile' => 0,
-                    'ByFrame' => true,
-                    'Width' => 1280,
-                    'Height' => 720,
-                    'GopMode' => 'NormalP',
-                    'IPQpDelta' => 2,
-                    'RcMode' => 'VBR',
-                    'IFrameInterval' => 15,
-                    'MaxBitrate' => 1024,
-                ],
-                [
-                    'Channel' => 2,
-                    'Type' => 'H264',
-                    'Profile' => 0,
-                    'ByFrame' => true,
-                    'Width' => 640,
-                    'Height' => 480,
-                    'GopMode' => 'NormalP',
-                    'IPQpDelta' => 2,
-                    'RcMode' => 'VBR',
-                    'IFrameInterval' => 30,
-                    'MaxBitrate' => 348,
-                ],
-            ],
         ]);
     }
 

@@ -87,6 +87,47 @@ abstract class is extends domophone
         }
     }
 
+    public function configureEncoding()
+    {
+        $this->apiCall('/camera/audio', 'PUT', [
+            'aac_enable' => false,
+            'format' => 'PCMA',
+        ]);
+
+        $hwVer = floor($this->getSysinfo()['HardwareVersion'] ?? 0);
+
+        $this->apiCall('/camera/codec', 'PUT', [
+            'Channels' => [
+                [
+                    'Channel' => 0,
+                    'Type' => 'H264',
+                    'Profile' => 0,
+                    'ByFrame' => true,
+                    'Width' => 1280,
+                    'Height' => 720,
+                    'GopMode' => 'NormalP',
+                    'IPQpDelta' => 2,
+                    'RcMode' => 'VBR',
+                    'IFrameInterval' => 15,
+                    'MaxBitrate' => 1024,
+                ],
+                [
+                    'Channel' => $hwVer == 5 ? 1 : 2,
+                    'Type' => 'H264',
+                    'Profile' => 0,
+                    'ByFrame' => true,
+                    'Width' => 640,
+                    'Height' => 480,
+                    'GopMode' => 'NormalP',
+                    'IPQpDelta' => 2,
+                    'RcMode' => 'VBR',
+                    'IFrameInterval' => 30,
+                    'MaxBitrate' => 348,
+                ],
+            ],
+        ]);
+    }
+
     public function configureGate(array $links = [])
     {
         $this->apiCall('/gate/settings', 'PUT', [

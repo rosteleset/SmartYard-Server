@@ -5,9 +5,9 @@ zabbix_export:
       name: Templates/Intercoms
   templates:
     - uuid: 46bbe9b8518d49e9b6f5dc7ad15b2926
-      template: Intercom_BEWARD_DS06
-      name: 'Intercom | BEWARD DS06 by HTTP'
-      description: 'Intercom BEWARD DS06 panel monitoring'
+      template: Intercom_BEWARD_DS
+      name: 'Intercom | BEWARD DS by HTTP'
+      description: 'Intercom BEWARD DS panel monitoring'
       vendor:
         name: SmartYard
         version: 6.4-0
@@ -50,7 +50,7 @@ zabbix_export:
             key: intercom.systeminfo
           triggers:
             - uuid: 626e0c6db182478eb8bd42124e262be9
-              expression: 'last(/Intercom_BEWARD_DS06/intercom.fwversion,#1)<>last(/Intercom_BEWARD_DS06/intercom.fwversion,#2) and length(last(/Intercom_BEWARD_DS06/intercom.fwversion))>0'
+              expression: 'last(/Intercom_BEWARD_DS/intercom.fwversion,#1)<>last(/Intercom_BEWARD_DS/intercom.fwversion,#2) and length(last(/Intercom_BEWARD_DS/intercom.fwversion))>0'
               name: 'Firmware version has changed'
               event_name: 'INTERCOM: {HOST.NAME} | Firmvare version has changed (new version: {ITEM.VALUE})'
               priority: INFO
@@ -81,15 +81,15 @@ zabbix_export:
               value: regstatus
           triggers:
             - uuid: b0da5bc661234f09b9901ae2e8b74132
-              expression: 'count(/Intercom_BEWARD_DS06/intercom.sipstatus,10m,,"0")>5'
+              expression: 'count(/Intercom_BEWARD_DS/intercom.sipstatus,10m,,"0")>5'
               name: 'SIP registration failure'
               event_name: 'INTERCOM: {HOST.NAME} | SIP registration failure'
               priority: WARNING
               description: 'Check SIP registration on device more 10 minutes'
               dependencies:
                 - name: 'Device has been restarted'
-                  expression: last(/Intercom_BEWARD_DS06/intercom.uptime)<10m
-                  recovery_expression: last(/Intercom_BEWARD_DS06/intercom.uptime)>15m
+                  expression: last(/Intercom_BEWARD_DS/intercom.uptime)<10m
+                  recovery_expression: last(/Intercom_BEWARD_DS/intercom.uptime)>15m
         - uuid: 4cd0ca8ed3244fd2a80568c25f060109
           name: 'BEWARD Intercom: system info'
           type: HTTP_AGENT
@@ -145,18 +145,18 @@ zabbix_export:
             key: intercom.systeminfo
           triggers:
             - uuid: ea74626ad9c8478083a3ad8c765b2186
-              expression: last(/Intercom_BEWARD_DS06/intercom.uptime)<10m
+              expression: last(/Intercom_BEWARD_DS/intercom.uptime)<10m
               recovery_mode: RECOVERY_EXPRESSION
-              recovery_expression: last(/Intercom_BEWARD_DS06/intercom.uptime)>15m
+              recovery_expression: last(/Intercom_BEWARD_DS/intercom.uptime)>15m
               name: 'Device has been restarted'
               event_name: 'INTERCOM: {HOST.NAME} | has been restarted (uptime < 10m)'
               priority: INFO
               description: 'Device has been restarted'
               manual_close: 'YES'
             - uuid: 68c1b71d2d3f411684e8a2ead93d9389
-              expression: 'count(/Intercom_BEWARD_DS06/intercom.uptime,1800,,"5")<=200'
+              expression: 'count(/Intercom_BEWARD_DS/intercom.uptime,1800,,"5")<=200'
               recovery_mode: RECOVERY_EXPRESSION
-              recovery_expression: last(/Intercom_BEWARD_DS06/intercom.uptime)>=3600
+              recovery_expression: last(/Intercom_BEWARD_DS/intercom.uptime)>=3600
               name: 'Intercom: power fail'
               status: DISABLED
               priority: HIGH

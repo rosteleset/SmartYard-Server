@@ -74,6 +74,8 @@ function cardForm(params) {
     }
 
     let first = " no-border-top";
+    let focus;
+    let autofocus;
 
     let tabs = [];
     let others = false;
@@ -194,6 +196,14 @@ function cardForm(params) {
 
         first = "";
         let height = 0;
+
+        if (!focus && params.fields[i].focus && params.fields[i].hidden !== true && params.fields[i].disabled !== true) {
+            focus = _prefix + params.fields[i].id;
+        }
+
+        if (!autofocus && params.fields[i].hidden !== true && params.fields[i].disabled !== true) {
+            autofocus = _prefix + params.fields[i].id;
+        }
 
         switch (params.fields[i].type) {
             case "select":
@@ -521,13 +531,16 @@ function cardForm(params) {
                 let s2 = $(this);
                 s2.css("width", s2.css("width"));
             });
-        }, 100);
-
-        setTimeout(() => {
             if (params.title) {
                 $("#modal").draggable({
                     handle: "#modalHeader",
                 });
+            }
+            if (autofocus && !focus) {
+                $("#" + autofocus).focus();
+            }
+            if (focus) {
+                $("#" + focus).focus();
             }
         }, 100);
 

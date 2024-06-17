@@ -1,9 +1,0 @@
-{
-    "title": "IS ISCOM X1 rev.5 (Sokol Plus)",
-    "vendor": "IS",
-    "model": "ISCOM X1 rev.5",
-    "version": false,
-    "eventServer": "is",
-    "class": "iscomx1plus",
-    "useSmartConfigurator": true
-}

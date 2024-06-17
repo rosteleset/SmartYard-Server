@@ -325,11 +325,13 @@
                     return false;
                 }
 
-                return $this->db->modify("insert into houses_houses_entrances (address_house_id, house_entrance_id, prefix) values (:address_house_id, :house_entrance_id, :prefix)", [
+                $result = $this->db->modify("insert into houses_houses_entrances (address_house_id, house_entrance_id, prefix) values (:address_house_id, :house_entrance_id, :prefix)", [
                     ":address_house_id" => $houseId,
                     ":house_entrance_id" => $entranceId,
                     ":prefix" => $prefix,
                 ]);
+
+                return $result !== false ? $entranceId : false;
             }
 
             /**
@@ -896,10 +898,19 @@
                 $monitoring = loadBackend("monitoring");
 
                 if ($monitoring && $withStatus) {
+                    $targetHosts = [];
                     $domophones = $this->db->get($q, false, $r);
 
+                    foreach ($domophones as $domophone) {
+                        $targetHosts[] = [
+                            'hostId' => $domophone['domophoneId'],
+                            'ip' => $domophone['ip'],
+                        ];
+                    }
+
+                    $targetStatus = $monitoring->devicesStatus("domophone", $targetHosts);
                     foreach ($domophones as &$domophone) {
-                        $domophone["status"] = $monitoring->deviceStatus("domophone", $domophone["domophoneId"]);
+                        $domophone["status"] = $targetStatus[$domophone["domophoneId"]]['status'];
                     }
 
                     return $domophones;
@@ -1138,7 +1149,7 @@
                     $monitoring = loadBackend("monitoring");
 
                     if ($monitoring) {
-                        $domophone["status"] = $monitoring->deviceStatus("domophone", $domophone["domophoneId"]);
+                        $domophone["status"] = $monitoring->deviceStatus("domophone", $domophone["ip"]);
                     }
 
                     $domophone["json"] = json_decode(file_get_contents(__DIR__ . "/../../../hw/ip/domophone/models/" . $domophone["model"]), true);

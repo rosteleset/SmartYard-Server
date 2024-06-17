@@ -156,7 +156,7 @@ function cardTable(params) {
                 }
                 h += `>`;
                 if (typeof rows[i].cols[j].click === "string") {
-                    h += `<a href="${sprintf(rows[i].cols[j].click, rows[i].uid)}" class="nodec hoverable">${rows[i].cols[j].data}</a>`;
+                    h += `<a href="${rows[i].cols[j].click}" class="nodec hoverable">${rows[i].cols[j].data}</a>`;
                 } else {
                     h += rows[i].cols[j].data;
                 }

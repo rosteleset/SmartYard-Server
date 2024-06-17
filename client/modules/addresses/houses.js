@@ -1456,6 +1456,24 @@
                         ]
                     },
                     {
+                        id: "autoBlock",
+                        type: "select",
+                        title: i18n("addresses.autoBlock"),
+                        placeholder: i18n("addresses.autoBlock"),
+                        value: flat.autoBlock,
+                        readonly: true,
+                        options: [
+                            {
+                                id: "0",
+                                text: i18n("no"),
+                            },
+                            {
+                                id: "1",
+                                text: i18n("yes"),
+                            },
+                        ]
+                    },
+                    {
                         id: "openCode",
                         type: "text",
                         title: i18n("addresses.openCode"),
@@ -1583,6 +1601,7 @@
                     },
                 ],
                 callback: result => {
+                    delete result.autoBlock;
                     let apartmentsAndLevels = {};
                     for (let i in entrances) {
                         if ($(`.${prefx}-apartment[data-entrance-id="${entrances[i].id}"]`).length) {
@@ -1754,6 +1773,7 @@
                     for (let i in modules.addresses.houses.meta.flats) {
                         rows.push({
                             uid: modules.addresses.houses.meta.flats[i].flatId,
+                            class: (parseInt(modules.addresses.houses.meta.flats[i].manualBlock) || parseInt(modules.addresses.houses.meta.flats[i].autoBlock) || parseInt(modules.addresses.houses.meta.flats[i].adminBlock)) ? "text-secondary" : "",
                             cols: [
                                 {
                                     data: modules.addresses.houses.meta.flats[i].flatId,
@@ -2006,8 +2026,8 @@
                                 uid: modules.addresses.houses.meta.cameras[i].cameraId,
                                 cols: [
                                     {
-                                        data: modules.addresses.houses.meta.cameras[i].cameraId?modules.addresses.houses.meta.cameras[i].cameraId:i18n("addresses.deleted"),
-                                        click: modules.addresses.houses.meta.cameras[i].cameraId?("#addresses.cameras&filter=" + modules.addresses.houses.meta.cameras[i].cameraId):false,
+                                        data: modules.addresses.houses.meta.cameras[i].cameraId ? modules.addresses.houses.meta.cameras[i].cameraId : i18n("addresses.deleted"),
+                                        click: modules.addresses.houses.meta.cameras[i].cameraId ? ("#addresses.cameras&filter=" + modules.addresses.houses.meta.cameras[i].cameraId) : false,
                                     },
                                     {
                                         data: modules.addresses.houses.meta.cameras[i].url?modules.addresses.houses.meta.cameras[i].url:"",

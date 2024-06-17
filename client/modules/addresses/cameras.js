@@ -98,6 +98,9 @@
                     placeholder: "http://",
                     validate: v => {
                         try {
+                            if (v && !/^https?:\/\/.+/.test(v)) {
+                                throw new Error();;
+                            }
                             new URL(v);
                             return true;
                         } catch (_) {
@@ -114,6 +117,9 @@
                     validate: v => {
                         if (v) {
                             try {
+                                if (!/^https?:\/\/.+/.test(v)) {
+                                    throw new Error();
+                                }
                                 new URL(v);
                                 return true;
                             } catch (_) {
@@ -150,6 +156,9 @@
                     validate: v => {
                         if (v) {
                             try {
+                                if (!/^https?:\/\/.+/.test(v)) {
+                                    throw new Error();
+                                }
                                 new URL(v);
                                 return true;
                             } catch (_) {
@@ -345,6 +354,9 @@
                         value: camera.url,
                         validate: v => {
                             try {
+                                if (v && !/^https?:\/\/.+/.test(v)) {
+                                    throw new Error();
+                                }
                                 new URL(v);
                                 return true;
                             } catch (_) {
@@ -362,6 +374,9 @@
                         validate: v => {
                             if (v) {
                                 try {
+                                    if (!/^rtsp:\/\/.+/.test(v)) {
+                                        throw new Error();
+                                    }
                                     new URL(v);
                                     return true;
                                 } catch (_) {
@@ -401,6 +416,9 @@
                         validate: v => {
                             if (v) {
                                 try {
+                                    if (!/^https?:\/\/.+/.test(v)) {
+                                        throw new Error();
+                                    }
                                     new URL(v);
                                     return true;
                                 } catch (_) {
@@ -531,6 +549,31 @@
         });
     },
 
+    handleDeviceStatus: function (status) {
+        let statusClass;
+        switch (status) {
+            case 'OK':
+                statusClass = 'status-ok';
+                break;
+            case 'Offline':
+                statusClass = 'status-offline';
+                break;
+            case 'Disabled':
+                statusClass = 'status-disabled';
+                break;
+            default:
+                statusClass = 'status-unknown';
+                status = 'unknown'
+        }
+        return `
+        <div class="status-container">
+            <span class="status-indicator ${statusClass}">
+                <div class="status-tooltip">${status}</div>
+            </span>
+        </div>  
+    `;
+    },
+
     route: function (params) {
         subTop();
         $("#altForm").hide();
@@ -557,7 +600,13 @@
                         title: i18n("addresses.cameraIdList"),
                     },
                     {
+                        title: i18n("addresses.status"),
+                    },
+                    {
                         title: i18n("addresses.url"),
+                    },
+                    {
+                        title: i18n("addresses.common"),
                     },
                     {
                         title: i18n("addresses.model"),
@@ -583,7 +632,19 @@
                                     data: modules.addresses.cameras.meta.cameras[i].cameraId,
                                 },
                                 {
+                                    data: modules.addresses.cameras.meta.cameras[i].enabled
+                                        ? modules.addresses.cameras.handleDeviceStatus(
+                                            modules.addresses.cameras.meta.cameras[i].status
+                                                ? modules.addresses.cameras.meta.cameras[i].status.status : "Unknown")
+                                        : modules.addresses.cameras.handleDeviceStatus("Disabled"),
+                                    nowrap: true,
+                                },
+                                {
                                     data: modules.addresses.cameras.meta.cameras[i].url,
+                                    nowrap: true,
+                                },
+                                {
+                                    data: modules.addresses.cameras.meta.cameras[i].common ? i18n("addresses.yes") : i18n("addresses.no"),
                                     nowrap: true,
                                 },
                                 {

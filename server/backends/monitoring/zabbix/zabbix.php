@@ -11,7 +11,7 @@ enum Triggers: string
 class zabbix extends monitoring
 {
     protected $zbxData = [];
-    protected $zbxApi, $zbxToken, $scheduler, $useCashe;
+    protected $zbxApi, $zbxToken, $scheduler, $useCache;
     protected $zbxStoreDays;
     protected $hostGroups = [];
     protected $templateGroups = [];
@@ -19,6 +19,7 @@ class zabbix extends monitoring
     protected $cameraTemplateNames = [];
     protected $pluggedTemplateNames = [];
     protected $templatesDir;
+    protected $cameraVendor = 'FAKE';
 
     /**
      * @throws \Exception
@@ -30,17 +31,118 @@ class zabbix extends monitoring
             require_once __DIR__ . '/../../../utils/api_exec.php';
 
             $this->initializeZabbixApi($config);
-            $this->getActualIds();
-
-            //DEBUG
-            $this->log(var_export($this->zbxData, true));
+            $this->checkApiConnection();
         } catch (\Exception $e) {
             $this->log("Error: " . $e->getMessage());
             throw $e;
         }
     }
 
-    private function saveToRedis($key, $value, $ttl = 3600): void
+    /**
+     * @inheritDoc
+     */
+    public function cron($part)
+    {
+        try {
+            $result = false;
+            if ($part === $this->scheduler){
+                $this->getActualIds();
+                $this->handleIntercoms();
+                $this->handleCameras();
+                $result = true;
+                $this->log("Сron task finish");
+
+                //TODO: test
+                $this->test_v2([
+                    [
+                        'cameraId' => '9',
+                        'ip' => "10.190.24.141",
+                    ],
+                    [
+                        'cameraId' => '11',
+                        'ip' => "192.168.13.121",
+                    ],
+                    [
+                        'cameraId' => '12',
+                        'ip' => "192.168.168.10",
+                    ],
+                    [
+                        'cameraId' => '13',
+                        'ip' => null,
+                    ],
+                ]);
+            }
+        } catch (\Exception $e) {
+            $this->log('Сron err >> ' . $e->getMessage());
+        }
+        return $result;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function deviceStatus($deviceType, $host)
+    {
+        try {
+
+            switch ($deviceType) {
+                case 'domophone':
+                case 'camera':
+                    return $this->processHostTriggers($host);
+            }
+        } catch (\Exception $e){
+            $this->log("method deviceStatus: " . $e->getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function devicesStatus($deviceType, $hosts)
+    {
+        try {
+            switch ($deviceType) {
+                case 'domophone':
+                case 'camera':
+                    return $this->processHostsTriggers($hosts);
+            }
+        } catch (\Exception $e){
+            $this->log("method devicesStatus: " . $e->getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Create start configuration on Zabbix server
+     * 1 create host group
+     * 2 create template group
+     * 3 get template group ids
+     * 4 get plugged template ids
+     * 5 create target template
+     * 6 import template from YAML file
+     * @return void
+     * @throws \Exception
+     */
+    public function configureZbx(): void
+    {
+        $this->createHostGroups($this->hostGroups);
+        $this->createTemplateGroups($this->templateGroups);
+
+        $this->getTemplateGroupIds($this->templateGroups);
+        $this->getPluggedTemplateIds($this->pluggedTemplateNames);
+
+        $this->createTargetTemplates($this->intercomTemplateNames, $this->zbxData['templateGroups']['Templates/Intercoms']);
+        $this->createTargetTemplates($this->cameraTemplateNames, $this->zbxData['templateGroups']['Templates/Cameras']);
+
+        $this->importTemplateConfigFiles($this->templatesDir, "intercom");
+        $this->importTemplateConfigFiles($this->templatesDir, "camera");
+        $this->importTemplateConfigFiles($this->templatesDir, "services");
+
+        $this->log("Finish configure zabbix");
+    }
+
+     private function saveToRedis($key, $value, $ttl = 3600): void
     {
         $this->redis->set($key, json_encode($value, true));
         $this->redis->expire($key, $ttl);
@@ -55,86 +157,23 @@ class zabbix extends monitoring
     }
 
     /**
-     * @inheritDoc
-     */
-    public function cron($part)
-    {
-        try {
-            $result = false;
-            if ($part === $this->scheduler){
-                $this->handleIntercoms();
-                $this->handleCameras();
-
-                // test get status
-//                $this->processFeature();
-
-                $result = true;
-                $this->log("cron task finish");
-            }
-        } catch (\Exception $e) {
-            $this->log('cron err >>');
-            $this->log($e->getMessage());
-        }
-        return $result;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function deviceStatus($deviceType, $deviceId)
-    {
-        switch ($deviceType) {
-            case 'domophone':
-                $status = $this->processTriggers($deviceType, $deviceId);
-
-                if (!$status) {
-                    return [
-                        "status" => "unknown",
-                        "message" => i18n("monitoring.unknown"),
-                    ];
-                }
-
-                return $status;
-
-            case 'camera':
-                return [
-                    "status" => "unknown",
-                    "message" => i18n("monitoring.unknown"),
-                ];
-        }
-    }
-
-    /**
-     * Create start configuration on Zabbix server
-     * @return void
+     * Check Zabbix API connection
      * @throws \Exception
      */
-    public function configureZbx(): void
+    private function checkApiConnection(): void
     {
-        /** TODO:
-         *  - implement starter zabbix template, groups ...
-         *  1 create host group
-         *  2 create template group
-         *  3 get template group ids
-         *  4 get plugged template ids
-         *  5 create target template
-         *  6 import template from YAML file
-         */
-        $this->createHostGroups($this->hostGroups);
-        $this->createTemplateGroups($this->templateGroups);
+        $body = [
+            'jsonrpc' => '2.0',
+            'method' => 'apiinfo.version',
+            'params' => [],
+            'id' => 1,
+        ];
 
-        $this->getTemplateGroupIds($this->templateGroups);
-        $this->getPluggedTemplateIds($this->pluggedTemplateNames);
+        $response = $this->apiCall($body, false);
 
-        $this->createTargetTemplates($this->intercomTemplateNames, $this->zbxData['templateGroups']['Templates/Intercoms']);
-        $this->createTargetTemplates($this->cameraTemplateNames, $this->zbxData['templateGroups']['Templates/Cameras']);
-
-        $this->importTemplateConfigFiles($this->templatesDir, "intercom");
-        $this->importTemplateConfigFiles($this->templatesDir, "camera");
-
-        $this->importTemplateConfigFiles($this->templatesDir, "services");
-
-        $this->log("Finish configure zabbix");
+        if (!isset($response)) {
+            throw new \Exception("Unable to connect to Zabbix API. Please check the API URL and credentials.");
+        }
     }
 
     /**
@@ -145,15 +184,15 @@ class zabbix extends monitoring
      * @param $contentType
      * @param $token
      * @return false|object
-     * @throws Exception
+     * @throws \Exception
      */
-    public function apiCall($payload)
+    public function apiCall($payload, $withAuth = true )
     {
         $method = 'POST';
         $url = $this->zbxApi;
         $token = $this->zbxToken;
         $contentType = 'application/json';
-        $response = apiExec($method, $url, $payload, $contentType, $token);
+        $response = apiExec($method, $url, $payload, $contentType, $withAuth ? $token : false, 3);
 
         if (is_object($response)
             && property_exists($response, 'message')
@@ -205,7 +244,7 @@ class zabbix extends monitoring
         $this->zbxToken = $zbxConfig["zbx_token"];
         $this->zbxStoreDays = $zbxConfig["zbx_store_days"];
         $this->scheduler = $zbxConfig["cron_sync_data_scheduler"];
-        $this->useCashe = $zbxConfig["use_cache"];
+        $this->useCache = $zbxConfig["use_cache"];
 
         $this->hostGroups = $zbxConfig["zbx_data_collection"]["host_groups"];
         $this->templateGroups = $zbxConfig["zbx_data_collection"]["template_groups"];
@@ -227,9 +266,18 @@ class zabbix extends monitoring
     {
         $existGroups = $this->getGroupIds($hostGroups);
 
+        // First start, missing target groups
+        if (!$existGroups) {
+            // Create missing groups
+            foreach ($hostGroups as $hostGroupName) {
+                $this->log("Init. Create missing host group: " . $hostGroupName);
+                $this->createHostGroup($hostGroupName);
+            }
+            return;
+        }
+
         foreach ($hostGroups as $hostGroupName) {
             $groupExist = false;
-
             // find target hot group name in existing groups
             foreach ($existGroups as $existGroup) {
                if ($existGroup['name'] === $hostGroupName){
@@ -247,47 +295,82 @@ class zabbix extends monitoring
     }
 
     /**
-     * Get actual item id from zabbix api
+     * Get actual item IDs from Zabbix API and update local cache if necessary
      * @return void
      * @throws \Exception
      */
     private function getActualIds(): void
     {
-        /**
-         * TODO: store data to redis, update every hour for example
-         */
-        $templates = null;
-        $groups = null;
+        $templates = $this->getTemplatesData();
+        $groups = $this->getGroupsData();
 
-        if ($this->useCashe){
-            // get ids from cache
-            $cashedTemplates = $this->getFromRedis('zbx_templates');
-            $cashedGroups = $this->getFromRedis('zbx_groups');
-            if(!$cashedTemplates || !$cashedGroups){
-                $templates = $this->getTemplateIds([... $this->intercomTemplateNames, ... $this->cameraTemplateNames]);
-                $groups = $this->getGroupIds($this->hostGroups);
+        $this->updateZbxData($templates, $groups);
 
-                $this->saveToRedis("zbx_templates", $templates);
-                $this->saveToRedis("zbx_groups", $groups);
+        $this->log('Successfully updated Zabbix data.');
+    }
+
+    /**
+     * Get templates data from cache or API
+     * @return array
+     * @throws \Exception
+     */
+    private function getTemplatesData(): array
+    {
+        if ($this->useCache) {
+            $cachedTemplates = $this->getFromRedis('zbx_templates');
+            if ($cachedTemplates) {
+                $this->log('Cache hit for templates.');
+                return $cachedTemplates;
             }
-            else {
-                $templates = $cashedTemplates;
-                $groups = $cashedGroups;
-            }
-        } else {
-            // get ids from API
-            $templates = $this->getTemplateIds([... $this->intercomTemplateNames, ... $this->cameraTemplateNames]);
-            $groups = $this->getGroupIds($this->hostGroups);
+            $this->log('Cache miss for templates. Fetching from API.');
         }
-        if ($templates) {
-            foreach ($templates as $template) {
-                $this->zbxData['templates'][$template['host']] = $template['templateid'];
-            }
+        $templates = $this->getTemplateIds(array_merge($this->intercomTemplateNames, $this->cameraTemplateNames));
+        if ($this->useCache) {
+            $this->saveToRedis("zbx_templates", $templates);
         }
-        if ($groups) {
-            foreach ($groups as $group) {
-                $this->zbxData['groups'][$group['name']] = $group['groupid'];
+        return $templates;
+    }
+
+    /**
+     * Get groups data from cache or API
+     * @return array
+     * @throws \Exception
+     */
+    private function getGroupsData(): array
+    {
+        if ($this->useCache) {
+            $cachedGroups = $this->getFromRedis('zbx_groups');
+            if ($cachedGroups) {
+                $this->log('Cache hit for groups.');
+                return $cachedGroups;
             }
+            $this->log('Cache miss for groups. Fetching from API.');
+        }
+        $groups = $this->getGroupIds($this->hostGroups);
+        if ($this->useCache) {
+            $this->saveToRedis("zbx_groups", $groups);
+        }
+        return $groups;
+    }
+
+    /**
+     * Update Zabbix data with fetched templates and groups
+     * @param array $templates
+     * @param array $groups
+     * @return void
+     */
+    private function updateZbxData(array $templates, array $groups): void
+    {
+        if (!$templates || !$groups) {
+            throw new \Exception("Failed to fetch template or group IDs from Zabbix API.");
+        }
+
+        foreach ($templates as $template) {
+            $this->zbxData['templates'][$template['host']] = $template['templateid'];
+        }
+
+        foreach ($groups as $group) {
+            $this->zbxData['groups'][$group['name']] = $group['groupid'];
         }
     }
 
@@ -343,8 +426,8 @@ class zabbix extends monitoring
                 "credentials" => $camera["credentials"],
                 "ip" => $camera["ip"],
                 // TODO: not used fields
-                //"stream" => $camera["stream"],
-                //"dvrStream" => $camera["dvrStream"],
+//                "stream" => $camera["stream"],
+//                "dvrStream" => $camera["dvrStream"],
             ];
         }
 
@@ -353,7 +436,6 @@ class zabbix extends monitoring
 
     private function getGroupIds(array $names): mixed
     {
-        // implement api call to get monitored items from zabbix
         $body =  [
             'jsonrpc' => '2.0',
             'method' => 'hostgroup.get',
@@ -382,6 +464,7 @@ class zabbix extends monitoring
      * Get monitored items from Zabbix server
      * @param $name
      * @return mixed|null
+     * @throws \Exception
      */
     private function getTemplateIds($name)
     {
@@ -412,8 +495,9 @@ class zabbix extends monitoring
 
     /**
      * Get template groups from Zabbix server
-     * @param array $templateGroups
-     * @return false|object
+     * @param array $templateGroups An array of template group names to fetch from the Zabbix server
+     * @return object|null The response from the Zabbix API call, or null if the call fails
+     * @throws \Exception
      */
     private function getTemplateGroups(array $templateGroups)
     {
@@ -433,11 +517,11 @@ class zabbix extends monitoring
         ];
         $response =  $this->apiCall($body);
 
-        if ($response) {
-            return $response;
+        if (!$response) {
+            return null;
         }
 
-        return null;
+        return $response;
     }
 
     /**
@@ -555,6 +639,7 @@ class zabbix extends monitoring
                         "updateExisting" => true
                     ],
                 ],
+
                 "source" => $templateDataStr
             ],
             "id" => 1
@@ -642,6 +727,7 @@ class zabbix extends monitoring
             'id' => 1
         ];
 
+        $this->log("create: " . $item['name']);
         return $this->apiCall($body);
     }
 
@@ -702,8 +788,17 @@ class zabbix extends monitoring
      */
     private function createTemplateGroups(array $templateGroups): void
     {
-        $this->log("RUN createTemplateGroups, groups:");
         $existTemplateGroups = $this->getTemplateGroups($templateGroups);
+
+        // First start, missing target template groups
+        if (!$existTemplateGroups) {
+            // Create missing template groups
+            foreach ($templateGroups as $templateGroup) {
+                $this->log("Init. Create missing template group: " . $templateGroup);
+                $this->createTemplateGroup($templateGroup);
+            }
+            return;
+        }
 
         foreach ($templateGroups as $templateGroup) {
             $groupExist = false;
@@ -740,6 +835,7 @@ class zabbix extends monitoring
     /**
      * Disable host and add tag "DISABLED: 1710495601 || 03/15/2024 09:40:01"
      * @param array $item
+     * @throws \Exception
      */
     private function disableHost(array $item)
     {
@@ -760,9 +856,14 @@ class zabbix extends monitoring
             'id' => 1
         ];
 
+        $this->log("Disable host: " . $item['name']);
         return $this->apiCall($body);
     }
 
+    /**
+     * @param array $tags
+     * @return array
+     */
     private function formatTags(array $tags): array
     {
         $formatTags = [];
@@ -797,10 +898,10 @@ class zabbix extends monitoring
             'id' => 1
         ];
 
+        $this->log("Enable host: " . $item['name']);
         return $this->apiCall($body);
     }
 
-    // TODO: refactor to mass delete
     private function deleteHosts($item): void
     {
         $body = [
@@ -815,6 +916,7 @@ class zabbix extends monitoring
     /**
      * Delete host from Zabbix server by id
      * @param $id
+     * @throws \Exception
      */
     private function deleteHost($id)
     {
@@ -836,8 +938,19 @@ class zabbix extends monitoring
      */
     private function createTargetTemplates(array $templateNames, int $templateGroupId): void
     {
-        $this->log("RUN createTargetTemplates:");
         $exitsTemplates = $this->getTemplateIds($templateNames);
+
+        if (!$exitsTemplates) {
+            foreach ($templateNames as $templateName) {
+                $this->log("Init. Create missing template >> " . $templateName);
+                $this->createTemplate(
+                    $templateName,
+                    [$templateGroupId],
+                    array_values($this->zbxData['pluggedTemplates'])
+                );
+            }
+            return;
+        }
 
         foreach ($templateNames as $templateName) {
             $templateExist = false;
@@ -849,14 +962,12 @@ class zabbix extends monitoring
             }
 
             if (!$templateExist){
-                $this->log("create template > " . $templateName);
-
+                $this->log("create missing template >> " . $templateName);
                 $this->createTemplate(
                     $templateName,
                     [$templateGroupId],
                     array_values($this->zbxData['pluggedTemplates'])
                 );
-
             }
         }
     }
@@ -911,7 +1022,7 @@ class zabbix extends monitoring
         $mapped = [];
         foreach ($cameras as $item) {
             // FIXME: only vendor "FAKE"
-            if ($item['vendor'] === 'FAKE' && $this->isAllKeysNotEmpty($item)){
+            if ($item['vendor'] === $this->cameraVendor && $this->isAllKeysNotEmpty($item)){
                 $mapped_item = [
                     'rbt_cameraId' => $item['cameraId'],
                     'status' => $item['enabled'] === 1,
@@ -1045,6 +1156,7 @@ class zabbix extends monitoring
     private function deleteHostIfNeeded(array $item, int $deleteTimestamp): void
     {
         if ($deleteTimestamp < time()) {
+            $this->log("delete: " . $item['name']);
             $this->deleteHost($item['zbx_hostid']);
         }
     }
@@ -1130,210 +1242,82 @@ class zabbix extends monitoring
         }
     }
 
-    private function handleDevices_feature(array $rbtDevices, array $zbxDevices, string $groupName): void
-    {
-        $startTime = microtime(true);
-        $hostsToAdd = [];
-        $hostsToEnable = [];
-        $hostsToDisable = [];
-        $hostsToDelete = [];
-
-        // Создаем массивы хостов, которые нужно добавить, включить, выключить и удалить
-        foreach ($rbtDevices as $rbtDevice) {
-            $zbxDevice = $this->findHostInArray($rbtDevice, $zbxDevices);
-
-            if ($zbxDevice) {
-                if ($rbtDevice['status'] !== $zbxDevice['status']) {
-                    if ($rbtDevice['status'] === false) {
-                        $hostsToDisable[] = $zbxDevice;
-                    } else {
-                        $hostsToEnable[] = $zbxDevice;
-                    }
-                }
-            } else {
-                if ($rbtDevice['status'] === true) {
-                    $hostsToAdd[] = $rbtDevice;
-                }
-            }
-        }
-
-        foreach ($zbxDevices as $zbxDevice) {
-            $device = $this->findHostInArray($zbxDevice, $rbtDevices);
-            if (!$device) {
-                if ($zbxDevice['status'] === true) {
-                    $hostsToDisable[] = $zbxDevice;
-                }
-                if ($zbxDevice['status'] === false && isset($zbxDevice['tags']['DISABLED'])) {
-                    $disableTimestamp = (int)explode(' || ', $zbxDevice['tags']['DISABLED'])[0];
-                    $deleteAfter = $disableTimestamp + ($this->zbxStoreDays * 24 * 60 * 60);
-                    if ($deleteAfter < time()) {
-                        $hostsToDelete[] = $zbxDevice;
-                    }
-                }
-            }
-        }
-
-        // Выполняем действия для каждого массива хостов
-        foreach ($hostsToAdd as $hostToAdd) {
-            $this->createHost($hostToAdd, $groupName);
-        }
-
-        foreach ($hostsToEnable as $hostToEnable) {
-            $this->enableHost($hostToEnable);
-        }
-
-        foreach ($hostsToDisable as $hostToDisable) {
-            $this->disableHost($hostToDisable);
-        }
-
-        foreach ($hostsToDelete as $hostToDelete) {
-            $this->deleteHostIfNeeded($hostToDelete, $this->zbxStoreDays);
-        }
-        $endTime = microtime(true);
-        $executionTime = $endTime - $startTime; // Вычисляем время выполнения методаскщт
-        $this->log("Execution time for $groupName handleDevices(): " . $executionTime . " seconds");
-    }
-
-    /**
-     * @param string $deviceType
-     * @param int $id
-     * @return mixed
-     */
-    private function getDeviceHostname(string $deviceType, int $id): mixed
+    private function getTriggers($hosts)
     {
         /**
-         * implement me
-         *  - get "ip address" by id (camera or domophone)
-         *  - get host by "hostname" with trigger values
-         *  - get trigger status
+         * TODO: use method "trigger.get"
          */
-
-        switch ($deviceType){
-            case 'domophone':
-                $households = loadBackend("households");
-                $result = $households->getDomophones('id', $id);
-
-                if ($result && $result[0]['ip']) {
-                    return $result[0]['ip'];
-                }
-                return null;
-
-            case 'camera':
-                $cameras = loadBackend("cameras");
-                $result = $cameras->getCameras('id', $id);
-
-                if ($result && $result[0]['ip']) {
-                    return $result[0]['ip'];
-                }
-
-        }
-
-        return null;
-    }
-
-    private function getTriggers($hostName, $trigger = Triggers::ICMP)
-    {
         $body = [
             'jsonrpc' => '2.0',
             'method' => 'host.get',
             'params' => [
-                'output' => ['host', 'description'],
-                'filter' => ['host' => $hostName],
+                'output' => ['hostid', 'host'],
+                'filter' => ['host' => $hosts],
                 'selectTriggers' => [
                     'description',
                     'status',
                     'value',
-                    'comments',
                 ],
             ],
             'id' => 1
         ];
 
         $response = $this->apiCall($body);
-        if ($response[0]['triggers']){
-            return $response[0]['triggers'];
+        if (!$response){
+            return null;
+        }
+
+        return $response;
+    }
+
+    private function getTriggers_v2($hostId)
+    {
+        $body = [
+            'jsonrpc' => '2.0',
+            'method' => 'trigger.get',
+            'params' => [
+                'output' => ['description', 'tags'],
+                'hostids' => $hostId,
+                'filter' => ['status' => '0', 'value' => '1']
+            ],
+            'id' => 1
+        ];
+
+        $response = $this->apiCall($body);
+        if ($response){
+            return $response;
         }
 
         return null;
     }
 
-    private function processFeature()
+    /**
+     * @throws \Exception
+     */
+    private function getHostId($hostName)
     {
-//        /**
-//         * 1 Получаем hostname зная ID устройства
-//         */
-//        $targetDevice = $this->getDeviceHostname("domophone", 1);
-//        $this->log('$targetDevice');
-//        $this->log($targetDevice);
-//
-//        /**
-//         * 2 Получаем статус триггеров устройства
-//         */
-//        $triggers = $this->getTriggers($targetDevice);
-////        $this->log(var_export($triggers, true));
-//
-//        /**
-//         * 3 Перебираем все триггеры, находим ICMP и SIP
-//         *  -   Проверяем только включенные триггеры с состоянием проблема
-//         *  -   если найден триггер ICMP и SIP, возвращаем соответстуующий статус
-//         *  -   если нет триггеров с проблемой - возвращаем статус 'OK'
-//         */
-//        foreach ($triggers as $trigger) {
-//            if ($trigger['status'] != '1' && $trigger['value'] === '1'){
-//                switch ($trigger['description']) {
-//                    case Triggers::ICMP->value:
-//                        $this->log(">> ICMP FAILURE");
-//                        return [
-//                            'status'=> 'Offline',
-//                            'message'=> i18n('monitoring.offline'),
-//                        ];
-//
-//                    case Triggers::SIP->value:
-//                        $this->log(">> SIP FAILURE");
-//                        return [
-//                            'status' => 'SIP failure',
-//                            'message' => i18n('monitoring.sipRegistrationFail'),
-//                        ];
-//                }
-//            }
-//        }
-//
-//        return [
-//            'status' => 'OK',
-//            'message' => i18n('monitoring.online'),
-//        ];
+        $body = [
+            'jsonrpc' => '2.0',
+            'method' => 'host.get',
+            'params' => [
+                'output' => ['hostid'],
+                'filter' => ['host' => $hostName],
+            ],
+            'id' => 1
+        ];
 
-
-        /**
-         * TODO:
-         *      - get status
-         */
-        $households = loadBackend("households");
-        $domophones = $households->getDomophones("all", -1, true);
-        $this->log("GET all domophones with status");
-
-        $this->log(var_export($domophones, true));
-
-
-
-    }
-
-
-    private function processTriggers($deviceType, $deviceId)
-    {
-        /**
-         * 1 Получаем hostname зная ID устройства
-         */
-        $hostname = $this->getDeviceHostname($deviceType, $deviceId);
-        if (!$hostname) {
-            return [
-                "status" => "unknown",
-                "message" => i18n("monitoring.unknown"),
-            ];
+        $response = $this->apiCall($body);
+        if ($response && $response[0]['hostid']){
+            return $response[0]['hostid'];
         }
 
+        return null;
+    }
+
+    private function processHostTriggers($hostname)
+    {
         /**
-         * 2 Получаем статус триггеров устройства
+         * 1    Getting status of device triggers
          */
         $triggers = $this->getTriggers($hostname);
         if (!$triggers) {
@@ -1344,12 +1328,12 @@ class zabbix extends monitoring
         }
 
         /**
-         * 3 Перебираем все триггеры, находим ICMP и SIP
-         *  -   Проверяем только включенные триггеры с состоянием проблема
-         *  -   если найден триггер ICMP и SIP, возвращаем соответстуующий статус
-         *  -   если нет триггеров с проблемой - возвращаем статус 'OK'
+         * 2    Processing triggers, find ICMP and SIP
+         *  -   Check only enabled triggers with the problem status
+         *  -   If an ICMP and SIP triggers is found, return the corresponding status
+         *  -   Not found  triggers with problem - return the status 'OK'
          */
-        foreach ($triggers as $trigger) {
+        foreach ($triggers[0]['triggers'] as $trigger) {
             if ($trigger['status'] != '1' && $trigger['value'] === '1'){
                 switch ($trigger['description']) {
                     case Triggers::ICMP->value:
@@ -1360,7 +1344,7 @@ class zabbix extends monitoring
 
                     case Triggers::SIP->value:
                         return [
-                            'status' => 'SIP failure',
+                            'status' => 'SIP error',
                             'message' => i18n('monitoring.sipRegistrationFail'),
                         ];
                 }
@@ -1372,9 +1356,105 @@ class zabbix extends monitoring
             'message' => i18n('monitoring.online'),
         ];
     }
+
+    private function processHostsTriggers($hosts)
+    {
+        $hostStatus = [];
+        $targetHosts = [];
+
+        // 1 make associative array: "hostId" => ["ip", "status"]
+        foreach ($hosts as $host){
+            $hostStatus[$host['hostId']] = [
+                'ip' => $host['ip'],
+                'status' => [],
+            ];
+            // TODO: refactor?
+
+            $host['ip'] && $targetHosts[] = $host['ip'];
+        }
+
+        // 2 get triggers per hosts
+        $triggers = $this->getTriggers((array)$targetHosts);
+
+        // Filter active triggers
+        $triggers = array_map(function ($host){
+            $filtered_triggers = array_filter($host['triggers'], function ($trigger){
+                return $trigger['value'] === "1" && $trigger['status'] !== "1";
+            });
+
+            return [
+                'host' => $host['host'],
+                'triggers' => array_map(function ($trigger){
+                    return [
+                        'triggerid' => $trigger['triggerid'],
+                        'description' => $trigger['description'],
+                    ];
+                }, $filtered_triggers)
+            ];
+        }, (array)$triggers);
+
+        // Make associative array:  host => triggers
+        $hostTriggers = [];
+        foreach ($triggers as $item) {
+            $hostTriggers[$item['host']] = $item['triggers'];
+        }
+
+        // Update host status result
+        foreach ($hostStatus as $hostId => &$host) {
+            $ip = $host['ip'];
+            // Check host triggers
+            if (isset($hostTriggers[$ip])) {
+                // Triggers found, check
+                if (empty($hostTriggers[$ip])) {
+                    $host['status'] = [
+                        'status' => 'OK',
+                        'message' => 'Доступен',
+                    ];
+                } else {
+                    foreach ($hostTriggers[$ip] as $trigger) {
+                        switch ($trigger['description']) {
+                            case Triggers::ICMP->value:
+                                $host['status'] = [
+                                    'status' => 'Offline',
+                                    'message' => 'Недоступен, проверьте подключение устройства',
+                                ];
+                                break;
+
+                            case Triggers::SIP->value:
+                                $host['status'] = [
+                                    'status' => 'SIP error',
+                                    'message' => 'Ошибка регистрации SIP',
+                                ];
+                                break;
+
+                            default:
+                                $host['status'] = [
+                                    'status' => 'Other',
+                                    'message' => 'Другие ошибки',
+                                ];
+                        }
+                        // Skip
+                        if ($host['status']['status'] !== 'OK') {
+                            break;
+                        }
+                    }
+                }
+            } else {
+                // Triggers not found
+                $host['status'] = [
+                    'status' => 'unknown',
+                    "message" => i18n("monitoring.unknown"),
+                ];
+            }
+        }
+
+        return $hostStatus;
+    }
+
     private function log(string $text): void
     {
-        $message = "ZBX || " . $text;
+        $dateTime = date('Y-m-d H:i:s');
+        $message = "[$dateTime] || ZBX || " . $text;
         error_log($message);
     }
 }

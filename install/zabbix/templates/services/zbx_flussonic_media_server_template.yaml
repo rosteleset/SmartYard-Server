@@ -278,7 +278,7 @@ zabbix_export:
                 key: 'stream[{#STREAM_NAME}]'
               tags:
                 - tag: Application
-                  value: 'Flussonic streams - status'
+                  value: 'Flussonic streams - alive status'
             - uuid: ed4c85ec50f844738bc74f7ec7fdb466
               name: 'Stream "{#STREAM_NAME}" errors'
               type: DEPENDENT
@@ -296,7 +296,7 @@ zabbix_export:
                 key: 'stream[{#STREAM_NAME}]'
               tags:
                 - tag: Application
-                  value: 'Flussonic streams - status'
+                  value: 'Flussonic streams - errors status'
             - uuid: e414dc89396949729c0b976ef1544ece
               name: 'Stream "{#STREAM_NAME}" running'
               type: DEPENDENT
@@ -319,7 +319,7 @@ zabbix_export:
                 key: 'stream[{#STREAM_NAME}]'
               tags:
                 - tag: Application
-                  value: 'Flussonic streams - status'
+                  value: 'Flussonic streams - running status'
             - uuid: 7762548653f94941a541ad3a81d81db8
               name: 'Stream "{#STREAM_NAME}"'
               type: HTTP_AGENT

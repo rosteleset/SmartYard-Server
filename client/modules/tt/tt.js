@@ -590,7 +590,7 @@
 
                             let value = (typeof prefferredValue !== "undefined") ? prefferredValue : ((issue && issue["_cf_" + fieldId]) ? issue["_cf_" + fieldId] : []);
 
-                            if (value && !already[value]) {
+                            if (value && $.trim(value) && !already[value]) {
                                 options.push({
                                     id: value,
                                     text: value,
@@ -1322,16 +1322,16 @@
             $("#ttProjectSelect").css("width", $("#ttSearch").parent().css("width"));
         }
 
+        $(".ttFilterCustom").off("click").on("click", () => {
+            window.location.href = '?#tt&filter=empty&customSearch=yes&_=' + Math.random();
+        });
+
         $("#ttSearch").off("keypress").on("keypress", ev => {
             if (ev.keyCode == 13) {
                 $("#ttSearchButton").click();
                 ev.preventDefault();
                 return false;
             }
-        });
-
-        $(".ttFilterCustom").off("click").on("click", () => {
-            window.location.href = '?#tt&filter=empty&customSearch=yes&_=' + Math.random();
         });
 
         $("#ttSearchButton").off("click").on("click", () => {
@@ -1463,9 +1463,9 @@
             for (let o in filter_names) {
                 filters += `<span class="dropdown">`;
                 if (o == 0) {
-                    filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter-${o}" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" style="margin-left: -4px;"><i class="far fa-fw fa-caret-square-down"></i>${filter_names[o].trim()}</span>`;
+                    filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter-${o}" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" style="margin-left: -4px;"><i class="far fa-fw fa-caret-square-down mr-1"></i>${filter_names[o].trim()}</span>`;
                 } else {
-                    filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter-${o}" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false"><i class="far fa-fw fa-caret-square-down"></i>${filter_names[o].trim()}</span>`;
+                    filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter-${o}" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false"><i class="far fa-fw fa-caret-square-down mr-1"></i>${filter_names[o].trim()}</span>`;
                 }
                 filters += `<ul class="dropdown-menu" aria-labelledby="ttFilter-${o}">`;
                 filters += hh(filtersTree);
@@ -1691,7 +1691,7 @@
             };
 
             let sortMenu = menu({
-                button: "<i class='fas fa-fw fa-bars pointer'></i>",
+                button: "<i class='fas fa-fw fa-sort pointer'></i>",
                 items: sortMenuItems,
                 click: function (id) {
                     if (sort && sort[id]) {
@@ -1916,17 +1916,6 @@
                                         filter: x ? x : "",
                                         search: ($.trim(params.search) && params.search !== true) ? $.trim(params.search) : "",
                                     }),
-/*
-                                    click: (issue) => {
-                                        issue = JSON.parse(b64_to_utf8(issue));
-
-                                        window.location.href = navigateUrl("tt", {
-                                            issue: issue.id,
-                                            filter: issue.filter ? issue.filter : "",
-                                            search: ($.trim(issue.search) && typeof issue.search === "string") ? $.trim(issue.search) : "",
-                                        });
-                                    },
-*/
                                     fullWidth: j == pKeys.length - 1,
                                 });
                             }
