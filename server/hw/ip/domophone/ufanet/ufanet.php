@@ -283,6 +283,12 @@ abstract class ufanet extends domophone
 
     public function transformDbConfig(array $dbConfig): array
     {
+        $dbConfig['eventServer'] = '';
+
+        $dbConfig['sip']['stunEnabled'] = false;
+        $dbConfig['sip']['stunServer'] = '';
+        $dbConfig['sip']['stunPort'] = 3478;
+
         return $dbConfig;
     }
 
@@ -339,7 +345,12 @@ abstract class ufanet extends domophone
 
     protected function getDtmfConfig(): array
     {
-        return [];
+        return [
+            'code1' => '1',
+            'code2' => '2',
+            'code3' => '3',
+            'codeCms' => '1',
+        ];
     }
 
     protected function getGateConfig(): array
