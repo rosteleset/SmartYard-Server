@@ -60,7 +60,7 @@ abstract class ufanet extends domophone
         $this->loadDialplans();
 
         $this->dialplans[$apartment] = [
-            'sip_number' => $sipNumbers[0] ?? '',
+            'sip_number' => "$sipNumbers[0]" ?? '',
             'sip' => true,
             'analog' => $cmsEnabled,
             'map' => $this->dialplans[$apartment]['map'] ?? 0,
@@ -283,11 +283,26 @@ abstract class ufanet extends domophone
 
     public function transformDbConfig(array $dbConfig): array
     {
+        $dbConfig['cmsLevels'] = [];
         $dbConfig['eventServer'] = '';
 
         $dbConfig['sip']['stunEnabled'] = false;
         $dbConfig['sip']['stunServer'] = '';
         $dbConfig['sip']['stunPort'] = 3478;
+
+        $shortRfids = [];
+
+        foreach ($dbConfig['rfids'] as $fullRfid) {
+            $shortRfid = substr_replace($fullRfid, '00000000', 0, 8);
+            $shortRfids[$shortRfid] = $shortRfid;
+        }
+
+        $dbConfig['rfids'] = $shortRfids;
+
+        foreach ($dbConfig['apartments'] as &$apartment) {
+            $apartment['code'] = 0;
+            $apartment['cmsLevels'] = [];
+        }
 
         return $dbConfig;
     }
