@@ -106,7 +106,7 @@ abstract class ufanet extends domophone
 
     public function configureMatrix(array $matrix)
     {
-        $this->loadDialplans();
+        $this->clearMatrix();
 
         foreach ($matrix as ['hundreds' => $hundreds, 'tens' => $tens, 'units' => $units, 'apartment' => $apartment]) {
             $analogNumber = $hundreds * 100 + $tens * 10 + $units;
@@ -148,10 +148,22 @@ abstract class ufanet extends domophone
         // Empty implementation
     }
 
-    public function deleteApartment(int $apartment = 0) // TODO: check matrix
+    public function deleteApartment(int $apartment = 0)
     {
         $this->loadDialplans();
-        unset($this->dialplans[$apartment]);
+
+        ['map' => $analogReplace, 'analog' => $cmsEnabled] = $this->dialplans[$apartment];
+
+        if ($analogReplace !== 0) {
+            $this->dialplans[$apartment] = [
+                'sip_number' => '',
+                'sip' => false,
+                'analog' => $cmsEnabled,
+                'map' => $analogReplace,
+            ];
+        } else {
+            unset($this->dialplans[$apartment]);
+        }
     }
 
     public function deleteRfid(string $code = '')
@@ -213,12 +225,14 @@ abstract class ufanet extends domophone
 
     public function setConciergeNumber(int $sipNumber)
     {
-        $this->apiCall('/api/v1/apartments/CONS', 'DELETE');
-        $this->apiCall('/api/v1/apartments/CONS', 'POST', [
+        $this->loadDialplans();
+
+        $this->dialplans['CONS'] = [
             'sip_number' => "$sipNumber",
             'analog' => false,
             'sip' => true,
-        ]);
+            'map' => 0,
+        ];
     }
 
     public function setDtmfCodes(
@@ -243,12 +257,14 @@ abstract class ufanet extends domophone
 
     public function setSosNumber(int $sipNumber)
     {
-        $this->apiCall('/api/v1/apartments/SOS', 'DELETE');
-        $this->apiCall('/api/v1/apartments/SOS', 'POST', [
+        $this->loadDialplans();
+
+        $this->dialplans['SOS'] = [
             'sip_number' => "$sipNumber",
             'analog' => false,
             'sip' => true,
-        ]);
+            'map' => 0,
+        ];
     }
 
     public function setTalkTimeout(int $timeout)
@@ -283,6 +299,8 @@ abstract class ufanet extends domophone
 
     public function transformDbConfig(array $dbConfig): array
     {
+        // TODO: CMS model transform
+
         $dbConfig['cmsLevels'] = [];
         $dbConfig['eventServer'] = '';
 
@@ -307,6 +325,19 @@ abstract class ufanet extends domophone
         return $dbConfig;
     }
 
+    protected function clearMatrix()
+    {
+        $this->loadDialplans();
+
+        foreach ($this->dialplans as $apartmentNumber => $dialplan) {
+            if ($dialplan['sip'] !== false) { // Dialplan with apartment, reset the map
+                $this->dialplans[$apartmentNumber]['map'] = 0;
+            } else { // Dialplan without apartment, delete it
+                unset($this->dialplans[$apartmentNumber]);
+            }
+        }
+    }
+
     protected function getApartments(): array
     {
         $this->loadDialplans();
@@ -314,7 +345,7 @@ abstract class ufanet extends domophone
         $apartments = [];
 
         foreach ($this->dialplans as $apartmentNumber => $dialplan) {
-            if ($dialplan['sip'] === false) {
+            if ($dialplan['sip'] === false || in_array($apartmentNumber, ['SOS', 'CONS', 'KALITKA', 'FRSI'])) {
                 continue;
             }
 
@@ -448,8 +479,7 @@ abstract class ufanet extends domophone
     protected function loadDialplans()
     {
         if ($this->dialplans === null) {
-            $rawApartments = $this->apiCall('/api/v1/apartments');
-            $this->dialplans = array_filter($rawApartments, fn($key) => is_numeric($key), ARRAY_FILTER_USE_KEY);
+            $this->dialplans = $this->apiCall('/api/v1/apartments') ?? [];
         }
     }
 
@@ -461,7 +491,7 @@ abstract class ufanet extends domophone
     protected function loadRfids()
     {
         if ($this->rfids === null) {
-            $this->rfids = $this->apiCall('/api/v1/rfids') ?: [];
+            $this->rfids = $this->apiCall('/api/v1/rfids') ?? [];
         }
     }
 
