@@ -2239,8 +2239,9 @@
                     echo formatUsage("usage: {$argv[0]} tt
 
                         files:
-                            [--export-workflows]
                             [--export-filters]
+                            [--export-viewers]
+                            [--export-workflows]
                     ");
 
                     exit(1);
