@@ -318,7 +318,11 @@ local function handleCMSIntercom(context, extension)
         end
         if dest ~= "" then
             dest = dest:sub(2)
-            app.Dial(dest, 120)
+            if channel.CALLERID("num"):get():sub(1, 1) == "7" then
+                app.Dial(dest, 120, "m")
+            else
+                app.Dial(dest, 120)
+            end
         end
     end
 
