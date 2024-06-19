@@ -25,9 +25,17 @@
              */
             public function capabilities()
             {
-                return [
-                    "mode" => "rw",
-                ];
+                $cap = parent::capabilities();
+
+                if ($cap) {
+                    $cap["mode"] = "rw";
+                } else {
+                    $cap = [
+                        "mode" => "rw",
+                    ];
+                }
+
+                return $cap;
             }
 
             /**
