@@ -299,7 +299,10 @@ abstract class ufanet extends domophone
 
     public function transformDbConfig(array $dbConfig): array
     {
-        // TODO: CMS model transform
+        $cmsType = self::CMS_PARAMS[$dbConfig['cmsModel']]['type'];
+        if (in_array($cmsType, ['METAKOM', 'ELTIS'])) {
+            $dbConfig['cmsModel'] = $cmsType;
+        }
 
         $dbConfig['cmsLevels'] = [];
         $dbConfig['eventServer'] = '';
