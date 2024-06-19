@@ -2297,6 +2297,29 @@
                     exit(0);
                 }
 
+                if (count($args) == 1 && array_key_exists("--export-viewers", $args) && !isset($args["--export-viewers"])) {
+                    $viewers = $this->getViewers();
+
+                    foreach ($viewers as $v) {
+                        echo "export: {$v['filename']} ... ";
+
+                        try {
+                            $dir = __DIR__ . "/../../data/files/viewers/";
+
+                            if (!file_exists($dir)) {
+                                mkdir($dir, 0777, true);
+                            }
+
+                            file_put_contents($dir . "{$v['filename']}" . ".js", $v['code']);
+
+                            echo "success\n";
+                        } catch (\Exception $e) {
+                            echo "fail\n";
+                        }
+                    }
+
+                    exit(0);
+                }
 
                 cliUsage();
 
