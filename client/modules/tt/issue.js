@@ -373,15 +373,26 @@
                 }, true).done(r => {
                     if (r && r.template) {
                         if (typeof r.template == "string") {
-                            if (modules.custom && typeof modules.custom[r.template] == "function") {
-                                modules.custom[r.template](issue.issue, action, callback, prefferredValues, timeout);
+                            if (r.template == "!") {
+                                // action without accept
+                                PUT("tt", "action", issue.issue.issueId, {
+                                    action: action,
+                                }).
+                                fail(FAIL).
+                                always(() => {
+                                    if (typeof callback === "function") {
+                                        callback();
+                                    }
+                                });
                             } else {
-                                loadingDone();
-                                error(i18n("errors.functionNotFound", r.template), i18n("error"), 30);
+                                if (modules.custom && typeof modules.custom[r.template] == "function") {
+                                    modules.custom[r.template](issue.issue, action, callback, prefferredValues, timeout);
+                                } else {
+                                    loadingDone();
+                                    error(i18n("errors.functionNotFound", r.template), i18n("error"), 30);
+                                }
                             }
                         } else {
-                            loadingDone();
-
                             let fields = [];
 
                             let project;
@@ -424,6 +435,8 @@
                                     n++;
                                 }
                             }
+
+                            loadingDone();
 
                             if (n) {
                                 cardForm({
