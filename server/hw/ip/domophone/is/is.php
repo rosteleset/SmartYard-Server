@@ -12,11 +12,7 @@ abstract class is extends domophone
 
     use \hw\ip\common\is\is;
 
-    protected array $apartments = [];
-    protected array $matrix = [];
-    protected string $nowCms = '';
-
-    protected array $cmsParams = [
+    protected const CMS_PARAMS = [
         'BK-100' => ['VIZIT', 100, 10, 10],
         'KMG-100' => ['CYFRAL', 100, 10, 10],
         'KKM-100S2' => ['CYFRAL', 100, 10, 10],
@@ -27,11 +23,8 @@ abstract class is extends domophone
         'FACTORIAL 8x8' => ['FACTORIAL', 64, 8, 8],
     ];
 
-    public function __construct(string $url, string $password, bool $firstTime = false)
-    {
-        parent::__construct($url, $password, $firstTime);
-        $this->nowCms = $this->getCmsModel();
-    }
+    protected array $apartments = [];
+    protected array $matrix = [];
 
     public function addRfid(string $code, int $apartment = 0)
     {
@@ -153,7 +146,7 @@ abstract class is extends domophone
             $params[$tens][$units] = $apartment;
         }
 
-        [, $capacity, $columns, $rows] = $this->cmsParams[$this->nowCms];
+        [, $capacity, $columns, $rows] = self::CMS_PARAMS[$this->getCmsModel()];
 
         $zeroMatrix = array_fill(0, $columns, array_fill(0, $rows, 0));
         $fullMatrix = array_replace_recursive($zeroMatrix, $params);
@@ -227,7 +220,7 @@ abstract class is extends domophone
 
     public function openLock(int $lockNumber = 0)
     {
-        $this->apiCall('/relay/' . ($lockNumber + 1) . '/open', 'PUT');
+        $this->apiCall('/relay/' . ($lockNumber + 1) . '/open', 'PUT', [], 3);
     }
 
     public function prepare()
@@ -261,12 +254,11 @@ abstract class is extends domophone
 
     public function setCmsModel(string $model = '')
     {
-        $id = $this->cmsParams[$model][0];
+        $id = self::CMS_PARAMS[$model][0];
         $nowMatrix = $this->getMatrix();
 
         $this->apiCall('/switch/settings', 'PUT', ['modelId' => $id]);
 
-        $this->nowCms = $model;
         $this->configureMatrix($nowMatrix);
     }
 
@@ -409,7 +401,7 @@ abstract class is extends domophone
      */
     protected function disfigureMatrix(array $matrix): array
     {
-        [$id, , $columns, $rows] = $this->cmsParams[$this->nowCms];
+        [$id, , $columns, $rows] = self::CMS_PARAMS[$this->getCmsModel()];
         $wrongCmses = ['METAKOM', 'FACTORIAL'];
 
         if (!in_array($id, $wrongCmses)) {
@@ -694,7 +686,7 @@ abstract class is extends domophone
      */
     protected function restoreMatrix(array $matrix): array
     {
-        [$id, , $columns, $rows] = $this->cmsParams[$this->nowCms];
+        [$id, , $columns, $rows] = self::CMS_PARAMS[$this->getCmsModel()];
         $wrongCmses = ['METAKOM', 'FACTORIAL'];
 
         if (!in_array($id, $wrongCmses)) {
