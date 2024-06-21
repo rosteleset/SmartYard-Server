@@ -121,7 +121,7 @@ CREATE TABLE houses_subscribers_mobile
     auth_token text,
     platform integer,                                                                                                   -- 0 - android, 1 - ios
     push_token text,
-    push_token_type integer,                                                                                            -- 0 - fcm, 1 - apple, 2 - apple (dev), 3 - huawei
+    push_token_type integer,                                                                                            -- 0, 3 - fcm, 1 - apple, 2 - apple (dev), 4 - huawei, 5 - rustore
     voip_token text,                                                                                                    -- iOs only
     registered integer,                                                                                                 -- UNIX timestamp
     last_seen integer,                                                                                                  -- UNIX timestamp
