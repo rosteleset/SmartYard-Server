@@ -37,8 +37,8 @@ trait is
     public function getSysinfo(): array
     {
         $sysinfo = [];
-        $info = $this->apiCall('/system/info');
-        $versions = $this->apiCall('/v2/system/versions');
+        $info = $this->apiCall('/system/info', 'GET', [], 3);
+        $versions = $this->apiCall('/v2/system/versions', 'GET', [], 3);
 
         if ($info && $versions) {
             $sysinfo['DeviceID'] = $info['deviceID'];
