@@ -293,6 +293,7 @@
                     ]);
 
                     $this->workflows[$workflow] = new \tt\workflow\workflow($this->config, $this->db, $this->redis, $this, $workflow, $sandbox);
+
                     return $this->workflows[$workflow];
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
@@ -2214,6 +2215,116 @@
                 }
 
                 return $success && parent::cron($part);
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function capabilities()
+            {
+                return [
+                    "cli" => true,
+                ];
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function cli($args)
+            {
+                function cliUsage()
+                {
+                    global $argv;
+
+                    echo formatUsage("usage: {$argv[0]} tt
+
+                        files:
+                            [--export-filters]
+                            [--export-viewers]
+                            [--export-workflows]
+                    ");
+
+                    exit(1);
+                }
+
+                if (count($args) == 1 && array_key_exists("--export-workflows", $args) && !isset($args["--export-workflows"])) {
+                    $workflows = $this->getWorkflows();
+
+                    foreach ($workflows as $w => $m) {
+                        echo "export: $w ... ";
+
+                        try {
+                            $l = $this->getWorkflow($w);
+                            $dir = __DIR__ . "/../../data/files/workflows/";
+
+                            if (!file_exists($dir)) {
+                                mkdir($dir, 0777, true);
+                            }
+
+                            file_put_contents($dir . "$w" . ".lua", $l);
+
+                            echo "success\n";
+                        } catch (\Exception $e) {
+                            echo "fail\n";
+                        }
+                    }
+
+                    exit(0);
+                }
+
+                if (count($args) == 1 && array_key_exists("--export-filters", $args) && !isset($args["--export-filters"])) {
+                    $filters = $this->getFilters();
+
+                    foreach ($filters as $f => $m) {
+                        echo "export: $f ... ";
+
+                        try {
+                            $l = $this->getFilter($f);
+
+                            $dir = __DIR__ . "/../../data/files/filters/";
+
+                            if (!file_exists($dir)) {
+                                mkdir($dir, 0777, true);
+                            }
+
+                            file_put_contents($dir . "$f" . ".json", $l);
+
+                            echo "success\n";
+                        } catch (\Exception $e) {
+                            echo "fail\n";
+                        }
+                    }
+
+                    exit(0);
+                }
+
+                if (count($args) == 1 && array_key_exists("--export-viewers", $args) && !isset($args["--export-viewers"])) {
+                    $viewers = $this->getViewers();
+
+                    foreach ($viewers as $v) {
+                        echo "export: {$v['filename']} ... ";
+
+                        try {
+                            $dir = __DIR__ . "/../../data/files/viewers/";
+
+                            if (!file_exists($dir)) {
+                                mkdir($dir, 0777, true);
+                            }
+
+                            file_put_contents($dir . "{$v['filename']}" . ".js", $v['code']);
+
+                            echo "success\n";
+                        } catch (\Exception $e) {
+                            echo "fail\n";
+                        }
+                    }
+
+                    exit(0);
+                }
+
+                cliUsage();
+
+                return true;
             }
         }
     }

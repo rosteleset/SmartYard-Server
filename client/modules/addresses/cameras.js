@@ -117,7 +117,7 @@
                     validate: v => {
                         if (v) {
                             try {
-                                if (!/^https?:\/\/.+/.test(v)) {
+                                if (!/^rtsp:\/\/.+/.test(v)) {
                                     throw new Error();
                                 }
                                 new URL(v);

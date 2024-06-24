@@ -72,7 +72,8 @@
         "[Server]",
         "Proguard start",
         "UART_EV",
-        "HI_MPI_VENC"
+        "HI_MPI_VENC",
+        "GetExposureAttr"
     ],
     "qtech": [
         "Heart Beat",

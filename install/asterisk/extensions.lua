@@ -207,10 +207,11 @@ local function mobile_intercom(flatId, flatNumber, domophoneId)
                     redis:setex("mobile_token_" .. extension, 3 * 60, token)
                 end
                 -- ios over fcm (with repeat)
-                if tonumber(s.platform) == 1 and tonumber(s.tokenType) == 0 then
+                if tonumber(s.platform) == 1 and (tonumber(s.tokenType) == 0 or tonumber(s.tokenType) == 4 or tonumber(s.tokenType) == 5) then
                     redis:setex("voip_crutch_" .. extension, 1 * 60, cjson.encode({
                         id = extension,
                         token = token,
+                        tokenType = s.tokenType,
                         hash = hash,
                         platform = s.platform,
                         flatId = flatId,
@@ -288,7 +289,7 @@ local function handleMobileIntercom(context, extension)
             app.Wait(0.5)
             if voip_crutch then
                 if voip_crutch['cycle'] % 10 == 0 then
-                    push(voip_crutch['token'], '0', voip_crutch['platform'], extension, voip_crutch['hash'], channel.CALLERID("name"):get(), voip_crutch['flatId'], voip_crutch['dtmf'], voip_crutch['mobile'] .. '*', voip_crutch['flatNumber'], voip_crutch['domophoneId'])
+                    push(voip_crutch['token'], voip_crutch['tokenType'], voip_crutch['platform'], extension, voip_crutch['hash'], channel.CALLERID("name"):get(), voip_crutch['flatId'], voip_crutch['dtmf'], voip_crutch['mobile'] .. '*', voip_crutch['flatNumber'], voip_crutch['domophoneId'])
                 end
                 voip_crutch['cycle'] = voip_crutch['cycle'] + 1
             end
@@ -318,7 +319,11 @@ local function handleCMSIntercom(context, extension)
         end
         if dest ~= "" then
             dest = dest:sub(2)
-            app.Dial(dest, 120)
+            if channel.CALLERID("num"):get():sub(1, 1) == "7" then
+                app.Dial(dest, 120, "m")
+            else
+                app.Dial(dest, 120)
+            end
         end
     end
 

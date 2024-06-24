@@ -141,6 +141,12 @@
                 modules.asterisk.holdedSession = false;
                 modules.asterisk.registered = false;
 
+                try {
+                    modules.asterisk.ua.stop();
+                } catch (_) {
+                    //
+                }
+
                 setTimeout(() => {
                     modules.asterisk.ua = new JsSIP.UA({
                         sockets: [ new JsSIP.WebSocketInterface(config.asterisk.ws) ],
