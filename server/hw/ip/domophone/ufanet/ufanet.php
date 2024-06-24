@@ -305,7 +305,6 @@ abstract class ufanet extends domophone
         }
 
         $dbConfig['cmsLevels'] = [];
-        $dbConfig['eventServer'] = '';
 
         $dbConfig['sip']['stunEnabled'] = false;
         $dbConfig['sip']['stunServer'] = '';

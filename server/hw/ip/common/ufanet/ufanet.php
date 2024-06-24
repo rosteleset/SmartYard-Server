@@ -10,7 +10,13 @@ trait ufanet
 
     public function configureEventServer(string $url)
     {
-        // TODO: Implement configureEventServer() method.
+        ['host' => $server, 'port' => $port] = parse_url_ext($url);
+
+        $this->apiCall('/cgi-bin/configManager.cgi', 'GET', [
+            'action' => 'setConfig',
+            'Syslog.Address' => "$server:$port",
+            'Syslog.Level' => 8,
+        ]);
     }
 
     public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow')
@@ -125,8 +131,9 @@ trait ufanet
 
     protected function getEventServer(): string
     {
-        // TODO: Implement getEventServer() method.
-        return '';
+        $rawParams = $this->apiCall('/cgi-bin/configManager.cgi', 'GET', ['action' => 'getConfig', 'name' => 'Syslog']);
+        $address = $this->convertResponseToArray($rawParams)['Address'];
+        return "syslog.udp:$address";
     }
 
     protected function getNtpConfig(): array
