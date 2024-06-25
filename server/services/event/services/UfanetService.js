@@ -8,7 +8,7 @@ import { SyslogService } from './index.js';
 class UfanetService extends SyslogService {
 
     async handleSyslogMessage(date, host, message) {
-        console.log(message);
+        // TODO
     }
 }
 

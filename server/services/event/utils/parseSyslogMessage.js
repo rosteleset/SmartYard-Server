@@ -1,9 +1,28 @@
-// IETF (RFC 5424) message, with structured data and chained hostnames
+import { SERVICE_UFANET } from '../constants.js';
 import { getTimestamp } from "./index.js";
 
-const parseSyslogMessage = (str) => {
-    if (!str) return false;
+const RFC_3164_REGEX = /^<(?<PRI>[0-9]{1,3})>(?<TIMESTAMP>[A-Za-z]{3} [0-9]{1,2} \d{2}:\d{2}:\d{2}) (?<HOSTNAME>\S+) (?<MSG>[\S\s]+)/;
+
+const parseSyslogMessage = (str, unit) => {
+    if (!str) {
+        return false;
+    }
+
     str = str.trim();
+
+    if (unit === SERVICE_UFANET) {
+        const parts = RFC_3164_REGEX.exec(str);
+
+        if (parts) {
+            const { PRI, HOSTNAME, MSG } = parts.groups;
+            return {
+                format: 'RFC 3164',
+                priority: +PRI,
+                hostname: HOSTNAME,
+                message: MSG,
+            };
+        }
+    }
 
     // Check if the message follows the RFC 5424 format
     const regexIETF = /<(?<priority>\d{1,3})>(?<version>\d+) (?<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?\w?(?:[+-]\d{2}:\d{2})?) (?<hostname>\S+) (?<app>\S+) (?<pid>\S+) (?<msg_id>\S+)\s-\s(?<message>.*)$/;
