@@ -85,7 +85,10 @@ class SyslogService {
                 return;
             }
 
-            const { hostname: addressFromMessageBody, message: message } = parseSyslogMessage(rawMessage);
+            const {
+                hostname: addressFromMessageBody,
+                message: message,
+            } = parseSyslogMessage(rawMessage, this.unit);
 
             // Return if message parsing fails
             if (!message) {
