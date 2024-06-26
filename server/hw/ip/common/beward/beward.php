@@ -76,7 +76,7 @@ trait beward
             'passwd' => $password,
             'passwd1' => $password,
             'newpassword' => '',
-        ], true, "http://$this->url/umanage.asp");
+        ], true, "$this->url/umanage.asp");
 
         $this->apiCall('cgi-bin/pwdgrp_cgi', [
             'action' => 'update',
@@ -128,7 +128,7 @@ trait beward
 
         $ch = curl_init($req);
 
-        curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+        curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC | CURLAUTH_DIGEST);
         curl_setopt($ch, CURLOPT_USERPWD, "$this->login:$this->password");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt(
