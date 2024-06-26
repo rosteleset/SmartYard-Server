@@ -75,7 +75,7 @@ switch (serviceParam) {
         break;
 
     case SERVICE_UFANET:
-        const ufanetService = new UfanetService(SERVICE_UFANET, serviceConfig);
+        const ufanetService = new UfanetService(SERVICE_UFANET, serviceConfig, spamWords[SERVICE_UFANET]);
         ufanetService.createSyslogServer();
         break;
 
