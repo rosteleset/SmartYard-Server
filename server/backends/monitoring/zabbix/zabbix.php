@@ -51,26 +51,6 @@ class zabbix extends monitoring
                 $this->handleCameras();
                 $result = true;
                 $this->log("Сron task finish");
-
-                //TODO: test
-                $this->test_v2([
-                    [
-                        'cameraId' => '9',
-                        'ip' => "10.190.24.141",
-                    ],
-                    [
-                        'cameraId' => '11',
-                        'ip' => "192.168.13.121",
-                    ],
-                    [
-                        'cameraId' => '12',
-                        'ip' => "192.168.168.10",
-                    ],
-                    [
-                        'cameraId' => '13',
-                        'ip' => null,
-                    ],
-                ]);
             }
         } catch (\Exception $e) {
             $this->log('Сron err >> ' . $e->getMessage());
