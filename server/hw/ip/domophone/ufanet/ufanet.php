@@ -193,6 +193,7 @@ abstract class ufanet extends domophone
     {
         parent::prepare();
         $this->setNetwork();
+        $this->setRfidMode();
         $this->setDisplayLocalization();
     }
 
@@ -541,6 +542,16 @@ abstract class ufanet extends domophone
             'RTSP.Block' => 'false',
             'Agent.Enable' => 'false',
         ]);
+    }
+
+    /**
+     * Set RFID reader mode.
+     *
+     * @return void
+     */
+    protected function setRfidMode()
+    {
+        $this->apiCall('/api/v1/configuration', 'PATCH', ['door' => ['rfid_pass_en' => false]]);
     }
 
     /**
