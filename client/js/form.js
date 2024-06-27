@@ -343,7 +343,7 @@ function cardForm(params) {
                 h += `>`;
                 if (params.fields[i].button) {
                     h += `<div class="input-group-append">`;
-                    h += `<span id="${_prefix}${params.fields[i].id}-button" class="input-group-text pointer"><i class="fa-fw ${params.fields[i].button.class}"></i></span>`;
+                    h += `<span id="${_prefix}${params.fields[i].id}-button" title="${params.fields[i].button.hint ? params.fields[i].button.hint : ''}" class="input-group-text pointer"><i class="fa-fw ${params.fields[i].button.class}"></i></span>`;
                     h += `</div>`;
                     h += `</div>`;
                 }
