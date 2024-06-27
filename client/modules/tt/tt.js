@@ -867,7 +867,7 @@
         }
     },
 
-    issueField2Html: function (issue, field, val, target) {
+    issueField2Html: function (issue, field, val, target, filter) {
         let members = {};
         let escaped = false;
 
@@ -902,7 +902,7 @@
         }
 
         if (v && modules.tt.viewers[field] && typeof modules.tt.viewers[field][v] == "function") {
-            val = modules.tt.viewers[field][v](val, issue, field, target);
+            val = modules.tt.viewers[field][v](val, issue, field, target, filter);
         } else {
             if (val == null || val == "&nbsp;") {
                 return "";
@@ -936,7 +936,7 @@
                         break;
 
                     case "author":
-                        val = escapeHTML(members[val]?members[val]:val);
+                        val = escapeHTML(members[val] ? members[val] : val);
                         break;
 
                     case "commentPrivate":
@@ -1151,7 +1151,7 @@
                             let m = "";
 
                             for (let i in val) {
-                                m += members[val[i]]?members[val[i]]:val[i];
+                                m += members[val[i]] ? members[val[i]] : val[i];
                                 m += ", ";
                             }
 
@@ -1161,7 +1161,7 @@
 
                             val = escapeHTML(m);
                         } else {
-                            val = escapeHTML(members[val]?members[val]:val);
+                            val = escapeHTML(members[val] ? members[val] : val);
                         }
                         break;
 
@@ -1909,7 +1909,7 @@
 
                             for (let j = 0; j < pKeys.length; j++) {
                                 cols.push({
-                                    data: modules.tt.issueField2Html(issues.issues[i], pKeys[j], undefined, "list"),
+                                    data: modules.tt.issueField2Html(issues.issues[i], pKeys[j], undefined, "list", x),
                                     nowrap: true,
                                     click: navigateUrl("tt", {
                                         issue: issues.issues[i]["issueId"],
