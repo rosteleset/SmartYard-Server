@@ -1675,7 +1675,17 @@
                 sort = {};
             }
 
+            let virtuals = {};
+
+            for (let i in modules.tt.meta.customFields) {
+                if (modules.tt.meta.customFields[i].type == 'virtual') {
+                    virtuals["_cf_" + modules.tt.meta.customFields[i].field] = 1;
+                }
+            }
+
             for (let i = 0; i < pKeys.length; i++) {
+                if (virtuals[pKeys[i]]) continue;
+
                 if (sort[pKeys[i]]) {
                     sortMenuItems.push({
                         id: pKeys[i],
