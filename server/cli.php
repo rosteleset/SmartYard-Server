@@ -56,7 +56,7 @@
                 [--run-demo-server [--port=<port>]]
 
             initialization and update:
-                [--init-db [--skip=<versions>]]
+                [--init-db [--skip=<versions>|--force=<version>]]
                 [--init-clickhouse-db]
                 [--admin-password=<password>]
                 [--reindex]
@@ -437,6 +437,8 @@
         (count($args) == 1 && array_key_exists("--init-db", $args) && !isset($args["--init-db"]))
         ||
         (count($args) == 2 && array_key_exists("--init-db", $args) && !isset($args["--init-db"]) && array_key_exists("--skip", $args) && isset($args["--skip"]))
+        ||
+        (count($args) == 2 && array_key_exists("--init-db", $args) && !isset($args["--init-db"]) && array_key_exists("--force", $args) && isset($args["--force"]))
     ) {
         maintenance(true);
         wait_all();
@@ -444,7 +446,7 @@
         backup_db(false);
         echo "\n";
 
-        initDB(@$args["--skip"]);
+        initDB(@$args["--skip"], @$args["--force"]);
         echo "\n";
 
         startup(true);
