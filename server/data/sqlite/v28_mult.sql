@@ -6,7 +6,7 @@ CREATE TABLE houses_subscribers_devices
     auth_token TEXT,
     platform INTEGER,                                                                                                   -- 0 - android, 1 - ios, 2 - web
     push_token TEXT,
-    push_token_type INTEGER,                                                                                            -- 0 - fcm, 1 - apple, 2 - apple (dev), 3 - huawei
+    push_token_type INTEGER,                                                                                            -- 0, 3 - fcm, 1 - apple, 2 - apple (dev), 4 - huawei, 5 - rustore
     voip_token TEXT,                                                                                                    -- iOs only
     registered INTEGER,                                                                                                 -- UNIX timestamp
     last_seen INTEGER,                                                                                                  -- UNIX timestamp

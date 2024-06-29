@@ -114,5 +114,8 @@
         "v34_mult.php",
         "v34_mult.sql",
         "v34_cameras.sql"
+    ],
+    "36": [
+        "v36_tt.sql"
     ]
 }

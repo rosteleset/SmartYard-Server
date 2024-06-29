@@ -19,13 +19,19 @@
              * @param $url
              * @return mixed
              */
-            abstract public function getDVRServerByStream($url);
+            abstract public function getDVRServerForCam($cam);
 
             /**
              * @param $url
              * @return mixed
              */
             abstract public function getDVRTokenForCam($cam, $subscriberId);
+
+            /**
+             * @param $url
+             * @return mixed
+             */
+            abstract public function getDVRStreamURLForCam($cam);
 
             /**
              * @return mixed

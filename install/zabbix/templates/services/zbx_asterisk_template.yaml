@@ -507,3 +507,38 @@ zabbix_export:
               newvalue: Down
             - value: '1'
               newvalue: Up
+  graphs:
+    - uuid: d465e317d90541b6b8441471db42c9bb
+      name: 'Asterisk: calls'
+      graph_items:
+        - color: 1A7C11
+          calc_fnc: ALL
+          item:
+            host: SmartYard-Server_Asterisk
+            key: asterisk_rbt.calls_processed
+        - sortorder: '1'
+          color: '274482'
+          calc_fnc: ALL
+          item:
+            host: SmartYard-Server_Asterisk
+            key: asterisk_rbt.active_calls
+    - uuid: 6f33a32298c04f6c8bf3aa672ead1da7
+      name: 'Asterisk: clients'
+      graph_items:
+        - color: 1A7C11
+          calc_fnc: ALL
+          item:
+            host: SmartYard-Server_Asterisk
+            key: asterisk_rbt.pjsip_clients_total
+        - sortorder: '1'
+          color: '274482'
+          calc_fnc: ALL
+          item:
+            host: SmartYard-Server_Asterisk
+            key: asterisk_rbt.pjsip_client_intercom_online
+        - sortorder: '2'
+          color: F63100
+          calc_fnc: ALL
+          item:
+            host: SmartYard-Server_Asterisk
+            key: asterisk_rbt.pjsip_outdoor_intercom_online

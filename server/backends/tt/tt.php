@@ -30,7 +30,7 @@
                 if (!$files) {
                     return false;
                 }
-                
+
                 $cache = $this->cacheGet("WORKFLOWS");
                 if ($cache) {
                     return $cache;
@@ -275,7 +275,7 @@
                             return [ $custom->DELETE($params) ];
                         },
                     ]);
-                    
+
                     $sandbox->registerLibrary("mb", [
                         "substr" => function (...$args) {
                             return [ mb_substr(...$args) ];
@@ -293,6 +293,7 @@
                     ]);
 
                     $this->workflows[$workflow] = new \tt\workflow\workflow($this->config, $this->db, $this->redis, $this, $workflow, $sandbox);
+
                     return $this->workflows[$workflow];
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
@@ -312,7 +313,7 @@
                     $this->unCache("WORKFLOW:$workflow");
                     return false;
                 }
-                
+
                 $cache = $this->cacheGet("WORKFLOW:$workflow");
                 if ($cache) {
                     return $cache;
@@ -356,7 +357,7 @@
                 if (!$workflow) {
                     return false;
                 }
-                
+
                 $workflows = $files->searchFiles([
                     "metadata.type" => "workflow",
                     "metadata.workflow" => $workflow,
@@ -384,7 +385,7 @@
                 if (!$files) {
                     return false;
                 }
-                
+
                 $workflows = $files->searchFiles([
                     "metadata.type" => "workflow",
                     "metadata.workflow" => $workflow,
@@ -411,7 +412,7 @@
                 if (!$files) {
                     return false;
                 }
-                
+
                 $cache = $this->cacheGet("WORKFLOW:LIBS");
                 if ($cache) {
                     return $cache;
@@ -439,7 +440,7 @@
                 if (!$files) {
                     return false;
                 }
-                
+
                 $libs = $files->searchFiles([
                     "metadata.type" => "workflow.lib",
                 ]);
@@ -465,7 +466,7 @@
                 if (!$files) {
                     return false;
                 }
-                
+
                 $libs = $files->searchFiles([
                     "metadata.type" => "workflow.lib",
                     "metadata.lib" => $lib,
@@ -489,7 +490,7 @@
              * @param $body
              * @return boolean
              */
-            public function putWorkflowLib($lib, $body) 
+            public function putWorkflowLib($lib, $body)
             {
                 $files = loadBackend("files");
 
@@ -500,7 +501,7 @@
                 if (!$lib) {
                     return false;
                 }
-                
+
                 $libs = $files->searchFiles([
                     "metadata.type" => "workflow.lib",
                     "metadata.lib" => $lib,
@@ -520,14 +521,14 @@
              * @param $workflow
              * @return boolean
              */
-            public function deleteWorkflowLib($lib) 
+            public function deleteWorkflowLib($lib)
             {
                 $files = loadBackend("files");
 
                 if (!$files) {
                     return false;
                 }
-                
+
                 $libs = $files->searchFiles([
                     "metadata.type" => "workflow.lib",
                     "metadata.lib" => $lib,
@@ -626,9 +627,9 @@
               * @param $statusId
               * @return boolean
               */
- 
+
              abstract public function deleteStatus($statusId);
- 
+
             /**
              * @return false|array
              */
@@ -792,7 +793,7 @@
                 if ($cache) {
                     return $cache;
                 }
-                
+
                 $filters = $files->searchFiles([ "metadata.type" => "filter" ]);
 
                 $_list = [];
@@ -818,7 +819,7 @@
                     $this->unCache("FILTERS-EXT");
                     return false;
                 }
-                
+
                 $cache = $this->cacheGet("FILTERS-EXT");
                 if ($cache) {
                     return $cache;
@@ -834,7 +835,8 @@
                             "name" => @$f["name"],
                             "sort" => @$f["sort"],
                             "hide" => @$f["hide"],
-                            "disableCustomSort" => @$f["disableCustomSort"],
+                            "disableCustomSort" => !!@$f["disableCustomSort"],
+                            "pipeline" => !!@$f["pipeline"],
                             "owner" => @$filter["metadata"]["owner"],
                         ];
                     } catch (\Exception $e) {
@@ -859,7 +861,7 @@
                 if (!$files) {
                     return false;
                 }
-                
+
                 if ($owner) {
                     $filters = $files->searchFiles([
                         "metadata.type" => "filter",
@@ -911,11 +913,11 @@
                         "metadata.filter" => $filter,
                         "metadata.owner" => $owner,
                     ]);
-    
+
                     foreach ($filters as $f) {
                         $files->deleteFile($f["id"]);
                     }
-    
+
                     return $files->addFile($filter . ".json", $files->contentsToStream($body), [
                         "type" => "filter",
                         "filter" => $filter,
@@ -926,11 +928,11 @@
                         "metadata.type" => "filter",
                         "metadata.filter" => $filter,
                     ]);
-    
+
                     foreach ($filters as $f) {
                         $files->deleteFile($f["id"]);
                     }
-    
+
                     return $files->addFile($filter . ".json", $files->contentsToStream($body), [
                         "type" => "filter",
                         "filter" => $filter,
@@ -1064,7 +1066,7 @@
                         "name" => $v["metadata"]["name"],
                         "field" => $v["metadata"]["field"],
                         "code" => $files->streamToContents($files->getFileStream($v["id"])) ? : "//function subject_v1 (value, field, issue, target) {\n\treturn val;\n//}\n",
-                    ]; 
+                    ];
                 }
 
                 $this->cacheSet("VIEWERS", $_vs);
@@ -1115,7 +1117,7 @@
                 }
                 return array_keys($a) === range(0, count($a) - 1);
             }
-            
+
             /**
              * @param $a
              * @return boolean
@@ -1123,7 +1125,7 @@
             private static function an($a){
                 return ctype_digit(implode('', array_keys($a)));
             }
-            
+
             /**
              * @param $a
              * @return mixed
@@ -1630,11 +1632,11 @@
                 if ($needModify1) {
                     $success = $success && $this->modifyIssue($issue1);
                 }
-                
+
                 if ($needModify2) {
                     $success = $success && $this->modifyIssue($issue2);
                 }
-                
+
                 return $success;
             }
 
@@ -1711,11 +1713,11 @@
                 if ($needModify1) {
                     $success = $success && $this->modifyIssue($issue1);
                 }
-                
+
                 if ($needModify2) {
                     $success = $success && $this->modifyIssue($issue2);
                 }
-                
+
                 return $success;
             }
 
@@ -2156,7 +2158,7 @@
                 $success = true;
 
                 $tasks = $this->db->get("select acronym, filter, action, uid, login from tt_crontabs left join tt_projects using (project_id) left join core_users using (uid) where crontab = :crontab and enabled = 1", [
-                    "crontab" => $part,                    
+                    "crontab" => $part,
                 ], [
                     "acronym" => "acronym",
                     "filter" => "filter",
@@ -2213,6 +2215,116 @@
                 }
 
                 return $success && parent::cron($part);
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function capabilities()
+            {
+                return [
+                    "cli" => true,
+                ];
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function cli($args)
+            {
+                function cliUsage()
+                {
+                    global $argv;
+
+                    echo formatUsage("usage: {$argv[0]} tt
+
+                        files:
+                            [--export-filters]
+                            [--export-viewers]
+                            [--export-workflows]
+                    ");
+
+                    exit(1);
+                }
+
+                if (count($args) == 1 && array_key_exists("--export-workflows", $args) && !isset($args["--export-workflows"])) {
+                    $workflows = $this->getWorkflows();
+
+                    foreach ($workflows as $w => $m) {
+                        echo "export: $w ... ";
+
+                        try {
+                            $l = $this->getWorkflow($w);
+                            $dir = __DIR__ . "/../../data/files/workflows/";
+
+                            if (!file_exists($dir)) {
+                                mkdir($dir, 0777, true);
+                            }
+
+                            file_put_contents($dir . "$w" . ".lua", $l);
+
+                            echo "success\n";
+                        } catch (\Exception $e) {
+                            echo "fail\n";
+                        }
+                    }
+
+                    exit(0);
+                }
+
+                if (count($args) == 1 && array_key_exists("--export-filters", $args) && !isset($args["--export-filters"])) {
+                    $filters = $this->getFilters();
+
+                    foreach ($filters as $f => $m) {
+                        echo "export: $f ... ";
+
+                        try {
+                            $l = $this->getFilter($f);
+
+                            $dir = __DIR__ . "/../../data/files/filters/";
+
+                            if (!file_exists($dir)) {
+                                mkdir($dir, 0777, true);
+                            }
+
+                            file_put_contents($dir . "$f" . ".json", $l);
+
+                            echo "success\n";
+                        } catch (\Exception $e) {
+                            echo "fail\n";
+                        }
+                    }
+
+                    exit(0);
+                }
+
+                if (count($args) == 1 && array_key_exists("--export-viewers", $args) && !isset($args["--export-viewers"])) {
+                    $viewers = $this->getViewers();
+
+                    foreach ($viewers as $v) {
+                        echo "export: {$v['filename']} ... ";
+
+                        try {
+                            $dir = __DIR__ . "/../../data/files/viewers/";
+
+                            if (!file_exists($dir)) {
+                                mkdir($dir, 0777, true);
+                            }
+
+                            file_put_contents($dir . "{$v['filename']}" . ".js", $v['code']);
+
+                            echo "success\n";
+                        } catch (\Exception $e) {
+                            echo "fail\n";
+                        }
+                    }
+
+                    exit(0);
+                }
+
+                cliUsage();
+
+                return true;
             }
         }
     }

@@ -25,6 +25,7 @@
 
 auth();
 
+$last = htmlspecialchars(trim(@$postdata['last']));
 $name = htmlspecialchars(trim(@$postdata['name']));
 $patronymic = htmlspecialchars(trim(@$postdata['patronymic']));
 

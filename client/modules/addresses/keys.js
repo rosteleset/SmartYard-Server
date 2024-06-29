@@ -19,7 +19,7 @@
             cardTable({
                 target: "#mainForm",
                 title: {
-                    caption: i18n("addresses.superKeys"),
+                    caption: parseInt(params.by) ? i18n("addresses.objectKeys", i18n("addresses.keysType" + parseInt(params.by))) : i18n("addresses.superKeys"),
                     button: {
                         caption: i18n("addresses.addKey"),
                         click: () => {

@@ -96,6 +96,9 @@
                     placeholder: "http://",
                     validate: v => {
                         try {
+                            if (!/^https?:\/\/.+/.test(v)) {
+                                throw new Error();
+                            }
                             new URL(v);
                             return true;
                         } catch (_) {
@@ -225,6 +228,9 @@
                         value: domophone.url,
                         validate: v => {
                             try {
+                                if (!/^https?:\/\/.+/.test(v)) {
+                                    throw new Error();
+                                }
                                 new URL(v);
                                 return true;
                             } catch (_) {
@@ -334,7 +340,7 @@
             <span class="status-indicator ${statusClass}">
                 <div class="status-tooltip">${status}</div>
             </span>
-        </div>  
+        </div>
     `;
     },
 
@@ -405,12 +411,13 @@
                                                 ? modules.addresses.domophones.meta.domophones[i].status.status : "Unknown")
                                         : modules.addresses.domophones.handleDeviceStatus("Disabled"),
                                     nowrap: true,
-                                 },
+                                },
                                 {
                                     data: modules.addresses.domophones.meta.domophones[i].url,
                                     nowrap: true,
                                 },
-                                {   data: modules.addresses.domophones.meta.models[modules.addresses.domophones.meta.domophones[i].model].title,
+                                {
+                                    data: (modules.addresses.domophones.meta.domophones[i].model && modules.addresses.domophones.meta.models[modules.addresses.domophones.meta.domophones[i].model]) ? modules.addresses.domophones.meta.models[modules.addresses.domophones.meta.domophones[i].model].title : modules.addresses.domophones.meta.domophones[i].model,
                                     nowrap: true,
                                 },
                                 {

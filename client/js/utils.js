@@ -98,23 +98,25 @@ function xblur() {
 }
 
 function autoZ(target) {
-    let maxZ = Math.max.apply(null, $.map($('body > *:visible'), function(e) {
-        if (e === target) {
-            return 1;
-        } else {
-            // no great than 9999999
-            let z = parseInt($(e).css('z-index'));
-            if (z < 9999999) {
-                return parseInt($(e).css('z-index')) || 1;
-            } else {
-                return 1;
-            }
-        }
-    }));
-
-    maxZ = Math.max(maxZ, 100500);
-
     if (target) {
+        target.css('z-index', 1);
+
+        let maxZ = Math.max.apply(null, $.map($('body > *:visible'), function(e) {
+            if (e === target) {
+                return 1;
+            } else {
+                // no great than 9999999
+                let z = parseInt($(e).css('z-index'));
+                if (z < 9999999) {
+                    return parseInt($(e).css('z-index')) || 1;
+                } else {
+                    return 1;
+                }
+            }
+        }));
+
+        maxZ = Math.max(maxZ, 100500);
+
         target.css('z-index', maxZ + 1);
     }
 

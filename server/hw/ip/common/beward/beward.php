@@ -76,7 +76,7 @@ trait beward
             'passwd' => $password,
             'passwd1' => $password,
             'newpassword' => '',
-        ], true, "http://$this->url/umanage.asp");
+        ], true, "$this->url/umanage.asp", CURLAUTH_BASIC | CURLAUTH_DIGEST);
 
         $this->apiCall('cgi-bin/pwdgrp_cgi', [
             'action' => 'update',
@@ -105,10 +105,17 @@ trait beward
      * @param array $params (Optional) Query params or request body. Empty array by default.
      * @param bool $post (Optional) Add $params as request body if true. Default is false.
      * @param string $referer (Optional) Add referer header to query. Default is empty string.
+     * @param int $authType (Optional) Authentication type. Default is CURLAUTH_BASIC.
      *
      * @return string API response.
      */
-    protected function apiCall(string $resource, array $params = [], bool $post = false, string $referer = ''): string
+    protected function apiCall(
+        string $resource,
+        array  $params = [],
+        bool   $post = false,
+        string $referer = '',
+        int    $authType = CURLAUTH_BASIC,
+    ): string
     {
         $query = '';
 
@@ -128,7 +135,7 @@ trait beward
 
         $ch = curl_init($req);
 
-        curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+        curl_setopt($ch, CURLOPT_HTTPAUTH, $authType);
         curl_setopt($ch, CURLOPT_USERPWD, "$this->login:$this->password");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt(

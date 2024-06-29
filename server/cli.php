@@ -44,7 +44,7 @@
         global $argv;
 
         echo formatUsage("usage: {$argv[0]}
-        
+
             backend:
                 [<backend name> [params]]
 
@@ -56,7 +56,7 @@
                 [--run-demo-server [--port=<port>]]
 
             initialization and update:
-                [--init-db [--skip=<versions>]]
+                [--init-db [--skip=<versions>|--force=<version>]]
                 [--init-clickhouse-db]
                 [--admin-password=<password>]
                 [--reindex]
@@ -174,7 +174,7 @@
         global $db, $params, $script_process_id, $script_parent_pid, $script_result;
 
         register_shutdown_function('shutdown');
-    
+
         if (@$db) {
             try {
                 $script_process_id = $db->insert('insert into core_running_processes (pid, ppid, start, process, params, expire) values (:pid, :ppid, :start, :process, :params, :expire)', [
@@ -192,7 +192,7 @@
             $already = (int)$db->get("select count(*) as already from core_running_processes where done is null and params = :params and pid <> " . getmypid(), [
                     'params' => $params,
             ], false, [ 'fieldlify', 'silent' ]);
-        
+
             if ($already) {
                 $script_result = "already running";
                 exit(0);
@@ -200,7 +200,7 @@
 
             if (!$skip_maintenance_check) {
                 $maintenance = (int)$db->get("select count(*) as maintenance from core_vars where var_name = 'maintenance'", [], false, [ 'fieldlify', 'silent' ]);
-    
+
                 if ($maintenance) {
                     echo "****************************************\n";
                     echo "*       !!! MAINTENANCE MODE !!!       *\n";
@@ -264,7 +264,7 @@
         if (@$db) {
             while (true) {
                 $exists = (int)$db->get("select count(*) as exists from core_running_processes where done is null and pid <> " . getmypid(), [], false, [ 'fieldlify', 'silent' ]);
-        
+
                 if (!$exists) {
                     break;
                 } else {
@@ -389,7 +389,7 @@
 
         foreach ($config["backends"] as $b => $p) {
             $e = loadBackend($b);
-            if ($e->capabilities() && array_key_exists("cli", $e->capabilities())) {
+            if ($e && $e->capabilities() && array_key_exists("cli", $e->capabilities())) {
                 $cli[] = $b;
             }
         }
@@ -437,6 +437,8 @@
         (count($args) == 1 && array_key_exists("--init-db", $args) && !isset($args["--init-db"]))
         ||
         (count($args) == 2 && array_key_exists("--init-db", $args) && !isset($args["--init-db"]) && array_key_exists("--skip", $args) && isset($args["--skip"]))
+        ||
+        (count($args) == 2 && array_key_exists("--init-db", $args) && !isset($args["--init-db"]) && array_key_exists("--force", $args) && isset($args["--force"]))
     ) {
         maintenance(true);
         wait_all();
@@ -444,9 +446,9 @@
         backup_db(false);
         echo "\n";
 
-        initDB(@$args["--skip"]);
+        initDB(@$args["--skip"], @$args["--force"]);
         echo "\n";
-        
+
         startup(true);
         echo "\n";
 
@@ -455,7 +457,7 @@
 
         reindex();
         echo "\n";
-        
+
         maintenance(false);
         exit(0);
     }
@@ -714,7 +716,7 @@
 
         reindex();
         echo "\n";
-        
+
         maintenance(false);
 
         exit(0);

@@ -1,10 +1,10 @@
 [Unit]
-Description=Event service for Beward DS06A intercom syslog messages
+Description=Event service for Beward DS intercom syslog messages
 Documentation=https://github.com/rosteleset/SmartYard-Server/tree/main/install
 After=network.target
 
 [Service]
-SyslogIdentifier=event_beward_ds06a
+SyslogIdentifier=event_beward_ds
 Type=simple
 WorkingDirectory=/opt/rbt/server/services/event/
 ExecStart=/usr/bin/node /opt/rbt/server/services/event/index.js beward_ds
@@ -15,8 +15,8 @@ Group=rbt
 LimitCORE=infinity
 KillMode=process
 StandardOutput=null
-#StandardOutput=file:/var/log/event_service/event_beward_ds06a.log
-StandardError=file:/var/log/event_service/event_beward_ds06a.error.log
+#StandardOutput=append:/var/log/event_service/event_beward_ds.log
+StandardError=append:/var/log/event_service/event_beward_ds.error.log
 
 [Install]
 WantedBy=multi-user.target

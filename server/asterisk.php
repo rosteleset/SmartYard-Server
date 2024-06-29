@@ -503,7 +503,7 @@
                         $dvrs = @loadBackend("dvr");
                         if ($cameras && $dvrs) {
                             $camera = $cameras->getCamera($entrance["cameraId"]);
-                            $dvr = $dvrs->getDVRServerByStream($camera["dvrStream"]);
+                            $dvr = $dvrs->getDVRServerForCam($camera);
                             if ($camera && $dvr) {
                                 $_params["videoServer"] = $dvr["type"];
                                 $_params["videoToken"] = $dvrs->getDVRTokenForCam($camera, -1);

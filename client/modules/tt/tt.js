@@ -590,7 +590,7 @@
 
                             let value = (typeof prefferredValue !== "undefined") ? prefferredValue : ((issue && issue["_cf_" + fieldId]) ? issue["_cf_" + fieldId] : []);
 
-                            if (value && !already[value]) {
+                            if (value && $.trim(value) && !already[value]) {
                                 options.push({
                                     id: value,
                                     text: value,
@@ -867,7 +867,7 @@
         }
     },
 
-    issueField2Html: function (issue, field, val, target) {
+    issueField2Html: function (issue, field, val, target, filter) {
         let members = {};
         let escaped = false;
 
@@ -902,7 +902,7 @@
         }
 
         if (v && modules.tt.viewers[field] && typeof modules.tt.viewers[field][v] == "function") {
-            val = modules.tt.viewers[field][v](val, issue, field, target);
+            val = modules.tt.viewers[field][v](val, issue, field, target, filter);
         } else {
             if (val == null || val == "&nbsp;") {
                 return "";
@@ -936,7 +936,7 @@
                         break;
 
                     case "author":
-                        val = escapeHTML(members[val]?members[val]:val);
+                        val = escapeHTML(members[val] ? members[val] : val);
                         break;
 
                     case "commentPrivate":
@@ -1151,7 +1151,7 @@
                             let m = "";
 
                             for (let i in val) {
-                                m += members[val[i]]?members[val[i]]:val[i];
+                                m += members[val[i]] ? members[val[i]] : val[i];
                                 m += ", ";
                             }
 
@@ -1161,7 +1161,7 @@
 
                             val = escapeHTML(m);
                         } else {
-                            val = escapeHTML(members[val]?members[val]:val);
+                            val = escapeHTML(members[val] ? members[val] : val);
                         }
                         break;
 
@@ -1200,10 +1200,10 @@
                 modules.tt.viewers[modules.tt.meta.viewers[i].field] = {};
             }
             try {
-                modules.tt.viewers[modules.tt.meta.viewers[i].field][modules.tt.meta.viewers[i].name] = new Function('value', 'issue', 'field', 'target', modules.tt.meta.viewers[i].code);
+                modules.tt.viewers[modules.tt.meta.viewers[i].field][modules.tt.meta.viewers[i].name] = new Function('value', 'issue', 'field', 'target', 'filter', modules.tt.meta.viewers[i].code);
             } catch (e) {
                 console.error(e);
-                modules.tt.viewers[modules.tt.meta.viewers[i].field][modules.tt.meta.viewers[i].name] = new Function('value', 'issue', 'field', 'target', "//function $name (value, field, issue, terget) {\n\treturn value;\n//}\n");
+                modules.tt.viewers[modules.tt.meta.viewers[i].field][modules.tt.meta.viewers[i].name] = new Function('value', 'issue', 'field', 'target', 'filter', "//function $name (value, field, issue, terget, filter) {\n\treturn value;\n//}\n");
             }
         }
 
@@ -1675,7 +1675,17 @@
                 sort = {};
             }
 
+            let virtuals = {};
+
+            for (let i in modules.tt.meta.customFields) {
+                if (modules.tt.meta.customFields[i].type == 'virtual') {
+                    virtuals["_cf_" + modules.tt.meta.customFields[i].field] = 1;
+                }
+            }
+
             for (let i = 0; i < pKeys.length; i++) {
+                if (virtuals[pKeys[i]]) continue;
+
                 if (sort[pKeys[i]]) {
                     sortMenuItems.push({
                         id: pKeys[i],
@@ -1691,7 +1701,7 @@
             };
 
             let sortMenu = menu({
-                button: "<i class='fas fa-fw fa-bars pointer'></i>",
+                button: "<i class='fas fa-fw fa-sort pointer'></i>",
                 items: sortMenuItems,
                 click: function (id) {
                     if (sort && sort[id]) {
@@ -1909,24 +1919,13 @@
 
                             for (let j = 0; j < pKeys.length; j++) {
                                 cols.push({
-                                    data: modules.tt.issueField2Html(issues.issues[i], pKeys[j], undefined, "list"),
+                                    data: modules.tt.issueField2Html(issues.issues[i], pKeys[j], undefined, "list", x),
                                     nowrap: true,
                                     click: navigateUrl("tt", {
                                         issue: issues.issues[i]["issueId"],
                                         filter: x ? x : "",
                                         search: ($.trim(params.search) && params.search !== true) ? $.trim(params.search) : "",
                                     }),
-/*
-                                    click: (issue) => {
-                                        issue = JSON.parse(b64_to_utf8(issue));
-
-                                        window.location.href = navigateUrl("tt", {
-                                            issue: issue.id,
-                                            filter: issue.filter ? issue.filter : "",
-                                            search: ($.trim(issue.search) && typeof issue.search === "string") ? $.trim(issue.search) : "",
-                                        });
-                                    },
-*/
                                     fullWidth: j == pKeys.length - 1,
                                 });
                             }

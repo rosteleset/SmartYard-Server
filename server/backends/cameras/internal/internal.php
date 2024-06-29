@@ -63,8 +63,20 @@ namespace backends\cameras
             ]);
 
             if ($monitoring && $withStatus) {
+                $targetHosts = [];
+
+                foreach ($cameras as $camera) {
+                        $targetHosts[] = [
+                            'hostId' => $camera['cameraId'],
+                            'ip' => $camera['ip'],
+                        ];
+                }
+
+                //get status
+                $targetStatus = $monitoring->devicesStatus("camera", $targetHosts);
+
                 foreach ($cameras as &$camera) {
-                        $camera["status"] = $monitoring->deviceStatus("camera", $camera["ip"]);
+                        $camera["status"] = $targetStatus[$camera["cameraId"]]['status'];
                 }
             }
 
