@@ -111,9 +111,11 @@
         "v33_houses.sql"
     ],
     "34": [
-        "v34_mult.php",
-        "v34_mult.sql",
         "v34_cameras.sql"
+    ],
+    "35": [
+        "v35_mult.php",
+        "v35_mult.sql"
     ],
     "36": [
         "v36_tt.sql"
