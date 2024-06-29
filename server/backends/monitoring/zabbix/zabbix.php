@@ -122,7 +122,7 @@ class zabbix extends monitoring
         $this->log("Finish configure zabbix");
     }
 
-     private function saveToRedis($key, $value, $ttl = 3600): void
+    private function saveToRedis($key, $value, $ttl = 3600): void
     {
         $this->redis->set($key, json_encode($value, true));
         $this->redis->expire($key, $ttl);
@@ -234,7 +234,7 @@ class zabbix extends monitoring
 
         $templatePath = __DIR__ . "/../../../.." . $zbxConfig["zbx_data_collection"]["templates_dir"];
         if (!is_dir($templatePath)) {
-           throw new Exception("Error: template directory does not exist: $templatePath");
+            throw new Exception("Error: template directory does not exist: $templatePath");
         }
         $this->templatesDir = realpath($templatePath);
     }
@@ -260,10 +260,10 @@ class zabbix extends monitoring
             $groupExist = false;
             // find target hot group name in existing groups
             foreach ($existGroups as $existGroup) {
-               if ($existGroup['name'] === $hostGroupName){
-                   $groupExist = true;
-                   break;
-               }
+                if ($existGroup['name'] === $hostGroupName){
+                    $groupExist = true;
+                    break;
+                }
             }
 
             // Create missing group
@@ -664,41 +664,41 @@ class zabbix extends monitoring
     private function createHost(array $item, string $groupName)
     {
         $params = [
-        'host' => $item['host'],
-        'name' => $item['name'],
-        'interfaces' => [
-            [
-                "type" => 1,
-                "main" => 1,
-                "useip" => 1,
-                "ip" => $item['interface'],
-                "dns" => "",
-                "port" => "10050"
+            'host' => $item['host'],
+            'name' => $item['name'],
+            'interfaces' => [
+                [
+                    "type" => 1,
+                    "main" => 1,
+                    "useip" => 1,
+                    "ip" => $item['interface'],
+                    "dns" => "",
+                    "port" => "10050"
+                ]
+            ],
+            'groups' => [
+                [
+                    "groupid" => $this->zbxData['groups'][$groupName]
+                ]
+            ],
+            'tags' => [
+                [
+                    "tag" => "Host type",
+                    "value" => $groupName
+                ]
+            ],
+            'templates' => [
+                [
+                    "templateid" => $this->zbxData['templates'][$item['template']],
+                ]
+            ],
+            'macros' => [
+                [
+                    "macro" => '{$HOST_PASSWORD}',
+                    "value" => $item['credentials'],
+                ]
             ]
-        ],
-        'groups' => [
-            [
-                "groupid" => $this->zbxData['groups'][$groupName]
-            ]
-        ],
-        'tags' => [
-            [
-                "tag" => "Host type",
-                "value" => $groupName
-            ]
-        ],
-        'templates' => [
-            [
-                "templateid" => $this->zbxData['templates'][$item['template']],
-            ]
-        ],
-        'macros' => [
-            [
-                "macro" => '{$HOST_PASSWORD}',
-                "value" => $item['credentials'],
-            ]
-        ]
-         ];
+        ];
 
         $body = [
             'jsonrpc' => "2.0",
@@ -1179,44 +1179,102 @@ class zabbix extends monitoring
         }
     }
 
+//    private function handleDevices_(array $rbtDevices, array $zbxDevices, string $groupName): void
+//    {
+//        if ($rbtDevices) {
+//            foreach ($rbtDevices as $rbtDevice) {
+//                $zbxDevice = $this->findHostInArray($rbtDevice, $zbxDevices);
+//                $this->log("Found device >>");
+//                $this->log(var_export($zbxDevice, true));
+//
+//                if ($zbxDevice) {
+//                    if ($rbtDevice['status'] === false && $zbxDevice['status'] === true) {
+//                        $this->disableHost($zbxDevice);
+//                    } elseif ($rbtDevice['status'] === true && $zbxDevice['status'] === false) {
+//                        $this->enableHost($zbxDevice);
+//                    } elseif (
+//                        $rbtDevice['status'] === false
+//                        && $zbxDevice['status'] === false
+//                        && isset($zbxDevice['tags']['DISABLED'])
+//                    ) {
+//                        $disableTimestamp = (int)explode(' || ', $zbxDevice['tags']['DISABLED'])[0];
+//                        $deleteAfter = $disableTimestamp + ($this->zbxStoreDays * 24 * 60 * 60);
+//                        $this->deleteHostIfNeeded($zbxDevice, $deleteAfter);
+//                    }
+//                } else {
+//                    if ($rbtDevice['status'] === true) {
+//                        $this->createHost($rbtDevice, $groupName);
+//                    }
+//                }
+//            }
+//
+//            foreach ($zbxDevices as $zbxDevice) {
+//                $device = $this->findHostInArray($zbxDevice, $rbtDevices);
+//                if (!$device) {
+//                    if ($zbxDevice['status'] === true) {
+//                        $this->disableHost($zbxDevice);
+//                    }
+//                    if ($zbxDevice['status'] === false &&  $zbxDevice['tags']['DISABLED']) {
+//                        $disableTimestamp = (int)explode(' || ', $zbxDevice['tags']['DISABLED'])[0];
+//                        $deleteAfter = $disableTimestamp + ($this->zbxStoreDays * 24 * 60 * 60);
+//                        $this->deleteHostIfNeeded($zbxDevice, $deleteAfter);
+//                    }
+//                }
+//            }
+//        }
+//    }
+
     private function handleDevices(array $rbtDevices, array $zbxDevices, string $groupName): void
     {
-        if ($rbtDevices) {
-            foreach ($rbtDevices as $rbtDevice) {
-                $zbxDevice = $this->findHostInArray($rbtDevice, $zbxDevices);
+        if (empty($rbtDevices))
+        {
+            $this->log("Not found device for process");
+            return;
+        }
 
-                if ($zbxDevice) {
-                    if ($rbtDevice['status'] === false && $zbxDevice['status'] === true) {
-                        $this->disableHost($zbxDevice);
-                    } elseif ($rbtDevice['status'] === true && $zbxDevice['status'] === false) {
-                        $this->enableHost($zbxDevice);
-                    } elseif (
-                        $rbtDevice['status'] === false
-                        && $zbxDevice['status'] === false
-                        && isset($zbxDevice['tags']['DISABLED'])
-                    ) {
-                        $disableTimestamp = (int)explode(' || ', $zbxDevice['tags']['DISABLED'])[0];
-                        $deleteAfter = $disableTimestamp + ($this->zbxStoreDays * 24 * 60 * 60);
-                        $this->deleteHostIfNeeded($zbxDevice, $deleteAfter);
-                    }
-                } else {
-                    if ($rbtDevice['status'] === true) {
-                        $this->createHost($rbtDevice, $groupName);
-                    }
-                }
+        foreach ($rbtDevices as $rbtDevice) {
+            $zbxDevice = $this->findHostInArray($rbtDevice, $zbxDevices);
+
+            if ($zbxDevice) {
+                $this->processExistingDevice($rbtDevice, $zbxDevice);
+            } else {
+                $this->processNewDevice($rbtDevice, $groupName);
             }
+        }
 
-            foreach ($zbxDevices as $zbxDevice) {
-                $device = $this->findHostInArray($zbxDevice, $rbtDevices);
-                if (!$device) {
-                    if ($zbxDevice['status'] === true) {
-                        $this->disableHost($zbxDevice);
-                    }
-                    if ($zbxDevice['status'] === false &&  $zbxDevice['tags']['DISABLED']) {
-                        $disableTimestamp = (int)explode(' || ', $zbxDevice['tags']['DISABLED'])[0];
-                        $deleteAfter = $disableTimestamp + ($this->zbxStoreDays * 24 * 60 * 60);
-                        $this->deleteHostIfNeeded($zbxDevice, $deleteAfter);
-                    }
+        $this->handleUnmatchedZbxDevices($rbtDevices, $zbxDevices);
+    }
+
+    private function processExistingDevice(array $rbtDevice, array $zbxDevice): void
+    {
+        if ($rbtDevice['status'] === false && $zbxDevice['status'] === true) {
+            $this->disableHost($zbxDevice);
+        } elseif ($rbtDevice['status'] === true && $zbxDevice['status'] === false) {
+            $this->enableHost($zbxDevice);
+        } elseif ($rbtDevice['status'] === false && $zbxDevice['status'] === false && isset($zbxDevice['tags']['DISABLED'])) {
+            $disableTimestamp = (int)explode(' || ', $zbxDevice['tags']['DISABLED'])[0];
+            $deleteAfter = $disableTimestamp + ($this->zbxStoreDays * 24 * 60 * 60);
+            $this->deleteHostIfNeeded($zbxDevice, $deleteAfter);
+        }
+    }
+
+    private function processNewDevice(array $rbtDevice, string $groupName): void{
+        if ($rbtDevice['status'] === true) {
+            $this->createHost($rbtDevice, $groupName);
+        }
+    }
+
+    private function handleUnmatchedZbxDevices(array $rbtDevices, array $zbxDevices): void
+    {
+        foreach ($zbxDevices as $zbxDevice) {
+            $device = $this->findHostInArray($zbxDevice, $rbtDevices);
+            if (!$device) {
+                if ($zbxDevice['status'] === true) {
+                    $this->disableHost($zbxDevice);
+                } elseif ($zbxDevice['status'] === false && isset($zbxDevice['tags']['DISABLED'])) {
+                    $disableTimestamp = (int)explode(' || ', $zbxDevice['tags']['DISABLED'])[0];
+                    $deleteAfter = $disableTimestamp + ($this->zbxStoreDays * 24 * 60 * 60);
+                    $this->deleteHostIfNeeded($zbxDevice, $deleteAfter);
                 }
             }
         }
@@ -1248,27 +1306,6 @@ class zabbix extends monitoring
         }
 
         return $response;
-    }
-
-    private function getTriggers_v2($hostId)
-    {
-        $body = [
-            'jsonrpc' => '2.0',
-            'method' => 'trigger.get',
-            'params' => [
-                'output' => ['description', 'tags'],
-                'hostids' => $hostId,
-                'filter' => ['status' => '0', 'value' => '1']
-            ],
-            'id' => 1
-        ];
-
-        $response = $this->apiCall($body);
-        if ($response){
-            return $response;
-        }
-
-        return null;
     }
 
     /**
