@@ -1,10 +1,10 @@
 <?php
 
-function v34_mult($db) {
+function v35_mult($db) {
     try {
 
         $subscribers = $db->get("
-            SELECT 
+            SELECT
                 house_subscriber_id,
                 auth_token,
                 platform,
