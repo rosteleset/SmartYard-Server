@@ -332,5 +332,41 @@
              * @return mixed
              */
             abstract public function unlinkCamera($from, $id, $cameraId);
+
+            /**
+             * @param $by - "id", "subscriber", "flat", "authToken"
+             * @param $query
+             * @return false|array
+             */
+            abstract public function getDevices($by, $query);
+
+            /**
+             * @param $subscriber
+             * @param $deviceToken
+             * @param $platformauthToken
+             * @param $authToken
+             * @return boolean|integer
+             */
+            abstract public function addDevice($subscriber, $deviceToken, $platform, $authToken);
+
+            /**
+             * @param $deviceId
+             * @param $params
+             * @return boolean
+             */
+            abstract public function modifyDevice($deviceId, $params = []);
+
+            /**
+             * @param $deviceId
+             * @return boolean
+             */
+            abstract public function deleteDevice($deviceId);
+
+            /**
+             * @param $deviceId
+             * @param $flat
+             * @return boolean
+             */
+            abstract public function setDeviceFlat($deviceId, $flat, $voipEnabled);
         }
     }

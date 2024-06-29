@@ -169,7 +169,7 @@ local function mobile_intercom(flatId, flatNumber, domophoneId)
     local res = ""
     local callerId
 
-    local subscribers = dm("subscribers", flatId)
+    local devices = dm("devices", flatId)
 
     local dtmf = '1'
 
@@ -184,9 +184,9 @@ local function mobile_intercom(flatId, flatNumber, domophoneId)
 
     callerId = channel.CALLERID("name"):get()
 
-    for i, s in ipairs(subscribers) do
-        log_debug(s)
-        if s.platform ~= cjson.null and s.type ~= cjson.null and tonumber(s.voipEnabled) == 1 then
+    for i, device in ipairs(devices) do
+        log_debug(devices)
+        if device.platform ~= cjson.null and device.type ~= cjson.null and tonumber(device.voipEnabled) == 1 then
             redis:incr("autoextension")
             extension = tonumber(redis:get("autoextension"))
             if extension > 999999 then
@@ -194,34 +194,34 @@ local function mobile_intercom(flatId, flatNumber, domophoneId)
             end
             extension = extension + 2000000000
             local token = ""
-            if tonumber(s.tokenType) == 1 or tonumber(s.tokenType) == 2 then
-                token = s.voipToken
+            if tonumber(device.tokenType) == 1 or tonumber(device.tokenType) == 2 then
+                token = device.voipToken
             else
-                token = s.pushToken
+                token = device.pushToken
             end
             if token ~= cjson.null and token ~= nil and token ~= "" then
                 redis:setex("turn/realm/" .. realm .. "/user/" .. extension .. "/key", 3 * 60, md5(extension .. ":" .. realm .. ":" .. hash))
                 redis:setex("mobile_extension_" .. extension, 3 * 60, hash)
-                if tonumber(s.tokenType) ~= 1 and tonumber(s.tokenType) ~= 2 then
+                if tonumber(device.tokenType) ~= 1 and tonumber(device.tokenType) ~= 2 then
                     -- not for apple's voips
                     redis:setex("mobile_token_" .. extension, 3 * 60, token)
                 end
                 -- ios over fcm (with repeat)
-                if tonumber(s.platform) == 1 and (tonumber(s.tokenType) == 0 or tonumber(s.tokenType) == 4 or tonumber(s.tokenType) == 5) then
+                if tonumber(device.platform) == 1 and (tonumber(device.tokenType) == 0 or tonumber(device.tokenType) == 4 or tonumber(device.tokenType) == 5) then
                     redis:setex("voip_crutch_" .. extension, 1 * 60, cjson.encode({
                         id = extension,
                         token = token,
                         tokenType = s.tokenType,
                         hash = hash,
-                        platform = s.platform,
+                        platform = device.platform,
                         flatId = flatId,
                         dtmf = dtmf,
-                        mobile = s.mobile,
+                        mobile = device.mobile,
                         flatNumber = flatNumber,
                         domophoneId = domophoneId,
                     }))
                 end
-                push(token, s.tokenType, s.platform, extension, hash, callerId, flatId, dtmf, s.mobile, flatNumber, domophoneId)
+                push(token, device.tokenType, device.platform, extension, hash, callerId, flatId, dtmf, device.mobile, flatNumber, domophoneId)
                 res = res .. "&Local/" .. extension
             end
         end

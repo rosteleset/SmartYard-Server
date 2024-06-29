@@ -188,7 +188,7 @@ function mkdir_r($dirName, $rights = 0777) {
 }
 
 function auth($_response_cache_ttl = -1) {
-    global $_SERVER, $bearer, $response_cache_ttl, $subscriber;
+    global $_SERVER, $bearer, $response_cache_ttl, $subscriber, $device;
     $households = loadBackend("households");
 
     if ($_response_cache_ttl >= 0) {
@@ -203,6 +203,11 @@ function auth($_response_cache_ttl = -1) {
             $subscriber = $subscribers[0];
             $bearer = $subscriber["authToken"];
         }
+        $devices = $households->getDevices("subscriber", $subscriber["subscriberId"]);
+        if ($devices) {
+            $device = $devices[0];
+            $bearer = $device["authToken"];
+        }
         if (!$bearer) {
             response(403, false, "Ошибка авторизации", "Ошибка авторизации");
         }
@@ -216,15 +221,16 @@ function auth($_response_cache_ttl = -1) {
         }
         $t_ = $bearer;
         $bearer = false;
-        $subscribers = $households->getSubscribers("authToken", $t_);
-        if ($subscribers) {
-            $subscriber = $subscribers[0];
-            $bearer = $subscriber["authToken"];
+        $devices = $households->getDevices("authToken", $t_);
+        if ($devices) {
+            $device = $devices[0];
+            $bearer = $device["authToken"];
+            $subscriber = $households->getSubscribers("id", $device["subscriberId"])[0];
         } else {
             response(401, false, "Не авторизован", "Не авторизован");
         }
         // обновление последнего использования токена пользователем
-        $households->modifySubscriber($subscriber["subscriberId"]);
+        $households->modifyDevice($device["deviceId"]);
     }
 }
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {

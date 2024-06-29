@@ -24,6 +24,6 @@
 
 auth();
 response(200, [
-    "pushToken" => $subscriber['pushToken'],
-    "voipToken" => $subscriber['voipToken'],
+    "pushToken" => $device['pushToken'],
+    "voipToken" => $device['voipToken'],
     ]);

@@ -4,7 +4,7 @@ CREATE TABLE houses_subscribers_devices
     house_subscriber_id INTEGER,
     device_token TEXT,
     auth_token TEXT,
-    platform INTEGER,                                                                                                   -- 0 - android, 1 - ios
+    platform INTEGER,                                                                                                   -- 0 - android, 1 - ios, 2 - web
     push_token TEXT,
     push_token_type INTEGER,                                                                                            -- 0, 3 - fcm, 1 - apple, 2 - apple (dev), 4 - huawei, 5 - rustore
     voip_token TEXT,                                                                                                    -- iOs only

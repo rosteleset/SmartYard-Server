@@ -369,6 +369,7 @@
 
                     break;
 
+                // deprecated
                 case "subscribers":
                     $households = loadBackend("households");
 
@@ -385,6 +386,25 @@
                     }
 
                     echo json_encode($subscribers);
+
+                    break;
+
+                case "devices":
+                    $households = loadBackend("households");
+
+                    $devices = $households->getDevices("flat", (int)$params);
+
+                    if ($devices) {
+                        foreach ($devices as &$device) {
+                            foreach ($device["flats"] as $flat) {
+                                if ($flat["flatId"] == (int)$params) {
+                                    $device["voipEnabled"] = (int)($device["voipEnabled"] && $flat["voipEnabled"]);
+                                }
+                            }
+                        }
+                    }
+
+                    echo json_encode($devices);
 
                     break;
 
