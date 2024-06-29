@@ -99,7 +99,7 @@ function xblur() {
 
 function autoZ(target) {
     if (target) {
-        target.css('z-index', 0);
+        target.css('z-index', 1);
 
         let maxZ = Math.max.apply(null, $.map($('body > *:visible'), function(e) {
             if (e === target) {
