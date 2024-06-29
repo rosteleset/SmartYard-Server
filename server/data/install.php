@@ -6,7 +6,7 @@
      * @return void
      */
 
-    function initDB($_skip, $_force) {
+    function initDB($_skip, $_force = false) {
         global $config, $db, $version;
 
         $install = @json_decode(file_get_contents("data/install.json"), true);
