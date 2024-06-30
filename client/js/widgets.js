@@ -131,12 +131,12 @@ function mAlert(body, title, callback, titleButton, mainButton) {
         title = '<span class="text-success">' + title + '</span>';
     }
     let l = $('#alertModalLabel').html(title);
-    if (title_button) {
+    if (titleButton) {
         l.next().remove();
         l.parent().append($(titleButton));
     }
     $('#alertModalBody').html(body);
-    if (main_button) {
+    if (mainButton) {
         $('#alertModalButton').html(mainButton);
     } else {
         $('#alertModalButton').html(i18n("ok"));
@@ -155,13 +155,13 @@ function mPrompt(prompt, title, value, callback, titleButton, mainButton) {
         title = i18n("message");
     }
     let l = $('#promptModalLabel').html(title);
-    if (title_button) {
+    if (titleButton) {
         l.next().remove();
         l.parent().append($(titleButton));
     }
     $('#promptModalBody').html(prompt);
     $('#promptModalInput').val(value);
-    if (main_button) {
+    if (mainButton) {
         $('#promptModalButton').html(mainButton);
     } else {
         $('#ptomptModalButton').html(i18n("ok"));
