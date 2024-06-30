@@ -117,7 +117,7 @@ function mYesNo(body, title, callbackYes, callbackNo, yes, no, timeout) {
     }
 }
 
-function mAlert(body, title, callback, title_button, main_button) {
+function mAlert(body, title, callback, titleButton, mainButton) {
     if (!title) {
         title = i18n("message");
     }
@@ -133,11 +133,11 @@ function mAlert(body, title, callback, title_button, main_button) {
     let l = $('#alertModalLabel').html(title);
     if (title_button) {
         l.next().remove();
-        l.parent().append($(title_button));
+        l.parent().append($(titleButton));
     }
     $('#alertModalBody').html(body);
     if (main_button) {
-        $('#alertModalButton').html(main_button);
+        $('#alertModalButton').html(mainButton);
     } else {
         $('#alertModalButton').html(i18n("ok"));
     }
@@ -147,6 +147,31 @@ function mAlert(body, title, callback, title_button, main_button) {
         e.stopPropagation();
     });
     autoZ($('#alertModal')).modal('show');
+    xblur();
+}
+
+function mPrompt(prompt, title, value, callback, titleButton, mainButton) {
+    if (!title) {
+        title = i18n("message");
+    }
+    let l = $('#promptModalLabel').html(title);
+    if (title_button) {
+        l.next().remove();
+        l.parent().append($(titleButton));
+    }
+    $('#promptModalBody').html(prompt);
+    $('#promptModalInput').val(value);
+    if (main_button) {
+        $('#promptModalButton').html(mainButton);
+    } else {
+        $('#ptomptModalButton').html(i18n("ok"));
+    }
+    $('#promptModalButton').off('click').on('click', (e) => {
+        $('#promptModal').modal('hide');
+        if (typeof callback == 'function') callback($('#promptModalInput').val());
+        e.stopPropagation();
+    });
+    autoZ($('#promptModal')).modal('show');
     xblur();
 }
 

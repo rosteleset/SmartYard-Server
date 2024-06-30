@@ -270,6 +270,25 @@
         </div>
     </div>
 
+    <!-- promptModal -->
+    <div class="modal" id="promptModal" role="dialog" aria-labelledby="promptModalLabel" aria-hidden="true" style="padding-top: 4rem!important; display: none;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header pointer pl-4 pt-2 pb-2" id="promptModalHeader">
+                    <h3 class="card-title pt-1 text-bold" id="promptModalLabel" style="font-weight: bold;">...</h3>
+                    <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal"><i class="far faw fa-times-circle"></i></button>
+                </div>
+                <div class="modal-body">
+                    <div id="promptModalBody" style="word-break: break-word;">...</div>
+                    <input name="promptModalInput" id="promptModalInput" type="text" class="form-control modalFormField" style="cursor: text;" autocomplete="off" >
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="promptModalButton">Ок</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- modal -->
     <div class="modal p-0" id="modal" role="dialog" style="padding-top: 4rem!important; display: none;">
         <div class="modal-dialog p-0" role="document">
