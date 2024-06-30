@@ -1335,6 +1335,54 @@
             /**
              * @inheritDoc
              */
+            public function getFavoriteFilters()
+            {
+                return $this->db->get("select filter, right_side, icon from tt_favorite_filters where login = {$this->login}", false, [
+                    "filter" => "filter",
+                    "right_side" => "rightSide",
+                    "icon" => "icon",
+                ]);
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function addFavoriteFilter($filter, $rightSide, $icon)
+            {
+                if (!checkStr($filter)) {
+                    return false;
+                }
+
+                if (!checkInt($rightSide)) {
+                    return false;
+                }
+
+                return $this->db->insert("insert into tt_favorite_filters (login, filter, right_side, icon) values (:login, :filter, :right_side, :icon)", [
+                    "login" => $this->login,
+                    "filter" => $filter,
+                    "right_side" => $rightSide,
+                    "icon" => $icon,
+                ]);
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function deleteFavoriteFilter($filter)
+            {
+                if (!checkStr($filter)) {
+                    return false;
+                }
+
+                return $this->db->modify("delete from tt_favorite_filters where login = :login and filter = :filter", [
+                    "login" => $this->login,
+                    "filter" => $filter,
+                ]);
+            }
+
+            /**
+             * @inheritDoc
+             */
             public function getCrontabs() {
                 $cache = $this->cacheGet("CRONTABS");
                 if ($cache) {

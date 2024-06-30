@@ -2150,6 +2150,25 @@
             public abstract function journalLast($login, $limit = 4096);
 
             /**
+             * @return array
+             */
+            public abstract function getFavoriteFilters();
+
+            /**
+             * @param string $filter
+             * @param string $rightSide
+             * @param string $icon
+             * @return mixed
+             */
+            public abstract function addFavoriteFilter($filter, $rightSide, $icon);
+
+            /**
+             * @param string $filter
+             * @return mixed
+             */
+            public abstract function deleteFavoriteFilter($filter);
+
+            /**
              * @inheritDoc
              */
 
