@@ -1,12 +1,11 @@
 -- changa mobile subscribers
-ALTER TABLE houses_subscribers_mobile
-    DROP COLUMN auth_token,
-    DROP COLUMN platform,
-    DROP COLUMN push_token,
-    DROP COLUMN push_token_type,
-    DROP COLUMN voip_token,
-    DROP COLUMN last_seen,
-    DROP COLUMN voip_enabled;
+ALTER TABLE houses_subscribers_mobile DROP COLUMN auth_token;
+ALTER TABLE houses_subscribers_mobile DROP COLUMN platform;
+ALTER TABLE houses_subscribers_mobile DROP COLUMN push_token;
+ALTER TABLE houses_subscribers_mobile DROP COLUMN push_token_type;
+ALTER TABLE houses_subscribers_mobile DROP COLUMN voip_token;
+ALTER TABLE houses_subscribers_mobile DROP COLUMN last_seen;
+ALTER TABLE houses_subscribers_mobile DROP COLUMN voip_enabled;
 
 -- flats <-> devices
 CREATE TABLE houses_flats_devices
