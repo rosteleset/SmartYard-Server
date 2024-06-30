@@ -173,6 +173,7 @@ function mPrompt(prompt, title, value, callback, titleButton, mainButton) {
     });
     autoZ($('#promptModal')).modal('show');
     xblur();
+    $('#promptModalInput').focus();
 }
 
 function modal(body) {
