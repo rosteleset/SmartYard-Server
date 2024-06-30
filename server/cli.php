@@ -440,7 +440,7 @@
         ||
         (count($args) == 2 && array_key_exists("--init-db", $args) && !isset($args["--init-db"]) && array_key_exists("--force", $args) && isset($args["--force"]))
         ||
-        (count($args) == 2 && array_key_exists("--init-db", $args) && !isset($args["--init-db"]) && array_key_exists("--set-version", $args) && isset($args["--set-version"]))
+        (count($args) == 2 && array_key_exists("--init-db", $args) && !isset($args["--init-db"]) && array_key_exists("--set-version", $args) && isset($args["--set-version"]) && (int)$args["--set-version"])
     ) {
         maintenance(true);
         wait_all();
