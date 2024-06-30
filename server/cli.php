@@ -454,7 +454,6 @@
             $sth->execute();
         } else {
             initDB(@$args["--skip"], @$args["--force"]);
-            echo "\n";
         }
 
         startup(true);
