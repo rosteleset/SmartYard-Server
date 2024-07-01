@@ -18,6 +18,8 @@ var lStoreEngine = false;
 var hasUnsavedChanges = false;
 var currentAceEditor = false;
 var currentAceEditorOriginalValue = false;
+var lastLoadedModule = false;
+var loasLoadedGroup = false;
 
 function hashChange() {
     $('.dropdownMenu').collapse('hide');
@@ -419,7 +421,12 @@ function initAll() {
 }
 
 function loadModule() {
+    if (lastLoadedModule && modules[lastLoadedModule] && typeof modules[lastLoadedModule].moduleLoaded == "function") {
+        console.log(1);
+        modules[lastLoadedModule].moduleLoaded();
+    }
     let module = moduleLoadQueue.shift();
+    lastLoadedModule = module;
     if (!module) {
         for (let i in modules) {
             if (typeof modules[i].allLoaded == "function") {
