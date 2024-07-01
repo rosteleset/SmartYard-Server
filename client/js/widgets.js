@@ -324,8 +324,18 @@ function leftSide(button, title, target, group, wisibleOnlyWhenActive) {
 
     let id = md5(guid());
 
+    let style;
+    if (mainSidebarFirst) {
+        style = "margin-top: 11px;"
+    } else {
+        style = "margin-top: 3px;";
+    }
+    if (wisibleOnlyWhenActive && target !== "#" + route.split('.')[0]) {
+        style += "display: none;";
+    }
+
     $("#leftside-menu").append(`
-        <li id="${id}" class="nav-item${mainSidebarFirst?" mt-2":""}${wisibleOnlyWhenActive?" wisibleOnlyWhenActive":""}" data-target="${target}" title="${escapeHTML(title)}"${(wisibleOnlyWhenActive && target !== "#" + route.split('.')[0])?" style='display: none;'":""}>
+        <li id="${id}" class="nav-item${wisibleOnlyWhenActive?" wisibleOnlyWhenActive":""}" data-target="${target}" title="${escapeHTML(title)}" style="${style}">
             <a href="${target}" data-href="${target}" class="nav-link${(target === "#" + route.split('.')[0])?" active":""}">
                 <i class="${button} nav-icon"></i>
                 <p class="text-nowrap">${title}</p>

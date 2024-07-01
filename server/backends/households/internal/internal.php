@@ -1381,7 +1381,7 @@
                         return false;
                     }
                 }
-              
+
               if (@$params["subscriberLast"] || @$params["forceNames"]) {
                     if (!checkStr($params["subscriberLast"], [ "maxLength" => 32 ])) {
                         setLastError("invalidParams");
@@ -1395,7 +1395,7 @@
 
                 $r = true;
 
-                /*
+/*
                 $queue = loadBackend("queue");
                 if ($queue) {
                     $queue->changed("subscriber", $subscriberId);
@@ -2235,7 +2235,7 @@
              */
             public function addDevice($subscriber, $deviceToken, $platform, $authToken)
             {
-                
+
                 $deviceId = $this->db->insert("insert into houses_subscribers_devices (house_subscriber_id, device_token, platform, auth_token, registered, voip_enabled) values (:house_subscriber_id, :device_token, :platform, :auth_token, :registered, 1)", [
                     "house_subscriber_id" => $subscriber,
                     "device_token" => $deviceToken,
@@ -2361,10 +2361,10 @@
 
                 // Используем ON DUPLICATE KEY UPDATE для обновления записи, если она существует, или вставки новой записи, если её нет
                 $query = "
-                    INSERT INTO houses_flats_devices (subscriber_device_id, house_flat_id, voip_enabled) 
+                    INSERT INTO houses_flats_devices (subscriber_device_id, house_flat_id, voip_enabled)
                     VALUES (:subscriber_device_id, :house_flat_id, :voip_enabled)
-                    ON CONFLICT (subscriber_device_id, house_flat_id) 
-                    DO UPDATE SET 
+                    ON CONFLICT (subscriber_device_id, house_flat_id)
+                    DO UPDATE SET
                         voip_enabled = :voip_enabled
                 ";
 
