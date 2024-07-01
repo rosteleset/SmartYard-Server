@@ -73,6 +73,7 @@
     },
 
     moduleLoaded: function () {
+        //
     },
 
     issueFieldTitle: function (field) {
