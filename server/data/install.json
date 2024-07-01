@@ -114,6 +114,7 @@
         "v34_cameras.sql"
     ],
     "35": [
+        "v35_indexes.sql",
         "v35_mult.php",
         "v35_mult.sql"
     ],
