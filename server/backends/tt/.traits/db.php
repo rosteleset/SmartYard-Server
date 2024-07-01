@@ -1337,7 +1337,9 @@
              */
             public function getFavoriteFilters()
             {
-                return $this->db->get("select filter, right_side, icon from tt_favorite_filters where login = {$this->login}", false, [
+                return $this->db->get("select filter, right_side, icon from tt_favorite_filters where login = :login", [
+                    "login" => $this->login,
+                ], [
                     "filter" => "filter",
                     "right_side" => "rightSide",
                     "icon" => "icon",

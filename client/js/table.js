@@ -98,6 +98,7 @@ function cardTable(params) {
     if (typeof params.edit === "function") {
         h += `<th><i class="fa fa-fw"></i></th>`;
     }
+
     for (let i in params.columns) {
         if (params.columns[i].hidden) {
             continue;
@@ -108,9 +109,16 @@ function cardTable(params) {
             h += `<th nowrap>${params.columns[i].title}</th>`;
         }
     }
+
     if (hasDropDowns) {
-        h += `<th><i class="fa fa-fw"></i></th>`;
+        if (params.dropDownHeader) {
+            params.dropDownHeader.id = md5(guid());
+            h += `<th><i id="${params.dropDownHeader.id}" class="fa-fw ${params.dropDownHeader.icon} hoverable pointer"></i></th>`;
+        } else {
+            h += `<th><i class="fa fa-fw"></i></th>`;
+        }
     }
+
     h += `</tr>`;
     h += `</thead>`;
 
@@ -392,6 +400,10 @@ function cardTable(params) {
         $("." + editClass).off("click").on("click", function () {
             params.edit($(this).attr("uid"))
         });
+
+        if (params.dropDownHeader) {
+            $("#" + params.dropDownHeader.id).off("click").on("click", params.dropDownHeader.click);
+        }
     }
 
     if (params.target) {

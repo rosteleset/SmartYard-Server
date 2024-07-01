@@ -35,16 +35,16 @@ function hashChange() {
 
             let r = route.split(".");
 
-            if ($(".sidebar .withibleOnlyWhenActive[data-target!='?#" + route + "']").length) {
-                $(".sidebar .withibleOnlyWhenActive[data-target!='?#" + route + "']").hide();
+            if ($(".sidebar .wisibleOnlyWhenActive[data-target!='?#" + route + "']").length) {
+                $(".sidebar .wisibleOnlyWhenActive[data-target!='?#" + route + "']").hide();
             } else {
-                $(".sidebar .withibleOnlyWhenActive[data-target!='?#" + r[0] + "']").hide();
+                $(".sidebar .wisibleOnlyWhenActive[data-target!='?#" + r[0] + "']").hide();
             }
 
-            if ($(".sidebar .withibleOnlyWhenActive[data-target='?#" + route + "']").length) {
-                $(".sidebar .withibleOnlyWhenActive[data-target='?#" + route + "']").show();
+            if ($(".sidebar .wisibleOnlyWhenActive[data-target='?#" + route + "']").length) {
+                $(".sidebar .wisibleOnlyWhenActive[data-target='?#" + route + "']").show();
             } else {
-                $(".sidebar .withibleOnlyWhenActive[data-target='?#" + r[0] + "']").show();
+                $(".sidebar .wisibleOnlyWhenActive[data-target='?#" + r[0] + "']").show();
             }
 
             if ($(".sidebar .nav-item a[data-href!='?#" + route + "']").length) {

@@ -32,6 +32,7 @@
             "issue",
             "settings",
             "workspaces",
+            "favorites",
         ], this);
     },
 
@@ -1897,11 +1898,26 @@
                 });
             });
 
+            let bookmarked = false;
+
+            for (let i in modules.tt.meta.favoriteFilters) {
+                if (modules.tt.meta.favoriteFilters[i].filter == x) {
+                    bookmarked = true;
+                    break;
+                }
+            }
+
             if (issues.issues && issues.issues.length) {
                 $("#" + issuesListId + "-count").text("[" + x + "]: " + i18n("tt.showCounts", parseInt(issues.skip) + 1, parseInt(issues.skip) + issues.issues.length, issues.count)).addClass("small");
                 cardTable({
                     target: "#" + issuesListId,
                     columns: columns,
+                    dropDownHeader: (x && x[0] != '#') ? {
+                        icon: (bookmarked ? "fas" : "far") + " text-primary fa-bookmark",
+                        click: () => {
+                            console.log(x);
+                        },
+                    } : false,
                     rows: () => {
                         let rows = [];
 
