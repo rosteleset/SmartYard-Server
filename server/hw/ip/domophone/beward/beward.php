@@ -529,6 +529,7 @@ abstract class beward extends domophone
             $this->setIntercom('DoorCode', $code);
             $this->setIntercom('DoorCodeActive', 'on');
         } else {
+            $this->setIntercom('DoorCode', self::DEFAULT_PUBLIC_ACCESS_CODE);
             $this->setIntercom('DoorCodeActive', 'off');
         }
     }

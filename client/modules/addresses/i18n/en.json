@@ -294,7 +294,7 @@
   "autoconfigureDomophone": "Configure domophone",
   "autoconfigureDomophoneFirstTime": "Configure domophone (first time)",
   "taskQueued": "Task was added to queue",
-  "openCodeError": "The opening code must be a number in the range 10000-99999",
+  "openCodeError": "The opening code must be a number in the range 10001-99999. To remove the code, leave the field blank",
   "autoBlock": "Autoblocked",
   "status": "Status",
   "yes": "Yes",

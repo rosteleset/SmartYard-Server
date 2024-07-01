@@ -793,12 +793,12 @@
                     title: i18n("addresses.openCode"),
                     placeholder: i18n("addresses.openCode"),
                     validate: (v) => {
-                        if (!new RegExp(/^(?:[1-9]\d{4})?$/).test(v)){
-                            error(i18n("addresses.openCodeError"))
+                        if (+v >= 10001 && +v <= 99999 || v === '') {
+                            return true;
                         } else {
-                            return true
+                            error(i18n("addresses.openCodeError"));
                         }
-                    }
+                    },
                 },
                 {
                     id: "plog",
@@ -1480,12 +1480,12 @@
                         placeholder: i18n("addresses.openCode"),
                         value: flat.openCode,
                         validate: (v) => {
-                            if (!new RegExp(/^(?:[1-9]\d{4})?$/).test(v)) {
-                                error(i18n("addresses.openCodeError"));
-                            } else {
+                            if (+v >= 10001 && +v <= 99999 || v === '') {
                                 return true;
+                            } else {
+                                error(i18n("addresses.openCodeError"));
                             }
-                        }
+                        },
                     },
                     {
                         id: "autoOpen",

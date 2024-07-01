@@ -12,6 +12,12 @@ abstract class domophone extends ip
 {
 
     /**
+     * @var int Default public access code.
+     * Used for devices that require the code to exist even if it is disabled.
+     */
+    public const DEFAULT_PUBLIC_ACCESS_CODE = 10000;
+
+    /**
      * @return void
      * @deprecated Left for compatibility with the old configurator.
      */
