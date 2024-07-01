@@ -617,6 +617,7 @@
 
         let h = "";
 
+        h += "<div>";
         h += "<table class='mt-2 ml-2' style='width: 100%;'>";
         h += "<tr>";
         h += "<td style='vertical-align: top; width: 100%;'>";
@@ -718,7 +719,7 @@
 
         h += "</div>";
         h += "</td>";
-        h += "<td style='text-align: right;' class='pr-2'>";
+        h += "<td style='text-align: right;' class='pr-2' nowrap>";
         if (index && count && index !== true && count !== true) {
             if (parseInt(index) > 1) {
                 h += "<i id='stepPrev' class='fas fa-fw fa-chevron-left pointer'></i>"
@@ -736,7 +737,11 @@
         }
         h += "</td>";
         h += "</tr>";
+        h += "</table>";
+        h += "</div>";
 
+        h += "<div>";
+        h += "<table class='mt-1 ml-2' style='width: 100%;'>";
         if (!isEmpty(issue.issue.tags)) {
             h += "<tr>";
             h += "<td style='vertical-align: top; width: 100%;'>";
@@ -890,8 +895,23 @@
 
         h += "<table style='width: 100%; display: none;' class='ml-2' id='issueJournal'>";
         h += "</table>";
+        h += "</div>";
+
+        h += `
+            <button id="issueScrollToTop" class="btn btn-primary back-to-top" role="button" aria-label="${i18n("scrollToTop")}" onclick="$('html').scrollTop(0);" disabled="disabled">
+                <i class="fas fa-chevron-up"></i>
+            </button>
+        `;
 
         $("#mainForm").html(h);
+
+        if (!modules.tt.issue.scrollToTopInterval) {
+            modules.tt.issue.scrollToTopInterval = setInterval(() => {
+                if ($("#issueScrollToTop:visible").length) {
+                    $("#issueScrollToTop").prop("disabled", $('html').scrollTop() < 16);
+                }
+            }, 250);
+        }
 
         $(".ttIssue").off("click").on("click", function () {
             window.location.href = "?#tt&issue=" + encodeURIComponent($(this).text());

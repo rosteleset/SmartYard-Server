@@ -422,7 +422,6 @@ function initAll() {
 
 function loadModule() {
     if (lastLoadedModule && modules[lastLoadedModule] && typeof modules[lastLoadedModule].moduleLoaded == "function") {
-        console.log(1);
         modules[lastLoadedModule].moduleLoaded();
     }
     let module = moduleLoadQueue.shift();
