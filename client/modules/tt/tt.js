@@ -1954,6 +1954,7 @@
                     columns: columns,
                     dropDownHeader: (x && x[0] != '#') ? {
                         icon: (bookmarked ? "fas" : "far") + " text-primary fa-bookmark",
+                        title: bookmarked ? i18n("tt.removeFavoriteFilter") : i18n("tt.addFavoriteFilter"),
                         click: () => {
                             console.log(x);
                         },

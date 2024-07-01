@@ -113,7 +113,7 @@ function cardTable(params) {
     if (hasDropDowns) {
         if (params.dropDownHeader) {
             params.dropDownHeader.id = md5(guid());
-            h += `<th><i id="${params.dropDownHeader.id}" class="fa-fw ${params.dropDownHeader.icon} hoverable pointer"></i></th>`;
+            h += `<th><i id="${params.dropDownHeader.id}" class="fa-fw ${params.dropDownHeader.icon} hoverable pointer" title="${params.dropDownHeader.title ? params.dropDownHeader.title : ''}"></i></th>`;
         } else {
             h += `<th><i class="fa fa-fw"></i></th>`;
         }
