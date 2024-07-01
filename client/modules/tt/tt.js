@@ -19,7 +19,6 @@
     ],
 
     init: function () {
-
         if (AVAIL("tt", "tt")) {
             if (parseInt(myself.uid) == 0) {
                 leftSide("fas fa-fw fa-tasks", i18n("tt.tt"), "?#tt.settings", "tt");
@@ -36,6 +35,41 @@
     },
 
     allLoaded: function () {
+        if (parseInt(myself.uid) && AVAIL("tt", "favoriteFilter")) {
+            GET("tt", "tt", false, true).
+            done(modules.tt.tt).
+            done(() => {
+                let h = "";
+                for (let i in modules.tt.meta.favoriteFilters) {
+                    if (parseInt(modules.tt.meta.favoriteFilters[i].rightSide)) {
+                        let title = '';
+                        h += `
+                            <li class="nav-item" title="${escapeHTML(title)}">
+                                <a href="?#tt&filter=${modules.tt.meta.favoriteFilters[i].filter}" class="nav-link">
+                                    <i class="nav-icon fa fa-fw ${modules.tt.meta.favoriteFilters[i].icon}"></i>
+                                    <p class="text-nowrap">${title}</p>
+                                </a>
+                            </li>
+                        `;
+                    }
+                }
+                if (modules.tt.menuItem) {
+                    let i = $('#' + modules.tt.menuItem);
+                    while (i.next().length) {
+                        i = i.next();
+                        if ($.trim(i.text()) == "") {
+                            $(h).insertBefore(i);
+                            f = true;
+                            return;
+                        }
+                    }
+                    if (i.length) {
+                        $(h).insertAfter(i);
+                    }
+                }
+            }).
+            fail(FAIL);
+        }
     },
 
     moduleLoaded: function () {
