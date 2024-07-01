@@ -318,6 +318,7 @@
     "openIssueNewWindow": "Открыть заявку в новом окне",
     "actionNotAvailable": "Действие недоступно",
     "commented": "прокомментировал",
+    "scrollToTop": "Пролистать наверх",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",

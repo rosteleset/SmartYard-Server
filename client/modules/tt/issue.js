@@ -898,7 +898,7 @@
         h += "</div>";
 
         h += `
-            <button id="issueScrollToTop" class="btn btn-primary back-to-top" role="button" aria-label="${i18n("scrollToTop")}" onclick="$('html').scrollTop(0);" disabled="disabled">
+            <button id="issueScrollToTop" class="btn btn-primary back-to-top" role="button" aria-label="${i18n("tt.scrollToTop")}" title="${i18n("tt.scrollToTop")}" onclick="$('html').scrollTop(0);" disabled="disabled">
                 <i class="fas fa-chevron-up"></i>
             </button>
         `;

@@ -318,6 +318,7 @@
     "openIssueNewWindow": "Open issue in a new window",
     "actionNotAvailable": "Action not available",
     "commented": "commented",
+    "scrollToTop": "Scroll to top",
     "methods": {
         "tt": {
             "_title": "Task Manager",
