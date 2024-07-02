@@ -251,9 +251,9 @@ function cardForm(params) {
                 if (typeof params.fields[i].options === "object") {
                     for (let j in params.fields[i].options) {
                         if (params.fields[i].options[j].value == params.fields[i].value || params.fields[i].options[j].selected) {
-                            h += `<option label="${escapeHTML(params.fields[i].options[j].text)}" value="${escapeHTML(params.fields[i].options[j].value)}" selected data-icon="${params.fields[i].options[j].icon}">${escapeHTML(params.fields[i].options[j].text)}</option>`;
+                            h += `<option label="${escapeHTML(params.fields[i].options[j].text)}" value="${escapeHTML(params.fields[i].options[j].value)}" data-icon="${params.fields[i].options[j].icon}" data-class="${params.fields[i].options[j].class}" selected>${escapeHTML(params.fields[i].options[j].text)}</option>`;
                         } else {
-                            h += `<option label="${escapeHTML(params.fields[i].options[j].text)}" value="${escapeHTML(params.fields[i].options[j].value)}" data-icon="${params.fields[i].options[j].icon}">${escapeHTML(params.fields[i].options[j].text)}</option>`;
+                            h += `<option label="${escapeHTML(params.fields[i].options[j].text)}" value="${escapeHTML(params.fields[i].options[j].value)}" data-icon="${params.fields[i].options[j].icon}" data-class="${params.fields[i].options[j].class}">${escapeHTML(params.fields[i].options[j].text)}</option>`;
                         }
                     }
                 } else {
@@ -665,19 +665,38 @@ function cardForm(params) {
                 s2p.ajax = params.fields[i].ajax;
             }
 
-            function s2IconFormat(item) {
+            function s2FormatR(item) {
                 if (!item.id) {
                     return item.text;
                 }
+                let c = '';
+                if (item.element && item.element.dataset && item.element.dataset.class && item.element.dataset.class !== "undefined") {
+                    c = item.element.dataset.class;
+                }
                 if (item.element && item.element.dataset && item.element.dataset.icon && item.element.dataset.icon !== "undefined") {
-                    return $(`<span><i class="${item.element.dataset.icon} mr-2"></i>${item.text}</span>`);
+                    return $(`<span class="${c}" style="display: grid; align-items: center; justify-content: start;"><span style="grid-column: 1; width: fit-content;"><i class="${item.element.dataset.icon} mr-2"></i></span><span style="grid-column: 2;">${item.text}</span></span>`);
                 } else {
-                    return $(`<span>${item.text}</span>`);
+                    return $(`<span class="${c}">${item.text}</span>`);
                 }
             }
 
-            s2p.templateResult = s2IconFormat;
-            s2p.templateSelection = s2IconFormat;
+            function s2FormatS(item) {
+                if (!item.id) {
+                    return item.text;
+                }
+                let c = '';
+                if (item.element && item.element.dataset && item.element.dataset.class && item.element.dataset.class !== "undefined") {
+                    c = item.element.dataset.class;
+                }
+                if (item.element && item.element.dataset && item.element.dataset.icon && item.element.dataset.icon !== "undefined") {
+                    return $(`<span class="${c}" style="display: grid; align-items: top; justify-content: start;"><span style="grid-column: 1; width: fit-content;"><i class="${item.element.dataset.icon} mr-2"></i></span><span style="grid-column: 2;">${item.text}</span></span>`);
+                } else {
+                    return $(`<span class="${c}">${item.text}</span>`);
+                }
+            }
+
+            s2p.templateResult = s2FormatR;
+            s2p.templateSelection = s2FormatS;
 
             s2p.escapeMarkup = function (m) {
                 return m;

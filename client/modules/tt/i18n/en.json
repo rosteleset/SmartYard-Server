@@ -319,6 +319,11 @@
     "actionNotAvailable": "Action not available",
     "commented": "commented",
     "scrollToTop": "Scroll to top",
+    "addFavoriteFilter": "Add filter to favorites",
+    "filterIcon": "Icon",
+    "filterRightSide": "Show at right sidebar",
+    "filterColor": "Color",
+    "removeFavoriteFilter": "Remove filter from favorites",
     "methods": {
         "tt": {
             "_title": "Task Manager",

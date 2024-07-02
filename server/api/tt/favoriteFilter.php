@@ -15,7 +15,7 @@
         class favoriteFilter extends api {
 
             public static function POST($params) {
-                $success = loadBackend("tt")->addFavoriteFilter($params["_id"], $params["rightSide"], $params["icon"]);
+                $success = loadBackend("tt")->addFavoriteFilter($params["_id"], @$params["rightSide"], @$params["icon"], @$params["color"]);
 
                 return api::ANSWER($success, ($success !== false) ? false : "notAcceptable");
             }

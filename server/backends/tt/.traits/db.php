@@ -1337,19 +1337,20 @@
              */
             public function getFavoriteFilters()
             {
-                return $this->db->get("select filter, right_side, icon from tt_favorite_filters where login = :login", [
+                return $this->db->get("select filter, right_side, icon, color from tt_favorite_filters where login = :login", [
                     "login" => $this->login,
                 ], [
                     "filter" => "filter",
                     "right_side" => "rightSide",
                     "icon" => "icon",
+                    "color" => "color",
                 ]);
             }
 
             /**
              * @inheritDoc
              */
-            public function addFavoriteFilter($filter, $rightSide, $icon)
+            public function addFavoriteFilter($filter, $rightSide, $icon, $color)
             {
                 if (!checkStr($filter)) {
                     return false;
@@ -1359,11 +1360,12 @@
                     return false;
                 }
 
-                return $this->db->insert("insert into tt_favorite_filters (login, filter, right_side, icon) values (:login, :filter, :right_side, :icon)", [
+                return $this->db->insert("insert into tt_favorite_filters (login, filter, right_side, icon, color) values (:login, :filter, :right_side, :icon, :color)", [
                     "login" => $this->login,
                     "filter" => $filter,
                     "right_side" => $rightSide,
                     "icon" => $icon,
+                    "color" => $color,
                 ]);
             }
 

@@ -2158,9 +2158,10 @@
              * @param string $filter
              * @param string $rightSide
              * @param string $icon
+             * @param string $color
              * @return mixed
              */
-            public abstract function addFavoriteFilter($filter, $rightSide, $icon);
+            public abstract function addFavoriteFilter($filter, $rightSide, $icon, $color);
 
             /**
              * @param string $filter

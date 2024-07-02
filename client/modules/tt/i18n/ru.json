@@ -319,6 +319,11 @@
     "actionNotAvailable": "Действие недоступно",
     "commented": "прокомментировал",
     "scrollToTop": "Пролистать наверх",
+    "addFavoriteFilter": "Добавить фильтр в избранные",
+    "filterIcon": "Иконка",
+    "filterRightSide": "Отображать справа",
+    "filterColor": "Цвет",
+    "removeFavoriteFilter": "Убрать фильтр из избранных",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",

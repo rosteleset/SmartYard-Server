@@ -46,7 +46,7 @@
                         h += `
                             <li class="nav-item" title="${escapeHTML(title)}">
                                 <a href="?#tt&filter=${modules.tt.meta.favoriteFilters[i].filter}" class="nav-link">
-                                    <i class="nav-icon fa fa-fw ${modules.tt.meta.favoriteFilters[i].icon}"></i>
+                                    <i class="nav-icon fa fa-fw ${modules.tt.meta.favoriteFilters[i].icon} ${modules.tt.meta.favoriteFilters[i].color}"></i>
                                     <p class="text-nowrap">${title}</p>
                                 </a>
                             </li>
@@ -1959,11 +1959,103 @@
                         title: bookmarked ? i18n("tt.removeFavoriteFilter") : i18n("tt.addFavoriteFilter"),
                         click: () => {
                             if (!bookmarked) {
-                                mConfirm();
+                                let icons = [];
+                                for (let i in faIcons) {
+                                    icons.push({
+                                        icon: faIcons[i].title + " fa-fw",
+                                        text: faIcons[i].title.split(" fa-")[1] + (faIcons[i].searchTerms.length ? (", " + faIcons[i].searchTerms.join(", ")) : ""),
+                                        value: faIcons[i].title,
+                                    });
+                                }
+                                cardForm({
+                                    title: i18n("tt.addFavoriteFilter"),
+                                    footer: true,
+                                    borderless: true,
+                                    topApply: true,
+                                    apply: i18n("add"),
+                                    size: "lg",
+                                    fields: [
+                                        {
+                                            id: "icon",
+                                            title: i18n("tt.filterIcon"),
+                                            type: "select2",
+                                            options: icons,
+                                            value: "far fa-bookmark",
+                                        },
+                                        {
+                                            id: "color",
+                                            title: i18n("tt.filterColor"),
+                                            type: "select2",
+                                            options: [
+                                                {
+                                                    text: "По умолчанию",
+                                                    value: "",
+                                                    class: "",
+                                                },
+                                                {
+                                                    text: "Primary",
+                                                    value: "text-primary",
+                                                    class: "text-primary",
+                                                },
+                                                {
+                                                    text: "Secondary",
+                                                    value: "text-secondary",
+                                                    class: "text-secondary",
+                                                },
+                                                {
+                                                    text: "Success",
+                                                    value: "text-success",
+                                                    class: "text-success",
+                                                },
+                                                {
+                                                    text: "Danger",
+                                                    value: "text-danger",
+                                                    class: "text-danger",
+                                                },
+                                                {
+                                                    text: "Warning",
+                                                    value: "text-warning",
+                                                    class: "text-warning",
+                                                },
+                                                {
+                                                    text: "Info",
+                                                    value: "text-info",
+                                                    class: "text-info",
+                                                },
+                                            ],
+                                            value: ""
+                                        },
+                                        {
+                                            id: "rightSide",
+                                            title: i18n("tt.filterRightSide"),
+                                            type: "noyes",
+                                        },
+                                    ],
+                                    callback: r => {
+                                        loadingStart();
+                                        POST("tt", "favoriteFilter", x, {
+                                            icon: r.icon,
+                                            color: r.color,
+                                            rightSide: r.rightSide,
+                                        }).
+                                        done(() => {
+                                            window.location.reload();
+                                        }).
+                                        fail(FAIL).
+                                        fail(loadingDone);
+                                    },
+                                });
                             } else {
-
+                                mConfirm(modules.tt.meta.filters[x], i18n("tt.removeFavoriteFilter"), i18n("delete"), () => {
+                                    loadingStart();
+                                    DELETE("tt", "favoriteFilter", x).
+                                    done(() => {
+                                        window.location.reload();
+                                    }).
+                                    fail(FAIL).
+                                    fail(loadingDone);
+                                });
                             }
-                            console.log(x);
                         },
                     } : false,
                     rows: () => {
