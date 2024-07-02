@@ -1611,7 +1611,7 @@
                 }
 
                 h += `<nav class="pager" data-target="${issuesListId}">`;
-                h += '<ul class="pagination mb-0 ml-0">';
+                h += '<ul class="pagination mb-0 ml-0" style="margin-right: -2px!important;">';
 
                 if (first > 1) {
                     h += `<li class="page-item pointer tt_pager" data-page="1" data-target="${issuesListId}"><span class="page-link"><span aria-hidden="true">&laquo;</span></li>`;
@@ -1655,12 +1655,12 @@
 
             if (target) {
                 if (!$("#" + issuesListId).length) {
-                    target.append(`<table class="mt-2 ml-2" style="width: 100%;"><tr><td style="width: 100%;">${filters}<br/><span id='${issuesListId + '-count'}'></span></td><td style="padding-right: 15px;">${pager(issuesListId)}</td></tr></table><div class="ml-2 mr-2" id="${issuesListId}"></div>`);
+                    target.append(`<table class="mt-2" style="width: 100%;"><tr><td style="width: 100%;">${filters}<br/><span id='${issuesListId + '-count'}'></span></td><td>${pager(issuesListId)}</td></tr></table><div id="${issuesListId}"></div>`);
                 } else {
                     $(`.pager[data-target="${issuesListId}"]`).html(pager(issuesListId));
                 }
             } else {
-                $("#mainForm").html(`${cs}<table class="mt-2 ml-2" style="width: 100%;"><tr><td style="width: 100%;">${cs?'&nbsp;':filters}<br/><span id='${issuesListId + '-count'}'></span></td><td style="padding-right: 15px;">${pager(issuesListId)}</td></tr></table><div class="ml-2 mr-2" id="${issuesListId}"></div>`);
+                $("#mainForm").html(`${cs}<table class="mt-2" style="width: 100%;"><tr><td style="width: 100%;">${cs ? '' : (filters + '<br/>')}<span id='${issuesListId + '-count'}'></span></td><td>${pager(issuesListId)}</td></tr></table><div id="${issuesListId}"></div>`);
             }
 
             $(".tt_issues_filter").off("click").on("click", function () {
@@ -2046,7 +2046,7 @@
                     }
                     e = `<span class="text-danger text-bold">${e} [${params.filter}]<span/>`;
                     if (target !== true) {
-                        target.append(`<table class="mt-2 ml-2" style="width: 100%;"><tr><td style="width: 100%;">${e}</td></tr></table>`);
+                        target.append(`<table class="mt-2" style="width: 100%;"><tr><td style="width: 100%;">${e}</td></tr></table>`);
                     } else {
                         $("#" + issuesListId).html(e);
                     }
