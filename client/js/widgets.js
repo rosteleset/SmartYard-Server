@@ -356,14 +356,17 @@ $(document).on('select2:open', '.select2', function () {
 });
 
 $(window).off("resize").on("resize", () => {
-    if ($("#editorContainer").length) {
-        let height = $(window).height() - mainFormTop;
-        if ($('#subTop:visible').length) {
-            height -= $('#subTop').height();
+    if ($("#editorContainer:visible").length) {
+        if (!$("#editorContainer").attr("data-fh")) {
+            let height = $(window).height() - mainFormTop;
+            if ($('#subTop:visible').length) {
+                height -= $('#subTop').height();
+            }
+            $("#editorContainer").css("height", height + "px");
+
         }
-        $("#editorContainer").css("height", height + "px");
     }
-    if ($("#mapContainer").length) {
+    if ($("#mapContainer:visible").length) {
         let height = $(window).height() - mainFormTop;
         if ($('#subTop:visible').length) {
             height -= $('#subTop').height();

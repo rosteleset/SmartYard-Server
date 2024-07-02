@@ -1644,7 +1644,7 @@
             if (!target && params.customSearch && params.customSearch !== true) {
                 let height = 400;
                 cs += '<div>';
-                cs += `<div id='filterEditorContainer' style='width: 100%; height: ${height}px;'>`;
+                cs += `<div id='editorContainer' style='width: 100%; height: ${height}px;' data-fh="true">`;
                 cs += `<pre class="ace-editor mt-2" id="filterEditor" style="position: relative; border: 1px solid #ced4da; border-radius: 0.25rem; width: 100%; height: 100%;"></pre>`;
                 cs += "</div>";
                 cs += `<span style='position: absolute; right: 35px; top: 35px;'>`;
@@ -1907,12 +1907,14 @@
                         GET("tt", "customFilter", params.filter).
                         done(response => {
                             editor.setValue(response.body, -1);
+                            currentAceEditorOriginalValue = currentAceEditor.getValue();
                             loadingDone();
                         });
                     } else {
                         GET("tt", "filter", params.filter).
                         done(response => {
                             editor.setValue(response.body, -1);
+                            currentAceEditorOriginalValue = currentAceEditor.getValue();
                             loadingDone();
                         });
                     }
@@ -1956,6 +1958,11 @@
                         icon: (bookmarked ? "fas" : "far") + " text-primary fa-bookmark",
                         title: bookmarked ? i18n("tt.removeFavoriteFilter") : i18n("tt.addFavoriteFilter"),
                         click: () => {
+                            if (!bookmarked) {
+                                mConfirm();
+                            } else {
+
+                            }
                             console.log(x);
                         },
                     } : false,
