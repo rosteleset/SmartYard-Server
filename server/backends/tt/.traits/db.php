@@ -1372,16 +1372,22 @@
             /**
              * @inheritDoc
              */
-            public function deleteFavoriteFilter($filter)
+            public function deleteFavoriteFilter($filter, $all = false)
             {
                 if (!checkStr($filter)) {
                     return false;
                 }
 
-                return $this->db->modify("delete from tt_favorite_filters where login = :login and filter = :filter", [
-                    "login" => $this->login,
-                    "filter" => $filter,
-                ]);
+                if ($all) {
+                    return $this->db->modify("delete from tt_favorite_filters where filter = :filter", [
+                        "filter" => $filter,
+                    ]);
+                } else {
+                    return $this->db->modify("delete from tt_favorite_filters where login = :login and filter = :filter", [
+                        "login" => $this->login,
+                        "filter" => $filter,
+                    ]);
+                }
             }
 
             /**

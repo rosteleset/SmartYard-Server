@@ -324,6 +324,7 @@
     "filterRightSide": "Отображать справа",
     "filterColor": "Цвет",
     "removeFavoriteFilter": "Убрать фильтр из избранных",
+    "favoriteFilters": "Избранные фильтры",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",

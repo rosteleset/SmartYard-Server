@@ -42,7 +42,7 @@
                 let h = "";
                 for (let i in modules.tt.meta.favoriteFilters) {
                     if (parseInt(modules.tt.meta.favoriteFilters[i].rightSide)) {
-                        let title = '';
+                        let title = modules.tt.meta.filtersExt[modules.tt.meta.favoriteFilters[i].filter].shortName ? modules.tt.meta.filtersExt[modules.tt.meta.favoriteFilters[i].filter].shortName : modules.tt.meta.filtersExt[modules.tt.meta.favoriteFilters[i].filter].name;
                         h += `
                             <li class="nav-item" title="${escapeHTML(title)}">
                                 <a href="?#tt&filter=${modules.tt.meta.favoriteFilters[i].filter}" class="nav-link">
@@ -1428,8 +1428,8 @@
                 f[tree[tree.length - 1].trim()] = project.filters[i];
             }
 
-            let filter_name = modules.tt.meta.filters[x] ? modules.tt.meta.filters[x] : i18n("tt.filter");
-            document.title = i18n("windowTitle") + " :: " + filter_name;
+            let filterName = modules.tt.meta.filters[x] ? modules.tt.meta.filters[x] : i18n("tt.filter");
+            document.title = i18n("windowTitle") + " :: " + filterName;
 
             function hh(t) {
                 let filters = '';
@@ -1499,24 +1499,42 @@
                 return filters;
             }
 
-            filter_names = filter_name.split("/");
+            filterNames = filterName.split("/");
 
-            for (let o in filter_names) {
+            for (let o in filterNames) {
                 filters += `<span class="dropdown">`;
                 if (o == 0) {
-                    filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter-${o}" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" style="margin-left: -4px;"><i class="far fa-fw fa-caret-square-down mr-1"></i>${filter_names[o].trim()}</span>`;
+                    filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter-${o}" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" style="margin-left: -4px;"><i class="far fa-fw fa-caret-square-down mr-1"></i>${filterNames[o].trim()}</span>`;
                 } else {
-                    filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter-${o}" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false"><i class="far fa-fw fa-caret-square-down mr-1"></i>${filter_names[o].trim()}</span>`;
+                    filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter-${o}" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false"><i class="far fa-fw fa-caret-square-down mr-1"></i>${filterNames[o].trim()}</span>`;
                 }
                 filters += `<ul class="dropdown-menu" aria-labelledby="ttFilter-${o}">`;
+
+                if (modules.tt.meta.favoriteFilters.length) {
+                    filters += `<li class="dropdown-item pointer submenu mr-4"><i class="far fa-fw fa-folder mr-2"></i><span>${i18n("tt.favoriteFilters")}&nbsp;</span></li>`;
+                    filters += '<ul class="dropdown-menu">';
+                    for (let ff in modules.tt.meta.favoriteFilters) {
+                        if (x == modules.tt.meta.favoriteFilters[ff].filter) {
+                            filters += `<li class="dropdown-item nomenu pointer tt_issues_filter font-weight-bold mr-3" data-filter-name="${modules.tt.meta.favoriteFilters[ff].filter}">`;
+                        } else {
+                            filters += `<li class="dropdown-item nomenu pointer tt_issues_filter mr-3" data-filter-name="${modules.tt.meta.favoriteFilters[ff].filter}">`;
+                        }
+                        filters += `<i class="fa-fw mr-2 ${modules.tt.meta.favoriteFilters[ff].icon} ${modules.tt.meta.favoriteFilters[ff].color}"></i>`;
+                        filters += "<span>" + $.trim(modules.tt.meta.filtersExt[modules.tt.meta.favoriteFilters[ff].filter].shortName ? modules.tt.meta.filtersExt[modules.tt.meta.favoriteFilters[ff].filter].shortName : modules.tt.meta.filtersExt[modules.tt.meta.favoriteFilters[ff].filter].name) + "&nbsp;</span>";
+                        filters += "</li>";
+                    }
+                    filters += '</ul>';
+                    filters += `</li>`;
+                }
+
                 filters += hh(filtersTree);
                 filters += "</ul></span>";
 
-                if (o < filter_names.length - 1) {
+                if (o < filterNames.length - 1) {
                     filters += "<i class='fas fa-fw fa-xs fa-angle-double-right ml-2 mr-2'></i>";
                 }
 
-                filtersTree = filtersTree[filter_names[o].trim()];
+                filtersTree = filtersTree[filterNames[o].trim()];
             }
 
             let fp = -1;
@@ -2046,7 +2064,7 @@
                                     },
                                 });
                             } else {
-                                mConfirm(modules.tt.meta.filters[x], i18n("tt.removeFavoriteFilter"), i18n("delete"), () => {
+                                mConfirm(i18n("tt.removeFavoriteFilter"), modules.tt.meta.filtersExt[x].shortName ? modules.tt.meta.filtersExt[x].shortName : modules.tt.meta.filtersExt[x].name, i18n("remove"), () => {
                                     loadingStart();
                                     DELETE("tt", "favoriteFilter", x).
                                     done(() => {

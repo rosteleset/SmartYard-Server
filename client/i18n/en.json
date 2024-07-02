@@ -32,6 +32,7 @@
     "add": "Add",
     "create": "Create",
     "delete": "Delete",
+    "remove": "Remove",
     "deleteFile": "Delete the file (s) \"%s\" from the list?",
     "apply": "Apply",
     "cancel": "Cancellation",
