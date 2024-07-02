@@ -1,3 +1,6 @@
+var backToTopButton = false;
+var backToTopTicking = false;
+
 function message(message, caption, timeout) {
     timeout = timeout?timeout:15;
     toastr.info(message, caption?caption:i18n("message"), {
@@ -397,3 +400,24 @@ setInterval(() => {
         return false;
     });
 }, 1000);
+
+$(document).off("scroll").on("scroll", () => { //addEventListener("scroll", () => {
+    if (!backToTopTicking) {
+        window.requestAnimationFrame(() => {
+            if ($('html').scrollTop() < 16) {
+                if (backToTopButton) {
+                    backToTopButton = false;
+                    $(".back-to-top").hide();
+                }
+            } else {
+                if (!backToTopButton) {
+                    backToTopButton = true;
+                    $(".back-to-top").show();
+                }
+            }
+            backToTopTicking = false;
+        });
+
+        backToTopTicking = true;
+    }
+});

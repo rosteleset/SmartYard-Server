@@ -897,21 +897,7 @@
         h += "</table>";
         h += "</div>";
 
-        h += `
-            <button id="issueScrollToTop" class="btn btn-primary back-to-top" role="button" aria-label="${i18n("tt.scrollToTop")}" title="${i18n("tt.scrollToTop")}" onclick="$('html').scrollTop(0);" disabled="disabled">
-                <i class="fas fa-chevron-up"></i>
-            </button>
-        `;
-
         $("#mainForm").html(h);
-
-        if (!modules.tt.issue.scrollToTopInterval) {
-            modules.tt.issue.scrollToTopInterval = setInterval(() => {
-                if ($("#issueScrollToTop:visible").length) {
-                    $("#issueScrollToTop").prop("disabled", $('html').scrollTop() < 16);
-                }
-            }, 250);
-        }
 
         $(".ttIssue").off("click").on("click", function () {
             window.location.href = "?#tt&issue=" + encodeURIComponent($(this).text());

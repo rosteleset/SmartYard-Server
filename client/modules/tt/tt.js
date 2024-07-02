@@ -2062,6 +2062,13 @@
                                         fail(FAIL).
                                         fail(loadingDone);
                                     },
+                                    done: id => {
+                                        $(`
+                                            <button class="btn btn-primary back-to-top" role="button" aria-label="${i18n("tt.scrollToTop")}" title="${i18n("tt.scrollToTop")}" onclick="$('html').scrollTop(0);" disabled="disabled">
+                                                <i class="fas fa-chevron-up"></i>
+                                            </button>
+                                        `).append(id);
+                                    },
                                 });
                             } else {
                                 mConfirm(i18n("tt.removeFavoriteFilter"), modules.tt.meta.filtersExt[x].shortName ? modules.tt.meta.filtersExt[x].shortName : modules.tt.meta.filtersExt[x].name, i18n("remove"), () => {
