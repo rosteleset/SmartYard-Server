@@ -315,6 +315,9 @@ function initAll() {
     $("#forgotBoxLogin").text(i18n("forgotLogin"));
     $("#forgotBoxServer").attr("placeholder", i18n("server"));
 
+    $(".back-to-top").attr("aria-label", i18n("scrollToTop"));
+    $(".back-to-top").attr("title", i18n("scrollToTop"));
+
     $("#brandTitle").text(i18n("windowTitle"));
     $("#logout").text(i18n("logout"));
 
