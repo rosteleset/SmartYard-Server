@@ -41,7 +41,7 @@ if (strlen($user_phone) == 11 && $user_phone[0] == '7') {
 if ($result || $user_phone == "79123456781" || $user_phone == "79123456782") {
     $token = GUIDv4();
     $subscribers = $households->getSubscribers("mobile", $user_phone);
-    $devices = $households->getDevices("deviceToken", $device_token);
+    $devices = false;
     $subscriber_id = false;
     $names = ["name" => "", "patronymic" => "", "last" => ""];
     if ($subscribers) {
@@ -49,20 +49,23 @@ if ($result || $user_phone == "79123456781" || $user_phone == "79123456782") {
         // Пользователь найден
         $subscriber_id = $subscriber["subscriberId"];
         $names = ["name" => $subscriber["subscriberName"], "patronymic" => $subscriber["subscriberPatronymic"], "last" => $subscriber["subscriberLast"]];
+        $devices = $households->getDevices("subscriber", $subscriber_id);
     } else {
         // Пользователь не найден - создаём
         $subscriber_id = $households->addSubscriber($user_phone, "", "", "");
     }
 
-    // temporary solution
+    // no longer such a temporary solution
     if ($devices) {
-        $device = $devices[0];
-        if ($device["subscriberId"] != $subscriber_id) {
-            $households->deleteDevice($device["deviceId"]);
+        $filteredDevices = array_filter($devices, function ($device) use ($device_token) {
+            return $device['deviceToken'] === $device_token;
+        });
+        $device = reset($filteredDevices);
+        if ($device) {
+            $households->modifyDevice($device["deviceId"], ["authToken" => $token]);
+        } else {
             $households->addDevice($subscriber_id, $device_token, $platform, $token);
             $inbox->sendMessage($subscriber_id, "Внимание!", "Произведена авторизация на новом устройстве", $action = "inbox");
-        } else {
-            $households->modifyDevice($device["deviceId"], ["authToken" => $token]);
         }
     } else {
         $households->addDevice($subscriber_id, $device_token, $platform, $token);
