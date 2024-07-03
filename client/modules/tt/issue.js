@@ -744,7 +744,7 @@
         h += "<table class='mt-1 ml-2' style='width: 100%;'>";
         if (!isEmpty(issue.issue.tags)) {
             h += "<tr>";
-            h += "<td style='vertical-align: top; width: 100%;'>";
+            h += "<td style='vertical-align: top; width: 100%;' colspan='2'>";
             h += "<div class='pt-1 pb-1 small'>";
             for (let i in issue.issue.tags) {
                 let fg = (tags[issue.issue.tags[i]] && tags[issue.issue.tags[i]].foreground) ? tags[issue.issue.tags[i]].foreground : "#666666";
@@ -757,7 +757,7 @@
         }
 
         h += "<tr>";
-        h += "<td style='vertical-align: top;'>";
+        h += "<td style='vertical-align: top; width: 100%;'>";
         h += "<table style='width: 100%;'>";
         for (let i in issue.fields) {
             if (!rightFields.includes(issue.fields[i])) {
@@ -780,7 +780,7 @@
         let members = {};
 
         for (let i in modules.users.meta) {
-            members[modules.users.meta[i].login] = modules.users.meta[i].realName?modules.users.meta[i].realName:modules.users.meta[i].login;
+            members[modules.users.meta[i].login] = modules.users.meta[i].realName ? modules.users.meta[i].realName : modules.users.meta[i].login;
         }
 
         if (issue.issue.attachments && Object.keys(issue.issue.attachments).length) {
