@@ -119,7 +119,8 @@
         "v35_mult.sql"
     ],
     "36": [
-        "v36_tt.sql"
+        "v36_tt.sql",
+        "v36_mult.php"
     ],
     "37": [
         "v37_tt.sql"
