@@ -24,70 +24,70 @@
  * @apiSuccess {String} names.patronymic отчество
 
  */
-    $user_phone = @$postdata['userPhone'];
-    if ($user_phone[0] == '8') {
-        $user_phone[0] = '7';
-    }
-    $device_token = @$postdata['deviceToken'] ?: 'default';
-    $platform = @$postdata['platform'];
-    $pin = @$postdata['smsCode'];
-    $isdn = loadBackend("isdn");
-    $inbox = loadBackend("inbox");
-    $households = loadBackend("households");
-    $confirmMethod = @$config["backends"]["isdn"]["confirm_method"] ?: "outgoingCall";
+$user_phone = @$postdata['userPhone'];
+if ($user_phone[0] == '8') {
+    $user_phone[0] = '7';
+}
+$device_token = @$postdata['deviceToken'] ?: 'default';
+$platform = @$postdata['platform'];
+$pin = @$postdata['smsCode'];
+$isdn = loadBackend("isdn");
+$inbox = loadBackend("inbox");
+$households = loadBackend("households");
+$confirmMethod = @$config["backends"]["isdn"]["confirm_method"] ?: "outgoingCall";
 
-    if (strlen($pin) == 4) {
-        $pinreq = $redis->get("userpin_".$user_phone);
+if (strlen($pin) == 4) {
+    $pinreq = $redis->get("userpin_" . $user_phone);
 
-        $redis->setex("userpin.attempts_".$user_phone, 3600, (int)$redis->get("userpin.attempts_".$user_phone) + 1);
+    $redis->setex("userpin.attempts_" . $user_phone, 3600, (int)$redis->get("userpin.attempts_" . $user_phone) + 1);
 
-        if (!$pinreq) {
-            response(404);
-        } else {
-            if ($pinreq != $pin) {
-                $attempts = $redis->get("userpin.attempts_".$user_phone);
-                if ($attempts > 5) {
-                    $redis->del("userpin_".$user_phone);
-                    $redis->del("userpin.attempts_".$user_phone);
-                    response(403, false, "Превышено максимальное число попыток ввода", "Превышено максимальное число попыток ввода");
-                } else {
-                    response(403, false, "Пин-код введен неверно", "Пин-код введен неверно");
-                }
+    if (!$pinreq) {
+        response(404);
+    } else {
+        if ($pinreq != $pin) {
+            $attempts = $redis->get("userpin.attempts_" . $user_phone);
+            if ($attempts > 5) {
+                $redis->del("userpin_" . $user_phone);
+                $redis->del("userpin.attempts_" . $user_phone);
+                response(403, false, "Превышено максимальное число попыток ввода", "Превышено максимальное число попыток ввода");
             } else {
-                $redis->del("userpin_".$user_phone);
-                $redis->del("userpin.attempts_".$user_phone);
-                $token = GUIDv4();
-                $subscribers = $households->getSubscribers("mobile", $user_phone);
-                $devices = @$subscribers ? $households->getDevices("deviceToken", $device_token) : false;
-                $subscriber_id = false;
-                $names = [ "name" => "", "patronymic" => "", "last" => "" ];
-                if ($subscribers) {
-                    $subscriber = $subscribers[0];
-                    // Пользователь найден
-                    $subscriber_id = $subscriber["subscriberId"];
-                    $names = [ "name" => $subscriber["subscriberName"], "patronymic" => $subscriber["subscriberPatronymic"], "last" => $subscriber["subscriberLast"] ];
-                } else {
-                    // Пользователь не найден - создаём
-                    $subscriber_id = $households->addSubscriber($user_phone, "", "", "");
-                }
+                response(403, false, "Пин-код введен неверно", "Пин-код введен неверно");
+            }
+        } else {
+            $redis->del("userpin_" . $user_phone);
+            $redis->del("userpin.attempts_" . $user_phone);
+            $token = GUIDv4();
+            $subscribers = $households->getSubscribers("mobile", $user_phone);
+            $devices = @$subscribers ? $households->getDevices("deviceToken", $device_token) : false;
+            $subscriber_id = false;
+            $names = ["name" => "", "patronymic" => "", "last" => ""];
+            if ($subscribers) {
+                $subscriber = $subscribers[0];
+                // Пользователь найден
+                $subscriber_id = $subscriber["subscriberId"];
+                $names = ["name" => $subscriber["subscriberName"], "patronymic" => $subscriber["subscriberPatronymic"], "last" => $subscriber["subscriberLast"]];
+            } else {
+                // Пользователь не найден - создаём
+                $subscriber_id = $households->addSubscriber($user_phone, "", "", "");
+            }
 
-                // temporary solution
-                if ($devices) {
-                    $device = $devices[0];
-                    if ($device["subscriberId"] != $subscriber_id) {
-                        $households->deleteDevice($device["deviceId"]);
-                        $households->addDevice($subscriber_id, $device_token, $platform, $token);
-                        $inbox->sendMessage($subscriber_id, "Внимание!", "Произведена авторизация на новом устройстве", $action = "inbox");
-                    } else {
-                        $households->modifyDevice($device["deviceId"], [ "authToken" => $token ]);
-                    }
-                } else {
+            // temporary solution
+            if ($devices) {
+                $device = $devices[0];
+                if ($device["subscriberId"] != $subscriber_id) {
+                    $households->deleteDevice($device["deviceId"]);
                     $households->addDevice($subscriber_id, $device_token, $platform, $token);
                     $inbox->sendMessage($subscriber_id, "Внимание!", "Произведена авторизация на новом устройстве", $action = "inbox");
+                } else {
+                    $households->modifyDevice($device["deviceId"], ["authToken" => $token]);
                 }
-                response(200, [ 'accessToken' => $token, 'names' => $names ]);
+            } else {
+                $households->addDevice($subscriber_id, $device_token, $platform, $token);
+                $inbox->sendMessage($subscriber_id, "Внимание!", "Произведена авторизация на новом устройстве", $action = "inbox");
             }
+            response(200, ['accessToken' => $token, 'names' => $names]);
         }
-    } else {
-        response(422);
     }
+} else {
+    response(422);
+}
