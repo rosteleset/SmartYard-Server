@@ -21,7 +21,6 @@
  */
 
 auth();
-$allowedMods = ["fmp4", "mpegts"];
 $cameras = loadBackend("cameras");
 $dvr = loadBackend("dvr");
 
@@ -29,23 +28,31 @@ $common_cameras = $cameras->getCameras("common");
 $resp = [];
 
 foreach ($common_cameras as $camera) {
-    $hlsMode = $dvr->getDVRServerForCam($camera)["hlsMode"];
-    $item = [
-        "id" => $camera["cameraId"],
-        "name" => $camera["name"],
-        "lat" => strval($camera['lat']),
-        "lon" => strval($camera['lon']),
-        "url" => $dvr->getDVRStreamURLForCam($camera),
-        "token" => $dvr->getDVRTokenForCam($camera, $subscriber['subscriberId']),
-        "serverType" => $dvr->getDVRServerForCam($camera)["type"],
-        "hasSound" => boolval($camera['sound']),
-    ];
+    if ($camera['enabled']){
+        $dvrServer = $dvr->getDVRServerForCam($camera);
+        $url = $dvr->getDVRStreamURLForCam($camera);
+        // skip not valid url
+        if (!filter_var($url, FILTER_VALIDATE_URL)){
+            continue;
+        }
 
-    if ($hlsMode && in_array($hlsMode, $allowedMods)){
-        $item["hlsMode"] = $hlsMode;
+        $item = [
+            "id" => $camera["cameraId"],
+            "name" => $camera["name"],
+            "lat" => (string)$camera['lat'],
+            "lon" => (string)$camera['lon'],
+            "url" => $url,
+            "token" => $dvr->getDVRTokenForCam($camera, $subscriber['subscriberId']),
+            "serverType" => $dvrServer["type"],
+            "hasSound" => (bool)$camera['sound'],
+        ];
+
+        if (array_key_exists("hlsMode", $dvrServer)) {
+            $item["hlsMode"] = $dvrServer['hlsMode'];
+        }
+
+        $resp[] = $item;
     }
-
-    $resp=[... $resp, $item];
 }
 
 response(200, $resp);
