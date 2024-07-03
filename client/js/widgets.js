@@ -399,6 +399,9 @@ setInterval(() => {
         ev.preventDefault();
         return false;
     });
+
+    $(".blink-icon.blinking").toggleClass("text-warning");
+    $(".blink-icon:not(.blinking)").removeClass("text-warning");
 }, 1000);
 
 $(document).off("scroll").on("scroll", () => { //addEventListener("scroll", () => {

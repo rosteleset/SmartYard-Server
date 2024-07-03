@@ -390,10 +390,6 @@ function initAll() {
                                     onhashchange = hashChange;
                                 }
                             }
-                            setInterval(() => {
-                                $(".blink-icon.blinking").toggleClass("text-warning");
-                                $(".blink-icon:not(.blinking)").removeClass("text-warning");
-                            }, 1000);
                         }).fail(response => {
                             FAIL(response);
                             showLoginForm();
