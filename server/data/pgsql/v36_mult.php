@@ -32,11 +32,11 @@ function v36_mult($db)
                 SELECT
                     subscriber_device_id
                 FROM
-                    houses_flats_subscribers
+                    houses_subscribers_devices
                 WHERE
                     house_subscriber_id = :house_subscriber_id
             ", [':house_subscriber_id' => $flatSubscriber['house_subscriber_id']]);
-
+            
             foreach ($devices as $device) {
                 $stmt->execute([
                     ':house_flat_id' => $flatSubscriber['house_flat_id'],
