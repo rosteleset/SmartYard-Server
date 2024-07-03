@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {get} /authentication/whoAmI get self
+     * @api {get} /user/whoAmI get self
      *
      * @apiVersion 1.0.0
      *
