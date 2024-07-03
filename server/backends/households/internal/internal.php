@@ -1281,6 +1281,10 @@
                     ])) {
                         return false;
                     }
+                    $devices = $this->getDevices("subscriber", $subscriberId);
+                    foreach($devices as $device) {
+                        $this->setDeviceFlat($device["deviceId"], $flatId, 1);
+                    }
                 }
 
                 if ($subscriberId) {
@@ -1334,10 +1338,22 @@
                     $queue->changed("subscriber", $subscriberId);
                 }
 
-                return $this->db->modify("delete from houses_flats_subscribers where house_subscriber_id = :house_subscriber_id and house_flat_id = :house_flat_id", [
+                $devices = $this->getDevices("subscriber", $subscriberId);
+                
+
+                foreach ($devices as $device) {
+                    $this->db->modify("delete from houses_flats_devices where subscriber_device_id = :subscriber_device_id and house_flat_id = :house_flat_id", [
+                        "house_flat_id" => $flatId,
+                        "subscriber_device_id" => $device["deviceId"],
+                    ]);
+                }
+
+                $result = $this->db->modify("delete from houses_flats_subscribers where house_subscriber_id = :house_subscriber_id and house_flat_id = :house_flat_id", [
                     "house_flat_id" => $flatId,
                     "house_subscriber_id" => $subscriberId,
                 ]);
+
+                return $result;
             }
 
             /**
@@ -2240,6 +2256,22 @@
                     "auth_token" => $authToken,
                     "registered" => time(),
                 ]);
+
+                $flats = $this->db->get("select house_flat_id, role, flat, address_house_id from houses_flats_subscribers left join houses_flats using (house_flat_id) where house_subscriber_id = :house_subscriber_id",
+                    [
+                        "house_subscriber_id" => $subscriber
+                    ],
+                    [
+                        "house_flat_id" => "flatId",
+                        "role" => "role",
+                        "flat" => "flat",
+                        "address_house_id" => "addressHouseId",
+                    ]
+                );
+
+                foreach ($flats as $flat) {
+                    $this->setDeviceFlat($deviceId, $flat["flatId"], 1);
+                }
 
                 return $deviceId;
             }
