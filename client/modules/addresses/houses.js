@@ -1276,7 +1276,7 @@
         fail(loadingDone);
     },
 
-    modifyFlat: function (flatId, houseId) {
+    modifyFlat: function (flatId, houseId, canDelete) {
         let flat = false;
 
         for (let i in modules.addresses.houses.meta.flats) {
@@ -1332,7 +1332,7 @@
                 footer: true,
                 borderless: true,
                 topApply: true,
-                delete: houseId?i18n("addresses.deleteFlat"):false,
+                delete: canDelete ? (houseId ? i18n("addresses.deleteFlat") : false) : false,
                 apply: i18n("edit"),
                 size: "lg",
                 fields: [
@@ -1739,7 +1739,7 @@
                     },
                 },
                 edit: flatId => {
-                    modules.addresses.houses.modifyFlat(flatId, houseId);
+                    modules.addresses.houses.modifyFlat(flatId, houseId, true);
                 },
                 columns: [
                     {

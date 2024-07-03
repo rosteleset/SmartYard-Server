@@ -165,6 +165,8 @@ local function camshow(domophoneId)
 end
 
 local function mobile_intercom(flatId, flatNumber, domophoneId)
+    log_debug("mobile intercom: " .. flatId .. ", " .. flatNumber .. ", " .. domophoneId)
+
     local extension
     local res = ""
     local callerId

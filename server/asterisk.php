@@ -376,11 +376,7 @@
 
                     if ($devices) {
                         foreach ($devices as &$device) {
-                            foreach ($device["flats"] as $flat) {
-                                if ($flat["flatId"] == (int)$params) {
-                                    $device["voipEnabled"] = (int)($device["voipEnabled"]);
-                                }
-                            }
+                            $device["voipEnabled"] = (int)($device["voipEnabled"]);
                         }
                     }
 
