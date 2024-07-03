@@ -118,12 +118,6 @@ function ping(server) {
         url: server + "/server/ping",
         type: "POST",
         contentType: "json",
-        success: response => {
-            if (response != "pong") {
-                loadingDone(true);
-                error(i18n("errors.serverUnavailable"), i18n("error"), 30);
-            }
-        },
         error: () => {
             loadingDone(true);
             error(i18n("errors.serverUnavailable"), i18n("error"), 30);
