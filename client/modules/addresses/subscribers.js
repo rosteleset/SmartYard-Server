@@ -215,18 +215,12 @@
             let flats = [];
 
             for (let i in subscriber.flats) {
-                let owner, voipEnabled;
+                let owner;
 
                 try {
                     owner = subscriber.flats[i].role.toString() !== "1";
                 } catch (e) {
                     owner = true;
-                }
-
-                try {
-                    voipEnabled = subscriber.flats[i].voipEnabled.toString() == "1";
-                } catch (e) {
-                    voipEnabled = false;
                 }
 
                 let link = '';
@@ -243,10 +237,6 @@
                     <div class="custom-control custom-checkbox mb-0">
                         <input type="checkbox" class="custom-control-input" id="subscriber-role-flat-${subscriber.flats[i].flatId}"${owner ? " checked" : ""}>
                         <label class="custom-control-label form-check-label" for="subscriber-role-flat-${subscriber.flats[i].flatId}">${i18n("addresses.subscriberFlatOwner")}</label>
-                    </div>
-                    <div class="custom-control custom-checkbox mb-0">
-                        <input type="checkbox" class="custom-control-input" id="subscriber-voip-flat-${subscriber.flats[i].flatId}"${voipEnabled ? " checked" : ""}>
-                        <label class="custom-control-label form-check-label" for="subscriber-voip-flat-${subscriber.flats[i].flatId}">${i18n("addresses.voipEnabled")}</label>
                     </div>
                 `;
 
@@ -348,7 +338,6 @@
                         for (let i in result.flats) {
                             f[result.flats[i]] = {
                                 role: $("#subscriber-role-flat-" + result.flats[i]).prop("checked"),
-                                voipEnabled: $("#subscriber-voip-flat-" + result.flats[i]).prop("checked"),
                             };
                         }
 

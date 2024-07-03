@@ -1425,11 +1425,10 @@
                 $r = true;
 
                 foreach ($flats as $flatId => $flat) {
-                    $r = $r && $this->db->insert("insert into houses_flats_subscribers (house_subscriber_id, house_flat_id, role, voip_enabled) values (:house_subscriber_id, :house_flat_id, :role, :voip_enabled)", [
+                    $r = $r && $this->db->insert("insert into houses_flats_subscribers (house_subscriber_id, house_flat_id, role) values (:house_subscriber_id, :house_flat_id, :role)", [
                         "house_subscriber_id" => $subscriberId,
                         "house_flat_id" => $flatId,
                         "role" => $flat["role"] ? 0 : 1,
-                        "voip_enabled" => $flat["voipEnabled"] ? 1 : 0,
                     ]) !== false;
                 }
 
