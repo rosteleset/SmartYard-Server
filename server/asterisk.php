@@ -369,26 +369,6 @@
 
                     break;
 
-                // deprecated
-                case "subscribers":
-                    $households = loadBackend("households");
-
-                    $subscribers = $households->getSubscribers("flatId", (int)$params);
-
-                    if ($subscribers) {
-                        foreach ($subscribers as &$subscriber) {
-                            foreach ($subscriber["flats"] as $flat) {
-                                if ($flat["flatId"] == (int)$params) {
-                                    $subscriber["voipEnabled"] = (int)($subscriber["voipEnabled"] && $flat["voipEnabled"]);
-                                }
-                            }
-                        }
-                    }
-
-                    echo json_encode($subscribers);
-
-                    break;
-
                 case "devices":
                     $households = loadBackend("households");
 
@@ -398,7 +378,7 @@
                         foreach ($devices as &$device) {
                             foreach ($device["flats"] as $flat) {
                                 if ($flat["flatId"] == (int)$params) {
-                                    $device["voipEnabled"] = (int)($device["voipEnabled"] && $flat["voipEnabled"]);
+                                    $device["voipEnabled"] = (int)($device["voipEnabled"]);
                                 }
                             }
                         }
@@ -499,7 +479,7 @@
 
                     $entrance = @loadBackend("households")->getEntrances("domophoneId", [ "domophoneId" => (int)$params["domophoneId"], "output" => "0" ])[0];
                     if ($entrance && $entrance["video"] && $entrance["video"] != "inband") {
-                        $cameras = @loadBackend("cameras"); 
+                        $cameras = @loadBackend("cameras");
                         $dvrs = @loadBackend("dvr");
                         if ($cameras && $dvrs) {
                             $camera = $cameras->getCamera($entrance["cameraId"]);
@@ -525,4 +505,3 @@
             }
             break;
     }
-
