@@ -232,6 +232,7 @@ function whoAmI(force) {
             myself.phone = _me.user.phone;
             myself.webRtcExtension = _me.user.webRtcExtension;
             myself.webRtcPassword = _me.user.webRtcPassword;
+            myself.settings = _me.user.settings;
             myself.groups = {};
             if (_me.user.groups) {
                 for (let i in _me.user.groups) {
