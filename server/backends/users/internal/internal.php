@@ -290,7 +290,7 @@
                 }
 
                 $user = $this->getUser($uid);
-                
+
                 try {
                     $a = loadBackend("authorization");
 
@@ -435,6 +435,48 @@
                 } catch (\Exception $e) {
                     $this->unCache($key);
                     return false;
+                }
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function putSettings($settings)
+            {
+                try {
+                    $settings = $this->db->modify("update core_users set settings = :settings where login = :login", [
+                        "login" => $this->login,
+                        "settings" => json_encode($settings),
+                    ]);
+                } catch (\Exception $e) {
+                    return false;
+                }
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function getSettings()
+            {
+                try {
+                    $settings = $this->db->get("select settings from core_users where login = :login", [
+                        "login" => $this->login,
+                    ], [
+                        "settings" => "settings",
+                    ], [
+                        "fieldlify"
+                    ]);
+                    if ($settings) {
+                        try {
+                            return json_decode($settings, true);
+                        } catch (\Exception $e) {
+                            return [];
+                        }
+                    } else {
+                        return [];
+                    }
+                } catch (\Exception $e) {
+                    return [];
                 }
             }
         }

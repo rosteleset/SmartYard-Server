@@ -66,7 +66,9 @@
                 $user["webRtcExtension"] = $extension;
                 $user["webRtcPassword"] = $cred;
 
-                return api::ANSWER($user, ($user !== false)?"user":"notFound");
+                $user["settings"] = $params["_backends"]["users"]->getSettings();
+
+                return api::ANSWER($user, ($user !== false) ? "user" : "notFound");
             }
 
             public static function index() {
@@ -76,4 +78,3 @@
             }
         }
     }
-
