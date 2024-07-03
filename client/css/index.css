@@ -242,8 +242,8 @@ select {
   height: 100%;
 }
 .back-to-top {
-  bottom: .25rem;
-  right: .25rem;
+  bottom: 2.25rem;
+  right: 5.25rem;
 }
 
 body {
