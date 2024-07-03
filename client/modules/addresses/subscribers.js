@@ -249,7 +249,7 @@
                         <label class="custom-control-label form-check-label" for="subscriber-voip-flat-${subscriber.flats[i].flatId}">${i18n("addresses.voipEnabled")}</label>
                     </div>
                 `;
-                
+
                 flats.push({
                     "id": subscriber.flats[i].flatId,
                     "text": trimStr($.trim(subscriber.flats[i].house.houseFull + ", " + subscriber.flats[i].flat), 64, true) + " " + link,
@@ -309,37 +309,6 @@
                         type: "multiselect",
                         title: i18n("addresses.subscriberFlats"),
                         options: flats,
-                    },
-                    {
-                        id: "authToken",
-                        type: "text",
-                        title: i18n("addresses.authToken"),
-                        value: subscriber.authToken,
-                        readonly: true,
-                    },
-                    {
-                        id: "pushToken",
-                        type: "text",
-                        title: i18n("addresses.pushToken"),
-                        value: subscriber.pushToken,
-                        readonly: true,
-                    },
-                    {
-                        id: "voipEnabled",
-                        type: "select",
-                        title: i18n("addresses.voipEnabled"),
-                        placeholder: i18n("addresses.voipEnabled"),
-                        value: subscriber.voipEnabled,
-                        options: [
-                            {
-                                id: "0",
-                                text: i18n("no"),
-                            },
-                            {
-                                id: "1",
-                                text: i18n("yes"),
-                            },
-                        ],
                     },
                     {
                         id: "delete",
@@ -468,7 +437,7 @@
         });
     },
 
-    renderSubscribers: function (list, flatId, title) {
+    renderSubscribers: function (list) {
         let params = hashParse("params");
 
         cardTable({
@@ -481,7 +450,7 @@
                 },
             },
             edit: subscriberId => {
-                modules.addresses.subscribers.modifySubscriber(subscriberId, list, flatId);
+                modules.addresses.subscribers.modifySubscriber(subscriberId, list, params.flatId);
             },
             columns: [
                 {
@@ -541,14 +510,14 @@
                                     icon: "fas fa-key",
                                     title: i18n("addresses.keys"),
                                     click: subscriberId => {
-                                        window.location.href = "?#addresses.keys&query=" + subscriberId + "&by=1&backStr=" + encodeURIComponent(title + " [" + subscribers[subscriberId] + "]") + "&back=" + encodeURIComponent(hashParse("hash"));
+                                        window.location.href = "?#addresses.keys&query=" + subscriberId + "&by=1&houseId=" + params.houseId + "&flatId=" + params.flatId + "&phone=" + subscribers[subscriberId] + "&flat=" + params.flat + "&settlementId=" + params.settlementId + "&streetId=" + params.streetId + "&back=1";
                                     },
                                 },
                                 {
                                     icon: "fas fa-mobile",
                                     title: i18n("addresses.devices"),
                                     click: subscriberId => {
-                                        location.href = "?#addresses.subscriberDevices&subscriberId=" + subscriberId;
+                                        location.href = "?#addresses.subscriberDevices&subscriberId=" + subscriberId + "&houseId=" + params.houseId + "&flatId=" + params.flatId + "&phone=" + subscribers[subscriberId] + "&flat=" + params.flat + "&settlementId=" + params.settlementId + "&streetId=" + params.streetId;
                                     },
                                 },
                             ],
@@ -781,12 +750,10 @@
             done(modules.addresses.addresses).
             fail(FAIL).
             done(a => {
-                let t = '';
                 for (let i in a.addresses.houses) {
                     if (a.addresses.houses[i].houseId == params.houseId) {
                         document.title = i18n("windowTitle") + " :: " + a.addresses.houses[i].houseFull + ", " + params.flat;
-                        t = a.addresses.houses[i].houseFull + ", " + params.flat;
-                        subTop(modules.addresses.path((parseInt(params.settlementId)?"settlement":"street"), parseInt(params.settlementId)?params.settlementId:params.streetId, true) + "<i class=\"fas fa-xs fa-angle-double-right ml-2 mr-2\"></i>" + `<a href="?#addresses.houses&houseId=${params.houseId}">${a.addresses.houses[i].houseFull}</a>` + ", " + params.flat);
+                        subTop(modules.addresses.path((parseInt(params.settlementId) ? "settlement" : "street"), parseInt(params.settlementId) ? params.settlementId:params.streetId, true) + "<i class=\"fas fa-xs fa-angle-double-right ml-2 mr-2\"></i>" + `<a href="?#addresses.houses&houseId=${params.houseId}">${a.addresses.houses[i].houseFull}</a>` + "<i class=\"fas fa-xs fa-angle-double-right ml-2 mr-2\"></i>" + params.flat);
                         break;
                     }
                 }
@@ -795,7 +762,7 @@
                     by: "flatId",
                     query: params.flatId,
                 }).done(response => {
-                    modules.addresses.subscribers.renderSubscribers(response.flat.subscribers, params.flatId, t);
+                    modules.addresses.subscribers.renderSubscribers(response.flat.subscribers);
                     modules.addresses.subscribers.renderKeys(response.flat.keys);
                     modules.addresses.subscribers.renderCameras(response.flat.cameras);
                 }).

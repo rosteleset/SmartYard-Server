@@ -17,7 +17,7 @@
             modules.addresses.subscriberDevices.route(hashParse("params"));
         });
     },
-    
+
     doDeleteDevice: function (deviceId) {
         loadingStart();
         DELETE("subscribers", "device", deviceId).
@@ -109,7 +109,7 @@
         }).show();
     },
 
-    rendersubscriberDevices: function (subscriberId) {
+    renderSubscriberDevices: function (subscriberId) {
         loadingStart();
         QUERY("subscribers", "devices", {
             by: "subscriber",
@@ -139,6 +139,7 @@
                     },
                     {
                         title: i18n("addresses.lastSeen"),
+                        fullWidth: true,
                     },
                 ],
                 rows: () => {
@@ -152,15 +153,19 @@
                             cols: [
                                 {
                                     data: devices[i].deviceToken,
+                                    nowrap: true,
                                 },
                                 {
                                     data: this.platforms[devices[i].platform],
+                                    nowrap: true,
                                 },
                                 {
                                     data: new Date(devices[i].registered * 1000).toLocaleString(),
+                                    nowrap: true,
                                 },
                                 {
                                     data: new Date(devices[i].lastSeen * 1000).toLocaleString(),
+                                    nowrap: true,
                                 }
                             ],
                         });
@@ -175,10 +180,25 @@
     },
 
     route: function (params) {
+        $("#altForm").hide();
+
         modules.addresses.topMenu();
 
-        modules.addresses.subscriberDevices.rendersubscriberDevices(params.subscriberId);
+        QUERY("addresses", "addresses", {
+            houseId: params.houseId,
+        }).
+        done(modules.addresses.addresses).
+        fail(FAIL).
+        done(a => {
+            for (let i in a.addresses.houses) {
+                if (a.addresses.houses[i].houseId == params.houseId) {
+                    document.title = i18n("windowTitle") + " :: " + a.addresses.houses[i].houseFull + ", " + params.flat;
+                    subTop(modules.addresses.path((parseInt(params.settlementId) ? "settlement" : "street"), parseInt(params.settlementId) ? params.settlementId : params.streetId, true) + "<i class=\"fas fa-xs fa-angle-double-right ml-2 mr-2\"></i>" + `<a href="?#addresses.houses&houseId=${params.houseId}">${a.addresses.houses[i].houseFull}</a>` + '<i class="fas fa-xs fa-angle-double-right ml-2 mr-2"></i>' + `<a href='?#addresses.subscribers&flatId=${params.flatId}&houseId=${params.houseId}&flat=${params.flat}&settlementId=${params.settlementId}&streetId=${params.streetId}'>` +  params.flat + '</a><i class="fas fa-xs fa-angle-double-right ml-2 mr-2"></i>' + params.phone);
+                    break;
+                }
+            }
 
-        $("#altForm").hide();
+            modules.addresses.subscriberDevices.renderSubscriberDevices(params.subscriberId);
+        });
     }
 }).init();
