@@ -3,20 +3,23 @@
 if (empty($param)) {
     error_log('Snapshot hash required');
     response(400);
+    exit;
 }
 
 try {
-    $img = $redis->get("shot_" . $param);
+    $snapshot = $redis->get("shot_" . $param);
 } catch (RedisException $e) {
-    error_log("Redis error: " . $e->getMessage());
+    error_log("Redis error (hash: $param): " . $e->getMessage());
     response(500);
+    exit;
 }
 
-if ($img === false) {
-    error_log("Snapshot with hash '$param' not found");
+if ($snapshot === false) {
+    error_log("Snapshot not found (hash: $param)");
     response(404);
+    exit;
 }
 
 header('Content-Type: image/jpeg');
-echo $img;
+echo $snapshot;
 exit;
