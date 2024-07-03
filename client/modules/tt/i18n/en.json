@@ -322,7 +322,7 @@
     "filterIcon": "Icon",
     "filterRightSide": "Show at right sidebar",
     "filterColor": "Color",
-    "removeFavoriteFilter": "Remove filter from favorites",
+    "removeFavoriteFilter": "Remove filter from favorites?",
     "favoriteFilters": "Favorite filters",
     "methods": {
         "tt": {
