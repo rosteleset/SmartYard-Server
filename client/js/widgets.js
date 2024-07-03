@@ -192,7 +192,6 @@ function modal(body) {
 }
 
 function FAIL(response) {
-    console.log(response);
     if (response && response.responseJSON && response.responseJSON.error) {
         if (response.getResponseHeader("x-last-error")) {
             error(i18n("errors." + response.responseJSON.error, i18n("errors." + response.getResponseHeader("x-last-error"))), i18n("error"), 30);
@@ -215,7 +214,6 @@ function FAIL(response) {
 }
 
 function FAILPAGE(response) {
-    console.log(response);
     if (response && response.responseJSON && response.responseJSON.error) {
         if (response.getResponseHeader("x-last-error")) {
             error(i18n("errors." + response.responseJSON.error, i18n("errors." + response.getResponseHeader("x-last-error"))), i18n("error"), 30);
