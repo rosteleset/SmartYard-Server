@@ -2195,8 +2195,6 @@
                     "voip_enabled" => "voipEnabled",
                 ]);
 
-                if (!@$devices)
-                    return false;
                 foreach ($devices as &$device) {
                     $subscriber = $this->db->get("select * from houses_subscribers_mobile where house_subscriber_id = :house_subscriber_id",
                         [
