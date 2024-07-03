@@ -24,15 +24,15 @@
      *  }
      *
      * @apiExample {curl} Example usage:
-     *  curl -X POST http://127.0.0.1:8000/server/api.php/authentication/ping \
+     *  curl -X POST http://127.0.0.1:8000/server/api.php/server/ping \
      *      -H 'Authorization: Bearer aa8d362f-ffeb-4c2b-9e0f-f70ecb0078c0'
      */
 
     /**
-     * authentication api
+     * server api
      */
 
-    namespace api\authentication {
+    namespace api\server {
 
         use api\api;
 

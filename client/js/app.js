@@ -222,7 +222,7 @@ function forgot() {
 }
 
 function whoAmI(force) {
-    return GET("authentication", "whoAmI", false, force).done(_me => {
+    return GET("user", "whoAmI", false, force).done(_me => {
         if (_me && _me.user) {
             $(".myNameIs").attr("title", _me.user.realName?_me.user.realName:_me.user.login);
             myself.uid = _me.user.uid;
@@ -366,7 +366,7 @@ function initAll() {
     }
 
     if (lStore("_server") && lStore("_token")) {
-        POST("authentication", "ping", false).done((a, b) => {
+        POST("server", "ping", false).done((a, b) => {
             if (b === "nocontent") {
                 GET("authorization", "available").done(a => {
                     if (a && a.available) {
