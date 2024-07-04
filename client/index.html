@@ -47,6 +47,10 @@
     <script type="application/javascript">
         var version = 'unknown';
 
+        $.ajaxSetup({
+            cache: true
+        });
+
         function ver(c) {
             $.get("version?_=" + Math.random()).
             done(v => {
