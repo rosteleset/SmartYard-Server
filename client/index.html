@@ -47,16 +47,19 @@
     <script type="application/javascript">
         var version = 'unknown';
 
-        function ver() {
+        function ver(c) {
             $.get("version?_=" + Math.random()).
             done(v => {
                 version = v;
             }).
-            always(initAll);
+            always(() => {
+                cfg(c);
+            });
         }
 
         function cfg(c) {
             config = c;
+
             lStore(() => {
                 let l = lStore("_lang");
                 if (!l) {
@@ -65,25 +68,25 @@
                 if (!l) {
                     l = "ru";
                 }
-                $.get("i18n/" + l + ".json").
+                $.get("i18n/" + l + ".json?ver=" + version).
                 done(t => {
                     lang = t;
-                    ver();
+                    initAll();
                 }).
                 fail(function() {
                     lang = {};
-                    ver();
+                    initAll();
                 });
             });
         }
 
         document.addEventListener("DOMContentLoaded", () => {
             $.get("config/config.json?_=" + Math.random()).
-            done(cfg).
+            done(ver).
             fail(() => {
                 $.get("config/config.yml?_=" + Math.random()).
                 done(y => {
-                    cfg(jsyaml.load(y));
+                    ver(jsyaml.load(y));
                 }).
                 fail(() => {
                     error("Woops can't get config");
