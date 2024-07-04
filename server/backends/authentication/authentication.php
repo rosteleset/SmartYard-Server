@@ -42,7 +42,7 @@
                     if (count($keys) > $this->config["redis"]["max_allowed_tokens"]) {
                         foreach ($keys as $key) {
                             try {
-                                $auth = json_decode($this->redis->get($key));
+                                $auth = json_decode($this->redis->get($key), true);
                                 if (@(int)$auth["updated"] < $first_key_time) {
                                     $first_key = $key;
                                 }
