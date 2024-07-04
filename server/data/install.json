@@ -115,12 +115,12 @@
     ],
     "35": [
         "v35_indexes.sql",
-        "v35_mult.php",
-        "v35_mult.sql"
+        "v35_mult_1.php",
+        "v35_mult.sql",
+        "v35_mult_2.php"
     ],
     "36": [
-        "v36_tt.sql",
-        "v36_mult.php"
+        "v36_tt.sql"
     ],
     "37": [
         "v37_tt.sql"

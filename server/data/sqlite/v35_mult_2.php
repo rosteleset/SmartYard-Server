@@ -1,6 +1,6 @@
 <?php
 
-function v36_mult($db)
+function v35_mult_2($db)
 {
     try {
 

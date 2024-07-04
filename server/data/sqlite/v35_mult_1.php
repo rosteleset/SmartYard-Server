@@ -1,6 +1,6 @@
 <?php
 
-function v35_mult($db) {
+function v35_mult_1($db) {
     try {
 
         // Удаление дублирующихся значений push_token
