@@ -45,6 +45,16 @@
 
     <!-- wait for fully load -->
     <script type="application/javascript">
+        var version = 'unknown';
+
+        function ver() {
+            $.get("version?_=" + Math.random()).
+            done(v => {
+                console.log(v);
+            }).
+            always(initAll);
+        }
+
         function cfg(c) {
             config = c;
             lStore(() => {
@@ -58,11 +68,11 @@
                 $.get("i18n/" + l + ".json").
                 done(t => {
                     lang = t;
-                    initAll();
+                    ver();
                 }).
                 fail(function() {
                     lang = {};
-                    initAll();
+                    ver();
                 });
             });
         }
