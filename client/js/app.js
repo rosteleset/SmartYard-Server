@@ -406,11 +406,12 @@ function initAll() {
     } else {
         showLoginForm();
     }
-
+/*
     if (!lStore()) {
         loadingDone();
         return;
     }
+*/
 }
 
 function loadModule() {
