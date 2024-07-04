@@ -8,7 +8,7 @@ importScripts('js/cookie.js');
 
 lStore(() => {
     version = lStore("_version");
-    console.log("wsVersion: " + version);
+    console.log("swVersion: " + version);
 });
 
 const forceVersioning = [
