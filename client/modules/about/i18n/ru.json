@@ -4,10 +4,8 @@
         "",
         "<b>RoBoT - RBT (SmartYard-Server)</b>",
         "",
-        "Версия сервера v%s",
-        "Версия клиента v%s",
+        "Версия сервера %s",
+        "Версия клиента %s",
         "<hr/>Полностью автономная серверная часть для быстрого запуска домофонии и видеонаблюдения для мобильных приложений SmartYard (Теледом)",
-        "",
-        "Fully autonomous server part for quick launch of your intercom and video surveillance service"
     ]
 }
