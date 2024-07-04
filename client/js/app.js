@@ -444,7 +444,7 @@ function loadModule() {
         if (!l) {
             l = "ru";
         }
-        $.get("modules/" + module + "/i18n/" + l + ".json", i18n => {
+        $.get("modules/" + module + "/i18n/" + l + ".json?ver=" + version, i18n => {
             if (i18n.errors) {
                 if (!lang.errors) {
                     lang.errors = {};
@@ -464,7 +464,7 @@ function loadModule() {
         .fail(FAIL)
         .always(() => {
             if (config && config.customSubModules && config.customSubModules[module]) {
-                $.get("modules/" + module + "/custom/i18n/" + l + ".json", i18n => {
+                $.get("modules/" + module + "/custom/i18n/" + l + ".json?ver=" + version, i18n => {
                     if (i18n.errors) {
                         if (!lang.errors) {
                             lang.errors = {};
@@ -481,13 +481,13 @@ function loadModule() {
                     }
                     lang[module] = {...lang[module], ...i18n};
                 }).always(() => {
-                    $.getScript("modules/" + module + "/" + module + ".js")
+                    $.getScript("modules/" + module + "/" + module + ".js?ver=" + version)
                     .fail(() => {
                         pageError(i18n("errorLoadingModule", module));
                     });
                 });
             } else {
-                $.getScript("modules/" + module + "/" + module + ".js")
+                $.getScript("modules/" + module + "/" + module + ".js?ver=" + version)
                 .fail(() => {
                     pageError(i18n("errorLoadingModule", module));
                 });
@@ -529,7 +529,7 @@ function loadSubModules(parent, subModules, doneOrParentObject) {
             moduleLoaded(parent, doneOrParentObject);
         }
     } else{
-        $.getScript("modules/" + parent + "/" + module + ".js").
+        $.getScript("modules/" + parent + "/" + module + ".js?ver=" + version).
         done(() => {
             loadSubModules(parent, subModules, doneOrParentObject);
         }).
@@ -542,7 +542,7 @@ function loadCustomSubModules(parent, subModules) {
     if (!module) {
         loadModule();
     } else{
-        $.getScript("modules/" + parent + "/custom/" + module + ".js").
+        $.getScript("modules/" + parent + "/custom/" + module + ".js?ver=" + version).
         done(() => {
             loadCustomSubModules(parent, subModules);
         }).
