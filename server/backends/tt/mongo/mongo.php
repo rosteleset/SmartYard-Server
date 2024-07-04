@@ -806,10 +806,10 @@
                     if (count($list)) {
                         return false;
                     }
-                    if ($attachment["body"]) {
+                    if (@$attachment["body"]) {
                         $attachment["body"] = base64_decode($attachment["body"]);
                     } else
-                    if ($attachment["url"]) {
+                    if (@$attachment["url"]) {
                         $attachment["body"] = @file_get_contents($attachment["url"]);
                     }
                     if (strlen($attachment["body"]) <= 0 || strlen($attachment["body"]) > $project["maxFileSize"]) {
