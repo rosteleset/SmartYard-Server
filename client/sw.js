@@ -1,5 +1,5 @@
 var jQuery = {};
-var version = false;
+var version = Math.random();
 
 importScripts('js/phpjs.js');
 importScripts('js/idbkvstore.min.js');
