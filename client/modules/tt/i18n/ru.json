@@ -322,7 +322,7 @@
     "filterIcon": "Иконка",
     "filterRightSide": "Отображать справа",
     "filterColor": "Цвет",
-    "removeFavoriteFilter": "Убрать фильтр из избранных?",
+    "removeFavoriteFilter": "Убрать фильтр из избранных",
     "favoriteFilters": "Избранные фильтры",
     "methods": {
         "tt": {

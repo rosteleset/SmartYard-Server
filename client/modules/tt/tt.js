@@ -2071,7 +2071,7 @@
                                     },
                                 });
                             } else {
-                                mConfirm(i18n("tt.removeFavoriteFilter"), modules.tt.meta.filtersExt[x].shortName ? modules.tt.meta.filtersExt[x].shortName : modules.tt.meta.filtersExt[x].name, i18n("remove"), () => {
+                                mConfirm(i18n("tt.removeFavoriteFilter") + "?", modules.tt.meta.filtersExt[x].shortName ? modules.tt.meta.filtersExt[x].shortName : modules.tt.meta.filtersExt[x].name, i18n("remove"), () => {
                                     loadingStart();
                                     DELETE("tt", "favoriteFilter", x).
                                     done(() => {
