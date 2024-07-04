@@ -20,7 +20,7 @@ self.addEventListener('fetch', event => {
     const pathname = url.pathname.split("/");
 
     if (forceVersioning.indexOf(pathname[pathname.length - 1]) >= 0 && !url.search && version) {
-        console.log(url.href);
+        console.log("forceVersioningc: " + url.href);
         event.respondWith(fetch(url.href + "?ver=" + version));
     }
 });

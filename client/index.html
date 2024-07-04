@@ -63,9 +63,13 @@
                         navigator.serviceWorker.getRegistrations().then(r => {
                             r.forEach(w => {
                                 if (w && w.active && w.active.scriptURL) {
-                                    console.log("unregistering: " + w.active.scriptURL);
-                                    w.unregister();
-                                    needRestart = true;
+                                    const url = new URL(w.active.scriptURL);
+                                    const pathname = url.pathname.split("/");
+                                    if (pathname[pathname.length - 1] == "sw.js") {
+                                        console.log("unregistering: " + w.active.scriptURL);
+                                        w.unregister();
+                                        needRestart = true;
+                                    }
                                 }
                             });
                         }).then(() => {
