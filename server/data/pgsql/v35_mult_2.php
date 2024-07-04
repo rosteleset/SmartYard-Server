@@ -1,6 +1,6 @@
 <?php
 
-function v36_mult($db)
+function v35_mult_2($db)
 {
     try {
 
@@ -36,7 +36,7 @@ function v36_mult($db)
                 WHERE
                     house_subscriber_id = :house_subscriber_id
             ", [':house_subscriber_id' => $flatSubscriber['house_subscriber_id']]);
-            
+
             foreach ($devices as $device) {
                 $stmt->execute([
                     ':house_flat_id' => $flatSubscriber['house_flat_id'],
