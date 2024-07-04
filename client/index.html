@@ -50,7 +50,7 @@
         function ver() {
             $.get("version?_=" + Math.random()).
             done(v => {
-                console.log(v);
+                version = v;
             }).
             always(initAll);
         }
