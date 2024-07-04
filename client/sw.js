@@ -22,6 +22,8 @@ self.addEventListener('fetch', event => {
 
     if (forceVersioning.indexOf(pathname[pathname.length - 1]) >= 0 && !url.search && version) {
         console.log("forceVersioningc: " + url.href);
-        event.respondWith(fetch(url.href + "?swVer=" + version));
-    }
+
+//        event.respondWith(fetch(url.href + "?swVer=" + version));
+        event.respondWith(Response.redirect(url.href + "?swVer=" + version, 302));
+}
 });
