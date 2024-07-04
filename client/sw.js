@@ -13,6 +13,7 @@ lStore(() => {
 
 const forceVersioning = [
     "app.js",
+    "index.css",
 ];
 
 self.addEventListener('fetch', event => {
@@ -21,6 +22,6 @@ self.addEventListener('fetch', event => {
 
     if (forceVersioning.indexOf(pathname[pathname.length - 1]) >= 0 && !url.search && version) {
         console.log("forceVersioningc: " + url.href);
-        event.respondWith(fetch(url.href + "?ver=" + version));
+        event.respondWith(fetch(url.href + "?swVer=" + version));
     }
 });
