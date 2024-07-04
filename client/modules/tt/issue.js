@@ -520,7 +520,7 @@
         rtd += '<form autocomplete="off" onsubmit="return false;" method="post" action="">';
         rtd += '<input autocomplete="false" name="hidden" type="text" style="display:none;">';
         rtd += `<div class="input-group input-group-sm ttSearchInputGroup mt-1">`;
-        rtd += `<input id="ttSearch" class="form-control" type="search" aria-label="Search" autocomplete="off"><div class="input-group-append"><button class="btn btn-default" id="ttSearchButton" title="${i18n("tt.search")}"><i class="fas fa-search"></i></button></div>`;
+        rtd += `<input id="ttSearch" class="form-control tt-search" type="search" aria-label="Search" autocomplete="off"><div class="input-group-append"><button class="btn btn-default" id="ttSearchButton" title="${i18n("tt.search")}"><i class="fas fa-search"></i></button></div>`;
         rtd += `</div>`;
         rtd += '</form>';
 
