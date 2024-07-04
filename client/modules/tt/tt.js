@@ -1272,7 +1272,7 @@
     },
 
     selectProject: function (project) {
-        lStore("project", project);
+        lStore("tt_project", project);
         window.location.href = navigateUrl("tt", {
             project: project,
         });
@@ -1294,7 +1294,7 @@
         if (target) {
             current_project = params.project;
         } else {
-            current_project = params.project ? params.project : lStore("project");
+            current_project = params.project ? params.project : lStore("tt_project");
         }
 
         let pn = {};
@@ -2174,8 +2174,8 @@
                     }
                 } else {
                     lStore("tt_issue_filter_" + $("#ttProjectSelect").val(), null);
-                    lStore("tt_issue_filter_" + lStore("project"), null);
-                    lStore("project", null);
+                    lStore("tt_issue_filter_" + lStore("tt_project"), null);
+                    lStore("tt_project", null);
                     if (params["_"] != _) {
                         window.location.href = `?#tt&_=${_}`;
                     }

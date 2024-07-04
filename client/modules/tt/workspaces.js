@@ -44,23 +44,23 @@
 
             let showAlt = false;
             let workspace = [];
-            let currentWorkspace = params.workspace ? params.workspace : lStore("_tt_workspace");
+            let currentWorkspace = params.workspace ? params.workspace : lStore("tt_workspace");
             if (!currentWorkspace && result.files.length) {
                 currentWorkspace = result.files[0].filename;
             }
-            lStore("_tt_workspace", currentWorkspace);
+            lStore("tt_workspace", currentWorkspace);
 
             let rtd = "";
             rtd += `<div class="form-inline"><div class="input-group input-group-sm"><select id="ttWorkspaceSelect" class="form-control select-arrow" style="width: 259px;">`;
             rtd += `</select></div>`;
-    
+
             rtd += `<div class="nav-item mr-0 pr-0"><span id="editWorkspace" class="nav-link text-primary mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("tt.addModifyWorkspace")}"><i class="fas fa-lg fa-fw fa-pen-square"></i></span></div>`;
             if (currentWorkspace) {
                 rtd += `<div class="nav-item mr-0 pr-0"><span id="deleteWorkspace" class="nav-link text-danger mr-1 pr-0" role="button" style="cursor: pointer" title="${i18n("tt.deleteWorkspace")}"><i class="fas fa-lg fa-fw fa-minus-square"></i></span></div>`;
             }
-    
+
             $("#rightTopDynamic").html(rtd);
-    
+
             let h = "";
             for (let i in result.files) {
                 if (result.files[i].filename == currentWorkspace) {
@@ -97,18 +97,18 @@
                     showAlt = true;
                 }
             }
-    
+
             if (showAlt) {
                 $("#altForm").show();
             } else {
                 $("#altForm").hide();
             }
-    
+
             let _workspace = JSON.parse(JSON.stringify(workspace));
 
             (function loadWorkspace() {
                 let block = _workspace.shift();
-    
+
                 if (block) {
                     let query = {
                         project: block.project,
@@ -116,7 +116,7 @@
                         class: block.class,
                         limit: block.limit,
                     };
-            
+
                     if (lStore("sortBy:" + block.filter)) {
                         query.sort = lStore("sortBy:" + block.filter);
                     }
@@ -175,7 +175,7 @@
                         fail(FAIL).
                         fail(loadingDone).
                         done(() => {
-                            lStore("_tt_workspace", w.name);
+                            lStore("tt_workspace", w.name);
                             modules.tt.workspaces.renderWorkspaces({
                                 workspace: w.name,
                             });
@@ -195,7 +195,7 @@
                         fail(FAIL).
                         fail(loadingDone).
                         done(() => {
-                            lStore("_tt_workspace", null);
+                            lStore("tt_workspace", null);
                             modules.tt.workspaces.renderWorkspaces({
                                 workspace: null,
                             });

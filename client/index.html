@@ -5,9 +5,7 @@
     <title>::</title>
 
     <link id="favicon" rel="shortcut icon" href="img/smartIcon.png"/>
-    <!-- Google Font: Source Sans Pro
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-     -->
+
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="lib/AdminLTE/plugins/fontawesome-free/css/all.min.css">
     <!-- Toastr -->
@@ -40,21 +38,46 @@
     <link rel="stylesheet" href="css/select2totree.css">
     <!-- app css -->
     <link rel="stylesheet" href="css/index.css">
-    <!-- yaml support -->
-    <script src="js/js-yaml.min.js"></script>
 
     <!-- wait for fully load -->
     <script type="application/javascript">
         var version = 'unknown';
+        var serviceWorker;
 
         $.ajaxSetup({
             cache: true
         });
 
         function ver(c) {
+            let needRestart = false;
+
             $.get("version?_=" + Math.random()).
             done(v => {
                 version = v;
+                let oldVersion = lStore("_version");
+                lStore("_version", version);
+                if ("serviceWorker" in navigator) {
+                    console.log("localVersion: " + oldVersion);
+                    console.log("remoteVersion: " + version);
+                    if (oldVersion != version) {
+                        navigator.serviceWorker.getRegistrations().then(r => {
+                            r.forEach(w => {
+                                if (w && w.active && w.active.scriptURL) {
+                                    console.log("unregistering: " + w.active.scriptURL);
+                                    w.unregister();
+                                    needRestart = true;
+                                }
+                            });
+                        }).then(() => {
+                            if (needRestart) {
+                                window.location.reload();
+                            }
+                        });
+                    }
+                    navigator.serviceWorker.register('sw.js').then(sw => {
+                        serviceWorker = sw;
+                    });
+                }
             }).
             always(() => {
                 cfg(c);
@@ -85,15 +108,17 @@
         }
 
         document.addEventListener("DOMContentLoaded", () => {
-            $.get("config/config.json?_=" + Math.random()).
-            done(ver).
-            fail(() => {
-                $.get("config/config.yml?_=" + Math.random()).
-                done(y => {
-                    ver(jsyaml.load(y));
-                }).
+            lStore(() => {
+                $.get("config/config.json?_=" + Math.random()).
+                done(ver).
                 fail(() => {
-                    error("Woops can't get config");
+                    $.get("config/config.yml?_=" + Math.random()).
+                    done(y => {
+                        ver(jsyaml.load(y));
+                    }).
+                    fail(() => {
+                        error("Woops can't get config");
+                    });
                 });
             });
         });
@@ -440,8 +465,6 @@
     <script src="lib/AdminLTE/plugins/select2/js/select2.full.min.js"></script>
     <script src="lib/AdminLTE/plugins/select2/js/i18n/en.js"></script>
     <script src="lib/AdminLTE/plugins/select2/js/i18n/ru.js"></script>
-    <!-- phpjs.js -->
-    <script src="js/phpjs.js"></script>
     <!-- FavIco badge and animation support -->
     <script src="js/favico.min.js"></script>
     <!-- browser detection -->
@@ -477,8 +500,6 @@
     <script src="js/select2totree.js"></script>
     <!-- MQTT client -->
     <script src="js/mqtt.min.js"></script>
-    <!-- KV store -->
-    <script src="js/idbkvstore.min.js"></script>
     <!-- leaflet -->
     <script src="lib/Leaflet/dist/leaflet.js"></script>
     <script src="js/leaflet.awesome-markers.min.js"></script>
@@ -488,6 +509,14 @@
     <!-- Linkify -->
     <script src="js/linkify.min.js"></script>
     <script src="js/linkify-html.min.js"></script>
+    <!-- yaml support -->
+    <script src="js/js-yaml.min.js"></script>
+    <!-- KV store -->
+    <script src="js/idbkvstore.min.js"></script>
+    <!-- phpjs -->
+    <script src="js/phpjs.js"></script>
+    <!-- lstore -->
+    <script src="js/lstore.js"></script>
     <!-- patches -->
     <script src="patches/modal.js" type="module"></script>
     <!-- APP -->
