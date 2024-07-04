@@ -27,14 +27,12 @@
 
 auth();
 $households = loadBackend("households");
-$isdn = loadBackend("isdn");
 
-$old_push = $subscriber["pushToken"];
 $push = trim(@$postdata['pushToken']);
 $voip = trim(@$postdata['voipToken'] ?: "");
 $production = trim(@$postdata['production']);
 
-if (!array_key_exists('platform', $postdata) || ($postdata['platform'] != 'ios' && $postdata['platform'] != 'android' && $postdata['platform'] != 'huawei')) {
+if (!array_key_exists('platform', $postdata) || ($postdata['platform'] != 'ios' && $postdata['platform'] != 'android' && $postdata['platform'] != 'huawei'  && $postdata['platform'] != 'web')) {
     response(422);
 }
 
@@ -53,6 +51,9 @@ if ($postdata['platform'] == 'ios') {
     } else {
         $type = 0; // fcm (resend)
     }
+} elseif ($postdata['platform'] == 'web') {
+    $platform = 2;
+    $type = 0;
 } elseif ($postdata['platform'] == 'huawei') {
     $platform = 0;
     $type = 3; // huawei
@@ -61,23 +62,10 @@ if ($postdata['platform'] == 'ios') {
     $type = 0; // fcm
 }
 
-$households->modifySubscriber($subscriber["subscriberId"], [ "pushToken" => $push, "tokenType" => $type, "voipToken" => $voip, "platform" => $platform ]);
+$households->modifyDevice($device["deviceId"], [ "pushToken" => $push, "tokenType" => $type, "voipToken" => $voip, "platform" => $platform ]);
 
 if (!$push) {
-    $households->modifySubscriber($subscriber["subscriberId"], [ "pushToken" => "off" ]);   
-} else {
-    if ($old_push && $old_push != $push) {
-        $md5 = md5($push.$old_push);
-        $payload = [
-            "token" => $old_push,
-            "messageId" => $md5,
-            "title" => "Внимание!",
-            "msg" => "Произведена авторизация на другом устройстве",
-            "badge" => "1",
-            "pushAction" => "logout"
-        ];
-        $isdn->push($payload);
-    }
+    $households->modifyDevice($device["deviceId"], [ "pushToken" => "off" ]);   
 }
 
 if (!$voip) {

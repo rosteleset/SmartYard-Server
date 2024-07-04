@@ -6,7 +6,7 @@
      * @return void
      */
 
-    function initDB($_skip) {
+    function initDB($_skip, $_force = -1) {
         global $config, $db, $version;
 
         $install = @json_decode(file_get_contents("data/install.json"), true);
@@ -26,21 +26,22 @@
         if (count($install) > 0) {
             foreach ($install as $v => $steps) {
                 $v = (int)$v;
-    
+                $f = (int)$_force;
+
                 $_v = sprintf("%06d", $v);
-    
-                if ($version >= $v) {
+
+                if ($version >= $v && $v != $f) {
                     echo "skipping DB version $_v\n";
                     continue;
                 }
-    
-                if (@$skip[$v]) {
+
+                if (@$skip[$v] && $v != $f) {
                     echo "force skipping DB version $_v\n";
                     continue;
                 }
-    
+
                 echo "upgrading to DB version $_v\n";
-    
+
                 try {
                     foreach ($steps as $step) {
                         echo "\n================= $step\n\n";
@@ -63,11 +64,11 @@
                     echo "\n================= fail\n\n";
                     exit(1);
                 }
-    
+
                 $sth = $db->prepare("update core_vars set var_value = :version where var_name = 'dbVersion'");
                 $sth->bindParam('version', $v);
                 $sth->execute();
-    
+
                 echo "\n================= done\n\n";
             }
         }

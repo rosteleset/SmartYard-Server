@@ -369,22 +369,18 @@
 
                     break;
 
-                case "subscribers":
+                case "devices":
                     $households = loadBackend("households");
 
-                    $subscribers = $households->getSubscribers("flatId", (int)$params);
+                    $devices = $households->getDevices("flat", (int)$params);
 
-                    if ($subscribers) {
-                        foreach ($subscribers as &$subscriber) {
-                            foreach ($subscriber["flats"] as $flat) {
-                                if ($flat["flatId"] == (int)$params) {
-                                    $subscriber["voipEnabled"] = (int)($subscriber["voipEnabled"] && $flat["voipEnabled"]);
-                                }
-                            }
+                    if ($devices) {
+                        foreach ($devices as &$device) {
+                            $device["voipEnabled"] = (int)($device["voipEnabled"]);
                         }
                     }
 
-                    echo json_encode($subscribers);
+                    echo json_encode($devices);
 
                     break;
 
@@ -479,7 +475,7 @@
 
                     $entrance = @loadBackend("households")->getEntrances("domophoneId", [ "domophoneId" => (int)$params["domophoneId"], "output" => "0" ])[0];
                     if ($entrance && $entrance["video"] && $entrance["video"] != "inband") {
-                        $cameras = @loadBackend("cameras"); 
+                        $cameras = @loadBackend("cameras");
                         $dvrs = @loadBackend("dvr");
                         if ($cameras && $dvrs) {
                             $camera = $cameras->getCamera($entrance["cameraId"]);
@@ -505,4 +501,3 @@
             }
             break;
     }
-

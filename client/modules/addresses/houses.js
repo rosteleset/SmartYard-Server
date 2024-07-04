@@ -793,12 +793,12 @@
                     title: i18n("addresses.openCode"),
                     placeholder: i18n("addresses.openCode"),
                     validate: (v) => {
-                        if (!new RegExp(/^(?:[1-9]\d{4})?$/).test(v)){
-                            error(i18n("addresses.openCodeError"))
+                        if (+v >= 10001 && +v <= 99999 || v === '') {
+                            return true;
                         } else {
-                            return true
+                            error(i18n("addresses.openCodeError"));
                         }
-                    }
+                    },
                 },
                 {
                     id: "plog",
@@ -1276,7 +1276,7 @@
         fail(loadingDone);
     },
 
-    modifyFlat: function (flatId, houseId) {
+    modifyFlat: function (flatId, houseId, canDelete) {
         let flat = false;
 
         for (let i in modules.addresses.houses.meta.flats) {
@@ -1332,7 +1332,7 @@
                 footer: true,
                 borderless: true,
                 topApply: true,
-                delete: houseId?i18n("addresses.deleteFlat"):false,
+                delete: canDelete ? (houseId ? i18n("addresses.deleteFlat") : false) : false,
                 apply: i18n("edit"),
                 size: "lg",
                 fields: [
@@ -1480,12 +1480,12 @@
                         placeholder: i18n("addresses.openCode"),
                         value: flat.openCode,
                         validate: (v) => {
-                            if (!new RegExp(/^(?:[1-9]\d{4})?$/).test(v)) {
-                                error(i18n("addresses.openCodeError"));
-                            } else {
+                            if (+v >= 10001 && +v <= 99999 || v === '') {
                                 return true;
+                            } else {
+                                error(i18n("addresses.openCodeError"));
                             }
-                        }
+                        },
                     },
                     {
                         id: "autoOpen",
@@ -1739,7 +1739,7 @@
                     },
                 },
                 edit: flatId => {
-                    modules.addresses.houses.modifyFlat(flatId, houseId);
+                    modules.addresses.houses.modifyFlat(flatId, houseId, true);
                 },
                 columns: [
                     {

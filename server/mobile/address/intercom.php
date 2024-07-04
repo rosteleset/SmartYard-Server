@@ -112,27 +112,16 @@ if (@$postdata['settings']) {
     $households->modifyFlat($flat_id, $params);
 
     if (@$settings['VoIP']) {
-        $f_list = [];
-        foreach ($subscriber['flats'] as $item) {
-            $f_id = (int)$item['flatId'];
-            $f_role = !$item['role'];
-            $f_voip_enabled = $item['voipEnabled'];
-            $f_list[$f_id] = [
-                "role" => $f_role,
-                "voipEnabled" => $f_voip_enabled
-            ];
-        }
-        $f_list[$flat_id]["voipEnabled"] = ($settings['VoIP'] == 't');
-        $households->setSubscriberFlats($subscriber['subscriberId'], $f_list);
+        $households->setDeviceFlat($device["deviceId"], $flat_id, $settings['VoIP'] == 't');
     }
 }
 
 // for voipEnabled
-$subscriber = $households->getSubscribers('id', $subscriber['subscriberId'])[0];
-if ($subscriber && $subscriber["flats"]) {
-    foreach ($subscriber["flats"] as $flat) {
+$device = $households->getDevices('id', $device['deviceId'])[0];
+if ($device && $device["flats"]) {
+    foreach ($device["flats"] as $flat) {
         if ($flat["flatId"] == $flat_id) {
-            $subscriber["voipEnabled"] = (int)($subscriber["voipEnabled"] && $flat["voipEnabled"]);
+            $device["voipEnabled"] = (int)($device["voipEnabled"] && $flat["voipEnabled"]);
             break;
         }
     }
@@ -164,7 +153,7 @@ if ($doorCode != '00000') {
     $ret['allowDoorCode'] = 'f';
 }
 $ret['CMS'] = @$flat['cmsEnabled'] ? 't' : 'f';
-$ret['VoIP'] = @$subscriber['voipEnabled'] ? 't' : 'f';
+$ret['VoIP'] = @$device['voipEnabled'] ? 't' : 'f';
 $ret['autoOpen'] = date('Y-m-d H:i:s', $flat['autoOpen']);
 $ret['whiteRabbit'] = strval($flat['whiteRabbit']);
 if ($flat_owner && $plog && $flat['plog'] != plog::ACCESS_RESTRICTED_BY_ADMIN) {

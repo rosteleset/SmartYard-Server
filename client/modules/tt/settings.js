@@ -3414,10 +3414,10 @@
         loadingStart();
         GET("tt", "viewer", false, true).
         done(v => {
-            let code = `//function ${name} (value, issue, field, target) {\n\treturn value;\n//}\n`;
+            let code = `//function ${name} (value, issue, field, target, filter) {\n\treturn value;\n//}\n`;
             for (let i in v.viewers) {
                 if (v.viewers[i].field == field && v.viewers[i].name == name) {
-                    code = v.viewers[i].code?v.viewers[i].code:`//function ${name} (value, issue, field, target) {\n\treturn value;\n//}\n`;
+                    code = v.viewers[i].code ? v.viewers[i].code : `//function ${name} (value, issue, field, target, filter) {\n\treturn value;\n//}\n`;
                     break;
                 }
             }
@@ -3509,8 +3509,8 @@
                 let v = {};
 
                 r.viewers.sort((a, b) => {
-                    let f1 = (a.field.substring(0, 4) == "_cf_")?cf[a.field]:i18n("tt." + a.field);
-                    let f2 = (b.field.substring(0, 4) == "_cf_")?cf[b.field]:i18n("tt." + b.field);
+                    let f1 = (a.field.substring(0, 4) == "_cf_") ? cf[a.field] : i18n("tt." + a.field);
+                    let f2 = (b.field.substring(0, 4) == "_cf_") ? cf[b.field] : i18n("tt." + b.field);
                     if (f1 > f2) {
                         return 1;
                     }

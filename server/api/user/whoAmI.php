@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {get} /authentication/whoAmI get self
+     * @api {get} /user/whoAmI get self
      *
      * @apiVersion 1.0.0
      *
@@ -36,14 +36,14 @@
      *  }
      *
      * @apiExample {curl} Example usage:
-     *  curl http://127.0.0.1:8000/server/api.php/authentication/whoAmI
+     *  curl http://127.0.0.1:8000/server/api.php/user/whoAmI
      */
 
     /**
-     * authentication namespace
+     * user namespace
      */
 
-    namespace api\authentication {
+    namespace api\user {
 
         use api\api;
 
@@ -66,7 +66,9 @@
                 $user["webRtcExtension"] = $extension;
                 $user["webRtcPassword"] = $cred;
 
-                return api::ANSWER($user, ($user !== false)?"user":"notFound");
+                $user["settings"] = $params["_backends"]["users"]->getSettings();
+
+                return api::ANSWER($user, ($user !== false) ? "user" : "notFound");
             }
 
             public static function index() {
@@ -76,4 +78,3 @@
             }
         }
     }
-

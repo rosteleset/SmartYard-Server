@@ -15,8 +15,8 @@ Group=rbt
 LimitCORE=infinity
 KillMode=process
 StandardOutput=null
-#StandardOutput=file:/var/log/event_service/event_beward_ds.log
-StandardError=file:/var/log/event_service/event_beward_ds.error.log
+#StandardOutput=append:/var/log/event_service/event_beward_ds.log
+StandardError=append:/var/log/event_service/event_beward_ds.error.log
 
 [Install]
 WantedBy=multi-user.target

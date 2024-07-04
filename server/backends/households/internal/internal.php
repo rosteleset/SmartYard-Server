@@ -1187,42 +1187,27 @@
                             "house_subscriber_id" => (int)$query,
                         ];
                         break;
-
-                    case "authToken":
-                        $q = "select * from houses_subscribers_mobile where auth_token = :auth_token";
-                        $p = [
-                            "auth_token" => $query,
-                        ];
-                        break;
                 }
 
                 $subscribers = $this->db->get($q, $p, [
                     "house_subscriber_id" => "subscriberId",
                     "id" => "mobile",
-                    "auth_token" => "authToken",
-                    "platform" => "platform",
-                    "push_token" => "pushToken",
-                    "push_token_type" => "tokenType",
-                    "voip_token" => "voipToken",
                     "registered" => "registered",
-                    "last_seen" => "lastSeen",
                     "subscriber_name" => "subscriberName",
                     "subscriber_patronymic" => "subscriberPatronymic",
                     "subscriber_last" => "subscriberLast",
-                    "voip_enabled" => "voipEnabled",
                 ]);
 
                 $addresses = loadBackend("addresses");
 
                 foreach ($subscribers as &$subscriber) {
-                    $flats = $this->db->get("select house_flat_id, role, voip_enabled, flat, address_house_id from houses_flats_subscribers left join houses_flats using (house_flat_id) where house_subscriber_id = :house_subscriber_id",
+                    $flats = $this->db->get("select house_flat_id, role, flat, address_house_id from houses_flats_subscribers left join houses_flats using (house_flat_id) where house_subscriber_id = :house_subscriber_id",
                         [
                             "house_subscriber_id" => $subscriber["subscriberId"]
                         ],
                         [
                             "house_flat_id" => "flatId",
                             "role" => "role",
-                            "voip_enabled" => "voipEnabled",
                             "flat" => "flat",
                             "address_house_id" => "addressHouseId",
                         ]
@@ -1260,7 +1245,7 @@
                 ]);
 
                 if (!$subscriberId) {
-                    $subscriberId = $this->db->insert("insert into houses_subscribers_mobile (id, subscriber_name, subscriber_patronymic, subscriber_last, registered, voip_enabled) values (:mobile, :subscriber_name, :subscriber_patronymic, :subscriber_last, :registered, 1)", [
+                    $subscriberId = $this->db->insert("insert into houses_subscribers_mobile (id, subscriber_name, subscriber_patronymic, subscriber_last, registered) values (:mobile, :subscriber_name, :subscriber_patronymic, :subscriber_last, :registered)", [
                         "mobile" => $mobile,
                         "subscriber_name" => $name,
                         "subscriber_patronymic" => $patronymic,
@@ -1295,6 +1280,10 @@
                         "house_flat_id" => $flatId,
                     ])) {
                         return false;
+                    }
+                    $devices = $this->getDevices("subscriber", $subscriberId);
+                    foreach($devices as $device) {
+                        $this->setDeviceFlat($device["deviceId"], $flatId, 1);
                     }
                 }
 
@@ -1349,10 +1338,22 @@
                     $queue->changed("subscriber", $subscriberId);
                 }
 
-                return $this->db->modify("delete from houses_flats_subscribers where house_subscriber_id = :house_subscriber_id and house_flat_id = :house_flat_id", [
+                $devices = $this->getDevices("subscriber", $subscriberId);
+                
+
+                foreach ($devices as $device) {
+                    $this->db->modify("delete from houses_flats_devices where subscriber_device_id = :subscriber_device_id and house_flat_id = :house_flat_id", [
+                        "house_flat_id" => $flatId,
+                        "subscriber_device_id" => $device["deviceId"],
+                    ]);
+                }
+
+                $result = $this->db->modify("delete from houses_flats_subscribers where house_subscriber_id = :house_subscriber_id and house_flat_id = :house_flat_id", [
                     "house_flat_id" => $flatId,
                     "house_subscriber_id" => $subscriberId,
                 ]);
+
+                return $result;
             }
 
             /**
@@ -1397,7 +1398,7 @@
                     }
                 }
 
-                if (@$params["subscriberLast"] || @$params["forceNames"]) {
+              if (@$params["subscriberLast"] || @$params["forceNames"]) {
                     if (!checkStr($params["subscriberLast"], [ "maxLength" => 32 ])) {
                         setLastError("invalidParams");
                         return false;
@@ -1408,73 +1409,8 @@
                     }
                 }
 
-                if (@$params["authToken"]) {
-                    if (!checkStr($params["authToken"])) {
-                        setLastError("invalidParams");
-                        return false;
-                    }
-
-                    if ($this->db->modify("update houses_subscribers_mobile set auth_token = :auth_token where house_subscriber_id = $subscriberId", [ "auth_token" => $params["authToken"] ]) === false) {
-                        return false;
-                    }
-                }
-
-                if (array_key_exists("platform", $params)) {
-                    if (!checkInt($params["platform"])) {
-                        setLastError("invalidParams");
-                        return false;
-                    }
-
-                    if ($this->db->modify("update houses_subscribers_mobile set platform = :platform where house_subscriber_id = $subscriberId", [ "platform" => $params["platform"] ]) === false) {
-                        return false;
-                    }
-                }
-
-                if (@$params["pushToken"]) {
-                    if (!checkStr($params["pushToken"])) {
-                        setLastError("invalidParams");
-                        return false;
-                    }
-
-                    if ($this->db->modify("update houses_subscribers_mobile set push_token = :push_token where house_subscriber_id = $subscriberId", [ "push_token" => $params["pushToken"] ]) === false) {
-                        return false;
-                    }
-                }
-
-                if (array_key_exists("tokenType", $params)) {
-                    if (!checkInt($params["tokenType"])) {
-                        setLastError("invalidParams");
-                        return false;
-                    }
-
-                    if ($this->db->modify("update houses_subscribers_mobile set push_token_type = :push_token_type where house_subscriber_id = $subscriberId", [ "push_token_type" => $params["tokenType"] ]) === false) {
-                        return false;
-                    }
-                }
-
-                if (@$params["voipToken"]) {
-                    if (!checkStr($params["voipToken"])) {
-                        setLastError("invalidParams");
-                        return false;
-                    }
-
-                    if ($this->db->modify("update houses_subscribers_mobile set voip_token = :voip_token where house_subscriber_id = $subscriberId", [ "voip_token" => $params["voipToken"] ]) === false) {
-                        return false;
-                    }
-                }
-
                 $r = true;
 
-                if (array_key_exists("voipEnabled", $params)) {
-                    if (!checkInt($params["voipEnabled"])) {
-                        setLastError("invalidParams");
-                        $r = false;
-                    }
-
-                    $r = $this->db->modify("update houses_subscribers_mobile set voip_enabled = :voip_enabled where house_subscriber_id = $subscriberId", [ "voip_enabled" => $params["voipEnabled"] ]) !== false;
-                }
-
-                $r = $r && $this->db->modify("update houses_subscribers_mobile set last_seen = :last_seen where house_subscriber_id = $subscriberId", [ "last_seen" => time() ]) !== false;
 /*
                 $queue = loadBackend("queue");
                 if ($queue) {
@@ -1505,11 +1441,10 @@
                 $r = true;
 
                 foreach ($flats as $flatId => $flat) {
-                    $r = $r && $this->db->insert("insert into houses_flats_subscribers (house_subscriber_id, house_flat_id, role, voip_enabled) values (:house_subscriber_id, :house_flat_id, :role, :voip_enabled)", [
+                    $r = $r && $this->db->insert("insert into houses_flats_subscribers (house_subscriber_id, house_flat_id, role) values (:house_subscriber_id, :house_flat_id, :role)", [
                         "house_subscriber_id" => $subscriberId,
                         "house_flat_id" => $flatId,
                         "role" => $flat["role"] ? 0 : 1,
-                        "voip_enabled" => $flat["voipEnabled"] ? 1 : 0,
                     ]) !== false;
                 }
 
@@ -2053,7 +1988,7 @@
                 $n = $this->db->modify("delete from houses_subscribers_mobile where house_subscriber_id not in (select house_subscriber_id from houses_flats_subscribers)");
                 $n = $this->db->modify("delete from houses_cameras_subscribers where house_subscriber_id not in (select house_subscriber_id from houses_subscribers_mobile)");
 
-//                $n += $this->db->modify("delete from houses_subscribers_mobile where house_subscriber_id not in (select house_subscriber_id from houses_flats_subscribers union select house_subscriber_id from houses_cameras_subscribers) and last_seen + (31 * 24 * 60 * 60) < " . time());
+                //$n += $this->db->modify("delete from houses_subscribers_mobile where house_subscriber_id not in (select house_subscriber_id from houses_flats_subscribers union select house_subscriber_id from houses_cameras_subscribers) and last_seen + (31 * 24 * 60 * 60) < " . time());
 
                 $n += $this->db->modify("delete from houses_entrances_flats where house_flat_id not in (select house_flat_id from houses_flats)");
                 $n += $this->db->modify("delete from houses_flats_subscribers where house_flat_id not in (select house_flat_id from houses_flats)");
@@ -2215,6 +2150,266 @@
                 cliUsage();
 
                 return true;
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function getDevices($by, $query)
+            {
+                $q = "";
+                $p = false;
+
+                switch ($by) {
+                    case "flat":
+                        $q = "select * from houses_subscribers_devices where subscriber_device_id in (select subscriber_device_id from houses_flats_devices where house_flat_id = :house_flat_id)";
+                        $p = [
+                            "house_flat_id" => (int)$query,
+                        ];
+                        break;
+
+                    case "subscriber":
+                        $q = "select * from houses_subscribers_devices where house_subscriber_id = :house_subscriber_id";
+                        $p = [
+                            "house_subscriber_id" => $query,
+                        ];
+                        break;
+
+                    case "id":
+                        $q = "select * from houses_subscribers_devices where subscriber_device_id = :subscriber_device_id";
+                        $p = [
+                            "subscriber_device_id" => (int)$query,
+                        ];
+                        break;
+
+                    case "deviceToken":
+                        $q = "select * from houses_subscribers_devices where device_token = :device_token";
+                        $p = [
+                            "device_token" => $query,
+                        ];
+                        break;
+                    case "authToken":
+                        $q = "select * from houses_subscribers_devices where auth_token = :auth_token";
+                        $p = [
+                            "auth_token" => $query,
+                        ];
+                        break;
+                }
+
+                $devices = $this->db->get($q, $p, [
+                    "subscriber_device_id" => "deviceId",
+                    "house_subscriber_id" => "subscriberId",
+                    "device_token" => "deviceToken",
+                    "auth_token" => "authToken",
+                    "platform" => "platform",
+                    "push_token" => "pushToken",
+                    "push_token_type" => "tokenType",
+                    "voip_token" => "voipToken",
+                    "registered" => "registered",
+                    "last_seen" => "lastSeen",
+                    "voip_enabled" => "voipEnabled",
+                ]);
+
+                foreach ($devices as &$device) {
+                    $subscriber = $this->db->get("select * from houses_subscribers_mobile where house_subscriber_id = :house_subscriber_id",
+                        [
+                            "house_subscriber_id" => (int)$device["subscriberId"]
+                        ],
+                        [
+                            "house_subscriber_id" => "subscriberId",
+                            "id" => "mobile",
+                            "subscriber_name" => "subscriberName",
+                            "subscriber_patronymic" => "subscriberPatronymic",
+                        ],
+                        [
+                            "singlify"
+                        ]
+                    );
+                    $flats = $this->db->get("select house_flat_id, voip_enabled, flat, address_house_id from houses_flats_devices left join houses_flats using (house_flat_id) where subscriber_device_id = :subscriber_device_id",
+                        [
+                            "subscriber_device_id" => $device["deviceId"]
+                        ],
+                        [
+                            "house_flat_id" => "flatId",
+                            "voip_enabled" => "voipEnabled",
+                            "flat" => "flat",
+                            "address_house_id" => "addressHouseId",
+                        ]
+                    );
+                    $device["subscriber"] = $subscriber;
+                    $device["flats"] = $flats;
+                }
+
+                return $devices;
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function addDevice($subscriber, $deviceToken, $platform, $authToken)
+            {
+
+                $deviceId = $this->db->insert("insert into houses_subscribers_devices (house_subscriber_id, device_token, platform, auth_token, registered, voip_enabled) values (:house_subscriber_id, :device_token, :platform, :auth_token, :registered, 1)", [
+                    "house_subscriber_id" => $subscriber,
+                    "device_token" => $deviceToken,
+                    "platform" => $platform,
+                    "auth_token" => $authToken,
+                    "registered" => time(),
+                ]);
+
+                $flats = $this->db->get("select house_flat_id, role, flat, address_house_id from houses_flats_subscribers left join houses_flats using (house_flat_id) where house_subscriber_id = :house_subscriber_id",
+                    [
+                        "house_subscriber_id" => $subscriber
+                    ],
+                    [
+                        "house_flat_id" => "flatId",
+                        "role" => "role",
+                        "flat" => "flat",
+                        "address_house_id" => "addressHouseId",
+                    ]
+                );
+
+                foreach ($flats as $flat) {
+                    $this->setDeviceFlat($deviceId, $flat["flatId"], 1);
+                }
+
+                return $deviceId;
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function modifyDevice($deviceId, $params = [])
+            {
+                if (!checkInt($deviceId)) {
+                    return false;
+                }
+
+                if (@$params["authToken"]) {
+                    if (!checkStr($params["authToken"])) {
+                        setLastError("invalidParams");
+                        return false;
+                    }
+
+                    if ($this->db->modify("update houses_subscribers_devices set auth_token = :auth_token where subscriber_device_id = $deviceId", [ "auth_token" => $params["authToken"] ]) === false) {
+                        return false;
+                    }
+                }
+
+                if (array_key_exists("platform", $params)) {
+                    if (!checkInt($params["platform"])) {
+                        setLastError("invalidParams");
+                        return false;
+                    }
+
+                    if ($this->db->modify("update houses_subscribers_devices set platform = :platform where subscriber_device_id = $deviceId", [ "platform" => $params["platform"] ]) === false) {
+                        return false;
+                    }
+                }
+
+                if (@$params["pushToken"]) {
+                    if (!checkStr($params["pushToken"])) {
+                        setLastError("invalidParams");
+                        return false;
+                    }
+
+                    if ($this->db->modify("update houses_subscribers_devices set push_token = :push_token where subscriber_device_id = $deviceId", [ "push_token" => $params["pushToken"] ]) === false) {
+                        return false;
+                    }
+                }
+
+                if (array_key_exists("tokenType", $params)) {
+                    if (!checkInt($params["tokenType"])) {
+                        setLastError("invalidParams");
+                        return false;
+                    }
+
+                    if ($this->db->modify("update houses_subscribers_devices set push_token_type = :push_token_type where subscriber_device_id = $deviceId", [ "push_token_type" => $params["tokenType"] ]) === false) {
+                        return false;
+                    }
+                }
+
+                if (@$params["voipToken"]) {
+                    if (!checkStr($params["voipToken"])) {
+                        setLastError("invalidParams");
+                        return false;
+                    }
+
+                    if ($this->db->modify("update houses_subscribers_devices set voip_token = :voip_token where subscriber_device_id = $deviceId", [ "voip_token" => $params["voipToken"] ]) === false) {
+                        return false;
+                    }
+                }
+
+                if (array_key_exists("voipEnabled", $params)) {
+                    if (!checkInt($params["voipEnabled"])) {
+                        setLastError("invalidParams");
+                        $r = false;
+                    }
+
+                    $r = $this->db->modify("update houses_subscribers_devices set voip_enabled = :voip_enabled where subscriber_device_id = $deviceId", [ "voip_enabled" => $params["voipEnabled"] ]) !== false;
+                }
+
+                $r = true;
+
+                $r = $r && $this->db->modify("update houses_subscribers_devices set last_seen = :last_seen where subscriber_device_id = $deviceId", [ "last_seen" => time() ]) !== false;
+
+                if (!$r) {
+                    setLastError("cantModifySubscriber");
+                }
+
+                return $r;
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function deleteDevice($deviceId)
+            {
+                if (!checkInt($deviceId)) {
+                    return false;
+                }
+
+                $result = $this->db->modify("delete from houses_subscribers_devices where subscriber_device_id = $deviceId");
+
+                if ($result === false) {
+                    return false;
+                } else {
+                    return $this->db->modify("delete from houses_flats_devices where subscriber_device_id = $deviceId");
+                }
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function setDeviceFlat($deviceId, $flat, $voipEnabled)
+            {
+                if (!checkInt($deviceId)) {
+                    setLastError("invalidParams");
+                    return false;
+                }
+
+                // Используем ON DUPLICATE KEY UPDATE для обновления записи, если она существует, или вставки новой записи, если её нет
+                $query = "
+                    INSERT INTO houses_flats_devices (subscriber_device_id, house_flat_id, voip_enabled)
+                    VALUES (:subscriber_device_id, :house_flat_id, :voip_enabled)
+                    ON CONFLICT (subscriber_device_id, house_flat_id)
+                    DO UPDATE SET
+                        voip_enabled = :voip_enabled
+                ";
+
+                $params = [
+                    "subscriber_device_id" => $deviceId,
+                    "house_flat_id" => $flat,
+                    "voip_enabled" => $voipEnabled ? 1 : 0,
+                ];
+
+                $r = $this->db->insert($query, $params) !== false;
+
+                if (!$r) {
+                    setLastError("cantSetSubscribersFlats");
+                }
+
+                return $r;
             }
         }
     }

@@ -19,7 +19,6 @@
     ],
 
     init: function () {
-
         if (AVAIL("tt", "tt")) {
             if (parseInt(myself.uid) == 0) {
                 leftSide("fas fa-fw fa-tasks", i18n("tt.tt"), "?#tt.settings", "tt");
@@ -33,6 +32,48 @@
             "settings",
             "workspaces",
         ], this);
+    },
+
+    allLoaded: function () {
+        if (parseInt(myself.uid) && AVAIL("tt", "favoriteFilter")) {
+            GET("tt", "tt", false, true).
+            done(modules.tt.tt).
+            done(() => {
+                let h = "";
+                for (let i in modules.tt.meta.favoriteFilters) {
+                    if (parseInt(modules.tt.meta.favoriteFilters[i].rightSide)) {
+                        let title = modules.tt.meta.filtersExt[modules.tt.meta.favoriteFilters[i].filter].shortName ? modules.tt.meta.filtersExt[modules.tt.meta.favoriteFilters[i].filter].shortName : modules.tt.meta.filtersExt[modules.tt.meta.favoriteFilters[i].filter].name;
+                        h += `
+                            <li class="nav-item" title="${escapeHTML(title)}">
+                                <a href="?#tt&filter=${modules.tt.meta.favoriteFilters[i].filter}" class="nav-link">
+                                    <i class="nav-icon fa fa-fw ${modules.tt.meta.favoriteFilters[i].icon} ${modules.tt.meta.favoriteFilters[i].color}"></i>
+                                    <p class="text-nowrap">${title}</p>
+                                </a>
+                            </li>
+                        `;
+                    }
+                }
+                if (modules.tt.menuItem) {
+                    let i = $('#' + modules.tt.menuItem);
+                    while (i.next().length) {
+                        i = i.next();
+                        if ($.trim(i.text()) == "") {
+                            $(h).insertBefore(i);
+                            f = true;
+                            return;
+                        }
+                    }
+                    if (i.length) {
+                        $(h).insertAfter(i);
+                    }
+                }
+            }).
+            fail(FAIL);
+        }
+    },
+
+    moduleLoaded: function () {
+        //
     },
 
     issueFieldTitle: function (field) {
@@ -867,7 +908,7 @@
         }
     },
 
-    issueField2Html: function (issue, field, val, target) {
+    issueField2Html: function (issue, field, val, target, filter) {
         let members = {};
         let escaped = false;
 
@@ -902,7 +943,7 @@
         }
 
         if (v && modules.tt.viewers[field] && typeof modules.tt.viewers[field][v] == "function") {
-            val = modules.tt.viewers[field][v](val, issue, field, target);
+            val = modules.tt.viewers[field][v](val, issue, field, target, filter);
         } else {
             if (val == null || val == "&nbsp;") {
                 return "";
@@ -936,7 +977,7 @@
                         break;
 
                     case "author":
-                        val = escapeHTML(members[val]?members[val]:val);
+                        val = escapeHTML(members[val] ? members[val] : val);
                         break;
 
                     case "commentPrivate":
@@ -1151,7 +1192,7 @@
                             let m = "";
 
                             for (let i in val) {
-                                m += members[val[i]]?members[val[i]]:val[i];
+                                m += members[val[i]] ? members[val[i]] : val[i];
                                 m += ", ";
                             }
 
@@ -1161,7 +1202,7 @@
 
                             val = escapeHTML(m);
                         } else {
-                            val = escapeHTML(members[val]?members[val]:val);
+                            val = escapeHTML(members[val] ? members[val] : val);
                         }
                         break;
 
@@ -1200,10 +1241,10 @@
                 modules.tt.viewers[modules.tt.meta.viewers[i].field] = {};
             }
             try {
-                modules.tt.viewers[modules.tt.meta.viewers[i].field][modules.tt.meta.viewers[i].name] = new Function('value', 'issue', 'field', 'target', modules.tt.meta.viewers[i].code);
+                modules.tt.viewers[modules.tt.meta.viewers[i].field][modules.tt.meta.viewers[i].name] = new Function('value', 'issue', 'field', 'target', 'filter', modules.tt.meta.viewers[i].code);
             } catch (e) {
                 console.error(e);
-                modules.tt.viewers[modules.tt.meta.viewers[i].field][modules.tt.meta.viewers[i].name] = new Function('value', 'issue', 'field', 'target', "//function $name (value, field, issue, terget) {\n\treturn value;\n//}\n");
+                modules.tt.viewers[modules.tt.meta.viewers[i].field][modules.tt.meta.viewers[i].name] = new Function('value', 'issue', 'field', 'target', 'filter', "//function $name (value, field, issue, terget, filter) {\n\treturn value;\n//}\n");
             }
         }
 
@@ -1387,8 +1428,8 @@
                 f[tree[tree.length - 1].trim()] = project.filters[i];
             }
 
-            let filter_name = modules.tt.meta.filters[x] ? modules.tt.meta.filters[x] : i18n("tt.filter");
-            document.title = i18n("windowTitle") + " :: " + filter_name;
+            let filterName = modules.tt.meta.filters[x] ? modules.tt.meta.filters[x] : i18n("tt.filter");
+            document.title = i18n("windowTitle") + " :: " + filterName;
 
             function hh(t) {
                 let filters = '';
@@ -1458,24 +1499,42 @@
                 return filters;
             }
 
-            filter_names = filter_name.split("/");
+            filterNames = filterName.split("/");
 
-            for (let o in filter_names) {
+            for (let o in filterNames) {
                 filters += `<span class="dropdown">`;
                 if (o == 0) {
-                    filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter-${o}" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" style="margin-left: -4px;"><i class="far fa-fw fa-caret-square-down mr-1"></i>${filter_names[o].trim()}</span>`;
+                    filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter-${o}" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" style="margin-left: -4px;"><i class="far fa-fw fa-caret-square-down mr-1"></i>${filterNames[o].trim()}</span>`;
                 } else {
-                    filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter-${o}" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false"><i class="far fa-fw fa-caret-square-down mr-1"></i>${filter_names[o].trim()}</span>`;
+                    filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter-${o}" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false"><i class="far fa-fw fa-caret-square-down mr-1"></i>${filterNames[o].trim()}</span>`;
                 }
                 filters += `<ul class="dropdown-menu" aria-labelledby="ttFilter-${o}">`;
+
+                if (modules.tt.meta.favoriteFilters.length) {
+                    filters += `<li class="dropdown-item pointer submenu mr-4"><i class="far fa-fw fa-folder mr-2"></i><span>${i18n("tt.favoriteFilters")}&nbsp;</span></li>`;
+                    filters += '<ul class="dropdown-menu">';
+                    for (let ff in modules.tt.meta.favoriteFilters) {
+                        if (x == modules.tt.meta.favoriteFilters[ff].filter) {
+                            filters += `<li class="dropdown-item nomenu pointer tt_issues_filter font-weight-bold mr-3" data-filter-name="${modules.tt.meta.favoriteFilters[ff].filter}">`;
+                        } else {
+                            filters += `<li class="dropdown-item nomenu pointer tt_issues_filter mr-3" data-filter-name="${modules.tt.meta.favoriteFilters[ff].filter}">`;
+                        }
+                        filters += `<i class="fa-fw mr-2 ${modules.tt.meta.favoriteFilters[ff].icon} ${modules.tt.meta.favoriteFilters[ff].color}"></i>`;
+                        filters += "<span>" + $.trim(modules.tt.meta.filtersExt[modules.tt.meta.favoriteFilters[ff].filter].shortName ? modules.tt.meta.filtersExt[modules.tt.meta.favoriteFilters[ff].filter].shortName : modules.tt.meta.filtersExt[modules.tt.meta.favoriteFilters[ff].filter].name) + "&nbsp;</span>";
+                        filters += "</li>";
+                    }
+                    filters += '</ul>';
+                    filters += `</li>`;
+                }
+
                 filters += hh(filtersTree);
                 filters += "</ul></span>";
 
-                if (o < filter_names.length - 1) {
+                if (o < filterNames.length - 1) {
                     filters += "<i class='fas fa-fw fa-xs fa-angle-double-right ml-2 mr-2'></i>";
                 }
 
-                filtersTree = filtersTree[filter_names[o].trim()];
+                filtersTree = filtersTree[filterNames[o].trim()];
             }
 
             let fp = -1;
@@ -1570,7 +1629,7 @@
                 }
 
                 h += `<nav class="pager" data-target="${issuesListId}">`;
-                h += '<ul class="pagination mb-0 ml-0">';
+                h += '<ul class="pagination mb-0 ml-0" style="margin-right: -2px!important;">';
 
                 if (first > 1) {
                     h += `<li class="page-item pointer tt_pager" data-page="1" data-target="${issuesListId}"><span class="page-link"><span aria-hidden="true">&laquo;</span></li>`;
@@ -1603,7 +1662,7 @@
             if (!target && params.customSearch && params.customSearch !== true) {
                 let height = 400;
                 cs += '<div>';
-                cs += `<div id='filterEditorContainer' style='width: 100%; height: ${height}px;'>`;
+                cs += `<div id='editorContainer' style='width: 100%; height: ${height}px;' data-fh="true">`;
                 cs += `<pre class="ace-editor mt-2" id="filterEditor" style="position: relative; border: 1px solid #ced4da; border-radius: 0.25rem; width: 100%; height: 100%;"></pre>`;
                 cs += "</div>";
                 cs += `<span style='position: absolute; right: 35px; top: 35px;'>`;
@@ -1614,12 +1673,12 @@
 
             if (target) {
                 if (!$("#" + issuesListId).length) {
-                    target.append(`<table class="mt-2 ml-2" style="width: 100%;"><tr><td style="width: 100%;">${filters}<br/><span id='${issuesListId + '-count'}'></span></td><td style="padding-right: 15px;">${pager(issuesListId)}</td></tr></table><div class="ml-2 mr-2" id="${issuesListId}"></div>`);
+                    target.append(`<table class="mt-2" style="width: 100%;"><tr><td style="width: 100%;">${filters}<br/><span id='${issuesListId + '-count'}'></span></td><td>${pager(issuesListId)}</td></tr></table><div id="${issuesListId}"></div>`);
                 } else {
                     $(`.pager[data-target="${issuesListId}"]`).html(pager(issuesListId));
                 }
             } else {
-                $("#mainForm").html(`${cs}<table class="mt-2 ml-2" style="width: 100%;"><tr><td style="width: 100%;">${cs?'&nbsp;':filters}<br/><span id='${issuesListId + '-count'}'></span></td><td style="padding-right: 15px;">${pager(issuesListId)}</td></tr></table><div class="ml-2 mr-2" id="${issuesListId}"></div>`);
+                $("#mainForm").html(`${cs}<table class="mt-2" style="width: 100%;"><tr><td style="width: 100%;">${cs ? '' : (filters + '<br/>')}<span id='${issuesListId + '-count'}'></span></td><td>${pager(issuesListId)}</td></tr></table><div id="${issuesListId}"></div>`);
             }
 
             $(".tt_issues_filter").off("click").on("click", function () {
@@ -1675,7 +1734,17 @@
                 sort = {};
             }
 
+            let virtuals = {};
+
+            for (let i in modules.tt.meta.customFields) {
+                if (modules.tt.meta.customFields[i].type == 'virtual') {
+                    virtuals["_cf_" + modules.tt.meta.customFields[i].field] = 1;
+                }
+            }
+
             for (let i = 0; i < pKeys.length; i++) {
+                if (virtuals[pKeys[i]]) continue;
+
                 if (sort[pKeys[i]]) {
                     sortMenuItems.push({
                         id: pKeys[i],
@@ -1856,12 +1925,14 @@
                         GET("tt", "customFilter", params.filter).
                         done(response => {
                             editor.setValue(response.body, -1);
+                            currentAceEditorOriginalValue = currentAceEditor.getValue();
                             loadingDone();
                         });
                     } else {
                         GET("tt", "filter", params.filter).
                         done(response => {
                             editor.setValue(response.body, -1);
+                            currentAceEditorOriginalValue = currentAceEditor.getValue();
                             loadingDone();
                         });
                     }
@@ -1887,11 +1958,131 @@
                 });
             });
 
+            let bookmarked = false;
+
+            for (let i in modules.tt.meta.favoriteFilters) {
+                if (modules.tt.meta.favoriteFilters[i].filter == x) {
+                    bookmarked = true;
+                    break;
+                }
+            }
+
             if (issues.issues && issues.issues.length) {
                 $("#" + issuesListId + "-count").text("[" + x + "]: " + i18n("tt.showCounts", parseInt(issues.skip) + 1, parseInt(issues.skip) + issues.issues.length, issues.count)).addClass("small");
                 cardTable({
                     target: "#" + issuesListId,
                     columns: columns,
+                    dropDownHeader: (x && x[0] != '#') ? {
+                        icon: (bookmarked ? "fas" : "far") + " text-primary fa-bookmark",
+                        title: bookmarked ? i18n("tt.removeFavoriteFilter") : i18n("tt.addFavoriteFilter"),
+                        click: () => {
+                            if (!bookmarked) {
+                                let icons = [];
+                                for (let i in faIcons) {
+                                    icons.push({
+                                        icon: faIcons[i].title + " fa-fw",
+                                        text: faIcons[i].title.split(" fa-")[1] + (faIcons[i].searchTerms.length ? (", " + faIcons[i].searchTerms.join(", ")) : ""),
+                                        value: faIcons[i].title,
+                                    });
+                                }
+                                cardForm({
+                                    title: i18n("tt.addFavoriteFilter"),
+                                    footer: true,
+                                    borderless: true,
+                                    topApply: true,
+                                    apply: i18n("add"),
+                                    size: "lg",
+                                    fields: [
+                                        {
+                                            id: "icon",
+                                            title: i18n("tt.filterIcon"),
+                                            type: "select2",
+                                            options: icons,
+                                            value: "far fa-bookmark",
+                                        },
+                                        {
+                                            id: "color",
+                                            title: i18n("tt.filterColor"),
+                                            type: "select2",
+                                            options: [
+                                                {
+                                                    text: "По умолчанию",
+                                                    value: "",
+                                                    class: "",
+                                                },
+                                                {
+                                                    text: "Primary",
+                                                    value: "text-primary",
+                                                    class: "text-primary",
+                                                },
+                                                {
+                                                    text: "Secondary",
+                                                    value: "text-secondary",
+                                                    class: "text-secondary",
+                                                },
+                                                {
+                                                    text: "Success",
+                                                    value: "text-success",
+                                                    class: "text-success",
+                                                },
+                                                {
+                                                    text: "Danger",
+                                                    value: "text-danger",
+                                                    class: "text-danger",
+                                                },
+                                                {
+                                                    text: "Warning",
+                                                    value: "text-warning",
+                                                    class: "text-warning",
+                                                },
+                                                {
+                                                    text: "Info",
+                                                    value: "text-info",
+                                                    class: "text-info",
+                                                },
+                                            ],
+                                            value: ""
+                                        },
+                                        {
+                                            id: "rightSide",
+                                            title: i18n("tt.filterRightSide"),
+                                            type: "noyes",
+                                        },
+                                    ],
+                                    callback: r => {
+                                        loadingStart();
+                                        POST("tt", "favoriteFilter", x, {
+                                            icon: r.icon,
+                                            color: r.color,
+                                            rightSide: r.rightSide,
+                                        }).
+                                        done(() => {
+                                            window.location.reload();
+                                        }).
+                                        fail(FAIL).
+                                        fail(loadingDone);
+                                    },
+                                    done: id => {
+                                        $(`
+                                            <button class="btn btn-primary back-to-top" role="button" aria-label="${i18n("tt.scrollToTop")}" title="${i18n("tt.scrollToTop")}" onclick="$('html').scrollTop(0);" disabled="disabled">
+                                                <i class="fas fa-chevron-up"></i>
+                                            </button>
+                                        `).append(id);
+                                    },
+                                });
+                            } else {
+                                mConfirm(i18n("tt.removeFavoriteFilter") + "?", modules.tt.meta.filtersExt[x].shortName ? modules.tt.meta.filtersExt[x].shortName : modules.tt.meta.filtersExt[x].name, i18n("remove"), () => {
+                                    loadingStart();
+                                    DELETE("tt", "favoriteFilter", x).
+                                    done(() => {
+                                        window.location.reload();
+                                    }).
+                                    fail(FAIL).
+                                    fail(loadingDone);
+                                });
+                            }
+                        },
+                    } : false,
                     rows: () => {
                         let rows = [];
 
@@ -1909,7 +2100,7 @@
 
                             for (let j = 0; j < pKeys.length; j++) {
                                 cols.push({
-                                    data: modules.tt.issueField2Html(issues.issues[i], pKeys[j], undefined, "list"),
+                                    data: modules.tt.issueField2Html(issues.issues[i], pKeys[j], undefined, "list", x),
                                     nowrap: true,
                                     click: navigateUrl("tt", {
                                         issue: issues.issues[i]["issueId"],
@@ -1972,7 +2163,7 @@
                     }
                     e = `<span class="text-danger text-bold">${e} [${params.filter}]<span/>`;
                     if (target !== true) {
-                        target.append(`<table class="mt-2 ml-2" style="width: 100%;"><tr><td style="width: 100%;">${e}</td></tr></table>`);
+                        target.append(`<table class="mt-2" style="width: 100%;"><tr><td style="width: 100%;">${e}</td></tr></table>`);
                     } else {
                         $("#" + issuesListId).html(e);
                     }

@@ -12,7 +12,7 @@ CREATE TABLE inbox
     push_message_id text,
     delivered integer,                                                                                                  -- delivered
     readed integer,                                                                                                     -- readed
-    code character varying                                                                                              -- result code from google, smssending, etc...
+    code text                                                                                                           -- result code from google, smssending, etc...
 );
 CREATE INDEX inbox_readed on inbox(readed);
 CREATE INDEX inbox_expire on inbox(expire);

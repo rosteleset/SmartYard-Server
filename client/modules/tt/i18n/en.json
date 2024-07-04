@@ -318,6 +318,12 @@
     "openIssueNewWindow": "Open issue in a new window",
     "actionNotAvailable": "Action not available",
     "commented": "commented",
+    "addFavoriteFilter": "Add filter to favorites",
+    "filterIcon": "Icon",
+    "filterRightSide": "Show at right sidebar",
+    "filterColor": "Color",
+    "removeFavoriteFilter": "Remove filter from favorites",
+    "favoriteFilters": "Favorite filters",
     "methods": {
         "tt": {
             "_title": "Task Manager",

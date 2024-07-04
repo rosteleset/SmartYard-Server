@@ -215,18 +215,12 @@
             let flats = [];
 
             for (let i in subscriber.flats) {
-                let owner, voipEnabled;
+                let owner;
 
                 try {
                     owner = subscriber.flats[i].role.toString() !== "1";
                 } catch (e) {
                     owner = true;
-                }
-
-                try {
-                    voipEnabled = subscriber.flats[i].voipEnabled.toString() == "1";
-                } catch (e) {
-                    voipEnabled = false;
                 }
 
                 let link = '';
@@ -243,10 +237,6 @@
                     <div class="custom-control custom-checkbox mb-0">
                         <input type="checkbox" class="custom-control-input" id="subscriber-role-flat-${subscriber.flats[i].flatId}"${owner ? " checked" : ""}>
                         <label class="custom-control-label form-check-label" for="subscriber-role-flat-${subscriber.flats[i].flatId}">${i18n("addresses.subscriberFlatOwner")}</label>
-                    </div>
-                    <div class="custom-control custom-checkbox mb-0">
-                        <input type="checkbox" class="custom-control-input" id="subscriber-voip-flat-${subscriber.flats[i].flatId}"${voipEnabled ? " checked" : ""}>
-                        <label class="custom-control-label form-check-label" for="subscriber-voip-flat-${subscriber.flats[i].flatId}">${i18n("addresses.voipEnabled")}</label>
                     </div>
                 `;
 
@@ -311,37 +301,6 @@
                         options: flats,
                     },
                     {
-                        id: "authToken",
-                        type: "text",
-                        title: i18n("addresses.authToken"),
-                        value: subscriber.authToken,
-                        readonly: true,
-                    },
-                    {
-                        id: "pushToken",
-                        type: "text",
-                        title: i18n("addresses.pushToken"),
-                        value: subscriber.pushToken,
-                        readonly: true,
-                    },
-                    {
-                        id: "voipEnabled",
-                        type: "select",
-                        title: i18n("addresses.voipEnabled"),
-                        placeholder: i18n("addresses.voipEnabled"),
-                        value: subscriber.voipEnabled,
-                        options: [
-                            {
-                                id: "0",
-                                text: i18n("no"),
-                            },
-                            {
-                                id: "1",
-                                text: i18n("yes"),
-                            },
-                        ],
-                    },
-                    {
                         id: "delete",
                         type: "select",
                         title: i18n("addresses.deleteSubscriber"),
@@ -379,7 +338,6 @@
                         for (let i in result.flats) {
                             f[result.flats[i]] = {
                                 role: $("#subscriber-role-flat-" + result.flats[i]).prop("checked"),
-                                voipEnabled: $("#subscriber-voip-flat-" + result.flats[i]).prop("checked"),
                             };
                         }
 
@@ -429,7 +387,7 @@
                         readonly: true,
                         value: key.rfId,
                     },
-                    {
+                {
                         id: "comments",
                         type: "text",
                         title: i18n("addresses.comments"),
@@ -468,8 +426,9 @@
         });
     },
 
-    renderSubscribers: function (list, flatId, title) {
+    renderSubscribers: function (list) {
         let params = hashParse("params");
+
         cardTable({
             target: "#mainForm",
             title: {
@@ -480,7 +439,7 @@
                 },
             },
             edit: subscriberId => {
-                modules.addresses.subscribers.modifySubscriber(subscriberId, list, flatId);
+                modules.addresses.subscribers.modifySubscriber(subscriberId, list, params.flatId);
             },
             columns: [
                 {
@@ -490,14 +449,6 @@
                     title: i18n("addresses.mobile"),
                     nowrap: true,
                     fullWidth: true,
-                },
-                {
-                    title: i18n("addresses.platform"),
-                    nowrap: true,
-                },
-                {
-                    title: i18n("addresses.lastSeen"),
-                    nowrap: true,
                 },
                 {
                     title: i18n("addresses.subscriberFlatOwner"),
@@ -532,13 +483,6 @@
                                 data: list[i].mobile,
                             },
                             {
-                                data: list[i].platform === null ? "-" : (list[i].platform === 0 ? "android" : (list[i].platform === 1 ? "ios" : (list[i].platform === 2 ? "other" : "-"))),
-                            },
-                            {
-                                data: list[i].lastSeen ? ttDate(list[i].lastSeen) : "",
-                                nowrap: true,
-                            },
-                            {
                                 data: owner?i18n("yes"):i18n("no"),
                             },
                         ],
@@ -555,7 +499,14 @@
                                     icon: "fas fa-key",
                                     title: i18n("addresses.keys"),
                                     click: subscriberId => {
-                                        window.location.href = "?#addresses.keys&query=" + subscriberId + "&by=1&backStr=" + encodeURIComponent(title + " [" + subscribers[subscriberId] + "]") + "&back=" + encodeURIComponent(hashParse("hash"));
+                                        window.location.href = "?#addresses.keys&query=" + subscriberId + "&by=1&houseId=" + params.houseId + "&flatId=" + params.flatId + "&phone=" + subscribers[subscriberId] + "&flat=" + params.flat + "&settlementId=" + params.settlementId + "&streetId=" + params.streetId + "&back=1";
+                                    },
+                                },
+                                {
+                                    icon: "fas fa-mobile",
+                                    title: i18n("addresses.devices"),
+                                    click: subscriberId => {
+                                        location.href = "?#addresses.subscriberDevices&subscriberId=" + subscriberId + "&houseId=" + params.houseId + "&flatId=" + params.flatId + "&phone=" + subscribers[subscriberId] + "&flat=" + params.flat + "&settlementId=" + params.settlementId + "&streetId=" + params.streetId;
                                     },
                                 },
                             ],
@@ -782,35 +733,35 @@
         if (params.flat) {
             loadingStart();
 
-            QUERY("addresses", "addresses", {
-                houseId: params.houseId,
-            }).
-            done(modules.addresses.addresses).
-            fail(FAIL).
-            done(a => {
-                let t = '';
-                for (let i in a.addresses.houses) {
-                    if (a.addresses.houses[i].houseId == params.houseId) {
-                        document.title = i18n("windowTitle") + " :: " + a.addresses.houses[i].houseFull + ", " + params.flat;
-                        t = a.addresses.houses[i].houseFull + ", " + params.flat;
-                        subTop(modules.addresses.path((parseInt(params.settlementId)?"settlement":"street"), parseInt(params.settlementId)?params.settlementId:params.streetId, true) + "<i class=\"fas fa-xs fa-angle-double-right ml-2 mr-2\"></i>" + `<a href="?#addresses.houses&houseId=${params.houseId}">${a.addresses.houses[i].houseFull}</a>` + ", " + params.flat);
-                        break;
-                    }
-                }
-
-                QUERY("subscribers", "subscribers", {
-                    by: "flatId",
-                    query: params.flatId,
-                }).done(response => {
-                    modules.addresses.subscribers.renderSubscribers(response.flat.subscribers, params.flatId, t);
-                    modules.addresses.subscribers.renderKeys(response.flat.keys);
-                    modules.addresses.subscribers.renderCameras(response.flat.cameras);
+            modules.addresses.houses.loadHouse(params.houseId, () => {
+                QUERY("addresses", "addresses", {
+                    houseId: params.houseId,
                 }).
+                done(modules.addresses.addresses).
                 fail(FAIL).
-                fail(() => {
-                    pageError();
-                }).
-                always(loadingDone);
+                done(a => {
+                    for (let i in a.addresses.houses) {
+                        if (a.addresses.houses[i].houseId == params.houseId) {
+                            document.title = i18n("windowTitle") + " :: " + a.addresses.houses[i].houseFull + ", " + params.flat;
+                            subTop(modules.addresses.path((parseInt(params.settlementId) ? "settlement" : "street"), parseInt(params.settlementId) ? params.settlementId:params.streetId, true) + "<i class=\"fas fa-xs fa-angle-double-right ml-2 mr-2\"></i>" + `<a href="?#addresses.houses&houseId=${params.houseId}">${a.addresses.houses[i].houseFull}</a>` + "<i class=\"fas fa-xs fa-angle-double-right ml-2 mr-2\"></i>" + `<a href="#" onclick="modules.addresses.houses.modifyFlat(${params.flatId}); event.preventDefault(); return false;">` + params.flat + "</a>");
+                            break;
+                        }
+                    }
+
+                    QUERY("subscribers", "subscribers", {
+                        by: "flatId",
+                        query: params.flatId,
+                    }).done(response => {
+                        modules.addresses.subscribers.renderSubscribers(response.flat.subscribers);
+                        modules.addresses.subscribers.renderKeys(response.flat.keys);
+                        modules.addresses.subscribers.renderCameras(response.flat.cameras);
+                    }).
+                    fail(FAIL).
+                    fail(() => {
+                        pageError();
+                    }).
+                    always(loadingDone);
+                });
             });
         }
     }

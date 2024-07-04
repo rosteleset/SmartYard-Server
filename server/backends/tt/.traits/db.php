@@ -1335,6 +1335,64 @@
             /**
              * @inheritDoc
              */
+            public function getFavoriteFilters()
+            {
+                return $this->db->get("select filter, right_side, icon, color from tt_favorite_filters where login = :login", [
+                    "login" => $this->login,
+                ], [
+                    "filter" => "filter",
+                    "right_side" => "rightSide",
+                    "icon" => "icon",
+                    "color" => "color",
+                ]);
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function addFavoriteFilter($filter, $rightSide, $icon, $color)
+            {
+                if (!checkStr($filter)) {
+                    return false;
+                }
+
+                if (!checkInt($rightSide)) {
+                    return false;
+                }
+
+                return $this->db->insert("insert into tt_favorite_filters (login, filter, right_side, icon, color) values (:login, :filter, :right_side, :icon, :color)", [
+                    "login" => $this->login,
+                    "filter" => $filter,
+                    "right_side" => $rightSide,
+                    "icon" => $icon,
+                    "color" => $color,
+                ]);
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function deleteFavoriteFilter($filter, $all = false)
+            {
+                if (!checkStr($filter)) {
+                    return false;
+                }
+
+                if ($all) {
+                    return $this->db->modify("delete from tt_favorite_filters where filter = :filter", [
+                        "filter" => $filter,
+                    ]);
+                } else {
+                    return $this->db->modify("delete from tt_favorite_filters where login = :login and filter = :filter", [
+                        "login" => $this->login,
+                        "filter" => $filter,
+                    ]);
+                }
+            }
+
+            /**
+             * @inheritDoc
+             */
             public function getCrontabs() {
                 $cache = $this->cacheGet("CRONTABS");
                 if ($cache) {

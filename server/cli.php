@@ -56,7 +56,7 @@
                 [--run-demo-server [--port=<port>]]
 
             initialization and update:
-                [--init-db [--skip=<versions>]]
+                [--init-db [--skip=<versions>|--force=<version>|--set-version=<version>]]
                 [--init-clickhouse-db]
                 [--admin-password=<password>]
                 [--reindex]
@@ -437,6 +437,10 @@
         (count($args) == 1 && array_key_exists("--init-db", $args) && !isset($args["--init-db"]))
         ||
         (count($args) == 2 && array_key_exists("--init-db", $args) && !isset($args["--init-db"]) && array_key_exists("--skip", $args) && isset($args["--skip"]))
+        ||
+        (count($args) == 2 && array_key_exists("--init-db", $args) && !isset($args["--init-db"]) && array_key_exists("--force", $args) && isset($args["--force"]))
+        ||
+        (count($args) == 2 && array_key_exists("--init-db", $args) && !isset($args["--init-db"]) && array_key_exists("--set-version", $args) && isset($args["--set-version"]) && (int)$args["--set-version"])
     ) {
         maintenance(true);
         wait_all();
@@ -444,8 +448,13 @@
         backup_db(false);
         echo "\n";
 
-        initDB(@$args["--skip"]);
-        echo "\n";
+        if (@$args["--set-version"]) {
+            $sth = $db->prepare("update core_vars set var_value = :version where var_name = 'dbVersion'");
+            $sth->bindParam('version', $args["--set-version"]);
+            $sth->execute();
+        } else {
+            initDB(@$args["--skip"], @$args["--force"]);
+        }
 
         startup(true);
         echo "\n";

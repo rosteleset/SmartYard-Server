@@ -18,7 +18,7 @@
              * get list of all users
              *
              * @param boolean $withSessions
-             * 
+             *
              * @return array
              */
 
@@ -193,6 +193,16 @@
                 if ($user["notification"] == "emailTg") {
                     return $this->sendEmail($login, @$user["eMail"], $subject, $message, $this->config) || $this->sendTg(@$user["tg"], $subject, $message, @$this->config["telegram"]["bot"]);
                 }
-            } 
+            }
+
+            /**
+             * @return mixed
+             */
+            abstract public function getSettings();
+
+            /**
+             * @param string $settings
+             */
+            abstract public function putSettings($settings);
         }
     }

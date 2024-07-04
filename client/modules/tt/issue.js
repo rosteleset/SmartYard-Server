@@ -617,6 +617,7 @@
 
         let h = "";
 
+        h += "<div>";
         h += "<table class='mt-2 ml-2' style='width: 100%;'>";
         h += "<tr>";
         h += "<td style='vertical-align: top; width: 100%;'>";
@@ -718,7 +719,7 @@
 
         h += "</div>";
         h += "</td>";
-        h += "<td style='text-align: right;' class='pr-2'>";
+        h += "<td style='text-align: right;' class='pr-2' nowrap>";
         if (index && count && index !== true && count !== true) {
             if (parseInt(index) > 1) {
                 h += "<i id='stepPrev' class='fas fa-fw fa-chevron-left pointer'></i>"
@@ -736,10 +737,14 @@
         }
         h += "</td>";
         h += "</tr>";
+        h += "</table>";
+        h += "</div>";
 
+        h += "<div>";
+        h += "<table class='mt-1 ml-2' style='width: 100%;'>";
         if (!isEmpty(issue.issue.tags)) {
             h += "<tr>";
-            h += "<td style='vertical-align: top; width: 100%;'>";
+            h += "<td style='vertical-align: top; width: 100%;' colspan='2'>";
             h += "<div class='pt-1 pb-1 small'>";
             for (let i in issue.issue.tags) {
                 let fg = (tags[issue.issue.tags[i]] && tags[issue.issue.tags[i]].foreground) ? tags[issue.issue.tags[i]].foreground : "#666666";
@@ -752,7 +757,7 @@
         }
 
         h += "<tr>";
-        h += "<td style='vertical-align: top;'>";
+        h += "<td style='vertical-align: top; width: 100%;'>";
         h += "<table style='width: 100%;'>";
         for (let i in issue.fields) {
             if (!rightFields.includes(issue.fields[i])) {
@@ -775,7 +780,7 @@
         let members = {};
 
         for (let i in modules.users.meta) {
-            members[modules.users.meta[i].login] = modules.users.meta[i].realName?modules.users.meta[i].realName:modules.users.meta[i].login;
+            members[modules.users.meta[i].login] = modules.users.meta[i].realName ? modules.users.meta[i].realName : modules.users.meta[i].login;
         }
 
         if (issue.issue.attachments && Object.keys(issue.issue.attachments).length) {
@@ -890,6 +895,7 @@
 
         h += "<table style='width: 100%; display: none;' class='ml-2' id='issueJournal'>";
         h += "</table>";
+        h += "</div>";
 
         $("#mainForm").html(h);
 

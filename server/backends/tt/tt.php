@@ -799,7 +799,7 @@
                 $_list = [];
                 foreach ($filters as $filter) {
                     try {
-                        $_list[$filter["metadata"]["filter"]] = @json_decode($this->getFilter($filter["metadata"]["filter"]), true)["name"];
+                        $_list[$filter["metadata"]["filter"]] = @json_decode($this->getFilter($filter["metadata"]["filter"]), true)["name"] ? : $filter["metadata"]["filter"];
                     } catch (\Exception $e) {
                         $_list[$filter["metadata"]["filter"]] = $filter["metadata"]["filter"];
                     }
@@ -832,7 +832,8 @@
                     try {
                         $f = @json_decode($this->getFilter($filter["metadata"]["filter"]), true);
                         $_list[$filter["metadata"]["filter"]] = [
-                            "name" => @$f["name"],
+                            "name" => @$f["name"] ? : $filter["metadata"]["filter"],
+                            "shortName" => @$f["shortName"],
                             "sort" => @$f["sort"],
                             "hide" => @$f["hide"],
                             "disableCustomSort" => !!@$f["disableCustomSort"],
@@ -971,6 +972,8 @@
                 foreach ($filters as $f) {
                     $files->deleteFile($f["id"]);
                 }
+
+                $this->deleteFavoriteFilter($filter, true);
 
                 return true;
             }
@@ -2148,6 +2151,26 @@
              * @return mixed
              */
             public abstract function journalLast($login, $limit = 4096);
+
+            /**
+             * @return array
+             */
+            public abstract function getFavoriteFilters();
+
+            /**
+             * @param string $filter
+             * @param string $rightSide
+             * @param string $icon
+             * @param string $color
+             * @return mixed
+             */
+            public abstract function addFavoriteFilter($filter, $rightSide, $icon, $color);
+
+            /**
+             * @param string $filter
+             * @return mixed
+             */
+            public abstract function deleteFavoriteFilter($filter);
 
             /**
              * @inheritDoc

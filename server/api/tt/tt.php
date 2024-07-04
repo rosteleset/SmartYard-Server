@@ -34,6 +34,7 @@
                         "myRoles" => $tt->myRoles(),
                         "myGroups" => $tt->myGroups(),
                         "prints" => $tt->getPrints(),
+                        "favoriteFilters" => $tt->getFavoriteFilters(),
                     ];
 
                     return api::ANSWER($meta, "meta");

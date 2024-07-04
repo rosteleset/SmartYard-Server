@@ -42,20 +42,28 @@
     <link rel="stylesheet" href="css/index.css">
     <!-- yaml support -->
     <script src="js/js-yaml.min.js"></script>
-    <!-- leaflet -->
-    <script src="lib/Leaflet/dist/leaflet.js"></script>
-    <script src="js/leaflet.awesome-markers.min.js"></script>
-    <script src="js/leaflet.markercluster.min.js"></script>
-    <!-- Clipboard -->
-    <script src="js/clipboard.min.js"></script>
-    <!-- Linkify -->
-    <script src="js/linkify.min.js"></script>
-    <script src="js/linkify-html.min.js"></script>
 
     <!-- wait for fully load -->
     <script type="application/javascript">
+        var version = 'unknown';
+
+        $.ajaxSetup({
+            cache: true
+        });
+
+        function ver(c) {
+            $.get("version?_=" + Math.random()).
+            done(v => {
+                version = v;
+            }).
+            always(() => {
+                cfg(c);
+            });
+        }
+
         function cfg(c) {
             config = c;
+
             lStore(() => {
                 let l = lStore("_lang");
                 if (!l) {
@@ -64,7 +72,7 @@
                 if (!l) {
                     l = "ru";
                 }
-                $.get("i18n/" + l + ".json").
+                $.get("i18n/" + l + ".json?ver=" + version).
                 done(t => {
                     lang = t;
                     initAll();
@@ -78,11 +86,11 @@
 
         document.addEventListener("DOMContentLoaded", () => {
             $.get("config/config.json?_=" + Math.random()).
-            done(cfg).
+            done(ver).
             fail(() => {
                 $.get("config/config.yml?_=" + Math.random()).
                 done(y => {
-                    cfg(jsyaml.load(y));
+                    ver(jsyaml.load(y));
                 }).
                 fail(() => {
                     error("Woops can't get config");
@@ -222,7 +230,7 @@
     </div>
 
     <!-- confirmModal -->
-    <div class="modal" id="confirmModal" role="dialog" aria-labelledby="confirmModalLabel" aria-hidden="true" style="padding-top: 4rem!important; display: none;">
+    <div class="modal mt-4" id="confirmModal" role="dialog" aria-labelledby="confirmModalLabel" aria-hidden="true" style="padding-top: 4rem!important; display: none;">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header pointer pl-4 pt-2 pb-2" id="confirmModalHeader">
@@ -238,7 +246,7 @@
     </div>
 
     <!-- yesnoModal -->
-    <div class="modal" id="yesnoModal" role="dialog" aria-labelledby="yesnoModalLabel" aria-hidden="true" style="padding-top: 4rem!important; display: none;">
+    <div class="modal mt-4" id="yesnoModal" role="dialog" aria-labelledby="yesnoModalLabel" aria-hidden="true" style="padding-top: 4rem!important; display: none;">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header pointer pl-4 pt-2 pb-2" id="yesnoModalHeader">
@@ -255,7 +263,7 @@
     </div>
 
     <!-- alertModal -->
-    <div class="modal" id="alertModal" role="dialog" aria-labelledby="alertModalLabel" aria-hidden="true" style="padding-top: 4rem!important; display: none;">
+    <div class="modal mt-4" id="alertModal" role="dialog" aria-labelledby="alertModalLabel" aria-hidden="true" style="padding-top: 4rem!important; display: none;">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header pointer pl-4 pt-2 pb-2" id="alertModalHeader">
@@ -265,6 +273,25 @@
                 <div class="modal-body" id="alertModalBody" style="word-break: break-word;">...</div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" id="alertModalButton">Ок</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- promptModal -->
+    <div class="modal mt-4" id="promptModal" role="dialog" aria-labelledby="promptModalLabel" aria-hidden="true" style="padding-top: 4rem!important; display: none;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header pointer pl-4 pt-2 pb-2" id="promptModalHeader">
+                    <h3 class="card-title pt-1 text-bold" id="promptModalLabel" style="font-weight: bold;">...</h3>
+                    <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal"><i class="far faw fa-times-circle"></i></button>
+                </div>
+                <div class="modal-body">
+                    <div id="promptModalBody" style="word-break: break-word;" class="mb-2">...</div>
+                    <input name="promptModalInput" id="promptModalInput" type="text" class="form-control modalFormField" style="cursor: text;" autocomplete="off" >
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="promptModalButton">Ок</button>
                 </div>
             </div>
         </div>
@@ -395,6 +422,10 @@
         </div>
     </div>
 
+    <button class="btn btn-primary back-to-top" role="button" onclick="$('html').scrollTop(0);" style="display: none;">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
     <!-- REQUIRED SCRIPTS -->
 
     <!-- Bootstrap 4 -->
@@ -448,6 +479,15 @@
     <script src="js/mqtt.min.js"></script>
     <!-- KV store -->
     <script src="js/idbkvstore.min.js"></script>
+    <!-- leaflet -->
+    <script src="lib/Leaflet/dist/leaflet.js"></script>
+    <script src="js/leaflet.awesome-markers.min.js"></script>
+    <script src="js/leaflet.markercluster.min.js"></script>
+    <!-- Clipboard -->
+    <script src="js/clipboard.min.js"></script>
+    <!-- Linkify -->
+    <script src="js/linkify.min.js"></script>
+    <script src="js/linkify-html.min.js"></script>
     <!-- patches -->
     <script src="patches/modal.js" type="module"></script>
     <!-- APP -->
@@ -457,6 +497,7 @@
     <script src="js/rest.js"></script>
     <script src="js/tz.js"></script>
     <script src="js/greetings.js"></script>
+    <script src="js/faicons.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>

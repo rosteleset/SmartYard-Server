@@ -18,6 +18,8 @@ var lStoreEngine = false;
 var hasUnsavedChanges = false;
 var currentAceEditor = false;
 var currentAceEditorOriginalValue = false;
+var lastLoadedModule = false;
+var loasLoadedGroup = false;
 
 function hashChange() {
     $('.dropdownMenu').collapse('hide');
@@ -35,16 +37,16 @@ function hashChange() {
 
             let r = route.split(".");
 
-            if ($(".sidebar .withibleOnlyWhenActive[data-target!='?#" + route + "']").length) {
-                $(".sidebar .withibleOnlyWhenActive[data-target!='?#" + route + "']").hide();
+            if ($(".sidebar .wisibleOnlyWhenActive[data-target!='?#" + route + "']").length) {
+                $(".sidebar .wisibleOnlyWhenActive[data-target!='?#" + route + "']").hide();
             } else {
-                $(".sidebar .withibleOnlyWhenActive[data-target!='?#" + r[0] + "']").hide();
+                $(".sidebar .wisibleOnlyWhenActive[data-target!='?#" + r[0] + "']").hide();
             }
 
-            if ($(".sidebar .withibleOnlyWhenActive[data-target='?#" + route + "']").length) {
-                $(".sidebar .withibleOnlyWhenActive[data-target='?#" + route + "']").show();
+            if ($(".sidebar .wisibleOnlyWhenActive[data-target='?#" + route + "']").length) {
+                $(".sidebar .wisibleOnlyWhenActive[data-target='?#" + route + "']").show();
             } else {
-                $(".sidebar .withibleOnlyWhenActive[data-target='?#" + r[0] + "']").show();
+                $(".sidebar .wisibleOnlyWhenActive[data-target='?#" + r[0] + "']").show();
             }
 
             if ($(".sidebar .nav-item a[data-href!='?#" + route + "']").length) {
@@ -116,12 +118,6 @@ function ping(server) {
         url: server + "/server/ping",
         type: "POST",
         contentType: "json",
-        success: response => {
-            if (response != "pong") {
-                loadingDone(true);
-                error(i18n("errors.serverUnavailable"), i18n("error"), 30);
-            }
-        },
         error: () => {
             loadingDone(true);
             error(i18n("errors.serverUnavailable"), i18n("error"), 30);
@@ -220,7 +216,7 @@ function forgot() {
 }
 
 function whoAmI(force) {
-    return GET("authentication", "whoAmI", false, force).done(_me => {
+    return GET("user", "whoAmI", false, force).done(_me => {
         if (_me && _me.user) {
             $(".myNameIs").attr("title", _me.user.realName?_me.user.realName:_me.user.login);
             myself.uid = _me.user.uid;
@@ -230,6 +226,7 @@ function whoAmI(force) {
             myself.phone = _me.user.phone;
             myself.webRtcExtension = _me.user.webRtcExtension;
             myself.webRtcPassword = _me.user.webRtcPassword;
+            myself.settings = _me.user.settings;
             myself.groups = {};
             if (_me.user.groups) {
                 for (let i in _me.user.groups) {
@@ -313,6 +310,9 @@ function initAll() {
     $("#forgotBoxLogin").text(i18n("forgotLogin"));
     $("#forgotBoxServer").attr("placeholder", i18n("server"));
 
+    $(".back-to-top").attr("aria-label", i18n("scrollToTop"));
+    $(".back-to-top").attr("title", i18n("scrollToTop"));
+
     $("#brandTitle").text(i18n("windowTitle"));
     $("#logout").text(i18n("logout"));
 
@@ -360,7 +360,7 @@ function initAll() {
     }
 
     if (lStore("_server") && lStore("_token")) {
-        POST("authentication", "ping", false).done((a, b) => {
+        POST("server", "ping", false).done((a, b) => {
             if (b === "nocontent") {
                 GET("authorization", "available").done(a => {
                     if (a && a.available) {
@@ -384,10 +384,6 @@ function initAll() {
                                     onhashchange = hashChange;
                                 }
                             }
-                            setInterval(() => {
-                                $(".blink-icon.blinking").toggleClass("text-warning");
-                                $(".blink-icon:not(.blinking)").removeClass("text-warning");
-                            }, 1000);
                         }).fail(response => {
                             FAIL(response);
                             showLoginForm();
@@ -419,7 +415,11 @@ function initAll() {
 }
 
 function loadModule() {
+    if (lastLoadedModule && modules[lastLoadedModule] && typeof modules[lastLoadedModule].moduleLoaded == "function") {
+        modules[lastLoadedModule].moduleLoaded();
+    }
     let module = moduleLoadQueue.shift();
+    lastLoadedModule = module;
     if (!module) {
         for (let i in modules) {
             if (typeof modules[i].allLoaded == "function") {
@@ -444,7 +444,7 @@ function loadModule() {
         if (!l) {
             l = "ru";
         }
-        $.get("modules/" + module + "/i18n/" + l + ".json", i18n => {
+        $.get("modules/" + module + "/i18n/" + l + ".json?ver=" + version, i18n => {
             if (i18n.errors) {
                 if (!lang.errors) {
                     lang.errors = {};
@@ -464,7 +464,7 @@ function loadModule() {
         .fail(FAIL)
         .always(() => {
             if (config && config.customSubModules && config.customSubModules[module]) {
-                $.get("modules/" + module + "/custom/i18n/" + l + ".json", i18n => {
+                $.get("modules/" + module + "/custom/i18n/" + l + ".json?ver=" + version, i18n => {
                     if (i18n.errors) {
                         if (!lang.errors) {
                             lang.errors = {};
@@ -481,13 +481,13 @@ function loadModule() {
                     }
                     lang[module] = {...lang[module], ...i18n};
                 }).always(() => {
-                    $.getScript("modules/" + module + "/" + module + ".js")
+                    $.getScript("modules/" + module + "/" + module + ".js?ver=" + version)
                     .fail(() => {
                         pageError(i18n("errorLoadingModule", module));
                     });
                 });
             } else {
-                $.getScript("modules/" + module + "/" + module + ".js")
+                $.getScript("modules/" + module + "/" + module + ".js?ver=" + version)
                 .fail(() => {
                     pageError(i18n("errorLoadingModule", module));
                 });
@@ -529,7 +529,7 @@ function loadSubModules(parent, subModules, doneOrParentObject) {
             moduleLoaded(parent, doneOrParentObject);
         }
     } else{
-        $.getScript("modules/" + parent + "/" + module + ".js").
+        $.getScript("modules/" + parent + "/" + module + ".js?ver=" + version).
         done(() => {
             loadSubModules(parent, subModules, doneOrParentObject);
         }).
@@ -542,7 +542,7 @@ function loadCustomSubModules(parent, subModules) {
     if (!module) {
         loadModule();
     } else{
-        $.getScript("modules/" + parent + "/custom/" + module + ".js").
+        $.getScript("modules/" + parent + "/custom/" + module + ".js?ver=" + version).
         done(() => {
             loadCustomSubModules(parent, subModules);
         }).

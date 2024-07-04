@@ -5,7 +5,7 @@ CREATE TABLE camera_records
     subscriber_id integer not null,
     start integer,
     finish integer,
-    filename text,
+    filename CHARACTER VARYING,
     expire integer,
     state integer                                                                                                       -- 0 = created, 1 = in progress, 2 = completed, 3 = error
 );

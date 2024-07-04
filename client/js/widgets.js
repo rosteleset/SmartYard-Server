@@ -1,3 +1,6 @@
+var backToTopButton = false;
+var backToTopTicking = false;
+
 function message(message, caption, timeout) {
     timeout = timeout?timeout:15;
     toastr.info(message, caption?caption:i18n("message"), {
@@ -117,7 +120,7 @@ function mYesNo(body, title, callbackYes, callbackNo, yes, no, timeout) {
     }
 }
 
-function mAlert(body, title, callback, title_button, main_button) {
+function mAlert(body, title, callback, titleButton, mainButton) {
     if (!title) {
         title = i18n("message");
     }
@@ -131,13 +134,13 @@ function mAlert(body, title, callback, title_button, main_button) {
         title = '<span class="text-success">' + title + '</span>';
     }
     let l = $('#alertModalLabel').html(title);
-    if (title_button) {
+    if (titleButton) {
         l.next().remove();
-        l.parent().append($(title_button));
+        l.parent().append($(titleButton));
     }
     $('#alertModalBody').html(body);
-    if (main_button) {
-        $('#alertModalButton').html(main_button);
+    if (mainButton) {
+        $('#alertModalButton').html(mainButton);
     } else {
         $('#alertModalButton').html(i18n("ok"));
     }
@@ -148,6 +151,34 @@ function mAlert(body, title, callback, title_button, main_button) {
     });
     autoZ($('#alertModal')).modal('show');
     xblur();
+}
+
+function mPrompt(prompt, title, value, callback, titleButton, mainButton) {
+    if (!title) {
+        title = i18n("message");
+    }
+    let l = $('#promptModalLabel').html(title);
+    if (titleButton) {
+        l.next().remove();
+        l.parent().append($(titleButton));
+    }
+    $('#promptModalBody').html(prompt);
+    $('#promptModalInput').val(value);
+    if (mainButton) {
+        $('#promptModalButton').html(mainButton);
+    } else {
+        $('#ptomptModalButton').html(i18n("ok"));
+    }
+    $('#promptModalButton').off('click').on('click', (e) => {
+        $('#promptModal').modal('hide');
+        if (typeof callback == 'function') callback($('#promptModalInput').val());
+        e.stopPropagation();
+    });
+    autoZ($('#promptModal')).modal('show');
+    xblur();
+    setTimeout(() => {
+        $('#promptModalInput').focus();
+    }, 100);
 }
 
 function modal(body) {
@@ -174,16 +205,15 @@ function FAIL(response) {
             }, 5000);
         }
     } else {
-        if (response.getResponseHeader("x-last-error")) {
+        if (response && response.getResponseHeader("x-last-error")) {
             error(i18n("errors.unknown" + " [" + i18n("errors." + response.getResponseHeader("x-last-error")) + "]"), i18n("errorCode", response.status), 30);
         } else {
-            error(i18n("errors.unknown"), i18n("errorCode", response.status), 30);
+            error(i18n("errors.unknown"), i18n("errorCode", response ? response.status : i18n("unknown")), 30);
         }
     }
 }
 
 function FAILPAGE(response) {
-    console.log(response.getResponseHeader("x-last-error"));
     if (response && response.responseJSON && response.responseJSON.error) {
         if (response.getResponseHeader("x-last-error")) {
             error(i18n("errors." + response.responseJSON.error, i18n("errors." + response.getResponseHeader("x-last-error"))), i18n("error"), 30);
@@ -193,11 +223,11 @@ function FAILPAGE(response) {
             pageError(i18n("errors." + response.responseJSON.error));
         }
     } else {
-        if (response.getResponseHeader("x-last-error")) {
+        if (response && response.getResponseHeader("x-last-error")) {
             error(i18n("errors.unknown" + " [" + i18n("errors." + response.getResponseHeader("x-last-error")) + "]"), i18n("errorCode", response.status), 30);
             pageError(i18n("errors." + response.getResponseHeader("x-last-error")));
         } else {
-            error(i18n("errors.unknown"), i18n("errorCode", response.status), 30);
+            error(i18n("errors.unknown"), i18n("errorCode", response ? response.status : i18n("unknown")), 30);
             pageError();
         }
     }
@@ -284,7 +314,7 @@ function subTop(html) {
     }
 }
 
-function leftSide(button, title, target, group, withibleOnlyWhenActive) {
+function leftSide(button, title, target, group, wisibleOnlyWhenActive) {
     if (group != mainSidebarGroup && !mainSidebarFirst) {
         $("#leftside-menu").append(`
             <li class="nav-item"><hr class="border-top" style="opacity: 15%"></li>
@@ -295,8 +325,18 @@ function leftSide(button, title, target, group, withibleOnlyWhenActive) {
 
     let id = md5(guid());
 
+    let style;
+    if (mainSidebarFirst) {
+        style = "margin-top: 11px;"
+    } else {
+        style = "margin-top: 3px;";
+    }
+    if (wisibleOnlyWhenActive && target !== "#" + route.split('.')[0]) {
+        style += "display: none;";
+    }
+
     $("#leftside-menu").append(`
-        <li id="${id}" class="nav-item${mainSidebarFirst?" mt-2":""}${withibleOnlyWhenActive?" withibleOnlyWhenActive":""}" data-target="${target}" title="${escapeHTML(title)}"${(withibleOnlyWhenActive && target !== "#" + route.split('.')[0])?" style='display: none;'":""}>
+        <li id="${id}" class="nav-item${wisibleOnlyWhenActive?" wisibleOnlyWhenActive":""}" data-target="${target}" title="${escapeHTML(title)}" style="${style}">
             <a href="${target}" data-href="${target}" class="nav-link${(target === "#" + route.split('.')[0])?" active":""}">
                 <i class="${button} nav-icon"></i>
                 <p class="text-nowrap">${title}</p>
@@ -316,15 +356,39 @@ $(document).on('select2:open', '.select2', function () {
     }, 5);
 });
 
-$(window).off("resize").on("resize", () => {
-    if ($("#editorContainer").length) {
-        let height = $(window).height() - mainFormTop;
-        if ($('#subTop:visible').length) {
-            height -= $('#subTop').height();
-        }
-        $("#editorContainer").css("height", height + "px");
+$(document).off("scroll").on("scroll", () => {
+    if (!backToTopTicking) {
+        window.requestAnimationFrame(() => {
+            if ($('html').scrollTop() < 16) {
+                if (backToTopButton) {
+                    backToTopButton = false;
+                    $(".back-to-top").hide();
+                }
+            } else {
+                if (!backToTopButton) {
+                    backToTopButton = true;
+                    $(".back-to-top").show();
+                }
+            }
+            backToTopTicking = false;
+        });
+
+        backToTopTicking = true;
     }
-    if ($("#mapContainer").length) {
+});
+
+$(window).off("resize").on("resize", () => {
+    if ($("#editorContainer:visible").length) {
+        if (!$("#editorContainer").attr("data-fh")) {
+            let height = $(window).height() - mainFormTop;
+            if ($('#subTop:visible').length) {
+                height -= $('#subTop').height();
+            }
+            $("#editorContainer").css("height", height + "px");
+
+        }
+    }
+    if ($("#mapContainer:visible").length) {
         let height = $(window).height() - mainFormTop;
         if ($('#subTop:visible').length) {
             height -= $('#subTop').height();
@@ -354,4 +418,7 @@ setInterval(() => {
         ev.preventDefault();
         return false;
     });
+
+    $(".blink-icon.blinking").toggleClass("text-warning");
+    $(".blink-icon:not(.blinking)").removeClass("text-warning");
 }, 1000);
