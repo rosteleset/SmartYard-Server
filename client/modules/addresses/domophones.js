@@ -197,6 +197,7 @@
                         title: i18n("addresses.domophoneId"),
                         value: domophoneId,
                         readonly: true,
+                        hint: 100000 + parseInt(domophoneId),
                     },
                     {
                         id: "enabled",
