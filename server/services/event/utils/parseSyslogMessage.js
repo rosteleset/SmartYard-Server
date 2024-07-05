@@ -1,7 +1,7 @@
 import { SERVICE_UFANET } from '../constants.js';
 import { getTimestamp } from "./index.js";
 
-const RFC_3164_REGEX = /^<(?<PRI>[0-9]{1,3})>(?<TIMESTAMP>[A-Za-z]{3} [0-9]{1,2} \d{2}:\d{2}:\d{2}) (?<HOSTNAME>\S+) (?<MSG>[\S\s]+)/;
+const RFC_3164_REGEX = /^<(?<PRI>[0-9]{1,3})>(?<TIMESTAMP>[A-Za-z]{3}\s+[0-9]{1,2} \d{2}:\d{2}:\d{2}) (?<HOSTNAME>\S+) (?<MSG>[\S\s]+)/; // \s+ - crutch for Ufanet :(
 
 const parseSyslogMessage = (str, unit) => {
     if (!str) {
