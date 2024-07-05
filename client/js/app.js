@@ -130,6 +130,49 @@ function lStore(key, val) {
     }
 }
 
+function hashParse(part) {
+    let u = new URL(location.href);
+
+    let hash = u.hash;
+
+    if (hash && hash[0] == "#") {
+        hash = hash.substring(1);
+    }
+
+    let params = {};
+    let route = "default";
+
+    try {
+        let t = $.deparam(hash);
+        let k = Object.keys(t);
+        if (k.length > 0) {
+            route = k[0];
+            k.shift();
+            for (let i in k) {
+                params[k[i]] = t[k[i]];
+            }
+        } else {
+            route = "default";
+        }
+    } catch (e) {
+        route = "default";
+    }
+
+    if (part == "route") {
+        return route;
+    }
+
+    if (part == "params") {
+        return params;
+    }
+
+    if (part == "hash") {
+        return hash;
+    }
+
+    return [ route, params, hash ];
+}
+
 function hashChange() {
     $('.dropdownMenu').collapse('hide');
     $('.modal').modal('hide');
@@ -658,49 +701,6 @@ function loadCustomSubModules(parent, subModules) {
         }).
         fail(FAIL);
     }
-}
-
-function hashParse(part) {
-    let u = new URL(location.href);
-
-    let hash = u.hash;
-
-    if (hash && hash[0] == "#") {
-        hash = hash.substring(1);
-    }
-
-    let params = {};
-    let route = "default";
-
-    try {
-        let t = $.deparam(hash);
-        let k = Object.keys(t);
-        if (k.length > 0) {
-            route = k[0];
-            k.shift();
-            for (let i in k) {
-                params[k[i]] = t[k[i]];
-            }
-        } else {
-            route = "default";
-        }
-    } catch (e) {
-        route = "default";
-    }
-
-    if (part == "route") {
-        return route;
-    }
-
-    if (part == "params") {
-        return params;
-    }
-
-    if (part == "hash") {
-        return hash;
-    }
-
-    return [ route, params, hash ];
 }
 
 $("#loginBoxPassword").off("keypress").on("keypress", e => {
