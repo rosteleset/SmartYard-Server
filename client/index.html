@@ -60,7 +60,8 @@
                     console.log("localVersion: " + oldVersion);
                     console.log("remoteVersion: " + version);
                     if (oldVersion != version) {
-                        navigator.serviceWorker.getRegistrations().then(r => {
+                        navigator.serviceWorker.getRegistrations().
+                        then(r => {
                             r.forEach(w => {
                                 if (w && w.active && w.active.scriptURL) {
                                     const url = new URL(w.active.scriptURL);
@@ -72,17 +73,18 @@
                                     }
                                 }
                             });
-                        }).then(() => {
-                            if (needRestart) {
-                                window.location.reload();
-                            }
+                        }).
+                        then(() => {
+                            navigator.serviceWorker.register('sw.js').then(sw => {
+                                serviceWorker = sw;
+                                if (needRestart) {
+                                    window.location.reload();
+                                }
+                            });
                         });
                     } else {
                         cfg(c);
                     }
-                    navigator.serviceWorker.register('sw.js').then(sw => {
-                        serviceWorker = sw;
-                    });
                 } else {
                     cfg(c);
                 }
