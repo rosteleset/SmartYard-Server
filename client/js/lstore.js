@@ -11,10 +11,16 @@ function lStore(key, val) {
             wdb = new IdbKvStore("rbt");
 
             wdb.on("add", function (change) {
+                if (change.key == "_reload") {
+                    window.location.reload();
+                }
                 lStoreData[change.key] = change.value;
             });
 
             wdb.on("set", function (change) {
+                if (change.key == "_reload") {
+                    window.location.reload();
+                }
                 lStoreData[change.key] = change.value;
             });
 
