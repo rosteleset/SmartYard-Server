@@ -54,8 +54,6 @@ if (location.search) {
     }
 }
 
-console.log("swVersion: " + version);
-
 const forceVersioning = [
     "app.js",
     "index.css",
@@ -69,3 +67,5 @@ self.addEventListener('fetch', event => {
         event.respondWith(Response.redirect(url.href + "?ver=" + version, 302));
     }
 });
+
+console.log("swVersion: " + version);
