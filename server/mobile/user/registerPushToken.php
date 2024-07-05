@@ -69,7 +69,7 @@ if (!$push) {
 }
 
 if (!$voip) {
-    $households->modifySubscriber($subscriber["subscriberId"], [ "voipToken" => "off" ]);   
+    $households->modifyDevice($subscriber["subscriberId"], [ "voipToken" => "off" ]);   
 }
 
 response();

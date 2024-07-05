@@ -56,21 +56,30 @@ if ($result || $user_phone == "79123456781" || $user_phone == "79123456782") {
     }
 
     // no longer such a temporary solution
+    if (!$subscriber_id) {
+        response(401);
+    }
+
+    $deviceExists = false;
+
     if ($devices) {
+
         $filteredDevices = array_filter($devices, function ($device) use ($device_token) {
             return $device['deviceToken'] === $device_token;
         });
         $device = reset($filteredDevices);
+
         if ($device) {
             $households->modifyDevice($device["deviceId"], ["authToken" => $token]);
-        } else {
-            $households->addDevice($subscriber_id, $device_token, $platform, $token);
-            $inbox->sendMessage($subscriber_id, "Внимание!", "Произведена авторизация на новом устройстве", $action = "inbox");
+            $deviceExists = true;
         }
-    } else {
+    }
+
+    if (!$deviceExists) {
         $households->addDevice($subscriber_id, $device_token, $platform, $token);
         $inbox->sendMessage($subscriber_id, "Внимание!", "Произведена авторизация на новом устройстве", $action = "inbox");
     }
+
     response(200, ['accessToken' => $token, 'names' => $names]);
 } else {
     response(401);
