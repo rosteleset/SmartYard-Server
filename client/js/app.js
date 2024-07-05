@@ -206,7 +206,7 @@ function hashChange() {
             } else
             if (route === "default") {
                 if (config.defaultRoute && config.defaultRoute != "#" && config.defaultRoute != "?#") {
-                    location.href = (config.defaultRoute.charAt(0) == "?")?config.defaultRoute:("?" + config.defaultRoute);
+                    location.href = (config.defaultRoute.charAt(0) == "?") ? config.defaultRoute : ("?" + config.defaultRoute);
                 } else {
                     loadingDone();
                 }
@@ -675,10 +675,14 @@ function hashParse(part) {
     try {
         let t = $.deparam(hash);
         let k = Object.keys(t);
-        route = k[0];
-        k.shift();
-        for (let i in k) {
-            params[k[i]] = t[k[i]];
+        if (k.length > 0) {
+            route = k[0];
+            k.shift();
+            for (let i in k) {
+                params[k[i]] = t[k[i]];
+            }
+        } else {
+            route = "default";
         }
     } catch (e) {
         route = "default";
