@@ -52,6 +52,7 @@ console.log("swVersion: " + version);
 
 const forceVersioning = [
     "app.js",
+    "lstore.js",
     "index.css",
 ];
 
