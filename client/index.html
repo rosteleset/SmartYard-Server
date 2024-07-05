@@ -77,13 +77,17 @@
                                 window.location.reload();
                             }
                         });
+                    } else {
+                        cfg(c);
                     }
                     navigator.serviceWorker.register('sw.js').then(sw => {
                         serviceWorker = sw;
                     });
+                } else {
+                    cfg(c);
                 }
             }).
-            always(() => {
+            fail(() => {
                 cfg(c);
             });
         }
