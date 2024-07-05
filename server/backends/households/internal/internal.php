@@ -1311,6 +1311,8 @@
                     $queue->changed("subscriber", $subscriberId);
                 }
 
+                $this->db->modify("delete from houses_subscribers_devices where house_subscriber_id = $subscriberId");
+
                 $result = $this->db->modify("delete from houses_subscribers_mobile where house_subscriber_id = $subscriberId");
 
                 if ($result === false) {
