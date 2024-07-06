@@ -4,7 +4,7 @@
     init: function () {
         if (parseInt(myself.uid) > 0) {
             if (AVAIL("notes")) {
-                this.menuItem = leftSide("far fa-fw fa-sticky-note fa-flip-vertical", i18n("notes.notes"), "?#notes", "notes");
+                this.menuItem = leftSide("fab fa-fw fa-pinterest-p", i18n("notes.notes"), "?#notes", "notes");
             }
         }
         moduleLoaded("notes", this);
