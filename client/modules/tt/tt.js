@@ -45,7 +45,7 @@
                         let title = modules.tt.meta.filtersExt[modules.tt.meta.favoriteFilters[i].filter].shortName ? modules.tt.meta.filtersExt[modules.tt.meta.favoriteFilters[i].filter].shortName : modules.tt.meta.filtersExt[modules.tt.meta.favoriteFilters[i].filter].name;
                         h += `
                             <li class="nav-item" title="${escapeHTML(title)}">
-                                <a href="?#tt&filter=${modules.tt.meta.favoriteFilters[i].filter}" class="nav-link">
+                                <a href="?#tt&filter=${modules.tt.meta.favoriteFilters[i].filter}" class="nav-link" onclick="xblur(); return true;">
                                     <i class="nav-icon fa fa-fw ${modules.tt.meta.favoriteFilters[i].icon} ${modules.tt.meta.favoriteFilters[i].color}"></i>
                                     <p class="text-nowrap">${title}</p>
                                 </a>
