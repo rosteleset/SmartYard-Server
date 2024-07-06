@@ -2219,9 +2219,17 @@
             } else {
                 if (modules.tt.menuItem) {
                     if (params  && params.filter && params.filter[0] == "#") {
-                        $("#" + modules.tt.menuItem).children().first().attr("href", navigateUrl("tt"));
+                        $("#" + modules.tt.menuItem).children().first().attr("href", navigateUrl("tt", false, {
+                            exclude: [
+                                "customSearch"
+                            ]
+                        }));
                     } else {
-                        $("#" + modules.tt.menuItem).children().first().attr("href", refreshUrl());
+                        $("#" + modules.tt.menuItem).children().first().attr("href", refreshUrl({
+                            exclude: [
+                                "customSearch"
+                            ]
+                        }));
                     }
                 }
 

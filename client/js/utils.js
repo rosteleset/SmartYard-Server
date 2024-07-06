@@ -286,19 +286,31 @@ $.deparam = function (query) {
     }
 }
 
-function refreshUrl() {
+function refreshUrl(options) {
     let [ route, params ] = hashParse();
 
     params["_"] = Math.random();
 
+    if (options && options.exclude) {
+        for (let i in options.exclude) {
+            delete params[options.exclude[i]];
+        }
+    }
+
     return "?#" + route + "&" + $.param(params);
 }
 
-function navigateUrl(route, params) {
+function navigateUrl(route, params, options) {
     if (!params) {
         params = {};
     }
     params["_"] = Math.random();
+
+    if (options && options.exclude) {
+        for (let i in options.exclude) {
+            delete params[options.exclude[i]];
+        }
+    }
 
     return "?#" + route + "&" + $.param(params);
 }
