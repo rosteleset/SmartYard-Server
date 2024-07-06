@@ -1431,6 +1431,8 @@
             let filterName = modules.tt.meta.filters[x] ? modules.tt.meta.filters[x] : i18n("tt.filter");
             document.title = i18n("windowTitle") + " :: " + filterName;
 
+            let alreadyFavorite = false;
+
             function hh(t) {
                 let filters = '';
 
@@ -1510,7 +1512,8 @@
                 }
                 filters += `<ul class="dropdown-menu" aria-labelledby="ttFilter-${o}">`;
 
-                if (modules.tt.meta.favoriteFilters.length) {
+                if (modules.tt.meta.favoriteFilters.length && !alreadyFavorite) {
+                    alreadyFavorite = true;
                     filters += `<li class="dropdown-item pointer submenu mr-4"><i class="far fa-fw fa-folder mr-2"></i><span>${i18n("tt.favoriteFilters")}&nbsp;</span></li>`;
                     filters += '<ul class="dropdown-menu">';
                     for (let ff in modules.tt.meta.favoriteFilters) {
