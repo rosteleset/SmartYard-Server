@@ -10,7 +10,7 @@ CREATE TABLE notes
     bg_color TEXT,
     fg_color TEXT,
     position_left INTEGER,
-    position_right INTEGER,
+    position_top INTEGER,
     category TEXT
 );
 CREATE INDEX notes_owner ON notes(owner);
