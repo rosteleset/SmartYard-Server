@@ -1,6 +1,6 @@
 CREATE TABLE core_inbox
 (
-    msg_id serial primary key,
+    msg_id SERIAL PRIMARY KEY,
     msg_date INTEGER,
     msg_from CHARACTER VARYING,
     msg_to CHARACTER VARYING,

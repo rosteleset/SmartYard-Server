@@ -1,0 +1,1 @@
+ALTER TABLE core_inbox ADD COLUMN msg_handler CHARACTER VARYING;
