@@ -11,6 +11,7 @@ CREATE TABLE notes
     fg_color CHARACTER VARYING,
     position_left INTEGER,
     position_top INTEGER,
+    position_order INTEGER,
     category CHARACTER VARYING
 );
 CREATE INDEX notes_owner ON notes(owner);
