@@ -12,7 +12,8 @@ CREATE TABLE notes
     position_left INTEGER,
     position_top INTEGER,
     position_order INTEGER,
-    category TEXT
+    category TEXT,
+    font TEXT
 );
 CREATE INDEX notes_owner ON notes(owner);
 CREATE INDEX notes_remind ON notes(remind);

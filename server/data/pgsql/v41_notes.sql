@@ -12,7 +12,8 @@ CREATE TABLE notes
     position_left INTEGER,
     position_top INTEGER,
     position_order INTEGER,
-    category CHARACTER VARYING
+    category CHARACTER VARYING,
+    font CHARACTER VARYING
 );
 CREATE INDEX notes_owner ON notes(owner);
 CREATE INDEX notes_remind ON notes(remind);
