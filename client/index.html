@@ -136,6 +136,27 @@
                 });
             });
         });
+
+    </script>
+    <script>
+        var availableFonts = [];
+
+        async function qf() {
+            try {
+                const array = await self.queryLocalFonts();
+                array.forEach(font => {
+                    if (availableFonts.indexOf(font.family) < 0) {
+                        availableFonts.push(font.family);
+                    }
+                });
+            } catch(e) {
+                console.log(`Local font access not available: ${e.message}`);
+            }
+        }
+
+        (async () => {
+            await qf();
+        })();
     </script>
 </head>
 
