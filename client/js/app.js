@@ -560,23 +560,6 @@ function initAll() {
     } else {
         showLoginForm();
     }
-/*
-    if (!lStore()) {
-        loadingDone();
-        return;
-    }
-*/
-    try {
-        queryLocalFonts().then(fonts => {
-            fonts.forEach(font => {
-                if (availableFonts.indexOf(font.family) < 0) {
-                    availableFonts.push(font.family);
-                }
-            });
-        });
-    } catch(e) {
-        console.warn(`Local font access not available: ${e.message}`);
-    }
 }
 
 function loadModule() {
@@ -720,3 +703,14 @@ $("#loginBoxPassword").off("keypress").on("keypress", e => {
         login();
     }
 });
+
+try {
+    const array = await self.queryLocalFonts();
+    array.forEach(font => {
+        if (availableFonts.indexOf(font.family) < 0) {
+            availableFonts.push(font.family);
+        }
+    });
+} catch(e) {
+    console.warn(`Local font access not available: ${e.message}`);
+}
