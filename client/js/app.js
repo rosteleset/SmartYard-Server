@@ -21,6 +21,7 @@ var lastLoadedModule = false;
 var loasLoadedGroup = false;
 var lStoreEngine = false;
 var lStoreData = {};
+var availableFonts = [];
 
 function lStore(key, val) {
     if (!lStoreEngine) {
@@ -565,6 +566,17 @@ function initAll() {
         return;
     }
 */
+    try {
+        queryLocalFonts().then(fonts => {
+            fonts.forEach(font => {
+                if (availableFonts.indexOf(font.family) < 0) {
+                    availableFonts.push(font.family);
+                }
+            });
+        });
+    } catch(e) {
+        console.warn(`Local font access not available: ${e.message}`);
+    }
 }
 
 function loadModule() {
