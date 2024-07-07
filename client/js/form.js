@@ -1,4 +1,16 @@
 function cardForm(params) {
+    try {
+        queryLocalFonts().then(array => {
+            array.forEach(font => {
+                if (availableFonts.indexOf(font.family) < 0) {
+                    availableFonts.push(font.family);
+                }
+            });
+        });
+    } catch(e) {
+        console.log(`Local font access not available: ${e.message}`);
+    }
+
     let _prefix = "modalForm-" + md5(guid()) + "-";
 
     let h = `<form id="${_prefix}form" autocomplete="off" onsubmit="return false;" action="">`;

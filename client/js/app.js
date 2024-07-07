@@ -21,6 +21,7 @@ var lastLoadedModule = false;
 var loasLoadedGroup = false;
 var lStoreEngine = false;
 var lStoreData = {};
+var availableFonts = [];
 
 function lStore(key, val) {
     if (!lStoreEngine) {
