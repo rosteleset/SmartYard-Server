@@ -560,6 +560,18 @@ function initAll() {
     } else {
         showLoginForm();
     }
+
+    try {
+        queryLocalFonts().then(array => {
+            array.forEach(font => {
+                if (availableFonts.indexOf(font.family) < 0) {
+                    availableFonts.push(font.family);
+                }
+            });
+        });
+    } catch(e) {
+        console.log(`Local font access not available: ${e.message}`);
+    }
 }
 
 function loadModule() {
