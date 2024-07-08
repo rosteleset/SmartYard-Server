@@ -540,7 +540,7 @@ body.dark-mode .nodec:hover {
   border-bottom: dashed 2px #0085e8;
   margin: 0 0 1rem;
   min-height: 1.3rem;
-  padding: 0 1.5rem 0.25rem 0;
+  padding: 0 0 1rem 0;
 }
 
 .sticky p {
@@ -553,5 +553,5 @@ body.dark-mode .nodec:hover {
   font-size: 1rem;
   position: absolute;
   right: 0.8rem;
-  top: 0.4rem;
+  bottom: 0.8rem;
 }
