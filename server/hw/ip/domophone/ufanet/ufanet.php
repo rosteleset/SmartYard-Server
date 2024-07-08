@@ -112,7 +112,7 @@ abstract class ufanet extends domophone
             $analogNumber = $hundreds * 100 + $tens * 10 + $units;
 
             if (isset($this->dialplans[$apartment])) {
-                $this->dialplans[$apartment]['map'] = $analogNumber;
+                $this->dialplans[$apartment]['map'] = $analogNumber;  // FIXME: not working yet
             } else {
                 $this->dialplans[$apartment] = [
                     'sip_number' => '',

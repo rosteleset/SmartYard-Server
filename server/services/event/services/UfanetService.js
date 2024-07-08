@@ -1,4 +1,5 @@
 import { SyslogService } from './index.js';
+import { API } from '../utils/index.js';
 
 /**
  * Class representing an event handler for Ufanet devices.
@@ -34,8 +35,14 @@ class UfanetService extends SyslogService {
         }
 
         // Opening a door by RFID key
-        if (false) {
-            // TODO
+        if (message.includes('key=') && message.includes('pass=OK')) {
+            // Same message for internal and external readers
+            const decCode = +message.split(' ')[0].split('=')[1];
+
+            if (Number.isInteger(decCode)) {
+                const hexCode = decCode.toString(16).padStart(14, '0');
+                await API.openDoor({ date: date, ip: host, door: 0, detail: hexCode, by: 'rfid' });
+            }
         }
 
         // Opening a door by personal code
