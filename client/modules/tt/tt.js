@@ -24,6 +24,11 @@
                 leftSide("fas fa-fw fa-tasks", i18n("tt.tt"), "?#tt.settings", "tt");
                 this.menuItem = false;
             } else {
+                if (AVAIL("tt", "issue", "POST")) {
+                    leftSideClick("far fa-fw fa-plus-square", i18n("tt.createIssue"), "tt", () => {
+                        modules.tt.issue.createIssue($("#ttProjectSelect").val());
+                    });
+                }
                 this.menuItem = leftSide("fas fa-fw fa-tasks", i18n("tt.tt"), "?#tt", "tt");
             }
         }
@@ -1563,14 +1568,6 @@
                 filters = `<span class="text-bold text-warning">${i18n('tt.noFiltersAvailable')}</span>`;
             }
         }
-
-        if (myself.uid && !target) {
-            $("#leftTopDynamic").html(`<li class="nav-item d-none d-sm-inline-block"><span class="hoverable pointer nav-link text-success text-bold createIssue">${i18n("tt.createIssue")}</span></li>`);
-        }
-
-        $(".createIssue").off("click").on("click", () => {
-            modules.tt.issue.createIssue($("#ttProjectSelect").val());
-        });
 
         let skip = parseInt(params.skip?params.skip:0);
         let limit = parseInt(params.limit?params.limit:modules.tt.defaultIssuesPerPage);

@@ -352,6 +352,40 @@ function leftSide(button, title, target, group, wisibleOnlyWhenActive) {
     return id;
 }
 
+function leftSideClick(button, title, group, click) {
+    if (group != mainSidebarGroup && !mainSidebarFirst) {
+        $("#leftside-menu").append(`
+            <li class="nav-item"><hr class="border-top" style="opacity: 15%"></li>
+        `);
+    }
+
+    let id = md5(guid());
+
+    let style;
+
+    if (mainSidebarFirst) {
+        style = "margin-top: 11px;"
+    } else {
+        style = "margin-top: 3px;";
+    }
+
+    $("#leftside-menu").append(`
+        <li id="${id}" class="nav-item" title="${escapeHTML(title)}" style="${style}">
+            <a class="nav-link" href="#" onclick="xblur(); return false;">
+                <i class="${button} nav-icon"></i>
+                <p class="text-nowrap">${title}</p>
+            </a>
+        </li>
+    `);
+
+    $("#" + id).off("click").on("click", click);
+
+    mainSidebarGroup = group;
+    mainSidebarFirst = false;
+
+    return id;
+}
+
 $(document).on('select2:open', '.select2', function () {
     setTimeout(() => {
         document.querySelector(`[aria-controls="select2-${$(this).attr("id")}-results"]`).focus();
