@@ -263,9 +263,9 @@ function cardForm(params) {
                 if (typeof params.fields[i].options === "object") {
                     for (let j in params.fields[i].options) {
                         if (params.fields[i].options[j].value == params.fields[i].value || params.fields[i].options[j].selected) {
-                            h += `<option label="${escapeHTML(params.fields[i].options[j].text)}" value="${escapeHTML(params.fields[i].options[j].value)}" data-icon="${params.fields[i].options[j].icon}" data-class="${params.fields[i].options[j].class}" selected>${escapeHTML(params.fields[i].options[j].text)}</option>`;
+                            h += `<option label="${escapeHTML(params.fields[i].options[j].text)}" value="${escapeHTML(params.fields[i].options[j].value)}" data-icon="${params.fields[i].options[j].icon}" data-class="${params.fields[i].options[j].class}" data-font="${params.fields[i].options[j].font}" selected>${escapeHTML(params.fields[i].options[j].text)}</option>`;
                         } else {
-                            h += `<option label="${escapeHTML(params.fields[i].options[j].text)}" value="${escapeHTML(params.fields[i].options[j].value)}" data-icon="${params.fields[i].options[j].icon}" data-class="${params.fields[i].options[j].class}">${escapeHTML(params.fields[i].options[j].text)}</option>`;
+                            h += `<option label="${escapeHTML(params.fields[i].options[j].text)}" value="${escapeHTML(params.fields[i].options[j].value)}" data-icon="${params.fields[i].options[j].icon}" data-class="${params.fields[i].options[j].class}" data-font="${params.fields[i].options[j].font}">${escapeHTML(params.fields[i].options[j].text)}</option>`;
                         }
                     }
                 } else {
@@ -681,14 +681,22 @@ function cardForm(params) {
                 if (!item.id) {
                     return item.text;
                 }
+
                 let c = '';
+                let f = '';
+
                 if (item.element && item.element.dataset && item.element.dataset.class && item.element.dataset.class !== "undefined") {
                     c = item.element.dataset.class;
                 }
+
+                if (item.element && item.element.dataset && item.element.dataset.font && item.element.dataset.font !== "undefined") {
+                    f = `font-family: '${item.element.dataset.font}'`;
+                }
+
                 if (item.element && item.element.dataset && item.element.dataset.icon && item.element.dataset.icon !== "undefined") {
-                    return $(`<span class="${c}" style="display: grid; align-items: center; justify-content: start;"><span style="grid-column: 1; width: fit-content;"><i class="${item.element.dataset.icon} mr-2"></i></span><span style="grid-column: 2;">${item.text}</span></span>`);
+                    return $(`<span class="${c}" style="display: grid; align-items: center; justify-content: start;"><span style="grid-column: 1; width: fit-content;"><i class="${item.element.dataset.icon} mr-2"></i></span><span style="grid-column: 2; ${f}">${item.text}</span></span>`);
                 } else {
-                    return $(`<span class="${c}">${item.text}</span>`);
+                    return $(`<span class="${c}" style="${f}">${item.text}</span>`);
                 }
             }
 
@@ -696,14 +704,22 @@ function cardForm(params) {
                 if (!item.id) {
                     return item.text;
                 }
+
                 let c = '';
+                let f = '';
+
                 if (item.element && item.element.dataset && item.element.dataset.class && item.element.dataset.class !== "undefined") {
                     c = item.element.dataset.class;
                 }
+
+                if (item.element && item.element.dataset && item.element.dataset.font && item.element.dataset.font !== "undefined") {
+                    f = `font-family: '${item.element.dataset.font}'`;
+                }
+
                 if (item.element && item.element.dataset && item.element.dataset.icon && item.element.dataset.icon !== "undefined") {
-                    return $(`<span class="${c}" style="display: grid; align-items: top; justify-content: start;"><span style="grid-column: 1; width: fit-content;"><i class="${item.element.dataset.icon} mr-2"></i></span><span style="grid-column: 2;">${item.text}</span></span>`);
+                    return $(`<span class="${c}" style="display: grid; align-items: top; justify-content: start;"><span style="grid-column: 1; width: fit-content;"><i class="${item.element.dataset.icon} mr-2"></i></span><span style="grid-column: 2; $f">${item.text}</span></span>`);
                 } else {
-                    return $(`<span class="${c}">${item.text}</span>`);
+                    return $(`<span class="${c}" style="${f}">${item.text}</span>`);
                 }
             }
 
