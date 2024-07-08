@@ -125,7 +125,7 @@
     },
 
     renderNotes: function() {
-        $("#mainForm").html(`<div id="stickies-container" style="position: relative;"></div>`);
+        $("#mainForm").html(`<div id="stickies-container" style="width: 4096px;"></div>`);
 
         let isDragging = false;
         let dragTarget;
@@ -136,7 +136,7 @@
         function createSticky(x) {
             const stickyArea = $('#stickies-container');
 
-            const newSticky = `<div class='drag sticky' style='z-index: 1;'><h3>subject ${x}</h3><p>body</p><span class="deletesticky">&times;</span></div>`;
+            const newSticky = `<div class='drag sticky bg-warning' style='z-index: 1;'><h5>subject ${x}</h5><p>body</p><span class="editsticky"><i class="far fa-fw fa-edit"></i></span></div>`;
 
             stickyArea.append(newSticky);
 
@@ -180,7 +180,7 @@
 
             dragTarget.css({
                 left: -cont.left + e.clientX - lastOffsetX + 'px',
-                top: -cont.top + e.clientY - lastOffsetY + 'px',
+                top: $('html').scrollTop() - cont.top + e.clientY - lastOffsetY + 'px',
             });
         });
 
