@@ -1,2 +1,11 @@
 {
+    "notes": "Notes",
+    "subject": "Subject",
+    "body": "Body",
+    "category": "Category",
+    "remind": "Remind",
+    "icon": "Icon",
+    "font": "Font",
+    "color": "Color",
+    "createNote": "Create note"
 }
