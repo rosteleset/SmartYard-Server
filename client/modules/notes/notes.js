@@ -125,8 +125,76 @@
     },
 
     renderNotes: function() {
-        $("#mainForm").html("");
+        $("#mainForm").html(`<div id="stickies-container" style="position: relative;"></div>`);
+
+        let isDragging = false;
+        let dragTarget;
+
+        let lastOffsetX = 0;
+        let lastOffsetY = 0;
+
+        function createSticky(x) {
+            const stickyArea = $('#stickies-container');
+
+            const newSticky = `<div class='drag sticky' style='z-index: 1;'><h3>subject ${x}</h3><p>body</p><span class="deletesticky">&times;</span></div>`;
+
+            stickyArea.append(newSticky);
+
+            /*
+            console.log(1);
+            positionSticky(newSticky);
+            console.log(2);
+            */
+        }
+
+        function positionSticky(sticky) {
+            sticky.style.left = window.innerWidth / 2 - sticky.clientWidth / 2 + (-100 + Math.round(Math.random() * 50)) + 'px';
+            sticky.style.top = window.innerHeight / 2 - sticky.clientHeight / 2 + (-100 + Math.round(Math.random() * 50)) + 'px';
+          }
+
+
+        window.addEventListener('mousedown', e => {
+            let target = $(e.target);
+            if (!target.hasClass('drag')) {
+                return;
+            }
+            let z = 1;
+            $(".sticky").each(function () {
+                let mz = parseInt($(this).css("z-index"));
+                if (mz > z) {
+                    z = mz;
+                }
+            });
+            console.log(z);
+            target.css("z-index", parseInt(z) + 1);
+            dragTarget = target;
+            lastOffsetX = e.offsetX;
+            lastOffsetY = e.offsetY;
+            isDragging = true;
+        });
+
+        window.addEventListener('mousemove', e => {
+            if (!isDragging) return;
+
+            let cont = $('#stickies-container').offset();
+
+            dragTarget.css({
+                left: -cont.left + e.clientX - lastOffsetX + 'px',
+                top: -cont.top + e.clientY - lastOffsetY + 'px',
+            });
+        });
+
+        window.addEventListener('mouseup', () => (isDragging = false));
+
         loadingDone();
+
+        setTimeout(() => {
+            createSticky(1);
+        }, 100);
+
+        setTimeout(() => {
+            createSticky(2);
+        }, 100);
     },
 
     route: function (params) {
