@@ -108,7 +108,7 @@ function cardForm(params) {
         h += `<ul class="nav nav-tabs mt-1 ml-1" id="jsform-content-tab" role="tablist">`;
         for (let i in tabs) {
             h += `<li class="nav-item">`;
-            h += `<a class="nav-link jsform-nav-link ${(i == 0)?"active text-bold":""} jsform-tab-link" id="jsform-content-tab-${md5(tabs[i])}" data-toggle="pill" href="#" role="tab" aria-selected="${(i == 0)?"true":"false"}" aria-controls="jsform-content-${md5(tabs[i])}" data-tab-index="${i}">${tabs[i]}</a>`;
+            h += `<a class="nav-link jsform-nav-link ${(i == 0) ? "active text-bold" : ""} jsform-tab-link" id="jsform-content-tab-${md5(tabs[i])}" data-toggle="pill" href="#" role="tab" aria-selected="${(i == 0) ? "true" : "false"}" aria-controls="jsform-content-${md5(tabs[i])}" data-tab-index="${i}">${tabs[i]}</a>`;
             h += `</li>`;
         }
         h += `</ul>`;
@@ -186,7 +186,7 @@ function cardForm(params) {
         } else {
             h += `<tr class="jsform-tabbed-item" data-tab-index='${tabs.indexOf(params.fields[i].tab)}'>`;
         }
-        params.fields[i].type = params.fields[i].type?params.fields[i].type:"text";
+        params.fields[i].type = params.fields[i].type ? params.fields[i].type : "text";
 
         if (!params.singleColumn) {
             if (params.fields[i].hint || params.fields[i].type === "files") {
@@ -287,8 +287,8 @@ function cardForm(params) {
                     let id = md5(guid());
                     let c = params.fields[i].options[j].checked || (typeof params.fields[i].value === "object" && Array.isArray(params.fields[i].value) && params.fields[i].value.indexOf(params.fields[i].options[j].id) >= 0);
                     h += `
-                        <div class="custom-control custom-checkbox${(j !== params.fields[i].options.length - 1)?" mb-3":""}">
-                        <input type="checkbox" class="ml-1 checkBoxOption-${params.fields[i].id} custom-control-input" id="${id}" data-id="${params.fields[i].options[j].id}"${c?" checked":""}${params.fields[i].options[j].disabled?" disabled":""}/>
+                        <div class="custom-control custom-checkbox${(j !== params.fields[i].options.length - 1) ? " mb-3" : ""}">
+                        <input type="checkbox" class="ml-1 checkBoxOption-${params.fields[i].id} custom-control-input" id="${id}" data-id="${params.fields[i].options[j].id}"${c ? " checked" : ""}${params.fields[i].options[j].disabled ? " disabled" : ""}/>
                         <label for="${id}" class="custom-control-label form-check-label">${params.fields[i].options[j].text}</label>
                     `;
                     if (params.fields[i].options[j].append) {
@@ -325,7 +325,7 @@ function cardForm(params) {
 
             case "code":
             case "json":
-                height = params.fields[i].height?params.fields[i].height:400;
+                height = params.fields[i].height ? params.fields[i].height : 400;
                 h += `<div id="${_prefix}${params.fields[i].id}-div" style="height: ${height}px;">`;
                 h += `<pre class="ace-editor form-control modalFormField" id="${_prefix}${params.fields[i].id}" rows="5" style="border: 1px solid #ced4da; border-radius: 0.25rem;">`;
                 h += `</pre>`;

@@ -42,8 +42,8 @@
         document.title = i18n("windowTitle") + " :: " + i18n("map.map");
 
         $("#altForm").hide();
-        $("#mainForm").html(`<div id='mapContainer' style='width: 100%; height: ${height}px; border: solid thin #dee2e6;' class='mt-2'></div>`);
-        
+        $("#mainForm").html(`<div id='mapContainer' style='width: 100%; height: ${height}px; border: solid thin #dee2e6;' class='mt-2 resizable'></div>`);
+
         modules.map.map = L.map('mapContainer');
 
         if (config.map && config.map.crs) {
@@ -62,7 +62,7 @@
             maxZoom: (config.map && config.map.max)?config.map.max:18,
         }).addTo(modules.map.map);
 
-        let 
+        let
             lat = (config.map && config.map.default && config.map.default.lat)?config.map.default.lat:51.505,
             lon = (config.map && config.map.default && config.map.default.lon)?config.map.default.lon:-0.09,
             zoom = (config.map && config.map.default && config.map.default.zoom)?config.map.default.zoom:13
@@ -88,7 +88,7 @@
             L.marker([lat, lon]).addTo(modules.map.map);
 /*
             let homeMarker = L.AwesomeMarkers.icon({
-                icon: 'home fas fa-fw fa-home', 
+                icon: 'home fas fa-fw fa-home',
                 color: 'green'
             });
             for (let i = 0; i < 100; i++) {
@@ -110,6 +110,14 @@
                 });
             }
         }
+
+        $("mapContainer").off("windowResized").on("windowResized", () => {
+            let height = $(window).height() - mainFormTop;
+            if ($('#subTop:visible').length) {
+                height -= $('#subTop').height();
+            }
+            $("#mapContainer").css("height", height + "px");
+        });
 
         loadingDone();
     },

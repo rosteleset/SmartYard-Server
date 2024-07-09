@@ -479,6 +479,7 @@ function initAll() {
     $("#searchInput").attr("placeholder", i18n("search")).off("keypress").on("keypress", e => {
         if (e.charCode === 13) {
             modules[currentPage].search($("#searchInput").val());
+            e.preventDefault();
         }
     });
 

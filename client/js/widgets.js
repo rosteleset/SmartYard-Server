@@ -1,5 +1,6 @@
 var backToTopButton = false;
 var backToTopTicking = false;
+var windowResizeTicking = false;
 
 function message(message, caption, timeout) {
     timeout = timeout?timeout:15;
@@ -235,10 +236,12 @@ function FAILPAGE(response) {
 }
 
 function loadingStart() {
-    autoZ($('#loading').modal({
-        backdrop: 'static',
-        keyboard: false,
-    }));
+    requestAnimationFrame(() => {
+        autoZ($('#loading').modal({
+            backdrop: 'static',
+            keyboard: false,
+        }));
+    })
 }
 
 function loadingDone(stayHidden) {
@@ -408,28 +411,28 @@ $(document).off("scroll").on("scroll", () => {
             }
             backToTopTicking = false;
         });
-
         backToTopTicking = true;
     }
 });
 
 $(window).off("resize").on("resize", () => {
-    if ($("#editorContainer:visible").length) {
-        if (!$("#editorContainer").attr("data-fh")) {
-            let height = $(window).height() - mainFormTop;
-            if ($('#subTop:visible').length) {
-                height -= $('#subTop').height();
+    if (!windowResizeTicking) {
+        window.requestAnimationFrame(() => {
+            if ($("#editorContainer:visible").length) {
+                if (!$("#editorContainer").attr("data-fh")) {
+                    let height = $(window).height() - mainFormTop;
+                    if ($('#subTop:visible').length) {
+                        height -= $('#subTop').height();
+                    }
+                    $("#editorContainer").css("height", height + "px");
+                }
             }
-            $("#editorContainer").css("height", height + "px");
-
-        }
-    }
-    if ($("#mapContainer:visible").length) {
-        let height = $(window).height() - mainFormTop;
-        if ($('#subTop:visible').length) {
-            height -= $('#subTop').height();
-        }
-        $("#mapContainer").css("height", height + "px");
+            if ($(".resizable:visible")) {
+                $(".resizable:visible").trigger("windowResized");
+            }
+            windowResizeTicking = false;
+        });
+        windowResizeTicking = true;
     }
 });
 
