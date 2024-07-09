@@ -5,6 +5,7 @@ CREATE TABLE notes
     owner CHARACTER VARYING,
     note_subject CHARACTER VARYING,
     note_body CHARACTER VARYING,
+    checks INTEGER DEFAULT 0,
     remind INTEGER DEFAULT 0,
     reminded INTEGER DEFAULT 0,
     color CHARACTER VARYING,

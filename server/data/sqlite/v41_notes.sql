@@ -5,6 +5,7 @@ CREATE TABLE notes
     owner TEXT,
     note_subject TEXT,
     note_body TEXT,
+    checks INTEGER DEFAULT 0,
     remind INTEGER DEFAULT 0,
     reminded INTEGER DEFAULT 0,
     color TEXT,

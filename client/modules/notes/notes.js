@@ -122,7 +122,7 @@
             });
         }
         cardForm({
-            title: i18n("notes.addNote"),
+            title: i18n("notes.createNote"),
             footer: true,
             borderless: true,
             topApply: true,
@@ -259,7 +259,20 @@
 
         let id = md5(guid());
 
-        let newSticky = `<div id='${id}' class='drag sticky bg-warning' style='z-index: 1;'><h5>subject ${x}</h5><hr /><p>body</p><span class="editSticky"><i class="far fa-fw fa-edit"></i></span></div>`;
+        let newSticky = `
+            <div id='${id}' class='drag sticky bg-warning' style='z-index: 1;'>
+                <h5>
+                    <i class="far fa-fw fa-edit mr-1 clock"></i>
+                    subject ${x}
+                </h5>
+                <hr />
+                <p>
+                    body
+                </p>
+                <i class="far fa-fw fa-edit editSticky"></i>
+                <i class="far fa-fw fa-clock text-small reminder"></i>
+            </div>
+        `;
 
         stickyArea.append(newSticky);
 
