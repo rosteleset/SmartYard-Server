@@ -146,12 +146,16 @@
         }
     },
 
+    modifySticky: function (e) {
+        console.log(e);
+    },
+
     createSticky: function(x) {
         let stickyArea = $('#stickiesContainer');
 
         let id = md5(guid());
 
-        let newSticky = `<div id='${id}' class='drag sticky bg-warning' style='z-index: 1;'><h5>subject ${x}</h5><p>body</p><span class="editSticky"><i class="far fa-fw fa-edit"></i></span></div>`;
+        let newSticky = `<div id='${id}' class='drag sticky bg-warning' style='z-index: 1;'><h5>subject ${x}</h5><hr /><p>body</p><span class="editSticky"><i class="far fa-fw fa-edit"></i></span></div>`;
 
         stickyArea.append(newSticky);
 
@@ -163,7 +167,15 @@
         sticky.css({
             left: left,
             top: top,
-        })
+        });
+
+        $(".editSticky").off("mousedown").on("mousedown", e => {
+            e.preventDefault();
+
+            return false;
+        });
+
+        $(".editSticky").off("click").on("click", modules.notes.modifySticky)
     },
 
     route: function (params) {

@@ -528,7 +528,10 @@ select {
 }
 
 .sticky {
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  -moz-box-shadow: 3px 3px 5px #696969;
+  -webkit-box-shadow: 3px 3px 5px #696969;
+  box-shadow: 3px 3px 5px #696969;
+  border-radius: 5px;
   display: inline-block;
   padding: 1rem;
   position: absolute;
@@ -540,12 +543,14 @@ select {
   pointer-events: none;
 }
 
+/*
 .sticky h5 {
   border-bottom: dashed 2px #0085e8;
   margin: 0 0 1rem;
   min-height: 1.3rem;
   padding: 0 0 1rem 0;
 }
+*/
 
 .sticky p {
   margin: 0;
