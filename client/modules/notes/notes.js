@@ -28,15 +28,11 @@
                 let z = 1;
 
                 $(".sticky").each(function () {
-                    let me = $(this);
-                    let mz = parseInt(me.css("z-index"));
-                    if (mz > z) {
-                        z = mz;
-                    }
+                    z = Math.max(z, parseInt($(this).css("z-index")));
                 });
 
                 target.css({
-                    "z-index": parseInt(z) + 1,
+                    "z-index": z + 1,
                     "cursor": "grab",
                 });
 
@@ -214,6 +210,31 @@
                             value: "bg-orange",
                             icon: "p-1 fas fa-palette bg-orange",
                         },
+                        {
+                            text: "Lightblue",
+                            value: "bg-lightblue",
+                            icon: "p-1 fas fa-palette bg-lightblue",
+                        },
+                        {
+                            text: "Fuchsia",
+                            value: "bg-fuchsia",
+                            icon: "p-1 fas fa-palette bg-fuchsia",
+                        },
+                        {
+                            text: "Black",
+                            value: "bg-black",
+                            icon: "p-1 fas fa-palette bg-black",
+                        },
+                        {
+                            text: "Gray",
+                            value: "bg-gray",
+                            icon: "p-1 fas fa-palette bg-gray",
+                        },
+                        {
+                            text: "Lime",
+                            value: "bg-lime",
+                            icon: "p-1 fas fa-palette bg-lime",
+                        },
                     ],
                     value: "bg-warning",
                 },
@@ -266,8 +287,14 @@
 
         let id = md5(guid());
 
+        let z = 1;
+
+        $(".sticky").each(function () {
+            z = Math.max(z, parseInt($(this).css("z-index")));
+        });
+
         let newSticky = `
-            <div id='${id}' class='drag sticky bg-warning' style='z-index: 1;'>
+            <div id='${id}' class='drag sticky bg-orange' style='z-index: ${z + 1};'>
                 <h5 class="caption">
                     <i class="fas fa-fw fa-thumbtack mr-1 clock"></i>
                     subject ${x}
