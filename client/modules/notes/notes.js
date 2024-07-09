@@ -296,6 +296,12 @@
             modules.notes.adjustStickiesContainer();
         });
 
+        let rtd = "";
+        rtd += `<div class="form-inline mt-1 mr-3"><div class="input-group input-group-sm"><select id="notesCategories" class="form-control select-arrow" style="width: 259px;">`;
+        rtd += `</select></div>`;
+
+        $("#rightTopDynamic").html(rtd);
+
         loadingDone();
     },
 

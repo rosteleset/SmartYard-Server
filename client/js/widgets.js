@@ -241,21 +241,23 @@ function loadingStart() {
             backdrop: 'static',
             keyboard: false,
         }));
-    })
+    });
 }
 
 function loadingDone(stayHidden) {
-    xblur();
+    requestAnimationFrame(() => {
+        xblur();
 
-    $('#loading').modal('hide');
+        $('#loading').modal('hide');
 
-    if (stayHidden === true) {
-        $('#app').addClass("invisible");
-    } else {
-        $('#app').removeClass("invisible");
-    }
+        if (stayHidden === true) {
+            $('#app').addClass("invisible");
+        } else {
+            $('#app').removeClass("invisible");
+        }
 
-    $(window).resize();
+        $(window).resize();
+    });
 }
 
 function timeoutStart() {
