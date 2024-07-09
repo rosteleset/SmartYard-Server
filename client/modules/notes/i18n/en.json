@@ -7,5 +7,6 @@
     "icon": "Icon",
     "font": "Font",
     "color": "Color",
-    "createNote": "Create note"
+    "createNote": "Create note",
+    "withoutIcon": "Without icon"
 }

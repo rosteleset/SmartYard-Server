@@ -105,7 +105,14 @@
     },
 
     createNote: function () {
-        let icons = [];
+        let icons = [
+            {
+                icon: "fa fa-fw",
+                text: i18n("notes.withoutIcon"),
+                value: "",
+            },
+        ];
+
         for (let i in faIcons) {
             icons.push({
                 icon: faIcons[i].title + " fa-fw",
@@ -154,7 +161,7 @@
                     title: i18n("notes.icon"),
                     type: "select2",
                     options: icons,
-                    value: "fas fa-thumbtack",
+                    value: "",
                 },
                 {
                     id: "font",
@@ -261,12 +268,12 @@
 
         let newSticky = `
             <div id='${id}' class='drag sticky bg-warning' style='z-index: 1;'>
-                <h5>
-                    <i class="far fa-fw fa-edit mr-1 clock"></i>
+                <h5 class="caption">
+                    <i class="fas fa-fw fa-thumbtack mr-1 clock"></i>
                     subject ${x}
                 </h5>
                 <hr />
-                <p>
+                <p class="body">
                     body
                 </p>
                 <i class="far fa-fw fa-edit editSticky"></i>
@@ -278,12 +285,9 @@
 
         let sticky = $("#" + id);
 
-        let left = window.innerWidth / 2 - sticky.outerWidth(true) / 2 + (-100 + Math.round(Math.random() * 50)) + 'px';
-        let top = window.innerHeight / 2 - sticky.outerHeight(true) / 2 + (-100 + Math.round(Math.random() * 50)) + 'px';
-
         sticky.css({
-            left: left,
-            top: top,
+            left: window.innerWidth / 2 - sticky.outerWidth(true) / 2 + (-100 + Math.round(Math.random() * 50)) + 'px',
+            top: window.innerHeight / 2 - sticky.outerHeight(true) / 2 + (-100 + Math.round(Math.random() * 50)) + 'px',
         });
 
         $(".editSticky").off("mousedown").on("mousedown", e => {
