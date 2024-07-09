@@ -427,7 +427,7 @@ $(window).off("resize").on("resize", () => {
                     $("#editorContainer").css("height", height + "px");
                 }
             }
-            if ($(".resizable:visible")) {
+            if ($(".resizable:visible").length) {
                 $(".resizable:visible").trigger("windowResized");
             }
             windowResizeTicking = false;

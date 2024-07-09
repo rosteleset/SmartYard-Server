@@ -111,7 +111,7 @@
             }
         }
 
-        $("mapContainer").off("windowResized").on("windowResized", () => {
+        $("#mapContainer").off("windowResized").on("windowResized", () => {
             let height = $(window).height() - mainFormTop;
             if ($('#subTop:visible').length) {
                 height -= $('#subTop').height();

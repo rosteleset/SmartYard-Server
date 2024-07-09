@@ -1,8 +1,9 @@
 const modules = {};
 const moduleLoadQueue = [];
 const loadingProgress = new ldBar("#loadingProgress");
+
 // TODO f..ck!
-const mainFormTop = 75;
+let mainFormTop = 74;
 
 var lastHash = false;
 var currentPage = false;
