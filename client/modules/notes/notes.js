@@ -1,7 +1,19 @@
 ({
     menuItem: false,
+
+    initialWidth: 0,
     initialHeight: 0,
+
+    stretchedWidth: 0,
     stretchedHeight: 0,
+
+    isDragging: false,
+    dragTarget: undefined,
+
+    lastOffsetX: 0,
+    lastOffsetY: 0,
+    lastLeft: 0,
+    lastTop: 0,
 
     init: function () {
         if (parseInt(myself.uid) > 0) {
@@ -9,6 +21,86 @@
                 this.menuItem = leftSide("fas fa-fw fa-thumbtack", i18n("notes.notes"), "?#notes", "notes");
             }
         }
+
+        $(window).off("mousedown").on("mousedown", e => {
+            let target = $(e.target);
+
+            if (target.hasClass('drag')) {
+                let z = 1;
+
+                $(".sticky").each(function () {
+                    let me = $(this);
+                    let mz = parseInt(me.css("z-index"));
+                    if (mz > z) {
+                        z = mz;
+                    }
+                });
+
+                target.css({
+                    "z-index": parseInt(z) + 1,
+                    "cursor": "grab",
+                });
+
+                modules.notes.dragTarget = target;
+
+                modules.notes.lastOffsetX = e.offsetX;
+                modules.notes.lastOffsetY = e.offsetY;
+
+                modules.notes.isDragging = 1;
+
+                return;
+            }
+
+            if (target.attr("id") == "stickiesContainer") {
+                target.css("cursor", "grab");
+
+                modules.notes.dragTarget = target;
+
+                modules.notes.lastLeft = target.parent().scrollLeft();
+                modules.notes.lastTop = $("html").scrollTop();
+                modules.notes.lastOffsetX = e.clientX;
+                modules.notes.lastOffsetY = e.clientY;
+
+                modules.notes.isDragging = 2;
+
+                return;
+            }
+        });
+
+        $(window).off("mousemove").on("mousemove", e => {
+            if (!modules.notes.isDragging) return;
+
+            let cont = $("#stickiesContainer");
+
+            if (modules.notes.isDragging == 1) {
+                let off = cont.offset();
+
+                modules.notes.dragTarget.css({
+                    left: -off.left + e.clientX - modules.notes.lastOffsetX + 'px',
+                    top: $("html").scrollTop() - off.top + e.clientY - modules.notes.lastOffsetY + 'px',
+                });
+            }
+
+            if (modules.notes.isDragging == 2) {
+                let dx = e.clientX - modules.notes.lastOffsetX;
+                let dy = e.clientY - modules.notes.lastOffsetY;
+
+                cont.parent().scrollLeft(modules.notes.lastLeft - dx);
+                $("html").scrollTop(modules.notes.lastTop - dy);
+            }
+        });
+
+        $(window).off("mouseup").on("mouseup", e => {
+            if (!modules.notes.isDragging) return;
+
+            modules.notes.adjustStickiesContainer();
+
+            modules.notes.dragTarget.css({
+                "cursor": "",
+            });
+
+            return modules.notes.isDragging = false;
+        });
 
         moduleLoaded("notes", this);
     },
@@ -127,23 +219,38 @@
     },
 
     adjustStickiesContainer: function (init) {
-        let w = $(window);
-        let s = $("#stickiesContainer");
+        let wi = $(window);
+        let ct = $("#stickiesContainer");
 
-        let h = w.height() - mainFormTop - modules.notes.initialHeight;
+        // !!!тут все переделать!!!
+
+        let w = wi.width() - $(".main-sidebar").outerWidth(true) - modules.notes.initialWidth;
+        let h = wi.height() - mainFormTop - modules.notes.initialHeight;
 
         if (init) {
+            modules.notes.stretchedWidth = w;
             modules.notes.stretchedHeight = h;
-            s.css("height", h + "px");
-        } else {
-            let mh = 0;
-            $(".sticky").each(function () {
-                let s = $(this);
-                mh = Math.max(mh, s.position().top + s.outerHeight(true) + 20);
+            ct.css({
+                width: w + "px",
+                height: h + "px",
             });
-            mh = Math.max(modules.notes.stretchedHeight, mh - modules.notes.initialHeight);
-            s.css("height", mh + "px");
         }
+
+        let mh = 0, mw = 0;
+
+        $(".sticky").each(function () {
+            let s = $(this);
+            mw = Math.max(mw, s.position().left + s.outerWidth(true) + 20);
+            mh = Math.max(mh, s.position().top + s.outerHeight(true) + 20);
+        });
+
+        mw = Math.max(modules.notes.stretchedWidth, mw - modules.notes.initialWidth);
+        mh = Math.max(modules.notes.stretchedHeight, mh - modules.notes.initialHeight);
+
+        ct.css({
+            width: mw + "px",
+            height: mh + "px",
+        });
     },
 
     modifySticky: function (e) {
@@ -196,89 +303,10 @@
             modules.notes.createNote();
         });
 
-        $("#mainForm").html(`<div style="overflow-x: scroll; overflow-y: hidden;" class="p-0 m-0 mt-3"><div id="stickiesContainer" style="position: relative;" class="p-0 m-0 resizable"></div></div>`);
-
-        let isDragging = false;
-        let dragTarget;
-
-        let lastOffsetX = 0;
-        let lastOffsetY = 0;
-        let lastLeft = 0;
-        let lastTop = 0;
-
-        $("#stickiesContainer").off("mousedown").on("mousedown", e => {
-            let target = $(e.target);
-
-            if (target.hasClass('drag')) {
-                let z = 1;
-
-                $(".sticky").each(function () {
-                    let me = $(this);
-                    let mz = parseInt(me.css("z-index"));
-                    if (mz > z) {
-                        z = mz;
-                    }
-                });
-
-                target.css({
-                    "z-index": parseInt(z) + 1,
-                    "cursor": "grab",
-                });
-
-                dragTarget = target;
-
-                lastOffsetX = e.offsetX;
-                lastOffsetY = e.offsetY;
-
-                isDragging = 1;
-            } else {
-                target.css("cursor", "grab");
-
-                lastLeft = target.parent().scrollLeft();
-                lastTop = $("html").scrollTop();
-                lastOffsetX = e.clientX;
-                lastOffsetY = e.clientY;
-
-                isDragging = 2;
-            }
-        });
-
-        $("#stickiesContainer").off("mousemove").on("mousemove", e => {
-            if (!isDragging) return;
-
-            let cont = $("#stickiesContainer");
-
-            if (isDragging == 1) {
-                let off = cont.offset();
-
-                dragTarget.css({
-                    left: -off.left + e.clientX - lastOffsetX + 'px',
-                    top: $("html").scrollTop() - off.top + e.clientY - lastOffsetY + 'px',
-                });
-            }
-
-            if (isDragging == 2) {
-                let dx = e.clientX - lastOffsetX;
-                let dy = e.clientY - lastOffsetY;
-
-                cont.parent().scrollLeft(lastLeft - dx);
-                $("html").scrollTop(lastTop - dy);
-            }
-        });
-
-        $("#stickiesContainer").off("mouseup").on("mouseup", e => {
-            let target = $(e.target);
-
-            modules.notes.adjustStickiesContainer();
-
-            target.css({
-                "cursor": "",
-            });
-
-            return isDragging = false;
-        });
+        $("#mainForm").html(`<div style="overflow-x: scroll; overflow-y: hidden;" class="p-0 m-0 mt-3"><div id="stickiesContainer" style="position: relative;" class="p-0 m-0 resizable mouseEvents"></div></div>`);
 
         let s = $("#stickiesContainer");
+        modules.notes.initialWidth = s.width();
         modules.notes.initialHeight = s.parent().height();
 
         modules.notes.adjustStickiesContainer(true);

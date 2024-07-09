@@ -528,9 +528,9 @@ select {
 }
 
 .sticky {
-  -moz-box-shadow: 3px 3px 5px #696969;
-  -webkit-box-shadow: 3px 3px 5px #696969;
-  box-shadow: 3px 3px 5px #696969;
+  -moz-box-shadow: 2px 2px 2px #696969;
+  -webkit-box-shadow: 2px 2px 2px #696969;
+  box-shadow: 2px 2px 2px #696969;
   border-radius: 5px;
   display: inline-block;
   padding: 1rem;
