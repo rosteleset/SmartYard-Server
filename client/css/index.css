@@ -544,15 +544,6 @@ select {
   pointer-events: none;
 }
 
-/*
-.sticky h5 {
-  border-bottom: dashed 2px #0085e8;
-  margin: 0 0 1rem;
-  min-height: 1.3rem;
-  padding: 0 0 1rem 0;
-}
-*/
-
 .sticky p {
   margin: 0;
   min-height: 9rem;
