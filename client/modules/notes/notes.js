@@ -1,7 +1,6 @@
 ({
     menuItem: false,
 
-    initialWidth: 0,
     initialHeight: 0,
 
     stretchedWidth: 0,
@@ -222,9 +221,7 @@
         let wi = $(window);
         let ct = $("#stickiesContainer");
 
-        // !!!тут все переделать!!!
-
-        let w = wi.width() - $(".main-sidebar").outerWidth(true) - modules.notes.initialWidth;
+        let w = ct.width();
         let h = wi.height() - mainFormTop - modules.notes.initialHeight;
 
         if (init) {
@@ -240,11 +237,11 @@
 
         $(".sticky").each(function () {
             let s = $(this);
-            mw = Math.max(mw, s.position().left + s.outerWidth(true) + 20);
+            mw = Math.max(mw, s.position().left + s.outerWidth(true));
             mh = Math.max(mh, s.position().top + s.outerHeight(true) + 20);
         });
 
-        mw = Math.max(modules.notes.stretchedWidth, mw - modules.notes.initialWidth);
+        mw = Math.max(modules.notes.stretchedWidth, mw);
         mh = Math.max(modules.notes.stretchedHeight, mh - modules.notes.initialHeight);
 
         ct.css({
@@ -306,7 +303,7 @@
         $("#mainForm").html(`<div style="overflow-x: scroll; overflow-y: hidden;" class="p-0 m-0 mt-3"><div id="stickiesContainer" style="position: relative;" class="p-0 m-0 resizable mouseEvents"></div></div>`);
 
         let s = $("#stickiesContainer");
-        modules.notes.initialWidth = s.width();
+
         modules.notes.initialHeight = s.parent().height();
 
         modules.notes.adjustStickiesContainer(true);
