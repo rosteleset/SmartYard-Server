@@ -125,7 +125,7 @@
     },
 
     renderNotes: function() {
-        $("#mainForm").html(`<div id="stickies-container" style="width: 4096px;"></div>`);
+        $("#mainForm").html(`<div style="overflow-x: scroll;" class="p-0 m-0"><div id="stickies-container" style="width: 4096px; height: 4096px; position: relative;" class="p-0 m-0"></div></div>`);
 
         let isDragging = false;
         let dragTarget;
@@ -136,7 +136,9 @@
         function createSticky(x) {
             const stickyArea = $('#stickies-container');
 
-            const newSticky = `<div class='drag sticky bg-warning' style='z-index: 1;'><h5>subject ${x}</h5><p>body</p><span class="editsticky"><i class="far fa-fw fa-edit"></i></span></div>`;
+            const id = md5(guid());
+
+            const newSticky = `<div id='${id}' class='drag sticky bg-warning' style='z-index: 1;'><h5>subject ${x}</h5><p>body</p><span class="editsticky"><i class="far fa-fw fa-edit"></i></span></div>`;
 
             stickyArea.append(newSticky);
 
@@ -153,38 +155,45 @@
           }
 
 
-        window.addEventListener('mousedown', e => {
+        $("#stickies-container").off("mousedown").on("mousedown", e => {
             let target = $(e.target);
-            if (!target.hasClass('drag')) {
-                return;
+            if (target.hasClass('drag')) {
+                let z = 1;
+                $(".sticky").each(function () {
+                    let me = $(this);
+                    let mz = parseInt(me.css("z-index"));
+                    if (mz > z) {
+                        z = mz;
+                    }
+                });
+                target.css("z-index", parseInt(z) + 1);
+                dragTarget = target;
+                lastOffsetX = e.offsetX;
+                lastOffsetY = e.offsetY;
+                isDragging = 1;
+            } else {
+                isDragging = 2;
             }
-            let z = 1;
-            $(".sticky").each(function () {
-                let mz = parseInt($(this).css("z-index"));
-                if (mz > z) {
-                    z = mz;
-                }
-            });
-            console.log(z);
-            target.css("z-index", parseInt(z) + 1);
-            dragTarget = target;
-            lastOffsetX = e.offsetX;
-            lastOffsetY = e.offsetY;
-            isDragging = true;
         });
 
-        window.addEventListener('mousemove', e => {
+        $("#stickies-container").off("mousemove").on("mousemove", e => {
             if (!isDragging) return;
 
-            let cont = $('#stickies-container').offset();
+            if (isDragging == 1) {
+                let cont = $('#stickies-container').offset();
 
-            dragTarget.css({
-                left: -cont.left + e.clientX - lastOffsetX + 'px',
-                top: $('html').scrollTop() - cont.top + e.clientY - lastOffsetY + 'px',
-            });
+                dragTarget.css({
+                    left: -cont.left + e.clientX - lastOffsetX + 'px',
+                    top: $('html').scrollTop() - cont.top + e.clientY - lastOffsetY + 'px',
+                });
+            }
+
+            if (isDragging == 2) {
+
+            }
         });
 
-        window.addEventListener('mouseup', () => (isDragging = false));
+        $("#stickies-container").off("mouseup").on("mouseup", () => (isDragging = false));
 
         loadingDone();
 
