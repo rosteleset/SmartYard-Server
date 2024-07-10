@@ -167,25 +167,28 @@ function cardForm(params) {
             h += "</tr>";
             continue;
         }
+
         if (params.fields[i].options) {
             for (let j in params.fields[i].options) {
-                if (params.fields[i].options[j].id && !params.fields[i].options[j].value) {
+                if (params.fields[i].options[j].id && !params.fields[i].options[j].value && params.fields[i].options[j].value !== "") {
                     params.fields[i].options[j].value = params.fields[i].options[j].id;
                 }
                 if (params.fields[i].options[j].value && !params.fields[i].options[j].id) {
                     params.fields[i].options[j].id = params.fields[i].options[j].value;
                 }
-                if (!params.fields[i].options[j].id && !params.fields[i].options[j].value && params.fields[i].options[j].text) {
+                if (!params.fields[i].options[j].id && !params.fields[i].options[j].value && params.fields[i].options[j].value !== "" && params.fields[i].options[j].text) {
                     params.fields[i].options[j].id = params.fields[i].options[j].text;
                     params.fields[i].options[j].value = params.fields[i].options[j].text;
                 }
             }
         }
+
         if (params.fields[i].hidden || params.fields[i].tab_hidden) {
             h += `<tr style="display: none;" class="jsform-tabbed-item" data-tab-index='${tabs.indexOf(params.fields[i].tab)}'>`;
         } else {
             h += `<tr class="jsform-tabbed-item" data-tab-index='${tabs.indexOf(params.fields[i].tab)}'>`;
         }
+
         params.fields[i].type = params.fields[i].type ? params.fields[i].type : "text";
 
         if (!params.singleColumn) {

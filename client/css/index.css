@@ -549,6 +549,10 @@ select {
   pointer-events: none;
 }
 
+.sticky .body a {
+  pointer-events: all;
+}
+
 .sticky .editSticky {
   cursor: pointer;
   font-size: 1rem;

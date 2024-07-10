@@ -116,12 +116,14 @@
                 value: faIcons[i].title,
             });
         }
+
         let fonts = [
             {
                 text: i18n("notes.fontByDefault"),
                 value: "",
             },
         ];
+
         for (let i in availableFonts) {
             fonts.push({
                 text: availableFonts[i],
@@ -129,6 +131,7 @@
                 font: availableFonts[i],
             });
         }
+
         cardForm({
             title: i18n("notes.createNote"),
             footer: true,
