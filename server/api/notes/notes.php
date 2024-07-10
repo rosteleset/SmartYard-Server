@@ -25,9 +25,15 @@
             }
 
             public static function index() {
-                return [
-                    "GET" => "#common",
-                ];
+                $notes = loadBackend("notes");
+
+                if ($notes) {
+                    return [
+                        "GET" => "#common",
+                    ];
+                } else {
+                    return false;
+                }
             }
         }
     }

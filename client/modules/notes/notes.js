@@ -28,7 +28,6 @@
     createNote: function () {
         let icons = [
             {
-                icon: "fa fa-fw",
                 text: i18n("notes.withoutIcon"),
                 value: "",
             },

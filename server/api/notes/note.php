@@ -45,11 +45,17 @@
             }
 
             public static function index() {
-                return [
-                    "POST" => "#common",
-                    "PUT" => "#common",
-                    "DELETE" => "#common",
-                ];
+                $notes = loadBackend("notes");
+
+                if ($notes) {
+                    return [
+                        "POST" => "#common",
+                        "PUT" => "#common",
+                        "DELETE" => "#common",
+                    ];
+                } else {
+                    return false;
+                }
             }
         }
     }
