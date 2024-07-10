@@ -9,7 +9,7 @@
         use api\api;
 
         /**
-         * note method
+         * xyz method
          */
 
         class xyz extends api {
