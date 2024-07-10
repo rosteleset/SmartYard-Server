@@ -33,7 +33,7 @@
              */
             public function modifyNote11($id, $subject, $body, $category, $remind, $icon, $font, $color, $x, $y, $z)
             {
-
+                error_log("$id, $subject, $body, $category, $remind, $icon, $font, $color, $x, $y, $z");
             }
 
             /**
@@ -41,7 +41,7 @@
              */
             public function modifyNote4($id, $x, $y, $z)
             {
-
+                error_log("$id, $x, $y, $z");
             }
 
             /**
@@ -53,11 +53,12 @@
             }
 
             public function __call($method, $arguments) {
-                if($method == 'modifyNote') {
-                    if(count($arguments) == 11) {
+                if ($method == 'modifyNote') {
+                    if (count($arguments) == 11) {
                        return call_user_func_array([ $this, 'modifyNote11' ], $arguments);
                     }
-                    else if(count($arguments) == 4) {
+                    else
+                    if (count($arguments) == 4) {
                        return call_user_func_array([ $this, 'modifyNote4' ], $arguments);
                     }
                 }

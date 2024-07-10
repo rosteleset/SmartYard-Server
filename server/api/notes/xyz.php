@@ -12,7 +12,7 @@
          * note method
          */
 
-        class note extends api {
+        class xyz extends api {
 
             public static function PUT($params) {
                 $notes = loadBackend("notes");
