@@ -6,14 +6,15 @@ CREATE TABLE notes
     note_subject CHARACTER VARYING,
     note_body CHARACTER VARYING,
     checks INTEGER DEFAULT 0,
+    category CHARACTER VARYING,
     remind INTEGER DEFAULT 0,
-    reminded INTEGER DEFAULT 0,
+    icon CHARACTER VARYING,
+    font CHARACTER VARYING,
     color CHARACTER VARYING,
+    reminded INTEGER DEFAULT 0,
     position_left INTEGER,
     position_top INTEGER,
-    position_order INTEGER,
-    category CHARACTER VARYING,
-    font CHARACTER VARYING
+    position_order INTEGER
 );
 CREATE INDEX notes_owner ON notes(owner);
 CREATE INDEX notes_remind ON notes(remind);
