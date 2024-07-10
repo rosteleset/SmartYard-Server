@@ -34,9 +34,11 @@ class ufanet extends camera
 
     public function setOsdText(string $text = '')
     {
+        $modifiedText = str_replace(' ', '%20', $text);
+
         $this->apiCall('/cgi-bin/configManager.cgi', 'GET', [
             'action' => 'setConfig',
-            'Locales.TimeFormat' => "%22%d.%m.%y%20%H:%M:%S%20$text%22",
+            'Locales.TimeFormat' => "%22%d.%m.%y%20%H:%M:%S%20$modifiedText%22",
             'VideoWidget[0].TimeTitle.Rect[0]' => 0,
             'VideoWidget[0].TimeTitle.Rect[1]' => 0,
         ]);
@@ -59,8 +61,8 @@ class ufanet extends camera
             'name' => 'MotionDetect',
         ]);
 
-        ['ROI' => $roi] = $this->convertResponseToArray($rawParams);
-        $coordinates = explode('x', $roi);
+        $params = $this->convertResponseToArray($rawParams);
+        $coordinates = explode('x', $params['roi'] ?? '0x0x0x0');
 
         return [
             'left' => $coordinates[0],
@@ -77,7 +79,9 @@ class ufanet extends camera
             'name' => 'Locales'
         ]);
 
-        ['TimeFormat' => $timeFormat] = $this->convertResponseToArray($rawParams);
-        return explode(' ', $timeFormat, 3)[2];
+        $params = $this->convertResponseToArray($rawParams);
+        $timeFormat = $params['TimeFormat'] ?? '';
+
+        return explode(' ', $timeFormat, 3)[2] ?? '';
     }
 }

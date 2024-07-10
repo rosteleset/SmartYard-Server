@@ -118,12 +118,15 @@ trait ufanet
     protected function convertResponseToArray(string $response): array
     {
         $responseArray = [];
-        $lines = explode("\n", trim($response));
 
-        foreach ($lines as $line) {
-            [$longKey, $value] = explode('=', trim($line), 2);
-            $longKeyArray = explode('.', $longKey);
-            $responseArray[end($longKeyArray)] = $value;
+        if (!empty($response)) {
+            $lines = explode("\n", trim($response));
+
+            foreach ($lines as $line) {
+                [$longKey, $value] = explode('=', trim($line), 2);
+                $longKeyArray = explode('.', $longKey);
+                $responseArray[end($longKeyArray)] = $value;
+            }
         }
 
         return $responseArray;
