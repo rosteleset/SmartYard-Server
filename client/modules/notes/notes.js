@@ -391,7 +391,12 @@
 
         $("#rightTopDynamic").html(rtd);
 
-        loadingDone();
+        GET("notes", "notes", false, true).
+        done(result => {
+            console.log(result);
+        }).
+        fail(FAILPAGE).
+        always(loadingDone);
     },
 
     search: function (search) {
