@@ -1,5 +1,5 @@
 import { SyslogService } from './index.js';
-import { API } from '../utils/index.js';
+import { API, mdTimer } from '../utils/index.js';
 
 /**
  * Class representing an event handler for Ufanet devices.
@@ -10,13 +10,9 @@ class UfanetService extends SyslogService {
 
     async handleSyslogMessage(date, host, message) {
         // Motion detection start
-        if (false) {
-            // TODO
-        }
-
-        // Motion detection: stop
-        if (false) {
-            // TODO
+        if (message.includes('motion detected')) {
+            await API.motionDetection({ date: date, ip: host, motionActive: true });
+            await mdTimer({ ip: host });
         }
 
         // Opening door by DTMF or CMS handset
