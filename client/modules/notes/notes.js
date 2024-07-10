@@ -119,7 +119,7 @@
 
         let fonts = [
             {
-                text: i18n("notes.fontByDefault"),
+                text: i18n("notes.default"),
                 value: "",
             },
         ];
@@ -157,6 +157,16 @@
                     id: "category",
                     title: i18n("notes.category"),
                     type: "select2",
+                    multiple: false,
+                    tags: true,
+                    createTags: true,
+                    value: i18n("notes.default"),
+                    options: [
+                        {
+                            text: i18n("notes.default"),
+                            value: i18n("notes.default"),
+                        },
+                    ],
                 },
                 {
                     id: "remind",
@@ -182,7 +192,7 @@
                     type: "select2",
                     options: [
                         {
-                            text: "По умолчанию",
+                            text: i18n("notes.default"),
                             value: "bg-warning",
                             icon: "p-1 fas fa-palette bg-warning",
                         },

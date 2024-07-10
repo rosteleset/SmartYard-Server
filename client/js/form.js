@@ -681,10 +681,11 @@ function cardForm(params) {
             }
 
             function s2FormatR(item) {
+/*
                 if (!item.id) {
                     return item.text;
                 }
-
+*/
                 let c = '';
                 let f = '';
 
@@ -704,10 +705,11 @@ function cardForm(params) {
             }
 
             function s2FormatS(item) {
+/*
                 if (!item.id) {
                     return item.text;
                 }
-
+*/
                 let c = '';
                 let f = '';
 

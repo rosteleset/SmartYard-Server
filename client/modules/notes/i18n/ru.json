@@ -8,5 +8,6 @@
     "font": "Шрифт",
     "color": "Цвет",
     "createNote": "Добавить заметку",
-    "withoutIcon": "Без значка"
+    "withoutIcon": "Без значка",
+    "default": "По умолчанию"
 }
