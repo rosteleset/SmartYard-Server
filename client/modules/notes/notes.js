@@ -14,89 +14,14 @@
     lastLeft: 0,
     lastTop: 0,
 
+    notes: [],
+
     init: function () {
         if (parseInt(myself.uid) > 0) {
             if (AVAIL("notes")) {
                 this.menuItem = leftSide("fas fa-fw fa-thumbtack", i18n("notes.notes"), "?#notes", "notes");
             }
         }
-
-        $(window).off("mousedown").on("mousedown", e => {
-            let target = $(e.target);
-
-            if (target.hasClass('drag')) {
-                let z = 1;
-
-                $(".sticky").each(function () {
-                    z = Math.max(z, parseInt($(this).css("z-index")));
-                });
-
-                target.css({
-                    "z-index": z + 1,
-                    "cursor": "grab",
-                });
-
-                modules.notes.dragTarget = target;
-
-                modules.notes.lastOffsetX = e.offsetX;
-                modules.notes.lastOffsetY = e.offsetY;
-
-                modules.notes.isDragging = 1;
-
-                return;
-            }
-
-            if (target.attr("id") == "stickiesContainer") {
-                target.css("cursor", "grab");
-
-                modules.notes.dragTarget = target;
-
-                modules.notes.lastLeft = target.parent().scrollLeft();
-                modules.notes.lastTop = $("html").scrollTop();
-                modules.notes.lastOffsetX = e.clientX;
-                modules.notes.lastOffsetY = e.clientY;
-
-                modules.notes.isDragging = 2;
-
-                return;
-            }
-        });
-
-        $(window).off("mousemove").on("mousemove", e => {
-            if (!modules.notes.isDragging) return;
-
-            let cont = $("#stickiesContainer");
-
-            if (modules.notes.isDragging == 1) {
-                let off = cont.offset();
-
-                modules.notes.dragTarget.css({
-                    left: -off.left + e.clientX - modules.notes.lastOffsetX + 'px',
-                    top: $("html").scrollTop() - off.top + e.clientY - modules.notes.lastOffsetY + 'px',
-                });
-            }
-
-            if (modules.notes.isDragging == 2) {
-                let dx = e.clientX - modules.notes.lastOffsetX;
-                let dy = e.clientY - modules.notes.lastOffsetY;
-
-                cont.parent().scrollLeft(modules.notes.lastLeft - dx);
-                $("html").scrollTop(modules.notes.lastTop - dy);
-            }
-        });
-
-        $(window).off("mouseup").on("mouseup", e => {
-            if (!modules.notes.isDragging) return;
-
-            modules.notes.adjustStickiesContainer();
-
-            modules.notes.dragTarget.css({
-                "cursor": "",
-            });
-
-            return modules.notes.isDragging = false;
-        });
-
         moduleLoaded("notes", this);
     },
 
@@ -152,6 +77,11 @@
                     validate: a => {
                         return $.trim(a) != '';
                     }
+                },
+                {
+                    id: "checks",
+                    title: i18n("notes.checks"),
+                    type: "noyes",
                 },
                 {
                     id: "category",
@@ -362,6 +292,82 @@
         if (parseInt(myself.uid) && AVAIL("notes")) {
             $("#leftTopDynamic").html(`<li class="nav-item d-none d-sm-inline-block"><span class="hoverable pointer nav-link text-success text-bold createNote">${i18n("notes.createNote")}</span></li>`);
         }
+
+        $(window).off("mousedown").on("mousedown", e => {
+            let target = $(e.target);
+
+            if (target.hasClass('drag')) {
+                let z = 1;
+
+                $(".sticky").each(function () {
+                    z = Math.max(z, parseInt($(this).css("z-index")));
+                });
+
+                target.css({
+                    "z-index": z + 1,
+                    "cursor": "grab",
+                });
+
+                modules.notes.dragTarget = target;
+
+                modules.notes.lastOffsetX = e.offsetX;
+                modules.notes.lastOffsetY = e.offsetY;
+
+                modules.notes.isDragging = 1;
+
+                return;
+            }
+
+            if (target.attr("id") == "stickiesContainer") {
+                target.css("cursor", "grab");
+
+                modules.notes.dragTarget = target;
+
+                modules.notes.lastLeft = target.parent().scrollLeft();
+                modules.notes.lastTop = $("html").scrollTop();
+                modules.notes.lastOffsetX = e.clientX;
+                modules.notes.lastOffsetY = e.clientY;
+
+                modules.notes.isDragging = 2;
+
+                return;
+            }
+        });
+
+        $(window).off("mousemove").on("mousemove", e => {
+            if (!modules.notes.isDragging) return;
+
+            let cont = $("#stickiesContainer");
+
+            if (modules.notes.isDragging == 1) {
+                let off = cont.offset();
+
+                modules.notes.dragTarget.css({
+                    left: -off.left + e.clientX - modules.notes.lastOffsetX + 'px',
+                    top: $("html").scrollTop() - off.top + e.clientY - modules.notes.lastOffsetY + 'px',
+                });
+            }
+
+            if (modules.notes.isDragging == 2) {
+                let dx = e.clientX - modules.notes.lastOffsetX;
+                let dy = e.clientY - modules.notes.lastOffsetY;
+
+                cont.parent().scrollLeft(modules.notes.lastLeft - dx);
+                $("html").scrollTop(modules.notes.lastTop - dy);
+            }
+        });
+
+        $(window).off("mouseup").on("mouseup", e => {
+            if (!modules.notes.isDragging) return;
+
+            modules.notes.adjustStickiesContainer();
+
+            modules.notes.dragTarget.css({
+                "cursor": "",
+            });
+
+            return modules.notes.isDragging = false;
+        });
 
         $(".createNote").off("click").on("click", () => {
             modules.notes.createNote();

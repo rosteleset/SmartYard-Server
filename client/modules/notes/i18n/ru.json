@@ -9,5 +9,6 @@
     "color": "Цвет",
     "createNote": "Добавить заметку",
     "withoutIcon": "Без значка",
-    "default": "По умолчанию"
+    "default": "По умолчанию",
+    "checks": "Список"
 }

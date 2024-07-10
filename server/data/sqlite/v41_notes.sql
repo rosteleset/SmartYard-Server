@@ -6,14 +6,15 @@ CREATE TABLE notes
     note_subject TEXT,
     note_body TEXT,
     checks INTEGER DEFAULT 0,
+    category TEXT,
     remind INTEGER DEFAULT 0,
-    reminded INTEGER DEFAULT 0,
+    icon TEXT,
+    font TEXT,
     color TEXT,
+    reminded INTEGER DEFAULT 0,
     position_left INTEGER,
     position_top INTEGER,
-    position_order INTEGER,
-    category TEXT,
-    font TEXT
+    position_order INTEGER
 );
 CREATE INDEX notes_owner ON notes(owner);
 CREATE INDEX notes_remind ON notes(remind);

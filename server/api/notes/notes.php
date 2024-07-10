@@ -18,7 +18,7 @@
                 $notes = loadBackend("notes");
 
                 if ($notes) {
-                    $notes = $notes->getNotes(@$params["_id"]);
+                    $notes = $notes->getNotes();
                 }
 
                 return api::ANSWER($notes, ($notes !== false) ? "notes" : false);
