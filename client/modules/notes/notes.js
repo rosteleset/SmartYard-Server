@@ -116,7 +116,12 @@
                 value: faIcons[i].title,
             });
         }
-        let fonts = [];
+        let fonts = [
+            {
+                text: i18n("notes.fontByDefault"),
+                value: "",
+            },
+        ];
         for (let i in availableFonts) {
             fonts.push({
                 text: availableFonts[i],
@@ -141,6 +146,9 @@
                     id: "body",
                     title: i18n("notes.body"),
                     type: "area",
+                    validate: a => {
+                        return $.trim(a) != '';
+                    }
                 },
                 {
                     id: "category",
@@ -240,8 +248,54 @@
                 },
             ],
             callback: r => {
-                //
-            },
+                let stickyArea = $('#stickiesContainer');
+
+                let id = md5(guid());
+
+                let z = 1;
+
+                $(".sticky").each(function () {
+                    z = Math.max(z, parseInt($(this).css("z-index")));
+                });
+
+                let newSticky = `<div id='${id}' class='drag sticky ${r.color}' style='z-index: ${z + 1};'>`;
+                if (convertLinks(nl2br(escapeHTML($.trim(r.subject))))) {
+                    newSticky += `<h5 class="caption">`;
+                    if ($.trim(r.icon)) {
+                        newSticky += `<i class="fa-fw ${r.icon} mr-1"></i>`;
+                    }
+                    newSticky += r.subject;
+                    newSticky += "</h5><hr />";
+                }
+                newSticky += "<p class='body'";
+                if ($.trim(r.font)) {
+                    newSticky += `style='font-family: ${r.font}'`
+                }
+                newSticky += ">";
+                newSticky += convertLinks(nl2br(escapeHTML(r.body)));
+                newSticky += '</p><i class="far fa-fw fa-edit editSticky"></i>';
+                if (r.remind) {
+                    newSticky += '<i class="far fa-fw fa-clock text-small reminder"></i>';
+                }
+                newSticky += '</div>';
+
+                stickyArea.append(newSticky);
+
+                let sticky = $("#" + id);
+
+                sticky.css({
+                    left: window.innerWidth / 2 - sticky.outerWidth(true) / 2 + (-100 + Math.round(Math.random() * 50)) + 'px',
+                    top: window.innerHeight / 2 - sticky.outerHeight(true) / 2 + (-100 + Math.round(Math.random() * 50)) + 'px',
+                });
+
+                $(".editSticky").off("mousedown").on("mousedown", e => {
+                    e.preventDefault();
+
+                    return false;
+                });
+
+                $(".editSticky").off("click").on("click", modules.notes.modifySticky)
+                    },
         });
     },
 
@@ -282,50 +336,6 @@
         console.log(e);
     },
 
-    createSticky: function(x) {
-        let stickyArea = $('#stickiesContainer');
-
-        let id = md5(guid());
-
-        let z = 1;
-
-        $(".sticky").each(function () {
-            z = Math.max(z, parseInt($(this).css("z-index")));
-        });
-
-        let newSticky = `
-            <div id='${id}' class='drag sticky bg-orange' style='z-index: ${z + 1};'>
-                <h5 class="caption">
-                    <i class="fas fa-fw fa-thumbtack mr-1 clock"></i>
-                    subject ${x}
-                </h5>
-                <hr />
-                <p class="body">
-                    body
-                </p>
-                <i class="far fa-fw fa-edit editSticky"></i>
-                <i class="far fa-fw fa-clock text-small reminder"></i>
-            </div>
-        `;
-
-        stickyArea.append(newSticky);
-
-        let sticky = $("#" + id);
-
-        sticky.css({
-            left: window.innerWidth / 2 - sticky.outerWidth(true) / 2 + (-100 + Math.round(Math.random() * 50)) + 'px',
-            top: window.innerHeight / 2 - sticky.outerHeight(true) / 2 + (-100 + Math.round(Math.random() * 50)) + 'px',
-        });
-
-        $(".editSticky").off("mousedown").on("mousedown", e => {
-            e.preventDefault();
-
-            return false;
-        });
-
-        $(".editSticky").off("click").on("click", modules.notes.modifySticky)
-    },
-
     route: function (params) {
         subTop();
         $("#altForm").hide();
@@ -352,15 +362,7 @@
 
         modules.notes.adjustStickiesContainer(true);
 
-        setTimeout(() => {
-            modules.notes.createSticky(1);
-        }, 100);
-
-        setTimeout(() => {
-            modules.notes.createSticky(2);
-        }, 100);
-
-        $("#stickiesContainer").off("windowResized").on("windowResized", () => {
+                $("#stickiesContainer").off("windowResized").on("windowResized", () => {
             modules.notes.adjustStickiesContainer(true);
             modules.notes.adjustStickiesContainer();
         });

@@ -56,7 +56,6 @@
                 version = v;
                 lStore("_version", version);
                 if ("serviceWorker" in navigator) {
-                    console.log("appVersion: " + version);
                     navigator.serviceWorker.getRegistrations().
                     then(r => {
                         r.forEach(w => {
@@ -69,7 +68,6 @@
                                 }
                                 search = $.deparam(search);
                                 if (pathname[pathname.length - 1] == "sw.js" && (!search.ver || search.ver != version)) {
-                                    console.log("unregistering: " + w.active.scriptURL);
                                     w.unregister();
                                     needRestart = true;
                                 }

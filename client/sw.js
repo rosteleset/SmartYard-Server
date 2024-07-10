@@ -67,5 +67,3 @@ self.addEventListener('fetch', event => {
         event.respondWith(Response.redirect(url.href + "?ver=" + version, 302));
     }
 });
-
-console.log("swVersion: " + version);
