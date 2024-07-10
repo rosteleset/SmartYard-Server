@@ -305,6 +305,7 @@ abstract class ufanet extends domophone
             $dbConfig['cmsModel'] = $cmsType;
         }
 
+        $dbConfig['dtmf']['code1'] = '#';
         $dbConfig['cmsLevels'] = [];
 
         $dbConfig['sip']['stunEnabled'] = false;
@@ -395,7 +396,7 @@ abstract class ufanet extends domophone
     protected function getDtmfConfig(): array
     {
         return [
-            'code1' => '1',
+            'code1' => '#',
             'code2' => '2',
             'code3' => '3',
             'codeCms' => '1',

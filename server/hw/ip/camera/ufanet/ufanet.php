@@ -62,7 +62,7 @@ class ufanet extends camera
         ]);
 
         $params = $this->convertResponseToArray($rawParams);
-        $coordinates = explode('x', $params['roi'] ?? '0x0x0x0');
+        $coordinates = explode('x', $params['ROI'] ?? '0x0x0x0');
 
         return [
             'left' => $coordinates[0],
