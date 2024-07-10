@@ -46,7 +46,15 @@
              * @param integer $z
              * @return mixed
              */
-            abstract public function modifyNote($id, $subject, $body, $category, $remind, $icon, $font, $color, $x, $y, $z);
+            // or
+            /**
+             * @param integer $id
+             * @param integer $x
+             * @param integer $y
+             * @param integer $z
+             * @return mixed
+             */
+            // abstract public function modifyNote($id, ...);
 
             /**
              * @param integer $id
