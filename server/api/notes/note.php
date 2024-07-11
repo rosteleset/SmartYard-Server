@@ -18,7 +18,7 @@
                 $notes = loadBackend("notes");
 
                 if ($notes) {
-                    $success = $notes->addNote(@$params["subject"], @$params["body"], @$params["checks"], @$params["category"], @$params["remind"], @$params["icon"], @$params["font"], @$params["color"]);
+                    $success = $notes->addNote(@$params["subject"], @$params["body"], @$params["checks"], @$params["category"], @$params["remind"], @$params["icon"], @$params["font"], @$params["color"], @$params["x"], @$params["y"], @$params["z"]);
                 }
 
                 return api::ANSWER($success);

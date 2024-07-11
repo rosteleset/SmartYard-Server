@@ -28,9 +28,12 @@
              * @param string $icon
              * @param string $font
              * @param string $color
+             * @param integer $x
+             * @param integer $y
+             * @param integer $z
              * @return mixed
              */
-            abstract public function addNote($subject, $body, $checks, $category, $remind, $icon, $font, $color);
+            abstract public function addNote($subject, $body, $checks, $category, $remind, $icon, $font, $color, $x, $y, $z);
 
             /**
              * @param integer $id
