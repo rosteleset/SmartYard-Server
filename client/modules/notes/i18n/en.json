@@ -9,5 +9,6 @@
     "color": "Color",
     "createNote": "Create note",
     "default": "By default",
-    "checks": "Checkboxes"
+    "checks": "Checkboxes",
+    "deleteNote": "Delete note?"
 }

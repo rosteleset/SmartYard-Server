@@ -40,7 +40,9 @@
              */
             public function addNote($subject, $body, $checks, $category, $remind, $icon, $font, $color, $x, $y, $z)
             {
-                if (!checkStr($body)) {
+                $body = trim($body);
+
+                if (!$body) {
                     setLastError("invalidParams");
                     return false;
                 }
@@ -87,7 +89,9 @@
              */
             public function modifyNote11($id, $subject, $body, $category, $remind, $icon, $font, $color, $x, $y, $z)
             {
-                if (!checkStr($body) || !checkInt($id)) {
+                $body = trim($body);
+
+                if (!$body || !checkInt($id)) {
                     setLastError("invalidParams");
                     return false;
                 }
@@ -117,14 +121,6 @@
                     setLastError("invalidParams");
                     return false;
                 }
-
-                error_log(print_r([
-                    "note_id" => $id,
-                    "owner" => $this->login,
-                    "position_left" => $x,
-                    "position_top" => $y,
-                    "position_order" => $z,
-                ], true));
 
                 return $this->db->modify("update notes set position_left = :position_left, position_top = :position_top, position_order = :position_order where note_id = :note_id and owner = :owner", [
                     "note_id" => $id,

@@ -27,6 +27,8 @@
         $(window).on("mousedown", e => {
             let target = $(e.target);
 
+            if (e.button !== 0) return;
+
             if (target.hasClass('drag')) {
                 let z = 1;
 
@@ -209,6 +211,13 @@
                     z = Math.max(z, parseInt($(this).css("z-index")));
                 });
 
+                if (parseInt(r.checks)) {
+                    r.body = r.body.split("\n");
+                    for (let i in r.body) {
+                        r.body[i] = "-" + r.body[i];
+                    }
+                }
+
                 let newSticky = `<div id='${id}' class='drag sticky ${r.color}' style='z-index: ${z + 1};'>`;
                 if (convertLinks(nl2br(escapeHTML($.trim(r.subject))))) {
                     newSticky += `<h5 class="caption">`;
@@ -223,7 +232,15 @@
                     newSticky += `style='font-family: ${r.font}'`
                 }
                 newSticky += ">";
-                newSticky += convertLinks(nl2br(escapeHTML(r.body)));
+
+                if (parseInt(r.checks)) {
+                    for (let i in r.body) {
+                        newSticky += "<div><span><input type='checkbox' /></span><span>" + convertLinks(nl2br(escapeHTML(r.body[i]))) + "</span></div>";
+                    }
+                } else {
+                    newSticky += convertLinks(nl2br(escapeHTML(r.body)));
+                }
+
                 newSticky += '</p><i class="far fa-fw fa-edit editSticky"></i>';
                 if (r.remind) {
                     newSticky += '<i class="far fa-fw fa-clock text-small reminder"></i>';
@@ -242,10 +259,11 @@
                     top: y + 'px',
                 });
 
-                $(".editSticky").off("mousedown").on("mousedown", e => {
+                $(".nodrag").off("mousedown").on("mousedown", e => {
                     e.preventDefault();
                     return false;
                 });
+
                 $(".editSticky").off("click").on("click", modules.notes.modifySticky);
 
                 modules.notes.adjustStickiesContainer();
@@ -439,8 +457,17 @@
                         newSticky += `style='font-family: ${r.font}'`
                     }
                     newSticky += ">";
-                    newSticky += convertLinks(nl2br(escapeHTML(r.body)));
-                    newSticky += '</p><i class="far fa-fw fa-edit editSticky"></i>';
+
+                    if (parseInt(modules.notes.notes[id].checks)) {
+                        let b = modules.notes.notes[id].body.split("\n");
+                        for (let i in b) {
+                            newSticky += `<span class='mr-2'><input type='checkbox' class='nodrag' ${(b[i][0] == "+") ? "checked" : ""}/></span><span>${convertLinks(nl2br(escapeHTML(b[i].substring(1))))}</span><br />`;
+                        }
+                    } else {
+                        newSticky += convertLinks(nl2br(escapeHTML(modules.notes.notes[id].body)));
+                    }
+
+                    newSticky += '</p><i class="far fa-fw fa-edit editSticky nodrag"></i>';
                     if (r.remind) {
                         newSticky += '<i class="far fa-fw fa-clock text-small reminder"></i>';
                     }
@@ -529,7 +556,16 @@
                     newSticky += `style='font-family: ${modules.notes.notes[id].font}'`
                 }
                 newSticky += ">";
-                newSticky += convertLinks(nl2br(escapeHTML(modules.notes.notes[id].body)));
+
+                if (parseInt(modules.notes.notes[id].checks)) {
+                    let b = modules.notes.notes[id].body.split("\n");
+                    for (let i in b) {
+                        newSticky += `<span class='mr-2'><input type='checkbox' class='nodrag' ${(b[i][0] == "+") ? "checked" : ""}/></span><span>${convertLinks(nl2br(escapeHTML(b[i].substring(1))))}</span><br />`;
+                    }
+                } else {
+                    newSticky += convertLinks(nl2br(escapeHTML(modules.notes.notes[id].body)));
+                }
+
                 newSticky += '</p><i class="far fa-fw fa-edit editSticky"></i>';
                 if (modules.notes.notes[id].remind) {
                     newSticky += '<i class="far fa-fw fa-clock text-small reminder"></i>';
