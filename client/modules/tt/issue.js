@@ -658,8 +658,8 @@
                 }
             } else
             if (t < Object.keys(issue.actions).length) {
-                h += `<span class="dropdown">`;
-                h += `<span class="pointer hoverable dropdown-toggle dropdown-toggle-no-icon text-primary mr-3" id="ttIssueAllActions" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">${i18n("tt.allActions")}</span>`;
+                h += `<span class="dropdown" data-toggle="dropdown">`;
+                h += `<span class="pointer hoverable dropdown-toggle dropdown-toggle-no-icon text-primary mr-3" id="ttIssueAllActions" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" data-flip="false">${i18n("tt.allActions")}</span>`;
                 h += `<ul class="dropdown-menu" aria-labelledby="ttIssueAllActions">`;
                 let hr = true;
                 for (let i = Object.keys(issue.actions).length - 1; i >= 0; i--) {

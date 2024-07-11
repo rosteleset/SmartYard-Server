@@ -12,7 +12,7 @@ function menu(config) {
     let xid = guid();
 
     h += `<span class="dropdown">`;
-    h += `<span class="pointer hoverable dropdown-toggle dropdown-toggle-no-icon" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" id="${xid}">${config.button}</span>`;
+    h += `<span class="pointer hoverable dropdown-toggle dropdown-toggle-no-icon" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" data-flip="false" id="${xid}">${config.button}</span>`;
     h += `<ul class="dropdown-menu" aria-labelledby="${xid}" style="min-width: 250px!important;">`;
 
     for (let i in config.items) {

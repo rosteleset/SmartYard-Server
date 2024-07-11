@@ -18,10 +18,10 @@
                 $notes = loadBackend("notes");
 
                 if ($notes) {
-                    $success = $notes->addNote(@$params["subject"], @$params["body"], @$params["checks"], @$params["category"], @$params["remind"], @$params["icon"], @$params["font"], @$params["color"], @$params["x"], @$params["y"], @$params["z"]);
+                    $note = $notes->addNote(@$params["subject"], @$params["body"], @$params["checks"], @$params["category"], @$params["remind"], @$params["icon"], @$params["font"], @$params["color"], @$params["x"], @$params["y"], @$params["z"]);
                 }
 
-                return api::ANSWER($success);
+                return api::ANSWER($note, ($note !== false) ? "note" : "error");
             }
 
             public static function PUT($params) {

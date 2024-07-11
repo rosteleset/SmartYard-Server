@@ -14,7 +14,8 @@
     lastLeft: 0,
     lastTop: 0,
 
-    notes: [],
+    notes: {},
+    categories: [],
 
     init: function () {
         if (parseInt(myself.uid) > 0) {
@@ -56,6 +57,27 @@
             });
         }
 
+        let already = {};
+        already[i18n("notes.default")] = true;
+
+        let categories = [
+            {
+                text: i18n("notes.default"),
+                value: i18n("notes.default"),
+            },
+        ];
+
+        for (let i in modules.notes.categories) {
+            if (!already[modules.notes.categories[i]]) {
+                categories.push(
+                    {
+                        text: modules.notes.categories[i],
+                        value: modules.notes.categories[i],
+                    }
+                );
+            }
+        }
+
         cardForm({
             title: i18n("notes.createNote"),
             footer: true,
@@ -90,12 +112,7 @@
                     tags: true,
                     createTags: true,
                     value: i18n("notes.default"),
-                    options: [
-                        {
-                            text: i18n("notes.default"),
-                            value: i18n("notes.default"),
-                        },
-                    ],
+                    options: categories,
                 },
                 {
                     id: "remind",
@@ -225,19 +242,47 @@
 
                 let sticky = $("#" + id);
 
+                let x = window.innerWidth / 2 - sticky.outerWidth(true) / 2 + (-100 + Math.round(Math.random() * 50));
+                let y = window.innerHeight / 2 - sticky.outerHeight(true) / 2 + (-100 + Math.round(Math.random() * 50));
+
                 sticky.css({
-                    left: window.innerWidth / 2 - sticky.outerWidth(true) / 2 + (-100 + Math.round(Math.random() * 50)) + 'px',
-                    top: window.innerHeight / 2 - sticky.outerHeight(true) / 2 + (-100 + Math.round(Math.random() * 50)) + 'px',
+                    left: x + 'px',
+                    top: y + 'px',
                 });
 
                 $(".editSticky").off("mousedown").on("mousedown", e => {
                     e.preventDefault();
-
                     return false;
                 });
+                $(".editSticky").off("click").on("click", modules.notes.modifySticky);
 
-                $(".editSticky").off("click").on("click", modules.notes.modifySticky)
-                    },
+                modules.notes.adjustStickiesContainer();
+
+                loadingStart();
+
+                POST("notes", "note", false, {
+                    subject: r.subject,
+                    body: r.body,
+                    checks: r.checks,
+                    category: r.category,
+                    remind: r.remind,
+                    icon: r.icon,
+                    font: r.font,
+                    color: r.color,
+                    x: parseFloat(x),
+                    y: parseFloat(y),
+                    z: parseInt(z),
+                }).
+                done(r => {
+                    if (r && r.note) {
+                        let id = "note-" + $.trim(r);
+                        sticky.attr("id", id);
+                        modules.notes.notes[id] = r.note;
+                    }
+                }).
+                fail(FAIL).
+                always(loadingDone);
+            },
         });
     },
 
@@ -275,7 +320,280 @@
     },
 
     modifySticky: function (e) {
-        console.log(e);
+        let id = $(e.target).parent().attr("id");
+
+        let icons = [
+            {
+                text: i18n("notes.withoutIcon"),
+                value: "",
+            },
+        ];
+
+        for (let i in faIcons) {
+            icons.push({
+                icon: faIcons[i].title + " fa-fw",
+                text: faIcons[i].title.split(" fa-")[1] + (faIcons[i].searchTerms.length ? (", " + faIcons[i].searchTerms.join(", ")) : ""),
+                value: faIcons[i].title,
+            });
+        }
+
+        let fonts = [
+            {
+                text: i18n("notes.default"),
+                value: "",
+            },
+        ];
+
+        for (let i in availableFonts) {
+            fonts.push({
+                text: availableFonts[i],
+                value: availableFonts[i],
+                font: availableFonts[i],
+            });
+        }
+
+        let already = {};
+        already[i18n("notes.default")] = true;
+
+        let categories = [
+            {
+                text: i18n("notes.default"),
+                value: i18n("notes.default"),
+            },
+        ];
+
+        for (let i in modules.notes.categories) {
+            if (!already[modules.notes.categories[i]]) {
+                categories.push(
+                    {
+                        text: modules.notes.categories[i],
+                        value: modules.notes.categories[i],
+                    }
+                );
+            }
+        }
+
+        cardForm({
+            title: i18n("notes.modifyNote"),
+            footer: true,
+            borderless: true,
+            topApply: true,
+            apply: i18n("edit"),
+            delete: i18n("delete"),
+            size: "lg",
+            fields: [
+                {
+                    id: "subject",
+                    title: i18n("notes.subject"),
+                    type: "text",
+                    value: modules.notes.notes[id].subject,
+                },
+                {
+                    id: "body",
+                    title: i18n("notes.body"),
+                    type: "area",
+                    validate: a => {
+                        return $.trim(a) != '';
+                    },
+                    value: modules.notes.notes[id].body,
+                },
+                {
+                    id: "category",
+                    title: i18n("notes.category"),
+                    type: "select2",
+                    multiple: false,
+                    tags: true,
+                    createTags: true,
+                    value: modules.notes.notes[id].category,
+                    options: categories,
+                },
+                {
+                    id: "remind",
+                    title: i18n("notes.remind"),
+                    type: "datetime-local",
+                    value: modules.notes.notes[id].remind,
+                },
+                {
+                    id: "icon",
+                    title: i18n("notes.icon"),
+                    type: "select2",
+                    options: icons,
+                    value: modules.notes.notes[id].icon,
+                },
+                {
+                    id: "font",
+                    title: i18n("notes.font"),
+                    type: "select2",
+                    options: fonts,
+                    value: modules.notes.notes[id].font,
+                },
+                {
+                    id: "color",
+                    title: i18n("notes.color"),
+                    type: "select2",
+                    options: [
+                        {
+                            text: i18n("notes.default"),
+                            value: "bg-warning",
+                            icon: "p-1 fas fa-palette bg-warning",
+                        },
+                        {
+                            text: "Primary",
+                            value: "bg-primary",
+                            icon: "p-1 fas fa-palette bg-primary",
+                        },
+                        {
+                            text: "Secondary",
+                            value: "bg-secondary",
+                            icon: "p-1 fas fa-palette bg-secondary",
+                        },
+                        {
+                            text: "Success",
+                            value: "bg-success",
+                            icon: "p-1 fas fa-palette bg-success",
+                        },
+                        {
+                            text: "Danger",
+                            value: "bg-danger",
+                            icon: "p-1 fas fa-palette bg-danger",
+                        },
+                        {
+                            text: "Info",
+                            value: "bg-info",
+                            icon: "p-1 fas fa-palette bg-info",
+                        },
+                        {
+                            text: "Purple",
+                            value: "bg-purple",
+                            icon: "p-1 fas fa-palette bg-purple",
+                        },
+                        {
+                            text: "Orange",
+                            value: "bg-orange",
+                            icon: "p-1 fas fa-palette bg-orange",
+                        },
+                        {
+                            text: "Lightblue",
+                            value: "bg-lightblue",
+                            icon: "p-1 fas fa-palette bg-lightblue",
+                        },
+                        {
+                            text: "Fuchsia",
+                            value: "bg-fuchsia",
+                            icon: "p-1 fas fa-palette bg-fuchsia",
+                        },
+                        {
+                            text: "Black",
+                            value: "bg-black",
+                            icon: "p-1 fas fa-palette bg-black",
+                        },
+                        {
+                            text: "Gray",
+                            value: "bg-gray",
+                            icon: "p-1 fas fa-palette bg-gray",
+                        },
+                        {
+                            text: "Lime",
+                            value: "bg-lime",
+                            icon: "p-1 fas fa-palette bg-lime",
+                        },
+                    ],
+                    value: modules.notes.notes[id].color,
+                },
+            ],
+            callback: r => {
+                $("#" + id).remove();
+
+                if (r.delete) {
+                    mConfirm(i18n("notes.deleteNote"), i18n("confirm"), i18n("delete"), () => {
+                        DELETE("notes", "note", modules.notes.notes[id].id).
+                        fail(FAIL).
+                        always(loadingDone);
+                    });
+                } else {
+                    let stickyArea = $('#stickiesContainer');
+
+                    let z = modules.notes.notes[id].z;
+
+                    let newSticky = `<div id='${id}' class='drag sticky ${r.color}' style='z-index: ${z};'>`;
+                    if (convertLinks(nl2br(escapeHTML($.trim(r.subject))))) {
+                        newSticky += `<h5 class="caption">`;
+                        if ($.trim(r.icon)) {
+                            newSticky += `<i class="fa-fw ${r.icon} mr-1"></i>`;
+                        }
+                        newSticky += r.subject;
+                        newSticky += "</h5><hr />";
+                    }
+                    newSticky += "<p class='body'";
+                    if ($.trim(r.font)) {
+                        newSticky += `style='font-family: ${r.font}'`
+                    }
+                    newSticky += ">";
+                    newSticky += convertLinks(nl2br(escapeHTML(r.body)));
+                    newSticky += '</p><i class="far fa-fw fa-edit editSticky"></i>';
+                    if (r.remind) {
+                        newSticky += '<i class="far fa-fw fa-clock text-small reminder"></i>';
+                    }
+                    newSticky += '</div>';
+
+                    stickyArea.append(newSticky);
+
+                    let sticky = $("#" + id);
+
+                    let x = modules.notes.notes[id].x;
+                    let y = modules.notes.notes[id].y;
+
+                    sticky.css({
+                        left: x + 'px',
+                        top: y + 'px',
+                    });
+
+                    $(".editSticky").off("mousedown").on("mousedown", e => {
+                        e.preventDefault();
+                        return false;
+                    });
+                    $(".editSticky").off("click").on("click", modules.notes.modifySticky);
+
+                    loadingStart();
+
+                    if (modules.notes.categories.indexOf(r.category) < 0) {
+                        modules.notes.categories.push(r.category);
+                        modules.notes.categories.sort();
+                    }
+
+                    modules.notes.notes[id].subject = r.subject;
+                    modules.notes.notes[id].body = r.body;
+                    modules.notes.notes[id].category= r.category;
+                    modules.notes.notes[id].remind = r.remind;
+                    modules.notes.notes[id].icon = r.icon;
+                    modules.notes.notes[id].font = r.font;
+                    modules.notes.notes[id].color = r.color;
+                    modules.notes.notes[id].x = parseFloat(x);
+                    modules.notes.notes[id].y = parseFloat(y);
+                    modules.notes.notes[id].z = parseInt(z);
+
+                    PUT("notes", "note", modules.notes.notes[id].id, {
+                        subject: r.subject,
+                        body: r.body,
+                        category: r.category,
+                        remind: r.remind,
+                        icon: r.icon,
+                        font: r.font,
+                        color: r.color,
+                        x: parseFloat(x),
+                        y: parseFloat(y),
+                        z: parseInt(z),
+                    }).
+                    done(r => {
+                        sticky.attr("id", "note-" + $.trim(r));
+                    }).
+                    fail(FAIL).
+                    always(loadingDone);
+                }
+
+                modules.notes.adjustStickiesContainer();
+            },
+        });
     },
 
     route: function (params) {
@@ -365,6 +683,21 @@
                 "cursor": "",
             });
 
+            if (modules.notes.dragTarget.hasClass('drag')) {
+                let id = modules.notes.dragTarget.attr("id");
+
+                modules.notes.notes[id].x = parseFloat(modules.notes.dragTarget.css("left"));
+                modules.notes.notes[id].y = parseFloat(modules.notes.dragTarget.css("top"));
+                modules.notes.notes[id].z = parseInt(modules.notes.dragTarget.css("z-index"));
+
+                PUT("notes", "xyz", modules.notes.notes[id].id, {
+                    x: parseFloat(modules.notes.dragTarget.css("left")),
+                    y: parseFloat(modules.notes.dragTarget.css("top")),
+                    z: parseInt(modules.notes.dragTarget.css("z-index")),
+                }).
+                fail(FAIL);
+            }
+
             return modules.notes.isDragging = false;
         });
 
@@ -380,7 +713,7 @@
 
         modules.notes.adjustStickiesContainer(true);
 
-                $("#stickiesContainer").off("windowResized").on("windowResized", () => {
+        $("#stickiesContainer").off("windowResized").on("windowResized", () => {
             modules.notes.adjustStickiesContainer(true);
             modules.notes.adjustStickiesContainer();
         });
@@ -394,6 +727,64 @@
         GET("notes", "notes", false, true).
         done(result => {
             console.log(result);
+
+            if (result && result.notes) {
+                for (let i in result.notes) {
+
+                    let stickyArea = $('#stickiesContainer');
+
+                    let id = "note-" + result.notes[i].id;
+
+                    modules.notes.notes[id] = result.notes[i];
+
+                    let z = result.notes[i].z;
+
+                    let newSticky = `<div id='${id}' class='drag sticky ${result.notes[i].color ? result.notes[i].color : "bg-warning"}' style='z-index: ${z};'>`;
+                    let subject = $.trim(result.notes[i].subject);
+                    if (subject) {
+                        newSticky += `<h5 class="caption">`;
+                        if ($.trim(result.notes[i].icon)) {
+                            newSticky += `<i class="fa-fw ${result.notes[i].icon} mr-1"></i>`;
+                        }
+                        newSticky += convertLinks(nl2br(escapeHTML(subject)));
+                        newSticky += "</h5><hr />";
+                    }
+                    newSticky += "<p class='body'";
+                    if ($.trim(result.notes[i].font)) {
+                        newSticky += `style='font-family: ${result.notes[i].font}'`
+                    }
+                    newSticky += ">";
+                    newSticky += convertLinks(nl2br(escapeHTML(result.notes[i].body)));
+                    newSticky += '</p><i class="far fa-fw fa-edit editSticky"></i>';
+                    if (result.notes[i].remind) {
+                        newSticky += '<i class="far fa-fw fa-clock text-small reminder"></i>';
+                    }
+                    newSticky += '</div>';
+
+                    stickyArea.append(newSticky);
+
+                    let sticky = $("#" + id);
+
+                    sticky.css({
+                        left: result.notes[i].x + 'px',
+                        top: result.notes[i].y + 'px',
+                    });
+
+                    if (modules.notes.categories.indexOf(result.notes[i].category) < 0) {
+                        modules.notes.categories.push(result.notes[i].category);
+                    }
+                }
+
+                modules.notes.categories.sort();
+
+                $(".editSticky").off("mousedown").on("mousedown", e => {
+                    e.preventDefault();
+                    return false;
+                });
+                $(".editSticky").off("click").on("click", modules.notes.modifySticky);
+
+                modules.notes.adjustStickiesContainer();
+            }
         }).
         fail(FAILPAGE).
         always(loadingDone);

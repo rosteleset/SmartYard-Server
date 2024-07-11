@@ -17,7 +17,7 @@
              */
             public function getNotes()
             {
-                $notes = $this->db->get("select * from notes where owner = :owner", [
+                return $notes = $this->db->get("select * from notes where owner = :owner order by position_order", [
                     "owner" => $this->login,
                 ], [
                     "note_id" => "id",
@@ -33,15 +33,6 @@
                     "position_top" => "y",
                     "position_order" => "z",
                 ]);
-
-                $z = 1;
-
-                foreach ($notes as &$note) {
-                    $note["z"] = $z;
-                    $z++;
-                }
-
-                return $notes;
             }
 
             /**
@@ -54,12 +45,8 @@
                     return false;
                 }
 
-                if (!checkInt($x) || !checkInt($y) || !checkInt($z)) {
-                    setLastError("invalidParams");
-                    return false;
-                }
-
-                return $this->db->insert("insert into notes (owner, note_subject, note_body, checks, category, remind, icon, font, color, position_left, position_top, position_order) values (:owner, :note_subject, :note_body, :checks, :category, :remind, :icon, :font, :color, :position_left, :position_top, :position_order)", [
+                $id = $this->db->insert("insert into notes (create_date, owner, note_subject, note_body, checks, category, remind, icon, font, color, position_left, position_top, position_order) values (:create_date, :owner, :note_subject, :note_body, :checks, :category, :remind, :icon, :font, :color, :position_left, :position_top, :position_order)", [
+                    "create_date" => time(),
                     "owner" => $this->login,
                     "note_subject" => $subject ? : null,
                     "note_body" => $body ? : null,
@@ -73,6 +60,26 @@
                     "position_top" => $y,
                     "position_order" => $z,
                 ]);
+
+                return $notes = $this->db->get("select * from notes where owner = :owner and note_id = :note_id", [
+                    "owner" => $this->login,
+                    "note_id" => $id,
+                ], [
+                    "note_id" => "id",
+                    "note_subject" => "subject",
+                    "note_body" => "body",
+                    "checks" => "checks",
+                    "category" => "category",
+                    "remind" => "remind",
+                    "icon" => "icon",
+                    "font" => "font",
+                    "color" => "color",
+                    "position_left" => "x",
+                    "position_top" => "y",
+                    "position_order" => "z",
+                ], [
+                    "singlify",
+                ]);
             }
 
             /**
@@ -80,12 +87,7 @@
              */
             public function modifyNote11($id, $subject, $body, $category, $remind, $icon, $font, $color, $x, $y, $z)
             {
-                if (!checkStr($body)) {
-                    setLastError("invalidParams");
-                    return false;
-                }
-
-                if (!checkInt($id) || !checkInt($x) || !checkInt($y) || !checkInt($z)) {
+                if (!checkStr($body) || !checkInt($id)) {
                     setLastError("invalidParams");
                     return false;
                 }
@@ -111,10 +113,18 @@
              */
             public function modifyNote4($id, $x, $y, $z)
             {
-                if (!checkInt($id) || !checkInt($x) || !checkInt($y) || !checkInt($z)) {
+                if (!checkInt($id)) {
                     setLastError("invalidParams");
                     return false;
                 }
+
+                error_log(print_r([
+                    "note_id" => $id,
+                    "owner" => $this->login,
+                    "position_left" => $x,
+                    "position_top" => $y,
+                    "position_order" => $z,
+                ], true));
 
                 return $this->db->modify("update notes set position_left = :position_left, position_top = :position_top, position_order = :position_order where note_id = :note_id and owner = :owner", [
                     "note_id" => $id,

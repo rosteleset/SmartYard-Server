@@ -12,8 +12,8 @@ CREATE TABLE notes
     font TEXT,
     color TEXT,
     reminded INTEGER DEFAULT 0,
-    position_left INTEGER,
-    position_top INTEGER,
+    position_left REAL,
+    position_top REAL,
     position_order INTEGER
 );
 CREATE INDEX notes_owner ON notes(owner);

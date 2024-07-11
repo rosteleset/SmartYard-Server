@@ -1511,9 +1511,9 @@
             for (let o in filterNames) {
                 filters += `<span class="dropdown">`;
                 if (o == 0) {
-                    filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter-${o}" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" style="margin-left: -4px;"><i class="far fa-fw fa-caret-square-down mr-1"></i>${filterNames[o].trim()}</span>`;
+                    filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter-${o}" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" data-flip="false" style="margin-left: -4px;"><i class="far fa-fw fa-caret-square-down mr-1"></i>${filterNames[o].trim()}</span>`;
                 } else {
-                    filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter-${o}" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false"><i class="far fa-fw fa-caret-square-down mr-1"></i>${filterNames[o].trim()}</span>`;
+                    filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter-${o}" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" data-flip="false"><i class="far fa-fw fa-caret-square-down mr-1"></i>${filterNames[o].trim()}</span>`;
                 }
                 filters += `<ul class="dropdown-menu" aria-labelledby="ttFilter-${o}">`;
 
