@@ -1519,7 +1519,7 @@
 
                 if (modules.tt.meta.favoriteFilters.length && !alreadyFavorite) {
                     alreadyFavorite = true;
-                    filters += `<li class="dropdown-item pointer submenu mr-4"><i class="far fa-fw fa-folder mr-2"></i><span>${i18n("tt.favoriteFilters")}&nbsp;</span></li>`;
+                    filters += `<li class="dropdown-item pointer submenu mr-4"><i class="far fa-fw fa-bookmark mr-2"></i><span>${i18n("tt.favoriteFilters")}&nbsp;</span></li>`;
                     filters += '<ul class="dropdown-menu">';
                     for (let ff in modules.tt.meta.favoriteFilters) {
                         if (x == modules.tt.meta.favoriteFilters[ff].filter) {
