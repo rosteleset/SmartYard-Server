@@ -329,7 +329,6 @@ abstract class qtech extends domophone
         $this->enableDialplanOnly();
         $this->enableDisplayHeat();
         $this->enableFtp(false);
-        $this->enableInternalFrs(false);
         $this->enablePnp(false);
         $this->setPersonalCodeLength();
         $this->configureRfidMode();
@@ -669,18 +668,6 @@ abstract class qtech extends domophone
             'Config.DoorSetting.GENERAL.AnalogHandsetEnable' => (int)$enabled,
             'Config.DoorSetting.GENERAL.SIPEquipmentEnable' => (int)$enabled,
         ]);
-    }
-
-    /**
-     * Enable or disable built-in face recognition.
-     *
-     * @param bool $enabled (Optional) Whether to enable built-in face recognition. Default is true.
-     *
-     * @return void
-     */
-    protected function enableInternalFrs(bool $enabled = true)
-    {
-        $this->setParams(['Config.DoorSetting.FACEDETECT.Enable' => (int)$enabled]);
     }
 
     /**
