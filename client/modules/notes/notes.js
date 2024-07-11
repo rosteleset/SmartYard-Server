@@ -24,7 +24,7 @@
             }
         }
 
-        $(window).off("mousedown").on("mousedown", e => {
+        $(window).on("mousedown", e => {
             let target = $(e.target);
 
             if (target.hasClass('drag')) {
@@ -65,7 +65,7 @@
             }
         });
 
-        $(window).off("mousemove").on("mousemove", e => {
+        $(window).on("mousemove", e => {
             if (!modules.notes.isDragging) return;
 
             let cont = $("#stickiesContainer");
@@ -88,7 +88,7 @@
             }
         });
 
-        $(window).off("mouseup").on("mouseup", e => {
+        $(window).on("mouseup", e => {
             if (!modules.notes.isDragging) return;
 
             modules.notes.adjustStickiesContainer();
@@ -454,25 +454,14 @@
             });
         }
 
-        let already = {};
-        already[i18n("notes.default")] = true;
-
-        let categories = [
-            {
-                text: i18n("notes.default"),
-                value: i18n("notes.default"),
-            },
-        ];
-
+        let categories = [];
         for (let i in modules.notes.categories) {
-            if (!already[modules.notes.categories[i]]) {
-                categories.push(
-                    {
-                        text: modules.notes.categories[i],
-                        value: modules.notes.categories[i],
-                    }
-                );
-            }
+            categories.push(
+                {
+                    text: modules.notes.categories[i],
+                    value: modules.notes.categories[i],
+                }
+            );
         }
 
         cardForm({
@@ -814,7 +803,9 @@
             modules.notes.renderNotes();
         });
 
-        modules.notes.categories.push(i18n("notes.default"));
+        if (modules.notes.categories.indexOf(i18n("notes.default")) < 0) {
+            modules.notes.categories.push(i18n("notes.default"));
+        }
 
         GET("notes", "notes", false, true).
         done(result => {
