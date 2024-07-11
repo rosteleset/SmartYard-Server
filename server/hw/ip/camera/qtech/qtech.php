@@ -20,18 +20,27 @@ class qtech extends camera
         int $sensitivity = 4
     )
     {
+        $isEnabled = (int)($left || $top || $width || $height);
+
+        // Motion detection params
         $this->setParams([
-            'Config.DoorSetting.MOTION_DETECT.MotionDectect' => (int)($left || $top || $width || $height),
-            'Config.DoorSetting.MOTION_DETECT.DetectDelay' => 3,
+            'Config.DoorSetting.MOTION_DETECT.MotionDectect' => $isEnabled,
+            'Config.DoorSetting.MOTION_DETECT.DetectDelay' => 3, // delay between sending motion detection events
             'Config.DoorSetting.MOTION_DETECT.MDTimeWeekDay' => '0123456',
             'Config.DoorSetting.MOTION_DETECT.MDTimeStart' => '00:00',
             'Config.DoorSetting.MOTION_DETECT.MDTimeEnd' => '23:59',
-            // 'Config.DoorSetting.MOTION_DETECT.AreaStartWidth' => $left,
-            // 'Config.DoorSetting.MOTION_DETECT.AreaEndWidth' => $width,
-            // 'Config.DoorSetting.MOTION_DETECT.AreaStartHeight' => $top,
-            // 'Config.DoorSetting.MOTION_DETECT.AreaEndHeight' => $height,
-            'Config.DoorSetting.MOTION_DETECT.DetectAccuracy' => $sensitivity,
+            'Config.DoorSetting.MOTION_DETECT.DetectAccuracy' => $sensitivity, // feels like it doesn't affect anything
             'Config.DoorSetting.MOTION_DETECT.FTPEnable' => 1, // for syslog event
+        ]);
+
+        // Face detection params
+        $this->setParams([
+            'Config.DoorSetting.FACEDETECT.Enable' => $isEnabled,
+            'Config.DoorSetting.FACEDETECT.IP' => 'fake', // no syslog messages without this
+            'Config.DoorSetting.FACEDETECT.Timeout' => 3, // ???
+            'Config.DoorSetting.FACEDETECT.ResetTime' => 60, // ???
+            'Config.DoorSetting.FACEDETECT.FaceLiveness' => 0.95,
+            'Config.DoorSetting.FACEDETECT.SendInterval' => 2, // ???
         ]);
     }
 
@@ -39,6 +48,12 @@ class qtech extends camera
     {
         $host = parse_url($this->url)['host'];
         return file_get_contents("http://$this->login:$this->password@$host:8080/picture.jpg");
+    }
+
+    public function prepare()
+    {
+        parent::prepare();
+        $this->configureImage();
     }
 
     public function setOsdText(string $text = '')
@@ -63,23 +78,6 @@ class qtech extends camera
         return $dbConfig;
     }
 
-    protected function getMotionDetectionConfig(): array
-    {
-        $mdEnabled = (bool)$this->getParam('Config.DoorSetting.MOTION_DETECT.MotionDectect');
-
-        return [
-            'left' => ($mdEnabled) ? 1 : 0,
-            'top' => ($mdEnabled) ? 1 : 0,
-            'width' => ($mdEnabled) ? 1 : 0,
-            'height' => ($mdEnabled) ? 1 : 0,
-        ];
-    }
-
-    protected function getOsdText(): string
-    {
-        return $this->getParam('Config.DoorSetting.GENERAL.VideoWaterMark2');
-    }
-
     /**
      * Apply optimal image settings.
      *
@@ -96,9 +94,20 @@ class qtech extends camera
         ]);
     }
 
-    public function prepare()
+    protected function getMotionDetectionConfig(): array
     {
-        parent::prepare();
-        $this->configureImage();
+        $mdEnabled = (bool)$this->getParam('Config.DoorSetting.MOTION_DETECT.MotionDectect');
+
+        return [
+            'left' => ($mdEnabled) ? 1 : 0,
+            'top' => ($mdEnabled) ? 1 : 0,
+            'width' => ($mdEnabled) ? 1 : 0,
+            'height' => ($mdEnabled) ? 1 : 0,
+        ];
+    }
+
+    protected function getOsdText(): string
+    {
+        return $this->getParam('Config.DoorSetting.GENERAL.VideoWaterMark2');
     }
 }

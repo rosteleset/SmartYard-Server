@@ -21,7 +21,7 @@ class QtechService extends SyslogService {
         /**
          *  Motion detection start
          */
-        if (qtMsgParts[1] === "Send Photo") {
+        if (qtMsgParts[1] === "face was detected" || qtMsgParts[1] === "Send Photo") {
             await API.motionDetection({date: now, ip: host, motionActive: true});
             await mdTimer({ip: host});
         }
