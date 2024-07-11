@@ -23,6 +23,98 @@
                 this.menuItem = leftSide("fas fa-fw fa-thumbtack", i18n("notes.notes"), "?#notes", "notes");
             }
         }
+
+        $(window).off("mousedown").on("mousedown", e => {
+            let target = $(e.target);
+
+            if (target.hasClass('drag')) {
+                let z = 1;
+
+                $(".sticky").each(function () {
+                    z = Math.max(z, parseInt($(this).css("z-index")));
+                });
+
+                target.css({
+                    "z-index": z + 1,
+                    "cursor": "grab",
+                });
+
+                modules.notes.dragTarget = target;
+
+                modules.notes.lastOffsetX = e.offsetX;
+                modules.notes.lastOffsetY = e.offsetY;
+
+                modules.notes.isDragging = 1;
+
+                return;
+            }
+
+            if (target.attr("id") == "stickiesContainer") {
+                target.css("cursor", "grab");
+
+                modules.notes.dragTarget = target;
+
+                modules.notes.lastLeft = target.parent().scrollLeft();
+                modules.notes.lastTop = $("html").scrollTop();
+                modules.notes.lastOffsetX = e.clientX;
+                modules.notes.lastOffsetY = e.clientY;
+
+                modules.notes.isDragging = 2;
+
+                return;
+            }
+        });
+
+        $(window).off("mousemove").on("mousemove", e => {
+            if (!modules.notes.isDragging) return;
+
+            let cont = $("#stickiesContainer");
+
+            if (modules.notes.isDragging == 1) {
+                let off = cont.offset();
+
+                modules.notes.dragTarget.css({
+                    left: -off.left + e.clientX - modules.notes.lastOffsetX + 'px',
+                    top: $("html").scrollTop() - off.top + e.clientY - modules.notes.lastOffsetY + 'px',
+                });
+            }
+
+            if (modules.notes.isDragging == 2) {
+                let dx = e.clientX - modules.notes.lastOffsetX;
+                let dy = e.clientY - modules.notes.lastOffsetY;
+
+                cont.parent().scrollLeft(modules.notes.lastLeft - dx);
+                $("html").scrollTop(modules.notes.lastTop - dy);
+            }
+        });
+
+        $(window).off("mouseup").on("mouseup", e => {
+            if (!modules.notes.isDragging) return;
+
+            modules.notes.adjustStickiesContainer();
+
+            modules.notes.dragTarget.css({
+                "cursor": "",
+            });
+
+            if (modules.notes.dragTarget.hasClass('drag')) {
+                let id = modules.notes.dragTarget.attr("id");
+
+                modules.notes.notes[id].x = parseFloat(modules.notes.dragTarget.css("left"));
+                modules.notes.notes[id].y = parseFloat(modules.notes.dragTarget.css("top"));
+                modules.notes.notes[id].z = parseInt(modules.notes.dragTarget.css("z-index"));
+
+                PUT("notes", "xyz", modules.notes.notes[id].id, {
+                    x: parseFloat(modules.notes.dragTarget.css("left")),
+                    y: parseFloat(modules.notes.dragTarget.css("top")),
+                    z: parseInt(modules.notes.dragTarget.css("z-index")),
+                }).
+                fail(FAIL);
+            }
+
+            return modules.notes.isDragging = false;
+        });
+
         moduleLoaded("notes", this);
     },
 
@@ -111,7 +203,7 @@
                     multiple: false,
                     tags: true,
                     createTags: true,
-                    value: i18n("notes.default"),
+                    value: $("#notesCategories").val(),
                     options: categories,
                 },
                 {
@@ -207,6 +299,16 @@
                 },
             ],
             callback: r => {
+                if (modules.notes.categories.indexOf(r.category) < 0) {
+                    modules.notes.categories.push(r.category);
+                    modules.notes.categories.sort();
+                }
+
+                if (r.category != lStore("notesCategory")) {
+                    lStore("notesCategory", r.category);
+                    modules.notes.renderNotes();
+                }
+
                 let stickyArea = $('#stickiesContainer');
 
                 let id = md5(guid());
@@ -275,7 +377,7 @@
                 }).
                 done(r => {
                     if (r && r.note) {
-                        let id = "note-" + $.trim(r);
+                        let id = "note-" + $.trim(r.note.id);
                         sticky.attr("id", id);
                         modules.notes.notes[id] = r.note;
                     }
@@ -502,18 +604,46 @@
                 },
             ],
             callback: r => {
-                $("#" + id).remove();
-
                 if (r.delete) {
                     mConfirm(i18n("notes.deleteNote"), i18n("confirm"), i18n("delete"), () => {
+                        loadingStart();
                         DELETE("notes", "note", modules.notes.notes[id].id).
+                        done(() => {
+                            $("#" + id).remove();
+                            delete modules.notes.notes[id];
+                        }).
                         fail(FAIL).
                         always(loadingDone);
                     });
                 } else {
-                    let stickyArea = $('#stickiesContainer');
+                    $("#" + id).remove();
 
+                    if (modules.notes.categories.indexOf(r.category) < 0) {
+                        modules.notes.categories.push(r.category);
+                        modules.notes.categories.sort();
+                    }
+
+                    if (r.category != lStore("notesCategory")) {
+                        lStore("notesCategory", r.category);
+                        modules.notes.renderNotes();
+                    }
+
+                    let x = modules.notes.notes[id].x;
+                    let y = modules.notes.notes[id].y;
                     let z = modules.notes.notes[id].z;
+
+                    modules.notes.notes[id].subject = r.subject;
+                    modules.notes.notes[id].body = r.body;
+                    modules.notes.notes[id].category = r.category;
+                    modules.notes.notes[id].remind = r.remind;
+                    modules.notes.notes[id].icon = r.icon;
+                    modules.notes.notes[id].font = r.font;
+                    modules.notes.notes[id].color = r.color;
+                    modules.notes.notes[id].x = parseFloat(x);
+                    modules.notes.notes[id].y = parseFloat(y);
+                    modules.notes.notes[id].z = parseInt(z);
+
+                    let stickyArea = $('#stickiesContainer');
 
                     let newSticky = `<div id='${id}' class='drag sticky ${r.color}' style='z-index: ${z};'>`;
                     if (convertLinks(nl2br(escapeHTML($.trim(r.subject))))) {
@@ -540,9 +670,6 @@
 
                     let sticky = $("#" + id);
 
-                    let x = modules.notes.notes[id].x;
-                    let y = modules.notes.notes[id].y;
-
                     sticky.css({
                         left: x + 'px',
                         top: y + 'px',
@@ -556,22 +683,6 @@
 
                     loadingStart();
 
-                    if (modules.notes.categories.indexOf(r.category) < 0) {
-                        modules.notes.categories.push(r.category);
-                        modules.notes.categories.sort();
-                    }
-
-                    modules.notes.notes[id].subject = r.subject;
-                    modules.notes.notes[id].body = r.body;
-                    modules.notes.notes[id].category= r.category;
-                    modules.notes.notes[id].remind = r.remind;
-                    modules.notes.notes[id].icon = r.icon;
-                    modules.notes.notes[id].font = r.font;
-                    modules.notes.notes[id].color = r.color;
-                    modules.notes.notes[id].x = parseFloat(x);
-                    modules.notes.notes[id].y = parseFloat(y);
-                    modules.notes.notes[id].z = parseInt(z);
-
                     PUT("notes", "note", modules.notes.notes[id].id, {
                         subject: r.subject,
                         body: r.body,
@@ -584,9 +695,6 @@
                         y: parseFloat(y),
                         z: parseInt(z),
                     }).
-                    done(r => {
-                        sticky.attr("id", "note-" + $.trim(r));
-                    }).
                     fail(FAIL).
                     always(loadingDone);
                 }
@@ -594,6 +702,78 @@
                 modules.notes.adjustStickiesContainer();
             },
         });
+    },
+
+    renderNotes: function () {
+        let category = lStore("notesCategory");
+
+        let h = '';
+
+        for (let i in modules.notes.categories) {
+            h += '<option>' + escapeHTML(modules.notes.categories[i]) + '</option>';
+        }
+
+        if (!h) {
+            h += '<option>' + escapeHTML(i18n("notes.default")) + '</option>';
+        }
+
+        $("#notesCategories").html(h);
+
+        if (modules.notes.categories.indexOf(category) >= 0) {
+            $("#notesCategories").val(category);
+        }
+
+        category = $("#notesCategories").val();
+        lStore("notesCategory", category);
+
+        let stickyArea = $('#stickiesContainer');
+
+        stickyArea.html("");
+
+        for (let id in modules.notes.notes) {
+            if (modules.notes.notes[id].category == category) {
+                let z = modules.notes.notes[id].z;
+
+                let newSticky = `<div id='${id}' class='drag sticky ${modules.notes.notes[id].color ? modules.notes.notes[id].color : "bg-warning"}' style='z-index: ${z};'>`;
+                let subject = $.trim(modules.notes.notes[id].subject);
+                if (subject) {
+                    newSticky += `<h5 class="caption">`;
+                    if ($.trim(modules.notes.notes[id].icon)) {
+                        newSticky += `<i class="fa-fw ${modules.notes.notes[id].icon} mr-1"></i>`;
+                    }
+                    newSticky += convertLinks(nl2br(escapeHTML(subject)));
+                    newSticky += "</h5><hr />";
+                }
+                newSticky += "<p class='body'";
+                if ($.trim(modules.notes.notes[id].font)) {
+                    newSticky += `style='font-family: ${modules.notes.notes[id].font}'`
+                }
+                newSticky += ">";
+                newSticky += convertLinks(nl2br(escapeHTML(modules.notes.notes[id].body)));
+                newSticky += '</p><i class="far fa-fw fa-edit editSticky"></i>';
+                if (modules.notes.notes[id].remind) {
+                    newSticky += '<i class="far fa-fw fa-clock text-small reminder"></i>';
+                }
+                newSticky += '</div>';
+
+                stickyArea.append(newSticky);
+
+                let sticky = $("#" + id);
+
+                sticky.css({
+                    left: modules.notes.notes[id].x + 'px',
+                    top: modules.notes.notes[id].y + 'px',
+                });
+            }
+        }
+
+        $(".editSticky").off("mousedown").on("mousedown", e => {
+            e.preventDefault();
+            return false;
+        });
+        $(".editSticky").off("click").on("click", modules.notes.modifySticky);
+
+        modules.notes.adjustStickiesContainer();
     },
 
     route: function (params) {
@@ -609,97 +789,6 @@
         if (parseInt(myself.uid) && AVAIL("notes")) {
             $("#leftTopDynamic").html(`<li class="nav-item d-none d-sm-inline-block"><span class="hoverable pointer nav-link text-success text-bold createNote">${i18n("notes.createNote")}</span></li>`);
         }
-
-        $(window).off("mousedown").on("mousedown", e => {
-            let target = $(e.target);
-
-            if (target.hasClass('drag')) {
-                let z = 1;
-
-                $(".sticky").each(function () {
-                    z = Math.max(z, parseInt($(this).css("z-index")));
-                });
-
-                target.css({
-                    "z-index": z + 1,
-                    "cursor": "grab",
-                });
-
-                modules.notes.dragTarget = target;
-
-                modules.notes.lastOffsetX = e.offsetX;
-                modules.notes.lastOffsetY = e.offsetY;
-
-                modules.notes.isDragging = 1;
-
-                return;
-            }
-
-            if (target.attr("id") == "stickiesContainer") {
-                target.css("cursor", "grab");
-
-                modules.notes.dragTarget = target;
-
-                modules.notes.lastLeft = target.parent().scrollLeft();
-                modules.notes.lastTop = $("html").scrollTop();
-                modules.notes.lastOffsetX = e.clientX;
-                modules.notes.lastOffsetY = e.clientY;
-
-                modules.notes.isDragging = 2;
-
-                return;
-            }
-        });
-
-        $(window).off("mousemove").on("mousemove", e => {
-            if (!modules.notes.isDragging) return;
-
-            let cont = $("#stickiesContainer");
-
-            if (modules.notes.isDragging == 1) {
-                let off = cont.offset();
-
-                modules.notes.dragTarget.css({
-                    left: -off.left + e.clientX - modules.notes.lastOffsetX + 'px',
-                    top: $("html").scrollTop() - off.top + e.clientY - modules.notes.lastOffsetY + 'px',
-                });
-            }
-
-            if (modules.notes.isDragging == 2) {
-                let dx = e.clientX - modules.notes.lastOffsetX;
-                let dy = e.clientY - modules.notes.lastOffsetY;
-
-                cont.parent().scrollLeft(modules.notes.lastLeft - dx);
-                $("html").scrollTop(modules.notes.lastTop - dy);
-            }
-        });
-
-        $(window).off("mouseup").on("mouseup", e => {
-            if (!modules.notes.isDragging) return;
-
-            modules.notes.adjustStickiesContainer();
-
-            modules.notes.dragTarget.css({
-                "cursor": "",
-            });
-
-            if (modules.notes.dragTarget.hasClass('drag')) {
-                let id = modules.notes.dragTarget.attr("id");
-
-                modules.notes.notes[id].x = parseFloat(modules.notes.dragTarget.css("left"));
-                modules.notes.notes[id].y = parseFloat(modules.notes.dragTarget.css("top"));
-                modules.notes.notes[id].z = parseInt(modules.notes.dragTarget.css("z-index"));
-
-                PUT("notes", "xyz", modules.notes.notes[id].id, {
-                    x: parseFloat(modules.notes.dragTarget.css("left")),
-                    y: parseFloat(modules.notes.dragTarget.css("top")),
-                    z: parseInt(modules.notes.dragTarget.css("z-index")),
-                }).
-                fail(FAIL);
-            }
-
-            return modules.notes.isDragging = false;
-        });
 
         $(".createNote").off("click").on("click", () => {
             modules.notes.createNote();
@@ -718,57 +807,22 @@
             modules.notes.adjustStickiesContainer();
         });
 
-        let rtd = "";
-        rtd += `<div class="form-inline mt-1 mr-3"><div class="input-group input-group-sm"><select id="notesCategories" class="form-control select-arrow" style="width: 259px;">`;
-        rtd += `</select></div>`;
+        $("#rightTopDynamic").html(`<div class="form-inline mt-1 mr-3"><div class="input-group input-group-sm"><select id="notesCategories" class="form-control select-arrow" style="width: 259px;"></select></div>`);
 
-        $("#rightTopDynamic").html(rtd);
+        $("#notesCategories").off("change").on("change", () => {
+            lStore("notesCategory", $("#notesCategories").val());
+            modules.notes.renderNotes();
+        });
+
+        modules.notes.categories.push(i18n("notes.default"));
 
         GET("notes", "notes", false, true).
         done(result => {
-            console.log(result);
-
             if (result && result.notes) {
                 for (let i in result.notes) {
-
-                    let stickyArea = $('#stickiesContainer');
-
                     let id = "note-" + result.notes[i].id;
 
                     modules.notes.notes[id] = result.notes[i];
-
-                    let z = result.notes[i].z;
-
-                    let newSticky = `<div id='${id}' class='drag sticky ${result.notes[i].color ? result.notes[i].color : "bg-warning"}' style='z-index: ${z};'>`;
-                    let subject = $.trim(result.notes[i].subject);
-                    if (subject) {
-                        newSticky += `<h5 class="caption">`;
-                        if ($.trim(result.notes[i].icon)) {
-                            newSticky += `<i class="fa-fw ${result.notes[i].icon} mr-1"></i>`;
-                        }
-                        newSticky += convertLinks(nl2br(escapeHTML(subject)));
-                        newSticky += "</h5><hr />";
-                    }
-                    newSticky += "<p class='body'";
-                    if ($.trim(result.notes[i].font)) {
-                        newSticky += `style='font-family: ${result.notes[i].font}'`
-                    }
-                    newSticky += ">";
-                    newSticky += convertLinks(nl2br(escapeHTML(result.notes[i].body)));
-                    newSticky += '</p><i class="far fa-fw fa-edit editSticky"></i>';
-                    if (result.notes[i].remind) {
-                        newSticky += '<i class="far fa-fw fa-clock text-small reminder"></i>';
-                    }
-                    newSticky += '</div>';
-
-                    stickyArea.append(newSticky);
-
-                    let sticky = $("#" + id);
-
-                    sticky.css({
-                        left: result.notes[i].x + 'px',
-                        top: result.notes[i].y + 'px',
-                    });
 
                     if (modules.notes.categories.indexOf(result.notes[i].category) < 0) {
                         modules.notes.categories.push(result.notes[i].category);
@@ -776,15 +830,9 @@
                 }
 
                 modules.notes.categories.sort();
-
-                $(".editSticky").off("mousedown").on("mousedown", e => {
-                    e.preventDefault();
-                    return false;
-                });
-                $(".editSticky").off("click").on("click", modules.notes.modifySticky);
-
-                modules.notes.adjustStickiesContainer();
             }
+
+            modules.notes.renderNotes();
         }).
         fail(FAILPAGE).
         always(loadingDone);

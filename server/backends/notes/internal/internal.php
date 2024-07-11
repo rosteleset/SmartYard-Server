@@ -148,9 +148,6 @@
                 return $this->db->modify("delete from notes where note_id = :note_id and owner = :owner", [
                     "note_id" => $id,
                     "owner" => $this->login,
-                    "position_left" => $x,
-                    "position_top" => $y,
-                    "position_order" => $z,
                 ]);
             }
 

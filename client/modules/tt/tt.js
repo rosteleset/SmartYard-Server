@@ -1263,10 +1263,10 @@
     selectFilter: function (filter, skip, limit, search) {
         if (filter) {
             if (filter[0] !== "#") {
-                lStore("tt_issue_filter_" + $("#ttProjectSelect").val(), filter);
+                lStore("ttIssueFilter:" + $("#ttProjectSelect").val(), filter);
             }
         } else {
-            filter = lStore("tt_issue_filter_" + $("#ttProjectSelect").val());
+            filter = lStore("ttIssueFilter:" + $("#ttProjectSelect").val());
         }
         window.location.href = navigateUrl("tt", {
             filter: filter,
@@ -1406,7 +1406,7 @@
             }
         } else {
             try {
-                x = params["filter"] ? params["filter"] : lStore("tt_issue_filter_" + current_project);
+                x = params["filter"] ? params["filter"] : lStore("ttIssueFilter:" + current_project);
             } catch (e) {
                 //
             }
@@ -1513,7 +1513,7 @@
                 if (o == 0) {
                     filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter-${o}" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" data-flip="false" style="margin-left: -4px;"><i class="far fa-fw fa-caret-square-down mr-1"></i>${filterNames[o].trim()}</span>`;
                 } else {
-                    filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter-${o}" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" data-flip="false"><i class="far fa-fw fa-caret-square-down mr-1"></i>${filterNames[o].trim()}</span>`;
+                    filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter-${o}" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false"  data-flip="false"><i class="far fa-fw fa-caret-square-down mr-1"></i>${filterNames[o].trim()}</span>`;
                 }
                 filters += `<ul class="dropdown-menu" aria-labelledby="ttFilter-${o}">`;
 
@@ -1589,7 +1589,7 @@
         QUERY("tt", "issues", query, true).
         done(response => {
             if (response && response.issues && response.issues.all) {
-                lStore("tt_issue_filter_list:" + x, response.issues.all);
+                lStore("ttIssueFilterList:" + x, response.issues.all);
             }
 
             if (response.issues.exception) {
@@ -1910,7 +1910,7 @@
                         }).
                         done(() => {
                             message(i18n("tt.filterWasSaved"));
-                            lStore("tt_issue_filter_" + current_project, n);
+                            lStore("ttIssueFilter:" + current_project, n);
                             currentAceEditorOriginalValue = currentAceEditor.getValue();
                             window.location.href = '?#tt&filter=' + n + '&customSearch=yes&_=' + Math.random();
                         }).
@@ -1950,7 +1950,7 @@
                     DELETE("tt", "customFilter", f, { "project": current_project }).
                     done(() => {
                         message(i18n("tt.filterWasDeleted"));
-                        lStore("tt_issue_filter_" + current_project, null);
+                        lStore("ttIssueFilter:" + current_project, null);
                         window.location.href = '?#tt&_=' + Math.random();
                     }).
                     fail(FAIL).
@@ -2166,8 +2166,8 @@
                         callback();
                     }
                 } else {
-                    lStore("tt_issue_filter_" + $("#ttProjectSelect").val(), null);
-                    lStore("tt_issue_filter_" + lStore("tt_project"), null);
+                    lStore("ttIssueFilter:" + $("#ttProjectSelect").val(), null);
+                    lStore("ttIssueFilter:" + lStore("tt_project"), null);
                     lStore("tt_project", null);
                     if (params["_"] != _) {
                         window.location.href = `?#tt&_=${_}`;

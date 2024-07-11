@@ -496,7 +496,7 @@
         let prev = false;
 
         if (filter) {
-            let f = lStore("tt_issue_filter_list:" + filter);
+            let f = lStore("ttIssueFilterList:" + filter);
 
             if (f) {
                 count = f.length;
