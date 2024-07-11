@@ -57,6 +57,13 @@
              * @param integer $z
              * @return mixed
              */
+            // or
+            /**
+             * @param integer $id
+             * @param integer $line
+             * @param integer $checked
+             * @return mixed
+             */
             // abstract public function modifyNote($id, ...);
 
             /**

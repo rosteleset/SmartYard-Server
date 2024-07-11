@@ -515,7 +515,11 @@
     },
 
     stickyCheckbox: function (e) {
-        console.log($(e.target).prop("checked"), $(e.target).attr("data-line"), $(e.target).parent().parent().parent().sattr("id"));
+        PUT("notes", "check", $(e.target).parent().parent().parent().attr("id").split("-")[1], {
+            line: $(e.target).attr("data-line"),
+            checked: $(e.target).prop("checked") ? "1" : "0"
+        }).
+        fail(FAIL);
     },
 
     renderNotes: function () {

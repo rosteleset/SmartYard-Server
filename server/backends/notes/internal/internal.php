@@ -134,6 +134,38 @@
             /**
              * @inheritDoc
              */
+            public function modifyNote3($id, $line, $checked)
+            {
+                if (!checkInt($id) || !checkInt($line) || !checkInt($checked)) {
+                    setLastError("invalidParams");
+                    return false;
+                }
+
+                $body = $this->db->get("select note_body from notes where note_id = :note_id and owner = :owner and checks = 1", [
+                    "note_id" => $id,
+                    "owner" => $this->login,
+                ], [
+                    "note_body" => "body",
+                ], [
+                    "fieldlify"
+                ]);
+
+                $body = explode("\n", $body);
+                if (@$body[$line]) {
+                    $body[$line][0] = $checked ? "+" : "-";
+                }
+                $body = implode("\n", $body);
+
+                return $this->db->modify("update notes set note_body = :note_body where note_id = :note_id and owner = :owner and checks = 1", [
+                    "note_id" => $id,
+                    "owner" => $this->login,
+                    "note_body" => $body,
+                ]);
+            }
+
+            /**
+             * @inheritDoc
+             */
             public function deleteNote($id)
             {
                 if (!checkInt($id)) {
@@ -156,7 +188,11 @@
                     if (count($arguments) == 4) {
                        return call_user_func_array([ $this, 'modifyNote4' ], $arguments);
                     }
-                }
+                    else
+                    if (count($arguments) == 3) {
+                        return call_user_func_array([ $this, 'modifyNote3' ], $arguments);
+                     }
+                 }
              }
         }
     }

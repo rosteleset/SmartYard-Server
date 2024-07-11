@@ -10,5 +10,6 @@
     "createNote": "Create note",
     "default": "By default",
     "checks": "Checkboxes",
-    "deleteNote": "Delete note?"
+    "deleteNote": "Delete note?",
+    "modifyNote": "Modify note"
 }
