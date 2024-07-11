@@ -155,6 +155,112 @@ function cardForm(params) {
             ];
         }
 
+        if (params.fields[i].type === "font") {
+            let fonts = [
+                {
+                    text: i18n("default"),
+                    value: "",
+                },
+            ];
+
+            for (let i in availableFonts) {
+                fonts.push({
+                    text: availableFonts[i],
+                    value: availableFonts[i],
+                    font: availableFonts[i],
+                });
+            }
+
+            params.fields[i].type = "select2";
+            params.fields[i].options = fonts;
+        }
+
+        if (params.fields[i].type === "themeColor") {
+            params.fields[i].type = "select2";
+            params.fields[i].options = [
+                {
+                    text: "Warning",
+                    value: "bg-warning",
+                    icon: "p-1 fas fa-palette bg-warning",
+                },
+                {
+                    text: "Primary",
+                    value: "bg-primary",
+                    icon: "p-1 fas fa-palette bg-primary",
+                },
+                {
+                    text: "Secondary",
+                    value: "bg-secondary",
+                    icon: "p-1 fas fa-palette bg-secondary",
+                },
+                {
+                    text: "Success",
+                    value: "bg-success",
+                    icon: "p-1 fas fa-palette bg-success",
+                },
+                {
+                    text: "Danger",
+                    value: "bg-danger",
+                    icon: "p-1 fas fa-palette bg-danger",
+                },
+                {
+                    text: "Info",
+                    value: "bg-info",
+                    icon: "p-1 fas fa-palette bg-info",
+                },
+                {
+                    text: "Purple",
+                    value: "bg-purple",
+                    icon: "p-1 fas fa-palette bg-purple",
+                },
+                {
+                    text: "Orange",
+                    value: "bg-orange",
+                    icon: "p-1 fas fa-palette bg-orange",
+                },
+                {
+                    text: "Lightblue",
+                    value: "bg-lightblue",
+                    icon: "p-1 fas fa-palette bg-lightblue",
+                },
+                {
+                    text: "Fuchsia",
+                    value: "bg-fuchsia",
+                    icon: "p-1 fas fa-palette bg-fuchsia",
+                },
+                {
+                    text: "Black",
+                    value: "bg-black",
+                    icon: "p-1 fas fa-palette bg-black",
+                },
+                {
+                    text: "Lime",
+                    value: "bg-lime",
+                    icon: "p-1 fas fa-palette bg-lime",
+                },
+            ];
+        }
+
+        if (params.fields[i].type === "icon") {
+            let icons = [
+                {
+                    text: i18n("withoutIcon"),
+                    value: "",
+                },
+            ];
+
+            for (let i in faIcons) {
+                icons.push({
+                    icon: faIcons[i].title + " fa-fw",
+                    text: faIcons[i].title.split(" fa-")[1] + (faIcons[i].searchTerms.length ? (", " + faIcons[i].searchTerms.join(", ")) : ""),
+                    value: faIcons[i].title,
+                });
+            }
+
+            params.fields[i].type = "select2";
+            params.fields[i].options = icons;
+        }
+
         if (params.fields[i].id === "-") {
             h += `<tr class='mt-0 mb-0 pt-0 pb-0 jsform-tabbed-item' data-tab-index='${tabs.indexOf(params.fields[i].tab)}'>`;
             if (params.singleColumn) {

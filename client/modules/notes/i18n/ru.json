@@ -8,7 +8,6 @@
     "font": "Шрифт",
     "color": "Цвет",
     "createNote": "Добавить заметку",
-    "withoutIcon": "Без значка",
     "default": "По умолчанию",
     "checks": "Список"
 }

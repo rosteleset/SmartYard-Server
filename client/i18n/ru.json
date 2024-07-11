@@ -67,6 +67,8 @@
     "checkAll": "Отметить все",
     "unCheckAll": "Снять все",
     "scrollToTop": "Пролистать наверх",
+    "default": "По умолчанию",
+    "withoutIcon": "Без значка",
     "tz": {
         "Europe/Moscow": "Европа/Москва"
     },

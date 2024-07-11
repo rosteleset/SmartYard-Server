@@ -64,6 +64,8 @@
     "checkAll": "Check all",
     "unCheckAll": "Uncheck all",
     "scrollToTop": "Scroll to top",
+    "default": "By default",
+    "withoutIcon": "Without icon",
     "errors": {
         "404caption": "Oh! Page not found.",
         "404message": "It seems that we cannot find the page you need. <br /> Try to switch to <a href=\"?#\"> the initial page </a>.",

@@ -119,55 +119,14 @@
     },
 
     createNote: function () {
-        let icons = [
-            {
-                text: i18n("notes.withoutIcon"),
-                value: "",
-            },
-        ];
-
-        for (let i in faIcons) {
-            icons.push({
-                icon: faIcons[i].title + " fa-fw",
-                text: faIcons[i].title.split(" fa-")[1] + (faIcons[i].searchTerms.length ? (", " + faIcons[i].searchTerms.join(", ")) : ""),
-                value: faIcons[i].title,
-            });
-        }
-
-        let fonts = [
-            {
-                text: i18n("notes.default"),
-                value: "",
-            },
-        ];
-
-        for (let i in availableFonts) {
-            fonts.push({
-                text: availableFonts[i],
-                value: availableFonts[i],
-                font: availableFonts[i],
-            });
-        }
-
-        let already = {};
-        already[i18n("notes.default")] = true;
-
-        let categories = [
-            {
-                text: i18n("notes.default"),
-                value: i18n("notes.default"),
-            },
-        ];
-
+        let categories = [];
         for (let i in modules.notes.categories) {
-            if (!already[modules.notes.categories[i]]) {
-                categories.push(
-                    {
-                        text: modules.notes.categories[i],
-                        value: modules.notes.categories[i],
-                    }
-                );
-            }
+            categories.push(
+                {
+                    text: modules.notes.categories[i],
+                    value: modules.notes.categories[i],
+                }
+            );
         }
 
         cardForm({
@@ -214,87 +173,18 @@
                 {
                     id: "icon",
                     title: i18n("notes.icon"),
-                    type: "select2",
-                    options: icons,
+                    type: "icon",
                     value: "",
                 },
                 {
                     id: "font",
                     title: i18n("notes.font"),
-                    type: "select2",
-                    options: fonts,
+                    type: "font",
                 },
                 {
                     id: "color",
                     title: i18n("notes.color"),
-                    type: "select2",
-                    options: [
-                        {
-                            text: i18n("notes.default"),
-                            value: "bg-warning",
-                            icon: "p-1 fas fa-palette bg-warning",
-                        },
-                        {
-                            text: "Primary",
-                            value: "bg-primary",
-                            icon: "p-1 fas fa-palette bg-primary",
-                        },
-                        {
-                            text: "Secondary",
-                            value: "bg-secondary",
-                            icon: "p-1 fas fa-palette bg-secondary",
-                        },
-                        {
-                            text: "Success",
-                            value: "bg-success",
-                            icon: "p-1 fas fa-palette bg-success",
-                        },
-                        {
-                            text: "Danger",
-                            value: "bg-danger",
-                            icon: "p-1 fas fa-palette bg-danger",
-                        },
-                        {
-                            text: "Info",
-                            value: "bg-info",
-                            icon: "p-1 fas fa-palette bg-info",
-                        },
-                        {
-                            text: "Purple",
-                            value: "bg-purple",
-                            icon: "p-1 fas fa-palette bg-purple",
-                        },
-                        {
-                            text: "Orange",
-                            value: "bg-orange",
-                            icon: "p-1 fas fa-palette bg-orange",
-                        },
-                        {
-                            text: "Lightblue",
-                            value: "bg-lightblue",
-                            icon: "p-1 fas fa-palette bg-lightblue",
-                        },
-                        {
-                            text: "Fuchsia",
-                            value: "bg-fuchsia",
-                            icon: "p-1 fas fa-palette bg-fuchsia",
-                        },
-                        {
-                            text: "Black",
-                            value: "bg-black",
-                            icon: "p-1 fas fa-palette bg-black",
-                        },
-                        {
-                            text: "Gray",
-                            value: "bg-gray",
-                            icon: "p-1 fas fa-palette bg-gray",
-                        },
-                        {
-                            text: "Lime",
-                            value: "bg-lime",
-                            icon: "p-1 fas fa-palette bg-lime",
-                        },
-                    ],
+                    type: "themeColor",
                     value: "bg-warning",
                 },
             ],
@@ -424,36 +314,6 @@
     modifySticky: function (e) {
         let id = $(e.target).parent().attr("id");
 
-        let icons = [
-            {
-                text: i18n("notes.withoutIcon"),
-                value: "",
-            },
-        ];
-
-        for (let i in faIcons) {
-            icons.push({
-                icon: faIcons[i].title + " fa-fw",
-                text: faIcons[i].title.split(" fa-")[1] + (faIcons[i].searchTerms.length ? (", " + faIcons[i].searchTerms.join(", ")) : ""),
-                value: faIcons[i].title,
-            });
-        }
-
-        let fonts = [
-            {
-                text: i18n("notes.default"),
-                value: "",
-            },
-        ];
-
-        for (let i in availableFonts) {
-            fonts.push({
-                text: availableFonts[i],
-                value: availableFonts[i],
-                font: availableFonts[i],
-            });
-        }
-
         let categories = [];
         for (let i in modules.notes.categories) {
             categories.push(
@@ -507,88 +367,19 @@
                 {
                     id: "icon",
                     title: i18n("notes.icon"),
-                    type: "select2",
-                    options: icons,
+                    type: "icon",
                     value: modules.notes.notes[id].icon,
                 },
                 {
                     id: "font",
                     title: i18n("notes.font"),
-                    type: "select2",
-                    options: fonts,
+                    type: "font",
                     value: modules.notes.notes[id].font,
                 },
                 {
                     id: "color",
                     title: i18n("notes.color"),
-                    type: "select2",
-                    options: [
-                        {
-                            text: i18n("notes.default"),
-                            value: "bg-warning",
-                            icon: "p-1 fas fa-palette bg-warning",
-                        },
-                        {
-                            text: "Primary",
-                            value: "bg-primary",
-                            icon: "p-1 fas fa-palette bg-primary",
-                        },
-                        {
-                            text: "Secondary",
-                            value: "bg-secondary",
-                            icon: "p-1 fas fa-palette bg-secondary",
-                        },
-                        {
-                            text: "Success",
-                            value: "bg-success",
-                            icon: "p-1 fas fa-palette bg-success",
-                        },
-                        {
-                            text: "Danger",
-                            value: "bg-danger",
-                            icon: "p-1 fas fa-palette bg-danger",
-                        },
-                        {
-                            text: "Info",
-                            value: "bg-info",
-                            icon: "p-1 fas fa-palette bg-info",
-                        },
-                        {
-                            text: "Purple",
-                            value: "bg-purple",
-                            icon: "p-1 fas fa-palette bg-purple",
-                        },
-                        {
-                            text: "Orange",
-                            value: "bg-orange",
-                            icon: "p-1 fas fa-palette bg-orange",
-                        },
-                        {
-                            text: "Lightblue",
-                            value: "bg-lightblue",
-                            icon: "p-1 fas fa-palette bg-lightblue",
-                        },
-                        {
-                            text: "Fuchsia",
-                            value: "bg-fuchsia",
-                            icon: "p-1 fas fa-palette bg-fuchsia",
-                        },
-                        {
-                            text: "Black",
-                            value: "bg-black",
-                            icon: "p-1 fas fa-palette bg-black",
-                        },
-                        {
-                            text: "Gray",
-                            value: "bg-gray",
-                            icon: "p-1 fas fa-palette bg-gray",
-                        },
-                        {
-                            text: "Lime",
-                            value: "bg-lime",
-                            icon: "p-1 fas fa-palette bg-lime",
-                        },
-                    ],
+                    type: "themeColor",
                     value: modules.notes.notes[id].color,
                 },
             ],
@@ -829,8 +620,9 @@
         always(loadingDone);
     },
 
+/*
     search: function (search) {
         console.log(search);
     }
-
+*/
 }).init();

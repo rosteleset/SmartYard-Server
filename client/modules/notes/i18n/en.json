@@ -8,7 +8,6 @@
     "font": "Font",
     "color": "Color",
     "createNote": "Create note",
-    "withoutIcon": "Without icon",
     "default": "By default",
     "checks": "Checkboxes"
 }
