@@ -17,7 +17,31 @@
              */
             public function getNotes()
             {
+                $notes = $this->db->get("select * from notes where owner = :owner", [
+                    "owner" => $this->login,
+                ], [
+                    "note_id" => "id",
+                    "note_subject" => "subject",
+                    "note_body" => "body",
+                    "checks" => "checks",
+                    "category" => "category",
+                    "remind" => "remind",
+                    "icon" => "icon",
+                    "font" => "font",
+                    "color" => "color",
+                    "position_left" => "x",
+                    "position_top" => "y",
+                    "position_order" => "z",
+                ]);
 
+                $z = 1;
+
+                foreach ($notes as &$note) {
+                    $note["z"] = $z;
+                    $z++;
+                }
+
+                return $notes;
             }
 
             /**
