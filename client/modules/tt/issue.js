@@ -11,10 +11,31 @@
         GET("tt", "tt", false, true).
         done(modules.tt.tt).
         done(() => {
+            let projects = [];
+
+            projects.push({
+                id: "-",
+                text: "-",
+            });
+
+            for (let i in modules.tt.meta.projects) {
+                projects.push({
+                    id: modules.tt.meta.projects[i].acronym,
+                    text: $.trim(modules.tt.meta.projects[i].project ? modules.tt.meta.projects[i].project : modules.tt.meta.projects[i].acronym),
+                    selected: current_project == modules.tt.meta.projects[i].acronym || lStore("ttProject") == modules.tt.meta.projects[i].acronym,
+                });
+            }
+
+            for (let i in projects) {
+                if (projects[i].selected) {
+                    current_project = projects[i].id;
+                }
+            }
+
             let workflows = [];
 
             for (let i in modules.tt.meta.workflows) {
-                workflows[i] = modules.tt.meta.workflows[i].name?modules.tt.meta.workflows[i].name:i;
+                workflows[i] = modules.tt.meta.workflows[i].name ? modules.tt.meta.workflows[i].name : i;
             }
 
             function workflowsByProject(project) {
@@ -29,12 +50,12 @@
                     for (let i in modules.tt.meta.projects) {
                         if (modules.tt.meta.projects[i].acronym == project) {
                             for (let j in modules.tt.meta.projects[i].workflows) {
-                                let wn = $.trim(workflows[modules.tt.meta.projects[i].workflows[j]]?workflows[modules.tt.meta.projects[i].workflows[j]]:modules.tt.meta.projects[i].workflows[j]);
+                                let wn = $.trim(workflows[modules.tt.meta.projects[i].workflows[j]] ? workflows[modules.tt.meta.projects[i].workflows[j]] : modules.tt.meta.projects[i].workflows[j]);
                                 if (wn.charAt(0) != "#") {
                                     w.push({
                                         id: modules.tt.meta.projects[i].workflows[j],
                                         text: wn,
-                                        selected: lStore("tt_workflow") == modules.tt.meta.projects[i].workflows[j],
+                                        selected: lStore("ttWorkflow") == modules.tt.meta.projects[i].workflows[j],
                                     });
                                 }
                             }
@@ -94,21 +115,6 @@
                 });
 
                 return x;
-            }
-
-            let projects = [];
-
-            projects.push({
-                id: "-",
-                text: "-",
-            });
-
-            for (let i in modules.tt.meta.projects) {
-                projects.push({
-                    id: modules.tt.meta.projects[i].acronym,
-                    text: $.trim(modules.tt.meta.projects[i].project?modules.tt.meta.projects[i].project:modules.tt.meta.projects[i].acronym),
-                    selected: current_project == modules.tt.meta.projects[i].acronym || lStore("tt_project") == modules.tt.meta.projects[i].acronym,
-                });
             }
 
             cardForm({
@@ -178,8 +184,8 @@
                 },
                 callback: function (result) {
                     if (result.project && result.workflow) {
-                        lStore("tt_project", result.project);
-                        lStore("tt_workflow", result.workflow);
+                        lStore("ttProject", result.project);
+                        lStore("ttWorkflow", result.workflow);
                     }
                     modules.tt.issue.createIssueForm(result.project, result.workflow, result.catalog, (!!parent)?encodeURIComponent(parent):"");
                 },

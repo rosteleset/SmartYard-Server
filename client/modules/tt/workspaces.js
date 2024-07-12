@@ -44,11 +44,11 @@
 
             let showAlt = false;
             let workspace = [];
-            let currentWorkspace = params.workspace ? params.workspace : lStore("tt_workspace");
+            let currentWorkspace = params.workspace ? params.workspace : lStore("ttWorkspace");
             if (!currentWorkspace && result.files.length) {
                 currentWorkspace = result.files[0].filename;
             }
-            lStore("tt_workspace", currentWorkspace);
+            lStore("ttWorkspace", currentWorkspace);
 
             let rtd = "";
             rtd += `<div class="form-inline"><div class="input-group input-group-sm"><select id="ttWorkspaceSelect" class="form-control select-arrow" style="width: 259px;">`;
@@ -175,7 +175,7 @@
                         fail(FAIL).
                         fail(loadingDone).
                         done(() => {
-                            lStore("tt_workspace", w.name);
+                            lStore("ttWorkspace", w.name);
                             modules.tt.workspaces.renderWorkspaces({
                                 workspace: w.name,
                             });
@@ -195,7 +195,7 @@
                         fail(FAIL).
                         fail(loadingDone).
                         done(() => {
-                            lStore("tt_workspace", null);
+                            lStore("ttWorkspace", null);
                             modules.tt.workspaces.renderWorkspaces({
                                 workspace: null,
                             });
