@@ -171,6 +171,7 @@
                     id: "remind",
                     title: i18n("notes.remind"),
                     type: "datetime-local",
+                    sec: true,
                 },
                 {
                     id: "icon",
@@ -382,6 +383,7 @@
                     title: i18n("notes.remind"),
                     type: "datetime-local",
                     value: modules.notes.notes[id].remind,
+                    sec: true,
                 },
                 {
                     id: "icon",
