@@ -39,7 +39,7 @@ class qtech extends camera
             'Config.DoorSetting.FACEDETECT.IP' => 'fake', // no syslog messages without this
             'Config.DoorSetting.FACEDETECT.Timeout' => 3, // ???
             'Config.DoorSetting.FACEDETECT.ResetTime' => 60, // ???
-            'Config.DoorSetting.FACEDETECT.FaceLiveness' => 0.95,
+            'Config.DoorSetting.FACEDETECT.FaceLiveness' => 0, // feels like it doesn't affect anything
             'Config.DoorSetting.FACEDETECT.SendInterval' => 2, // ???
         ]);
     }
