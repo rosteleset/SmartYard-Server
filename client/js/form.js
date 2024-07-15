@@ -438,6 +438,9 @@ function cardForm(params) {
                     h += `
                         <tr>
                             <td>
+                                <i class="fas fa-fw fa-bars ml-2" draggable="true"></i>
+                            </td>
+                            <td>
                                 <input type="checkbox" class="ml-2 mr-2" ${params.fields[i].options[j].checked ? "checked" : ""}/>
                             </td>
                             <td style='width: 100%;'>
@@ -457,6 +460,9 @@ function cardForm(params) {
                 }
                 h += `
                     <tr>
+                        <td>
+                            &nbsp;
+                        </td>
                         <td>
                             &nbsp;
                         </td>
