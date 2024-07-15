@@ -532,8 +532,15 @@
     },
 
     stickyCheckbox: function (e) {
-        PUT("notes", "check", $(e.target).parent().parent().parent().attr("id").split("-")[1], {
-            line: $(e.target).attr("data-line"),
+        let id = $(e.target).parent().parent().parent().attr("id");
+        let b = modules.notes.notes[id].body;
+        let l = parseInt($(e.target).attr("data-line"));
+        b = b.split("\n");
+        b[l] = ($(e.target).prop("checked") ? "+" : "-") + b[l].substring(1);
+        modules.notes.notes[id].body = b.join("\n");
+
+        PUT("notes", "check", id.split("-")[1], {
+            line: l,
             checked: $(e.target).prop("checked") ? "1" : "0"
         }).
         fail(FAIL);
