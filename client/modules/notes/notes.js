@@ -122,6 +122,22 @@
 
     renderNote: function (id, subject, body, color, icon, font, checks, remind, z) {
         let newSticky = `<div id='${id}' class='drag sticky ${color ? color : "bg-warning"}' style='z-index: ${z};'>`;
+
+        let ch = {
+            "bg-warning": "background-color: #3498db;",
+            "bg-primary": "background-color: white;",
+            "bg-secondary": "background-color: black;",
+            "bg-success": "background-color: white;",
+            "bg-danger": "background-color: yellow;",
+            "bg-info": "",
+            "bg-purple": "",
+            "bg-orange": "",
+            "bg-lightblue": "",
+            "bg-fuchsia": "",
+            "bg-black": "background-color: yellow;",
+            "bg-lime": "",
+        };
+
         subject = $.trim(subject);
         if (subject) {
             newSticky += `<h5 class="caption">`;
@@ -129,8 +145,14 @@
                 newSticky += `<i class="fa-fw ${icon} mr-1"></i>`;
             }
             newSticky += convertLinks(nl2br(escapeHTML(subject)));
-            newSticky += "</h5><hr />";
+            newSticky += "</h5>";
+            if (ch[color]) {
+                newSticky += `<hr style="${ch[color]}" />`;
+            } else {
+                newSticky += "<hr />";
+            }
         }
+
         newSticky += "<p class='body'";
         if ($.trim(font)) {
             newSticky += `style='font-family: ${font}'`
@@ -146,7 +168,27 @@
             newSticky += convertLinks(nl2br(escapeHTML(body)));
         }
 
-        newSticky += '</p><i class="far fa-fw fa-edit editSticky"></i>';
+        let cc = {
+            "bg-warning": "color: black; background-color: white;",
+            "bg-primary": "color: blue; background-color: white;",
+            "bg-secondary": "color: white; background-color: black;",
+            "bg-success": "color: green; background-color: white;",
+            "bg-danger": "color: black; background-color: yellow;",
+            "bg-info": "",
+            "bg-purple": "",
+            "bg-orange": "",
+            "bg-lightblue": "",
+            "bg-fuchsia": "",
+            "bg-black": "color: black; background-color: yellow;",
+            "bg-lime": "",
+        };
+
+        if (cc[color]) {
+            newSticky += `</p><i class="far fa-fw fa-edit editSticky" style="${cc[color]}"></i>`;
+        } else {
+            newSticky += '</p><i class="far fa-fw fa-edit editSticky"></i>';
+        }
+
         if (remind) {
             newSticky += '<i class="far fa-fw fa-clock text-small reminder"></i>';
         }
