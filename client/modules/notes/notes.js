@@ -138,6 +138,21 @@
             "bg-lime": "",
         };
 
+        let cc = {
+            "bg-warning": "color: black; background-color: white;",
+            "bg-primary": "color: blue; background-color: white;",
+            "bg-secondary": "color: white; background-color: black;",
+            "bg-success": "color: green; background-color: white;",
+            "bg-danger": "color: black; background-color: yellow;",
+            "bg-info": "",
+            "bg-purple": "",
+            "bg-orange": "",
+            "bg-lightblue": "",
+            "bg-fuchsia": "",
+            "bg-black": "color: black; background-color: yellow;",
+            "bg-lime": "",
+        };
+
         subject = $.trim(subject);
         if (subject) {
             newSticky += `<h5 class="caption">`;
@@ -167,21 +182,6 @@
         } else {
             newSticky += convertLinks(nl2br(escapeHTML(body)));
         }
-
-        let cc = {
-            "bg-warning": "color: black; background-color: white;",
-            "bg-primary": "color: blue; background-color: white;",
-            "bg-secondary": "color: white; background-color: black;",
-            "bg-success": "color: green; background-color: white;",
-            "bg-danger": "color: black; background-color: yellow;",
-            "bg-info": "",
-            "bg-purple": "",
-            "bg-orange": "",
-            "bg-lightblue": "",
-            "bg-fuchsia": "",
-            "bg-black": "color: black; background-color: yellow;",
-            "bg-lime": "",
-        };
 
         if (cc[color]) {
             newSticky += `</p><i class="far fa-fw fa-edit editSticky" style="${cc[color]}"></i>`;
