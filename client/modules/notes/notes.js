@@ -120,6 +120,41 @@
         moduleLoaded("notes", this);
     },
 
+    renderNote: function (id, subject, body, color, icon, font, checks, remind, z) {
+        let newSticky = `<div id='${id}' class='drag sticky ${color ? color : "bg-warning"}' style='z-index: ${z};'>`;
+        subject = $.trim(subject);
+        if (subject) {
+            newSticky += `<h5 class="caption">`;
+            if ($.trim(icon)) {
+                newSticky += `<i class="fa-fw ${icon} mr-1"></i>`;
+            }
+            newSticky += convertLinks(nl2br(escapeHTML(subject)));
+            newSticky += "</h5><hr />";
+        }
+        newSticky += "<p class='body'";
+        if ($.trim(font)) {
+            newSticky += `style='font-family: ${font}'`
+        }
+        newSticky += ">";
+
+        if (parseInt(checks)) {
+            let b = body.split("\n");
+            for (let i in b) {
+                newSticky += `<span class='mr-2'><input type='checkbox' class='nodrag noteCheckbox' ${(b[i][0] == "+") ? "checked" : ""} data-line='${i}'/></span><span>${convertLinks(nl2br(escapeHTML(b[i].substring(1))))}</span><br />`;
+            }
+        } else {
+            newSticky += convertLinks(nl2br(escapeHTML(body)));
+        }
+
+        newSticky += '</p><i class="far fa-fw fa-edit editSticky"></i>';
+        if (remind) {
+            newSticky += '<i class="far fa-fw fa-clock text-small reminder"></i>';
+        }
+        newSticky += '</div>';
+
+        return newSticky;
+    },
+
     createNote: function () {
         let categories = [];
         for (let i in modules.notes.categories) {
@@ -212,41 +247,17 @@
                     z = Math.max(z, parseInt($(this).css("z-index")));
                 });
 
-                if (parseInt(r.checks)) {
-                    r.body = r.body.split("\n");
-                    for (let i in r.body) {
-                        r.body[i] = "-" + r.body[i];
-                    }
-                }
-
-                let newSticky = `<div id='${id}' class='drag sticky ${r.color}' style='z-index: ${z + 1};'>`;
-                if (convertLinks(nl2br(escapeHTML($.trim(r.subject))))) {
-                    newSticky += `<h5 class="caption">`;
-                    if ($.trim(r.icon)) {
-                        newSticky += `<i class="fa-fw ${r.icon} mr-1"></i>`;
-                    }
-                    newSticky += r.subject;
-                    newSticky += "</h5><hr />";
-                }
-                newSticky += "<p class='body'";
-                if ($.trim(r.font)) {
-                    newSticky += `style='font-family: ${r.font}'`
-                }
-                newSticky += ">";
-
-                if (parseInt(r.checks)) {
-                    for (let i in r.body) {
-                        newSticky += "<div><span><input type='checkbox' class='nodrag noteCheckbox' data-line='${i}'/></span><span>" + convertLinks(nl2br(escapeHTML(r.body[i]))) + "</span></div>";
-                    }
-                } else {
-                    newSticky += convertLinks(nl2br(escapeHTML(r.body)));
-                }
-
-                newSticky += '</p><i class="far fa-fw fa-edit editSticky"></i>';
-                if (r.remind) {
-                    newSticky += '<i class="far fa-fw fa-clock text-small reminder"></i>';
-                }
-                newSticky += '</div>';
+                let newSticky = modules.notes.renderNote(
+                    id,
+                    r.subject,
+                    r.body,
+                    r.color,
+                    r.icon,
+                    r.font,
+                    r.checks,
+                    r.remind,
+                    z + 1
+                );
 
                 stickyArea.append(newSticky);
 
@@ -446,35 +457,17 @@
 
                     let stickyArea = $('#stickiesContainer');
 
-                    let newSticky = `<div id='${id}' class='drag sticky ${r.color}' style='z-index: ${z};'>`;
-                    if (convertLinks(nl2br(escapeHTML($.trim(r.subject))))) {
-                        newSticky += `<h5 class="caption">`;
-                        if ($.trim(r.icon)) {
-                            newSticky += `<i class="fa-fw ${r.icon} mr-1"></i>`;
-                        }
-                        newSticky += r.subject;
-                        newSticky += "</h5><hr />";
-                    }
-                    newSticky += "<p class='body'";
-                    if ($.trim(r.font)) {
-                        newSticky += `style='font-family: ${r.font}'`
-                    }
-                    newSticky += ">";
-
-                    if (parseInt(modules.notes.notes[id].checks)) {
-                        let b = modules.notes.notes[id].body.split("\n");
-                        for (let i in b) {
-                            newSticky += `<span class='mr-2'><input type='checkbox' class='nodrag noteCheckbox' ${(b[i][0] == "+") ? "checked" : ""} data-line='${i}'/></span><span>${convertLinks(nl2br(escapeHTML(b[i].substring(1))))}</span><br />`;
-                        }
-                    } else {
-                        newSticky += convertLinks(nl2br(escapeHTML(modules.notes.notes[id].body)));
-                    }
-
-                    newSticky += '</p><i class="far fa-fw fa-edit editSticky nodrag"></i>';
-                    if (r.remind) {
-                        newSticky += '<i class="far fa-fw fa-clock text-small reminder"></i>';
-                    }
-                    newSticky += '</div>';
+                    let newSticky = modules.notes.renderNote(
+                        id,
+                        r.subject,
+                        r.body,
+                        r.color,
+                        r.icon,
+                        r.font,
+                        modules.notes.notes[id].checks,
+                        r.remind,
+                        z
+                    );
 
                     stickyArea.append(newSticky);
 
@@ -552,38 +545,17 @@
 
         for (let id in modules.notes.notes) {
             if (modules.notes.notes[id].category == category) {
-                let z = modules.notes.notes[id].z;
-
-                let newSticky = `<div id='${id}' class='drag sticky ${modules.notes.notes[id].color ? modules.notes.notes[id].color : "bg-warning"}' style='z-index: ${z};'>`;
-                let subject = $.trim(modules.notes.notes[id].subject);
-                if (subject) {
-                    newSticky += `<h5 class="caption">`;
-                    if ($.trim(modules.notes.notes[id].icon)) {
-                        newSticky += `<i class="fa-fw ${modules.notes.notes[id].icon} mr-1"></i>`;
-                    }
-                    newSticky += convertLinks(nl2br(escapeHTML(subject)));
-                    newSticky += "</h5><hr />";
-                }
-                newSticky += "<p class='body'";
-                if ($.trim(modules.notes.notes[id].font)) {
-                    newSticky += `style='font-family: ${modules.notes.notes[id].font}'`
-                }
-                newSticky += ">";
-
-                if (parseInt(modules.notes.notes[id].checks)) {
-                    let b = modules.notes.notes[id].body.split("\n");
-                    for (let i in b) {
-                        newSticky += `<span class='mr-2'><input type='checkbox' class='nodrag noteCheckbox' ${(b[i][0] == "+") ? "checked" : ""} data-line='${i}'/></span><span>${convertLinks(nl2br(escapeHTML(b[i].substring(1))))}</span><br />`;
-                    }
-                } else {
-                    newSticky += convertLinks(nl2br(escapeHTML(modules.notes.notes[id].body)));
-                }
-
-                newSticky += '</p><i class="far fa-fw fa-edit editSticky"></i>';
-                if (modules.notes.notes[id].remind) {
-                    newSticky += '<i class="far fa-fw fa-clock text-small reminder"></i>';
-                }
-                newSticky += '</div>';
+                let newSticky = modules.notes.renderNote(
+                    id,
+                    modules.notes.notes[id].subject,
+                    modules.notes.notes[id].body,
+                    modules.notes.notes[id].color,
+                    modules.notes.notes[id].icon,
+                    modules.notes.notes[id].font,
+                    modules.notes.notes[id].checks,
+                    modules.notes.notes[id].remind,
+                    modules.notes.notes[id].z
+                );
 
                 stickyArea.append(newSticky);
 

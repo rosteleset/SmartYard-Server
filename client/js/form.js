@@ -414,6 +414,37 @@ function cardForm(params) {
                 h += `</div>`;
                 break;
 
+            case "sortableList":
+                if (params.target) {
+                    h += `<div name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" class="overflow-y-auto pl-2" style="position: relative; border: solid thin transparent; border-radius: 3px;">`;
+                } else {
+                    // TODO: Do something with this!!! (max-height)
+                    h += `<div name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" class="overflow-y-auto pl-2" style="max-height: 400px; overflow-y: auto!important; position: relative; border: solid thin transparent; border-radius: 3px;">`;
+                    // TODO: Do something with this!!! (max-height)
+                }
+                /*
+                    options:
+                    [
+                        {
+                            id: optionId,
+                            text: text,
+                            checked: true,
+                        }
+                    ]
+                */
+                for (let j = 0; j < params.fields[i].options.length; j++) {
+                    h += `
+                        <div class="custom-control custom-checkbox">
+                        <input type="checkbox"/>
+                        <input type="text" />
+                    `;
+                    h += `
+                        </div>
+                    `;
+                }
+                h += `</div>`;
+                break;
+
             case "area":
                 h += `<textarea name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" rows="5" class="form-control modalFormField overflow-auto" autocomplete="off" style="resize: none;" placeholder="${escapeHTML(params.fields[i].placeholder ? params.fields[i].placeholder : "")}"`;
                 if (params.fields[i].readonly) {
