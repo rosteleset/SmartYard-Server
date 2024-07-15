@@ -247,6 +247,14 @@
                     z = Math.max(z, parseInt($(this).css("z-index")));
                 });
 
+                if (parseInt(r.checks)) {
+                    r.body = r.body.split("\n");
+                    for (let i in r.body) {
+                        r.body[i] = "-" + r.body[i];
+                    }
+                    r.body = r.body.join("\n");
+                }
+
                 let newSticky = modules.notes.renderNote(
                     id,
                     r.subject,

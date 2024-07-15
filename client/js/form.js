@@ -652,7 +652,6 @@ function cardForm(params) {
                         $(`#${_prefix}${params.fields[invalid[i]].id}`).next().addClass("border-color-invalid");
                         break;
                     case "multiselect":
-                        console.log(`#${_prefix}${params.fields[invalid[i]].id}`);
                         $(`#${_prefix}${params.fields[invalid[i]].id}`).addClass("border-color-invalid");
                         break;
                     case "code":
