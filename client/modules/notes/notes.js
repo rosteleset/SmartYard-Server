@@ -355,6 +355,19 @@
             );
         }
 
+        let checks = [];
+        if (parseInt(modules.notes.notes[id].checks)) {
+            let b = modules.notes.notes[id].body.split("\n");
+            let d = md5(guid());
+            for (let i in b) {
+                checks.push({
+                    id: d + i,
+                    text: b[i].substring(1),
+                    checked: b[i][0] == "+",
+                });
+            }
+        }
+
         cardForm({
             title: i18n("notes.modifyNote"),
             footer: true,
@@ -373,11 +386,12 @@
                 {
                     id: "body",
                     title: i18n("notes.body"),
-                    type: "area",
-                    validate: a => {
+                    type: parseInt(modules.notes.notes[id].checks) ? "sortableList" : "area",
+                    validate: parseInt(modules.notes.notes[id].checks) ? (a => {
                         return $.trim(a) != '';
-                    },
-                    value: modules.notes.notes[id].body,
+                    }) : false,
+                    value: parseInt(modules.notes.notes[id].checks) ? undefined : modules.notes.notes[id].body,
+                    options: parseInt(modules.notes.notes[id].checks) ? checks : undefined,
                 },
                 {
                     id: "category",

@@ -416,10 +416,10 @@ function cardForm(params) {
 
             case "sortableList":
                 if (params.target) {
-                    h += `<div name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" class="overflow-y-auto pl-2" style="position: relative; border: solid thin transparent; border-radius: 3px;">`;
+                    h += `<div name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" class="overflow-y-auto pl-0" style="position: relative; border: solid thin transparent; border-radius: 3px;">`;
                 } else {
                     // TODO: Do something with this!!! (max-height)
-                    h += `<div name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" class="overflow-y-auto pl-2" style="max-height: 400px; overflow-y: auto!important; position: relative; border: solid thin transparent; border-radius: 3px;">`;
+                    h += `<div name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" class="overflow-y-auto pl-0" style="max-height: 400px; overflow-y: auto!important; position: relative; border: solid thin transparent; border-radius: 3px;">`;
                     // TODO: Do something with this!!! (max-height)
                 }
                 /*
@@ -432,17 +432,51 @@ function cardForm(params) {
                         }
                     ]
                 */
+               h += "<div class='sortable-list-noborder-frame'>";
+               h += "<table class='sortable-list-noborder-table' style='width: 100%;'>";
                 for (let j = 0; j < params.fields[i].options.length; j++) {
                     h += `
-                        <div class="custom-control custom-checkbox">
-                        <input type="checkbox"/>
-                        <input type="text" />
-                    `;
-                    h += `
-                        </div>
+                        <tr>
+                            <td>
+                                <input type="checkbox" class="ml-2 mr-2" ${params.fields[i].options[j].checked ? "checked" : ""}/>
+                            </td>
+                            <td style='width: 100%;'>
+                                <input type="text" class="form-control sortable-list-noborder-input" value="${escapeHTML(params.fields[i].options[j].text)}"/>
+                            </td>
+                            <td>
+                                ${(j == 0) ? "&nbsp;" : "<i class='far fa-fw fa-caret-square-up ml-2'></i>" }
+                            </td>
+                            <td>
+                                <i class="far fa-fw fa-trash-alt ml-2"></i>
+                            </td>
+                            <td>
+                                ${(j == params.fields[i].options.length - 1) ? "&nbsp;" : "<i class='far fa-fw fa-caret-square-down ml-2 mr-2'></i>"}
+                            </td>
+                        </tr>
                     `;
                 }
-                h += `</div>`;
+                h += `
+                    <tr>
+                        <td>
+                            &nbsp;
+                        </td>
+                        <td style='width: 100%;'>
+                            <input type="text" class="form-control sortable-list-noborder-input" />
+                        </td>
+                        <td>
+                            &nbsp;
+                        </td>
+                        <td>
+                            <i class="far fa-fw fa-check-square ml-2"></i>
+                        </td>
+                        <td>
+                            &nbsp;
+                        </td>
+                    </tr>
+                `;
+                h += '</table>';
+                h += '</div>';
+                h += '</div>';
                 break;
 
             case "area":

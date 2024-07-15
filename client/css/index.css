@@ -572,3 +572,43 @@ select {
   top: 0.35rem;
   pointer-events: none;
 }
+
+.sortable-list-noborder-input {
+  border: none;
+  display: initial;
+  width: 100%;
+}
+
+.sortable-list-noborder-input:hover {
+  border: none;
+  display: initial;
+  width: 100%;
+}
+
+.sortable-list-noborder-input:focus {
+  border: none;
+  outline: none;
+  display: initial;
+  width: 100%;
+}
+
+.sortable-list-noborder-table {
+  margin: 0;
+  padding: 0;
+  border-collapse: collapse;
+}
+
+.sortable-list-noborder-table td {
+  border: none;
+  padding-left: 0!important;
+  padding-right: 0!important;
+  padding-top: 3px!important;
+  padding-bottom: 3px!important;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.sortable-list-noborder-frame {
+  border: solid thin lightgrey;
+  border-radius: 0.25rem;
+}
