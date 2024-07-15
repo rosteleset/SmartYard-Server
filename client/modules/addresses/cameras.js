@@ -648,7 +648,7 @@
                                     nowrap: true,
                                 },
                                 {
-                                    data: modules.addresses.cameras.meta.models[modules.addresses.cameras.meta.cameras[i].model].title,
+                                    data: modules.addresses.cameras.meta.models[modules.addresses.cameras.meta.cameras[i].model]?.title,
                                     nowrap: true,
                                 },
                                 {
