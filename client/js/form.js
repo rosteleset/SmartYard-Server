@@ -422,66 +422,31 @@ function cardForm(params) {
                     h += `<div name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" class="overflow-y-auto pl-0" style="max-height: 400px; overflow-y: auto!important; position: relative; border: solid thin transparent; border-radius: 3px;">`;
                     // TODO: Do something with this!!! (max-height)
                 }
-                /*
-                    options:
-                    [
-                        {
-                            id: optionId,
-                            text: text,
-                            checked: true,
-                        }
-                    ]
-                */
-               h += "<div class='sortable-list-noborder-frame'>";
-               h += "<table class='sortable-list-noborder-table' style='width: 100%;'>";
+                h += `
+                    <div class="input-group">
+                        <input type="text" class="form-control">
+                        <div class="input-group-append">
+                            <div class="input-group-text"><i class="far fa-fw fa-plus-square text-success"></i></div>
+                        </div>
+                    </div>
+                `;
                 for (let j = 0; j < params.fields[i].options.length; j++) {
                     h += `
-                        <tr>
-                            <td>
-                                <i class="fas fa-fw fa-bars ml-2" draggable="true"></i>
-                            </td>
-                            <td>
-                                <input type="checkbox" class="ml-2 mr-2" ${params.fields[i].options[j].checked ? "checked" : ""}/>
-                            </td>
-                            <td style='width: 100%;'>
-                                <input type="text" class="form-control sortable-list-noborder-input" value="${escapeHTML(params.fields[i].options[j].text)}"/>
-                            </td>
-                            <td>
-                                ${(j == 0) ? "&nbsp;" : "<i class='far fa-fw fa-caret-square-up ml-2'></i>" }
-                            </td>
-                            <td>
-                                <i class="far fa-fw fa-trash-alt ml-2"></i>
-                            </td>
-                            <td>
-                                ${(j == params.fields[i].options.length - 1) ? "&nbsp;" : "<i class='far fa-fw fa-caret-square-down ml-2 mr-2'></i>"}
-                            </td>
-                        </tr>
+                        <div class="input-group mt-1">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    <input type="checkbox" ${params.fields[i].options[j].checked ? "checked" : ""}>
+                                </span>
+                            </div>
+                            <input type="text" class="form-control" value="${escapeHTML(params.fields[i].options[j].text)}">
+                            <div class="input-group-append">
+                                <div class="input-group-text"><i class="far fa-fw fa-caret-square-up"></i></div>
+                                <div class="input-group-text"><i class="far fa-fw fa-trash-alt text-danger"></i></div>
+                                <div class="input-group-text"><i class="far fa-fw fa-caret-square-down"></i></div>
+                            </div>
+                        </div>
                     `;
                 }
-                h += `
-                    <tr>
-                        <td>
-                            &nbsp;
-                        </td>
-                        <td>
-                            &nbsp;
-                        </td>
-                        <td style='width: 100%;'>
-                            <input type="text" class="form-control sortable-list-noborder-input" />
-                        </td>
-                        <td>
-                            &nbsp;
-                        </td>
-                        <td>
-                            <i class="far fa-fw fa-check-square ml-2"></i>
-                        </td>
-                        <td>
-                            &nbsp;
-                        </td>
-                    </tr>
-                `;
-                h += '</table>';
-                h += '</div>';
                 h += '</div>';
                 break;
 
