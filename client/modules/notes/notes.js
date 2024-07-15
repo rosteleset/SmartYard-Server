@@ -435,7 +435,7 @@
                 },
                 {
                     id: "body",
-                    title: i18n("notes.body"),
+                    title: parseInt(modules.notes.notes[id].checks) ? i18n("notes.list") : i18n("notes.body"),
                     type: parseInt(modules.notes.notes[id].checks) ? "sortableList" : "area",
                     validate: parseInt(modules.notes.notes[id].checks) ? (a => {
                         return $.trim(a) != '';
