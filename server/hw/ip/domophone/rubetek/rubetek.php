@@ -312,13 +312,8 @@ abstract class rubetek extends domophone
 
     public function openLock(int $lockNumber = 0)
     {
-        $doors = $this->getDoors();
-        $open = $doors[$lockNumber]['open'] ?? false;
-
-        if (!$open) {
-            $lockNumber += 1;
-            $this->apiCall("/doors/$lockNumber/open", 'POST');
-        }
+        $lockNumber += 1;
+        $this->apiCall("/doors/$lockNumber/open", 'POST');
     }
 
     public function prepare()
@@ -446,7 +441,7 @@ abstract class rubetek extends domophone
 
     public function setUnlockTime(int $time = 3)
     {
-        // TODO: causes a side effect: always closes the relay
+        // TODO: closes the relay if the door is currently open by API, RFID, personal access code, etc.
         $doors = $this->getDoors();
 
         foreach ($doors as $door) {
@@ -463,16 +458,8 @@ abstract class rubetek extends domophone
 
     public function setUnlocked(bool $unlocked = true)
     {
-        // TODO: if unlocked, the locks will close after reboot
-        $doors = $this->getDoors();
-
-        foreach ($doors as $door) {
-            $id = $door['id'];
-            $this->apiCall("/doors/$id", 'PATCH', [
-                'id' => $id,
-                'open' => $unlocked,
-            ]);
-        }
+        // TODO: requires manual configuration of discrete output logic (custom situation command -> Switch OFF)
+        $this->apiCall('/custom/' . ($unlocked ? 'start' : 'stop'), 'POST');
     }
 
     public function transformDbConfig(array $dbConfig): array
@@ -710,6 +697,7 @@ abstract class rubetek extends domophone
 
     protected function getUnlocked(): bool
     {
+        // TODO: returns true if the door is currently open by API, RFID, personal access code, etc.
         return $this->getDoors()[0]['open'];
     }
 
