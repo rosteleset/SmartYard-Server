@@ -317,6 +317,7 @@ local function handleCMSIntercom(context, extension)
         for i, e in ipairs(flat.entrances) do
             if e.apartment > 0 and e.domophoneId > 0 and e.matrix > 0 then
                 dest = dest .. "&PJSIP/" .. string.format("%d@1%05d", e.apartment, e.domophoneId)
+                channel.CALLERID("name"):set(math.floor(e.apartment))
                 log_debug(channel.CALLERID("num"):get() .. " >>> " .. string.format("%d@1%05d", e.apartment, e.domophoneId))
             end
         end
