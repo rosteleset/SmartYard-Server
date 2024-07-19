@@ -1,7 +1,7 @@
 zabbix_export:
   version: '6.4'
   template_groups:
-    - uuid: 6b2da836ac5d4728b89105eb2ed04250
+    - uuid: e858e071fe054cdabec002d7d99891e9
       name: Templates/Intercoms
   templates:
     - uuid: 4b1e045ce6f54de8b626da09c747bb5d
@@ -135,16 +135,13 @@ zabbix_export:
             - type: JAVASCRIPT
               parameters:
                 - |
-                  const parts = value.split(/\s+/)
-                  const days = parts[0].split("day:")[1]
-                  const timeParts = parts[1].split(":");
-                  const days2seconds = parseInt(days.trim()) * 24 *  60 * 60;
-                  const hours2seconds = parseInt(timeParts[0].trim()) * 60 * 60;
-                  const minutes2seconds = parseInt(timeParts[1].trim()) * 60;
-                  const seconds = parseInt(timeParts[2].trim())
-                  
-                  const str2seconds = days2seconds + hours2seconds + minutes2seconds + seconds
-                  return str2seconds
+                  const dayMatch = value.match(/day:(\d+)/);
+                  const timeMatch = value.match(/(\d+):\s*(\d+):\s*(\d+)/);
+                  const days = parseInt(dayMatch[1], 10);
+                  const hours = parseInt(timeMatch[1].trim(), 10);
+                  const minutes = parseInt(timeMatch[2].trim(), 10);
+                  const seconds = parseInt(timeMatch[3].trim(), 10);
+                  return days * 86400 + hours * 3600 + minutes * 60 + seconds;
           master_item:
             key: intercom.systeminfo
           triggers:
