@@ -465,7 +465,7 @@
                         "dtmf" => $params["dtmf"],
                         "timestamp" => time(),
                         "ttl" => 30,
-                        "platform" => (int)$params["platform"]?"ios":"android",
+                        "platform" => (int)$params["platform"] == 1?"ios":"android",
                         "callerId" => $params["callerId"],
                         "flatId" => $params["flatId"],
                         "domophoneId" => $params["domophoneId"],
