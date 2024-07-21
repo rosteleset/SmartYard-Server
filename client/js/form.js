@@ -440,9 +440,9 @@ function cardForm(params) {
                             </div>
                             <input type="text" class="form-control" value="${escapeHTML(params.fields[i].options[j].text)}">
                             <div class="input-group-append">
-                                <div class="input-group-text pointer sortableListUp" data-item-index="${j}"><i class="far fa-fw fa-caret-square-up"></i></div>
+                                <div class="input-group-text ${(j !== 0) ? "pointer" : ""} sortableListUp" data-item-index="${j}"><i class="far fa-fw fa-caret-square-up disabled"></i></div>
                                 <div class="input-group-text pointer sortableListTrash" data-item-index="${j}"><i class="far fa-fw fa-trash-alt text-danger"></i></div>
-                                <div class="input-group-text pointer sortableListDown" data-item-index="${j}"><i class="far fa-fw fa-caret-square-down"></i></div>
+                                <div class="input-group-text ${(j !== params.fields[i].options.length - 1) ? "pointer" : ""} sortableListDown" data-item-index="${j}"><i class="far fa-fw fa-caret-square-down"></i></div>
                             </div>
                         </div>
                     `;
