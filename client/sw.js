@@ -6,8 +6,17 @@ const forceVersioningResources = [
 ];
 
 const cacheFirstResources = [
-    "lib/AdminLTE/dist/css/adminlte.min.css",
-    "lib/AdminLTE/dist/js/adminlte.min.js",
+    ".js",
+    ".css",
+    ".png",
+    ".svg",
+    ".woff2",
+    ".json",
+    ".html",
+];
+
+const directProtocols = [
+    "chrome-extension:",
 ];
 
 function deparam(query) {
@@ -104,13 +113,20 @@ self.addEventListener("activate", event => {
 
 self.addEventListener('fetch', event => {
     let url = new URL(event.request.url);
-    let pathname = url.pathname.split("/");
 
-    if (!url.search) {
-        if (forceVersioningResources.indexOf(pathname[pathname.length - 1]) >= 0) {
-            event.respondWith(Response.redirect(url.href + "?ver=" + version, 302));
+    if (directProtocols.indexOf(url.protocol) < 0) {
+        let pathname = url.pathname.split("/");
+
+        if (!url.search) {
+            if (forceVersioningResources.indexOf(pathname[pathname.length - 1]) >= 0) {
+                event.respondWith(Response.redirect(url.href + "?ver=" + version, 302));
+            } else {
+                if (endsWith(event.request.url, cacheFirstResources)) {
+                    event.respondWith(cacheFirst(event.request));
+                }
+            }
         } else {
-            if (endsWith(event.request.url, cacheFirstResources)) {
+            if (parseInt(deparam(url.search).ver) === parseInt(version) && endsWith(url.pathname, cacheFirstResources)) {
                 event.respondWith(cacheFirst(event.request));
             }
         }
