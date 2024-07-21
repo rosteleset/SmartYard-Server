@@ -2856,7 +2856,7 @@
                 };
                 template.name = filter;
 
-                editor.setValue((trim(f.body) == "{}")?JSON.stringify(template, null, 4):f.body , -1);
+                editor.setValue((trim(f.body) == "{}") ? JSON.stringify(template, null, 4) : f.body, -1);
                 currentAceEditor = editor;
                 currentAceEditorOriginalValue = currentAceEditor.getValue();
                 editor.getSession().getUndoManager().reset();
