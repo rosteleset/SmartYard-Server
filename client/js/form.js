@@ -611,6 +611,9 @@ function cardForm(params) {
 
             case "files":
                 return files[_prefix + params.fields[i].id];
+
+            case "sortableList":
+                return [];
         }
     }
 
@@ -779,6 +782,9 @@ function cardForm(params) {
                     for (let j in params.fields[i].value) {
                         $(`.checkBoxOption-${params.fields[i].id}[data-id='${params.fields[i].value[j]}']`).prop("checked", true);
                     }
+                    break;
+
+                case "sortableList":
                     break;
             }
         }
