@@ -19,6 +19,13 @@ const directProtocols = [
     "chrome-extension:",
 ];
 
+if (location.search) {
+    version = deparam(location.search).ver;
+    if (!version) {
+        version = Math.random();
+    }
+};
+
 function deparam(query) {
     if (query) {
         if (query[0] == "?") {
@@ -72,13 +79,6 @@ function endsWith(str, ends) {
         return str.endsWith(element);
     });
     return value;
-};
-
-if (location.search) {
-    version = deparam(location.search).ver;
-    if (!version) {
-        version = Math.random();
-    }
 };
 
 async function deleteCache(key) {
