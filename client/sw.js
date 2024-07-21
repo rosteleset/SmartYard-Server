@@ -1,4 +1,14 @@
-var version = Math.random();
+var version = false;
+
+const forceVersioningResources = [
+    "app.js",
+    "index.css",
+];
+
+const cacheFirstResources = [
+    "lib/AdminLTE/dist/css/adminlte.min.css",
+    "lib/AdminLTE/dist/js/adminlte.min.js",
+];
 
 function deparam(query) {
     if (query) {
@@ -45,25 +55,64 @@ function deparam(query) {
     } else {
         return {};
     }
-}
+};
+
+function endsWith(str, ends) {
+    let value = false;
+    value = ends.some(element => {
+        return str.endsWith(element);
+    });
+    return value;
+};
 
 if (location.search) {
     version = deparam(location.search).ver;
     if (!version) {
         version = Math.random();
     }
-}
+};
 
-const forceVersioning = [
-    "app.js",
-    "index.css",
-];
+async function deleteCache(key) {
+    await caches.delete(key);
+};
+
+async function deleteOldCaches() {
+    let cacheKeepList = [ version ];
+    let keyList = await caches.keys();
+    let cachesToDelete = keyList.filter(key => !cacheKeepList.includes(key));
+    await Promise.all(cachesToDelete.map(deleteCache));
+};
+
+async function putInCache(request, response) {
+    let cache = await caches.open(version);
+    await cache.put(request, response);
+};
+
+async function cacheFirst(request) {
+    let responseFromCache = await caches.match(request);
+    if (responseFromCache) {
+        return responseFromCache;
+    }
+    let responseFromNetwork = await fetch(request);
+    putInCache(request, responseFromNetwork.clone());
+    return responseFromNetwork;
+};
+
+self.addEventListener("activate", event => {
+    event.waitUntil(deleteOldCaches());
+});
 
 self.addEventListener('fetch', event => {
-    const url = new URL(event.request.url);
-    const pathname = url.pathname.split("/");
+    let url = new URL(event.request.url);
+    let pathname = url.pathname.split("/");
 
-    if (forceVersioning.indexOf(pathname[pathname.length - 1]) >= 0 && !url.search && version) {
-        event.respondWith(Response.redirect(url.href + "?ver=" + version, 302));
+    if (!url.search) {
+        if (forceVersioningResources.indexOf(pathname[pathname.length - 1]) >= 0) {
+            event.respondWith(Response.redirect(url.href + "?ver=" + version, 302));
+        } else {
+            if (endsWith(event.request.url, cacheFirstResources)) {
+                event.respondWith(cacheFirst(event.request));
+            }
+        }
     }
 });
