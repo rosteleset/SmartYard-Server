@@ -44,7 +44,7 @@ function deparam(query) {
         let nvp = query.split('&');
         let data = {};
 
-        for (let i = 0 ; i < nvp.length ; i++) {
+        for (let i = 0; i < nvp.length; i++) {
             let pair = nvp[i].split('=');
             let name = decodeURIComponent(pair[0]);
             let value = decodeURIComponent(pair[1]);
