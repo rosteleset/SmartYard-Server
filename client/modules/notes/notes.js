@@ -292,7 +292,9 @@
                 if (parseInt(r.checks)) {
                     r.body = r.body.split("\n");
                     for (let i in r.body) {
-                        r.body[i] = "-" + r.body[i];
+                        if ($.trim(r.body[i])) {
+                            r.body[i] = "-" + $.trim(r.body[i]);
+                        }
                     }
                     r.body = r.body.join("\n");
                 }
@@ -507,6 +509,10 @@
                     let x = modules.notes.notes[id].x;
                     let y = modules.notes.notes[id].y;
                     let z = modules.notes.notes[id].z;
+
+                    if (modules.notes.notes[id].checks) {
+
+                    }
 
                     modules.notes.notes[id].subject = r.subject;
                     modules.notes.notes[id].body = r.body;

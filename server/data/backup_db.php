@@ -1,44 +1,8 @@
 <?php
 
-    function parseDsn($dsn)
-    {
-        $dsn = trim($dsn);
-
-        if (strpos($dsn, ':') === false) {
-            die("the dsn is invalid, it does not have scheme separator \":\"\n");
-        }
-
-        list($prefix, $dsnWithoutPrefix) = preg_split('#\s*:\s*#', $dsn, 2);
-
-        $protocol = $prefix;
-
-        if (preg_match('/^[a-z\d]+$/', strtolower($prefix)) == false) {
-            die("the dsn is invalid, prefix contains illegal symbols\n");
-        }
-
-        $dsnElements = preg_split('#\s*\;\s*#', $dsnWithoutPrefix);
-
-        $elements = [];
-        foreach ($dsnElements as $element) {
-            if (strpos($dsnWithoutPrefix, '=') !== false) {
-                list($key, $value) = preg_split('#\s*=\s*#', $element, 2);
-                $elements[$key] = $value;
-            } else {
-                $elements = [
-                    $dsnWithoutPrefix,
-                ];
-            }
-        }
-
-        return [
-            "protocol" => $protocol,
-            "params" => $elements,
-        ];
-    }
-
     function backup_db($check_backup = true)
     {
-        global $config;
+        global $config, $db;
 
         $path = @$config["db"]["backup"] ? : (__DIR__ . "/../db/backup");
         $path = rtrim($path, "/");
@@ -48,13 +12,13 @@
         }
 
         $file = $path . "/" . date("Y-m-d_H:i:s") . ".sql";
-        $dsn = parseDsn($config["db"]["dsn"]);
+        $dsn = $db->parseDsn();
 
         switch ($dsn["protocol"]) {
             case "pgsql":
                 backup_pgsql($dsn["params"]["host"] ? : "127.0.0.1", $dsn["params"]["port"] ? : 5432, $config["db"]["username"] ? : "rbt", $config["db"]["password"] ? : "rbt", $dsn["params"]["dbname"], $file);
                 break;
-            
+
             case "sqlite":
                 backup_sqlite($dsn["params"][0], $file);
                 break;
@@ -100,7 +64,7 @@
 
     function restore_db($file)
     {
-        global $config;
+        global $config, $db;
 
         $path = @$config["db"]["backup"] ? : (__DIR__ . "/../db/backup");
         $path = rtrim($path, "/");
@@ -114,13 +78,13 @@
             die("file not found: $file\n");
         }
 
-        $dsn = parseDsn($config["db"]["dsn"]);
+        $dsn = $db->parseDsn();
 
         switch ($dsn["protocol"]) {
             case "pgsql":
                 restore_pgsql($dsn["params"]["host"] ? : "127.0.0.1", $dsn["params"]["port"] ? : 5432, $config["db"]["username"] ? : "rbt", $config["db"]["password"] ? : "rbt", $dsn["params"]["dbname"], $file);
                 break;
-            
+
             case "sqlite":
                 restore_sqlite($dsn["params"][0], $file);
                 break;

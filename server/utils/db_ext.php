@@ -2,11 +2,51 @@
 
     class PDO_EXT extends PDO {
 
-        public function __construct($dsn, $username = null, $password = null, $options = null)
+        private $dsn;
+
+        public function __construct($_dsn, $username = null, $password = null, $options = null)
         {
-            parent::__construct($dsn, $username, $password, $options);
+            $this->dsn = $_dsn;
+
+            parent::__construct($_dsn, $username, $password, $options);
 
             $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        }
+
+        function parseDsn()
+        {
+            $dsn = trim($this->dsn);
+
+            if (strpos($dsn, ':') === false) {
+                die("the dsn is invalid, it does not have scheme separator \":\"\n");
+            }
+
+            list($prefix, $dsnWithoutPrefix) = preg_split('#\s*:\s*#', $dsn, 2);
+
+            $protocol = $prefix;
+
+            if (preg_match('/^[a-z\d]+$/', strtolower($prefix)) == false) {
+                die("the dsn is invalid, prefix contains illegal symbols\n");
+            }
+
+            $dsnElements = preg_split('#\s*\;\s*#', $dsnWithoutPrefix);
+
+            $elements = [];
+            foreach ($dsnElements as $element) {
+                if (strpos($dsnWithoutPrefix, '=') !== false) {
+                    list($key, $value) = preg_split('#\s*=\s*#', $element, 2);
+                    $elements[$key] = $value;
+                } else {
+                    $elements = [
+                        $dsnWithoutPrefix,
+                    ];
+                }
+            }
+
+            return [
+                "protocol" => $protocol,
+                "params" => $elements,
+            ];
         }
 
         function trimParams($map)
@@ -176,6 +216,38 @@
                 setLastError($e->getMessage());
                 error_log(print_r($e, true));
                 return false;
+            }
+        }
+
+        function exec($sql, $internal = true)
+        {
+            if ($internal) {
+                return parent::exec($sql);
+            } else {
+                $dsn = $this->parseDsn();
+
+                switch ($dsn["protocol"]) {
+                    case "sqlite":
+                        try {
+                            $result = -1;
+
+                            file_put_contents("/tmp/db_exec_content.sql", $sql);
+
+                            $db = $dsn['params'][0];
+                            system("cat /tmp/db_exec_content.sql | sqlite3 $db", $result);
+
+                            if ((int)$result) {
+                                return false;
+                            } else {
+                                return true;
+                            }
+                        } catch (\Exception $e) {
+                            return false;
+                        }
+
+                    default:
+                        return parent::exec($sql);
+                }
             }
         }
     }

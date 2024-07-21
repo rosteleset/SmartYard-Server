@@ -426,7 +426,7 @@ function cardForm(params) {
                     <div class="input-group">
                         <input type="text" class="form-control">
                         <div class="input-group-append">
-                            <div class="input-group-text"><i class="far fa-fw fa-plus-square text-success"></i></div>
+                            <div class="input-group-text pointer sortableListPlus"><i class="far fa-fw fa-plus-square text-success"></i></div>
                         </div>
                     </div>
                 `;
@@ -440,9 +440,9 @@ function cardForm(params) {
                             </div>
                             <input type="text" class="form-control" value="${escapeHTML(params.fields[i].options[j].text)}">
                             <div class="input-group-append">
-                                <div class="input-group-text"><i class="far fa-fw fa-caret-square-up"></i></div>
-                                <div class="input-group-text"><i class="far fa-fw fa-trash-alt text-danger"></i></div>
-                                <div class="input-group-text"><i class="far fa-fw fa-caret-square-down"></i></div>
+                                <div class="input-group-text pointer sortableListUp" data-item-index="${j}"><i class="far fa-fw fa-caret-square-up"></i></div>
+                                <div class="input-group-text pointer sortableListTrash" data-item-index="${j}"><i class="far fa-fw fa-trash-alt text-danger"></i></div>
+                                <div class="input-group-text pointer sortableListDown" data-item-index="${j}"><i class="far fa-fw fa-caret-square-down"></i></div>
                             </div>
                         </div>
                     `;
