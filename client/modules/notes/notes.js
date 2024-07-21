@@ -157,7 +157,7 @@
         if (subject) {
             newSticky += `<h5 class="caption">`;
             if ($.trim(icon)) {
-                newSticky += `<i class="fa-fw ${icon} mr-3"></i>`;
+                newSticky += `<i class="fa-fw ${icon} mr-2"></i>`;
             }
             newSticky += convertLinks(nl2br(escapeHTML(subject)));
             newSticky += "</h5>";
