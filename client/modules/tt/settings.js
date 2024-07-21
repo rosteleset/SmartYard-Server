@@ -2150,6 +2150,7 @@
             currentAceEditorOriginalValue = currentAceEditor.getValue();
             editor.getSession().getUndoManager().reset();
             editor.clearSelection();
+            editor.focus();
             editor.setFontSize(14);
             editor.commands.removeCommand("removeline");
             editor.commands.removeCommand("redo");
@@ -2332,6 +2333,7 @@
             currentAceEditorOriginalValue = currentAceEditor.getValue();
             editor.getSession().getUndoManager().reset();
             editor.clearSelection();
+            editor.focus();
             editor.setFontSize(14);
             editor.commands.removeCommand("removeline");
             editor.commands.removeCommand("redo");
@@ -2859,6 +2861,7 @@
                 currentAceEditorOriginalValue = currentAceEditor.getValue();
                 editor.getSession().getUndoManager().reset();
                 editor.clearSelection();
+                editor.focus();
                 editor.setFontSize(14);
                 editor.setReadOnly(readOnly);
                 editor.commands.removeCommand("removeline");
@@ -3441,6 +3444,7 @@
             currentAceEditorOriginalValue = currentAceEditor.getValue();
             editor.getSession().getUndoManager().reset();
             editor.clearSelection();
+            editor.focus();
             editor.setFontSize(14);
             editor.commands.removeCommand("removeline");
             editor.commands.removeCommand("redo");
@@ -3808,6 +3812,7 @@
             currentAceEditorOriginalValue = currentAceEditor.getValue();
             editor.getSession().getUndoManager().reset();
             editor.clearSelection();
+            editor.focus();
             editor.setFontSize(14);
             editor.commands.removeCommand("removeline");
             editor.commands.removeCommand("redo");
@@ -3891,6 +3896,7 @@
             currentAceEditorOriginalValue = currentAceEditor.getValue();
             editor.getSession().getUndoManager().reset();
             editor.clearSelection();
+            editor.focus();
             editor.setFontSize(14);
             editor.commands.removeCommand("removeline");
             editor.commands.removeCommand("redo");

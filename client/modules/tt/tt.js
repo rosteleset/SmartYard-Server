@@ -1349,7 +1349,7 @@
         }
 
         if (AVAIL("tt", "customFilter") && current_project && current_project !== true) {
-            $(".ttSearchInputGroup").prepend(`<div class="input-group-prepend"><span class="input-group-text pointer-input-group ttFilterCustom" title="${i18n("tt.customSearch")}"><i class="fas fa-fw fa-running"></i></span></div>`);
+            $(".ttSearchInputGroup").prepend(`<div class="input-group-prepend"><span class="input-group-text pointer-input-group ttFilterCustom" title="${i18n("tt.customSearch")}"><i class="fas fa-fw fa-filter"></i></span></div>`);
         }
 
         $("#ttProjectSelect").off("change").on("change", () => {
@@ -1666,7 +1666,7 @@
                 cs += `<pre class="ace-editor mt-2" id="filterEditor" style="position: relative; border: 1px solid #ced4da; border-radius: 0.25rem; width: 100%; height: 100%;"></pre>`;
                 cs += "</div>";
                 cs += `<span style='position: absolute; right: 35px; top: 35px;'>`;
-                cs += `<span id="filterRun" class="hoverable saveButton"><i class="fas fa-running pr-2"></i>${i18n("tt.filterRun")}</span>`;
+                cs += `<span id="filterRun" class="hoverable saveButton"><i class="far fa-play-circle pr-2"></i>${i18n("tt.filterRun")}</span>`;
                 cs += `</span>`;
                 cs += '</div>';
             }
@@ -1819,7 +1819,6 @@
                     enableLiveAutocompletion: true,
                 });
                 editor.session.setMode("ace/mode/json");
-                editor.clearSelection();
                 editor.setFontSize(14);
                 let template = {
                     "name": "My",
@@ -1847,6 +1846,8 @@
                 currentAceEditor = editor;
                 currentAceEditorOriginalValue = currentAceEditor.getValue();
                 editor.getSession().getUndoManager().reset();
+                editor.clearSelection();
+                editor.focus();
                 editor.commands.removeCommand("removeline");
                 editor.commands.removeCommand("redo");
                 editor.commands.addCommand({
