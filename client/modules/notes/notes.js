@@ -177,7 +177,7 @@
         if (parseInt(checks)) {
             let b = body.split("\n");
             for (let i in b) {
-                newSticky += `<span class='mr-2'><input type='checkbox' class='nodrag noteCheckbox' ${(b[i][0] == "+") ? "checked" : ""} data-line='${i}'/></span><span>${convertLinks(nl2br(escapeHTML(b[i].substring(1))))}</span><br />`;
+                newSticky += `<span class='mr-2'><input type='checkbox' class='noteCheckbox' ${(b[i][0] == "+") ? "checked" : ""} data-line='${i}'/></span><span>${convertLinks(nl2br(escapeHTML(b[i].substring(1))))}</span><br />`;
             }
         } else {
             newSticky += convertLinks(nl2br(escapeHTML(body)));
@@ -321,11 +321,6 @@
                 sticky.css({
                     left: x + 'px',
                     top: y + 'px',
-                });
-
-                $(".nodrag").off("mousedown").on("mousedown", e => {
-                    e.preventDefault();
-                    return false;
                 });
 
                 $(".editSticky").off("click").on("click", modules.notes.modifySticky);
@@ -554,11 +549,6 @@
                         top: y + 'px',
                     });
 
-                    $(".nodrag").off("mousedown").on("mousedown", e => {
-                        e.preventDefault();
-                        return false;
-                    });
-
                     $(".editSticky").off("click").on("click", modules.notes.modifySticky);
                     $(".noteCheckbox").off("click").on("click", modules.notes.stickyCheckbox);
 
@@ -650,11 +640,6 @@
                 });
             }
         }
-
-        $(".nodrag").off("mousedown").on("mousedown", e => {
-            e.preventDefault();
-            return false;
-        });
 
         $(".editSticky").off("click").on("click", modules.notes.modifySticky);
         $(".noteCheckbox").off("click").on("click", modules.notes.stickyCheckbox);

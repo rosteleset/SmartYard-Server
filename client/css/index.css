@@ -576,10 +576,6 @@ select {
   padding-left: 3px;
 }
 
-.nodrag {
-  pointer-events: all;
-}
-
 .sticky .reminder {
   font-size: 0.75rem;
   position: absolute;
