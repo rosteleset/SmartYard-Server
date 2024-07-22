@@ -481,13 +481,16 @@
                 },
             ],
             callback: r => {
-                let b = '';
 
-                for (let i in r.body) {
-                    b += (r.body[i].checked ? "+" : "-") + r.body[i].text + "\n";
+                if (parseInt(modules.notes.notes[id].checks)) {
+                    let b = '';
+
+                    for (let i in r.body) {
+                        b += (r.body[i].checked ? "+" : "-") + r.body[i].text + "\n";
+                    }
+
+                    r.body = $.trim(b);
                 }
-
-                r.body = $.trim(b);
 
                 if (r.delete) {
                     mConfirm(i18n("notes.deleteNote"), i18n("confirm"), i18n("delete"), () => {
@@ -516,10 +519,6 @@
                     let x = modules.notes.notes[id].x;
                     let y = modules.notes.notes[id].y;
                     let z = modules.notes.notes[id].z;
-
-                    if (modules.notes.notes[id].checks) {
-
-                    }
 
                     modules.notes.notes[id].subject = r.subject;
                     modules.notes.notes[id].body = r.body;
