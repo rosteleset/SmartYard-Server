@@ -413,7 +413,6 @@
             let d = md5(guid());
             for (let i in b) {
                 checks.push({
-                    id: d + i,
                     text: b[i].substring(1),
                     checked: b[i][0] == "+",
                 });
@@ -438,10 +437,10 @@
                 {
                     id: "body",
                     title: parseInt(modules.notes.notes[id].checks) ? i18n("notes.list") : i18n("notes.body"),
-                    type: parseInt(modules.notes.notes[id].checks) ? "sortableList" : "area",
-                    validate: parseInt(modules.notes.notes[id].checks) ? (a => {
-                        return $.trim(a) != '';
-                    }) : false,
+                    type: parseInt(modules.notes.notes[id].checks) ? "sortable" : "area",
+                    validate: a => {
+                        return parseInt(modules.notes.notes[id].checks) ? a.length > 0 : $.trim(a) != '';
+                    },
                     value: parseInt(modules.notes.notes[id].checks) ? undefined : modules.notes.notes[id].body,
                     options: parseInt(modules.notes.notes[id].checks) ? checks : undefined,
                 },
@@ -482,6 +481,14 @@
                 },
             ],
             callback: r => {
+                let b = '';
+
+                for (let i in r.body) {
+                    b += (r.body[i].checked ? "+" : "-") + r.body[i].text + "\n";
+                }
+
+                r.body = $.trim(b);
+
                 if (r.delete) {
                     mConfirm(i18n("notes.deleteNote"), i18n("confirm"), i18n("delete"), () => {
                         loadingStart();
