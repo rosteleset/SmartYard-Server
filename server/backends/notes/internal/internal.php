@@ -202,7 +202,7 @@
             public function cron($part)
             {
                 if ($part == "minutely") {
-                    $notes = $this->db->get("select note_id, owner, note_subject, note_body from notes where reminded = 0 and remind > :now", [
+                    $notes = $this->db->get("select note_id, owner, note_subject, note_body from notes where reminded = 0 and remind < :now", [
                         "now" => time(),
                     ], [
                         "note_id" => "id",
