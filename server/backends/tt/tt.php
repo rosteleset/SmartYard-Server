@@ -2175,7 +2175,6 @@
             /**
              * @inheritDoc
              */
-
             public function cron($part)
             {
                 $success = true;

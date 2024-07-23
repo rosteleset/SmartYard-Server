@@ -179,7 +179,8 @@
                 ]);
             }
 
-            public function __call($method, $arguments) {
+            public function __call($method, $arguments)
+            {
                 if ($method == 'modifyNote') {
                     if (count($arguments) == 11) {
                        return call_user_func_array([ $this, 'modifyNote11' ], $arguments);
@@ -193,6 +194,32 @@
                         return call_user_func_array([ $this, 'modifyNote3' ], $arguments);
                      }
                  }
-             }
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function cron($part)
+            {
+                if ($part == "minutely") {
+                    $notes = $this->db->get("select note_id, owner, note_subject, note_body from notes where reminded = 0 and remind > :now", [
+                        "now" => time(),
+                    ], [
+                        "note_id" => "id",
+                        "owner" => "owner",
+                        "note_subject" => "subject",
+                        "note_body" => "body",
+                    ]);
+
+                    $users = loadBackend("users");
+
+                    foreach ($notes as $note) {
+                        $users->notify($note["owner"], $note["note_subject"], $note["note_body"]);
+                        $this->db->modify("update notes set reminded = 1 where note_id = ${note["id"]}");
+                    }
+                }
+
+                return true;
+            }
         }
     }
