@@ -243,5 +243,12 @@
              * @return mixed
              */
             abstract public function getMessages($ids);
+
+            /**
+             * @param array $ids
+             *
+             * @return mixed
+             */
+            abstract public function deleteMessages($ids);
         }
     }
