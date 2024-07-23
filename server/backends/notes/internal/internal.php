@@ -214,7 +214,7 @@
                     $users = loadBackend("users");
 
                     foreach ($notes as $note) {
-                        $users->notify($note["owner"], $note["note_subject"], $note["note_body"]);
+                        $users->notify($note["owner"], $note["subject"], $note["body"]);
                         $this->db->modify("update notes set reminded = 1 where note_id = ${note["id"]}");
                     }
                 }
