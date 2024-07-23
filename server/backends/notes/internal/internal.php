@@ -26,6 +26,7 @@
                     "checks" => "checks",
                     "category" => "category",
                     "remind" => "remind",
+                    "reminded" => "reminded",
                     "icon" => "icon",
                     "font" => "font",
                     "color" => "color",
@@ -47,7 +48,7 @@
                     return false;
                 }
 
-                $id = $this->db->insert("insert into notes (create_date, owner, note_subject, note_body, checks, category, remind, icon, font, color, position_left, position_top, position_order) values (:create_date, :owner, :note_subject, :note_body, :checks, :category, :remind, :icon, :font, :color, :position_left, :position_top, :position_order)", [
+                $id = $this->db->insert("insert into notes (create_date, owner, note_subject, note_body, checks, category, remind, reminded, icon, font, color, position_left, position_top, position_order) values (:create_date, :owner, :note_subject, :note_body, :checks, :category, :remind, :reminded, :icon, :font, :color, :position_left, :position_top, :position_order)", [
                     "create_date" => time(),
                     "owner" => $this->login,
                     "note_subject" => $subject ? : null,
@@ -55,6 +56,7 @@
                     "checks" => $checks ? 1 : 0,
                     "category" => $category ? : null,
                     "remind" => $remind ? : null,
+                    "reminded" => ((int)$remind > time()) ? 0 : 1,
                     "icon" => $icon ? : null,
                     "font" => $font ? : null,
                     "color" => $color ? : null,
@@ -73,6 +75,7 @@
                     "checks" => "checks",
                     "category" => "category",
                     "remind" => "remind",
+                    "reminded" => "reminded",
                     "icon" => "icon",
                     "font" => "font",
                     "color" => "color",
@@ -103,7 +106,7 @@
                     "note_body" => $body ? : null,
                     "category" => $category ? : null,
                     "remind" => $remind ? : null,
-                    "reminded" => ($remind > time()) ? 0 : 1,
+                    "reminded" => ((int)$remind > time()) ? 0 : 1,
                     "icon" => $icon ? : null,
                     "font" => $font ? : null,
                     "color" => $color ? : null,

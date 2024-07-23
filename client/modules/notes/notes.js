@@ -307,7 +307,7 @@
                     r.icon,
                     r.font,
                     r.checks,
-                    r.remind,
+                    parseInt(r.remind) > (new Date()).getTime() / 1000,
                     z + 1
                 );
 
@@ -536,7 +536,7 @@
                         r.icon,
                         r.font,
                         modules.notes.notes[id].checks,
-                        r.remind,
+                        parseInt(r.remind) > (new Date()).getTime() / 1000,
                         z
                     );
 
@@ -626,7 +626,7 @@
                     modules.notes.notes[id].icon,
                     modules.notes.notes[id].font,
                     modules.notes.notes[id].checks,
-                    modules.notes.notes[id].remind,
+                    parseInt(modules.notes.notes[id].remind) > (new Date()).getTime() / 1000 && !modules.notes.notes[id].reminded,
                     modules.notes.notes[id].z
                 );
 
