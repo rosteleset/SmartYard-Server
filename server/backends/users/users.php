@@ -108,6 +108,8 @@
              * @param string $subject
              * @param string $message
              * @param string $token
+             *
+             * @return mixed
              */
             private function sendTg($tg, $subject, $message, $token) {
                 if ($tg && $token) {
@@ -128,6 +130,8 @@
              * @param string $subject
              * @param string $message
              * @param string $config
+             *
+             * @return mixed
              */
             private function sendEmail($login, $email, $subject, $message, $config) {
                 try {
@@ -145,6 +149,8 @@
              * @param string $login
              * @param string $subject
              * @param string $message
+             *
+             * @return mixed
              */
             public function notify($login, $subject, $message) {
                 $uid = $this->getUidByLogin($login);
@@ -204,5 +210,38 @@
              * @param string $settings
              */
             abstract public function putSettings($settings);
+
+            /**
+             * @param string $from
+             * @param string $to
+             * @param string $subject
+             * @param string $body
+             * @param string $type
+             * @param string $handler
+             *
+             * @return mixed
+             */
+            abstract public function sendMessage($from, $to, $subject, $body, $type, $handler);
+
+            /**
+             * @param string $login
+             *
+             * @return mixed
+             */
+            abstract public function unreaded($login);
+
+            /**
+             * @param string $id
+             *
+             * @return mixed
+             */
+            abstract public function readed($id);
+
+            /**
+             * @param array $ids
+             *
+             * @return mixed
+             */
+            abstract public function getMessages($ids);
         }
     }
