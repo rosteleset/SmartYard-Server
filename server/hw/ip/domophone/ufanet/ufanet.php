@@ -541,7 +541,7 @@ abstract class ufanet extends domophone
         $this->apiCall('/cgi-bin/configManager.cgi', 'GET', [
             'action' => 'setConfig',
             'RTSP.Block' => 'false',
-            // 'Agent.Enable' => 'false',
+            'Agent.Enable' => 'false',
         ]);
     }
 
