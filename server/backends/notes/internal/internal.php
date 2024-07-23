@@ -96,13 +96,14 @@
                     return false;
                 }
 
-                return $this->db->modify("update notes set note_subject = :note_subject, note_body = :note_body, category = :category, remind = :remind, icon = :icon, font = :font, color = :color, position_left = :position_left, position_top = :position_top, position_order = :position_order where note_id = :note_id and owner = :owner", [
+                return $this->db->modify("update notes set note_subject = :note_subject, note_body = :note_body, category = :category, remind = :remind, reminded = :reminded, icon = :icon, font = :font, color = :color, position_left = :position_left, position_top = :position_top, position_order = :position_order where note_id = :note_id and owner = :owner", [
                     "note_id" => $id,
                     "owner" => $this->login,
                     "note_subject" => $subject ? : null,
                     "note_body" => $body ? : null,
                     "category" => $category ? : null,
                     "remind" => $remind ? : null,
+                    "reminded" => ($remind > time()) ? 0 : 1,
                     "icon" => $icon ? : null,
                     "font" => $font ? : null,
                     "color" => $color ? : null,
