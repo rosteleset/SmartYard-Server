@@ -112,7 +112,9 @@ abstract class beward extends domophone
             'DoorCodeActive' => $code ? 'on' : 'off',
             'RegCodeActive' => 'off',
             'BlockCMS' => $cmsEnabled ? 'off' : 'on',
-            'PhonesActive' => count($sipNumbers) ? 'on' : 'off',
+
+            // TODO: quick fix, we need to check if we can use an empty array of sip numbers in gate mode
+            'PhonesActive' => (!empty($sipNumbers) && $sipNumbers[0] > 9998) ? 'on' : 'off',
         ];
 
         if (count($cmsLevels) == 2) {
