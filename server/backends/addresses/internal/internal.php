@@ -121,6 +121,8 @@
                     return false;
                 }
 
+                $this->deleteFavorite('region', $regionId, true);
+
                 return $this->db->modify("delete from addresses_regions where address_region_id = $regionId") && $this->cleanup();
             }
 
@@ -243,6 +245,8 @@
                 if (!checkInt($areaId)) {
                     return false;
                 }
+
+                $this->deleteFavorite('area', $areaId, true);
 
                 return $this->db->modify("delete from addresses_areas where address_area_id = $areaId") && $this->cleanup();
             }
@@ -408,6 +412,8 @@
                     return false;
                 }
 
+                $this->deleteFavorite('city', $cityId, true);
+
                 return $this->db->modify("delete from addresses_cities where address_city_id = $cityId") && $this->cleanup();
             }
 
@@ -560,6 +566,8 @@
                     return false;
                 }
 
+                $this->deleteFavorite('settlement', $settlementId, true);
+
                 return $this->db->modify("delete from addresses_settlements where address_settlement_id = $settlementId") && $this->cleanup();
             }
 
@@ -710,6 +718,8 @@
                 if (!checkInt($streetId)) {
                     return false;
                 }
+
+                $this->deleteFavorite('street', $streetId, true);
 
                 return $this->db->modify("delete from addresses_streets where address_street_id = $streetId") && $this->cleanup();
             }
