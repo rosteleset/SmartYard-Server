@@ -1095,5 +1095,29 @@
 
                 return true;
             }
+
+            /**
+             * @inheritDoc
+             */
+            function getFavorites()
+            {
+
+            }
+
+            /**
+             * @inheritDoc
+             */
+            function addFavorite($object, $id, $title, $icon, $color)
+            {
+
+            }
+
+            /**
+             * @inheritDoc
+             */
+            function deleteFavorite($object, $id, $all = false)
+            {
+
+            }
         }
     }

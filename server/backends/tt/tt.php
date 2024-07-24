@@ -2168,9 +2168,10 @@
 
             /**
              * @param string $filter
+             * @param boolean $all
              * @return mixed
              */
-            public abstract function deleteFavoriteFilter($filter);
+            public abstract function deleteFavoriteFilter($filter, $all = false);
 
             /**
              * @inheritDoc

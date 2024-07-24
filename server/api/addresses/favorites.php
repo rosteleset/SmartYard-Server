@@ -18,6 +18,14 @@
                 return api::ANSWER($r, ($r !== false)?"favorites":"badRequest");
             }
 
+            public static function POST($params) {
+                return api::ANSWER($r, ($r !== false)?"favorites":"badRequest");
+            }
+
+            public static function DELETE($params) {
+                return api::ANSWER($r, ($r !== false)?"favorites":"badRequest");
+            }
+
             public static function index() {
                 $addresses = loadBackend("addresses");
 

@@ -281,5 +281,29 @@
              * @return false|integer
              */
             abstract function addHouseByMagic($houseUuid);
+
+            /**
+             * @return mixed
+             */
+            abstract function getFavorites();
+
+            /**
+             * @param string object
+             * @param integer id
+             * @param string title
+             * @param string icon
+             * @param string color
+             *
+             * @return mixed
+             */
+            abstract function addFavorite($object, $id, $title, $icon, $color);
+
+            /**
+             * @param string object
+             * @param integer $id
+             *
+             * @return mixed
+             */
+            abstract function deleteFavorite($object, $id, $all = false);
         }
     }
