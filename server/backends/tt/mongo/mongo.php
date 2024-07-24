@@ -1206,6 +1206,7 @@
                         }
                     }
                 }
+
                 if (!$old && $new) {
                     foreach ($new as $key => $field) {
                         if (!$field) {
@@ -1213,6 +1214,7 @@
                         }
                     }
                 }
+
                 if (!$new && $old) {
                     foreach ($old as $key => $field) {
                         if (!$field) {
