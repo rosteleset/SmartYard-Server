@@ -366,8 +366,7 @@ select {
 
 .select2-selection__rendered {
   white-space: normal;
-  word-break:
-  break-all;
+  word-break: break-all;
   width: 100%!important;
 }
 
@@ -378,6 +377,10 @@ select {
 }
 
 .select2-selection__rendered span[role="presentation"] {
+  width: auto!important;
+}
+
+.select2-selection__choice__remove span[role="presentation"] {
   width: auto!important;
 }
 
