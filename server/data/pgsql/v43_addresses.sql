@@ -3,6 +3,7 @@ CREATE TABLE addresses_favorites
 (
     login CHARACTER VARYING,
     link CHARACTER VARYING,
+    title CHARACTER VARYING,
     icon CHARACTER VARYING,
     color CHARACTER VARYING
 );

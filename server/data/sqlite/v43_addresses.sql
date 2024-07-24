@@ -3,6 +3,7 @@ CREATE TABLE addresses_favorites
 (
     login TEXT,
     link TEXT,
+    title TEXT,
     icon TEXT,
     color TEXT
 );
