@@ -6,4 +6,4 @@ CREATE TABLE addresses_favorites
     icon CHARACTER VARYING,
     color CHARACTER VARYING
 );
-CREATE UNIQUE INDEX addresses_favorites_uniq ON addresses_houses(login, link);
+CREATE UNIQUE INDEX addresses_favorites_uniq ON addresses_favorites(login, link);
