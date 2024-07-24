@@ -479,5 +479,46 @@
                     return [];
                 }
             }
+
+            /**
+             * @inheritDoc
+             */
+            public function sendMessage($from, $to, $subject, $body, $type, $handler)
+            {
+
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function unreaded($login)
+            {
+
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function readed($id)
+            {
+
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function getMessages($ids)
+            {
+
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function deleteMessages($ids)
+            {
+
+            }
+
         }
     }
