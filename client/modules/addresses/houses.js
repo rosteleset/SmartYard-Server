@@ -2340,14 +2340,20 @@
     route: function (params) {
         document.title = i18n("windowTitle") + " :: " + i18n("addresses.house");
 
-        modules.addresses.topMenu();
-
         if (params.show === "cms" && parseInt(params.entranceId) > 0) {
             $("#altForm").hide();
+
             subTop();
 
             modules.addresses.houses.renderEntranceCMS(params.houseId, params.entranceId);
         } else {
+            modules.addresses.topMenu([{
+                title: i18n("addresses.addFlatsWizard"),
+                click: () => {
+                    console.log(params);
+                }
+            }]);
+
             modules.addresses.houses.renderHouse(params.houseId);
         }
     },

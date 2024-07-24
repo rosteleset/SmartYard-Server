@@ -1,7 +1,9 @@
 ({
+    menuItem: false,
+
     init: function () {
         if (AVAIL("addresses", "region", "PUT")) {
-            leftSide("fas fa-fw fa-globe-americas", i18n("addresses.addresses"), "?#addresses", "households");
+            this.menuItem = leftSide("fas fa-fw fa-globe-americas", i18n("addresses.addresses"), "?#addresses", "households");
         }
 
         loadSubModules("addresses", [
@@ -13,6 +15,37 @@
             "subscriberInbox",
             "subscriberDevices"
         ], this);
+    },
+
+    allLoaded: function () {
+        let h = "";
+        h += `
+            <li class="nav-item" title="${escapeHTML('qwerty')}" style="margin-top: 3px;">
+                <a href="?#addresses" class="nav-link" onclick="xblur(); return true;">
+                    <i class="nav-icon fa fa-fw fa-link text-danger"></i>
+                    <p class="text-nowrap">${'title'}</p>
+                </a>
+            </li>
+        `;
+        if (modules.addresses.menuItem) {
+            let i = $('#' + modules.addresses.menuItem);
+            let f = false;
+            while (i.next().length) {
+                i = i.next();
+                if ($.trim(i.text()) == "") {
+                    $(h).insertBefore(i);
+                    f = true;
+                    break;
+                }
+            }
+            if (!f && i.length) {
+                $(h).insertAfter(i);
+            }
+        }
+    },
+
+    moduleLoaded: function () {
+        //
     },
 
     addresses: function (addresses) {
@@ -93,16 +126,20 @@
             }
         }
 
+        function bookmark() {
+            return "<span style='position: absolute; right: 0px;' class='mr-3'><i class='far fa-fw fa-bookmark text-primary pointer'></i></span>";
+        }
+
         switch (object) {
             case "region":
-                return region(id).regionWithType;
+                return region(id).regionWithType + bookmark();
 
             case "area":
                 let a = area(id);
                 if (_link) {
                     return a.parent + sp + link("area", a.areaWithType, id);
                 } else {
-                    return a.parent + sp + a.areaWithType;
+                    return a.parent + sp + a.areaWithType + bookmark();
                 }
 
             case "city":
@@ -110,7 +147,7 @@
                 if (_link) {
                     return c.parent + sp + link("city", c.cityWithType, id);
                 } else {
-                    return c.parent + sp + c.cityWithType;
+                    return c.parent + sp + c.cityWithType + bookmark();
                 }
 
             case "settlement":
@@ -118,7 +155,7 @@
                 if (_link) {
                     return se.parent + sp + link("settlement", se.settlementWithType, id);
                 } else {
-                    return se.parent + sp + se.settlementWithType;
+                    return se.parent + sp + se.settlementWithType + bookmark();
                 }
 
             case "street":
@@ -126,7 +163,7 @@
                 if (_link) {
                     return st.parent + sp + link("street", st.streetWithType, id);
                 } else {
-                    return st.parent + sp + st.streetWithType;
+                    return st.parent + sp + st.streetWithType + bookmark();
                 }
 
             default:
@@ -2273,7 +2310,7 @@
         fail(loadingDone);
     },
 
-    topMenu: function () {
+    topMenu: function (wizards) {
         let top = '';
 
         if (AVAIL("geo", "suggestions")) {
@@ -2284,8 +2321,24 @@
             `;
         }
 
+        if (wizards) {
+            for (let i in wizards) {
+                top += `
+                    <li class="nav-item d-none d-sm-inline-block">
+                        <a href="javascript:void(0)" class="houseWizard${i} nav-link nav-item-back-hover text-dark">${wizards[i].title}</a>
+                    </li>
+                `;
+            }
+        }
+
         $("#leftTopDynamic").html(top);
         $(".addHouseMagic").off("click").on("click", modules.addresses.houses.houseMagic);
+
+        if (wizards) {
+            for (let i in wizards) {
+                $(".houseWizard" + i).off("click").on("click", wizards[i].click);
+            }
+        }
     },
 
     route: function (params) {

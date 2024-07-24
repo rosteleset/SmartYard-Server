@@ -237,6 +237,8 @@ function FAILPAGE(response) {
 
 function loadingStart() {
     requestAnimationFrame(() => {
+        document.body.style.cursor = 'wait';
+
         autoZ($('#loading').modal({
             backdrop: 'static',
             keyboard: false,
@@ -246,6 +248,8 @@ function loadingStart() {
 
 function loadingDone(stayHidden) {
     requestAnimationFrame(() => {
+        document.body.style.cursor = 'default';
+
         xblur();
 
         $('#loading').modal('hide');

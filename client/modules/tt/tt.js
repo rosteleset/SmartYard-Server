@@ -49,7 +49,7 @@
                     if (parseInt(modules.tt.meta.favoriteFilters[i].rightSide)) {
                         let title = modules.tt.meta.filtersExt[modules.tt.meta.favoriteFilters[i].filter].shortName ? modules.tt.meta.filtersExt[modules.tt.meta.favoriteFilters[i].filter].shortName : modules.tt.meta.filtersExt[modules.tt.meta.favoriteFilters[i].filter].name;
                         h += `
-                            <li class="nav-item" title="${escapeHTML(title)}">
+                            <li class="nav-item" title="${escapeHTML(title)}" style="margin-top: 3px;">
                                 <a href="?#tt&filter=${modules.tt.meta.favoriteFilters[i].filter}" class="nav-link" onclick="xblur(); return true;">
                                     <i class="nav-icon fa fa-fw ${modules.tt.meta.favoriteFilters[i].icon} ${modules.tt.meta.favoriteFilters[i].color}"></i>
                                     <p class="text-nowrap">${title}</p>
@@ -60,15 +60,16 @@
                 }
                 if (modules.tt.menuItem) {
                     let i = $('#' + modules.tt.menuItem);
+                    let f = false;
                     while (i.next().length) {
                         i = i.next();
                         if ($.trim(i.text()) == "") {
                             $(h).insertBefore(i);
                             f = true;
-                            return;
+                            break;
                         }
                     }
-                    if (i.length) {
+                    if (!f && i.length) {
                         $(h).insertAfter(i);
                     }
                 }
