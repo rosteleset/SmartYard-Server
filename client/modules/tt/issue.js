@@ -937,7 +937,7 @@
                         }
                         let action = response.journal[i].action.split("#")[0];
                         let indx = parseInt(response.journal[i].action.split("#")[1]) + 1;
-                        let sep = [ "modifyIssue", "modifyComment" ].includes(action.split("#")[0]) ? "<i class='fas fa-fw fa-arrow-right ml-2 mr-2'></i>" : "&nbsp;";
+                        let sep = ![ "modifyIssue", "modifyComment" ].includes(action.split("#")[0]);
                         h += "<tr>";
                         if (jf) {
                             jf = false;
@@ -958,6 +958,7 @@
                         h += "</div>";
                         h += "</td>";
                         h += "</tr>";
+
                         if (o && n) {
                             let k = Object.keys(response.journal[i].old);
                             k = k.concat(Object.keys(response.journal[i].new));
@@ -965,27 +966,33 @@
                             for (let j in k) {
                                 let oo = jShow(response.journal[i].old[k[j]]) ? modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].old[k[j]], "journal") : "&nbsp;";
                                 let nn = jShow(response.journal[i].new[k[j]]) ? modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].new[k[j]], "journal") : "&nbsp;";
+
                                 if (oo == nn) {
                                     continue;
                                 }
+
                                 if (k[j] == "workflowAction") {
                                     h += "<tr class='tr-hoverable'>";
                                     h += "<td class='pl-2 td-journal nowrap'>";
                                     h += modules.tt.issueFieldTitle(k[j]) + ": ";
                                     h += "</td>";
-                                    h += "<td class='pl-2 td-journal' colspan='3'>";
+                                    h += "<td class='pl-2 td-journal' style='width: 100%;'>";
                                     h += nn;
                                     h += "</td>";
                                     h += "</tr>";
                                 } else {
                                     h += "<tr class='tr-hoverable'>";
                                     h += "<td class='pl-2 td-journal nowrap'>";
-                                    h += modules.tt.issueFieldTitle(k[j]) + ": ";
+                                    h += modules.tt.issueFieldTitle(k[j]) + " (" + i18n("tt.old") + "): ";
                                     h += "</td>";
-                                    h += "<td class='pl-2 td-journal'>";
+                                    h += "<td class='pl-2 td-journal' style='width: 100%;'>";
                                     h += oo;
                                     h += "</td>";
-                                    h += "<td class='pl-2 td-journal'>" + sep + "</td>";
+                                    h += "</tr>";
+                                    h += "<tr class='tr-hoverable'>";
+                                    h += "<td class='pl-2 td-journal nowrap'>";
+                                    h += modules.tt.issueFieldTitle(k[j]) + " (" + i18n("tt.new") + "): ";
+                                    h += "</td>";
                                     h += "<td class='pl-2 td-journal' style='width: 100%;'>";
                                     h += nn;
                                     h += "</td>";
@@ -993,40 +1000,55 @@
                                 }
                             }
                         }
+
                         if (!o && n) {
                             let k = Object.keys(response.journal[i].new);
                             k = [...new Set(k)].sort();
                             for (let j in k) {
-                                h += "<tr class='tr-hoverable'>";
-                                h += "<td class='pl-2 td-journal nowrap'>";
-                                h += modules.tt.issueFieldTitle(k[j]) + ": ";
-                                h += "</td>";
-                                if (sep == "&nbsp;") {
-                                    h += "<td class='pl-2 td-journal' style='width: 100%;' colspan='3'>";
-                                    h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].new[k[j]], "journal");
+                                if (sep) {
+                                    h += "<tr class='tr-hoverable'>";
+                                    h += "<td class='pl-2 td-journal nowrap'>";
+                                    h += modules.tt.issueFieldTitle(k[j]) + ": ";
                                     h += "</td>";
-                                } else {
-                                    h += "<td class='pl-2 td-journal'>&nbsp;</td>";
-                                    h += "<td class='pl-2 td-journal'>" + sep + "</td>";
                                     h += "<td class='pl-2 td-journal' style='width: 100%;'>";
                                     h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].new[k[j]], "journal");
                                     h += "</td>";
+                                    h += "</tr>";
+                                } else {
+                                    h += "<tr class='tr-hoverable'>";
+                                    h += "<td class='pl-2 td-journal nowrap'>";
+                                    h += modules.tt.issueFieldTitle(k[j]) + " (" + i18n("tt.old") + "): ";
+                                    h += "</td>";
+                                    h += "<td class='pl-2 td-journal' style='width: 100%;'>&nbsp;</td>";
+                                    h += "</tr>";
+                                    h += "<tr class='tr-hoverable'>";
+                                    h += "<td class='pl-2 td-journal nowrap'>";
+                                    h += modules.tt.issueFieldTitle(k[j]) + " (" + i18n("tt.new") + "): ";
+                                    h += "</td>";
+                                    h += "<td class='pl-2 td-journal' style='width: 100%;'>";
+                                    h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].new[k[j]], "journal");
+                                    h += "</td>";
+                                    h += "</tr>";
                                 }
-                                h += "</tr>";
                             }
                         }
+
                         if (o && !n) {
                             let k = Object.keys(response.journal[i].old);
                             k = [...new Set(k)].sort();
                             for (let j in k) {
                                 h += "<tr class='tr-hoverable'>";
                                 h += "<td class='pl-2 td-journal nowrap'>";
-                                h += modules.tt.issueFieldTitle(k[j]) + ": ";
+                                h += modules.tt.issueFieldTitle(k[j]) + " (" + i18n("tt.old") + "): ";
                                 h += "</td>";
-                                h += "<td class='pl-2 td-journal'>";
+                                h += "<td class='pl-2 td-journal' style='width: 100%;'>";
                                 h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].old[k[j]], "journal");
                                 h += "</td>";
-                                h += "<td class='pl-2 td-journal'>" + sep + "</td>";
+                                h += "</tr>";
+                                h += "<tr class='tr-hoverable'>";
+                                h += "<td class='pl-2 td-journal nowrap'>";
+                                h += modules.tt.issueFieldTitle(k[j]) + " (" + i18n("tt.new") + "): ";
+                                h += "</td>";
                                 h += "<td class='pl-2 td-journal' style='width: 100%;'>&nbsp;</td>";
                                 h += "</tr>";
                             }

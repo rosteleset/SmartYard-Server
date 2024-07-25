@@ -1447,8 +1447,6 @@
                 }
 
                 return $this->journal($issueId, $action, $old, $new, $workflowAction);
-
-                return false;
             }
 
             /**
