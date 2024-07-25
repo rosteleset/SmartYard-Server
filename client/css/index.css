@@ -380,7 +380,7 @@ select {
   width: auto!important;
 }
 
-.select2-selection__choice__remove span[role="presentation"] {
+.select2-selection__choice__remove {
   width: auto!important;
 }
 
