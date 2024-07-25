@@ -18,6 +18,7 @@
     },
 
     allLoaded: function () {
+/*
         let h = "";
         h += `
             <li class="nav-item" title="${escapeHTML('qwerty')}" style="margin-top: 3px;">
@@ -42,6 +43,7 @@
                 $(h).insertAfter(i);
             }
         }
+*/
     },
 
     moduleLoaded: function () {
