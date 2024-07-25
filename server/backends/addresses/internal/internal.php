@@ -1111,7 +1111,15 @@
              */
             function getFavorites()
             {
-
+                return $this->db->get("select object, id, title, icon, color from addresses_favorites where login = :login", [
+                    "login" => $this->login,
+                ], [
+                    "object" => "object",
+                    "id" => "id",
+                    "title" => "title",
+                    "icon" => "icon",
+                    "color" => "color",
+                ]);
             }
 
             /**
@@ -1119,7 +1127,14 @@
              */
             function addFavorite($object, $id, $title, $icon, $color)
             {
-
+                return $this->db->modify("insert into addresses_favorites (login, object, id, title, icon, color) values (:login, :object, :id, :title, :icon, :color)", [
+                    "login" => $this->login,
+                    "object" => $object,
+                    "id" => $id,
+                    "title" => $title,
+                    "icon" => $icon,
+                    "color" => $color,
+                ]);
             }
 
             /**
@@ -1127,7 +1142,18 @@
              */
             function deleteFavorite($object, $id, $all = false)
             {
-
+                if ($all) {
+                    return $this->db->modify("delete from addresses_favorites where object = :object and id = :id", [
+                        "object" => $object,
+                        "id" => $id,
+                    ]);
+                } else {
+                    return $this->db->modify("delete from addresses_favorites where login = :login and object = :object and id = :id", [
+                        "login" => $this->login,
+                        "object" => $object,
+                        "id" => $id,
+                    ]);
+                }
             }
         }
     }

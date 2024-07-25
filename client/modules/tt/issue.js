@@ -926,7 +926,7 @@
                     $(".ttCalls").hide();
                     $("#issueComments").hide();
                     let h = '';
-                    h += `<tr><td style="width: 100%" colspan="4"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.journal")}' style="font-size: 11pt;"/></td></tr>`;
+                    h += `<tr><td style='width: 100%' colspan='2'><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.journal")}' style='font-size: 11pt;'/></td></tr>`;
                     let jf = true;
                     let c = 1;
                     for (let i in response.journal) {
@@ -941,9 +941,9 @@
                         h += "<tr>";
                         if (jf) {
                             jf = false;
-                            h += "<td class='pl-1' style='font-size: 14px;' colspan='4'>";
+                            h += "<td class='pl-1' style='font-size: 14px;' colspan='2'>";
                         } else {
-                            h += "<td class='pl-1 pt-3' style='font-size: 14px;' colspan='4'>";
+                            h += "<td class='pl-1 pt-3' style='font-size: 14px;' colspan='2'>";
                         }
                         h += "<div>";
                         h += "#" + c + " ";

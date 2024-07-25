@@ -15,15 +15,27 @@
         class favorites extends api {
 
             public static function GET($params) {
-                return api::ANSWER($r, ($r !== false)?"favorites":"badRequest");
+                $addresses = loadBackend("addresses");
+
+                $favorites = $addresses->getFavorites();
+
+                return api::ANSWER($favorites, ($favorites !== false) ? "favorites" : "badRequest");
             }
 
             public static function POST($params) {
-                return api::ANSWER($r, ($r !== false)?"favorites":"badRequest");
+                $addresses = loadBackend("addresses");
+
+                $success = $addresses->addFavorite(@$params["object"], @$params["id"], @$params["title"], @$params["icon"], @$params["color"]);
+
+                return api::ANSWER($success, ($success !== false) ? false : "notAcceptable");
             }
 
             public static function DELETE($params) {
-                return api::ANSWER($r, ($r !== false)?"favorites":"badRequest");
+                $addresses = loadBackend("addresses");
+
+                $success = $addresses->deleteFavorite(@$params["object"], @$params["id"]);
+
+                return api::ANSWER($success, ($success !== false) ? false : "notAcceptable");
             }
 
             public static function index() {
