@@ -1,5 +1,6 @@
 ({
     menuItem: false,
+    favorites: [],
 
     init: function () {
         if (AVAIL("addresses", "region", "PUT")) {
@@ -18,32 +19,40 @@
     },
 
     allLoaded: function () {
-/*
-        let h = "";
-        h += `
-            <li class="nav-item" title="${escapeHTML('qwerty')}" style="margin-top: 3px;">
-                <a href="?#addresses" class="nav-link" onclick="xblur(); return true;">
-                    <i class="nav-icon fa fa-fw fa-link text-danger"></i>
-                    <p class="text-nowrap">${'title'}</p>
-                </a>
-            </li>
-        `;
-        if (modules.addresses.menuItem) {
-            let i = $('#' + modules.addresses.menuItem);
-            let f = false;
-            while (i.next().length) {
-                i = i.next();
-                if ($.trim(i.text()) == "") {
-                    $(h).insertBefore(i);
-                    f = true;
-                    break;
+        GET("addresses", "favorites", false, true).
+        done(r => {
+            if (r && r.favorites) {
+                modules.addresses.favorites = r.favorites;
+                let h = "";
+                for (let i in r.favorites) {
+                    h += `
+                        <li class="nav-item" title="${escapeHTML(r.favorites[i].title)}" style="margin-top: 3px;">
+                            <a href="?#addresses&show=${r.favorites[i].object}&${r.favorites[i].object}Id=${r.favorites[i].id}" class="nav-link" onclick="xblur(); return true;">
+                                <i class="nav-icon fa-fw ${r.favorites[i].icon} ${r.favorites[i].color}"></i>
+                                <p class="text-nowrap">${escapeHTML(r.favorites[i].title)}</p>
+                            </a>
+                        </li>
+                    `;
+                    $(`.addressFavoriteIcon[data-object='${r.favorites[i].object}'][data-object-id='${r.favorites[i].id}']`).removeClass("far").addClass("fas");
+                }
+                if (modules.addresses.menuItem) {
+                    let i = $('#' + modules.addresses.menuItem);
+                    let f = false;
+                    while (i.next().length) {
+                        i = i.next();
+                        if ($.trim(i.text()) == "") {
+                            $(h).insertBefore(i);
+                            f = true;
+                            break;
+                        }
+                    }
+                    if (!f && i.length) {
+                        $(h).insertAfter(i);
+                    }
                 }
             }
-            if (!f && i.length) {
-                $(h).insertAfter(i);
-            }
-        }
-*/
+        }).
+        fail(FAIL);
     },
 
     moduleLoaded: function () {
@@ -54,11 +63,150 @@
         modules.addresses.meta = addresses["addresses"];
     },
 
+    toggleFavorite: function (object, id) {
+        let f = false;
+        for (let i in modules.addresses.favorites) {
+            if (modules.addresses.favorites[i].object == object && modules.addresses.favorites[i].id == id) {
+                f = true;
+                break;
+            }
+        }
+
+        let title = "";
+        for (let i in modules.addresses.meta[object + "s"]) {
+            if (modules.addresses.meta[object + "s"][i][object + "Id"] == id) {
+                title = modules.addresses.meta[object + "s"][i][object + "WithType"];
+                break;
+            }
+        }
+
+        if (!f) {
+            let icons = [];
+            for (let i in faIcons) {
+                icons.push({
+                    icon: faIcons[i].title + " fa-fw",
+                    text: faIcons[i].title.split(" fa-")[1] + (faIcons[i].searchTerms.length ? (", " + faIcons[i].searchTerms.join(", ")) : ""),
+                    value: faIcons[i].title,
+                });
+            }
+
+            cardForm({
+                title: i18n("addresses.addFavorite"),
+                footer: true,
+                borderless: true,
+                topApply: true,
+                apply: i18n("add"),
+                size: "lg",
+                fields: [
+                    {
+                        id: "title",
+                        title: i18n("addresses.title"),
+                        type: "text",
+                        value: title,
+                    },
+                    {
+                        id: "icon",
+                        title: i18n("tt.filterIcon"),
+                        type: "select2",
+                        options: icons,
+                        value: "far fa-bookmark",
+                    },
+                    {
+                        id: "color",
+                        title: i18n("tt.filterColor"),
+                        type: "select2",
+                        options: [
+                            {
+                                text: "По умолчанию",
+                                value: "",
+                                class: "",
+                            },
+                            {
+                                text: "Primary",
+                                value: "text-primary",
+                                class: "text-primary",
+                            },
+                            {
+                                text: "Secondary",
+                                value: "text-secondary",
+                                class: "text-secondary",
+                            },
+                            {
+                                text: "Success",
+                                value: "text-success",
+                                class: "text-success",
+                            },
+                            {
+                                text: "Danger",
+                                value: "text-danger",
+                                class: "text-danger",
+                            },
+                            {
+                                text: "Warning",
+                                value: "text-warning",
+                                class: "text-warning",
+                            },
+                            {
+                                text: "Info",
+                                value: "text-info",
+                                class: "text-info",
+                            },
+                        ],
+                        value: ""
+                    },
+                ],
+                callback: r => {
+                    loadingStart();
+                    POST("addresses", "favorites", false, {
+                        object: object,
+                        id: id,
+                        title: r.title,
+                        icon: r.icon,
+                        color: r.color,
+                    }).
+                    done(() => {
+                        window.location.reload();
+                    }).
+                    fail(FAIL).
+                    fail(loadingDone);
+                },
+            });
+        } else {
+            mConfirm(i18n("addresses.removeFavorite") + "?", title, i18n("remove"), () => {
+                loadingStart();
+                DELETE("addresses", "favorites", false, {
+                    object: object,
+                    id: id,
+                }).
+                done(() => {
+                    window.location.reload();
+                }).
+                fail(FAIL).
+                fail(loadingDone);
+            });
+        }
+    },
+
     path: function (object, id, _link) {
         let sp = "<i class=\"fas fa-xs fa-angle-double-right ml-2 mr-2\"></i>";
 
         function link(target, text, id) {
             return `<a href="?#addresses&show=${target}&${target}Id=${id}">${text}</a>`;
+        }
+
+        function favorite(object, id) {
+            let f = false;
+            for (let i in modules.addresses.favorites) {
+                if (modules.addresses.favorites[i].object == object && modules.addresses.favorites[i].id == id) {
+                    f = true;
+                    break;
+                }
+            }
+            if (f) {
+                return `<span style='position: absolute; right: 0px;' class='mr-3' onclick='modules.addresses.toggleFavorite("${object}", ${id})'><i class='fas fa-fw fa-bookmark text-primary pointer addressFavoriteIcon' data-object='${object}' data-object-id='${id}'></i></span>`;
+            } else {
+                return `<span style='position: absolute; right: 0px;' class='mr-3' onclick='modules.addresses.toggleFavorite("${object}", ${id})'><i class='far fa-fw fa-bookmark text-primary pointer addressFavoriteIcon' data-object='${object}' data-object-id='${id}'></i></span>`;
+            }
         }
 
         function region(id) {
@@ -128,20 +276,16 @@
             }
         }
 
-        function bookmark() {
-            return "<span style='position: absolute; right: 0px;' class='mr-3'><i class='far fa-fw fa-bookmark text-primary pointer'></i></span>";
-        }
-
         switch (object) {
             case "region":
-                return region(id).regionWithType + bookmark();
+                return region(id).regionWithType + favorite(object, id);
 
             case "area":
                 let a = area(id);
                 if (_link) {
                     return a.parent + sp + link("area", a.areaWithType, id);
                 } else {
-                    return a.parent + sp + a.areaWithType + bookmark();
+                    return a.parent + sp + a.areaWithType + favorite(object, id);
                 }
 
             case "city":
@@ -149,7 +293,7 @@
                 if (_link) {
                     return c.parent + sp + link("city", c.cityWithType, id);
                 } else {
-                    return c.parent + sp + c.cityWithType + bookmark();
+                    return c.parent + sp + c.cityWithType + favorite(object, id);
                 }
 
             case "settlement":
@@ -157,7 +301,7 @@
                 if (_link) {
                     return se.parent + sp + link("settlement", se.settlementWithType, id);
                 } else {
-                    return se.parent + sp + se.settlementWithType + bookmark();
+                    return se.parent + sp + se.settlementWithType + favorite(object, id);
                 }
 
             case "street":
@@ -165,7 +309,7 @@
                 if (_link) {
                     return st.parent + sp + link("street", st.streetWithType, id);
                 } else {
-                    return st.parent + sp + st.streetWithType + bookmark();
+                    return st.parent + sp + st.streetWithType + favorite(object, id);
                 }
 
             default:
