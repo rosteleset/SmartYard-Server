@@ -1189,9 +1189,18 @@
              */
             public function journal($issueId, $action, $old, $new, $workflowAction)
             {
+                $force = [ "watchers" ];
+
                 if ($old && $new) {
+                    $keys = [];
                     foreach ($old as $key => $field) {
-                        if (!array_key_exists($key, $new)) {
+                        $keys[$key] = 1;
+                    }
+                    foreach ($new as $key => $field) {
+                        $keys[$key] = 1;
+                    }
+                    foreach ($keys as $key => $one) {
+                        if (!array_key_exists($key, $new) && !in_array($key, $force)) {
                             unset($old[$key]);
                         }
                         if (@is_array(@$old[$key]) || @is_array(@$new[$key])) {
@@ -1211,7 +1220,8 @@
                                     $n = [];
                                 }
                             }
-                            if (!count(array_diff($o, $n))) {
+
+                            if (!count(array_diff($o, $n)) && !count(array_diff($n, $o))) {
                                 unset($old[$key]);
                                 unset($new[$key]);
                             }
