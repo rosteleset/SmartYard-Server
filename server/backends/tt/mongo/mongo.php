@@ -1194,8 +1194,24 @@
                         if (!array_key_exists($key, $new)) {
                             unset($old[$key]);
                         }
-                        if (@is_array(@$old[$key]) && @is_array(@$new[$key])) {
-                            if (!count(array_diff($old[$key], $new[$key]))) {
+                        if (@is_array(@$old[$key]) || @is_array(@$new[$key])) {
+                            $o = @$old[$key];
+                            $n = @$new[$key];
+                            if (!is_array($o)) {
+                                if ($o) {
+                                    $o = [ $o ];
+                                } else {
+                                    $o = [];
+                                }
+                            }
+                            if (!is_array($n)) {
+                                if ($n) {
+                                    $n = [ $n ];
+                                } else {
+                                    $n = [];
+                                }
+                            }
+                            if (!count(array_diff($o, $n))) {
                                 unset($old[$key]);
                                 unset($new[$key]);
                             }
