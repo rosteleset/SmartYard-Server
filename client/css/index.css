@@ -382,6 +382,7 @@ select {
 
 .select2-selection__choice__remove {
   width: auto!important;
+  display: none!important;
 }
 
 .text-decoration-line-through {
