@@ -1421,6 +1421,7 @@
                         hidden: entrances.length <= 0,
                         options: entrances,
                         value: entrances_selected,
+                        allButtons: false,
                     },
                     {
                         id: "manualBlock",
