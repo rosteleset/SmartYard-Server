@@ -2467,6 +2467,11 @@
                                 value: 1,
                             },
                             {
+                                id: "openCode",
+                                type: "noyes",
+                                title: i18n("addresses.openCode"),
+                            },
+                            {
                                 id: "autoOpen",
                                 type: "datetime-local",
                                 sec: true,
@@ -2523,7 +2528,7 @@
                                     apartmentsAndLevels: false,
                                     manualBlock: result.manualBlock,
                                     adminBlock: result.adminBlock,
-                                    openCode: 0,
+                                    openCode: parseInt(result.openCode) ? "!" : "00000",
                                     plog: result.plog,
                                     autoOpen: result.autoOpen,
                                     whiteRabbit: result.whiteRabbit,
