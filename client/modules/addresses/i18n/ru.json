@@ -310,6 +310,12 @@
     "addFlatsWizard": "Добавить квартиры",
     "addFavorite": "Добавить адрес в избранное",
     "removeFavorite": "Убрать адрес из избранного",
+    "addFlats": "Добавить квартиры (офисы)",
+    "firstFloor": "Начинать с этажа",
+    "firstFlat": "Начинать с квартиры",
+    "flatsByFloor": "Квартир на этаже",
+    "totalFlats": "Всего квартир",
+    "flatsWasAdded": "Итого добавлено квартир: %s",
     "errors": {
         "UNIQUE constraint failed: addresses_houses.address_settlement_id, addresses_houses.address_street_id, addresses_houses.house": "Такой дом уже существует",
         "UNIQUE constraint failed: houses_houses_entrances.house_entrance_id, houses_houses_entrances.prefix": "Такой префикс уже используется",
