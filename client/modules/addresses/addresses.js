@@ -19,40 +19,40 @@
     },
 
     allLoaded: function () {
-        GET("addresses", "favorites", false, true).
-        done(r => {
-            if (r && r.favorites) {
-                modules.addresses.favorites = r.favorites;
-                let h = "";
-                for (let i in r.favorites) {
-                    h += `
-                        <li class="nav-item" title="${escapeHTML(r.favorites[i].title)}" style="margin-top: 3px;">
-                            <a href="?#addresses&show=${r.favorites[i].object}&${r.favorites[i].object}Id=${r.favorites[i].id}" class="nav-link" onclick="xblur(); return true;">
-                                <i class="nav-icon fa-fw ${r.favorites[i].icon} ${r.favorites[i].color}"></i>
-                                <p class="text-nowrap">${escapeHTML(r.favorites[i].title)}</p>
-                            </a>
-                        </li>
-                    `;
-                    $(`.addressFavoriteIcon[data-object='${r.favorites[i].object}'][data-object-id='${r.favorites[i].id}']`).removeClass("far").addClass("fas");
-                }
-                if (modules.addresses.menuItem) {
-                    let i = $('#' + modules.addresses.menuItem);
-                    let f = false;
-                    while (i.next().length) {
-                        i = i.next();
-                        if ($.trim(i.text()) == "") {
-                            $(h).insertBefore(i);
-                            f = true;
-                            break;
+        if (modules.addresses.menuItem) {
+            GET("addresses", "favorites", false, true).
+            done(r => {
+                if (r && r.favorites) {
+                    modules.addresses.favorites = r.favorites;
+                    let h = "";
+                    for (let i in r.favorites) {
+                        h += `
+                            <li class="nav-item" title="${escapeHTML(r.favorites[i].title)}" style="margin-top: 3px;">
+                                <a href="?#addresses&show=${r.favorites[i].object}&${r.favorites[i].object}Id=${r.favorites[i].id}" class="nav-link" onclick="xblur(); return true;">
+                                    <i class="nav-icon fa-fw ${r.favorites[i].icon} ${r.favorites[i].color}"></i>
+                                    <p class="text-nowrap">${escapeHTML(r.favorites[i].title)}</p>
+                                </a>
+                            </li>
+                        `;
+                        $(`.addressFavoriteIcon[data-object='${r.favorites[i].object}'][data-object-id='${r.favorites[i].id}']`).removeClass("far").addClass("fas");
+                    }
+                        let i = $('#' + modules.addresses.menuItem);
+                        let f = false;
+                        while (i.next().length) {
+                            i = i.next();
+                            if ($.trim(i.text()) == "") {
+                                $(h).insertBefore(i);
+                                f = true;
+                                break;
+                            }
                         }
-                    }
-                    if (!f && i.length) {
-                        $(h).insertAfter(i);
-                    }
+                        if (!f && i.length) {
+                            $(h).insertAfter(i);
+                        }
                 }
-            }
-        }).
-        fail(FAIL);
+            }).
+            fail(FAIL);
+        }
     },
 
     moduleLoaded: function () {

@@ -40,7 +40,7 @@
     },
 
     allLoaded: function () {
-        if (parseInt(myself.uid) && AVAIL("tt", "favoriteFilter")) {
+        if (modules.tt.menuItem && parseInt(myself.uid) && AVAIL("tt", "favoriteFilter")) {
             GET("tt", "tt", false, true).
             done(modules.tt.tt).
             done(() => {
@@ -58,7 +58,6 @@
                         `;
                     }
                 }
-                if (modules.tt.menuItem) {
                     let i = $('#' + modules.tt.menuItem);
                     let f = false;
                     while (i.next().length) {
@@ -72,7 +71,6 @@
                     if (!f && i.length) {
                         $(h).insertAfter(i);
                     }
-                }
             }).
             fail(FAIL);
         }
