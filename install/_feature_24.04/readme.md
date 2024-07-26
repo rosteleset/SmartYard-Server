@@ -1,13 +1,13 @@
 ## Install
 
-01. [Ubuntu Nooble](01.nooble.md)
+01. [Ubuntu 24.04 (Noble Numbat)](01.nooble.md)
 02. [NodeJS](02.nodejs.md)
 03. [PostgreSQL](03.postresql.md)
 04. [PgBouncer](04.bouncer.md)
-05. [Clickhouse](04.clickhouse.md)
+05. [Clickhouse](05.clickhouse.md)
 06. [MongoDB](06.mongo.md)
 07. [Nginx](07.nginx.md)
-08. [Acmesh](08.acmesh.md)
+08. [Acmesh](08.acme.md)
 09. [RBT](09.install.md)
 10. [Asterisk](10.asterisk.md)
 11. [Event](11.event.md)
