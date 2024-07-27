@@ -597,6 +597,8 @@
             }
         }
 
+        console.log(noJournal);
+
         function fieldRow(i, target) {
             let h = '';
 
