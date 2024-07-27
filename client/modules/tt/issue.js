@@ -597,8 +597,6 @@
             }
         }
 
-        console.log(noJournal);
-
         function fieldRow(i, target) {
             let h = '';
 
@@ -975,6 +973,7 @@
                             k = k.concat(Object.keys(response.journal[i].new));
                             k = [...new Set(k)].sort();
                             for (let j in k) {
+                                console.log(k[j], noJournal.indexOf(k[j]));
                                 if (noJournal.indexOf(k[j]) !== false) continue;
 
                                 let oo = jShow(response.journal[i].old[k[j]]) ? modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].old[k[j]], "journal") : "&nbsp;";
