@@ -48,6 +48,10 @@
                     $success = $tt->setProjectCustomFields($params["_id"], $params["customFields"]);
                 }
 
+                if (array_key_exists("customFieldsNoJournal", $params)) {
+                    $success = $tt->setProjectCustomFieldsNoJournal($params["_id"], $params["customFieldsNoJournal"]);
+                }
+
                 if (array_key_exists("viewers", $params)) {
                     $success = $tt->setProjectViewers($params["_id"], $params["viewers"]);
                 }

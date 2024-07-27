@@ -326,6 +326,8 @@
     "favoriteFilters": "Избранные фильтры",
     "old": "было",
     "new": "стало",
+    "projectCustomFieldsNoJournal": "Настраиваемые поля проекта",
+    "customFieldsNoJournal": "Настраиваемые поля скрытые в журнале",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",

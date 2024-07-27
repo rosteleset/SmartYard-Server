@@ -1505,6 +1505,63 @@
         }).show();
     },
 
+    projectCustomFieldsNoJournal: function (projectId) {
+        let project = false;
+        for (let i in modules.tt.meta.projects) {
+            if (modules.tt.meta.projects[i].projectId == projectId) {
+                project = modules.tt.meta.projects[i];
+                break;
+            }
+        }
+
+        let customFields = [];
+        for (let i in modules.tt.meta.customFields) {
+            customFields.push({
+                id: modules.tt.meta.customFields[i].customFieldId,
+                text: $.trim(modules.tt.meta.customFields[i].fieldDisplay + " [" + modules.tt.meta.customFields[i].field + "]"),
+            });
+        }
+
+        customFields.sort((a, b) => {
+            if (a.text > b.text) {
+                return 1;
+            }
+            if (a.text < b.text) {
+                return -1;
+            }
+            return 0;
+        });
+
+        cardForm({
+            title: i18n("tt.projectCustomFieldsNoJournal"),
+            footer: true,
+            borderless: true,
+            noHover: true,
+            topApply: true,
+            singleColumn: true,
+            fields: [
+                {
+                    id: "customFieldsNoJournal",
+                    type: "multiselect",
+                    title: i18n("tt.customFieldsNoJournal"),
+                    options: customFields,
+                    value: project.customFieldsNoJournal,
+                },
+            ],
+            callback: function (result) {
+                loadingStart();
+                PUT("tt", "project", projectId, {
+                    customFieldsNoJournal: result.customFieldsNoJournal,
+                }).
+                fail(FAIL).
+                done(() => {
+                    message(i18n("tt.projectWasChanged"));
+                }).
+                always(modules.tt.settings.renderProjects);
+            },
+        }).show();
+    },
+
     projectDeleteUser: function (projectRoleId, projectId) {
         mConfirm(i18n("users.confirmDelete", projectRoleId.toString()), i18n("confirm"), `warning:${i18n("tt.removeUserFromProject")}`, () => {
             loadingStart();
@@ -2086,6 +2143,12 @@
                                         icon: "fas fa-edit",
                                         title: i18n("tt.customFields"),
                                         click: modules.tt.settings.projectCustomFields,
+                                        disabled: modules.tt.meta.customFields.length <= 0,
+                                    },
+                                    {
+                                        icon: "fas fa-eye-slash",
+                                        title: i18n("tt.customFieldsNoJournal"),
+                                        click: modules.tt.settings.projectCustomFieldsNoJournal,
                                         disabled: modules.tt.meta.customFields.length <= 0,
                                     },
                                     {

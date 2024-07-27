@@ -588,6 +588,15 @@
             tags[project.tags[i].tag] = project.tags[i];
         }
 
+        let noJournal = [ "updated" ];
+        for (let i in project.customFieldsNoJournal) {
+            for (let j in modules.tt.meta.customFields) {
+                if (project.customFieldsNoJournal[i] == modules.tt.meta.customFields[j].customFieldId) {
+                    noJournal.push("_cf_" + modules.tt.meta.customFields[j].field);
+                }
+            }
+        }
+
         function fieldRow(i, target) {
             let h = '';
 
@@ -964,6 +973,8 @@
                             k = k.concat(Object.keys(response.journal[i].new));
                             k = [...new Set(k)].sort();
                             for (let j in k) {
+                                if (noJournal.indexOf(k[j]) !== false) continue;
+
                                 let oo = jShow(response.journal[i].old[k[j]]) ? modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].old[k[j]], "journal") : "&nbsp;";
                                 let nn = jShow(response.journal[i].new[k[j]]) ? modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].new[k[j]], "journal") : "&nbsp;";
 
@@ -1005,6 +1016,8 @@
                             let k = Object.keys(response.journal[i].new);
                             k = [...new Set(k)].sort();
                             for (let j in k) {
+                                if (noJournal.indexOf(k[j]) !== false) continue;
+
                                 if (sep) {
                                     h += "<tr class='tr-hoverable'>";
                                     h += "<td class='pl-2 td-journal nowrap'>";
@@ -1037,6 +1050,8 @@
                             let k = Object.keys(response.journal[i].old);
                             k = [...new Set(k)].sort();
                             for (let j in k) {
+                                if (noJournal.indexOf(k[j]) !== false) continue;
+
                                 h += "<tr class='tr-hoverable'>";
                                 h += "<td class='pl-2 td-journal nowrap'>";
                                 h += modules.tt.issueFieldTitle(k[j]) + " (" + i18n("tt.old") + "): ";

@@ -102,6 +102,12 @@
                             $cf[] = $customField["issue_custom_field_id"];
                         }
 
+                        $customFieldsNoJournal = $this->db->query("select issue_custom_field_id from tt_projects_custom_fields_nojournal where project_id = {$project["project_id"]}", \PDO::FETCH_ASSOC)->fetchAll();
+                        $cfnj = [];
+                        foreach ($customFieldsNoJournal as $customField) {
+                            $cfnj[] = $customField["issue_custom_field_id"];
+                        }
+
                         $u = [];
                         $g = [];
 
@@ -194,6 +200,7 @@
                             "filters" => $f,
                             "resolutions" => $r,
                             "customFields" => $cf,
+                            "customFieldsNoJournal" => $cfnj,
                             "users" => $u,
                             "groups" => $g,
                             "viewers" => $this->getProjectViewers($project["project_id"]),
@@ -789,6 +796,53 @@
             /**
              * @inheritDoc
              */
+            public function setProjectCustomFieldsNoJournal($projectId, $customFields)
+            {
+                $this->clearCache();
+
+                // TODO: add transaction, commint, rollback
+
+                if (!checkInt($projectId)) {
+                    return false;
+                }
+
+                try {
+                    $sth = $this->db->prepare("insert into tt_projects_custom_fields_nojournal (project_id, issue_custom_field_id) values (:project_id, :issue_custom_field_id)");
+                } catch (\Exception $e) {
+                    error_log(print_r($e, true));
+                    return false;
+                }
+
+                try {
+                    $this->db->exec("delete from tt_projects_custom_fields_nojournal where project_id = $projectId");
+                } catch (\Exception $e) {
+                    error_log(print_r($e, true));
+                    return false;
+                }
+
+                try {
+                    foreach ($customFields as $customField) {
+                        if (!checkInt($customField)) {
+                            return false;
+                        }
+                        if (!$sth->execute([
+                            ":project_id" => $projectId,
+                            ":issue_custom_field_id" => $customField,
+                        ])) {
+                            return false;
+                        }
+                    }
+                } catch (\Exception $e) {
+                    error_log(print_r($e, true));
+                    return false;
+                }
+
+                return true;
+            }
+
+            /**
+             * @inheritDoc
+             */
             public function addUserRole($projectId, $uid, $roleId)
             {
                 $this->clearCache();
@@ -1044,7 +1098,8 @@
                 try {
                     return $this->db->modify("delete from tt_issue_custom_fields where issue_custom_field_id = $customFieldId") +
                         $this->db->modify("delete from tt_issue_custom_fields_options where issue_custom_field_id = $customFieldId") +
-                        $this->db->modify("delete from tt_projects_custom_fields where issue_custom_field_id = $customFieldId");
+                        $this->db->modify("delete from tt_projects_custom_fields where issue_custom_field_id = $customFieldId") +
+                        $this->db->modify("delete from tt_projects_custom_fields_nojournal where issue_custom_field_id = $customFieldId");
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
                     return false;
@@ -1450,6 +1505,7 @@
             public function cleanup() {
                 $this->db->modify("delete from tt_issue_custom_fields_options where issue_custom_field_id not in (select issue_custom_field_id from tt_issue_custom_fields)");
                 $this->db->modify("delete from tt_projects_custom_fields where issue_custom_field_id not in (select issue_custom_field_id from tt_issue_custom_fields)");
+                $this->db->modify("delete from tt_projects_custom_fields_nojournal where issue_custom_field_id not in (select issue_custom_field_id from tt_issue_custom_fields)");
                 $this->db->modify("delete from tt_projects_viewers where project_id not in (select project_id from tt_projects)");
 
                 return parent::cleanup();

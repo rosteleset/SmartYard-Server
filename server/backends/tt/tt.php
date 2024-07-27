@@ -687,9 +687,17 @@
              * @return boolean
              */
 
-            abstract public function setProjectCustomFields($projectId, $customFields);
+             abstract public function setProjectCustomFields($projectId, $customFields);
 
             /**
+             * @param $projectId
+             * @param $customFields
+             * @return boolean
+             */
+
+             abstract public function setProjectCustomFieldsNoJournal($projectId, $customFields);
+
+             /**
              * @param $projectId
              * @param $uid
              * @param $roleId
