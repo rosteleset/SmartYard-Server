@@ -973,8 +973,7 @@
                             k = k.concat(Object.keys(response.journal[i].new));
                             k = [...new Set(k)].sort();
                             for (let j in k) {
-                                console.log(k[j], noJournal.indexOf(k[j]));
-                                if (noJournal.indexOf(k[j]) !== false) continue;
+                                if (noJournal.indexOf(k[j]) >= 0) continue;
 
                                 let oo = jShow(response.journal[i].old[k[j]]) ? modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].old[k[j]], "journal") : "&nbsp;";
                                 let nn = jShow(response.journal[i].new[k[j]]) ? modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].new[k[j]], "journal") : "&nbsp;";
@@ -1017,7 +1016,7 @@
                             let k = Object.keys(response.journal[i].new);
                             k = [...new Set(k)].sort();
                             for (let j in k) {
-                                if (noJournal.indexOf(k[j]) !== false) continue;
+                                if (noJournal.indexOf(k[j]) >= 0) continue;
 
                                 if (sep) {
                                     h += "<tr class='tr-hoverable'>";
@@ -1051,7 +1050,7 @@
                             let k = Object.keys(response.journal[i].old);
                             k = [...new Set(k)].sort();
                             for (let j in k) {
-                                if (noJournal.indexOf(k[j]) !== false) continue;
+                                if (noJournal.indexOf(k[j]) >= 0) continue;
 
                                 h += "<tr class='tr-hoverable'>";
                                 h += "<td class='pl-2 td-journal nowrap'>";
