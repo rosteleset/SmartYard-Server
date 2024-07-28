@@ -100,20 +100,20 @@
                 fields: [
                     {
                         id: "title",
-                        title: i18n("addresses.title"),
+                        title: i18n("addresses.faforiteTitle"),
                         type: "text",
                         value: title,
                     },
                     {
                         id: "icon",
-                        title: i18n("tt.filterIcon"),
+                        title: i18n("address.favoriteIcon"),
                         type: "select2",
                         options: icons,
                         value: "far fa-bookmark",
                     },
                     {
                         id: "color",
-                        title: i18n("tt.filterColor"),
+                        title: i18n("address.favoriteColor"),
                         type: "select2",
                         options: [
                             {
