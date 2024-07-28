@@ -218,36 +218,4 @@
                 return false;
             }
         }
-
-        function exec($sql, $internal = true)
-        {
-            if ($internal) {
-                return parent::exec($sql);
-            } else {
-                $dsn = $this->parseDsn();
-
-                switch ($dsn["protocol"]) {
-                    case "sqlite":
-                        try {
-                            $result = -1;
-
-                            file_put_contents("/tmp/db_exec_content.sql", $sql);
-
-                            $db = $dsn['params'][0];
-                            system("cat /tmp/db_exec_content.sql | sqlite3 $db", $result);
-
-                            if ((int)$result) {
-                                return false;
-                            } else {
-                                return true;
-                            }
-                        } catch (\Exception $e) {
-                            return false;
-                        }
-
-                    default:
-                        return parent::exec($sql);
-                }
-            }
-        }
     }
