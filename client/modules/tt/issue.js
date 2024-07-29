@@ -1028,12 +1028,14 @@
                                     h += "</td>";
                                     h += "</tr>";
                                 } else {
+/*
                                     h += "<tr class='tr-hoverable'>";
                                     h += "<td class='pl-2 td-journal nowrap'>";
                                     h += modules.tt.issueFieldTitle(k[j]) + " (" + i18n("tt.old") + "): ";
                                     h += "</td>";
                                     h += "<td class='pl-2 td-journal' style='width: 100%;'>&nbsp;</td>";
                                     h += "</tr>";
+*/
                                     h += "<tr class='tr-hoverable'>";
                                     h += "<td class='pl-2 td-journal nowrap'>";
                                     h += modules.tt.issueFieldTitle(k[j]) + " (" + i18n("tt.new") + "): ";
@@ -1060,12 +1062,14 @@
                                 h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].old[k[j]], "journal");
                                 h += "</td>";
                                 h += "</tr>";
+/*
                                 h += "<tr class='tr-hoverable'>";
                                 h += "<td class='pl-2 td-journal nowrap'>";
                                 h += modules.tt.issueFieldTitle(k[j]) + " (" + i18n("tt.new") + "): ";
                                 h += "</td>";
                                 h += "<td class='pl-2 td-journal' style='width: 100%;'>&nbsp;</td>";
                                 h += "</tr>";
+*/
                             }
                         }
                     }
