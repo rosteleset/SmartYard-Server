@@ -992,6 +992,7 @@
                                     h += "</td>";
                                     h += "</tr>";
                                 } else {
+                                    console.log(k[j], oo, nn);
                                     h += "<tr class='tr-hoverable'>";
                                     h += "<td class='pl-2 td-journal nowrap'>";
                                     h += modules.tt.issueFieldTitle(k[j]) + " (" + i18n("tt.old") + "): ";
