@@ -954,7 +954,6 @@
             }
 
             if (field.substring(0, 4) !== "_cf_") {
-
                 switch (field) {
                     case "description":
                     case "subject":
