@@ -106,7 +106,11 @@
                             return [ time(...$args) ];
                         },
                         "date" => function (...$args) {
-                            return [ date(...$args) ];
+                            try {
+                                return [ date(...$args) ];
+                            } catch (\Exception $e) {
+                                return [ "" ];
+                            }
                         },
                         "strtotime" => function (...$args) {
                             return [ strtotime(...$args) ];
