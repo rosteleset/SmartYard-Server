@@ -987,7 +987,7 @@
                                     h += "<td class='pl-2 td-journal nowrap'>";
                                     h += modules.tt.issueFieldTitle(k[j]) + ": ";
                                     h += "</td>";
-                                    h += "<td class='pl-2 td-journal' style='width: 100%;'>";
+                                    h += "<td class='pl-2 td-journal' style='width: 100%;' style='font-weight: bold;'>";
                                     h += nn;
                                     h += "</td>";
                                     h += "</tr>";
