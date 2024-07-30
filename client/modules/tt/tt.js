@@ -981,6 +981,7 @@
                         break;
 
                     case "author":
+                    case "commentAuthor":
                         val = escapeHTML(members[val] ? members[val] : val);
                         break;
 
