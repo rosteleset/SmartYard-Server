@@ -103,7 +103,11 @@
                             return [ implode(...$args) ];
                         },
                         "time" => function (...$args) {
-                            return [ time(...$args) ];
+                            try {
+                                return [ time(...$args) ];
+                            } catch (\Exception) {
+                                return [ "" ];
+                            }
                         },
                         "date" => function (...$args) {
                             try {
