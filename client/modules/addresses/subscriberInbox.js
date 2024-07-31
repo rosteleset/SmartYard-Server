@@ -137,6 +137,8 @@
     },
 
     route: function (params) {
+        document.title = i18n("windowTitle") + " :: " + i18n("addresses.subscriberInbox");
+
         modules.addresses.topMenu();
 
         modules.addresses.subscriberInbox.renderSubscriberInbox(params.subscriberId);
