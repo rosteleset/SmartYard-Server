@@ -39,8 +39,9 @@ abstract class ufanet extends domophone
     {
         $this->loadRfids();
 
-        $internalRfid = substr($code, 6);
-        $externalRfid = '00' . substr($code, 8);
+        $lowercaseCode = strtolower($code);
+        $internalRfid = substr($lowercaseCode, 6);
+        $externalRfid = '00' . substr($lowercaseCode, 8);
 
         $this->rfids[$internalRfid] = $apartment ?: '';
         $this->rfids[$externalRfid] = $apartment ?: '';
@@ -177,8 +178,9 @@ abstract class ufanet extends domophone
         if ($code === '') {
             $this->rfids = [];
         } else {
-            $internalRfid = substr($code, 6);
-            $externalRfid = '00' . substr($code, 8);
+            $lowercaseCode = strtolower($code);
+            $internalRfid = substr($lowercaseCode, 6);
+            $externalRfid = '00' . substr($lowercaseCode, 8);
             unset($this->rfids[$internalRfid], $this->rfids[$externalRfid]);
         }
     }
@@ -439,7 +441,7 @@ abstract class ufanet extends domophone
 
         $uniqueRfids = [];
 
-        // Get keys and remove leading zeros
+        // Get RFIDs and remove leading zeros
         $normalizedRfids = array_map(fn($rfid) => ltrim($rfid, '0'), array_keys($this->rfids));
 
         // Identify unique RFIDs
@@ -458,8 +460,8 @@ abstract class ufanet extends domophone
             }
         }
 
-        // Pad the unique RFIDs to 14 characters
-        return array_map(fn($rfid) => str_pad($rfid, 14, '0', STR_PAD_LEFT), $uniqueRfids);
+        // Convert RFIDs to uppercase and pad them with leading zeros
+        return array_map(fn($rfid) => str_pad(strtoupper($rfid), 14, '0', STR_PAD_LEFT), $uniqueRfids);
     }
 
     protected function getSipConfig(): array
