@@ -7,7 +7,7 @@ CREATE TABLE houses_subscribers_devices
     platform INTEGER,                                                                                                   -- 0 - android, 1 - ios, 2 - web
     push_token CHARACTER VARYING,
     push_token_type INTEGER,                                                                                            -- 0, 3 - fcm, 1 - apple, 2 - apple (dev), 4 - huawei, 5 - rustore
-    voip_token CHARACTER VARYING,                                                                                       -- iOs only
+    voip_token CHARACTER VARYING,                                                                                       -- iOS only
     registered INTEGER,                                                                                                 -- UNIX timestamp
     last_seen INTEGER,                                                                                                  -- UNIX timestamp
     voip_enabled INTEGER
