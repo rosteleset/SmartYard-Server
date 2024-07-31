@@ -50,6 +50,8 @@
     $platform = 0;
     $type = 0;
 
+    error_log(print_r($postdata, true));
+
     switch ($postdata['platform']) {
         case "ios":
             $platform = 1;
