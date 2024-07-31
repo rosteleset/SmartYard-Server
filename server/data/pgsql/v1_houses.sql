@@ -119,9 +119,9 @@ CREATE TABLE houses_subscribers_mobile
     house_subscriber_id serial primary key,
     id character varying,                                                                                               -- phone
     auth_token character varying,
-    platform integer,                                                                                                   -- 0 - android, 1 - ios
+    platform integer,                                                                                                   -- 0 - android, 1 - ios, 2 - web
     push_token character varying,
-    push_token_type integer,                                                                                            -- 0, 3 - fcm, 1 - apple, 2 - apple (dev), 4 - huawei, 5 - rustore
+    push_token_type integer,                                                                                            -- 0 - fcm, 1 - apple, 2 - apple (dev), 4 - huawei, 5 - rustore
     voip_token character varying,                                                                                       -- iOs only
     registered integer,                                                                                                 -- UNIX timestamp
     last_seen integer,                                                                                                  -- UNIX timestamp

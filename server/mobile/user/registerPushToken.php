@@ -12,8 +12,8 @@
      * @apiParam {String} [pushToken] токен
      * @apiParam {String} [voipToken] токен
      * @apiParam {String="t","f"} [production="t"] использовать боевой сервер для voip пушей (ios only)
-     * @apiParam {String="ios","android"} platform тип устройства: ios, android
-     *
+     * @apiParam {String="ios","android","web"} platform тип устройства: ios, android, web
+     * @apiParam {String="fcm","apn","hms","rustore"} pushService поставщик услуг отправки пушей
      *
      * @apiErrorExample Ошибки
      * 403 требуется авторизация
@@ -44,25 +44,45 @@
         response(406);
     }
 
-    // platform        -- 0 - android, 1 - ios, 2 - web
-    // push_token_type -- 0, 3 - fcm, 1 - apple, 2 - apple (dev), 4 - huawei, 5 - rustore
+    // platform -- 0 - android, 1 - ios, 2 - web
+    // type     -- 0 - fcm, 1 - apple, 2 - apple (dev), 3 - not used, 4 - huawei, 5 - rustore
 
-    if ($postdata['platform'] == 'ios') {
-        $platform = 1;
-        if ($voip) {
-            $type = ($production == 'f') ? 2 : 1; // apn : apn.dev
-        } else {
-            $type = 0; // fcm (resend)
-        }
-    } elseif ($postdata['platform'] == 'web') {
-        $platform = 2;
-        $type = 0;
-    } elseif ($postdata['platform'] == 'huawei') {
-        $platform = 0;
-        $type = 3; // huawei
-    } else {
-        $platform = 0;
-        $type = 0; // fcm
+    $platform = 0;
+    $type = 0;
+
+    switch ($postdata['platform']) {
+        case "ios":
+            $platform = 1;
+            if ($voip) {
+                $type = ($production == 'f') ? 2 : 1; // apn : apn.dev
+            } else {
+                $type = 0; // fcm (resend)
+            }
+            break;
+
+        case "android":
+            switch (@$postdata['platform']) {
+                case "fcm":
+                    $platform = 0;
+                    $type = 0;
+                    break;
+
+                case "hms":
+                    $platform = 0;
+                    $type = 4;
+                    break;
+
+                case "rustore":
+                    $platform = 0;
+                    $type = 5;
+                    break;
+            }
+            break;
+
+        case "web":
+            $platform = 2;
+            $type = 0;
+            break;
     }
 
     $households->modifyDevice($device["deviceId"], [ "pushToken" => $push, "tokenType" => $type, "voipToken" => $voip, "platform" => $platform ]);

@@ -187,7 +187,7 @@ local function mobile_intercom(flatId, flatNumber, domophoneId)
     callerId = channel.CALLERID("name"):get()
 
     for i, device in ipairs(devices) do
-        if device.platform ~= cjson.null and device.type ~= cjson.null and tonumber(device.voipEnabled) == 1 then
+        if device.platform ~= cjson.null and tonumber(device.voipEnabled) == 1 then
             log_debug(device)
 
             redis:incr("autoextension")
