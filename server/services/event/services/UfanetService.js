@@ -31,14 +31,10 @@ class UfanetService extends SyslogService {
         }
 
         // Opening a door by RFID key
-        if (message.includes('key=') && message.includes('pass=OK')) {
+        if (message.includes('keyhex=') && message.includes('pass=OK')) {
             // Same message for internal and external readers
-            const decCode = +message.split(' ')[0].split('=')[1];
-
-            if (Number.isInteger(decCode)) {
-                const hexCode = decCode.toString(16).padStart(14, '0');
-                await API.openDoor({ date: date, ip: host, door: 0, detail: hexCode, by: 'rfid' });
-            }
+            const hexRfid = message.split(' ')[1].split('=')[1].padStart(14, '0');
+            await API.openDoor({ date: date, ip: host, door: 0, detail: hexRfid, by: 'rfid' });
         }
 
         // Opening a door by personal code

@@ -38,8 +38,12 @@ abstract class ufanet extends domophone
     public function addRfid(string $code, int $apartment = 0)
     {
         $this->loadRfids();
-        $decCode = hexdec(substr($code, 8));
-        $this->rfids[$decCode] = $apartment ?: '';
+
+        $internalRfid = substr($code, 6);
+        $externalRfid = '00' . substr($code, 8);
+
+        $this->rfids[$internalRfid] = $apartment ?: '';
+        $this->rfids[$externalRfid] = $apartment ?: '';
     }
 
     public function addRfids(array $rfids)
@@ -173,8 +177,9 @@ abstract class ufanet extends domophone
         if ($code === '') {
             $this->rfids = [];
         } else {
-            $decCode = hexdec(substr($code, 8));
-            unset($this->rfids[$decCode]);
+            $internalRfid = substr($code, 6);
+            $externalRfid = '00' . substr($code, 8);
+            unset($this->rfids[$internalRfid], $this->rfids[$externalRfid]);
         }
     }
 
@@ -312,15 +317,6 @@ abstract class ufanet extends domophone
         $dbConfig['sip']['stunServer'] = '';
         $dbConfig['sip']['stunPort'] = 3478;
 
-        $shortRfids = [];
-
-        foreach ($dbConfig['rfids'] as $fullRfid) {
-            $shortRfid = substr_replace($fullRfid, '00000000', 0, 8);
-            $shortRfids[$shortRfid] = $shortRfid;
-        }
-
-        $dbConfig['rfids'] = $shortRfids;
-
         foreach ($dbConfig['apartments'] as &$apartment) {
             $apartment['code'] = 0;
             $apartment['cmsLevels'] = [];
@@ -440,8 +436,30 @@ abstract class ufanet extends domophone
     protected function getRfids(): array
     {
         $this->loadRfids();
-        $hexCodes = array_map(fn($decCode) => sprintf('%014X', $decCode), array_keys($this->rfids));
-        return array_combine($hexCodes, $hexCodes);
+
+        $uniqueRfids = [];
+
+        // Get keys and remove leading zeros
+        $normalizedRfids = array_map(fn($rfid) => ltrim($rfid, '0'), array_keys($this->rfids));
+
+        // Identify unique RFIDs
+        foreach ($normalizedRfids as $rfid) {
+            $isUnique = true;
+
+            foreach ($normalizedRfids as $compareRfid) {
+                if ($rfid !== $compareRfid && str_contains($compareRfid, $rfid)) {
+                    $isUnique = false;
+                    break;
+                }
+            }
+
+            if ($isUnique) {
+                $uniqueRfids[] = $rfid;
+            }
+        }
+
+        // Pad the unique RFIDs to 14 characters
+        return array_map(fn($rfid) => str_pad($rfid, 14, '0', STR_PAD_LEFT), $uniqueRfids);
     }
 
     protected function getSipConfig(): array
