@@ -100,7 +100,7 @@
 
                 switch ($by) {
                     case "dates":
-                        $w = "where house_subscriber_id = :id and date < :date_to and date >= :date_from";
+                        $w = "where house_subscriber_id = :id and date <= :date_to and date >= :date_from";
                         $q = [
                             "id" => $subscriberId,
                             "date_from" => $params["dateFrom"],
