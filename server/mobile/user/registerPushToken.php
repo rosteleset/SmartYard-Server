@@ -61,7 +61,7 @@
             break;
 
         case "android":
-            switch (@$postdata['platform']) {
+            switch (@$postdata['pushService']) {
                 case "fcm":
                     $platform = 0;
                     $type = 0;
