@@ -65,7 +65,7 @@
     renderSubscriberInbox: function (subscriberId) {
         loadingStart();
 
-        GET("inbox", "message", subscriberId, false).
+        GET("inbox", "message", subscriberId, true).
         fail(FAILPAGE).
         done(response => {
             cardTable({

@@ -70,19 +70,18 @@
                             "type" => $device["tokenType"],
                             "timestamp" => time(),
                             "ttl" => 30,
-                            "platform" => (int)$device["platform"]?"ios":"android", // there should be a web here too
+                            "platform" => (int)$device["platform"] ? "ios" : "android", // there should be a web here too
                             "title" => $title,
                             "msg" => $msg,
                             "badge" => $unreaded,
                             "sound" => "default",
                             "pushAction" => $action,
                         ]);
-
-                        // !!! figure out what to do with result & push_message_id
                     } else {
                         setLastError("pushCantBeSent");
                     }
                 }
+
                 return $msgId;
             }
 
