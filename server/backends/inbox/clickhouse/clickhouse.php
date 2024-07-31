@@ -107,6 +107,7 @@
                             "date_to" => $params["dateTo"],
                         ];
                         break;
+
                     case "id":
                         $w = "where house_subscriber_id = :id and msg_id = :msg_id";
                         $q = [

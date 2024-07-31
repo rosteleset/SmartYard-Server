@@ -96,12 +96,6 @@
                         title: i18n("addresses.messageBody"),
                         fullWidth: true,
                     },
-                    {
-                        title: i18n("addresses.messageReaded"),
-                    },
-                    {
-                        title: i18n("addresses.messagesCode"),
-                    },
                 ],
                 rows: () => {
                     let rows = [];
@@ -129,12 +123,6 @@
                                 },
                                 {
                                     data: msg,
-                                },
-                                {
-                                    data: parseInt(response.messages[i].readed)?i18n("yes"):i18n("no"),
-                                },
-                                {
-                                    data: response.messages[i].code,
                                 },
                             ],
                         });

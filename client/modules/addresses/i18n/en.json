@@ -242,7 +242,7 @@
   "messageSend": "Send Message",
   "messageMobile": "Mobile",
   "messageReaded": "Read",
-  "messagesCode": "Sent",
+  "messageCode": "Sent",
   "doMessageSend": "Send",
   "addFlatTitle": "Address Added",
   "addFlatMsg": "A new address has been added to your account",
