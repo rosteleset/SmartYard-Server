@@ -14,6 +14,13 @@ function AVAIL(api, method, request_method) {
 }
 
 function QUERY(api, method, query, fresh) {
+    let l = lStore("_lang");
+    if (!l) {
+        l = config.defaultLanguage;
+    }
+    if (!l) {
+        l = "ru";
+    }
     if (fresh) {
         if (!query) {
             query = {};
@@ -21,9 +28,10 @@ function QUERY(api, method, query, fresh) {
         query["_"] = Math.random();
     }
     return $.ajax({
-        url: lStore("_server") + "/" + encodeURIComponent(api) + "/" + encodeURIComponent(method) + (query?("?" + $.param(query)):""),
+        url: lStore("_server") + "/" + encodeURIComponent(api) + "/" + encodeURIComponent(method) + (query ? ("?" + $.param(query)) : ""),
         beforeSend: xhr => {
             xhr.setRequestHeader("Authorization", "Bearer " + lStore("_token"));
+            xhr.setRequestHeader("Lang", l);
             if (fresh) {
                 xhr.setRequestHeader("X-Api-Refresh", "1");
             }
@@ -45,6 +53,7 @@ function GET(api, method, id, fresh) {
     if (fresh) {
         url += "?_=" + Math.random();
     }
+    console.log(url);
     return $.ajax({
         url: url,
         beforeSend: xhr => {
@@ -68,7 +77,7 @@ function AJAX(type, api, method, id, query) {
         l = "ru";
     }
     return $.ajax({
-        url: lStore("_server") + "/" + encodeURIComponent(api) + "/" + encodeURIComponent(method) + ((typeof id !== "undefined" && id !== false)?("/" + encodeURIComponent(id)):""),
+        url: lStore("_server") + "/" + encodeURIComponent(api) + "/" + encodeURIComponent(method) + ((typeof id !== "undefined" && id !== false) ? ("/" + encodeURIComponent(id)) : ""),
         beforeSend: xhr => {
             xhr.setRequestHeader("Authorization", "Bearer " + lStore("_token"));
             xhr.setRequestHeader("Lang", l);
