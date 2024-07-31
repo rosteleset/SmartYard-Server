@@ -41,8 +41,12 @@ function GET(api, method, id, fresh) {
     if (!l) {
         l = "ru";
     }
+    let url = lStore("_server") + "/" + encodeURIComponent(api) + "/" + encodeURIComponent(method) + ((typeof id !== "undefined" && id !== false) ? ("/" + encodeURIComponent(id)) : "");
+    if (fresh) {
+        url += "?_=" + Math.random();
+    }
     return $.ajax({
-        url: lStore("_server") + "/" + encodeURIComponent(api) + "/" + encodeURIComponent(method) + ((typeof id !== "undefined" && id !== false)?("/" + encodeURIComponent(id)):""),
+        url: url,
         beforeSend: xhr => {
             xhr.setRequestHeader("Authorization", "Bearer " + lStore("_token"));
             xhr.setRequestHeader("Lang", l);
