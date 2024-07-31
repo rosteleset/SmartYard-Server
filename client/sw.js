@@ -1,8 +1,20 @@
 var version = false;
 
 const forceVersioningResources = [
-    "app.js",
     "index.css",
+    "app.js",
+    "form.js",
+    "greetings.js",
+    "i18n.js",
+    "menu.js",
+    "phpjs.js",
+    "pwgen.js",
+    "rest.js",
+    "rs232.js",
+    "table.js",
+    "upload.js",
+    "utils.js",
+    "widgets.js",
 ];
 
 const cacheFirstResources = [

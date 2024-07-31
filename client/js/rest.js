@@ -53,7 +53,6 @@ function GET(api, method, id, fresh) {
     if (fresh) {
         url += "?_=" + Math.random();
     }
-    console.log(url);
     return $.ajax({
         url: url,
         beforeSend: xhr => {
