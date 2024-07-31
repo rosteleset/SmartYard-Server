@@ -67,10 +67,10 @@
                     if ($isdn && checkInt($device["platform"]) && checkInt($device["tokenType"]) && $device["pushToken"]) {
                         $result = $isdn->push([
                             "token" => $device["pushToken"],
-                            "type" => $device["tokenType"],
+                            "type" => ((int)$device["platform"] === 1) ? 0 : $device["tokenType"], // force FCM for Apple for text messages
                             "timestamp" => time(),
                             "ttl" => 30,
-                            "platform" => (int)$device["platform"] ? "ios" : "android", // there should be a web here too
+                            "platform" => [ "android", "ios", "web" ][(int)$device["platform"]],
                             "title" => $title,
                             "msg" => $msg,
                             "badge" => $unreaded,

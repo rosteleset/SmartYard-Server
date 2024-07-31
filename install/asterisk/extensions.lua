@@ -209,8 +209,8 @@ local function mobile_intercom(flatId, flatNumber, domophoneId)
                     -- not for apple's voips
                     redis:setex("mobile_token_" .. extension, 3 * 60, token)
                 end
-                -- ios over fcm (with repeat)
                 if tonumber(device.platform) == 1 and (tonumber(device.tokenType) == 0 or tonumber(device.tokenType) == 4 or tonumber(device.tokenType) == 5) then
+                    -- ios over fcm (with repeat)
                     redis:setex("voip_crutch_" .. extension, 1 * 60, cjson.encode({
                         id = extension,
                         token = token,
