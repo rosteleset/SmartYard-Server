@@ -173,8 +173,6 @@ local function mobile_intercom(flatId, flatNumber, domophoneId)
 
     local devices = dm("devices", flatId)
 
-    log_debug(devices)
-
     local dtmf = '1'
 
     if domophoneId >= 0 then
@@ -190,6 +188,8 @@ local function mobile_intercom(flatId, flatNumber, domophoneId)
 
     for i, device in ipairs(devices) do
         if device.platform ~= cjson.null and device.type ~= cjson.null and tonumber(device.voipEnabled) == 1 then
+            log_debug(device)
+
             redis:incr("autoextension")
             extension = tonumber(redis:get("autoextension"))
             if extension > 999999 then
@@ -214,7 +214,7 @@ local function mobile_intercom(flatId, flatNumber, domophoneId)
                     redis:setex("voip_crutch_" .. extension, 1 * 60, cjson.encode({
                         id = extension,
                         token = token,
-                        tokenType = s.tokenType,
+                        tokenType = device.tokenType,
                         hash = hash,
                         platform = device.platform,
                         flatId = flatId,

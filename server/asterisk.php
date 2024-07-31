@@ -374,12 +374,6 @@
 
                     $devices = $households->getDevices("flat", (int)$params);
 
-                    if ($devices) {
-                        foreach ($devices as &$device) {
-                            $device["voipEnabled"] = (int)($device["voipEnabled"]);
-                        }
-                    }
-
                     echo json_encode($devices);
 
                     break;
