@@ -15,6 +15,26 @@
         abstract class users extends backend {
 
             /**
+             * @param $config
+             * @param $db
+             * @param $redis
+             */
+            function __construct($config, $db, $redis, $login = false)
+            {
+                parent::__construct($config, $db, $redis, $login);
+
+                require_once __DIR__ . '/../../utils/clickhouse.php';
+
+                $this->clickhouse = new \clickhouse(
+                    @$config['clickhouse']['host'] ?: '127.0.0.1',
+                    @$config['clickhouse']['port'] ?: 8123,
+                    @$config['clickhouse']['username'] ?: 'default',
+                    @$config['clickhouse']['password'] ?: 'qqq',
+                    @$config['clickhouse']['database'] ?: 'default'
+                );
+            }
+
+            /**
              * get list of all users
              *
              * @param boolean $withSessions
@@ -183,6 +203,8 @@
                 if (!$message) {
                     return false;
                 }
+
+                $this->clickhouse->insert("nlog", [ [ "date" => time(), "login" => $this->login, "subject" => $subject, "message" => $message, "target" => $user["notification"] ] ]);
 
                 if ($user["notification"] == "tg") {
                     return $this->sendTg($user["tg"], $subject, $message, @$this->config["telegram"]["bot"]);
