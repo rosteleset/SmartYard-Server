@@ -219,7 +219,7 @@
             public function cron($part)
             {
                 if ($part == '5min') {
-                    $readed = $this->db->get("select msg_id, house_subscriber_id, id, date, title, msg, action, code from inbox where expired < :now or readed = 1",
+                    $readed = $this->db->get("select msg_id, house_subscriber_id, id, date, title, msg, action, code from inbox where expire < :now or readed = 1",
                         [
                             "now" => time(),
                         ],
