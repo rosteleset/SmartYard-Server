@@ -1,22 +1,23 @@
-#!/usr/bin/node
-
-require("dotenv").config({
-    path: `${process.env.NODE_ENV === "development" ? ".env_development" : ".env"}`
-});
-
-const path = require('path');
 const app = require('express')();
 const admin = require('firebase-admin');
 const { Curl } = require('node-libcurl');
+const {
+    PORT,
+    HOST,
+    CERT,
+    SERVICE_ACCOUNT,
+    APP_PROJECT_NAME,
+    APP_BUNDLE_ID,
+    APP_USER_AGENT,
+    DB_NAME,
+    HUAWEI_CLIENT_ID,
+    HUAWEI_CLIENT_SECRET,
+    HUAWEI_PROJECT_ID,
+    RUSTORE_PROJECT_ID,
+    RUSTORE_TOKEN
+} = require('./constants.js');
 
-const CERT = path.join(__dirname, './assets/certificate-and-privatekey.pem');
-const SERVICE_ACCOUNT = path.join(__dirname, './assets/pushServiceAccountKey.json');
-const PORT = process.env.APP_PORT || 8080;
-const HOST = process.env.APP_HOST || "127.0.0.1";
-const APP_PROJECT_NAME = process.env.APP_PROJECT_NAME || "example_app_project_name";
-const APP_BUNDLE_ID = process.env.APP_BUNDLE_ID || "example_app_bundle_id";
-const APP_USER_AGENT = process.env.APP_USER_AGENT || 'example_app_user_agent';
-const DB_NAME = process.env.APP_DATABASE_NAME || 'example_database';
+let huaweiToken = '' ;
 
 const pushOk = (token, result, res) => {
     console.log(`${(new Date()).toLocaleString()} | pushOk | result: ${JSON.stringify(result)}`)
@@ -39,7 +40,6 @@ const pushOk = (token, result, res) => {
 
     pushFail(token, result, res);
 }
-
 const pushFail = (token, error, res) => {
     console.log((new Date()).toLocaleString() + " err: " + token);
 
@@ -63,64 +63,24 @@ const pushFail = (token, error, res) => {
         broken = true;
     }
 
+    if (error.huaweiErrorData && error.huaweiErrorData.code && error.huaweiErrorData.code === "80300007") {
+        broken = true;
+    }
+
     if (broken) {
         res.send('ERR:broken');
     } else {
         res.send('ERR:send');
     }
 }
-
 const realPush = (msg, data, options, token, type, res) => {
     let message;
+    let badge = 0;
+    let curl = new Curl();
 
     switch (parseInt(type)) {
-        case 1:
-        case 2:
-            let http2_server = (parseInt(type) == 2) ? 'https://api.sandbox.push.apple.com' : 'https://api.push.apple.com';
-
-            console.log(http2_server);
-
-            let curl = new Curl();
-
-            curl.setOpt(Curl.option.HTTP_VERSION, 3);
-            curl.setOpt(Curl.option.URL, `${http2_server}/3/device/${token}`);
-            curl.setOpt(Curl.option.PORT, 443);
-            curl.setOpt(Curl.option.HTTPHEADER, [
-                `apns-topic: ${APP_BUNDLE_ID}.voip`,
-                `apns-push-type: voip`,
-                `apns-expiration: ${parseInt((new Date()).getTime() / 1000) + 60}`,
-                `User-Agent: ${APP_USER_AGENT}`,
-            ]);
-            curl.setOpt(Curl.option.POST, true);
-            curl.setOpt(Curl.option.POSTFIELDS, JSON.stringify({
-                data: data,
-            }));
-            curl.setOpt(Curl.option.TIMEOUT, 30);
-            curl.setOpt(Curl.option.SSL_VERIFYPEER, false);
-            curl.setOpt(Curl.option.SSLCERT, CERT);
-            curl.setOpt(Curl.option.HEADER, true);
-            curl.setOpt(Curl.option.VERBOSE, false);
-
-            curl.on('end', (code, data, headers) => {
-                if (parseInt(code) === 200) {
-                    pushOk(token, { successCount: 1 }, res);
-                } else {
-                    pushFail(token, { errorCode: code, errorData: data, errorHeaders: headers }, res);
-                }
-                curl.close();
-            });
-
-            curl.on('error', () => {
-                curl.close();
-            });
-
-            curl.perform();
-            break;
-
         case 0:
         case 3:
-            let badge = 0;
-
             if (msg) {
                 delete msg.tag;
                 if (msg.badge) {
@@ -164,7 +124,7 @@ const realPush = (msg, data, options, token, type, res) => {
             if (!badge) {
                 delete message.apns.payload.aps['badge'];
             } else {
-                message.android.notification.notification_count = badge;
+//                message.android.notification.notification_count = badge;
             }
 
             admin.messaging().send(message).then(r => {
@@ -174,11 +134,228 @@ const realPush = (msg, data, options, token, type, res) => {
             });
             break;
 
+        case 1:
+        case 2:
+            let http2_server = (parseInt(type) === 2) ? 'https://api.sandbox.push.apple.com' : 'https://api.push.apple.com';
+
+            curl.setOpt(Curl.option.HTTP_VERSION, 3);
+            curl.setOpt(Curl.option.URL, `${http2_server}/3/device/${token}`);
+            curl.setOpt(Curl.option.PORT, 443);
+            curl.setOpt(Curl.option.HTTPHEADER, [
+                `apns-topic: ${APP_BUNDLE_ID}.voip`,
+                `apns-push-type: voip`,
+                `apns-expiration: ${parseInt((new Date()).getTime() / 1000) + 60}`,
+                `User-Agent: ${APP_USER_AGENT}`,
+            ]);
+            curl.setOpt(Curl.option.POST, true);
+            curl.setOpt(Curl.option.POSTFIELDS, JSON.stringify({
+                data: data,
+            }));
+            curl.setOpt(Curl.option.TIMEOUT, 30);
+            curl.setOpt(Curl.option.SSL_VERIFYPEER, false);
+            curl.setOpt(Curl.option.SSLCERT, CERT);
+            curl.setOpt(Curl.option.HEADER, true);
+            curl.setOpt(Curl.option.VERBOSE, false);
+
+            curl.on('end', (code, data, headers) => {
+                if (parseInt(code) === 200) {
+                    pushOk(token, { successCount: 1 }, res);
+                } else {
+                    pushFail(token, { errorCode: code, errorData: data, errorHeaders: headers }, res);
+                }
+                curl.close();
+            });
+
+            curl.on('error', () => {
+                curl.close();
+            });
+
+            curl.perform();
+            break;
+
+        case 4:
+            let huaweiServer = `https://push-api.cloud.huawei.com/v2/${HUAWEI_PROJECT_ID}/messages:send`;
+
+            if (msg && msg.title && msg.body) {
+                data.title = msg.title;
+                data.body = msg.body;
+            }
+
+            message = {
+                data: JSON.stringify(data),
+                android: {
+                    ttl: "30s",
+                },
+                token: [
+                    token,
+                ]
+            };
+
+            if (msg && Object.keys(msg).length) {
+                delete message.android.ttl;
+            }
+
+            message = {
+                validate_only: false,
+                message: message,
+            };
+
+            curl.setOpt(Curl.option.URL, huaweiServer);
+            curl.setOpt(Curl.option.HTTPHEADER, [
+                `Authorization: Bearer ${huaweiToken}`,
+            ]);
+            curl.setOpt(Curl.option.POST, true);
+            curl.setOpt(Curl.option.POSTFIELDS, JSON.stringify(message));
+            curl.setOpt(Curl.option.TIMEOUT, 30);
+            curl.setOpt(Curl.option.SSL_VERIFYPEER, false);
+            curl.setOpt(Curl.option.SSLCERT, CERT);
+            curl.setOpt(Curl.option.HEADER, false);
+            curl.setOpt(Curl.option.VERBOSE, false);
+
+            curl.on('end', (code, data, headers) => {
+                if (parseInt(code) === 200) {
+                    try {
+                        data = JSON.parse(data);
+                    } catch (_) {
+                        data = false;
+                    }
+                    if (data && data.code === "80000000") {
+                        pushOk(token, { successCount: 1 }, res);
+                    } else {
+                        pushFail(token, { errorCode: code, huaweiErrorData: data, errorHeaders: headers }, res);
+                    }
+                } else {
+                    pushFail(token, { errorCode: code, huaweiErrorData: data, errorHeaders: headers }, res);
+                }
+                curl.close();
+            });
+
+            curl.on('error', () => {
+                curl.close();
+            });
+
+            curl.perform();
+            break;
+
+        case 5:
+            let rustoreServer = `https://vkpns.rustore.ru/v1/projects/${RUSTORE_PROJECT_ID}/messages:send`;
+
+            if (msg && msg.title && msg.body) {
+                data.title = msg.title;
+                data.body = msg.body;
+            }
+
+            message = {
+                android: {
+                    ttl: "30s",
+                },
+                data: data,
+                token: token,
+            };
+
+            if (msg && Object.keys(msg).length) {
+                delete message.android.ttl;
+            }
+
+            message = {
+                message: message,
+            };
+
+            curl.setOpt(Curl.option.URL, rustoreServer);
+            curl.setOpt(Curl.option.HTTPHEADER, [
+                `Authorization: Bearer ${RUSTORE_TOKEN}`,
+            ]);
+            curl.setOpt(Curl.option.POST, true);
+            curl.setOpt(Curl.option.POSTFIELDS, JSON.stringify(message));
+            curl.setOpt(Curl.option.TIMEOUT, 30);
+            curl.setOpt(Curl.option.SSL_VERIFYPEER, false);
+            curl.setOpt(Curl.option.SSLCERT, CERT);
+            curl.setOpt(Curl.option.HEADER, false);
+            curl.setOpt(Curl.option.VERBOSE, false);
+
+            curl.on('end', (code, data, headers) => {
+                if (parseInt(code) === 200) {
+                    pushOk(token, { successCount: 1 }, res);
+                } else {
+                    pushFail(token, { errorCode: code, rustoreErrorData: data.toString(), errorHeaders: headers }, res);
+                }
+                curl.close();
+            });
+
+            curl.on('error', () => {
+                curl.close();
+            });
+
+            curl.perform();
+            break;
+
         default:
-            console.log('Bad push type');
+            console.log(`${new Date().toLocaleString()} | Bad push type`);
             break;
     }
 }
+const refreshHuaweiToken = () => {
+    let curl = new Curl();
+    curl.setOpt(Curl.option.URL, `https://oauth-login.cloud.huawei.com/oauth2/v3/token?grant_type=client_credentials&client_id=${HUAWEI_CLIENT_ID}&client_secret=${HUAWEI_CLIENT_SECRET}`);
+    curl.setOpt(Curl.option.TIMEOUT, 30);
+    curl.setOpt(Curl.option.SSL_VERIFYPEER, false);
+    curl.setOpt(Curl.option.SSLCERT, CERT);
+    curl.setOpt(Curl.option.HEADER, false);
+    curl.setOpt(Curl.option.VERBOSE, false);
+
+    curl.on('end', (code, data, headers) => {
+        if (parseInt(code) === 200) {
+            try {
+                data = JSON.parse(data);
+                huaweiToken = data.access_token;
+                console.log(`${new Date().toLocaleString()} | HuaweiToken: ` + huaweiToken);
+                setTimeout(refreshHuaweiToken, data.expires_in * 500);
+            } catch (e) {
+                console.log(e);
+                setTimeout(refreshHuaweiToken, 1000);
+            }
+        } else {
+            console.log("error code:", code);
+            setTimeout(refreshHuaweiToken, 1000);
+        }
+        curl.close();
+    });
+
+    curl.on('error', e => {
+        console.log(e);
+        curl.close();
+        setTimeout(refreshHuaweiToken, 1000);
+    });
+
+    curl.perform();
+}
+const initFirebase = async () => {
+    try {
+        admin.initializeApp({
+            credential: admin.credential.cert(SERVICE_ACCOUNT),
+            databaseURL: DB_NAME,
+        });
+        console.log(`${new Date().toLocaleString()} | Firebase init success`);
+    } catch (error) {
+        console.error(`${new Date().toLocaleString()} | Error init Firebase:`, error);
+        throw error;
+    }
+};
+const startServer = async () => {
+    try {
+        await initFirebase();
+
+        app.listen(PORT, HOST, () => {
+            console.log(`${new Date().toLocaleString()} | Push server started >> http://${HOST}:${PORT}`);
+        });
+
+        if (HUAWEI_PROJECT_ID && HUAWEI_CLIENT_ID && HUAWEI_CLIENT_SECRET) {
+            refreshHuaweiToken();
+        }
+    } catch (error) {
+        console.error('Error starting server:', error);
+    }
+};
 
 app.get('/push', function (req, res) {
     console.log((new Date()).toLocaleString(), req.query);
@@ -228,7 +405,7 @@ app.get('/push', function (req, res) {
             data.extension = req.query.extension.toString();
         }
 
-        data.dtmf = req.query.dtmf?req.query.dtmf:'1';
+        data.dtmf = req.query.dtmf ? req.query.dtmf : '1';
 
         if (req.query.turn) {
             data.turn = req.query.turn;
@@ -240,12 +417,10 @@ app.get('/push', function (req, res) {
             data.stunTransport = req.query.stunTransport;
         }
 
-        console.log((new Date()).toLocaleString(), data);
-
         if (req.query.platform === 'ios') {
             realPush({
-                title: req.query.title?req.query.title:"Incoming call",
-                body: req.query.callerId?req.query.callerId:"Unknown",
+                title: req.query.title ? req.query.title : "Incoming call",
+                body: req.query.callerId ? req.query.callerId : "Unknown",
                 tag: "voip",
             }, data, {
                 priority: 'high',
@@ -264,20 +439,24 @@ app.get('/push', function (req, res) {
         }
     }
 
+    if (!req.query.type) {
+        req.query.type = 0;
+    }
+
     if (req.query.msg) {
         realPush({
             title: req.query.title,
             body: req.query.msg,
-            badge: req.query.badge?req.query.badge:'1',
+            badge: req.query.badge ? req.query.badge : '1',
             sound: "default",
         }, {
-            messageId: req.query.messageId?req.query.messageId:'',
-            badge: req.query.badge?req.query.badge:'1',
-            action: req.query.pushAction?req.query.pushAction:'inbox',
+            messageId: req.query.messageId ? req.query.messageId : '',
+            badge: req.query.badge ? req.query.badge : '1',
+            action: req.query.pushAction ? req.query.pushAction : 'inbox',
         }, {
             priority: 'high',
             mutableContent: false,
-        }, req.query.token, 0, res);
+        }, req.query.token, req.query.type, res);
         pushed = true;
     }
 
@@ -285,15 +464,6 @@ app.get('/push', function (req, res) {
         res.send('UNK');
     }
 });
-
-// runIt!
 app.use(require('body-parser').urlencoded({ extended: true }));
-app.listen(PORT, HOST, () => {
-    console.log(`${(new Date()).toLocaleString()} | Push server started >> http://${HOST}:${PORT}`)
-})
-    .on("listening", () => {
-        admin.initializeApp({
-            credential: admin.credential.cert(SERVICE_ACCOUNT),
-            databaseURL: DB_NAME,
-        });
-    })
+
+startServer();
