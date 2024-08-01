@@ -18,7 +18,7 @@ function initClickhouseDB(clickhouse $clickhouse)
 
         $currentVersion = getCurrentDbVersion($clickhouse);
         $_v = sprintf("%06d", $currentVersion);
-        echo "current CH version $_v\n";
+        echo "current CH version $_v\n\n";
 
         foreach ($install as $version => $steps) {
             $_v = sprintf("%06d", $version);
