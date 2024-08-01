@@ -728,6 +728,7 @@
         );
 
         initClickhouseDB($clickhouse);
+        echo "\n";
 
         $n = clearCache(true);
         echo "$n cache entries cleared\n\n";
