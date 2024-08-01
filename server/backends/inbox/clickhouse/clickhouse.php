@@ -219,6 +219,8 @@
             public function cron($part)
             {
                 if ($part == '5min') {
+                    $i = true;
+
                     $readed = $this->db->get("select msg_id, house_subscriber_id, id, date, title, msg, action, code from inbox where expire < :now or readed = 1",
                         [
                             "now" => time(),
@@ -234,8 +236,6 @@
                             "code" => "code",
                         ]
                     );
-
-                    $i = true;
 
                     foreach ($readed as $msg) {
                         $i = $this->clickhouse->insert("inbox", [
