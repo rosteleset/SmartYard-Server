@@ -1,18 +1,18 @@
 <?php
 
-/**
- * @api {post} /inbox/inbox входящие
- * @apiVersion 1.0.0
- * @apiDescription **[нет верстки]**
- *
- * @apiGroup Inbox
- *
- * @apiHeader {String} authorization токен авторизации
- *
- * @apiSuccess {Object} - страничка которую надо отобразить во вьюшке
- * @apiSuccess {String} -.basePath базовый путь (от которго должна была загрузиться страница)
- * @apiSuccess {String} -.code html страница
- */
+    /**
+     * @api {post} /inbox/inbox входящие
+     * @apiVersion 1.0.0
+     * @apiDescription **[нет верстки]**
+     *
+     * @apiGroup Inbox
+     *
+     * @apiHeader {String} authorization токен авторизации
+     *
+     * @apiSuccess {Object} - страничка которую надо отобразить во вьюшке
+     * @apiSuccess {String} -.basePath базовый путь (от которго должна была загрузиться страница)
+     * @apiSuccess {String} -.code html страница
+     */
 
     auth();
 
@@ -21,19 +21,21 @@
     $parsedown = new Parsedown();
     $inbox = loadBackend("inbox");
     $subscriber_id = (int)$subscriber['subscriberId'];
-    $msgs = array_map(function($item) {
-        return ['msgId' => $item['msgId'], 'date' => $item['date'], 'msg' => $item['msg']];
-    }, $inbox->getMessages($subscriber_id, "dates", ["dateFrom" => 946684800, "dateTo" => 2147483646]));
+    $msgs = array_map(
+        function($item) {
+            return ['msgId' => $item['msgId'], 'date' => $item['date'], 'msg' => $item['msg']];
+        },
+        $inbox->getMessages($subscriber_id, "dates", ["dateFrom" => 946684800, "dateTo" => 2147483646])
+    );
 
     usort($msgs, function ($a, $b) {
         if ($a['date'] > $b['date']) {
             return -1;
-        } else
-            if ($a['date'] < $b['date']) {
-                return 1;
-            } else {
-                return 0;
-            }
+        }
+        if ($a['date'] < $b['date']) {
+            return 1;
+        }
+        return 0;
     });
 
     $nd = false;

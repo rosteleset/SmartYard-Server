@@ -47,12 +47,6 @@
 
             /**
              * @param $subscriberId
-             * @return array|false
-             */
-            abstract public function msgMonths($subscriberId);
-
-            /**
-             * @param $subscriberId
              * @return mixed
              */
             abstract public function unreaded($subscriberId);

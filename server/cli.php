@@ -715,8 +715,19 @@
         system("git pull");
         echo "\n";
 
-        initDB(@$args["--skip"]);
+        initDB();
         echo "\n";
+
+        $clickhouse_config = @$config['clickhouse'];
+
+        $clickhouse = new clickhouse(
+            @$clickhouse_config['host'] ?? '127.0.0.1',
+            @$clickhouse_config['port'] ?? 8123,
+            @$clickhouse_config['username'] ?? 'default',
+            @$clickhouse_config['password'] ?? 'qqq',
+        );
+
+        initClickhouseDB($clickhouse);
 
         $n = clearCache(true);
         echo "$n cache entries cleared\n\n";
