@@ -3,7 +3,7 @@
     function language() {
         global $config;
 
-        return @$config["language"]?:"ru";
+        return @apache_request_headers()["Accept-Language"] ?: (@$config["language"] ?: "ru");
     }
 
     function isAssoc($array)

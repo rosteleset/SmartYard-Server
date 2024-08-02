@@ -11,6 +11,7 @@
     require_once "utils/api_response.php";
     require_once "utils/purifier.php";
     require_once "utils/i18n.php";
+    require_once "utils/apache_request_headers.php";
 
     // load configuration
     try {

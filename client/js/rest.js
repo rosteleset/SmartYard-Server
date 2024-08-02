@@ -31,7 +31,7 @@ function QUERY(api, method, query, fresh) {
         url: lStore("_server") + "/" + encodeURIComponent(api) + "/" + encodeURIComponent(method) + (query ? ("?" + $.param(query)) : ""),
         beforeSend: xhr => {
             xhr.setRequestHeader("Authorization", "Bearer " + lStore("_token"));
-            xhr.setRequestHeader("Lang", l);
+            xhr.setRequestHeader("Accept-Language", l);
             if (fresh) {
                 xhr.setRequestHeader("X-Api-Refresh", "1");
             }
@@ -57,7 +57,7 @@ function GET(api, method, id, fresh) {
         url: url,
         beforeSend: xhr => {
             xhr.setRequestHeader("Authorization", "Bearer " + lStore("_token"));
-            xhr.setRequestHeader("Lang", l);
+            xhr.setRequestHeader("Accept-Language", l);
             if (fresh) {
                 xhr.setRequestHeader("X-Api-Refresh", "1");
             }
@@ -79,7 +79,7 @@ function AJAX(type, api, method, id, query) {
         url: lStore("_server") + "/" + encodeURIComponent(api) + "/" + encodeURIComponent(method) + ((typeof id !== "undefined" && id !== false) ? ("/" + encodeURIComponent(id)) : ""),
         beforeSend: xhr => {
             xhr.setRequestHeader("Authorization", "Bearer " + lStore("_token"));
-            xhr.setRequestHeader("Lang", l);
+            xhr.setRequestHeader("Accept-Language", l);
         },
         type: type,
         contentType: "json",

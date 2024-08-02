@@ -26,7 +26,6 @@
     require_once "utils/apache_request_headers.php";
     require_once "utils/i18n.php";
 
-
     $RBTServices = [
         'internet' => [ "icon" => "internet", "title" => "Интернет", "description" => "Высокоскоростной доступ в интернет", "canChange" => "t" ],
         'iptv' => [ "icon" => "iptv", "title" => "Телевидение", "description" => "Более 200 каналов", "canChange" => "t" ],
