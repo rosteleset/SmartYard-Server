@@ -905,12 +905,15 @@
                         $targetHosts[] = [
                             'hostId' => $domophone['domophoneId'],
                             'ip' => $domophone['ip'],
+                            'url' => $domophone['url'],
                         ];
                     }
 
                     $targetStatus = $monitoring->devicesStatus("domophone", $targetHosts);
-                    foreach ($domophones as &$domophone) {
-                        $domophone["status"] = $targetStatus[$domophone["domophoneId"]]['status'];
+                    if ($targetStatus) {
+                        foreach ($domophones as &$domophone) {
+                            $domophone["status"] = $targetStatus[$domophone["domophoneId"]]['status'];
+                        }
                     }
 
                     return $domophones;
