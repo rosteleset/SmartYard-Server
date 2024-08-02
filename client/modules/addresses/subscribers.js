@@ -492,7 +492,7 @@
                                     icon: "far fa-envelope",
                                     title: i18n("addresses.subscriberInbox"),
                                     click: subscriberId => {
-                                        window.location.href = "?#addresses.subscriberInbox&subscriberId=" + subscriberId;
+                                        window.location.href = "?#addresses.subscriberInbox&subscriberId=" + subscriberId + "&houseId=" + params.houseId + "&flatId=" + params.flatId + "&phone=" + subscribers[subscriberId] + "&flat=" + params.flat + "&settlementId=" + params.settlementId + "&streetId=" + params.streetId;
                                     },
                                 },
                                 {
