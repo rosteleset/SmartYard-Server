@@ -1666,6 +1666,21 @@
         modules.addresses.houses.settlementId = "0";
         modules.addresses.houses.streetId = "0";
 
+        function favorite() {
+            let f = false;
+            for (let i in modules.addresses.favorites) {
+                if (modules.addresses.favorites[i].object == "house" && modules.addresses.favorites[i].id == houseId) {
+                    f = true;
+                    break;
+                }
+            }
+            if (f) {
+                return `<span style='position: absolute; right: 0px;' class='mr-3' onclick='modules.addresses.toggleFavorite("house", ${houseId})'><i class='fas fa-fw fa-bookmark text-primary pointer addressFavoriteIcon' data-object='house' data-object-id='${houseId}'></i></span>`;
+            } else {
+                return `<span style='position: absolute; right: 0px;' class='mr-3' onclick='modules.addresses.toggleFavorite("house", ${houseId})'><i class='far fa-fw fa-bookmark text-primary pointer addressFavoriteIcon' data-object='house' data-object-id='${houseId}'></i></span>`;
+            }
+        }
+
         QUERY("addresses", "addresses", {
             houseId: houseId,
         }).
@@ -1683,7 +1698,13 @@
                         modules.addresses.houses.houseId = houseId;
                         modules.addresses.houses.settlementId = modules.addresses.meta.houses[i].settlementId?modules.addresses.meta.houses[i].settlementId:0;
                         modules.addresses.houses.streetId = modules.addresses.meta.houses[i].streetId?modules.addresses.meta.houses[i].streetId:0;
-                        subTop(modules.addresses.path(modules.addresses.meta.houses[i].settlementId ? "settlement" : "street", modules.addresses.meta.houses[i].settlementId ? modules.addresses.meta.houses[i].settlementId : modules.addresses.meta.houses[i].streetId, true) + "<i class=\"fas fa-xs fa-angle-double-right ml-2 mr-2\"></i>" + modules.addresses.houses.meta.house.houseFull);
+                        subTop(
+                            modules.addresses.path(
+                                modules.addresses.meta.houses[i].settlementId ? "settlement" : "street",
+                                modules.addresses.meta.houses[i].settlementId ? modules.addresses.meta.houses[i].settlementId : modules.addresses.meta.houses[i].streetId,
+                                true
+                            ) + "<i class=\"fas fa-xs fa-angle-double-right ml-2 mr-2\"></i>" + modules.addresses.houses.meta.house.houseFull + favorite()
+                        );
                         f = true;
                     }
                 }
