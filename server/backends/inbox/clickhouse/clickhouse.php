@@ -98,39 +98,60 @@
                     return false;
                 }
 
+                $date_from = (int)$params["dateFrom"];
+                $date_to = (int)$params["dateTo"];
+                $msg_id = (int)$params;
+
                 switch ($by) {
                     case "dates":
-                        $w = "where house_subscriber_id = :id and date <= :date_to and date >= :date_from";
-                        $q = [
-                            "id" => $subscriberId,
-                            "date_from" => $params["dateFrom"],
-                            "date_to" => $params["dateTo"],
-                        ];
+                        $q = "select * from inbox where house_subscriber_id = $subscriberId and date <= $date_to and date >= $date_from";
                         break;
 
                     case "id":
-                        $w = "where house_subscriber_id = :id and msg_id = :msg_id";
-                        $q = [
-                            "id" => $subscriberId,
-                            "msg_id" => $params,
-                        ];
+                        $q = "select * from inbox where house_subscriber_id = $subscriberId and msg_id = $msg_id";
                         break;
                 }
 
-                return $this->db->get("select * from inbox $w", $q, [
-                    "msg_id" => "msgId",
-                    "house_subscriber_id" => "subscriberId",
-                    "id" => "id",
-                    "date" => "date",
-                    "title" => "title",
-                    "msg" => "msg",
-                    "action" => "action",
-                    "expire" => "expire",
-                    "push_message_id" => "pushMessageId",
-                    "delivered" => "delivered",
-                    "readed" => "readed",
-                    "code" => "code",
-                ]);
+                if ($q) {
+                    $oper = $this->db->get($q, false, [
+                        "msg_id" => "msgId",
+                        "house_subscriber_id" => "subscriberId",
+                        "id" => "id",
+                        "date" => "date",
+                        "title" => "title",
+                        "msg" => "msg",
+                        "action" => "action",
+                        "expire" => "expire",
+                        "push_message_id" => "pushMessageId",
+                        "delivered" => "delivered",
+                        "readed" => "readed",
+                        "code" => "code",
+                    ]);
+
+                    $arc = array_map(
+                        function ($item) {
+                            return [
+                                "msgId" => $item["msg_id"],
+                                "subscriberId" => $item["house_subscriber_id"],
+                                "id" => $item["id"],
+                                "date" => $item["date"],
+                                "title" => $item["title"],
+                                "msg" => $item["msg"],
+                                "action" => $item["action"],
+                                "code" => $item["code"],
+                            ];
+                        },
+                        $this->clickhouse->query($q)
+                    );
+
+                    $msgs = array_merge($oper, $arc);
+
+                    ksort($msgs, "date");
+
+                    return $msgs;
+                } else {
+                    return false;
+                }
             }
 
             /**

@@ -22,7 +22,7 @@
     $inbox = loadBackend("inbox");
     $subscriber_id = (int)$subscriber['subscriberId'];
     $msgs = array_map(
-        function($item) {
+        function ($item) {
             return ['msgId' => $item['msgId'], 'date' => $item['date'], 'msg' => $item['msg']];
         },
         $inbox->getMessages($subscriber_id, "dates", ["dateFrom" => 946684800, "dateTo" => 2147483646])
