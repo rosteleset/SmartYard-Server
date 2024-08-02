@@ -160,11 +160,11 @@
                                     nowrap: true,
                                 },
                                 {
-                                    data: ttDate(devices[i].registered, true),
+                                    data: ttDate(devices[i].registered, false),
                                     nowrap: true,
                                 },
                                 {
-                                    data: ttDate(devices[i].lastSeen, true),
+                                    data: ttDate(devices[i].lastSeen, false),
                                     nowrap: true,
                                 }
                             ],
