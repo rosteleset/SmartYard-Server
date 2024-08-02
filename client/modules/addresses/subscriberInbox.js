@@ -90,9 +90,6 @@
                         title: i18n("addresses.messageDate"),
                     },
                     {
-                        title: i18n("addresses.messageMobile"),
-                    },
-                    {
                         title: i18n("addresses.messageTitle"),
                     },
                     {
@@ -115,14 +112,11 @@
                             uid: response.messages[i].msgId,
                             cols: [
                                 {
-                                    data: response.messages[i].msgId,
+                                        data: response.messages[i].msgId,
                                 },
                                 {
                                     data: ttDate(response.messages[i].date, false),
                                     nowrap: true,
-                                },
-                                {
-                                    data: response.messages[i].id,
                                 },
                                 {
                                     data: response.messages[i].title,
