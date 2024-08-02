@@ -118,7 +118,7 @@
                                     data: response.messages[i].msgId,
                                 },
                                 {
-                                    data: ttDate(response.messages[i].date, true),
+                                    data: ttDate(response.messages[i].date, false),
                                 },
                                 {
                                     data: response.messages[i].id,
