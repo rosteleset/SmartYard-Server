@@ -73,10 +73,20 @@
         }
 
         let title = "";
-        for (let i in modules.addresses.meta[object + "s"]) {
-            if (modules.addresses.meta[object + "s"][i][object + "Id"] == id) {
-                title = modules.addresses.meta[object + "s"][i][object + "WithType"];
-                break;
+
+        if (object == "house") {
+            for (let i in modules.addresses.meta[object + "s"]) {
+                if (modules.addresses.meta[object + "s"][i][object + "Id"] == id) {
+                    title = modules.addresses.meta[object + "s"][i][object + "WithType"];
+                    break;
+                }
+            }
+        } else {
+            for (let i in modules.addresses.meta.houses) {
+                if (modules.addresses.meta.houses[i]["houseId"] == id) {
+                    title = modules.addresses.meta.houses[i].houseFull;
+                    break;
+                }
             }
         }
 
