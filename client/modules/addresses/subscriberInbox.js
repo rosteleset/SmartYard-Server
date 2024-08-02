@@ -119,6 +119,7 @@
                                 },
                                 {
                                     data: ttDate(response.messages[i].date, false),
+                                    nowrap: true,
                                 },
                                 {
                                     data: response.messages[i].id,
