@@ -253,7 +253,6 @@
             $module = $m[2];
             $method = $m[3];
             if (file_exists(__DIR__ . "/mobile/{$module}/{$method}.php")) {
-                header("X-Dm-Api-Data-Source: $response_data_source");
                 require_once __DIR__ . "/mobile/{$module}/{$method}.php";
             }
         }
