@@ -4,7 +4,7 @@
         moduleLoaded("addresses.subscriberDevices", this);
     },
 
-    platforms : ["android", "ios", "web"],
+    platforms : [ "Android", "iOS", "Web" ],
 
     doModifyDevice: function (device) {
         loadingStart();
@@ -160,11 +160,11 @@
                                     nowrap: true,
                                 },
                                 {
-                                    data: new Date(devices[i].registered * 1000).toLocaleString(),
+                                    data: ttDate(devices[i].registered, true),
                                     nowrap: true,
                                 },
                                 {
-                                    data: new Date(devices[i].lastSeen * 1000).toLocaleString(),
+                                    data: ttDate(devices[i].lastSeen, true),
                                     nowrap: true,
                                 }
                             ],
