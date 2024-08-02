@@ -146,7 +146,7 @@
 
                     $msgs = array_merge($oper, $arc);
 
-                    ksort($msgs, "date");
+                    usort($msgs, function ($a, $b) { return $a["date"] - $b["date"]; });
 
                     return $msgs;
                 } else {
