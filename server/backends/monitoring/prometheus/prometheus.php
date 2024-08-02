@@ -214,7 +214,7 @@ class prometheus extends monitoring
 
     private function checkServerAvailability($server)
     {
-        $url = $server['url'] . '/-/healthy'; // Используем URL для проверки доступности
+        $url = $server['url'] . '/-/healthy'; // simple URL for check availability service
         $method = 'GET';
         $contentType = 'text/plain';
 
@@ -246,7 +246,6 @@ class prometheus extends monitoring
                 return false;
             }
 
-            // Проверяем код ответа и текст ответа
             if ($httpCode !== 200 || trim($response) !== 'Prometheus Server is Healthy.') {
                 $this->log("Server {$server['url']} returned an unexpected response: " . var_export($response, true));
                 return false;
