@@ -130,7 +130,7 @@
             "servers": [
                 {
                     "title": "Local server",
-                    "type": "nimble or flussonic or  or trassir",
+                    "type": "nimble or flussonic or trassir",
                     "url": "https://video.server.hostname:8443",
                     "token": "<!-- mediaserver security token here (only if you use it) --!>",
                     "hlsMode": "mpegts",
