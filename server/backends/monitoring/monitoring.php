@@ -30,5 +30,5 @@
         /**
          * @return mixed
          */
-        abstract public function configureZbx();
+        abstract public function configureMonitoring();
     }

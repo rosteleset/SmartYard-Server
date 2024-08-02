@@ -66,7 +66,7 @@
                 [--update]
                 [--exit-maintenance-mode]
                 [--init-tt-mobile-template]
-                [--init-zabbix-templates]
+                [--init-monitoring-config]
 
             tests:
                 [--check-mail=<your email address>]
@@ -418,10 +418,10 @@
         exit(0);
     }
 
-    if (count($args) == 1 && array_key_exists("--init-zabbix-templates", $args) && !isset($args["--init-zabbix-templates"])) {
+    if (count($args) == 1 && array_key_exists("--init-monitoring-config", $args) && !isset($args["--init-monitoring-config"])) {
     try {
         $monitoring = loadBackend('monitoring');
-        $monitoring->configureZbx();
+        $monitoring->configureMonitoring();
     } catch (Exception $e) {
         echo $e->getMessage() . "\n\n";
         exit(1);

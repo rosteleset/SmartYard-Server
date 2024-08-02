@@ -66,7 +66,6 @@ class zabbix extends monitoring
     public function deviceStatus($deviceType, $host)
     {
         try {
-
             switch ($deviceType) {
                 case 'domophone':
                 case 'camera':
@@ -95,6 +94,11 @@ class zabbix extends monitoring
         }
     }
 
+    public function configureMonitoring(): void
+    {
+        $this->configureZbx();
+    }
+
     /**
      * Create start configuration on Zabbix server
      * 1 create host group
@@ -106,7 +110,7 @@ class zabbix extends monitoring
      * @return void
      * @throws Exception
      */
-    public function configureZbx(): void
+    private function configureZbx(): void
     {
         $this->createHostGroups($this->hostGroups);
         $this->createTemplateGroups($this->templateGroups);
