@@ -30,9 +30,9 @@
         });
     },
 
-    modifyDevice: function (deviceId,subscriber) {
+    modifyDevice: function (deviceId, subscriber) {
 
-        let device = subscriber.devices.find(i=>i.deviceId == deviceId);
+        let device = subscriber.devices.find( i => i.deviceId == deviceId);
 
         cardForm({
             title: i18n("addresses.device"),
