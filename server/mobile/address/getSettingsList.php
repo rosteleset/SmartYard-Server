@@ -39,7 +39,8 @@
 
     use backends\plog\plog;
 
-    auth(3600);
+    auth();
+
     $households = loadBackend("households");
     $plog = loadBackend("plog");
     $flats = [];
@@ -47,14 +48,14 @@
 
     foreach($subscriber['flats'] as $flat) {
         $f = [];
-        
+
         $f['address'] = $flat['house']['houseFull'].', кв. '.strval($flat['flat']);
         $f['houseId'] = strval($flat['house']['houseId']);
         $f['flatId'] = strval($flat['flatId']);
         $f['flatNumber'] = strval($flat['flat']);
         $is_owner = ((int)$flat['role'] == 0);
         $f['flatOwner'] = $is_owner ? 't' : 'f';
-        
+
         // TODO : сделать временный доступ к воротам. пока он отключен, и в приложении этот раздел просто не будет отображаться.
         $f['hasGates'] = 'f';
 
@@ -73,7 +74,7 @@
 
         // $f['contractName'] = '-';
         // $f['clientId'] = '0';
-        
+
         $subscribers = $households->getSubscribers('flatId',  $f['flatId']);
         $rms = [];
         foreach($subscribers as $s) {
@@ -84,7 +85,7 @@
             $rm['phone'] = $s['mobile'];
             // $rm['phone'][0] = '7';
             $rm['expire'] = '3001-01-01 00:00:00';
-            
+
             foreach ($s['flats'] as $sf) {
                 if ($sf['flatId'] == $flat['flatId']) {
                     $rm['type'] = $sf['role'] == 0 ? 'owner' : 'inner';
@@ -96,7 +97,7 @@
 
         $flats[] = $f;
     }
-    
+
     $result = $flats;
 
     if (count($result)) {
@@ -104,7 +105,7 @@
     } else {
         response();
     }
-    
+
     // TODO: убрать старую реализацию
 
     /*

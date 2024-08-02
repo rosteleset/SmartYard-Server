@@ -20,12 +20,12 @@
  * 424 неверный токен
  */
 
-    auth(15);
+    auth();
 
     $domophone_id = (int)@$postdata['domophoneId'];
     $door_id = (int)@$postdata['doorId'];
     $households = loadBackend("households");
-    
+
     // Check intercom is blocking
     $blocked = true;
     foreach($subscriber['flats'] as $flat) {

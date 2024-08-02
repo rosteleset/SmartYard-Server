@@ -38,16 +38,17 @@
 
     use backends\plog\plog;
 
-    auth(3600);
+    auth();
+
     $households = loadBackend("households");
     $plog = loadBackend("plog");
     $cameras = loadBackend("cameras");
 
     $houses = [];
-    
+
     foreach($subscriber['flats'] as $flat) {
         $houseId = $flat['addressHouseId'];
-        
+
         if (array_key_exists($houseId, $houses)) {
             $house = &$houses[$houseId];
         } else {
@@ -64,7 +65,7 @@
             $house['cameras'] = $households->getCameras("houseId", $houseId);
             $house['doors'] = [];
         }
-        
+
         $house['cameras'] = array_merge($house['cameras'], $households->getCameras("flatId", $flat['flatId']));
 
         $flatDetail = $households->getFlat($flat['flatId']);
@@ -72,7 +73,7 @@
             if (array_key_exists($entrance['entranceId'], $house['doors'])) {
                 continue;
             }
-            
+
             $e = $households->getEntrance($entrance['entranceId']);
             $door = [];
             $door['domophoneId'] = strval($e['domophoneId']);
@@ -84,9 +85,9 @@
                 $cam = $cameras->getCamera($e["cameraId"]);
                 $house['cameras'][] = $cam;
             }
-            
+
             // TODO: проверить обработку блокировки
-            // 
+            //
             if ($flatDetail['autoBlock'] || $flatDetail['adminBlock']) {
                 $door['blocked'] = "Услуга домофонии заблокирована";
             }
@@ -105,15 +106,15 @@
         unset( $houses[$house_key]['cameras']);
     }
     $result = array_values($houses);
-    
+
     if (count($result)) {
         response(200, $result);
     } else {
         response();
     }
-    
+
     // TODO: удалить исходники старой реализации
-    /* 
+    /*
     $ret = [];
 
     $houses = implode(',', all_houses()); // тут-же будет дернут all_cctv и с-но будет получен список камер ($cams)
