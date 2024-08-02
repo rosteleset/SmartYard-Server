@@ -26,9 +26,15 @@
                     modules.addresses.favorites = r.favorites;
                     let h = "";
                     for (let i in r.favorites) {
+                        let url;
+                        if (r.favorites[i].object == "house") {
+                            url = `?#addresses.houses&houseId=${r.favorites[i].id}`;
+                        } else {
+                            url = `?#addresses&show=${r.favorites[i].object}&${r.favorites[i].object}Id=${r.favorites[i].id}`;
+                        }
                         h += `
                             <li class="nav-item" title="${escapeHTML(r.favorites[i].title)}" style="margin-top: 3px;">
-                                <a href="?#addresses&show=${r.favorites[i].object}&${r.favorites[i].object}Id=${r.favorites[i].id}" class="nav-link" onclick="xblur(); return true;">
+                                    <a href="${url}" class="nav-link" onclick="xblur(); return true;">
                                     <i class="nav-icon fa-fw ${r.favorites[i].icon} ${r.favorites[i].color}"></i>
                                     <p class="text-nowrap">${escapeHTML(r.favorites[i].title)}</p>
                                 </a>
