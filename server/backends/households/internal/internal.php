@@ -1341,7 +1341,7 @@
                 }
 
                 $devices = $this->getDevices("subscriber", $subscriberId);
-                
+
 
                 foreach ($devices as $device) {
                     $this->db->modify("delete from houses_flats_devices where subscriber_device_id = :subscriber_device_id and house_flat_id = :house_flat_id", [
@@ -2190,6 +2190,7 @@
                             "device_token" => $query,
                         ];
                         break;
+
                     case "authToken":
                         $q = "select * from houses_subscribers_devices where auth_token = :auth_token";
                         $p = [
