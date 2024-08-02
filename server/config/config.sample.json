@@ -158,7 +158,7 @@
                     "title": "First server",
                     "type": "asterisk",
                     "trunk": "first",
-                    "ip": "<!-- your asterisk server external ip here --!>",
+                    "ip": "<!-- your asterisk server external ip (or domain name) here --!>",
                     "sip_tcp_port": 5060,
                     "sip_udp_port": 5060
                 },
