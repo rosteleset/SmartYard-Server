@@ -141,7 +141,7 @@
                                 "code" => $item["code"],
                             ];
                         },
-                        $this->clickhouse->query($q)
+                        $this->clickhouse->select($q)
                     );
 
                     $msgs = array_merge($oper, $arc);
