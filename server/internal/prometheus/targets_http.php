@@ -17,7 +17,7 @@
             $result[] = [
                 'targets' => [$device['url']],
                 'labels' => [
-                    'job' => 'doorphone_metrics',
+                    'job' => 'blackbox-icmp',
                     'alias' => "http",
                     'name' => $device['name'],
                     'type' => 'domophone'
