@@ -3,10 +3,33 @@
  * Return targets hosts for prometheus custom exporter
  */
     header('Content-Type: application/json; charset=utf-8');
-    if ($config['backends']['monitoring']['backend'] != 'prometheus'){
-        esponse(500, false, false, 'Monitoring backend not configured');
+
+    function checkAuth()
+    {
+        global $config;
+        $expectedToken = $config['backends']['monitoring']['service_discovery_token'];
+
+        if ($expectedToken) {
+            $authHeader = $_SERVER['Authorization'] ?? $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+            if (preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
+                $receivedToken = $matches[1];
+                if ($receivedToken !== $expectedToken) {
+                response(498, null, null, 'Invalid token or empty');
+                exit(1);
+                }
+            } else {
+                response(498, null, null, 'Token not provided');
+                exit(1);
+            }
+        }
+    }
+
+    if ($config['backends']['monitoring']['backend'] !== 'prometheus'){
+        response(500, false, false, 'Monitoring backend not configured');
         exit(1);
     }
+
+    checkAuth();
 
     $households = loadBackend("households");
     $domophones = $households->getDomophones("all");

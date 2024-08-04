@@ -3,6 +3,34 @@
  * Return target host for blackbox prometheus monitoring, checking http
  */
     header('Content-Type: application/json; charset=utf-8');
+
+    function checkAuth()
+    {
+        global $config;
+        $expectedToken = $config['backends']['monitoring']['service_discovery_token'];
+
+        if ($expectedToken) {
+            $authHeader = $_SERVER['Authorization'] ?? $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+            if (preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
+                $receivedToken = $matches[1];
+                if ($receivedToken !== $expectedToken) {
+                    response(498, null, null, 'Invalid token or empty');
+                    exit(1);
+                }
+            } else {
+                response(498, null, null, 'Token not provided');
+                exit(1);
+            }
+        }
+    }
+
+    if ($config['backends']['monitoring']['backend'] !== 'prometheus'){
+        response(500, false, false, 'Monitoring backend not configured');
+        exit(1);
+    }
+
+    checkAuth();
+
     $households = loadBackend("households");
     if ($config['backends']['monitoring']['backend'] !== 'prometheus'){
         response(500, false, false, 'Monitoring backend not configured');

@@ -195,22 +195,9 @@ class prometheus extends monitoring
         }
     }
 
-    public function configureMonitoring()
-    {
-        $this->log("method not implemented");
-        $server = $this->getServer();
-        $this->log(var_export($server, true));
-        $this->log("Start check server");
-        $this->checkServerAvailability($server);
+    private function processDvrStreams(){}
 
-        // TODO: Implement configureZbx() method.
-    }
-
-    private function getServer()
-    {
-        $randomIndex = array_rand($this->servers);
-        return $this->servers[$randomIndex];
-    }
+    public function configureMonitoring() {}
 
     private function checkServerAvailability($server)
     {
