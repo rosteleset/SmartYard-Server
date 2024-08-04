@@ -1227,7 +1227,7 @@
             /**
              * @inheritDoc
              */
-            public function addSubscriber($mobile, $name, $patronymic, $last = '', $flatId = false, $message = false)
+            public function addSubscriber($mobile, $name = '', $patronymic = '', $last = '', $flatId = false, $message = false)
             {
                 if (
                     !checkStr($mobile, [ "minLength" => 6, "maxLength" => 32, "validChars" => [ '+', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' ] ]) ||
@@ -1239,6 +1239,8 @@
                     return false;
                 }
 
+                $full = trim(preg_replace('/\s+/', ' ', $last + ' ' + $name + ' ' + $patronymic));
+
                 $subscriberId = $this->db->get("select house_subscriber_id from houses_subscribers_mobile where id = :mobile", [
                     "mobile" => $mobile,
                 ], [
@@ -1248,11 +1250,12 @@
                 ]);
 
                 if (!$subscriberId) {
-                    $subscriberId = $this->db->insert("insert into houses_subscribers_mobile (id, subscriber_name, subscriber_patronymic, subscriber_last, registered) values (:mobile, :subscriber_name, :subscriber_patronymic, :subscriber_last, :registered)", [
+                    $subscriberId = $this->db->insert("insert into houses_subscribers_mobile (id, subscriber_name, subscriber_patronymic, subscriber_last, subscriber_full, registered) values (:mobile, :subscriber_name, :subscriber_patronymic, :subscriber_last, :subscriber_full, :registered)", [
                         "mobile" => $mobile,
                         "subscriber_name" => $name,
                         "subscriber_patronymic" => $patronymic,
                         "subscriber_last" => $last,
+                        "subscriber_full" => $full,
                         "registered" => time(),
                     ]);
                 } else {
@@ -1264,7 +1267,6 @@
                 }
 
                 if ($subscriberId && $flatId) {
-
                     if (!checkInt($flatId)) {
                         setLastError("invalidFlat");
                         return false;
@@ -1381,11 +1383,15 @@
                     }
                 }
 
+                $full = '';
+
                 if (@$params["subscriberName"] || @$params["forceNames"]) {
                     if (!checkStr($params["subscriberName"], [ "maxLength" => 32 ])) {
                         setLastError("invalidParams");
                         return false;
                     }
+
+                    $full = trim(preg_replace('/\s+/', ' ', $params["subscriberLame"] + ' ' + $params["subscriberName"] + ' ' + $params["subscriberPatronymic"]));
 
                     if ($this->db->modify("update houses_subscribers_mobile set subscriber_name = :subscriber_name where house_subscriber_id = $subscriberId", [ "subscriber_name" => $params["subscriberName"] ]) === false) {
                         return false;
@@ -1398,6 +1404,8 @@
                         return false;
                     }
 
+                    $full = trim(preg_replace('/\s+/', ' ', $params["subscriberLame"] + ' ' + $params["subscriberName"] + ' ' + $params["subscriberPatronymic"]));
+
                     if ($this->db->modify("update houses_subscribers_mobile set subscriber_patronymic = :subscriber_patronymic where house_subscriber_id = $subscriberId", [ "subscriber_patronymic" => $params["subscriberPatronymic"] ]) === false) {
                         return false;
                     }
@@ -1409,7 +1417,15 @@
                         return false;
                     }
 
+                    $full = trim(preg_replace('/\s+/', ' ', $params["subscriberLame"] + ' ' + $params["subscriberName"] + ' ' + $params["subscriberPatronymic"]));
+
                     if ($this->db->modify("update houses_subscribers_mobile set subscriber_last = :subscriber_last where house_subscriber_id = $subscriberId", [ "subscriber_last" => $params["subscriberLast"] ]) === false) {
+                        return false;
+                    }
+                }
+
+                if ($full) {
+                    if ($this->db->modify("update houses_subscribers_mobile set subscriber_full = :subscriber_full where house_subscriber_id = $subscriberId", [ "subscriber_full" => $full ]) === false) {
                         return false;
                     }
                 }

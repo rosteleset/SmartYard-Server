@@ -52,7 +52,7 @@ if ($result || $user_phone == "79123456781" || $user_phone == "79123456782") {
         $devices = $households->getDevices("subscriber", $subscriber_id);
     } else {
         // Пользователь не найден - создаём
-        $subscriber_id = $households->addSubscriber($user_phone, "", "", "");
+        $subscriber_id = $households->addSubscriber($user_phone);
     }
 
     // no longer such a temporary solution
