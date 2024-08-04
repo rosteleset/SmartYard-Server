@@ -1,6 +1,4 @@
 ALTER TABLE cameras ADD COLUMN comments character varying;
---UPDATE cameras set comments = comment;
---ALTER TABLE cameras DROP COLUMN comment;
 
 ALTER TABLE houses_domophones ADD COLUMN comments character varying;
 UPDATE houses_domophones set comments = comment;
