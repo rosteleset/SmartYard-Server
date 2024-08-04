@@ -2433,5 +2433,13 @@
 
                 return $r;
             }
+
+            /**
+             * @inheritDoc
+             */
+            public function searchSubscriber($search)
+            {
+
+            }
         }
     }

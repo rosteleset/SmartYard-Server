@@ -305,5 +305,12 @@
              * @return mixed
              */
             abstract function deleteFavorite($object, $id, $all = false);
+
+            /**
+             * @param string search
+             *
+             * @return mixed
+             */
+            abstract function searchHouse($search);
         }
     }

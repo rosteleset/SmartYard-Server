@@ -1155,5 +1155,13 @@
                     ]);
                 }
             }
+
+            /**
+             * @inheritDoc
+             */
+            public function searchHouse($search)
+            {
+
+            }
         }
     }

@@ -368,5 +368,12 @@
              * @return boolean
              */
             abstract public function setDeviceFlat($deviceId, $flat, $voipEnabled);
+
+            /**
+             * @param string search
+             *
+             * @return mixed
+             */
+            abstract function searchSubscriber($search);
         }
     }
