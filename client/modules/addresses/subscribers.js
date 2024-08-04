@@ -730,7 +730,7 @@
     route: function (params) {
         modules.addresses.topMenu();
 
-        if (params.flat) {
+        if (params.flat && params.houseId && params.flatId) {
             loadingStart();
 
             modules.addresses.houses.loadHouse(params.houseId, () => {
@@ -763,6 +763,8 @@
                     always(loadingDone);
                 });
             });
+        } else {
+            pageError();
         }
     }
 }).init();
