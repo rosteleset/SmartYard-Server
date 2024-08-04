@@ -1239,7 +1239,7 @@
                     return false;
                 }
 
-                $full = trim(preg_replace('/\s+/', ' ', $last + ' ' + $name + ' ' + $patronymic));
+                $full = trim(preg_replace('/\s+/', ' ', ($last ?? '') . ' ' . ($name ?? '') . ' ' . ($patronymic ?? '')));
 
                 $subscriberId = $this->db->get("select house_subscriber_id from houses_subscribers_mobile where id = :mobile", [
                     "mobile" => $mobile,
@@ -1391,7 +1391,7 @@
                         return false;
                     }
 
-                    $full = trim(preg_replace('/\s+/', ' ', $params["subscriberLame"] + ' ' + $params["subscriberName"] + ' ' + $params["subscriberPatronymic"]));
+                    $full = trim(preg_replace('/\s+/', ' ', ($params["subscriberLast"] ?? '') . ' ' . ($params["subscriberName"] ?? '') . ' ' . ($params["subscriberPatronymic"] ?? '')));
 
                     if ($this->db->modify("update houses_subscribers_mobile set subscriber_name = :subscriber_name where house_subscriber_id = $subscriberId", [ "subscriber_name" => $params["subscriberName"] ]) === false) {
                         return false;
@@ -1404,7 +1404,7 @@
                         return false;
                     }
 
-                    $full = trim(preg_replace('/\s+/', ' ', $params["subscriberLame"] + ' ' + $params["subscriberName"] + ' ' + $params["subscriberPatronymic"]));
+                    $full = trim(preg_replace('/\s+/', ' ', ($params["subscriberLast"] ?? '') . ' ' . ($params["subscriberName"] ?? '') . ' ' . ($params["subscriberPatronymic"] ?? '')));
 
                     if ($this->db->modify("update houses_subscribers_mobile set subscriber_patronymic = :subscriber_patronymic where house_subscriber_id = $subscriberId", [ "subscriber_patronymic" => $params["subscriberPatronymic"] ]) === false) {
                         return false;
@@ -1417,7 +1417,7 @@
                         return false;
                     }
 
-                    $full = trim(preg_replace('/\s+/', ' ', $params["subscriberLame"] + ' ' + $params["subscriberName"] + ' ' + $params["subscriberPatronymic"]));
+                    $full = trim(preg_replace('/\s+/', ' ', ($params["subscriberLast"] ?? '') . ' ' . ($params["subscriberName"] ?? '') . ' ' . ($params["subscriberPatronymic"] ?? '')));
 
                     if ($this->db->modify("update houses_subscribers_mobile set subscriber_last = :subscriber_last where house_subscriber_id = $subscriberId", [ "subscriber_last" => $params["subscriberLast"] ]) === false) {
                         return false;
