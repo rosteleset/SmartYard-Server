@@ -1179,7 +1179,7 @@
                                 break;
 
                             default:
-                                $query = "select * from (select *, ts_rank_cd(to_tsvector('russian', house_full), to_tsquery(:search)) as similarity from addresses_houseswhere) as t1 where similarity > 0 order by similarity desc limit 1001";
+                                $query = "select * from (select *, ts_rank_cd(to_tsvector('russian', house_full), to_tsquery(:search)) as similarity from addresses_houses) as t1 where similarity > 0 order by similarity desc limit 1001";
                                 break;
                         }
                         break;
