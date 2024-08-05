@@ -1170,6 +1170,7 @@
             public function searchHouse($search)
             {
                 $search = trim(preg_replace('/\s+/', ' ', $search));
+                $text_search_config = $this->config["db"]["text_search_config"] ?? "simple";
 
                 switch ($this->db->parseDsn()["protocol"]) {
                     case "pgsql":
@@ -1180,7 +1181,7 @@
 
                             default:
                                 $search = str_replace(" ", " & ", $search);
-                                $query = "select * from (select *, ts_rank_cd(to_tsvector('russian', house_full), to_tsquery(:search)) as similarity from addresses_houses) as t1 where similarity > 0 order by similarity desc limit 1001";
+                                $query = "select * from (select *, ts_rank_cd(to_tsvector('$text_search_config', house_full), to_tsquery(:search)) as similarity from addresses_houses) as t1 where to_tsvector('$text_search_config', house_full) @@ to_tsquery('$text_search_config', :search) order by similarity desc limit 1001";
                                 break;
                         }
                         break;
