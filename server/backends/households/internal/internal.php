@@ -2439,7 +2439,7 @@
              */
             public function searchSubscriber($search)
             {
-
+                return [];
             }
         }
     }

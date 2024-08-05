@@ -311,6 +311,13 @@
              *
              * @return mixed
              */
+            abstract function searchAddress($search);
+
+            /**
+             * @param string search
+             *
+             * @return mixed
+             */
             abstract function searchHouse($search);
         }
     }

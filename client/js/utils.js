@@ -347,6 +347,19 @@ function object2array(obj) {
     return arr;
 }
 
+function pathToObject(parent, path) {
+    let result = parent;
+
+    path = path.split(".");
+
+    while (path.length) {
+        let k = path.shift();
+        result = result[k];
+    }
+
+    return result;
+}
+
 Object.defineProperty(Array.prototype, "assoc", {
     value: function (key, target, val) {
         let arr = this;

@@ -1159,9 +1159,17 @@
             /**
              * @inheritDoc
              */
+            public function searchAddress($search)
+            {
+                return [];
+            }
+
+            /**
+             * @inheritDoc
+             */
             public function searchHouse($search)
             {
-
+                return [];
             }
         }
     }

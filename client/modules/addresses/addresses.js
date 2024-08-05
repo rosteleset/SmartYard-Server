@@ -1,21 +1,23 @@
 ({
     menuItem: false,
     favorites: [],
+    subModules: [
+        "keys",
+        "houses",
+        "domophones",
+        "cameras",
+        "subscribers",
+        "subscriberInbox",
+        "subscriberDevices",
+        "_search",
+    ],
 
     init: function () {
         if (AVAIL("addresses", "region", "PUT")) {
             this.menuItem = leftSide("fas fa-fw fa-globe-americas", i18n("addresses.addresses"), "?#addresses", "households");
         }
 
-        loadSubModules("addresses", [
-            "keys",
-            "houses",
-            "domophones",
-            "cameras",
-            "subscribers", // and keys
-            "subscriberInbox",
-            "subscriberDevices"
-        ], this);
+        loadSubModules("addresses", JSON.parse(JSON.stringify(this.subModules)), this);
     },
 
     allLoaded: function () {
@@ -59,6 +61,14 @@
             }).
             fail(FAIL);
         }
+
+        for (let i in modules.addresses.subModules) {
+            if (modules.addresses.subModules[i] != "_search") {
+                modules.addresses[modules.addresses.subModules[i]].search = modules.addresses._search.search;
+            }
+        }
+
+        modules.addresses.search = modules.addresses._search.search;
     },
 
     moduleLoaded: function () {
@@ -2538,10 +2548,5 @@
                 page404();
                 break;
         }
-    },
-
-    // if search function is defined, search string will be displayed
-    search: function (str) {
-        console.log("addresses: " + str);
     },
 }).init();

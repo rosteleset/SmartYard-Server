@@ -479,17 +479,17 @@ function initAll() {
 
     $("#searchInput").attr("placeholder", i18n("search")).off("keypress").on("keypress", e => {
         if (e.charCode === 13) {
-            modules[currentPage].search($("#searchInput").val());
+            pathToObject(modules, currentPage).search($("#searchInput").val());
             e.preventDefault();
         }
     });
 
-    $("#inputTextLine").off("keypress").on("keypress", event => {
-        if (event.keyCode === 13) $('#inputTextButton').click();
+    $("#searchButton").off("click").on("click", () => {
+        pathToObject(modules, currentPage).search($("#searchInput").val());
     });
 
-    $("#searchButton").off("click").on("click", () => {
-        modules[currentPage].search($("#searchInput").val());
+    $("#inputTextLine").off("keypress").on("keypress", event => {
+        if (event.keyCode === 13) $('#inputTextButton').click();
     });
 
     if (lStoreEngine && lStoreEngine !== "cookie") {
