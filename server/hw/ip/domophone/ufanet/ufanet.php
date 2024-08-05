@@ -250,7 +250,12 @@ abstract class ufanet extends domophone
         string $codeCms = '1'
     )
     {
-        // Empty implementation
+        $this->apiCall('/api/v1/configuration', 'PATCH', [
+            'door' => [
+                'dtmf_open_local' => [$code1, $code2],
+                'dtmf_open_remote' => $codeCms,
+            ],
+        ]);
     }
 
     public function setLanguage(string $language = 'ru')
@@ -312,7 +317,6 @@ abstract class ufanet extends domophone
             $dbConfig['cmsModel'] = $cmsType;
         }
 
-        $dbConfig['dtmf']['code1'] = '#';
         $dbConfig['cmsLevels'] = [];
 
         $dbConfig['sip']['stunEnabled'] = false;
@@ -393,11 +397,16 @@ abstract class ufanet extends domophone
 
     protected function getDtmfConfig(): array
     {
+        $doorConfig = $this->apiCall('/api/v1/configuration')['door'];
+
+        $dtmfLocal = $doorConfig['dtmf_open_local'] ?? ['1', '2'];
+        $dtmfRemote = $doorConfig['dtmf_open_remote'] ?? '1';
+
         return [
-            'code1' => '#',
-            'code2' => '2',
+            'code1' => $dtmfLocal[0] ?? '1',
+            'code2' => $dtmfLocal[1] ?? '2',
             'code3' => '3',
-            'codeCms' => '1',
+            'codeCms' => $dtmfRemote,
         ];
     }
 
