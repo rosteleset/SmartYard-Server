@@ -1201,7 +1201,15 @@
                         break;
 
                     case "sqlite";
-                        $query = "select *, 1 as similarity from addresses_houses where house_full ilike concat('%', :search, '%') limit 1001";
+                        $tokens = explode(" ", $search);
+                        $query = [];
+                        $params = [];
+                        for ($i = 0; $i < count($tokens); $i++) {
+                            $query[] = "(house_full ilike concat('%', :s$i, '%'))";
+                            $params["s$i"] = $tokens[$i];
+                        }
+                        $query = implode(" and ", $query);
+                        $query = "select *, 1 as similarity from addresses_houses where $query limit 1001";
                         break;
 
                     default:
