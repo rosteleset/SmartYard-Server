@@ -35,6 +35,7 @@
     require_once "utils/response.php";
     require_once "utils/generate_password.php";
     require_once "utils/apache_request_headers.php";
+    require_once "utils/mb_levenshtein.php";
 
     require_once "backends/backend.php";
 

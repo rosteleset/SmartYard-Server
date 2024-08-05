@@ -12,6 +12,7 @@
     require_once "utils/purifier.php";
     require_once "utils/i18n.php";
     require_once "utils/apache_request_headers.php";
+    require_once "utils/mb_levenshtein.php";
 
     // load configuration
     try {

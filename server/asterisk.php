@@ -13,6 +13,7 @@
     require_once "utils/debug.php";
     require_once "utils/i18n.php";
     require_once "utils/apache_request_headers.php";
+    require_once "utils/mb_levenshtein.php";
 
     require_once "backends/backend.php";
 

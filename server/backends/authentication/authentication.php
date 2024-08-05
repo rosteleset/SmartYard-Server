@@ -212,6 +212,7 @@
 
             public function totp($otp) {
 /*
+https://github.com/PHPGangsta/GoogleAuthenticator/blob/master/PHPGangsta/GoogleAuthenticator.php
 require_once 'GoogleAuthenticator.php';
 
 $ga = new PHPGangsta_GoogleAuthenticator();
