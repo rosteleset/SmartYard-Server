@@ -1169,9 +1169,19 @@
              */
             public function searchHouse($search)
             {
+                $search = trim(preg_replace('/\s+/', ' ', $search));
+
                 switch ($this->db->parseDsn()["protocol"]) {
                     case "pgsql":
-                        $query = "select * from (select *, similarity(house_full, :search) from addresses_houses where house_full % :search) as t1 order by similarity desc limit 1001";
+                        switch (@$this->config["backends"]["addresses"]["text_search_mode"]) {
+                            case "trgm":
+                                $query = "select * from (select *, similarity(house_full, :search) from addresses_houses where house_full % :search) as t1 order by similarity desc limit 1001";
+                                break;
+
+                            default:
+                                $query = "select * from (select *, ts_rank_cd(to_tsvector('russian', house_full), to_tsquery(:search)) as similarity from addresses_houseswhere) as t1 where similarity > 0 order by similarity desc limit 1001";
+                                break;
+                        }
                         break;
 
                     case "sqlite";

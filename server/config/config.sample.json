@@ -79,7 +79,8 @@
         },
 
         "addresses": {
-            "backend": "internal"
+            "backend": "internal",
+            "text_search_mode": "fts"
         },
 
         "households": {
