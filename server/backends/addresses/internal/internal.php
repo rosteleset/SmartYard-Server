@@ -1181,6 +1181,11 @@
                                 break;
 
                             case "fts":
+                                $query = "select * from (select *, ts_rank_cd(to_tsvector('$text_search_config', house_full), to_tsquery(:search)) as similarity from addresses_houses) as t1 where to_tsvector('$text_search_config', house_full) @@ to_tsquery('$text_search_config', :search) order by similarity desc limit 1001";
+                                $params = [ "search" => $search ];
+                                break;
+
+                            case "ftsa":
                                 $search = str_replace(" ", " & ", $search);
                                 $query = "select * from (select *, ts_rank_cd(to_tsvector('$text_search_config', house_full), to_tsquery(:search)) as similarity from addresses_houses) as t1 where to_tsvector('$text_search_config', house_full) @@ to_tsquery('$text_search_config', :search) order by similarity desc limit 1001";
                                 $params = [ "search" => $search ];
