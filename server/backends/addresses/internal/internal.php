@@ -1171,11 +1171,11 @@
             {
                 switch ($this->db->parseDsn()["protocol"]) {
                     case "pgsql":
-                        $query = "select * from (select *, similarity(:s1) from addresses_houses where house_full % :s2) as t1 order by similarity desc limit 1001";
+                        $query = "select * from (select *, similarity(house_full, :search) from addresses_houses where house_full % :search) as t1 order by similarity desc limit 1001";
                         break;
 
                     case "sqlite";
-                        $query = "select *, 1 as similarity from addresses_houses limit 1001";
+                        $query = "select *, 1 as similarity from addresses_houses where house_full ilike concat('%', :search, '%') limit 1001";
                         break;
 
                     default:
@@ -1183,8 +1183,7 @@
                 }
 
                 return $this->db->get($query, [
-                    "s1" => $search,
-                    "s2" => $search,
+                    "search" => $search,
                 ], [
                     "address_house_id" => "houseId",
                     "address_settlement_id" => "settlementId",
