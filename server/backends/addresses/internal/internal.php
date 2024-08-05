@@ -1182,7 +1182,9 @@
                         return false;
                 }
 
-                return $this->db->get($query, false, [
+                return $this->db->get($query, [
+                    "search" => $search,
+                ], [
                     "address_house_id" => "houseId",
                     "address_settlement_id" => "settlementId",
                     "address_street_id" => "streetId",
