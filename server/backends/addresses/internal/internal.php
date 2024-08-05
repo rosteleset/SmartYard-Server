@@ -1180,6 +1180,7 @@
 
                             default:
                                 $search = str_replace(" ", " & ", $search);
+                                error_log("\n\n$search\n\n");
                                 $query = "select * from (select *, ts_rank_cd(to_tsvector('russian', house_full), to_tsquery(:search)) as similarity from addresses_houses) as t1 where similarity > 0 order by similarity desc limit 1001";
                                 break;
                         }
