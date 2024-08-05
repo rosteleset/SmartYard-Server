@@ -1195,7 +1195,7 @@
                                     $params["s$i"] = $tokens[$i];
                                 }
                                 $query = implode(" and ", $query);
-                                $query = "select * from (select *, levenshtein(house_full, :search) as similarity from addresses_houses where $query limit 1001) order by similarity asc";
+                                $query = "select * from (select *, levenshtein(house_full, :search) as similarity from addresses_houses where $query limit 1001) as t1 order by similarity asc";
                                 $params["search"] = $search;
                                 break;
                         }
@@ -1210,7 +1210,7 @@
                             $params["s$i"] = mb_strtoupper($tokens[$i]);
                         }
                         $query = implode(" and ", $query);
-                        $query = "select * from (select *, mb_levenshtein(house_full, :search) as similarity from addresses_houses where $query limit 1001) order by similarity asc";
+                        $query = "select * from (select *, mb_levenshtein(house_full, :search) as similarity from addresses_houses where $query limit 1001) as t1 order by similarity asc";
                         $params["search"] = $search;
                         break;
 
