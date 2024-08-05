@@ -147,6 +147,7 @@
         "v44_tt.sql"
     ],
     "45": [
-        "v45_search.sql"
+        "v45_search.sql",
+        "v45_search.php"
     ]
 }
