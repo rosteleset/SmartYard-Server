@@ -1177,11 +1177,25 @@
                         switch (@$this->config["backends"]["addresses"]["text_search_mode"]) {
                             case "trgm":
                                 $query = "select * from (select *, similarity(house_full, :search) from addresses_houses where house_full % :search) as t1 order by similarity desc limit 1001";
+                                $params = [ "search" => $search ];
+                                break;
+
+                            case "fts":
+                                $search = str_replace(" ", " & ", $search);
+                                $query = "select * from (select *, ts_rank_cd(to_tsvector('$text_search_config', house_full), to_tsquery(:search)) as similarity from addresses_houses) as t1 where to_tsvector('$text_search_config', house_full) @@ to_tsquery('$text_search_config', :search) order by similarity desc limit 1001";
+                                $params = [ "search" => $search ];
                                 break;
 
                             default:
-                                $search = str_replace(" ", " & ", $search);
-                                $query = "select * from (select *, ts_rank_cd(to_tsvector('$text_search_config', house_full), to_tsquery(:search)) as similarity from addresses_houses) as t1 where to_tsvector('$text_search_config', house_full) @@ to_tsquery('$text_search_config', :search) order by similarity desc limit 1001";
+                                $tokens = explode(" ", $search);
+                                $query = [];
+                                $params = [];
+                                for ($i = 0; $i < count($tokens); $i++) {
+                                    $query[] = "(house_full ilike '%' || :s$i || '%')";
+                                    $params["s$i"] = $tokens[$i];
+                                }
+                                $query = implode(" and ", $query);
+                                $query = "select *, 1 as similarity from addresses_houses where $query limit 1001";
                                 break;
                         }
                         break;
@@ -1194,9 +1208,7 @@
                         return false;
                 }
 
-                return $this->db->get($query, [
-                    "search" => $search,
-                ], [
+                return $this->db->get($query, $params, [
                     "address_house_id" => "houseId",
                     "address_settlement_id" => "settlementId",
                     "address_street_id" => "streetId",
