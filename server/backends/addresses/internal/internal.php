@@ -1169,7 +1169,31 @@
              */
             public function searchHouse($search)
             {
-                return [];
+                switch ($this->db->parseDsn()["protocol"]) {
+                    case "pgsql":
+                        $query = "select * from (select *, similarity(:search) from addresses_houses where house_full % :search) as t1 order by similarity desc limit 1001";
+                        break;
+
+                    case "sqlite";
+                        $query = "select *, 1 as similarity from addresses_houses limit 1001";
+                        break;
+
+                    default:
+                        return false;
+                }
+
+                return $this->db->get($query, false, [
+                    "address_house_id" => "houseId",
+                    "address_settlement_id" => "settlementId",
+                    "address_street_id" => "streetId",
+                    "house_uuid" => "houseUuid",
+                    "house_type" => "houseType",
+                    "house_type_full" => "houseTypeFull",
+                    "house_full" => "houseFull",
+                    "house" => "house",
+                    "company_id" => "companyId",
+                    "similarity" => "similarity",
+                ]);
             }
         }
     }
