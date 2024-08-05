@@ -1171,7 +1171,7 @@
             {
                 switch ($this->db->parseDsn()["protocol"]) {
                     case "pgsql":
-                        $query = "select * from (select *, similarity(:search) from addresses_houses where house_full % :search) as t1 order by similarity desc limit 1001";
+                        $query = "select * from (select *, similarity(:search::character varying) from addresses_houses where house_full % :search) as t1 order by similarity desc limit 1001";
                         break;
 
                     case "sqlite";
