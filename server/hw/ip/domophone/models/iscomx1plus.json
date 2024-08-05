@@ -4,7 +4,7 @@
     "model": "ISCOM X1 rev.5",
     "class": "iscomx1plus",
     "eventServer": "is",
-    "outputs": 1,
+    "outputs": 2,
     "camera": "is",
     "useSmartConfigurator": true,
     "cmses": [
