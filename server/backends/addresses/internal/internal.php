@@ -1176,18 +1176,18 @@
                     case "pgsql":
                         switch (@$this->config["backends"]["addresses"]["text_search_mode"]) {
                             case "trgm":
-                                $query = "select * from (select *, similarity(house_full, :search) from addresses_houses where house_full % :search) as t1 order by similarity desc limit 1001";
+                                $query = "select * from (select *, similarity(house_full, :search) from addresses_houses where house_full % :search) as t1 order by similarity desc limit 51";
                                 $params = [ "search" => $search ];
                                 break;
 
                             case "fts":
-                                $query = "select * from (select *, ts_rank_cd(to_tsvector('$text_search_config', house_full), to_tsquery(:search)) as similarity from addresses_houses) as t1 where to_tsvector('$text_search_config', house_full) @@ to_tsquery('$text_search_config', :search) order by similarity desc limit 1001";
+                                $query = "select * from (select *, ts_rank_cd(to_tsvector('$text_search_config', house_full), to_tsquery(:search)) as similarity from addresses_houses) as t1 where to_tsvector('$text_search_config', house_full) @@ to_tsquery('$text_search_config', :search) order by similarity desc limit 51";
                                 $params = [ "search" => $search ];
                                 break;
 
                             case "ftsa":
                                 $search = str_replace(" ", " & ", $search);
-                                $query = "select * from (select *, ts_rank_cd(to_tsvector('$text_search_config', house_full), to_tsquery(:search)) as similarity from addresses_houses) as t1 where to_tsvector('$text_search_config', house_full) @@ to_tsquery('$text_search_config', :search) order by similarity desc limit 1001";
+                                $query = "select * from (select *, ts_rank_cd(to_tsvector('$text_search_config', house_full), to_tsquery(:search)) as similarity from addresses_houses) as t1 where to_tsvector('$text_search_config', house_full) @@ to_tsquery('$text_search_config', :search) order by similarity desc limit 51";
                                 $params = [ "search" => $search ];
                                 break;
 
@@ -1200,7 +1200,7 @@
                                     $params["s$i"] = $tokens[$i];
                                 }
                                 $query = implode(" and ", $query);
-                                $query = "select * from (select *, levenshtein(house_full, :search) as similarity from addresses_houses where $query limit 1001) as t1 order by similarity asc";
+                                $query = "select * from (select *, levenshtein(house_full, :search) as similarity from addresses_houses where $query limit 51) as t1 order by similarity asc";
                                 $params["search"] = $search;
                                 break;
                         }
@@ -1215,7 +1215,7 @@
                             $params["s$i"] = mb_strtoupper($tokens[$i]);
                         }
                         $query = implode(" and ", $query);
-                        $query = "select * from (select *, mb_levenshtein(house_full, :search) as similarity from addresses_houses where $query limit 1001) as t1 order by similarity asc";
+                        $query = "select * from (select *, mb_levenshtein(house_full, :search) as similarity from addresses_houses where $query limit 51) as t1 order by similarity asc";
                         $params["search"] = $search;
                         break;
 
