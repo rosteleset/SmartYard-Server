@@ -220,8 +220,7 @@ $ga = new PHPGangsta_GoogleAuthenticator();
 $secret = 'JIGEIIFBJFF4BCZB';
 echo "Secret is: ".$secret."\n\n";
 
-parse_str(parse_url($ga->getQRCodeGoogleUrl('SmartYard', $secret, 'RBT'), PHP_URL_QUERY), $qrCodeText);
-echo "QR-Code: ".$qrCodeText['data']."\n\n";
+echo "QR-Code text: " . $ga->getQRCodeText('SmartYard', $secret, 'RBT')
 
 $oneCode = $ga->getCode($secret);
 echo "Checking Code '$oneCode' and Secret '$secret':\n";
