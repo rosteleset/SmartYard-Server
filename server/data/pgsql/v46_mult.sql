@@ -1,0 +1,1 @@
+CREATE INDEX IF NOT EXISTS houses_subscribers_devices_device_token ON houses_subscribers_devices (device_token);

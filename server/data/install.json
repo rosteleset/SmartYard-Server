@@ -149,5 +149,8 @@
     "45": [
         "v45_search.sql",
         "v45_search.php"
+    ],
+    "46": [
+        "v46_mult.sql"
     ]
 }
