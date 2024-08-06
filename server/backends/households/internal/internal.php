@@ -2021,6 +2021,8 @@
                 $n += $this->db->modify("delete from houses_entrances where house_entrance_id not in (select house_entrance_id from houses_houses_entrances)");
 
                 $n += $this->db->modify("delete from houses_subscribers_devices where house_subscriber_id not in (select house_subscriber_id from houses_subscribers_mobile)");
+                $n += $this->db->modify("delete from houses_flats_devices where house_flat_id not in (select house_flat_id from houses_flats)");
+                $n += $this->db->modify("delete from houses_flats_devices where subscriber_device_id not in (select subscriber_device_id from houses_subscribers_devices)");
 
                 return $n;
             }
