@@ -126,7 +126,7 @@ class API {
      * @param {"rfid"|"code"|"dtmf"|"button"} by event type
      */
     async openDoor({ date, ip = null, subId = null, door = 0, detail, by }) {
-        const payload = { date, ip, subId, door, event: null, detail };
+        const payload = { date, detail, subId, door, event: null, ip };
 
         try {
             switch (by) {
