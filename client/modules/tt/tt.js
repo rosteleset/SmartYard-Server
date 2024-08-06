@@ -51,7 +51,7 @@
                         h += `
                             <li class="nav-item" title="${escapeHTML(title)}" style="margin-top: 3px;">
                                 <a href="?#tt&filter=${modules.tt.meta.favoriteFilters[i].filter}" class="nav-link" onclick="xblur(); return true;">
-                                    <i class="nav-icon fa fa-fw ${modules.tt.meta.favoriteFilters[i].icon} ${modules.tt.meta.favoriteFilters[i].color}"></i>
+                                    <i class="nav-icon fa-fw ${modules.tt.meta.favoriteFilters[i].icon} ${modules.tt.meta.favoriteFilters[i].color}"></i>
                                     <p class="text-nowrap">${title}</p>
                                 </a>
                             </li>
