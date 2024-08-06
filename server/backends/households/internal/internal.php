@@ -1684,9 +1684,9 @@
             public function dismissToken($token)
             {
                 return
-                    $this->db->modify("update houses_subscribers_mobile set push_token = null where push_token = :push_token", [ "push_token" => $token ])
+                    $this->db->modify("update houses_subscribers_devices set push_token = null where push_token = :push_token", [ "push_token" => $token ])
                     or
-                    $this->db->modify("update houses_subscribers_mobile set voip_token = null where voip_token = :voip_token", [ "voip_token" => $token ]);
+                    $this->db->modify("update houses_subscribers_devices set voip_token = null where voip_token = :voip_token", [ "voip_token" => $token ]);
             }
 
             /**

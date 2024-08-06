@@ -23,7 +23,7 @@
                     $messages = $inbox->getMessages($params["_id"], "dates", [ "dateFrom" => 0, "dateTo" => time() + 1 ]);
                 }
 
-                return api::ANSWER($messages, ($messages !== false)?"messages":"notAcceptable");
+                return api::ANSWER($messages, ($messages !== false) ? "messages" : "notAcceptable");
             }
 
             public static function POST($params) {
@@ -31,7 +31,7 @@
 
                 $msgId = $inbox->sendMessage($params["_id"], $params["title"], $params["body"], $params["action"]);
 
-                return api::ANSWER($msgId, ($msgId !== false)?"$msgId":"");
+                return api::ANSWER($msgId, ($msgId !== false) ? "$msgId" : "");
             }
 
             public static function index() {

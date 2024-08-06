@@ -22,8 +22,8 @@
      * @apiSuccess {String} names.last фамилия
      * @apiSuccess {String} names.name имя
      * @apiSuccess {String} names.patronymic отчество
-
     */
+
     $user_phone = @$postdata['userPhone'];
 
     if ($user_phone[0] == '8') {
@@ -63,18 +63,16 @@
                 $devices = false;
                 $subscriber_id = false;
                 $names = ["name" => "", "patronymic" => "", "last" => ""];
+
                 if ($subscribers) {
                     $subscriber = $subscribers[0];
-                    // Пользователь найден
                     $subscriber_id = $subscriber["subscriberId"];
                     $names = ["name" => $subscriber["subscriberName"], "patronymic" => $subscriber["subscriberPatronymic"], "last" => $subscriber["subscriberLast"]];
                     $devices = $households->getDevices("subscriber", $subscriber_id);
                 } else {
-                    // Пользователь не найден - создаём
                     $subscriber_id = $households->addSubscriber($user_phone);
                 }
 
-                // no longer such a temporary solution
                 if ($devices) {
                     $filteredDevices = array_filter($devices, function ($device) use ($device_token) {
                         return $device['deviceToken'] === $device_token;
@@ -84,11 +82,9 @@
                         $households->modifyDevice($device["deviceId"], [ "authToken" => $token ]);
                     } else {
                         $households->addDevice($subscriber_id, $device_token, $platform, $token);
-                        $inbox->sendMessage($subscriber_id, "Внимание!", "Произведена авторизация на новом устройстве", $action = "inbox");
                     }
                 } else {
                     $households->addDevice($subscriber_id, $device_token, $platform, $token);
-                    $inbox->sendMessage($subscriber_id, "Внимание!", "Произведена авторизация на новом устройстве", $action = "inbox");
                 }
 
                 response(200, ['accessToken' => $token, 'names' => $names]);

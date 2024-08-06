@@ -26,6 +26,7 @@
      */
 
     auth();
+
     $households = loadBackend("households");
 
     $push = trim(@$postdata['pushToken']);
