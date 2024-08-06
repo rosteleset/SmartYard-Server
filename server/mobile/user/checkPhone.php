@@ -23,8 +23,18 @@
      * @apiSuccess {String} names.patronymic отчество
      */
 
+    $headers = apache_request_headers();
+
+    if (@$postdata['deviceToken']) {
+        $device_token = $postdata['deviceToken'];
+    } else
+    if (@$headers['Accept-Language'] && @$headers['X-System-Info']) {
+        $device_token = md5($headers['Accept-Language'] . $headers['X-System-Info']);
+    } else {
+        $device_token = 'default';
+    }
+
     $user_phone = @$postdata['userPhone'];
-    $device_token = @$postdata['deviceToken'] ?: 'default';
     $platform = @$postdata['platform'] ?: '0';
 
     $households = loadBackend("households");
@@ -60,14 +70,13 @@
         $deviceExists = false;
 
         if ($devices) {
-
             $filteredDevices = array_filter($devices, function ($device) use ($device_token) {
                 return $device['deviceToken'] === $device_token;
             });
             $device = reset($filteredDevices);
 
             if ($device) {
-                $households->modifyDevice($device["deviceId"], ["authToken" => $token]);
+                $households->modifyDevice($device["deviceId"], [ "authToken" => $token ]);
                 $deviceExists = true;
             }
         }

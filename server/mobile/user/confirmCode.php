@@ -30,7 +30,17 @@
         $user_phone[0] = '7';
     }
 
-    $device_token = @$postdata['deviceToken'] ?: 'default';
+    $headers = apache_request_headers();
+
+    if (@$postdata['deviceToken']) {
+        $device_token = $postdata['deviceToken'];
+    } else
+    if (@$headers['Accept-Language'] && @$headers['X-System-Info']) {
+        $device_token = md5($headers['Accept-Language'] . $headers['X-System-Info']);
+    } else {
+        $device_token = 'default';
+    }
+
     $platform = @$postdata['platform'];
     $pin = @$postdata['smsCode'];
     $isdn = loadBackend("isdn");
@@ -62,8 +72,7 @@
                 $subscribers = $households->getSubscribers("mobile", $user_phone);
                 $devices = false;
                 $subscriber_id = false;
-                $names = ["name" => "", "patronymic" => "", "last" => ""];
-
+                $names = [ "name" => "", "patronymic" => "", "last" => "" ];
                 if ($subscribers) {
                     $subscriber = $subscribers[0];
                     $subscriber_id = $subscriber["subscriberId"];
