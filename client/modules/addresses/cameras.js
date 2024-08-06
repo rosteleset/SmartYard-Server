@@ -561,6 +561,9 @@
             case 'Disabled':
                 statusClass = 'status-disabled';
                 break;
+            case 'DVRerr':
+                statusClass = 'status-dvr-err';
+                break;
             default:
                 statusClass = 'status-unknown';
                 status = 'unknown'

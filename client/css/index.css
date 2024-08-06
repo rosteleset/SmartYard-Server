@@ -513,6 +513,9 @@ select {
 .status-unknown {
   background-color: darkgrey;
 }
+.status-dvr-err {
+  background-color: deeppink;
+}
 
 .tt-search:focus {
   width: 500px;
