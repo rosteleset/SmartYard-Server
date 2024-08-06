@@ -70,6 +70,7 @@ namespace backends\cameras
                             'hostId' => $camera['cameraId'],
                             'ip' => $camera['ip'],
                             'url' => $camera['url'],
+                            'dvrStream' => $camera['dvrStream']
                         ];
                 }
 
