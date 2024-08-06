@@ -24,5 +24,5 @@ ___
 #### Monitoring
 ###### use Zabbix or Prometheus
 1. [Zabbix](97.zabbix.md) 
-2. Prometheus
+2. [Prometheus](95.prometheus.md)
 
