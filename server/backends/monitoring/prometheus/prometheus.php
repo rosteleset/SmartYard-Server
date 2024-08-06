@@ -7,6 +7,7 @@ enum AlertNames: string
 {
     case ICMP_HOST_UNREACHABLE = 'ICMPHostUnreachable';
     case SIP_CLIENT_OFFLINE = 'SipClientOffline';
+    case DVR_STREAM_ERROR = 'DvrStreamErr';
 }
 
 class prometheus extends monitoring
@@ -86,7 +87,6 @@ class prometheus extends monitoring
             $method = 'GET';
             $contentType = 'application/json';
             $response = apiExec($method, $url, null, $contentType,  false, 3);
-//            $this->log(var_export($response, true));
 
             if (is_object($response)
                 && property_exists($response, 'message')
@@ -123,11 +123,11 @@ class prometheus extends monitoring
             switch ($deviceType) {
                 case 'domophone':
                 case 'camera':
-                /**
-                 * TODO:
-                 *   - add check camera stream status
-                 */
-                    return $this->processAlarms($hosts);
+                    /**
+                     * TODO:
+                     *   - add check camera stream status
+                     */
+                    return $this->processAlarms($deviceType, $hosts);
             }
         } catch (Exception $e) {
             $this->log("Method devicesStatus: " . $e->getMessage());
@@ -135,10 +135,13 @@ class prometheus extends monitoring
         }
     }
 
-    private function processAlarms($hosts)
+    private function processAlarms($deviceType, $hosts)
     {
         try {
-            $url = '/api/v1/query?query=ALERTS{alertname%3D~%22ICMPHostUnreachable%7CSipClientOffline%22}';
+            $url = '/api/v1/query?query=ALERTS{alertname=~"ICMPHostUnreachable|SipClientOffline"}';
+            if ($deviceType === 'camera'){
+                $url = '/api/v1/query?query=ALERTS{alertname=~"ICMPHostUnreachable|DvrStreamErr"}';
+            }
             $hostStatus = [];
 
             foreach ($hosts as $host){
@@ -147,6 +150,15 @@ class prometheus extends monitoring
                     'url' => $host['url'],
                     'status' => [],
                 ];
+
+                if ($deviceType === 'camera'){
+                    $hostStatus[$host['hostId']]['dvrStream'] = $host['dvrStream'];
+                    $hostStatus[$host['hostId']]['streamName'] = $this->getStreamName($host['dvrStream']);
+                }
+            }
+
+            if ($deviceType === 'camera'){
+                $this->log(var_export($hostStatus, true));
             }
 
             // alerts from prometheus
@@ -154,8 +166,9 @@ class prometheus extends monitoring
 
             foreach ($alerts as $alert){
                 $instance = $alert['metric']['instance'];
-                $url = $alert['metric']['url'] ?? null;
                 $alertName = $alert['metric']['alertname'];
+                $url = $alert['metric']['url'] ?? null;
+                $name = $alert['metric']['name'] ?? null;
 
                 foreach ($hostStatus as $hostId => $host){
                     // check alert type
@@ -167,11 +180,20 @@ class prometheus extends monitoring
                             ];
                             break;
                         }
-                    } elseif ($alertName === AlertNames::ICMP_HOST_UNREACHABLE->value){
+                    } elseif ($alertName === AlertNames::ICMP_HOST_UNREACHABLE->value) {
                         if ($host['ip'] === $instance){
                             $hostStatus[$hostId]['status'] = [
                                 'status' => 'Offline',
                                 'message' => i18n('monitoring.offline'),
+                            ];
+                            break;
+                        }
+                    } elseif ($alertName === AlertNames::DVR_STREAM_ERROR->value) {
+                        if ($host['streamName'] === $name) {
+                            // TODO: add translation prompt for status
+                            $hostStatus[$hostId]['status'] = [
+                                'status' => 'DVRerr',
+                                'message' => 'DVR stream bad health',
                             ];
                             break;
                         }
@@ -188,16 +210,22 @@ class prometheus extends monitoring
                     ];
                 }
             }
-            return $hostStatus;
 
+            return $hostStatus;
         } catch (Exception $e){
             throw $e;
         }
     }
 
-    private function processDvrStreams(){}
+    private function getStreamName($url) {
+        if (preg_match('/^https:\/\/[^\/]+\/([^\/]+)(?:\/(index\.m3u8|video\.m3u8))?$/', $url, $matches)) {
+            return $matches[1]; // stream name
+        }
+        return null;
+    }
 
-    public function configureMonitoring() {}
+    public function configureMonitoring() {
+    }
 
     private function checkServerAvailability($server)
     {
