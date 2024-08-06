@@ -13,9 +13,7 @@ enum AlertNames: string
 class prometheus extends monitoring
 {
     protected $servers = [];
-    /**
-     * @throws Exception
-     */
+
     public function __construct($config, $db, $redis, $login = false)
     {
         try {
@@ -75,35 +73,6 @@ class prometheus extends monitoring
         return $decodedResponse;
     }
 
-    /**
-     * Check Prometheus API connection
-     * @return void
-     * @throws Exception
-     */
-    private function checkApiConnection()
-    {
-        try {
-            $url = 'http://192.168.13.39:9090/-/healthy';
-            $method = 'GET';
-            $contentType = 'application/json';
-            $response = apiExec($method, $url, null, $contentType,  false, 3);
-
-            if (is_object($response)
-                && property_exists($response, 'message')
-                && property_exists($response, 'code')
-            ) {
-                throw new Exception("API call error: " . $response->message . " (code: $response->code)");
-            }
-
-            if (!isset($response) &&  $response !== 'Prometheus Server is Healthy') {
-                throw new Exception("Unable to connect to Prometheus API. Please check the API URL and credentials.");
-            }
-        } catch (Exception $e) {
-            throw $e;
-        }
-
-    }
-
     private function log(string $text): void
     {
         $dateTime = date('Y-m-d H:i:s');
@@ -123,10 +92,6 @@ class prometheus extends monitoring
             switch ($deviceType) {
                 case 'domophone':
                 case 'camera':
-                    /**
-                     * TODO:
-                     *   - add check camera stream status
-                     */
                     return $this->processAlarms($deviceType, $hosts);
             }
         } catch (Exception $e) {
@@ -138,6 +103,7 @@ class prometheus extends monitoring
     private function processAlarms($deviceType, $hosts)
     {
         try {
+            // TODO: refactor url
             $url = '/api/v1/query?query=ALERTS{alertname=~"ICMPHostUnreachable|SipClientOffline"}';
             if ($deviceType === 'camera'){
                 $url = '/api/v1/query?query=ALERTS{alertname=~"ICMPHostUnreachable|DvrStreamErr"}';
@@ -155,10 +121,6 @@ class prometheus extends monitoring
                     $hostStatus[$host['hostId']]['dvrStream'] = $host['dvrStream'];
                     $hostStatus[$host['hostId']]['streamName'] = $this->getStreamName($host['dvrStream']);
                 }
-            }
-
-            if ($deviceType === 'camera'){
-                $this->log(var_export($hostStatus, true));
             }
 
             // alerts from prometheus
@@ -190,10 +152,9 @@ class prometheus extends monitoring
                         }
                     } elseif ($alertName === AlertNames::DVR_STREAM_ERROR->value) {
                         if ($host['streamName'] === $name) {
-                            // TODO: add translation prompt for status
                             $hostStatus[$hostId]['status'] = [
                                 'status' => 'DVRerr',
-                                'message' => 'DVR stream bad health',
+                                'message' => i18n('monitoring.dvrErr'),
                             ];
                             break;
                         }
@@ -217,7 +178,13 @@ class prometheus extends monitoring
         }
     }
 
-    private function getStreamName($url) {
+    /**
+     * Parse DVR URL to stream name, tested only flussonic
+     * @param $url
+     * @return string|null
+     */
+    private function getStreamName($url): ?string
+    {
         if (preg_match('/^https:\/\/[^\/]+\/([^\/]+)(?:\/(index\.m3u8|video\.m3u8))?$/', $url, $matches)) {
             return $matches[1]; // stream name
         }

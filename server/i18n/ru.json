@@ -13,7 +13,8 @@
         "unknown": "Статус неизвестен",
         "offline": "Недоступен, проверьте подключение устройства",
         "online": "Доступен",
-        "sipRegistrationFail": "Отсутствует SIP регистрация"
+        "sipRegistrationFail": "Отсутствует SIP регистрация",
+        "dvrErr": "Проблема с потоком DVR"
     },
 
     "cantLoadBackend": "Ошибка загрузки модуля %s"
