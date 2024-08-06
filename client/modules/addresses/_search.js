@@ -36,7 +36,7 @@
                     }
 
                     if (hs && hs.houses && hs.houses.length) {
-                        h += `<h4 class="mt-2">${i18n('addresses.housesFound')}</h4>`;
+                        h += `<h6 class="mt-3">${i18n('addresses.housesFound')}</h6>`;
                         h += '<ul>';
                         for (let i in hs.houses) {
                             h += `<li><i class='fas fa-fw fa-home mr-2'></i><a href='?#addresses.houses&houseId=${hs.houses[i].houseId}'>${hs.houses[i].houseFull}</a> (${hs.houses[i].similarity})</li>`;
@@ -50,7 +50,7 @@
                     if (h) {
                         $("#mainForm").html(h);
                     } else {
-                        $("#mainForm").html(`<h4 class="mt-2">${i18n('addresses.notFound')}</h4>`);
+                        $("#mainForm").html(`<h6 class="mt-3">${i18n('addresses.notFound')}</h6s>`);
                     }
 
                     loadingDone();
