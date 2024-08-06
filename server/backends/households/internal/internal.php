@@ -2378,6 +2378,18 @@
                     }
                 }
 
+                if (array_key_exists("ua", $params)) {
+                    if ($this->db->modify("update houses_subscribers_devices set ua = :ua where subscriber_device_id = $deviceId", [ "ua" => $params["ua"] ]) !== false) {
+                        $result++;
+                    }
+                }
+
+                if (array_key_exists("ip", $params)) {
+                    if ($this->db->modify("update houses_subscribers_devices set ip = :ip where subscriber_device_id = $deviceId", [ "ip" => $params["ip"] ]) !== false) {
+                        $result++;
+                    }
+                }
+
                 if ($this->db->modify("update houses_subscribers_devices set last_seen = :last_seen where subscriber_device_id = $deviceId", [ "last_seen" => time() ]) !== false) {
                     $result++;
                 }

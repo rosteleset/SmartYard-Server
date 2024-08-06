@@ -1,5 +1,9 @@
 <?php
 
+    $real_ip_header = 'HTTP_X_FORWARDED_FOR';
+
+    // mobile client API support
+
     $cli = false;
     $cliError = false;
 
@@ -188,11 +192,24 @@
     }
 
     function auth() {
-        global $_SERVER, $bearer, $subscriber, $device;
+        global $_SERVER, $bearer, $subscriber, $device, $real_ip_header;
 
         $households = loadBackend("households");
 
+        $ip = false;
+
+        if (isset($_SERVER['REMOTE_ADDR'])) {
+            $ip = $_SERVER['REMOTE_ADDR'];
+        }
+
+        if (!$ip) {
+            if (isset($_SERVER[$real_ip_header])) {
+                $ip = $_SERVER[$real_ip_header];
+            }
+        }
+
         $ip = long2ip(ip2long($_SERVER['REMOTE_ADDR']));
+
         if ($ip == '127.0.0.1' && !@$_SERVER['HTTP_AUTHORIZATION'] && $_GET['phone']) {
             $p = trim($_GET['phone']);
             $bearer = false;
@@ -227,7 +244,13 @@
             } else {
                 response(401, false, "Не авторизован", "Не авторизован");
             }
-            $households->modifyDevice($device["deviceId"]);
+
+            $headers = apache_request_headers();
+            if (@$headers['Accept-Language'] && @$headers['X-System-Info']) {
+                $households->modifyDevice($device["deviceId"], [ "ua" => $headers['Accept-Language'] . ',' . $headers['X-System-Info'], "ip" => $ip ]);
+            } else {
+                $households->modifyDevice($device["deviceId"], [ "ip" => $ip ]);
+            }
         }
     }
 
