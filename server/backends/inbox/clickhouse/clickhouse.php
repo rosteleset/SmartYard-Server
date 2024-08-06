@@ -46,9 +46,8 @@
                     return false;
                 }
 
-                $msgId = $this->db->insert("insert into inbox (id, house_subscriber_id, date, title, msg, action, expire, delivered, readed, code) values (:id, :house_subscriber_id, :date, :title, :msg, :action, :expire, 0, 0, null)", [
+                $msgId = $this->db->insert("insert into inbox (id, date, title, msg, action, expire, delivered, readed, code) values (:id, :date, :title, :msg, :action, :expire, 0, 0, null)", [
                     "id" => $devices[0]["subscriber"]["mobile"],
-                    "house_subscriber_id" => $subscriberId,
                     "date" => time(),
                     "title" => $title,
                     "msg" => $msg,
@@ -98,24 +97,32 @@
                     return false;
                 }
 
+                $households = loadBackend("households");
+                $devices = $households->getDevices("subscriber", $subscriberId);
+
+                if (!@$devices) {
+                    setLastError("mobileSubscriberNotRegistered");
+                    return false;
+                }
+
                 $date_from = (int)$params["dateFrom"];
                 $date_to = (int)$params["dateTo"];
                 $msg_id = (int)$params;
+                $id = $devices[0]["subscriber"]["mobile"];
 
                 switch ($by) {
                     case "dates":
-                        $q = "select * from inbox where house_subscriber_id = $subscriberId and date <= $date_to and date >= $date_from";
+                        $q = "select * from inbox where id = '$id' and date <= $date_to and date >= $date_from";
                         break;
 
                     case "id":
-                        $q = "select * from inbox where house_subscriber_id = $subscriberId and msg_id = $msg_id";
+                        $q = "select * from inbox where id = '$id' and msg_id = $msg_id";
                         break;
                 }
 
                 if ($q) {
                     $oper = $this->db->get($q, false, [
                         "msg_id" => "msgId",
-                        "house_subscriber_id" => "subscriberId",
                         "id" => "id",
                         "date" => "date",
                         "title" => "title",
@@ -132,7 +139,6 @@
                         function ($item) {
                             return [
                                 "msgId" => $item["msg_id"],
-                                "subscriberId" => $item["house_subscriber_id"],
                                 "id" => $item["id"],
                                 "date" => $item["date"],
                                 "title" => $item["title"],
@@ -159,14 +165,29 @@
              */
             public function markMessageAsReaded($subscriberId, $msgId = false)
             {
+                if (!checkInt($subscriberId)) {
+                    setLastError("invalidSubscriberId");
+                    return false;
+                }
+
+                $households = loadBackend("households");
+                $devices = $households->getDevices("subscriber", $subscriberId);
+
+                if (!@$devices) {
+                    setLastError("mobileSubscriberNotRegistered");
+                    return false;
+                }
+
+                $id = $devices[0]["subscriber"]["mobile"];
+
                 if ($msgId) {
-                    return $this->db->modify("update inbox set readed = 1 where readed = 0 and msg_id = :msg_id and house_subscriber_id = :house_subscriber_id", [
-                        "house_subscriber_id" => $subscriberId,
+                    return $this->db->modify("update inbox set readed = 1 where readed = 0 and msg_id = :msg_id and id = :id", [
+                        "id" => $id,
                         "msg_id" => $msgId,
                     ]);
                 } else {
-                    return $this->db->modify("update inbox set readed = 1 where readed = 0 and house_subscriber_id = :house_subscriber_id", [
-                        "house_subscriber_id" => $subscriberId,
+                    return $this->db->modify("update inbox set readed = 1 where readed = 0 and id = :id", [
+                        "id" => $id,
                     ]);
                 }
             }
@@ -176,14 +197,29 @@
              */
             public function markMessageAsDelivered($subscriberId, $msgId = false)
             {
+                if (!checkInt($subscriberId)) {
+                    setLastError("invalidSubscriberId");
+                    return false;
+                }
+
+                $households = loadBackend("households");
+                $devices = $households->getDevices("subscriber", $subscriberId);
+
+                if (!@$devices) {
+                    setLastError("mobileSubscriberNotRegistered");
+                    return false;
+                }
+
+                $id = $devices[0]["subscriber"]["mobile"];
+
                 if ($msgId) {
-                    return $this->db->modify("update inbox set delivered = 1 where delivered = 0 and msg_id = :msg_id and house_subscriber_id = :house_subscriber_id", [
-                        "house_subscriber_id" => $subscriberId,
+                    return $this->db->modify("update inbox set delivered = 1 where delivered = 0 and msg_id = :msg_id and id = :id", [
+                        "id" => $id,
                         "msg_id" => $msgId,
                     ]);
                 } else {
-                    return $this->db->modify("update inbox set delivered = 1 where delivered = 0 and house_subscriber_id = :house_subscriber_id", [
-                        "house_subscriber_id" => $subscriberId,
+                    return $this->db->modify("update inbox set delivered = 1 where delivered = 0 and id = :id", [
+                        "id" => $id,
                     ]);
                 }
             }
@@ -198,9 +234,19 @@
                     return false;
                 }
 
-                return $this->db->get("select count(*) as unreaded from inbox where house_subscriber_id = :house_subscriber_id and readed = 0",
+                $households = loadBackend("households");
+                $devices = $households->getDevices("subscriber", $subscriberId);
+
+                if (!@$devices) {
+                    setLastError("mobileSubscriberNotRegistered");
+                    return false;
+                }
+
+                $id = $devices[0]["subscriber"]["mobile"];
+
+                return $this->db->get("select count(*) as unreaded from inbox where id = :id and readed = 0",
                     [
-                        "house_subscriber_id" => $subscriberId,
+                        "id" => $id,
                     ],
                     [
                         "unreaded" => "unreaded",
@@ -221,9 +267,19 @@
                     return false;
                 }
 
-                return $this->db->get("select count(*) as undelivered from inbox where house_subscriber_id = :house_subscriber_id and delivered = 0",
+                $households = loadBackend("households");
+                $devices = $households->getDevices("subscriber", $subscriberId);
+
+                if (!@$devices) {
+                    setLastError("mobileSubscriberNotRegistered");
+                    return false;
+                }
+
+                $id = $devices[0]["subscriber"]["mobile"];
+
+                return $this->db->get("select count(*) as undelivered from inbox where id = :id and delivered = 0",
                     [
-                        "house_subscriber_id" => $subscriberId,
+                        "id" => $id,
                     ],
                     [
                         "undelivered" => "undelivered",
@@ -242,13 +298,12 @@
                 if ($part == '5min') {
                     $i = true;
 
-                    $readed = $this->db->get("select msg_id, house_subscriber_id, id, date, title, msg, action, code from inbox where expire < :now or readed = 1",
+                    $readed = $this->db->get("select msg_id, id, date, title, msg, action, code from inbox where expire < :now or readed = 1",
                         [
                             "now" => time(),
                         ],
                         [
                             "msg_id" => "msg_id",
-                            "house_subscriber_id" => "house_subscriber_id",
                             "id" => "id",
                             "date" => "date",
                             "title" => "title",
@@ -262,7 +317,6 @@
                         $i = $this->clickhouse->insert("inbox", [
                             [
                                 "msg_id" => $msg["msg_id"],
-                                "house_subscriber_id" => $msg["house_subscriber_id"],
                                 "id" => $msg["id"],
                                 "date" => $msg["date"],
                                 "title" => $msg["title"],
