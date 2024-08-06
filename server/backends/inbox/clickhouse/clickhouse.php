@@ -152,7 +152,7 @@
 
                     $msgs = array_merge($oper, $arc);
 
-                    usort($msgs, function ($a, $b) { return $a["date"] - $b["date"]; });
+                    usort($msgs, function ($a, $b) { return $b["date"] - $a["date"]; });
 
                     return $msgs;
                 } else {
