@@ -30,7 +30,28 @@
                     console.log(hs);
                     console.log(ss);
 
-                    $("#mainForm").html("");
+                    let h = '';
+
+                    if (as && as.addresses && as.addresses.length) {
+                    }
+
+                    if (hs && hs.houses && hs.houses.length) {
+                        h += `<h4 class="mt-2">${i18n('addresses.housesFound')}</h4>`;
+                        h += '<ul>';
+                        for (let i in hs.houses) {
+                            h += `<li><i class='fas fa-fw fa-home mr-2'></i><a href='?#addresses.houses&houseId=${hs.houses[i].houseId}'>${hs.houses[i].houseFull}</a> (${hs.houses[i].similarity})</li>`;
+                        }
+                        h += '</ul>';
+                    }
+
+                    if (ss && ss.subscribers && ss.subscribers.length) {
+                    }
+
+                    if (h) {
+                        $("#mainForm").html(h);
+                    } else {
+                        $("#mainForm").html(`<h4 class="mt-2">${i18n('addresses.notFound')}</h4>`);
+                    }
 
                     loadingDone();
                 }).fail(FAILPAGE);
