@@ -2308,14 +2308,16 @@
                     return false;
                 }
 
+                $result = 0;
+
                 if (@$params["authToken"]) {
                     if (!checkStr($params["authToken"])) {
                         setLastError("invalidParams");
                         return false;
                     }
 
-                    if ($this->db->modify("update houses_subscribers_devices set auth_token = :auth_token where subscriber_device_id = $deviceId", [ "auth_token" => $params["authToken"] ]) === false) {
-                        return false;
+                    if ($this->db->modify("update houses_subscribers_devices set auth_token = :auth_token where subscriber_device_id = $deviceId", [ "auth_token" => $params["authToken"] ]) !== false) {
+                        $result++;
                     }
                 }
 
@@ -2325,8 +2327,8 @@
                         return false;
                     }
 
-                    if ($this->db->modify("update houses_subscribers_devices set platform = :platform where subscriber_device_id = $deviceId", [ "platform" => $params["platform"] ]) === false) {
-                        return false;
+                    if ($this->db->modify("update houses_subscribers_devices set platform = :platform where subscriber_device_id = $deviceId", [ "platform" => $params["platform"] ]) !== false) {
+                        $result++;
                     }
                 }
 
@@ -2336,8 +2338,10 @@
                         return false;
                     }
 
-                    if ($this->db->modify("update houses_subscribers_devices set push_token = :push_token where subscriber_device_id = $deviceId", [ "push_token" => $params["pushToken"] ]) === false) {
-                        return false;
+                    $this->db->modify("delete from houses_subscribers_devices where push_token = :push_token and subscriber_device_id <> $deviceId", [ "push_token" => $params["pushToken"] ]);
+
+                    if ($this->db->modify("update houses_subscribers_devices set push_token = :push_token where subscriber_device_id = $deviceId", [ "push_token" => $params["pushToken"] ]) !== false) {
+                        $result++;
                     }
                 }
 
@@ -2347,8 +2351,8 @@
                         return false;
                     }
 
-                    if ($this->db->modify("update houses_subscribers_devices set push_token_type = :push_token_type where subscriber_device_id = $deviceId", [ "push_token_type" => $params["tokenType"] ]) === false) {
-                        return false;
+                    if ($this->db->modify("update houses_subscribers_devices set push_token_type = :push_token_type where subscriber_device_id = $deviceId", [ "push_token_type" => $params["tokenType"] ]) !== false) {
+                        $result++;
                     }
                 }
 
@@ -2358,29 +2362,31 @@
                         return false;
                     }
 
-                    if ($this->db->modify("update houses_subscribers_devices set voip_token = :voip_token where subscriber_device_id = $deviceId", [ "voip_token" => $params["voipToken"] ]) === false) {
-                        return false;
+                    if ($this->db->modify("update houses_subscribers_devices set voip_token = :voip_token where subscriber_device_id = $deviceId", [ "voip_token" => $params["voipToken"] ]) !== false) {
+                        $result++;
                     }
                 }
 
                 if (array_key_exists("voipEnabled", $params)) {
                     if (!checkInt($params["voipEnabled"])) {
                         setLastError("invalidParams");
-                        $r = false;
+                        return false;
                     }
 
-                    $r = $this->db->modify("update houses_subscribers_devices set voip_enabled = :voip_enabled where subscriber_device_id = $deviceId", [ "voip_enabled" => $params["voipEnabled"] ]) !== false;
+                    if ($this->db->modify("update houses_subscribers_devices set voip_enabled = :voip_enabled where subscriber_device_id = $deviceId", [ "voip_enabled" => $params["voipEnabled"] ]) !== false) {
+                        $result++;
+                    }
                 }
 
-                $r = true;
-
-                $r = $r && $this->db->modify("update houses_subscribers_devices set last_seen = :last_seen where subscriber_device_id = $deviceId", [ "last_seen" => time() ]) !== false;
-
-                if (!$r) {
-                    setLastError("cantModifySubscriber");
+                if ($this->db->modify("update houses_subscribers_devices set last_seen = :last_seen where subscriber_device_id = $deviceId", [ "last_seen" => time() ]) !== false) {
+                    $result++;
                 }
 
-                return $r;
+                if ($result <= 0) {
+                    setLastError("cantModifySubscriberDevice");
+                }
+
+                return $result > 0;
             }
 
             /**

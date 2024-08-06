@@ -9,6 +9,4 @@
      *
      */
 
-    error_log(print_r(apache_request_headers(), true));
-
     response(200, @$config["mobile"]["phonePattern"] ?: "");

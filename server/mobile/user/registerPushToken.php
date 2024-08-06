@@ -51,8 +51,6 @@
     $platform = 0;
     $type = 0;
 
-    error_log(print_r($postdata, true));
-
     switch ($postdata['platform']) {
         case "ios":
             $platform = 1;
@@ -88,8 +86,8 @@
             break;
     }
 
-    $households->modifyDevice($device["deviceId"], [ "pushToken" => $push, "tokenType" => $type, "voipToken" => $voip, "platform" => $platform ]);
-
+    $households->modifyDevice($device["deviceId"], [ "pushToken" => $push ?: "off" , "tokenType" => $type, "voipToken" => $voip ?: "off", "platform" => $platform ]);
+/*
     if (!$push) {
         $households->modifyDevice($device["deviceId"], [ "pushToken" => "off" ]);
     }
@@ -97,5 +95,5 @@
     if (!$voip) {
         $households->modifyDevice($subscriber["subscriberId"], [ "voipToken" => "off" ]);
     }
-
+*/
     response();
