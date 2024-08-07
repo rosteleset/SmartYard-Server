@@ -2468,7 +2468,7 @@
                         switch (@$this->config["backends"]["addresses"]["text_search_mode"]) {
                             case "trgm":
                                 $query = "select * from (
-                                    select *, greatest(similarity(subscriber_full, :search), similarity(id, :search)) as similarity from houses_subscribers_mobile where subscriber_full % :search
+                                    select *, greatest(similarity(subscriber_full, :search), similarity(id, :search)) as similarity from houses_subscribers_mobile where subscriber_full % :search or id = :search
                                 ) as t1 order by similarity desc, subscriber_full limit 51";
                                 $params = [ "search" => $search ];
                                 break;
