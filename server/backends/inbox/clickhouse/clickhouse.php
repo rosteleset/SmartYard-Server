@@ -75,6 +75,7 @@
                             "badge" => $unreaded,
                             "sound" => "default",
                             "pushAction" => $action,
+                            "messageId" => $msgId,
                         ]);
                     } else {
                         setLastError("pushCantBeSent");
