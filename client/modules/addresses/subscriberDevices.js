@@ -117,6 +117,7 @@
         }).
         fail(FAILPAGE).
         done(response => {
+            console.log(response);
             cardTable({
                 target: "#mainForm",
                 title: {
