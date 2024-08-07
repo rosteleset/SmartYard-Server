@@ -2458,7 +2458,80 @@
              */
             public function searchSubscriber($search)
             {
-                return [];
+                $search = trim(preg_replace('/\s+/', ' ', $search));
+                $text_search_config = $this->config["db"]["text_search_config"] ?? "simple";
+
+                switch ($this->db->parseDsn()["protocol"]) {
+                    case "pgsql":
+                        switch (@$this->config["backends"]["addresses"]["text_search_mode"]) {
+                            case "trgm":
+                                $query = "select * from (
+                                    select *, similarity(subscriber_full, :search) from houses_subscribers_mobile where subscriber_full % :search
+                                ) as t1 order by similarity desc, subscriber_full limit 51";
+                                $params = [ "search" => $search ];
+                                break;
+
+                            case "fts":
+                                $query = "select * from (select *, ts_rank_cd(to_tsvector('$text_search_config', house_full), to_tsquery(:search)) as similarity from addresses_houses) as t1 where to_tsvector('$text_search_config', house_full) @@ to_tsquery('$text_search_config', :search) order by similarity, house_full desc limit 51";
+                                $params = [ "search" => $search ];
+                                break;
+
+                            case "ftsa":
+                                $search = str_replace(" ", " & ", $search);
+                                $query = "select * from (select *, ts_rank_cd(to_tsvector('$text_search_config', house_full), to_tsquery(:search)) as similarity from addresses_houses) as t1 where to_tsvector('$text_search_config', house_full) @@ to_tsquery('$text_search_config', :search) order by similarity, house_full desc limit 51";
+                                $params = [ "search" => $search ];
+                                break;
+
+                            default:
+                                $tokens = explode(" ", $search);
+                                $query = [];
+                                $params = [];
+                                for ($i = 0; $i < count($tokens); $i++) {
+                                    $query[] = "(house_full ilike '%' || :s$i || '%')";
+                                    $params["s$i"] = $tokens[$i];
+                                }
+                                $query = implode(" and ", $query);
+                                $query = "select * from (
+                                    select *, levenshtein(house_full, :search) as similarity from addresses_houses where $query limit 51
+                                ) as t1 order by similarity asc, house_full";
+                                $params["search"] = $search;
+                                break;
+                        }
+                        break;
+
+                    case "sqlite";
+                        $tokens = explode(" ", $search);
+                        $query = [];
+                        $params = [];
+                        for ($i = 0; $i < count($tokens); $i++) {
+                            $query[] = "(mb_strtoupper(subscriber_full) like concat('%', :s$i, '%'))";
+                            $params["s$i"] = mb_strtoupper($tokens[$i]);
+                        }
+                        $query = implode(" and ", $query);
+                        $query = "select * from (
+                            select *, mb_levenshtein(subscriber_full, :search) as similarity from houses_subscribers_mobile where $query
+                            union
+
+                        ) as t1 order by similarity asc, flat limit 51";
+                        $params["search"] = $search;
+                        break;
+
+                    default:
+                        return false;
+                }
+
+                return $this->db->get($query, $params, [
+                    "address_house_id" => "houseId",
+                    "address_settlement_id" => "settlementId",
+                    "address_street_id" => "streetId",
+                    "house_uuid" => "houseUuid",
+                    "house_type" => "houseType",
+                    "house_type_full" => "houseTypeFull",
+                    "house_full" => "houseFull",
+                    "house" => "house",
+                    "company_id" => "companyId",
+                    "similarity" => "similarity",
+                ]);
             }
         }
     }

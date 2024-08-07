@@ -135,6 +135,9 @@
                         title: i18n("addresses.platform"),
                     },
                     {
+                        title: i18n("addresses.pushType"),
+                    },
+                    {
                         title: i18n("addresses.registered"),
                     },
                     {
@@ -157,6 +160,10 @@
                                 },
                                 {
                                     data: this.platforms[devices[i].platform],
+                                    nowrap: true,
+                                },
+                                {
+                                    data: this.platforms[devices[i].pushType],
                                     nowrap: true,
                                 },
                                 {
