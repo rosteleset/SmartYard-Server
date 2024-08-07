@@ -12,10 +12,10 @@ CREATE TABLE houses_subscribers_devices
     last_seen INTEGER,                                                                                                  -- UNIX timestamp
     voip_enabled INTEGER
 );
-CREATE UNIQUE INDEX houses_subscribers_devices_uniq_1 on houses_subscribers_devices(device_token);
-CREATE UNIQUE INDEX houses_subscribers_devices_uniq_2 on houses_subscribers_devices(auth_token);
-CREATE UNIQUE INDEX houses_subscribers_devices_uniq_3 on houses_subscribers_devices(push_token);
-CREATE INDEX houses_subscribers_devices_house_subscriber_id on houses_subscribers_devices(house_subscriber_id);
+CREATE UNIQUE INDEX houses_subscribers_devices_uniq_1 ON houses_subscribers_devices(device_token);
+CREATE UNIQUE INDEX houses_subscribers_devices_uniq_2 ON houses_subscribers_devices(auth_token);
+CREATE UNIQUE INDEX houses_subscribers_devices_uniq_3 ON houses_subscribers_devices(push_token);
+CREATE INDEX houses_subscribers_devices_house_subscriber_id ON houses_subscribers_devices(house_subscriber_id);
 
 -- cameras <-> entrances
 CREATE TABLE houses_entrances_cameras
@@ -25,6 +25,6 @@ CREATE TABLE houses_entrances_cameras
     path TEXT,
     distance INTEGER                                                                                                    -- "distance" (order) (virtual) from camera to domophone
 );
-CREATE UNIQUE INDEX houses_entrances_cameras_uniq on houses_entrances_cameras(camera_id, house_entrance_id);
-CREATE INDEX houses_entrances_cameras_camera_id on houses_entrances_cameras(camera_id);
-CREATE INDEX houses_entrances_cameras_house_entrance_id on houses_entrances_cameras(house_entrance_id);
+CREATE UNIQUE INDEX houses_entrances_cameras_uniq ON houses_entrances_cameras(camera_id, house_entrance_id);
+CREATE INDEX houses_entrances_cameras_camera_id ON houses_entrances_cameras(camera_id);
+CREATE INDEX houses_entrances_cameras_house_entrance_id ON houses_entrances_cameras(house_entrance_id);

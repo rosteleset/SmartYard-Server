@@ -2473,22 +2473,15 @@
                                 $params = [ "search" => $search ];
                                 break;
 
+                            case "ftsa":
+                                $search = str_replace(" ", " & ", $search);
+
                             case "fts":
                                 $query = "select * from (
                                     select *, ts_rank_cd(to_tsvector('$text_search_config', subscriber_full), to_tsquery(:search)) as similarity from houses_subscribers_mobile where to_tsvector('$text_search_config', subscriber_full) @@ to_tsquery('$text_search_config', :search)
                                     union
                                     select *, 1 as similarity from houses_subscribers_mobile where id = :search
                                 ) as t1  order by similarity, subscriber_full desc limit 51";
-                                $params = [ "search" => $search ];
-                                break;
-
-                            case "ftsa":
-                                $search = str_replace(" ", " & ", $search);
-                                $query = "select * from (
-                                    select *, ts_rank_cd(to_tsvector('$text_search_config', subscriber_full), to_tsquery(:search)) as similarity from houses_subscribers_mobile where to_tsvector('$text_search_config', subscriber_full) @@ to_tsquery('$text_search_config', :search)
-                                    union
-                                    select *, 1 as similarity from houses_subscribers_mobile where id = :search
-                                ) as t1 order by similarity, subscriber_full desc limit 51";
                                 $params = [ "search" => $search ];
                                 break;
 
@@ -2527,8 +2520,6 @@
                     default:
                         return false;
                 }
-
-                error_log($query);
 
                 $result = $this->db->get($query, $params, [
                     "house_subscriber_id" => "subscriberId",
