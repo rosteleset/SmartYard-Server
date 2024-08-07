@@ -135,7 +135,10 @@
                         title: i18n("addresses.platform"),
                     },
                     {
-                        title: i18n("addresses.pushType"),
+                        title: i18n("addresses.tokenType"),
+                    },
+                    {
+                        title: i18n("addresses.VoIP"),
                     },
                     {
                         title: i18n("addresses.registered"),
@@ -163,7 +166,11 @@
                                     nowrap: true,
                                 },
                                 {
-                                    data: this.platforms[devices[i].pushType],
+                                    data: this.platforms[devices[i].tokenType],
+                                    nowrap: true,
+                                },
+                                {
+                                    data: this.platforms[devices[i].voipToken],
                                     nowrap: true,
                                 },
                                 {
