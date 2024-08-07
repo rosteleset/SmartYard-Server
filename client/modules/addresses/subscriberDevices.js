@@ -5,6 +5,7 @@
     },
 
     platforms : [ "Android", "iOS", "Web" ],
+    tokenTypes : [ "FCM", "FCM", "FCM", "FCM", "HMS", "RUS" ],
 
     doModifyDevice: function (device) {
         loadingStart();
@@ -167,11 +168,11 @@
                                     nowrap: true,
                                 },
                                 {
-                                    data: this.platforms[devices[i].tokenType],
+                                    data: this.tokenTypes[devices[i].tokenType],
                                     nowrap: true,
                                 },
                                 {
-                                    data: this.platforms[devices[i].voipToken],
+                                    data: (devices[i].voipToken == "Off") ? i18n("no") : i18n("yes"),
                                     nowrap: true,
                                 },
                                 {
