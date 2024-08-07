@@ -39,7 +39,7 @@
                         h += `<h5 class="mt-3 ml-2">${i18n('addresses.housesFound')}</h5>`;
                         h += '<ul class="list-unstyled">';
                         for (let i in hs.houses) {
-                            h += `<li><i class='fas fa-fw fa-home mr-2'></i><a href='?#addresses.houses&houseId=${hs.houses[i].houseId}'>${hs.houses[i].houseFull}</a> (${hs.houses[i].similarity})</li>`;
+                            h += `<li><i class='fas fa-fw fa-home mr-2 ml-2'></i><a href='?#addresses.houses&houseId=${hs.houses[i].houseId}'>${hs.houses[i].houseFull}</a> (${hs.houses[i].similarity})</li>`;
                         }
                         h += '</ul>';
                     }
