@@ -29,7 +29,11 @@ namespace api\subscribers
         {
             $households = loadBackend("households");
 
-            $success = $households->modifySubscriber($params["_id"], $params) && $households->setSubscriberFlats($params["_id"], $params["flats"]);
+            $success = $households->modifySubscriber($params["_id"], $params);
+
+            if (@$params["flats"]) {
+                $success &= $households->setSubscriberFlats($params["_id"], @$params["flats"]);
+            }
 
             return api::ANSWER($success);
         }

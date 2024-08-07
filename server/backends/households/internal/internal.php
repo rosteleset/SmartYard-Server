@@ -2523,7 +2523,10 @@
 
                 $result = $this->db->get($query, $params, [
                     "house_subscriber_id" => "subscriberId",
-                    "id" => "id",
+                    "id" => "mobile",
+                    "subscriber_name" => "subscriberName",
+                    "subscriber_patronymic" => "subscriberPatronymic",
+                    "subscriber_last" => "subscriberLast",
                     "subscriber_full" => "subscriberFull",
                     "similarity" => "similarity",
                 ]);
@@ -2531,7 +2534,7 @@
                 $addresses = loadBackend("addresses");
 
                 foreach ($result as &$subscriber) {
-                    $subscriber["flats"] = $this->getFlats("subscriberId", [ "id" => $subscriber["id"] ]);
+                    $subscriber["flats"] = $this->getFlats("subscriberId", [ "id" => $subscriber["mobile"] ]);
                     foreach ($subscriber["flats"] as &$flat) {
                         $flat["house"] = $addresses->getHouse($flat["houseId"]);
                     }

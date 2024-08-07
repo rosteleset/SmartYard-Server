@@ -1,4 +1,6 @@
 ({
+    searchResults: {},
+
     init: function () {
         moduleLoaded("addresses._search", this);
     },
@@ -10,8 +12,6 @@
     },
 
     renderSearch: function (search) {
-        console.log(search);
-
         $("#searchInput").val(search);
 
         QUERY("addresses", "search", {
@@ -26,9 +26,11 @@
                     search: search,
                 }, true).
                 done(ss => {
-                    console.log(as);
-                    console.log(hs);
-                    console.log(ss);
+                    modules.addresses._search.searchResults = {
+                        as: [],
+                        hs: [],
+                        ss: [],
+                    }
 
                     let h = '';
 
@@ -36,6 +38,7 @@
                     }
 
                     if (hs && hs.houses && hs.houses.length) {
+                        modules.addresses._search.searchResults.hs = hs.houses;
                         h += `<h5 class="mt-3 ml-2">${i18n('addresses.housesFound')}</h5>`;
                         h += '<ul class="list-unstyled">';
                         for (let i in hs.houses) {
@@ -45,6 +48,25 @@
                     }
 
                     if (ss && ss.subscribers && ss.subscribers.length) {
+                        modules.addresses._search.searchResults.ss = ss.subscribers;
+                        h += `<h5 class="mt-3 ml-2">${i18n('addresses.subscribersFound')}</h5>`;
+                        h += '<ul class="list-unstyled">';
+                        for (let i in ss.subscribers) {
+                            h += '<li>';
+                            if (ss.subscribers[i].id == search) {
+                                h += "<i class='fas fa-fw fa-mobile-alt mr-2 ml-3'></i>";
+                            } else {
+                                h += "<i class='far fa-fw fa-user mr-2 ml-3'></i>";
+                            }
+                            h += `<a href="javascript:void(0)" class="ss" data-subscriber-id="${i}">${ss.subscribers[i].subscriberFull}</a> (${ss.subscribers[i].similarity})<br />`;
+
+                            for (let j in ss.subscribers[i].flats) {
+                                h += `<span class="ml-4 mt-1"><a href='?#addresses.houses&houseId=${ss.subscribers[i].flats[j].houseId}'>${ss.subscribers[i].flats[j].house.houseFull}, ${ss.subscribers[i].flats[j].flat}</a></span><br />`;
+                            }
+
+                            h += `</li>`;
+                        }
+                        h += '</ul>';
                     }
 
                     if (h) {
@@ -52,6 +74,10 @@
                     } else {
                         $("#mainForm").html(`<h5 class="mt-3 ml-2">${i18n('addresses.notFound')}</h5>`);
                     }
+
+                    $(".ss").off("click").on("click", function () {
+                        modules.addresses.subscribers.modifySubscriberLim(modules.addresses._search.searchResults.ss[$(this).attr("data-subscriber-id")]);
+                    });
 
                     loadingDone();
                 }).fail(FAILPAGE);

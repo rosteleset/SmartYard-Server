@@ -52,7 +52,7 @@
             message(i18n("addresses.subscriberWasChanged"));
         }).
         always(() => {
-            modules.addresses.subscribers.route(hashParse("params"));
+            pathToObject(modules, currentPage).route(hashParse("params"));
         });
     },
 
@@ -352,6 +352,80 @@
         } else {
             error(i18n("addresses.subscriberNotFound"));
         }
+    },
+
+    modifySubscriberLim: function (subscriber) {
+        cardForm({
+            title: i18n("addresses.editSubscriber"),
+            footer: true,
+            borderless: true,
+            topApply: true,
+            apply: i18n("edit"),
+            size: "lg",
+            fields: [
+                {
+                    id: "subscriberId",
+                    type: "text",
+                    title: i18n("addresses.subscriberId"),
+                    readonly: true,
+                    value: subscriber.subscriberId,
+                },
+                {
+                    id: "mobile",
+                    type: "text",
+                    title: i18n("addresses.mobile"),
+                    placeholder: config.phonePattern?config.phonePattern:i18n("addresses.mobile"),
+                    validate: (v) => {
+                        return new RegExp(config.regExp.phone).test(v);
+                    },
+                    value: subscriber.mobile,
+                },
+                {
+                    id: "subscriberName",
+                    type: "text",
+                    title: i18n("addresses.subscriberName"),
+                    placeholder: i18n("addresses.subscriberName"),
+                    value: subscriber.subscriberName,
+                },
+                {
+                    id: "subscriberPatronymic",
+                    type: "text",
+                    title: i18n("addresses.subscriberPatronymic"),
+                    placeholder: i18n("addresses.subscriberPatronymic"),
+                    value: subscriber.subscriberPatronymic,
+                },
+                {
+                    id: "subscriberLast",
+                    type: "text",
+                    title: i18n("addresses.subscriberLast"),
+                    placeholder: i18n("addresses.subscriberLast"),
+                    value: subscriber.subscriberLast,
+                },
+                {
+                    id: "delete",
+                    type: "select",
+                    title: i18n("addresses.deleteSubscriber"),
+                    options: [
+                        {
+                            id: "",
+                            text: "",
+                        },
+                        {
+                            id: "2",
+                            text: i18n("addresses.completeDeleteSubscriber"),
+                        }
+                    ]
+                }
+            ],
+            callback: function (result) {
+                if (parseInt(result.delete) == 2) {
+                    modules.addresses.subscribers.completeDeleteSubscriber(subscriberId);
+                } else {
+                    result.forceNames = true;
+                    modules.addresses.subscribers.doModifySubscriber(result);
+                }
+            },
+        }).show();
     },
 
     modifyKey: function (keyId, list) {

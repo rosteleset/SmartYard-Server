@@ -142,6 +142,9 @@
                         title: i18n("addresses.VoIP"),
                     },
                     {
+                        title: i18n("addresses.voipEnabledTable"),
+                    },
+                    {
                         title: i18n("addresses.registered"),
                     },
                     {
@@ -171,7 +174,11 @@
                                     nowrap: true,
                                 },
                                 {
-                                    data: (devices[i].voipToken &&  devices[i].voipToken.toString().length > 12) ? i18n("yes") : i18n("no"),
+                                    data: (devices[i].voipToken && devices[i].voipToken.toString().length > 12) ? i18n("yes") : i18n("no"),
+                                    nowrap: true,
+                                },
+                                {
+                                    data: parseInt(devices[i].voipEnabled) ? i18n("yes") : i18n("no"),
                                     nowrap: true,
                                 },
                                 {
