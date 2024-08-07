@@ -55,7 +55,7 @@ trait beward
 
     public function getSysinfo(): array
     {
-        return $this->parseParamValue($this->apiCall('cgi-bin/systeminfo_cgi', ['action' => 'get']));
+        return $this->parseParamValue($this->apiCall('cgi-bin/systeminfo_cgi', ['action' => 'get'], false, 3));
     }
 
     public function reboot()
@@ -76,7 +76,7 @@ trait beward
             'passwd' => $password,
             'passwd1' => $password,
             'newpassword' => '',
-        ], true, "$this->url/umanage.asp", CURLAUTH_BASIC | CURLAUTH_DIGEST);
+        ], true, 0, "$this->url/umanage.asp", CURLAUTH_BASIC | CURLAUTH_DIGEST);
 
         $this->apiCall('cgi-bin/pwdgrp_cgi', [
             'action' => 'update',
@@ -104,6 +104,7 @@ trait beward
      * @param string $resource API endpoint.
      * @param array $params (Optional) Query params or request body. Empty array by default.
      * @param bool $post (Optional) Add $params as request body if true. Default is false.
+     * @param int $timeout (Optional) The maximum number of seconds to allow cURL functions to execute.
      * @param string $referer (Optional) Add referer header to query. Default is empty string.
      * @param int $authType (Optional) Authentication type. Default is CURLAUTH_BASIC.
      *
@@ -113,6 +114,7 @@ trait beward
         string $resource,
         array  $params = [],
         bool   $post = false,
+        int    $timeout = 0,
         string $referer = '',
         int    $authType = CURLAUTH_BASIC,
     ): string
@@ -144,6 +146,7 @@ trait beward
             'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.96 Safari/537.36'
         );
         curl_setopt($ch, CURLOPT_VERBOSE, false);
+        curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
 
         if ($post) {
             curl_setopt($ch, CURLOPT_POST, true);

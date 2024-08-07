@@ -402,18 +402,13 @@ abstract class beward extends domophone
 
     public function openLock(int $lockNumber = 0)
     {
-        switch ($lockNumber) {
-            case 0:
-                $this->apiCall('cgi-bin/intercom_cgi', ['action' => 'maindoor']);
-                break;
-            case 1:
-                $this->apiCall('cgi-bin/intercom_cgi', ['action' => 'altdoor']);
-                break;
-            case 2:
-                $this->apiCall('cgi-bin/intercom_cgi', ['action' => 'light', 'Enable' => 'on']);
-                usleep(100000);
-                $this->apiCall('cgi-bin/intercom_cgi', ['action' => 'light', 'Enable' => 'off']);
-                break;
+        if ($lockNumber === 2) {
+            $this->apiCall('cgi-bin/intercom_cgi', ['action' => 'light', 'Enable' => 'on'], false, 3);
+            usleep(100000);
+            $this->apiCall('cgi-bin/intercom_cgi', ['action' => 'light', 'Enable' => 'off'], false, 3);
+        } else {
+            $action = $lockNumber === 1 ? 'altdoor' : 'maindoor';
+            $this->apiCall('cgi-bin/intercom_cgi', ['action' => $action], false, 3);
         }
     }
 

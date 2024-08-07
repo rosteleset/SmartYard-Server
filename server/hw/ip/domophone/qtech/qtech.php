@@ -314,12 +314,14 @@ abstract class qtech extends domophone
 
     public function openLock(int $lockNumber = 0)
     {
-        $this->apiCall('relay', 'trig', [
+        $data = [
             'mode' => 0,
             'relay_num' => $lockNumber,
             'level' => 0,
             'delay' => 3,
-        ]);
+        ];
+
+        $this->apiCall('relay', 'trig', $data, 3);
     }
 
     public function prepare()

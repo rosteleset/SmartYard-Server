@@ -40,7 +40,7 @@ trait qtech
 
     public function getSysinfo(): array
     {
-        $res = $this->apiCall('firmware', 'status');
+        $res = $this->apiCall('firmware', 'status', [], 3);
 
         $sysinfo['DeviceID'] = str_replace(':', '', $res['data']['mac']);
         $sysinfo['DeviceModel'] = $res['data']['model'];
@@ -81,10 +81,11 @@ trait qtech
      * @param string $target The target for the API call.
      * @param string $action The action to be performed.
      * @param array $data (Optional) An array of data to be included in the request.
+     * @param int $timeout (Optional) The maximum number of seconds to allow cURL functions to execute.
      *
      * @return array|null Returns the decoded JSON response as an associative array, or null on failure.
      */
-    protected function apiCall(string $target, string $action, array $data = []): ?array
+    protected function apiCall(string $target, string $action, array $data = [], int $timeout = 0): ?array
     {
         $req = $this->url . $this->apiPrefix;
 
@@ -102,6 +103,7 @@ trait qtech
         curl_setopt($ch, CURLOPT_USERPWD, "$this->login:$this->password");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_VERBOSE, false);
+        curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postfields));
 
         $res = curl_exec($ch);

@@ -41,7 +41,14 @@ class akuvox extends camera
         $url = parse_url_ext($this->url);
         $host = $url["host"];
         $port = @($url["fragmentExt"] && $url["fragmentExt"]["camshotPort"]) ? $url["fragmentExt"]["camshotPort"] : 8080;
-        return file_get_contents("http://$this->login:$this->password@$host:$port/picture.jpg");
+
+        $context = stream_context_create([
+            'http' => [
+                'timeout' => 3.0,
+            ],
+        ]);
+
+        return file_get_contents("http://$this->login:$this->password@$host:$port/picture.jpg", false, $context);
     }
 
     public function setOsdText(string $text = '') // Latin only

@@ -40,7 +40,7 @@ trait akuvox
 
     public function getSysinfo(): array
     {
-        $info = $this->apiCall('/system/info')['data']['Status'];
+        $info = $this->apiCall('/system/info', 'GET', [], 3)['data']['Status'] ?? [];
 
         $sysinfo['DeviceID'] = str_replace(':', '', $info['MAC']);
         $sysinfo['DeviceModel'] = $info['Model'];
@@ -82,10 +82,11 @@ trait akuvox
      * @param string $resource API endpoint.
      * @param string $method (Optional) HTTP method. Default is "GET".
      * @param array $payload (Optional) Request body as an array. Empty array by default.
+     * @param int $timeout (Optional) The maximum number of seconds to allow cURL functions to execute.
      *
      * @return array API response.
      */
-    protected function apiCall(string $resource, string $method = 'GET', array $payload = []): array
+    protected function apiCall(string $resource, string $method = 'GET', array $payload = [], int $timeout = 0): array
     {
         $url = explode('/#', $this->url)[0];
         $req = $url . $this->apiPrefix . $resource;
@@ -97,6 +98,7 @@ trait akuvox
         curl_setopt($ch, CURLOPT_USERPWD, "$this->login:$this->password");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_VERBOSE, false);
+        curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
 
         if ($payload) {
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));

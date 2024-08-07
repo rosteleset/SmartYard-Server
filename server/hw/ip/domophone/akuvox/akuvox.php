@@ -204,8 +204,9 @@ abstract class akuvox extends domophone
 
     public function openLock(int $lockNumber = 0)
     {
-        $relayDelay = (int)$this->apiCall('/relay/get')['data']['Config.DoorSetting.RELAY.RelayADelay'];
-        $this->apiCall('', 'POST', [
+        $relayDelay = (int)$this->apiCall('/relay/get', 'GET', [], 3)['data']['Config.DoorSetting.RELAY.RelayADelay'];
+
+        $payload = [
             'target' => 'relay',
             'action' => 'trig',
             'data' => [
@@ -214,7 +215,9 @@ abstract class akuvox extends domophone
                 'level' => 0, // Not using in auto close mode
                 'delay' => $relayDelay,
             ],
-        ]);
+        ];
+
+        $this->apiCall('', 'POST', $payload, 3);
     }
 
     public function prepare()

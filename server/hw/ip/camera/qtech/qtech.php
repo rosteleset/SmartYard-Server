@@ -47,7 +47,14 @@ class qtech extends camera
     public function getCamshot(): string
     {
         $host = parse_url($this->url)['host'];
-        return file_get_contents("http://$this->login:$this->password@$host:8080/picture.jpg");
+
+        $context = stream_context_create([
+            'http' => [
+                'timeout' => 3.0,
+            ],
+        ]);
+
+        return file_get_contents("http://$this->login:$this->password@$host:8080/picture.jpg", false, $context);
     }
 
     public function prepare()

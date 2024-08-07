@@ -49,7 +49,7 @@ class rubetek extends camera
 
     public function getCamshot(): string
     {
-        return $this->apiCall('/image');
+        return $this->apiCall('/image', 'GET', [], 5);
     }
 
     public function setOsdText(string $text = '')

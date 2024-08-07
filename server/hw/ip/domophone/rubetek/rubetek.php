@@ -313,7 +313,7 @@ abstract class rubetek extends domophone
     public function openLock(int $lockNumber = 0)
     {
         $lockNumber += 1;
-        $this->apiCall("/doors/$lockNumber/open", 'POST');
+        $this->apiCall("/doors/$lockNumber/open", 'POST', [], 3);
     }
 
     public function prepare()

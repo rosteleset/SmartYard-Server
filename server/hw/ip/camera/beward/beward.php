@@ -51,7 +51,7 @@ class beward extends camera
 
     public function getCamshot(): string
     {
-        return $this->apiCall('cgi-bin/images_cgi', ['channel' => 0]);
+        return $this->apiCall('cgi-bin/images_cgi', ['channel' => 0], false, 3);
     }
 
     public function setOsdText(string $text = '')
