@@ -171,7 +171,7 @@
                                     nowrap: true,
                                 },
                                 {
-                                    data: (devices[i].voipToken == "Off") ? i18n("no") : i18n("yes"),
+                                    data: (devices[i].voipToken &&  devices[i].voipToken.toString().length > 12) ? i18n("yes") : i18n("no"),
                                     nowrap: true,
                                 },
                                 {
