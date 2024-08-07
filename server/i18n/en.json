@@ -13,7 +13,8 @@
         "unknown": "Status Unknown",
         "offline": "Unavailable, please check the device connection",
         "online": "Available",
-        "sipRegistrationFail": "SIP registration missing"
+        "sipRegistrationFail": "SIP registration missing",
+        "dvrErr": "DVR stream bad health"
     },
 
     "cantLoadBackend": "Failed to load module %s"
