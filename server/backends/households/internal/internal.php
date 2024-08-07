@@ -2504,10 +2504,8 @@
                                 }
                                 $query = implode(" and ", $query);
                                 $query = "select * from (
-                                    select *, levenshtein(subscriber_full, :search) as similarity from addresses_houses where $query limit 51
-                                    union
-                                    select *, 0 as similarity from houses_subscribers_mobile where id = :search
-                                ) as t1 order by similarity asc, subscriber_full";
+                                    select *, min(levenshtein(subscriber_full, :search), levenshtein(id, :search)) as similarity from addresses_houses where ($query) or id = :search
+                                ) as t1 order by similarity asc, subscriber_full limit 51";
                                 $params["search"] = $search;
                                 break;
                         }
@@ -2523,9 +2521,7 @@
                         }
                         $query = implode(" and ", $query);
                         $query = "select * from (
-                            select *, mb_levenshtein(subscriber_full, :search) as similarity from houses_subscribers_mobile where $query
-                            union
-                            select *, 0 as similarity from houses_subscribers_mobile where id = :search
+                            select *, min(mb_levenshtein(subscriber_full, :search), mb_levenshtein(id, :search)) as similarity from houses_subscribers_mobile where ($query) or id = :search
                         ) as t1 order by similarity asc, subscriber_full limit 51";
                         $params["search"] = $search;
                         break;
