@@ -2504,7 +2504,7 @@
                                 }
                                 $query = implode(" and ", $query);
                                 $query = "select * from (
-                                    select *, min(levenshtein(subscriber_full, :search), levenshtein(id, :search)) as similarity from addresses_houses where ($query) or id = :search
+                                    select *, min(levenshtein(subscriber_full, :search), levenshtein(id, :search)) as similarity from houses_subscribers_mobile where ($query) or id = :search
                                 ) as t1 order by similarity asc, subscriber_full limit 51";
                                 $params["search"] = $search;
                                 break;
