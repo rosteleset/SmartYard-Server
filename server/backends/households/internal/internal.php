@@ -2468,9 +2468,7 @@
                         switch (@$this->config["backends"]["addresses"]["text_search_mode"]) {
                             case "trgm":
                                 $query = "select * from (
-                                    select *, similarity(subscriber_full, :search) from houses_subscribers_mobile where subscriber_full % :search
-                                    union
-                                    select *, 1 as similarity from houses_subscribers_mobile where id = :search
+                                    select *, greatest(similarity(subscriber_full, :search), similarity(id, :search)) as similarity from houses_subscribers_mobile where subscriber_full % :search
                                 ) as t1 order by similarity desc, subscriber_full limit 51";
                                 $params = [ "search" => $search ];
                                 break;
@@ -2504,7 +2502,7 @@
                                 }
                                 $query = implode(" and ", $query);
                                 $query = "select * from (
-                                    select *, min(levenshtein(subscriber_full, :search), levenshtein(id, :search)) as similarity from houses_subscribers_mobile where ($query) or id = :search
+                                    select *, least(levenshtein(subscriber_full, :search), levenshtein(id, :search)) as similarity from houses_subscribers_mobile where ($query) or id = :search
                                 ) as t1 order by similarity asc, subscriber_full limit 51";
                                 $params["search"] = $search;
                                 break;
