@@ -247,7 +247,9 @@
 
             $headers = apache_request_headers();
             if (@$headers['Accept-Language'] && @$headers['X-System-Info']) {
-                $households->modifyDevice($device["deviceId"], [ "ua" => $headers['Accept-Language'] . ',' . $headers['X-System-Info'], "ip" => $ip ]);
+                $ua = $headers['X-System-Info'];
+                $ua = str_replace(", ", ",", $ua);
+                $households->modifyDevice($device["deviceId"], [ "ua" => $headers['Accept-Language'] . ',' . $ua, "ip" => $ip ]);
             } else {
                 $households->modifyDevice($device["deviceId"], [ "ip" => $ip ]);
             }
