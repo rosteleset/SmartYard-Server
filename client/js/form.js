@@ -808,7 +808,7 @@ function cardForm(params) {
             if (focus) {
                 $("#" + focus).focus();
             }
-        }, 250);
+        }, 150);
 
         if (params.timeout) {
             $('#modal').attr("data-prefix", _prefix);
