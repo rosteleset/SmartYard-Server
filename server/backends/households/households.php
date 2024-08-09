@@ -375,5 +375,19 @@
              * @return mixed
              */
             abstract function searchSubscriber($search);
+
+            /**
+             * @param string search
+             *
+             * @return mixed
+             */
+            abstract function searchFlat($search);
+
+            /**
+             * @param string search
+             *
+             * @return mixed
+             */
+            abstract function searchRf($search);
         }
     }

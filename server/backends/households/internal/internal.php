@@ -15,7 +15,7 @@
             /**
              * @inheritDoc
              */
-            function getFlat($flatId)
+                function getFlat($flatId)
             {
                 if (!checkInt($flatId)) {
                     return false;
@@ -257,6 +257,13 @@
                         $p = [
                             "login" => $params["login"],
                             "password" => $params["password"],
+                        ];
+                        break;
+
+                    case "login":
+                        $q = "select house_flat_id from houses_flats where login = :login";
+                        $p = [
+                            "login" => $params["login"],
                         ];
                         break;
 
@@ -1502,6 +1509,13 @@
                             ];
                             break;
 
+                        case "rfId":
+                            $q = "select * from houses_rfids where rfid = :rfid";
+                            $p = [
+                                "rfid" => $query,
+                            ];
+                            break;
+
                         case "domophoneId":
                             $addresses = loadBackend("addresses");
                             $q = "select address_house_id from houses_houses_entrances where house_entrance_id in (select house_entrance_id from houses_entrances where house_domophone_id = :domophone_id)";
@@ -2512,7 +2526,14 @@
                         }
                         $query = implode(" and ", $query);
                         $query = "select * from (
-                            select *, min(mb_levenshtein(subscriber_full, :search), mb_levenshtein(id, :search)) as similarity from houses_subscribers_mobile where ($query) or id = :search
+                            select
+                                *, min(mb_levenshtein(subscriber_full, :search), mb_levenshtein(id, :search)) as similarity
+                            from
+                                houses_subscribers_mobile
+                            where
+                                ($query)
+                                or
+                                id = :search
                         ) as t1 order by similarity asc, subscriber_full limit 51";
                         $params["search"] = $search;
                         break;
@@ -2541,6 +2562,58 @@
                 }
 
                 return $result;
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function searchFlat($search)
+            {
+                $byLogin = $this->getFlats("login", [ "login" => $search ]);
+                $byContract = $this->getFlats("contract", [ "contract" => $search ]);
+
+/*
+                $addresses = loadBackend("addresses");
+
+                foreach ($result as &$subscriber) {
+                    $subscriber["flats"] = $this->getFlats("subscriberId", [ "id" => $subscriber["mobile"] ]);
+                    foreach ($subscriber["flats"] as &$flat) {
+                        $flat["house"] = $addresses->getHouse($flat["houseId"]);
+                    }
+                }
+*/
+                $already = [];
+                $result = [];
+
+                foreach ($byLogin as $flat) {
+                    if (!$already) {
+                        $result[] = $flat;
+                        $already[$flat["flatId"]] = 1;
+                    }
+                }
+
+                foreach ($byContract as $flat) {
+                    if (!$already) {
+                        $result[] = $flat;
+                        $already[$flat["flatId"]] = 1;
+                    }
+                }
+
+                $addresses = loadBackend("addresses");
+
+                foreach ($result as &$flat) {
+                    $flat["house"] = $addresses->getHouse($flat["houseId"]);
+                }
+
+                return $result;
+            }
+
+            /**
+             * @inheritDoc
+             */
+            public function searchRf($search)
+            {
+                return [];
             }
         }
     }

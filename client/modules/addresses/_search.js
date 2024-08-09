@@ -11,52 +11,6 @@
         })
     },
 
-/*
-<div class="list-group">
-    <div class="list-group-item">
-        <div class="row">
-            <div class="col px-4">
-                <div>
-                    <div class="float-right">2021-04-20 04:04pm</div>
-                    <h3>Lorem ipsum dolor sit amet</h3>
-                    <p class="mb-0">consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="list-group-item">
-        <div class="row">
-            <div class="col-auto">
-                <img class="img-fluid" src="../../dist/img/photo1.png" alt="Photo" style="max-height: 160px;">
-            </div>
-            <div class="col px-4">
-                <div>
-                    <div class="float-right">2021-04-20 10:14pm</div>
-                    <h3>Lorem ipsum dolor sit amet</h3>
-                    <p class="mb-0">consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="list-group-item">
-        <div class="row">
-            <div class="col-auto">
-                <iframe width="240" height="160" src="https://www.youtube.com/embed/WEkSYw3o5is?controls=0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" class="border-0" allowfullscreen=""></iframe>
-            </div>
-            <div class="col px-4">
-                <div>
-                    <div class="float-right">2021-04-20 11:54pm</div>
-                    <h3>Lorem ipsum dolor sit amet</h3>
-                    <p class="mb-0">consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-*/
-
     renderSearch: function (search) {
         $("#searchInput").val(search);
 
@@ -72,60 +26,99 @@
                     search: search,
                 }, true).
                 done(ss => {
-                    modules.addresses._search.searchResults = {
-                        as: [],
-                        hs: [],
-                        ss: [],
-                    }
+                    QUERY("subscribers", "searchFlat", {
+                        search: search,
+                    }, true).
+                    done(fs => {
+                        QUERY("subscribers", "searchFlat", {
+                            search: search,
+                        }, true).
+                        done(rs => {
+                            modules.addresses._search.searchResults = {
+                                as: [],
+                                hs: [],
+                                ss: [],
+                                fs: [],
+                                rs: [],
+                            }
 
-                    let h = '';
+                            let h = '';
 
-                    if (as && as.addresses && as.addresses.length) {
-                    }
+                            if (as && as.addresses && as.addresses.length) {
+                            }
 
-                    if (hs && hs.houses && hs.houses.length) {
-                        modules.addresses._search.searchResults.hs = hs.houses;
-                        h += `<h5 class="mt-3 ml-2">${i18n('addresses.housesFound')}</h5>`;
-                        h += '<ul class="list-unstyled">';
-                        for (let i in hs.houses) {
-                            h += `<li><i class='fas fa-fw fa-home mr-2 ml-3'></i><a href='?#addresses.houses&houseId=${hs.houses[i].houseId}'>${hs.houses[i].houseFull}</a> (${hs.houses[i].similarity})</li>`;
-                        }
-                        h += '</ul>';
-                    }
+                            if (hs && hs.houses && hs.houses.length) {
+                                modules.addresses._search.searchResults.hs = hs.houses;
+                                h += `<h5 class="mt-3 ml-2">${i18n('addresses.housesFound')}</h5>`;
+                                h += '<ul class="list-unstyled">';
+                                for (let i in hs.houses) {
+                                    h += '<li class="mt-2">';
+                                    h += '<i class="fas fa-fw fa-city mr-2 ml-3"></i>';
+                                    h += `<a href='?#addresses.houses&houseId=${hs.houses[i].houseId}'>${hs.houses[i].houseFull}</a> (${hs.houses[i].similarity})`;
+                                    h += '</li>';
+                                }
+                                h += '</ul>';
+                            }
 
-                    if (ss && ss.subscribers && ss.subscribers.length) {
-                        modules.addresses._search.searchResults.ss = ss.subscribers;
-                        h += `<h5 class="mt-3 ml-2">${i18n('addresses.subscribersFound')}</h5>`;
-                        h += '<ul class="list-unstyled">';
-                        for (let i in ss.subscribers) {
-                            h += '<li>';
-                            if (ss.subscribers[i].id == search) {
-                                h += "<i class='fas fa-fw fa-mobile-alt mr-2 ml-3'></i>";
+                            if (fs && fs.flats && fs.flats.length) {
+                                modules.addresses._search.searchResults.fs = fs.flats;
+                                h += `<h5 class="mt-3 ml-2">${i18n('addresses.flatsFound')}</h5>`;
+                                h += '<ul class="list-unstyled">';
+                                for (let i in fs.flats) {
+                                    h += '<li class="mt-2">';
+                                    h += '<i class="fas fa-fw fa-home mr-2 ml-3"></i>';
+                                    h += `<a href='"?#addresses.subscribers&flatId=${fs.flats[i].flatId}&houseId=${fs.flats[i].house.houseId}&flat=${encodeURIComponent(fs.flats[i].flat)}&settlementId=${fs.flats[i].house.settlementId ? fs.flats[i].house.settlementId : 0}&streetId=${fs.flats[i].house.streetId ? fs.flats[i].house.streetId : 0}'>${fs.flats[i].house.houseFull}, ${fs.flats[i].flat}</a>`;
+                                    h += '</li>';
+                                }
+                                h += '</ul>';
+                            }
+
+                            if (ss && ss.subscribers && ss.subscribers.length) {
+                                modules.addresses._search.searchResults.ss = ss.subscribers;
+                                h += `<h5 class="mt-3 ml-2">${i18n('addresses.subscribersFound')}</h5>`;
+                                h += '<ul class="list-unstyled">';
+                                for (let i in ss.subscribers) {
+                                    h += '<li class="mt-2">';
+                                    if (ss.subscribers[i].mobile == search) {
+                                        h += "<i class='fas fa-fw fa-mobile-alt mr-2 ml-3'></i>";
+                                    } else {
+                                        h += "<i class='fas fa-fw fa-user mr-2 ml-3'></i>";
+                                    }
+
+                                    h += `<a href="javascript:void(0)" class="ss" data-subscriber-id="${i}">${ss.subscribers[i].subscriberFull}</a> (${ss.subscribers[i].similarity})<br />`;
+
+                                    for (let j in ss.subscribers[i].flats) {
+                                        h += '<div class="mt-1">';
+                                        h += '<i class="fas fa-fw fa-home mr-2 ml-4"></i>';
+                                        h += `<a href='"?#addresses.subscribers&flatId=${ss.subscribers[i].flats[j].flatId}&houseId=${ss.subscribers[i].flats[j].house.houseId}&flat=${encodeURIComponent(ss.subscribers[i].flats[j].flat)}&settlementId=${ss.subscribers[i].flats[j].house.settlementId ? ss.subscribers[i].flats[j].house.settlementId : 0}&streetId=${ss.subscribers[i].flats[j].house.streetId ? ss.subscribers[i].flats[j].house.streetId : 0}'>${ss.subscribers[i].flats[j].house.houseFull}, ${ss.subscribers[i].flats[j].flat}</a><br />`;
+                                        h += '</div>';
+                                    }
+
+                                    h += `</li>`;
+                                }
+                                h += '</ul>';
+                            }
+
+                            if (rs && rs.rfs && rs.rfs.length) {
+                                modules.addresses._search.searchResults.rs = rs.rfs;
+                                h += `<h5 class="mt-3 ml-2">${i18n('addresses.rfsFound')}</h5>`;
+                            }
+
+                            if (h) {
+                                $("#mainForm").html(h);
                             } else {
-                                h += "<i class='far fa-fw fa-user mr-2 ml-3'></i>";
-                            }
-                            h += `<a href="javascript:void(0)" class="ss" data-subscriber-id="${i}">${ss.subscribers[i].subscriberFull}</a> (${ss.subscribers[i].similarity})<br />`;
-
-                            for (let j in ss.subscribers[i].flats) {
-                                h += `<span class="ml-4 mt-1"><a href='?#addresses.houses&houseId=${ss.subscribers[i].flats[j].houseId}'>${ss.subscribers[i].flats[j].house.houseFull}, ${ss.subscribers[i].flats[j].flat}</a></span><br />`;
+                                $("#mainForm").html(`<h5 class="mt-3 ml-2">${i18n('addresses.notFound')}</h5>`);
                             }
 
-                            h += `</li>`;
-                        }
-                        h += '</ul>';
-                    }
+                            $(".ss").off("click").on("click", function () {
+                                modules.addresses.subscribers.modifySubscriberLim(modules.addresses._search.searchResults.ss[$(this).attr("data-subscriber-id")]);
+                            });
 
-                    if (h) {
-                        $("#mainForm").html(h);
-                    } else {
-                        $("#mainForm").html(`<h5 class="mt-3 ml-2">${i18n('addresses.notFound')}</h5>`);
-                    }
-
-                    $(".ss").off("click").on("click", function () {
-                        modules.addresses.subscribers.modifySubscriberLim(modules.addresses._search.searchResults.ss[$(this).attr("data-subscriber-id")]);
-                    });
-
-                    loadingDone();
+                            loadingDone();
+                        }).
+                        fail(FAILPAGE);
+                    }).
+                    fail(FAILPAGE);
                 }).fail(FAILPAGE);
             }).fail(FAILPAGE);
         }).fail(FAILPAGE);
