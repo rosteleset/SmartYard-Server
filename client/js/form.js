@@ -794,18 +794,21 @@ function cardForm(params) {
                 let s2 = $(this);
                 s2.css("width", s2.css("width"));
             });
+
             if (params.title) {
                 $("#modal").draggable({
                     handle: "#modalHeader",
                 });
             }
+
             if (autofocus && !focus) {
                 $("#" + autofocus).focus();
             }
+
             if (focus) {
                 $("#" + focus).focus();
             }
-        }, 100);
+        }, 250);
 
         if (params.timeout) {
             $('#modal').attr("data-prefix", _prefix);

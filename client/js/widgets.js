@@ -397,7 +397,11 @@ function leftSideClick(button, title, group, click) {
 
 $(document).on('select2:open', '.select2', function () {
     setTimeout(() => {
-        document.querySelector(`[aria-controls="select2-${$(this).attr("id")}-results"]`).focus();
+        try {
+            document.querySelector(`[aria-controls="select2-${$(this).attr("id")}-results"]`).focus();
+        } catch (_) {
+            //
+        }
     }, 5);
 });
 
