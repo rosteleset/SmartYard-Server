@@ -2628,7 +2628,7 @@
                             break;
 
                         case 3:
-                            $entrances = $this->db->get("select address_house_id from houses_houses_entrances where house_entrance_id = :house_entrance_id", [
+                            $houses = $this->db->get("select address_house_id from houses_houses_entrances where house_entrance_id = :house_entrance_id", [
                                 "house_entrance_id" => $key["accessTo"],
                             ], [
                                 "address_house_id" => "houseId",
@@ -2636,8 +2636,8 @@
 
                             $key["entrance"] = $this->getEntrance($key["accessTo"]);
 
-                            foreach ($entrances as $e) {
-                                $key["houses"][] = $addresses->getHouse($e["houseId"]);
+                            foreach ($houses as $h) {
+                                $key["houses"][] = $addresses->getHouse($h["houseId"]);
                             }
                             break;
 
