@@ -102,9 +102,64 @@
                             if (rs && rs.rfs && rs.rfs.length) {
                                 modules.addresses._search.searchResults.rs = rs.rfs;
                                 h += `<h5 class="mt-3 ml-2">${i18n('addresses.rfsFound')}</h5>`;
+                                h += '<ul class="list-unstyled">';
                                 for (let i in rs.rfs) {
                                     console.log(rs.rfs[i]);
+                                    h += '<li class="mt-2">';
+                                    /*
+                                        type 0 (any)
+                                        type 1 (subscriber)
+                                        type 2 (flat)
+                                        type 3 (entrance)
+                                        type 4 (house)
+                                        type 5 (company)
+                                    */
+                                    switch (parseInt(rs.rfs[i].accessType)) {
+                                        case 0:
+                                            h += i18n("addresses.keysKeyType", i18n("addresses.keysType" + rs.rfs[i].accessType + "s"));
+                                            h += "<i class='fab fa-fw fa-keycdn mr-2 ml-3'></i>";
+                                            h += "<br />";
+                                            break;
+
+                                        case 1:
+                                            h += "<i class='fas fa-fw fa-user mr-2 ml-3'></i>";
+                                            h += i18n("addresses.keysKeyType", i18n("addresses.keysType" + rs.rfs[i].accessType + "s"));
+
+                                            break;
+
+                                        case 2:
+                                            h += '<i class="fas fa-fw fa-home mr-2 ml-3"></i>';
+                                            h += i18n("addresses.keysKeyType", i18n("addresses.keysType" + rs.rfs[i].accessType + "s"));
+
+                                            break;
+
+                                        case 3:
+                                            h += '<i class="fas fa-fw fa-door-closed mr-2 ml-3"></i>';
+                                            h += i18n("addresses.keysKeyType", i18n("addresses.keysType" + rs.rfs[i].accessType + "s"));
+
+                                            break;
+
+                                        case 4:
+                                            h += '<i class="fas fa-fw fa-key mr-2 ml-3"></i>';
+                                            h += rs.rfs[i].rfId;
+                                            h += " (" + i18n("addresses.keysKeyType", i18n("addresses.keysType" + rs.rfs[i].accessType + "s")) + ")";
+
+                                            h += '<div class="mt-1">';
+                                            h += '<i class="fas fa-fw fa-city mr-2 ml-4"></i>';
+                                            h += `<a href='?#addresses.houses&houseId=${rs.rfs[i].house.houseId}'>${rs.rfs[i].house.houseFull}</a>    `;
+                                            h += '</div>';
+
+                                            break;
+
+                                        case 5:
+                                            h += '<i class="far fa-fw fa-building nav-icon"></i>';
+                                            h += i18n("addresses.keysKeyType", i18n("addresses.keysType" + rs.rfs[i].accessType + "s"));
+
+                                            break;
+                                    }
+                                    h += '</li>';
                                 }
+                                h += '</ul>';
                             }
 
                             if (h) {
