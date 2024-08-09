@@ -30,7 +30,7 @@
                         search: search,
                     }, true).
                     done(fs => {
-                        QUERY("subscribers", "searchFlat", {
+                        QUERY("subscribers", "searchRf", {
                             search: search,
                         }, true).
                         done(rs => {
@@ -54,7 +54,7 @@
                                 for (let i in hs.houses) {
                                     h += '<li class="mt-2">';
                                     h += '<i class="fas fa-fw fa-city mr-2 ml-3"></i>';
-                                    h += `<a href='?#addresses.houses&houseId=${hs.houses[i].houseId}'>${hs.houses[i].houseFull}</a> (${hs.houses[i].similarity})`;
+                                    h += `<a href='?#addresses.houses&houseId=${hs.houses[i].houseId}'>${hs.houses[i].houseFull}</a>    `;
                                     h += '</li>';
                                 }
                                 h += '</ul>';
@@ -85,7 +85,7 @@
                                         h += "<i class='fas fa-fw fa-user mr-2 ml-3'></i>";
                                     }
 
-                                    h += `<a href="javascript:void(0)" class="ss" data-subscriber-id="${i}">${ss.subscribers[i].subscriberFull}</a> (${ss.subscribers[i].similarity})<br />`;
+                                    h += `<a href="javascript:void(0)" class="ss" data-subscriber-id="${i}">${ss.subscribers[i].subscriberFull}</a><br />`;
 
                                     for (let j in ss.subscribers[i].flats) {
                                         h += '<div class="mt-1">';
@@ -102,6 +102,9 @@
                             if (rs && rs.rfs && rs.rfs.length) {
                                 modules.addresses._search.searchResults.rs = rs.rfs;
                                 h += `<h5 class="mt-3 ml-2">${i18n('addresses.rfsFound')}</h5>`;
+                                for (let i in rs.rfs) {
+                                    console.log(rs.rfs[i]);
+                                }
                             }
 
                             if (h) {

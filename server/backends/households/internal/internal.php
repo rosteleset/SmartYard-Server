@@ -2611,7 +2611,47 @@
                     type 4 (house)
                     type 5 (company)
                 */
-                return [];
+                $rfs = $this->getKeys("rfId", $search);
+
+                $addresses = loadBackend("addresses");
+                $companies = loadBackend("companies");
+
+                foreach ($rfs as &$key) {
+                    switch ((int)$key["accessType"]) {
+                        case 1:
+                            $key["subscriber"] = $this->getSubscribers("id", $key["accessTo"]);
+                            break;
+
+                        case 2:
+                            $key["flat"] = $this->getFlat($key["accessTo"]);
+                            $key["house"] = $addresses->getHouse($key["flat"]["houseId"]);
+                            break;
+
+                        case 3:
+                            $entrances = $this->db->get("select address_house_id from houses_houses_entrances where house_entrance_id = :house_entrance_id", [
+                                "house_entrance_id" => $key["accessTo"],
+                            ], [
+                                "address_house_id" => "houseId",
+                            ]);
+
+                            $key["entrance"] = $this->getEntrance($key["accessTo"]);
+
+                            foreach ($entrances as $e) {
+                                $key["houses"][] = $addresses->getHouse($e["houseId"]);
+                            }
+                            break;
+
+                        case 4:
+                            $key["house"] = $addresses->getHouse($key["accessTo"]);
+                            break;
+
+                        case 5:
+                            $key["company"] = $companies->getCompany($key["accessTo"]);
+                            break;
+                    }
+                }
+
+                return $rfs;
             }
         }
     }
