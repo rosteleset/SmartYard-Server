@@ -2572,16 +2572,6 @@
                 $byLogin = $this->getFlats("login", [ "login" => $search ]);
                 $byContract = $this->getFlats("contract", [ "contract" => $search ]);
 
-/*
-                $addresses = loadBackend("addresses");
-
-                foreach ($result as &$subscriber) {
-                    $subscriber["flats"] = $this->getFlats("subscriberId", [ "id" => $subscriber["mobile"] ]);
-                    foreach ($subscriber["flats"] as &$flat) {
-                        $flat["house"] = $addresses->getHouse($flat["houseId"]);
-                    }
-                }
-*/
                 $already = [];
                 $result = [];
 
@@ -2613,6 +2603,14 @@
              */
             public function searchRf($search)
             {
+                /*
+                    type 0 (any)
+                    type 1 (subscriber)
+                    type 2 (flat)
+                    type 3 (entrance)
+                    type 4 (house)
+                    type 5 (company)
+                */
                 return [];
             }
         }
