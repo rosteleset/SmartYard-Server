@@ -478,14 +478,16 @@ function initAll() {
     $('.rs232-scanner').attr('title', i18n("connectScanner"));
 
     $("#searchInput").attr("placeholder", i18n("search")).off("keypress").on("keypress", e => {
-        if (e.charCode === 13) {
-            pathToObject(modules, currentPage).search($("#searchInput").val());
+        if (e.charCode === 13 && $.trim($("#searchInput").val())) {
+            pathToObject(modules, currentPage).search($.trim($("#searchInput").val()));
             e.preventDefault();
         }
     });
 
     $("#searchButton").off("click").on("click", () => {
-        pathToObject(modules, currentPage).search($("#searchInput").val());
+        if ($.trim($("#searchInput").val())) {
+            pathToObject(modules, currentPage).search($.trim($("#searchInput").val()));
+        }
     });
 
     $("#inputTextLine").off("keypress").on("keypress", event => {

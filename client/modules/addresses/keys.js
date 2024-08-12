@@ -148,7 +148,7 @@
         });
     },
 
-    modifyKey: function (keyId, params) {
+    modifyKey: function (keyId,     ) {
         loadingStart();
         QUERY("subscribers", "keys", {
             by: params.by ? params.by : "0",

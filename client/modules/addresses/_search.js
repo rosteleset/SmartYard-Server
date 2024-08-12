@@ -12,6 +12,8 @@
     },
 
     renderSearch: function (search) {
+        search = $.trim(search);
+
         $("#searchInput").val(search);
 
         QUERY("addresses", "search", {
@@ -116,26 +118,34 @@
                                     */
                                     switch (parseInt(rs.rfs[i].accessType)) {
                                         case 0:
-                                            h += i18n("addresses.keysKeyType", i18n("addresses.keysType" + rs.rfs[i].accessType + "s"));
                                             h += "<i class='fab fa-fw fa-keycdn mr-2 ml-3'></i>";
+                                            h += rs.rfs[i].rfId;
+                                            h += " (" + i18n("addresses.keysKeyType", i18n("addresses.keysType" + rs.rfs[i].accessType + "s")) + ")";
                                             h += "<br />";
+
                                             break;
 
                                         case 1:
                                             h += "<i class='fas fa-fw fa-user mr-2 ml-3'></i>";
-                                            h += i18n("addresses.keysKeyType", i18n("addresses.keysType" + rs.rfs[i].accessType + "s"));
+                                            h += rs.rfs[i].rfId;
+                                            h += " (" + i18n("addresses.keysKeyType", i18n("addresses.keysType" + rs.rfs[i].accessType + "s")) + ")";
+                                            h += "<br />";
 
                                             break;
 
                                         case 2:
                                             h += '<i class="fas fa-fw fa-home mr-2 ml-3"></i>';
-                                            h += i18n("addresses.keysKeyType", i18n("addresses.keysType" + rs.rfs[i].accessType + "s"));
+                                            h += rs.rfs[i].rfId;
+                                            h += " (" + i18n("addresses.keysKeyType", i18n("addresses.keysType" + rs.rfs[i].accessType + "s")) + ")";
+                                            h += "<br />";
 
                                             break;
 
                                         case 3:
                                             h += '<i class="fas fa-fw fa-door-closed mr-2 ml-3"></i>';
-                                            h += i18n("addresses.keysKeyType", i18n("addresses.keysType" + rs.rfs[i].accessType + "s"));
+                                            h += rs.rfs[i].rfId;
+                                            h += " (" + i18n("addresses.keysKeyType", i18n("addresses.keysType" + rs.rfs[i].accessType + "s")) + ")";
+                                            h += "<br />";
 
                                             break;
 
@@ -143,6 +153,7 @@
                                             h += '<i class="fas fa-fw fa-key mr-2 ml-3"></i>';
                                             h += rs.rfs[i].rfId;
                                             h += " (" + i18n("addresses.keysKeyType", i18n("addresses.keysType" + rs.rfs[i].accessType + "s")) + ")";
+                                            h += "<br />";
 
                                             h += '<div class="mt-1">';
                                             h += '<i class="fas fa-fw fa-city mr-2 ml-4"></i>';
@@ -153,7 +164,9 @@
 
                                         case 5:
                                             h += '<i class="far fa-fw fa-building nav-icon"></i>';
-                                            h += i18n("addresses.keysKeyType", i18n("addresses.keysType" + rs.rfs[i].accessType + "s"));
+                                            h += rs.rfs[i].rfId;
+                                            h += " (" + i18n("addresses.keysKeyType", i18n("addresses.keysType" + rs.rfs[i].accessType + "s")) + ")";
+                                            h += "<br />";
 
                                             break;
                                     }
