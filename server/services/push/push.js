@@ -123,8 +123,6 @@ const realPush = (msg, data, options, token, type, res) => {
 
             if (!badge) {
                 delete message.apns.payload.aps['badge'];
-            } else {
-//                message.android.notification.notification_count = badge;
             }
 
             admin.messaging().send(message).then(r => {
@@ -208,7 +206,6 @@ const realPush = (msg, data, options, token, type, res) => {
             curl.setOpt(Curl.option.POSTFIELDS, JSON.stringify(message));
             curl.setOpt(Curl.option.TIMEOUT, 30);
             curl.setOpt(Curl.option.SSL_VERIFYPEER, false);
-            curl.setOpt(Curl.option.SSLCERT, CERT);
             curl.setOpt(Curl.option.HEADER, false);
             curl.setOpt(Curl.option.VERBOSE, false);
 
@@ -269,7 +266,6 @@ const realPush = (msg, data, options, token, type, res) => {
             curl.setOpt(Curl.option.POSTFIELDS, JSON.stringify(message));
             curl.setOpt(Curl.option.TIMEOUT, 30);
             curl.setOpt(Curl.option.SSL_VERIFYPEER, false);
-            curl.setOpt(Curl.option.SSLCERT, CERT);
             curl.setOpt(Curl.option.HEADER, false);
             curl.setOpt(Curl.option.VERBOSE, false);
 
