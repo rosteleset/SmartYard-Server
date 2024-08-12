@@ -1,71 +1,128 @@
 ({
     currentTheme: '',
-    mainHeader: false,
+    mainHeader: null,
+    mediaQuery: null,
 
-    init: function () {
+    // Module initialization
+    init() {
         moduleLoaded("darkmode", this);
 
-        const currentTheme = lStore('theme')
-        const mainHeader = document.querySelector('.main-header')
+        // Load the current theme from local storage
+        this.currentTheme = lStore('theme');
+        this.mainHeader = document.querySelector('.main-header');
 
-        modules.darkmode.currentTheme = currentTheme;
-        modules.darkmode.mainHeader = mainHeader;
+        // Apply the current theme
+        this.applyTheme(this.currentTheme);
 
-        if (currentTheme) {
-            if (currentTheme === 'dark') {
-                if (!document.body.classList.contains('dark-mode')) {
-                    document.body.classList.add("dark-mode");
-                }
-                if (mainHeader.classList.contains('navbar-light')) {
-                    mainHeader.classList.add('navbar-dark');
-                    mainHeader.classList.remove('navbar-light');
-                }
-            }
-        }
+        // Create the theme selection dropdown menu
+        this.createThemeDropdown();
 
+        // Attach event listeners to the theme selection elements
+        this.attachEventListeners();
+    },
+
+    // Create the theme selection dropdown menu
+    createThemeDropdown() {
         $(`
             <li class="nav-item dropdown">
                 <span class="nav-link pointer" data-toggle="dropdown">
                     <i class="fas fa-lg fa-fw fa-moon"></i>
                 </span>
                 <div class="dropdown-menu">
-                    <a class="dropdown-item theme-select" href="#" id="dark-theme-select">${i18n('darkmode.dark')}</a>
-                    <a class="dropdown-item theme-select" href="#" id="light-theme-select">${i18n('darkmode.light')}</a>
+                    <a class="dropdown-item theme-select ${!this.currentTheme || this.currentTheme === 'auto' ? 'active' : ''}" href="#" data-theme="auto">${i18n('darkmode.auto')}</a>
+                    <a class="dropdown-item theme-select ${this.currentTheme === 'dark' ? 'active' : ''}" href="#" data-theme="dark">${i18n('darkmode.dark')}</a>
+                    <a class="dropdown-item theme-select ${this.currentTheme === 'light' ? 'active' : ''}" href="#" data-theme="light">${i18n('darkmode.light')}</a>
                 </div>
             </li>
         `).insertAfter("#rightTopDynamic");
-
-        $('.theme-select').on("click", modules.darkmode.switchTheme)
     },
 
+    // Attach event listeners to the theme selection elements
+    attachEventListeners() {
+        $('.theme-select').on("click", (e) => this.switchTheme(e));
+    },
+
+    // Apply the selected theme
+    applyTheme(theme) {
+        switch (theme) {
+            case 'dark':
+                this.setDark();
+                break;
+            case 'light':
+                this.setLight();
+                break;
+            case 'auto':
+            default:
+                this.setAuto();
+                break;
+        }
+    },
+
+    // Set the dark theme
+    setDark(updateStore = true) {
+        document.body.classList.add("dark-mode");
+        this.updateNavbar('dark');
+
+        if (updateStore) {
+            this.currentTheme = 'dark';
+            lStore('theme', this.currentTheme);
+        }
+    },
+
+    // Set the light theme
+    setLight(updateStore = true) {
+        document.body.classList.remove("dark-mode");
+        this.updateNavbar('light');
+
+        if (updateStore) {
+            this.currentTheme = 'light';
+            lStore('theme', this.currentTheme);
+        }
+    },
+
+    // Update the theme based on system settings
+    updateMedia(media) {
+        if (media.matches) {
+            this.setDark(false);
+        } else {
+            this.setLight(false);
+        }
+    },
+
+    // Automatically apply the theme based on system settings
+    setAuto() {
+        this.mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+        this.updateMedia(this.mediaQuery);
+        this.mediaQuery.onchange = (e) => this.updateMedia(e);
+
+        this.currentTheme = 'auto';
+        lStore('theme', this.currentTheme);
+    },
+
+    // Update the navbar classes based on the theme
+    updateNavbar(theme) {
+        if (theme === 'dark') {
+            this.mainHeader.classList.add('navbar-dark');
+            this.mainHeader.classList.remove('navbar-light');
+        } else {
+            this.mainHeader.classList.add('navbar-light');
+            this.mainHeader.classList.remove('navbar-dark');
+        }
+    },
+
+    // Switch the theme
     switchTheme(e) {
         e.preventDefault();
+        $('.theme-select').removeClass('active');
+        $(e.target).addClass('active');
+        const theme = $(e.target).data("theme");
 
-        const id = $(e.target).attr("id");
-
-        if (id === 'dark-theme-select') {
-            if (!document.body.classList.contains('dark-mode')) {
-                document.body.classList.add("dark-mode");
-            }
-            if (modules.darkmode.mainHeader.classList.contains('navbar-light')) {
-                modules.darkmode.mainHeader.classList.add('navbar-dark');
-                modules.darkmode.mainHeader.classList.remove('navbar-light');
-            }
-
-            modules.darkmode.currentTheme = 'dark'
-        } else {
-            if (document.body.classList.contains('dark-mode')) {
-                document.body.classList.remove("dark-mode");
-            }
-            if (modules.darkmode.mainHeader.classList.contains('navbar-dark')) {
-                modules.darkmode.mainHeader.classList.add('navbar-light');
-                modules.darkmode.mainHeader.classList.remove('navbar-dark');
-            }
-
-            modules.darkmode.currentTheme = 'light'
+        // Disable the media query listener when manually selecting a theme
+        if (this.mediaQuery && theme && theme !== 'auto') {
+            this.mediaQuery.onchange = null;
         }
 
-        lStore('theme', modules.darkmode.currentTheme);
+        this.applyTheme(theme);
     }
-
 }).init();
