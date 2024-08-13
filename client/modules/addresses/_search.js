@@ -106,7 +106,6 @@
                                 h += `<h5 class="mt-3 ml-2">${i18n('addresses.rfsFound')}</h5>`;
                                 h += '<ul class="list-unstyled">';
                                 for (let i in rs.rfs) {
-                                    console.log(rs.rfs[i]);
                                     h += '<li class="mt-2">';
                                     /*
                                         type 0 (any)
