@@ -119,7 +119,7 @@
                                     switch (parseInt(rs.rfs[i].accessType)) {
                                         case 0:
                                             h += "<i class='fab fa-fw fa-keycdn mr-2 ml-3'></i>";
-                                            h += rs.rfs[i].rfId;
+                                            h += `<a href="javascript:void(0)" class="rs" data-key-id="${rs.rfs[i].keyId}">${rs.rfs[i].rfId}</a>`;
                                             h += " (" + i18n("addresses.keysKeyType", i18n("addresses.keysType" + rs.rfs[i].accessType + "s")) + ")";
                                             h += "<br />";
 
@@ -127,7 +127,7 @@
 
                                         case 1:
                                             h += "<i class='fas fa-fw fa-user mr-2 ml-3'></i>";
-                                            h += rs.rfs[i].rfId;
+                                            h += `<a href="javascript:void(0)" class="rs" data-key-id="${rs.rfs[i].keyId}">${rs.rfs[i].rfId}</a>`;
                                             h += " (" + i18n("addresses.keysKeyType", i18n("addresses.keysType" + rs.rfs[i].accessType + "s")) + ")";
                                             h += "<br />";
 
@@ -135,7 +135,7 @@
 
                                         case 2:
                                             h += '<i class="fas fa-fw fa-home mr-2 ml-3"></i>';
-                                            h += rs.rfs[i].rfId;
+                                            h += `<a href="javascript:void(0)" class="rs" data-key-id="${rs.rfs[i].keyId}">${rs.rfs[i].rfId}</a>`;
                                             h += " (" + i18n("addresses.keysKeyType", i18n("addresses.keysType" + rs.rfs[i].accessType + "s")) + ")";
                                             h += "<br />";
 
@@ -143,7 +143,7 @@
 
                                         case 3:
                                             h += '<i class="fas fa-fw fa-door-closed mr-2 ml-3"></i>';
-                                            h += rs.rfs[i].rfId;
+                                            h += `<a href="javascript:void(0)" class="rs" data-key-id="${rs.rfs[i].keyId}">${rs.rfs[i].rfId}</a>`;
                                             h += " (" + i18n("addresses.keysKeyType", i18n("addresses.keysType" + rs.rfs[i].accessType + "s")) + ")";
                                             h += "<br />";
 
@@ -151,7 +151,7 @@
 
                                         case 4:
                                             h += '<i class="fas fa-fw fa-key mr-2 ml-3"></i>';
-                                            h += rs.rfs[i].rfId;
+                                            h += `<a href="javascript:void(0)" class="rs" data-key-id="${rs.rfs[i].keyId}">${rs.rfs[i].rfId}</a>`;
                                             h += " (" + i18n("addresses.keysKeyType", i18n("addresses.keysType" + rs.rfs[i].accessType + "s")) + ")";
                                             h += "<br />";
 
@@ -163,10 +163,15 @@
                                             break;
 
                                         case 5:
-                                            h += '<i class="far fa-fw fa-building nav-icon"></i>';
-                                            h += rs.rfs[i].rfId;
+                                            h += '<i class="far fa-fw fa-building mr-2 ml-3"></i>';
+                                            h += `<a href="javascript:void(0)" class="rs" data-key-id="${rs.rfs[i].keyId}">${rs.rfs[i].rfId}</a>`;
                                             h += " (" + i18n("addresses.keysKeyType", i18n("addresses.keysType" + rs.rfs[i].accessType + "s")) + ")";
                                             h += "<br />";
+
+                                            h += '<div class="mt-1">';
+                                            h += '<i class="fas fa-fw fa-city mr-2 ml-4"></i>';
+                                            h += `<a href="javascript:void(0)" class="cs" data-company-id='${rs.rfs[i].company.companyId}'>${rs.rfs[i].company.name}</a>    `;
+                                            h += '</div>';
 
                                             break;
                                     }
@@ -183,6 +188,14 @@
 
                             $(".ss").off("click").on("click", function () {
                                 modules.addresses.subscribers.modifySubscriberLim(modules.addresses._search.searchResults.ss[$(this).attr("data-subscriber-id")]);
+                            });
+
+                            $(".rs").off("click").on("click", function () {
+                                modules.addresses.keys.modifyKey($(this).attr("data-key-id"));
+                            });
+
+                            $(".cs").off("click").on("click", function () {
+                                modules.companies.modifyCompany($(this).attr("data-company              -id"));
                             });
 
                             loadingDone();

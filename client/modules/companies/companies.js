@@ -150,10 +150,12 @@
                     PUT("companies", "company", companyId, result).
                     then(() => {
                         message(i18n("companies.companyWasChanged"));
-                        modules.companies.renderCompanies();
                     }).
                     fail(FAIL).
-                    fail(loadingDone);
+                    fail(loadingDone).
+                    always(() => {
+                        window.location = refreshUrl();
+                    });
                 },
             }).show();
         }).
@@ -211,7 +213,7 @@
                 ],
                 rows: () => {
                     let rows = [];
-    
+
                     let companies = {};
 
                     for (let i in modules.companies.meta) {
@@ -259,7 +261,7 @@
                             },
                         });
                     }
-    
+
                     return rows;
                 },
             }).show();
@@ -273,7 +275,7 @@
 
         $("#altForm").hide();
         subTop();
-        
+
         modules.companies.renderCompanies(params);
     },
 }).init();

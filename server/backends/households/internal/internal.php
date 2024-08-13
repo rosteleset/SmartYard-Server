@@ -1516,6 +1516,13 @@
                             ];
                             break;
 
+                        case "keyId":
+                            $q = "select * from houses_rfids where house_rfid_id = :keyId";
+                            $p = [
+                                "keyId" => $query,
+                            ];
+                            break;
+
                         case "domophoneId":
                             $addresses = loadBackend("addresses");
                             $q = "select address_house_id from houses_houses_entrances where house_entrance_id in (select house_entrance_id from houses_entrances where house_domophone_id = :domophone_id)";

@@ -124,35 +124,36 @@
                 loadingStart();
                 POST("subscribers", "key", false, result).
                 fail(FAIL).
+                fail(loadingDone).
                 done(() => {
                     message(i18n("addresses.keyWasAdded"));
                 }).
                 always(() => {
-                    modules.addresses.keys.route(params);
+                    window.location = refreshUrl();
                 });
             },
         }).show();
     },
 
-    removeKey: function (keyId, params) {
+    removeKey: function (keyId) {
         mConfirm(i18n("addresses.confirmDeleteKey", keyId), i18n("confirm"), `danger:${i18n("addresses.deleteKey")}`, () => {
             DELETE("subscribers", "key", keyId).
+            fail(FAIL).
+            fail(loadingDone).
             done(() => {
                 message(i18n("addresses.keyWasDeleted"));
-                modules.addresses.keys.route(params);
             }).
-            fail(FAIL).
-            fail(() => {
-                loadingDone();
+            always(() => {
+                window.location = refreshUrl();
             });
         });
     },
 
-    modifyKey: function (keyId,     ) {
+    modifyKey: function (keyId) {
         loadingStart();
         QUERY("subscribers", "keys", {
-            by: params.by ? params.by : "0",
-            query: params.query ? params.query : "0",
+            by: "keyId",
+            query: keyId,
         }, true).
         fail(FAILPAGE).
         done(result => {
@@ -201,13 +202,13 @@
                         PUT("subscribers", "key", result.keyId, {
                             comments: result.comments,
                         }).
+                        fail(FAIL).
+                        fail(loadingDone).
                         done(() => {
                             message(i18n("addresses.keyWasChanged"));
-                            modules.addresses.keys.route(params);
                         }).
-                        fail(FAIL).
-                        fail(() => {
-                            loadingDone();
+                        always(() => {
+                            window.location = refreshUrl();
                         });
                     },
                 }).show();
