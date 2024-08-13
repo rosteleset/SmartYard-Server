@@ -69,7 +69,7 @@
                                 for (let i in fs.flats) {
                                     h += '<li class="mt-2">';
                                     h += '<i class="fas fa-fw fa-home mr-2 ml-3"></i>';
-                                    h += `<a href='"?#addresses.subscribers&flatId=${fs.flats[i].flatId}&houseId=${fs.flats[i].house.houseId}&flat=${encodeURIComponent(fs.flats[i].flat)}&settlementId=${fs.flats[i].house.settlementId ? fs.flats[i].house.settlementId : 0}&streetId=${fs.flats[i].house.streetId ? fs.flats[i].house.streetId : 0}'>${fs.flats[i].house.houseFull}, ${fs.flats[i].flat}</a>`;
+                                    h += `<a href='?#addresses.subscribers&flatId=${fs.flats[i].flatId}&houseId=${fs.flats[i].house.houseId}&flat=${encodeURIComponent(fs.flats[i].flat)}&settlementId=${fs.flats[i].house.settlementId ? fs.flats[i].house.settlementId : 0}&streetId=${fs.flats[i].house.streetId ? fs.flats[i].house.streetId : 0}'>${fs.flats[i].house.houseFull}, ${fs.flats[i].flat}</a>`;
                                     h += '</li>';
                                 }
                                 h += '</ul>';
@@ -92,7 +92,7 @@
                                     for (let j in ss.subscribers[i].flats) {
                                         h += '<div class="mt-1">';
                                         h += '<i class="fas fa-fw fa-home mr-2 ml-4"></i>';
-                                        h += `<a href='"?#addresses.subscribers&flatId=${ss.subscribers[i].flats[j].flatId}&houseId=${ss.subscribers[i].flats[j].house.houseId}&flat=${encodeURIComponent(ss.subscribers[i].flats[j].flat)}&settlementId=${ss.subscribers[i].flats[j].house.settlementId ? ss.subscribers[i].flats[j].house.settlementId : 0}&streetId=${ss.subscribers[i].flats[j].house.streetId ? ss.subscribers[i].flats[j].house.streetId : 0}'>${ss.subscribers[i].flats[j].house.houseFull}, ${ss.subscribers[i].flats[j].flat}</a><br />`;
+                                        h += `<a href='?#addresses.subscribers&flatId=${ss.subscribers[i].flats[j].flatId}&houseId=${ss.subscribers[i].flats[j].house.houseId}&flat=${encodeURIComponent(ss.subscribers[i].flats[j].flat)}&settlementId=${ss.subscribers[i].flats[j].house.settlementId ? ss.subscribers[i].flats[j].house.settlementId : 0}&streetId=${ss.subscribers[i].flats[j].house.streetId ? ss.subscribers[i].flats[j].house.streetId : 0}'>${ss.subscribers[i].flats[j].house.houseFull}, ${ss.subscribers[i].flats[j].flat}</a><br />`;
                                         h += '</div>';
                                     }
 
@@ -142,7 +142,7 @@
                                             for (let j in rs.rfs[i].subscriber.flats) {
                                                 h += '<div class="mt-1">';
                                                 h += '<i class="fas fa-fw fa-home mr-2 ml-4"></i>';
-                                                h += `<a href='"?#addresses.subscribers&flatId=${rs.rfs[i].subscriber.flats[j].flatId}&houseId=${rs.rfs[i].subscriber.flats[j].house.houseId}&flat=${encodeURIComponent(rs.rfs[i].subscriber.flats[j].flat)}&settlementId=${rs.rfs[i].subscriber.flats[j].house.settlementId ? rs.rfs[i].subscriber.flats[j].house.settlementId : 0}&streetId=${rs.rfs[i].subscriber.flats[j].house.streetId ? rs.rfs[i].subscriber.flats[j].house.streetId : 0}'>${rs.rfs[i].subscriber.flats[j].house.houseFull}, ${rs.rfs[i].subscriber.flats[j].flat}</a><br />`;
+                                                h += `<a href='?#addresses.subscribers&flatId=${rs.rfs[i].subscriber.flats[j].flatId}&houseId=${rs.rfs[i].subscriber.flats[j].house.houseId}&flat=${encodeURIComponent(rs.rfs[i].subscriber.flats[j].flat)}&settlementId=${rs.rfs[i].subscriber.flats[j].house.settlementId ? rs.rfs[i].subscriber.flats[j].house.settlementId : 0}&streetId=${rs.rfs[i].subscriber.flats[j].house.streetId ? rs.rfs[i].subscriber.flats[j].house.streetId : 0}'>${rs.rfs[i].subscriber.flats[j].house.houseFull}, ${rs.rfs[i].subscriber.flats[j].flat}</a><br />`;
                                                 h += '</div>';
                                             }
                                             h += '</div>';
@@ -158,7 +158,7 @@
                                             h += '<div class="mt-1 ml-2">';
                                             h += "<i class='fas fa-fw fa-home mr-2 ml-3'></i>";
 
-                                            h += `<a href='"?#addresses.subscribers&flatId=${rs.rfs[i].flat.flatId}&houseId=${rs.rfs[i].house.houseId}&flat=${encodeURIComponent(rs.rfs[i].flat.flat)}&settlementId=${rs.rfs[i].house.settlementId ? rs.rfs[i].house.settlementId : 0}&streetId=${rs.rfs[i].house.streetId ? rs.rfs[i].house.streetId : 0}'>${rs.rfs[i].house.houseFull}, ${rs.rfs[i].flat.flat}</a><br />`;
+                                            h += `<a href='?#addresses.subscribers&flatId=${rs.rfs[i].flat.flatId}&houseId=${rs.rfs[i].house.houseId}&flat=${encodeURIComponent(rs.rfs[i].flat.flat)}&settlementId=${rs.rfs[i].house.settlementId ? rs.rfs[i].house.settlementId : 0}&streetId=${rs.rfs[i].house.streetId ? rs.rfs[i].house.streetId : 0}'>${rs.rfs[i].house.houseFull}, ${rs.rfs[i].flat.flat}</a><br />`;
                                             h += '</div>';
 
                                             break;
