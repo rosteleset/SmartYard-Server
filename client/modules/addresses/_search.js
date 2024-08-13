@@ -138,7 +138,7 @@
                                             ss[k] = rs.rfs[i].subscriber;
                                             modules.addresses._search.searchResults.ss = ss;
 
-                                            h += `<a href="javascript:void(0)" class="ss" data-subscriber-id="${k}">${rs.rfs[i].subscriber.subscriberFull ? rs.rfs[i].subscriber.subscriberFull : i18n("addresses.undefined")}</a><br />`;
+                                            h += `<a href="javascript:void(0)" class="ss" data-subscriber-id="${k}">${rs.rfs[i].subscriber.subscriberFull ? rs.rfs[i].subscriber.subscriberFull : i18n("a   ddresses.undefined")}</a><br />`;
 
                                             for (let j in rs.rfs[i].subscriber.flats) {
                                                 h += '<div class="mt-1">';
@@ -156,6 +156,12 @@
                                             h += " (" + i18n("addresses.keysKeyType", i18n("addresses.keysType" + rs.rfs[i].accessType + "s")) + ")";
                                             h += "<br />";
 
+                                            h += '<div class="mt-1 ml-2">';
+                                            h += "<i class='fas fa-fw fa-home mr-2 ml-3'></i>";
+
+                                            h += `<a href='"?#addresses.subscribers&flatId=${rs.rfs[i].flat.flatId}&houseId=${rs.rfs[i].house.houseId}&flat=${encodeURIComponent(rs.rfs[i].flat.flat)}&settlementId=${rs.rfs[i].house.settlementId ? rs.rfs[i].house.settlementId : 0}&streetId=${rs.rfs[i].house.streetId ? rs.rfs[i].house.streetId : 0}'>${rs.rfs[i].house.houseFull}, ${rs.rfs[i].flat.flat}</a><br />`;
+                                            h += '</div>';
+
                                             break;
 
                                         case 3:
@@ -163,6 +169,13 @@
                                             h += `<a href="javascript:void(0)" class="rs" data-key-id="${rs.rfs[i].keyId}">${rs.rfs[i].rfId}</a>`;
                                             h += " (" + i18n("addresses.keysKeyType", i18n("addresses.keysType" + rs.rfs[i].accessType + "s")) + ")";
                                             h += "<br />";
+
+                                            for (let j in rs.rfs[i].houses) {
+                                                h += '<div class="mt-1">';
+                                                h += '<i class="fas fa-fw fa-door-closed mr-2 ml-4"></i>';
+                                                h += `<a href='?#addresses.houses&houseId=${rs.rfs[i].houses[j].houseId}'>${rs.rfs[i].houses[j].houseFull}, ${rs.rfs[i].entrance.entrance}</a>`;
+                                                h += '</div>';
+                                            }
 
                                             break;
 

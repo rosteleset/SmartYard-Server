@@ -1208,6 +1208,7 @@
                     "subscriber_name" => "subscriberName",
                     "subscriber_patronymic" => "subscriberPatronymic",
                     "subscriber_last" => "subscriberLast",
+                    "subscriber_full" => "subscriberFull",
                 ]);
 
                 $addresses = loadBackend("addresses");
