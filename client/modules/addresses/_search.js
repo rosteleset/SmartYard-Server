@@ -126,7 +126,7 @@
                                             break;
 
                                         case 1:
-                                            h += "<i class='fas fa-fw fa-user mr-2 ml-3'></i>";
+                                            h += '<i class="fas fa-fw fa-key mr-2 ml-3"></i>';
                                             h += `<a href="javascript:void(0)" class="rs" data-key-id="${rs.rfs[i].keyId}">${rs.rfs[i].rfId}</a>`;
                                             h += " (" + i18n("addresses.keysKeyType", i18n("addresses.keysType" + rs.rfs[i].accessType + "s")) + ")";
                                             h += "<br />";
@@ -134,7 +134,7 @@
                                             break;
 
                                         case 2:
-                                            h += '<i class="fas fa-fw fa-home mr-2 ml-3"></i>';
+                                            h += '<i class="fas fa-fw fa-key mr-2 ml-3"></i>';
                                             h += `<a href="javascript:void(0)" class="rs" data-key-id="${rs.rfs[i].keyId}">${rs.rfs[i].rfId}</a>`;
                                             h += " (" + i18n("addresses.keysKeyType", i18n("addresses.keysType" + rs.rfs[i].accessType + "s")) + ")";
                                             h += "<br />";
@@ -142,7 +142,7 @@
                                             break;
 
                                         case 3:
-                                            h += '<i class="fas fa-fw fa-door-closed mr-2 ml-3"></i>';
+                                            h += '<i class="fas fa-fw fa-key mr-2 ml-3"></i>';
                                             h += `<a href="javascript:void(0)" class="rs" data-key-id="${rs.rfs[i].keyId}">${rs.rfs[i].rfId}</a>`;
                                             h += " (" + i18n("addresses.keysKeyType", i18n("addresses.keysType" + rs.rfs[i].accessType + "s")) + ")";
                                             h += "<br />";
@@ -157,20 +157,20 @@
 
                                             h += '<div class="mt-1">';
                                             h += '<i class="fas fa-fw fa-city mr-2 ml-4"></i>';
-                                            h += `<a href='?#addresses.houses&houseId=${rs.rfs[i].house.houseId}'>${rs.rfs[i].house.houseFull}</a>    `;
+                                            h += `<a href='?#addresses.houses&houseId=${rs.rfs[i].house.houseId}'>${rs.rfs[i].house.houseFull}</a>`;
                                             h += '</div>';
 
                                             break;
 
                                         case 5:
-                                            h += '<i class="far fa-fw fa-building mr-2 ml-3"></i>';
+                                            h += '<i class="fas fa-fw fa-key mr-2 ml-3"></i>';
                                             h += `<a href="javascript:void(0)" class="rs" data-key-id="${rs.rfs[i].keyId}">${rs.rfs[i].rfId}</a>`;
                                             h += " (" + i18n("addresses.keysKeyType", i18n("addresses.keysType" + rs.rfs[i].accessType + "s")) + ")";
                                             h += "<br />";
 
                                             h += '<div class="mt-1">';
-                                            h += '<i class="fas fa-fw fa-city mr-2 ml-4"></i>';
-                                            h += `<a href="javascript:void(0)" class="cs" data-company-id='${rs.rfs[i].company.companyId}'>${rs.rfs[i].company.name}</a>    `;
+                                            h += '<i class="far fa-fw fa-building mr-2 ml-4"></i>';
+                                            h += `<a href="javascript:void(0)" class="cs" data-company-id='${rs.rfs[i].company.companyId}'>${rs.rfs[i].company.name}</a>`;
                                             h += '</div>';
 
                                             break;
