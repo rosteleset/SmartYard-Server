@@ -87,7 +87,7 @@
                                         h += "<i class='fas fa-fw fa-user mr-2 ml-3'></i>";
                                     }
 
-                                    h += `<a href="javascript:void(0)" class="ss" data-subscriber-id="${i}">${ss.subscribers[i].subscriberFull}</a><br />`;
+                                    h += `<a href="javascript:void(0)" class="ss" data-subscriber-id="${i}">${ss.subscribers[i].subscriberFull ? ss.subscribers[i].subscriberFull : i18n("addresses.undefined")}</a><br />`;
 
                                     for (let j in ss.subscribers[i].flats) {
                                         h += '<div class="mt-1">';
@@ -130,6 +130,23 @@
                                             h += `<a href="javascript:void(0)" class="rs" data-key-id="${rs.rfs[i].keyId}">${rs.rfs[i].rfId}</a>`;
                                             h += " (" + i18n("addresses.keysKeyType", i18n("addresses.keysType" + rs.rfs[i].accessType + "s")) + ")";
                                             h += "<br />";
+
+                                            h += '<div class="mt-1 ml-2">';
+                                            h += "<i class='fas fa-fw fa-user mr-2 ml-3'></i>";
+
+                                            let k = ss.length;
+                                            ss[k] = rs.rfs[i].subscriber;
+                                            modules.addresses._search.searchResults.ss = ss;
+
+                                            h += `<a href="javascript:void(0)" class="ss" data-subscriber-id="${k}">${rs.rfs[i].subscriber.subscriberFull ? rs.rfs[i].subscriber.subscriberFull : i18n("addresses.undefined")}</a><br />`;
+
+                                            for (let j in rs.rfs[i].subscriber.flats) {
+                                                h += '<div class="mt-1">';
+                                                h += '<i class="fas fa-fw fa-home mr-2 ml-4"></i>';
+                                                h += `<a href='"?#addresses.subscribers&flatId=${rs.rfs[i].subscriber.flats[j].flatId}&houseId=${rs.rfs[i].subscriber.flats[j].house.houseId}&flat=${encodeURIComponent(rs.rfs[i].subscriber.flats[j].flat)}&settlementId=${rs.rfs[i].subscriber.flats[j].house.settlementId ? rs.rfs[i].subscriber.flats[j].house.settlementId : 0}&streetId=${rs.rfs[i].subscriber.flats[j].house.streetId ? rs.rfs[i].subscriber.flats[j].house.streetId : 0}'>${rs.rfs[i].subscriber.flats[j].house.houseFull}, ${rs.rfs[i].subscriber.flats[j].flat}</a><br />`;
+                                                h += '</div>';
+                                            }
+                                            h += '</div>';
 
                                             break;
 
@@ -195,7 +212,7 @@
                             });
 
                             $(".cs").off("click").on("click", function () {
-                                modules.companies.modifyCompany($(this).attr("data-company              -id"));
+                                modules.companies.modifyCompany($(this).attr("data-company-id"));
                             });
 
                             loadingDone();

@@ -2627,6 +2627,12 @@
                     switch ((int)$key["accessType"]) {
                         case 1:
                             $key["subscriber"] = $this->getSubscribers("id", $key["accessTo"]);
+
+                            if (count($key["subscriber"])) {
+                                $key["subscriber"] = $key["subscriber"][0];
+                            } else {
+                                $key["subscriber"] = false;
+                            }
                             break;
 
                         case 2:
