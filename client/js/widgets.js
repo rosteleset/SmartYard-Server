@@ -202,7 +202,7 @@ function FAIL(response) {
         if (response.responseJSON.error == "tokenNotFound") {
             lStore("_token", null);
             setTimeout(() => {
-                location.reload();
+                window.location.reload();
             }, 5000);
         }
     } else {

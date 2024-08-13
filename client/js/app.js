@@ -264,7 +264,7 @@ function hashChange() {
 
 function changeLanguage() {
     lStore("_lang", $("#loginBoxLang").val());
-    location.reload();
+    window.location.reload();
 }
 
 function ping(server) {
@@ -307,7 +307,7 @@ function login() {
             success: response => {
                 if (response && response.token) {
                     lStore("_token", response.token);
-                    location.reload();
+                    window.location.reload();
                 } else {
                     error(i18n("errors.unknown"), i18n("error"), 30);
                 }
@@ -333,7 +333,7 @@ function doLogout(all) {
         mode: "all",
     }).always(() => {
         lStore("_token", null);
-        location.reload();
+        window.location.reload();
     });
 }
 

@@ -191,7 +191,7 @@
                         color: r.color,
                     }).
                     done(() => {
-                        window.location.reload();
+                        window.location = refreshUrl();
                     }).
                     fail(FAIL).
                     fail(loadingDone);
@@ -205,7 +205,7 @@
                     id: id,
                 }).
                 done(() => {
-                    window.location.reload();
+                    window.location = refreshUrl();
                 }).
                 fail(FAIL).
                 fail(loadingDone);
