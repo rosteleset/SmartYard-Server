@@ -386,10 +386,10 @@ function cardForm(params) {
 
             case "multiselect":
                 if (params.target) {
-                    h += `<div name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" class="overflow-y-auto pl-2" style="position: relative; border: solid thin transparent; border-radius: 3px;">`;
+                    h += `<div name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" class="overflow-y-auto" style="position: relative; border: solid thin transparent; border-radius: 3px;">`;
                 } else {
                     // TODO: Do something with this!!! (max-height)
-                    h += `<div name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" class="overflow-y-auto pl-2" style="max-height: 400px; overflow-y: auto!important; position: relative; border: solid thin transparent; border-radius: 3px;">`;
+                    h += `<div name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" class="overflow-y-auto" style="max-height: 400px; overflow-y: auto!important; position: relative; border: solid thin transparent; border-radius: 3px;">`;
                     // TODO: Do something with this!!! (max-height)
                 }
                 for (let j = 0; j < params.fields[i].options.length; j++) {
