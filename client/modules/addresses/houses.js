@@ -281,6 +281,8 @@
         always(() => {
             if (flat.houseId) {
                 modules.addresses.houses.renderHouse(flat.houseId);
+            } else {
+                loadingDone();
             }
         });
     },
