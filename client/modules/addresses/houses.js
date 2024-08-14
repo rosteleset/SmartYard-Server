@@ -1334,6 +1334,7 @@
                 borderless: true,
                 topApply: true,
                 delete: canDelete ? (houseId ? i18n("addresses.deleteFlat") : false) : false,
+                deleteTab: canDelete ? (houseId ? i18n("addresses.primary") : false) : false,
                 apply: i18n("edit"),
                 size: "lg",
                 fields: [
@@ -1343,6 +1344,7 @@
                         title: i18n("addresses.flatId"),
                         value: flatId,
                         readonly: true,
+                        tab: i18n("addresses.primary"),
                     },
                     {
                         id: "floor",
@@ -1359,7 +1361,8 @@
                         value: flat.flat,
                         validate: (v) => {
                             return $.trim(v) !== "";
-                        }
+                        },
+                        tab: i18n("addresses.primary"),
                     },
                     {
                         id: "contract",
@@ -1388,6 +1391,7 @@
                         title: i18n("addresses.addCode"),
                         placeholder: i18n("addresses.addCode"),
                         value: flat.code,
+                        tab: i18n("addresses.primary"),
                     },
                     {
                         id: "plog",
@@ -1413,6 +1417,7 @@
                             },
                         ],
                         value: flat.plog,
+                        tab: i18n("addresses.primary"),
                     },
                     {
                         id: "entrances",
@@ -1422,6 +1427,7 @@
                         options: entrances,
                         value: entrances_selected,
                         allButtons: false,
+                        tab: i18n("addresses.primary"),
                     },
                     {
                         id: "manualBlock",
@@ -1438,7 +1444,8 @@
                                 id: "1",
                                 text: i18n("yes"),
                             },
-                        ]
+                        ],
+                        tab: i18n("addresses.primary"),
                     },
                     {
                         id: "adminBlock",
@@ -1455,7 +1462,8 @@
                                 id: "1",
                                 text: i18n("yes"),
                             },
-                        ]
+                        ],
+                        tab: i18n("addresses.primary"),
                     },
                     {
                         id: "autoBlock",
@@ -1473,7 +1481,8 @@
                                 id: "1",
                                 text: i18n("yes"),
                             },
-                        ]
+                        ],
+                        tab: i18n("addresses.primary"),
                     },
                     {
                         id: "openCode",
@@ -1488,6 +1497,7 @@
                                 error(i18n("addresses.openCodeError"));
                             }
                         },
+                        tab: i18n("addresses.primary"),
                     },
                     {
                         id: "autoOpen",
@@ -1531,7 +1541,7 @@
                                 id: "10",
                                 text: i18n("addresses.10m"),
                             },
-                        ]
+                        ],
                     },
                     {
                         id: "cmsEnabled",
@@ -1549,6 +1559,7 @@
                                 text: i18n("yes"),
                             },
                         ],
+                        tab: i18n("addresses.primary"),
                     },
                     {
                         id: "sipEnabled",
