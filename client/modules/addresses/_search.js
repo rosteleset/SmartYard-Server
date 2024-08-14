@@ -192,15 +192,17 @@
                                             break;
 
                                         case 5:
-                                            h += '<i class="fas fa-fw fa-key mr-2 ml-3"></i>';
-                                            h += `<a href="javascript:void(0)" class="rs" data-key-id="${rs.rfs[i].keyId}">${rs.rfs[i].rfId}</a>`;
-                                            h += " (" + i18n("addresses.keysKeyType", i18n("addresses.keysType" + rs.rfs[i].accessType + "s")) + ")";
-                                            h += "<br />";
+                                            if (modules.companies && AVAIL("companies", "companies")) {
+                                                h += '<i class="fas fa-fw fa-key mr-2 ml-3"></i>';
+                                                h += `<a href="javascript:void(0)" class="rs" data-key-id="${rs.rfs[i].keyId}">${rs.rfs[i].rfId}</a>`;
+                                                h += " (" + i18n("addresses.keysKeyType", i18n("addresses.keysType" + rs.rfs[i].accessType + "s")) + ")";
+                                                h += "<br />";
 
-                                            h += '<div class="mt-1">';
-                                            h += '<i class="far fa-fw fa-building mr-2 ml-4"></i>';
-                                            h += `<a href="javascript:void(0)" class="cs" data-company-id='${rs.rfs[i].company.companyId}'>${rs.rfs[i].company.name}</a>`;
-                                            h += '</div>';
+                                                h += '<div class="mt-1">';
+                                                h += '<i class="far fa-fw fa-building mr-2 ml-4"></i>';
+                                                h += `<a href="javascript:void(0)" class="cs" data-company-id='${rs.rfs[i].company.companyId}'>${rs.rfs[i].company.name}</a>`;
+                                                h += '</div>';
+                                            }
 
                                             break;
                                     }
