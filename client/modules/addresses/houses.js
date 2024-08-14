@@ -1279,7 +1279,7 @@
         fail(loadingDone);
     },
 
-    modifyFlat: function (flatId,   , canDelete) {
+    modifyFlat: function (flatId, houseId, canDelete) {
         let flat = false;
 
         for (let i in modules.addresses.houses.meta.flats) {
