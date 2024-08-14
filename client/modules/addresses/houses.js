@@ -1279,7 +1279,7 @@
         fail(loadingDone);
     },
 
-    modifyFlat: function (flatId, houseId, canDelete) {
+    modifyFlat: function (flatId,   , canDelete) {
         let flat = false;
 
         for (let i in modules.addresses.houses.meta.flats) {
@@ -1635,7 +1635,6 @@
                         modules.addresses.houses.doModifyFlat(result);
                     }
                 },
-
             });
 
             for (let i in entrances_selected) {
