@@ -63,20 +63,24 @@
                 $unreaded = $this->unreaded($subscriberId);
 
                 foreach ($devices as $device) {
-                    if ($isdn && checkInt($device["platform"]) && checkInt($device["tokenType"]) && $device["pushToken"] && !(int)$device["pushDisable"]) {
-                        $result = $isdn->push([
-                            "token" => $device["pushToken"],
-                            "type" => ((int)$device["platform"] === 1) ? 0 : $device["tokenType"], // force FCM for Apple for text messages
-                            "timestamp" => time(),
-                            "ttl" => 30,
-                            "platform" => [ "android", "ios", "web" ][(int)$device["platform"]],
-                            "title" => $title,
-                            "msg" => $msg,
-                            "badge" => $unreaded,
-                            "sound" => "default",
-                            "pushAction" => $action,
-                            "messageId" => $msgId,
-                        ]);
+                    if ($isdn && checkInt($device["platform"]) && checkInt($device["tokenType"]) && $device["pushToken"]) {
+                        if (!(($action == "inbox" && (int)$device["pushDisable"]) || ($action == "money" && (int)$device["moneyDisable"]))) {
+                            if (!$result = $isdn->push([
+                                "token" => $device["pushToken"],
+                                "type" => ((int)$device["platform"] === 1) ? 0 : $device["tokenType"], // force FCM for Apple for text messages
+                                "timestamp" => time(),
+                                "ttl" => 30,
+                                "platform" => [ "android", "ios", "web" ][(int)$device["platform"]],
+                                "title" => $title,
+                                "msg" => $msg,
+                                "badge" => $unreaded,
+                                "sound" => "default",
+                                "pushAction" => $action,
+                                "messageId" => $msgId,
+                            ])) {
+                                setLastError("pushCantBeSent");
+                            }
+                        }
                     } else {
                         setLastError("pushCantBeSent");
                     }
