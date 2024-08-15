@@ -468,6 +468,7 @@ function initAll() {
     $(".back-to-top").attr("title", i18n("scrollToTop"));
 
     $("#brandTitle").text(i18n("windowTitle"));
+    $(".sidebarToggler").attr("title", i18n("windowTitle"));
     $("#logout").text(i18n("logout"));
     $("#logoutButton").attr("title", i18n("logout"));
 
@@ -494,6 +495,11 @@ function initAll() {
     $("#inputTextLine").off("keypress").on("keypress", event => {
         if (event.keyCode === 13) $('#inputTextButton').click();
     });
+
+    $(".sidebarToggler").off("click").on("click", e => {
+        e.preventDefault();
+        return false;
+    })
 
     if (lStoreEngine && lStoreEngine !== "cookie") {
         lStore("_cookie", "1");
