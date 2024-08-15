@@ -408,14 +408,9 @@ function whoAmI(force) {
                     $(".userAvatar").attr("src", "img/admin.png");
                 }
             }
-            if (modules.users) {
-                $("#selfSettings").off("click").on("click", () => {
-                    modules.users.modifyUser(myself.uid, true);
-                });
-            } else {
-                $("#selfSettings").hide();
-                $("#selfSettingsDivider").hide();
-            }
+            $("#selfSettings").off("click").on("click", () => {
+                modules.users.modifyUser(myself.uid, true);
+            });
             let userCard = _me.user.login;
             if (_me.user.realName) {
                 userCard += "<br />" + _me.user.realName;
@@ -600,6 +595,10 @@ function loadModule() {
                         modules[i][config.customSubModules[i][j]].allLoaded();
                     }
                 }
+            }
+            if (!modules.users) {
+                $("#selfSettings").hide();
+                $("#selfSettingsDivider").hide();
             }
         }
         hashChange();
