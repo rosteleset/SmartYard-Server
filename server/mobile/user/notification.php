@@ -28,7 +28,7 @@
     $money = !(int)$device["moneyDisable"];
     $enable = !(int)$device["pushDisable"];
 
-    $households = loadBackend("houseHolds");
+    $households = loadBackend("households");
 
     // TODO: сделать управление уведомлениями
     if (@$postdata['money'] == 't' && !$money) {
