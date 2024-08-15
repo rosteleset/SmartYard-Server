@@ -190,42 +190,51 @@ local function mobile_intercom(flatId, flatNumber, domophoneId)
         if device.platform ~= cjson.null and tonumber(device.voipEnabled) == 1 then
             log_debug(device)
 
-            redis:incr("autoextension")
-            extension = tonumber(redis:get("autoextension"))
-            if extension > 999999 then
-                redis:set("autoextension", "1")
-            end
-            extension = extension + 2000000000
-            local token = ""
-            if tonumber(device.tokenType) == 1 or tonumber(device.tokenType) == 2 then
-                token = device.voipToken
-            else
-                token = device.pushToken
-            end
-            if token ~= cjson.null and token ~= nil and token ~= "" then
-                redis:setex("turn/realm/" .. realm .. "/user/" .. extension .. "/key", 3 * 60, md5(extension .. ":" .. realm .. ":" .. hash))
-                redis:setex("mobile_extension_" .. extension, 3 * 60, hash)
-                if tonumber(device.tokenType) ~= 1 and tonumber(device.tokenType) ~= 2 then
-                    -- not for apple's voips
-                    redis:setex("mobile_token_" .. extension, 3 * 60, token)
+            local flatVoipEnabled = false
+            for j, flat in ipairs(device.flats) do
+                if flat.flatId == flatId then
+                    flatVoipEnabled = flat.voipEnabled
                 end
-                if tonumber(device.platform) == 1 and (tonumber(device.tokenType) == 0 or tonumber(device.tokenType) == 4 or tonumber(device.tokenType) == 5) then
-                    -- ios over fcm (with repeat)
-                    redis:setex("voip_crutch_" .. extension, 1 * 60, cjson.encode({
-                        id = extension,
-                        token = token,
-                        tokenType = device.tokenType,
-                        hash = hash,
-                        platform = device.platform,
-                        flatId = flatId,
-                        dtmf = dtmf,
-                        mobile = device.subscriber.mobile,
-                        flatNumber = flatNumber,
-                        domophoneId = domophoneId,
-                    }))
+            end
+
+            if flatVoipEnabled == 1 then
+                redis:incr("autoextension")
+                extension = tonumber(redis:get("autoextension"))
+                if extension > 999999 then
+                    redis:set("autoextension", "1")
                 end
-                push(token, device.tokenType, device.platform, extension, hash, callerId, flatId, dtmf, "device.subscriber.mobile", flatNumber, domophoneId)
-                res = res .. "&Local/" .. extension
+                extension = extension + 2000000000
+                local token = ""
+                if tonumber(device.tokenType) == 1 or tonumber(device.tokenType) == 2 then
+                    token = device.voipToken
+                else
+                    token = device.pushToken
+                end
+                if token ~= cjson.null and token ~= nil and token ~= "" then
+                    redis:setex("turn/realm/" .. realm .. "/user/" .. extension .. "/key", 3 * 60, md5(extension .. ":" .. realm .. ":" .. hash))
+                    redis:setex("mobile_extension_" .. extension, 3 * 60, hash)
+                    if tonumber(device.tokenType) ~= 1 and tonumber(device.tokenType) ~= 2 then
+                        -- not for apple's voips
+                        redis:setex("mobile_token_" .. extension, 3 * 60, token)
+                    end
+                    if tonumber(device.platform) == 1 and (tonumber(device.tokenType) == 0 or tonumber(device.tokenType) == 4 or tonumber(device.tokenType) == 5) then
+                        -- ios over fcm (with repeat)
+                        redis:setex("voip_crutch_" .. extension, 1 * 60, cjson.encode({
+                            id = extension,
+                            token = token,
+                            tokenType = device.tokenType,
+                            hash = hash,
+                            platform = device.platform,
+                            flatId = flatId,
+                            dtmf = dtmf,
+                            mobile = device.subscriber.mobile,
+                            flatNumber = flatNumber,
+                            domophoneId = domophoneId,
+                        }))
+                    end
+                    push(token, device.tokenType, device.platform, extension, hash, callerId, flatId, dtmf, "device.subscriber.mobile", flatNumber, domophoneId)
+                    res = res .. "&Local/" .. extension
+                end
             end
         end
     end
