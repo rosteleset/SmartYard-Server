@@ -2208,35 +2208,35 @@
 
                 switch ($by) {
                     case "flat":
-                        $q = "select * from houses_subscribers_devices where subscriber_device_id in (select subscriber_device_id from houses_flats_devices where house_flat_id = :house_flat_id)";
+                        $q = "select * from houses_subscribers_devices where subscriber_device_id in (select subscriber_device_id from houses_flats_devices where house_flat_id = :house_flat_id) order by subscriber_device_id";
                         $p = [
                             "house_flat_id" => (int)$query,
                         ];
                         break;
 
                     case "subscriber":
-                        $q = "select * from houses_subscribers_devices where house_subscriber_id = :house_subscriber_id";
+                        $q = "select * from houses_subscribers_devices where house_subscriber_id = :house_subscriber_id order by subscriber_device_id";
                         $p = [
                             "house_subscriber_id" => $query,
                         ];
                         break;
 
                     case "id":
-                        $q = "select * from houses_subscribers_devices where subscriber_device_id = :subscriber_device_id";
+                        $q = "select * from houses_subscribers_devices where subscriber_device_id = :subscriber_device_id order by subscriber_device_id";
                         $p = [
                             "subscriber_device_id" => (int)$query,
                         ];
                         break;
 
                     case "deviceToken":
-                        $q = "select * from houses_subscribers_devices where device_token = :device_token";
+                        $q = "select * from houses_subscribers_devices where device_token = :device_token order by subscriber_device_id";
                         $p = [
                             "device_token" => $query,
                         ];
                         break;
 
                     case "authToken":
-                        $q = "select * from houses_subscribers_devices where auth_token = :auth_token";
+                        $q = "select * from houses_subscribers_devices where auth_token = :auth_token order by subscriber_device_id";
                         $p = [
                             "auth_token" => $query,
                         ];
