@@ -135,7 +135,9 @@
                 } else {
                     modules.addresses.subscriberDevices.doModifyDevice({
                         uid: result.uid,
-                        voipEnabled: result.voipEnabled
+                        voipEnabled: result.voipEnabled,
+                        pushDisable: result.pushDisable,
+                        moneyDisable: result.moneyDisable,
                     });
                 }
             }
