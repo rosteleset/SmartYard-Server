@@ -2255,6 +2255,8 @@
                     "registered" => "registered",
                     "last_seen" => "lastSeen",
                     "voip_enabled" => "voipEnabled",
+                    "push_disable" => "pushDisable",
+                    "money_disable" => "moneyDisable",
                 ]);
 
                 foreach ($devices as &$device) {
@@ -2398,6 +2400,28 @@
                     }
 
                     if ($this->db->modify("update houses_subscribers_devices set voip_enabled = :voip_enabled where subscriber_device_id = $deviceId", [ "voip_enabled" => $params["voipEnabled"] ]) !== false) {
+                        $result++;
+                    }
+                }
+
+                if (array_key_exists("pushDisable", $params)) {
+                    if (!checkInt($params["pushDisable"])) {
+                        setLastError("invalidParams");
+                        return false;
+                    }
+
+                    if ($this->db->modify("update houses_subscribers_devices set push_disable = :push_disable where subscriber_device_id = $deviceId", [ "push_disable" => $params["pushDisable"] ]) !== false) {
+                        $result++;
+                    }
+                }
+
+                if (array_key_exists("moneyDisable", $params)) {
+                    if (!checkInt($params["moneyDisable"])) {
+                        setLastError("invalidParams");
+                        return false;
+                    }
+
+                    if ($this->db->modify("update houses_subscribers_devices set money_disable = :money_disable where subscriber_device_id = $deviceId", [ "money_disable" => $params["moneyDisable"] ]) !== false) {
                         $result++;
                     }
                 }

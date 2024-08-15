@@ -63,7 +63,7 @@
                 $unreaded = $this->unreaded($subscriberId);
 
                 foreach ($devices as $device) {
-                    if ($isdn && checkInt($device["platform"]) && checkInt($device["tokenType"]) && $device["pushToken"]) {
+                    if ($isdn && checkInt($device["platform"]) && checkInt($device["tokenType"]) && $device["pushToken"] && !(int)$device["pushDisable"]) {
                         $result = $isdn->push([
                             "token" => $device["pushToken"],
                             "type" => ((int)$device["platform"] === 1) ? 0 : $device["tokenType"], // force FCM for Apple for text messages
