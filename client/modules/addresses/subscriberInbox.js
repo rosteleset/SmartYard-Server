@@ -75,7 +75,7 @@
                     filter: true,
                     pagerItemsCount: 250,
                     button: {
-                        icon: "fas fa-fw fa-envelope-open",
+                        icon: "far fa-fw fa-envelope",
                         caption: i18n("addresses.messageSend"),
                         click: () => {
                             modules.addresses.subscriberInbox.sendMessage(subscriberId);
