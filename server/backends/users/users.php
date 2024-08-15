@@ -156,7 +156,7 @@
             private function sendEmail($login, $email, $subject, $message, $config) {
                 try {
                     if ($email && $config && $login != $email) {
-                        return eMail($config, $email, $subject ? : "-", $message) === true;
+                        return eMail($config["email"], $email, $subject ? : "-", $message) === true;
                     } else {
                         return false;
                     }
