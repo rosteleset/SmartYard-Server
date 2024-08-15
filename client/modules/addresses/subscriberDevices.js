@@ -95,6 +95,38 @@
                             text: i18n("yes"),
                         },
                     ],
+                },
+                {
+                    id: "pushDisable",
+                    type: "select",
+                    title: i18n("addresses.pushDisable"),
+                    value: device.pushDisable,
+                    options: [
+                        {
+                            id: "1",
+                            text: i18n("no"),
+                        },
+                        {
+                            id: "0",
+                            text: i18n("yes"),
+                        },
+                    ],
+                },
+                {
+                    id: "moneyDisable",
+                    type: "select",
+                    title: i18n("addresses.moneyDisable"),
+                    value: device.moneyDisable,
+                    options: [
+                        {
+                            id: "1",
+                            text: i18n("no"),
+                        },
+                        {
+                            id: "0",
+                            text: i18n("yes"),
+                        },
+                    ],
                 }
             ],
             callback: function (result) {
