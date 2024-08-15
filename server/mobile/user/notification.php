@@ -32,22 +32,22 @@
 
     // TODO: сделать управление уведомлениями
     if (@$postdata['money'] == 't' && !$money) {
-        $households->modifyDevice($device["deviceId"], [ "moneyDisable" => false ]);
+        $households->modifyDevice($device["deviceId"], [ "moneyDisable" => 0 ]);
         $money = 1;
     }
 
     if (@$postdata['money'] == 'f' && $money) {
-        $households->modifyDevice($device["deviceId"], [ "moneyDisable" => true ]);
+        $households->modifyDevice($device["deviceId"], [ "moneyDisable" => 1 ]);
         $money = 0;
     }
 
     if (@$postdata['enable'] == 't' && !$enable) {
-        $households->modifyDevice($device["deviceId"], [ "pushDisable" => false ]);
+        $households->modifyDevice($device["deviceId"], [ "pushDisable" => 0 ]);
         $enable = 1;
     }
 
     if (@$postdata['enable'] == 'f' && $enable) {
-        $households->modifyDevice($device["deviceId"], [ "pushDisable" => true ]);
+        $households->modifyDevice($device["deviceId"], [ "pushDisable" => 1 ]);
         $enable = 0;
     }
 
