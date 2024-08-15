@@ -200,7 +200,7 @@
                     </span>
                 </li>
 
-                <li class="nav-item dropdown">
+                <li class="nav-item dropdown" id="usersExists">
                     <span class="nav-link text-dark myNameIs pointer" data-toggle="dropdown" style="padding-left: 0.75rem!important;">
                         <i class="fas fa-lg fa-fw fa-user-cog"></i>
                     </span>
@@ -213,14 +213,20 @@
                                         <span id="userCard" class="mr-3">&nbsp;</span>
                                     </h3>
                                 </div>
-                                <span class="float-right text-sm"><i class="fas fa-cog"></i></span>
+                                <span class="float-right text-sm"><i class="fas fa-fw fa-cog"></i></span>
                             </div>
                         </span>
-                        <div class="dropdown-divider" id="selfSettingsDivider"></div>
+                        <div class="dropdown-divider"></div>
                         <div class="dropdown-item dropdown-footer pointer" onclick="logout()" style="text-align: left;"><span id="logout">...</span>
-                            <span class="float-right text-sm text-danger"><i class="fas fa-sign-out-alt"></i></span>
+                            <span class="float-right text-sm text-danger"><i class="fas fa-fw fa-sign-out-alt"></i></span>
                         </div>
                     </div>
+                </li>
+
+                <li class="nav-item" id="usersNotExists" onclick="logout()" style="display: none;">
+                    <span class="nav-link pr-1" role="button" style="cursor: pointer; padding-left: 0.75rem!important;" title="Logout" id="logoutButton">
+                        <span class="float-right text-sm text-danger"><i class="fas fa-fw fa-sign-out-alt fa-lg"></i></span>
+                    </span>
                 </li>
             </ul>
         </nav>

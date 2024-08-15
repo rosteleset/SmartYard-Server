@@ -469,6 +469,7 @@ function initAll() {
 
     $("#brandTitle").text(i18n("windowTitle"));
     $("#logout").text(i18n("logout"));
+    $("#logoutButton").attr("title", i18n("logout"));
 
     $("#myNotifications").attr("title", i18n("noNotifications"));
 
@@ -596,9 +597,12 @@ function loadModule() {
                     }
                 }
             }
-            if (!modules.users) {
-                $("#selfSettings").hide();
-                $("#selfSettingsDivider").hide();
+            if (modules.users) {
+                $("#usersExists").show();
+                $("#usersNotExists").hide();
+            } else {
+                $("#usersExists").hide();
+                $("#usersNotExists").show();
             }
         }
         hashChange();
