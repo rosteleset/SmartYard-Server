@@ -408,9 +408,14 @@ function whoAmI(force) {
                     $(".userAvatar").attr("src", "img/admin.png");
                 }
             }
-            $("#selfSettings").off("click").on("click", () => {
-                modules["users"].modifyUser(myself.uid, true);
-            });
+            if (modules.users) {
+                $("#selfSettings").off("click").on("click", () => {
+                    modules.users.modifyUser(myself.uid, true);
+                });
+            } else {
+                $("#selfSettings").hide();
+                $("#selfSettingsDivider").hide();
+            }
             let userCard = _me.user.login;
             if (_me.user.realName) {
                 userCard += "<br />" + _me.user.realName;
