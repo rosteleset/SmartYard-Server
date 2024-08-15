@@ -188,8 +188,6 @@ local function mobile_intercom(flatId, flatNumber, domophoneId)
 
     for i, device in ipairs(devices) do
         if device.platform ~= cjson.null and tonumber(device.voipEnabled) == 1 then
-            log_debug(device)
-
             local flatVoipEnabled = false
             for j, flat in ipairs(device.flats) do
                 if flat.flatId == flatId then
@@ -198,6 +196,8 @@ local function mobile_intercom(flatId, flatNumber, domophoneId)
             end
 
             if flatVoipEnabled == 1 then
+                log_debug(device)
+
                 redis:incr("autoextension")
                 extension = tonumber(redis:get("autoextension"))
                 if extension > 999999 then
