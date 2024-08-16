@@ -32,8 +32,6 @@
     },
 
     modifyDevice: function (deviceId, subscriber) {
-        console.log(subscriber);
-
         let device = subscriber.devices.find( i => i.deviceId == deviceId);
 
         QUERY("subscribers", "subscribers", {
@@ -43,7 +41,6 @@
             let flats = [];
 
             if (r && r.subscribers) {
-
                 for (let i in r.subscribers[0].flats) {
                     let link = '';
 
@@ -55,10 +52,18 @@
                         link = `<a href='#addresses.subscribers&settlementId=${r.subscribers[0].flats[i].house.settlementId}&flatId=${r.subscribers[0].flats[i].flatId}&houseId=${r.subscribers[0].flats[i].house.houseId}&flat=${r.subscribers[0].flats[i].flat}&house=${encodeURIComponent(r.subscribers[0].flats[i].house.houseFull)}'><i class='fas fa-fw fa-xs fa-link'></i></a>`;
                     }
 
+                    let voip = false;
+
+                    for (let j in device.flats) {
+                        if (device.flats[j].flatId == r.subscribers[0].flats[i].flatId) {
+                            voip = device.flats[j].voipEnabled;
+                        }
+                    }
+
                     flats.push({
                         "id": r.subscribers[0].flats[i].flatId,
                         "text": trimStr($.trim(r.subscribers[0].flats[i].house.houseFull + ", " + r.subscribers[0].flats[i].flat), 64, true) + " " + link,
-                        "checked": true,
+                        "checked": !!voip,
                     });
                 }
             }
@@ -124,6 +129,13 @@
                         ],
                     },
                     {
+                        id: "flats",
+                        type: "multiselect",
+                        title: i18n("addresses.voipEnabledFlats"),
+                        options: flats,
+                        hidden: flats.length == 0,
+                    },
+                    {
                         id: "pushDisable",
                         type: "select",
                         title: i18n("addresses.pushDisable"),
@@ -155,14 +167,6 @@
                             },
                         ],
                     },
-                    {
-                        id: "flats",
-                        type: "multiselect",
-                        title: i18n("addresses.voipEnabledFlats"),
-                        options: flats,
-                        hidden: flats.length == 0,
-                    },
-
                 ],
                 callback: function (result) {
                     if (result.delete === "yes") {
