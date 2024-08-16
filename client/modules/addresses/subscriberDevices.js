@@ -32,6 +32,7 @@
     },
 
     modifyDevice: function (deviceId, subscriber) {
+        console.log(subscriber);
 
         let device = subscriber.devices.find( i => i.deviceId == deviceId);
 
@@ -39,7 +40,7 @@
             title: i18n("addresses.device"),
             footer: true,
             borderless: true,
-            // topApply: true,
+            topApply: true,
             apply: i18n("edit"),
             delete: i18n("addresses.deleteDevice"),
             size: "lg",

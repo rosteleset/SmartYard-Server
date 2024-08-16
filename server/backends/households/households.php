@@ -363,11 +363,13 @@
             abstract public function deleteDevice($deviceId);
 
             /**
-             * @param $deviceId
-             * @param $flat
+             * @param integer $deviceId
+             * @param integer $flatId
+             * @param integer $voipEnabled
+             *
              * @return boolean
              */
-            abstract public function setDeviceFlat($deviceId, $flat, $voipEnabled);
+            abstract public function setDeviceFlat($deviceId, $flatId, $voipEnabled);
 
             /**
              * @param string search

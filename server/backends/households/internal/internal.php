@@ -2426,6 +2426,18 @@
                     }
                 }
 
+                if (array_key_exists("voipFlats", $params)) {
+                    foreach ($params["voipFlats"] as $flat) {
+                        if (!checkInt($flat["flatId"]) || !checkInt($flat["voipEnabled"])) {
+                            setLastError("invalidParams");
+                            return false;
+                        }
+                        if ($this->setDeviceFlat($deviceId, $flat["flatId"], $flat["voipEnabled"])) {
+                            $result++;
+                        }
+                    }
+                }
+
                 if (array_key_exists("ua", $params)) {
                     if ($this->db->modify("update houses_subscribers_devices set ua = :ua where subscriber_device_id = $deviceId", [ "ua" => $params["ua"] ]) !== false) {
                         $result++;
@@ -2470,29 +2482,23 @@
             /**
              * @inheritDoc
              */
-            public function setDeviceFlat($deviceId, $flat, $voipEnabled)
+            public function setDeviceFlat($deviceId, $flatId, $voipEnabled)
             {
                 if (!checkInt($deviceId)) {
                     setLastError("invalidParams");
                     return false;
                 }
 
-                // Используем ON DUPLICATE KEY UPDATE для обновления записи, если она существует, или вставки новой записи, если её нет
-                $query = "
+                $r = $this->db->insert("
                     INSERT INTO houses_flats_devices (subscriber_device_id, house_flat_id, voip_enabled)
                     VALUES (:subscriber_device_id, :house_flat_id, :voip_enabled)
                     ON CONFLICT (subscriber_device_id, house_flat_id)
-                    DO UPDATE SET
-                        voip_enabled = :voip_enabled
-                ";
-
-                $params = [
+                    DO UPDATE SET voip_enabled = :voip_enabled
+                ", [
                     "subscriber_device_id" => $deviceId,
-                    "house_flat_id" => $flat,
+                    "house_flat_id" => $flatId,
                     "voip_enabled" => $voipEnabled ? 1 : 0,
-                ];
-
-                $r = $this->db->insert($query, $params) !== false;
+                ]) !== false;
 
                 if (!$r) {
                     setLastError("cantSetSubscribersFlats");
