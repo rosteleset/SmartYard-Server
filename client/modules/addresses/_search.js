@@ -91,7 +91,7 @@
 
                                     h += '<div class="mt-1">';
                                     h += '<i class="fas fa-fw fa-mobile mr-2 ml-4"></i>';
-                                    h += `<a href='?#addresses.subscribers&subscriberId=${ss.subscribers[i].id}'>${i18n("addresses.devices")}</a><br />`;
+                                    h += `<a href='?#addresses.subscribers&subscriberId=${ss.subscribers[i].subscriberId}'>${i18n("addresses.devices")}</a><br />`;
                                     h += '</div>';
 
                                     for (let j in ss.subscribers[i].flats) {
