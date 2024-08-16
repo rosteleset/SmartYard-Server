@@ -169,13 +169,16 @@
                     },
                 ],
                 callback: function (result) {
-                    console.log(result.flats);
                     if (result.delete === "yes") {
                         modules.addresses.subscriberDevices.doDeleteDevice(result.uid);
                     } else {
                         if (flats.length) {
-                            flats = [];
-                            for (let i in result.flats) {
+                            f = [];
+                            for (let i in flats) {
+                                f.push({
+                                    flatId: flats[i].id,
+                                    voipEnabled: result.flats.indexOf(flats[i].id) >= 0,
+                                });
                             }
                         }
                         modules.addresses.subscriberDevices.doModifyDevice({
@@ -183,6 +186,7 @@
                             voipEnabled: result.voipEnabled,
                             pushDisable: result.pushDisable,
                             moneyDisable: result.moneyDisable,
+                            voipFlats: f,
                         });
                     }
                 }
