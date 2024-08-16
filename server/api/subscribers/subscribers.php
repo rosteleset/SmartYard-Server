@@ -20,13 +20,22 @@ namespace api\subscribers
         {
             $households = loadBackend("households");
 
-            $flat = [
-                "subscribers" => $households->getSubscribers(@$params["by"], @$params["query"]),
-                "cameras" => $households->getCameras(@$params["by"], @$params["query"]),
-                "keys" => $households->getKeys(@$params["by"], @$params["query"]),
-            ];
+            switch (@$params["by"]) {
+                case "flatId":
+                    $flat = [
+                        "subscribers" => $households->getSubscribers("flatId", @$params["query"]),
+                        "cameras" => $households->getCameras("flatId", @$params["query"]),
+                        "keys" => $households->getKeys("flatId", @$params["query"]),
+                    ];
 
-            return api::ANSWER($flat, $flat?"flat":false);
+                    return api::ANSWER($flat, $flat ? "flat" : false);
+
+                case "subscriberId":
+                    $subscribers = $households->getSubscribers("id", @$params["query"]);
+                    return api::ANSWER($subscribers, $subscribers ? "subscribers" : false);
+            }
+
+            return api::ERROR();
         }
 
         public static function index()

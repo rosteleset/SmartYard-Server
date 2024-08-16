@@ -138,7 +138,7 @@
                     "notAcceptable" => 406,
                 ];
 
-                $code = @$errors[$error]?:400;
+                $code = @$errors[$error] ?: 400;
 
                 return [
                     $code => [
