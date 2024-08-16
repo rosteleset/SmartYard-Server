@@ -90,14 +90,14 @@
                                     h += `<a href="javascript:void(0)" class="ss" data-subscriber-id="${i}">${ss.subscribers[i].subscriberFull ? ss.subscribers[i].subscriberFull : i18n("addresses.undefined")}</a><br />`;
 
                                     h += '<div class="mt-1">';
-                                    h += '<i class="fas fa-fw fa-mobile mr-2 ml-4"></i>';
-                                    h += `<a href='?#addresses.subscriberDevices&subscriberId=flatId=${ss.subscribers[i].flats[j].flatId}&houseId=${ss.subscribers[i].flats[j].house.houseId}&flat=${encodeURIComponent(ss.subscribers[i].flats[j].flat)}&settlementId=${ss.subscribers[i].flats[j].house.settlementId ? ss.subscribers[i].flats[j].house.settlementId : 0}&streetId=${ss.subscribers[i].flats[j].house.streetId ? ss.subscribers[i].flats[j].house.streetId : 0}'>${ss.subscribers[i].flats[j].house.houseFull}, ${ss.subscribers[i].flats[j].flat}</a><br />`;
+                                    h += '<i class="fas fa-fw fa-home mr-2 ml-4"></i>';
+                                    h += `<a href='?#addresses.subscribers&flatId=${ss.subscribers[i].id}">${i18n("addresses.devices")}</a><br />`;
                                     h += '</div>';
 
                                     for (let j in ss.subscribers[i].flats) {
                                         h += '<div class="mt-1">';
-                                        h += '<i class="fas fa-fw fa-home mr-2 ml-4"></i>';
-                                        h += `<a href='?#addresses.subscribers&flatId=${ss.subscribers[i].id}">${i18n("addresses.devices")}</a><br />`;
+                                        h += '<i class="fas fa-fw fa-mobile mr-2 ml-4"></i>';
+                                        h += `<a href='?#addresses.subscriberDevices&subscriberId=flatId=${ss.subscribers[i].flats[j].flatId}&houseId=${ss.subscribers[i].flats[j].house.houseId}&flat=${encodeURIComponent(ss.subscribers[i].flats[j].flat)}&settlementId=${ss.subscribers[i].flats[j].house.settlementId ? ss.subscribers[i].flats[j].house.settlementId : 0}&streetId=${ss.subscribers[i].flats[j].house.streetId ? ss.subscribers[i].flats[j].house.streetId : 0}'>${ss.subscribers[i].flats[j].house.houseFull}, ${ss.subscribers[i].flats[j].flat}</a><br />`;
                                         h += '</div>';
                                     }
 
