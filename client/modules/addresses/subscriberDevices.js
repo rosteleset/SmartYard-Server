@@ -110,8 +110,7 @@
                     {
                         id: "voipEnabled",
                         type: "select",
-                        title: i18n("addresses.voipEnabled"),
-                        placeholder: i18n("addresses.voipEnabled"),
+                        title: i18n("addresses.voipEnabledGlobal"),
                         value: device.voipEnabled,
                         options: [
                             {
