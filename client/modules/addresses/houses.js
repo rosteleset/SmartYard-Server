@@ -1500,6 +1500,12 @@
                             }
                         },
                         tab: i18n("addresses.primary"),
+                        button: {
+                            "class": "fas fa-magic",
+                            click: prefix => {
+                                $("#" + prefix + "openCode").val(Math.floor(Math.random() * (99999 - 10001) + 10001));
+                            }
+                        },
                     },
                     {
                         id: "autoOpen",

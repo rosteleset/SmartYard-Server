@@ -226,11 +226,11 @@
                 let link = '';
 
                 if (subscriber.flats[i].house.streetId) {
-                    link = `<a href='#addresses.subscribers&streetId=${subscriber.flats[i].house.streetId}&flatId=${subscriber.flats[i].flatId}&houseId=${subscriber.flats[i].house.houseId}&flat=${subscriber.flats[i].flat}&house=${encodeURIComponent(subscriber.flats[i].house.houseFull)}'><i class='fas fa-fw fa-xs fa-link'></i></a>`;
+                    link = `<a href='#addresses.subscribers&streetId=${subscriber.flats[i].house.streetId}&flatId=${subscriber.flats[i].flatId}&houseId=${subscriber.flats[i].house.houseId}&flat=${subscriber.flats[i].flat}'><i class='fas fa-fw fa-xs fa-link'></i></a>`;
                 }
 
                 if (subscriber.flats[i].house.settlementId) {
-                    link = `<a href='#addresses.subscribers&settlementId=${subscriber.flats[i].house.settlementId}&flatId=${subscriber.flats[i].flatId}&houseId=${subscriber.flats[i].house.houseId}&flat=${subscriber.flats[i].flat}&house=${encodeURIComponent(subscriber.flats[i].house.houseFull)}'><i class='fas fa-fw fa-xs fa-link'></i></a>`;
+                    link = `<a href='#addresses.subscribers&settlementId=${subscriber.flats[i].house.settlementId}&flatId=${subscriber.flats[i].flatId}&houseId=${subscriber.flats[i].house.houseId}&flat=${subscriber.flats[i].flat}'><i class='fas fa-fw fa-xs fa-link'></i></a>`;
                 }
 
                 let flat = `

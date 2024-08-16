@@ -45,11 +45,11 @@
                     let link = '';
 
                     if (r.subscribers[0].flats[i].house.streetId) {
-                        link = `<a href='#addresses.subscribers&streetId=${r.subscribers[0].flats[i].house.streetId}&flatId=${r.subscribers[0].flats[i].flatId}&houseId=${r.subscribers[0].flats[i].house.houseId}&flat=${r.subscribers[0].flats[i].flat}&house=${encodeURIComponent(r.subscribers[0].flats[i].house.houseFull)}'><i class='fas fa-fw fa-xs fa-link'></i></a>`;
+                        link = `<a href='#addresses.subscribers&streetId=${r.subscribers[0].flats[i].house.streetId}&flatId=${r.subscribers[0].flats[i].flatId}&houseId=${r.subscribers[0].flats[i].house.houseId}&flat=${r.subscribers[0].flats[i].flat}'><i class='fas fa-fw fa-xs fa-link'></i></a>`;
                     }
 
                     if (r.subscribers[0].flats[i].house.settlementId) {
-                        link = `<a href='#addresses.subscribers&settlementId=${r.subscribers[0].flats[i].house.settlementId}&flatId=${r.subscribers[0].flats[i].flatId}&houseId=${r.subscribers[0].flats[i].house.houseId}&flat=${r.subscribers[0].flats[i].flat}&house=${encodeURIComponent(r.subscribers[0].flats[i].house.houseFull)}'><i class='fas fa-fw fa-xs fa-link'></i></a>`;
+                        link = `<a href='#addresses.subscribers&settlementId=${r.subscribers[0].flats[i].house.settlementId}&flatId=${r.subscribers[0].flats[i].flatId}&houseId=${r.subscribers[0].flats[i].house.houseId}&flat=${r.subscribers[0].flats[i].flat}'><i class='fas fa-fw fa-xs fa-link'></i></a>`;
                     }
 
                     let voip = false;
