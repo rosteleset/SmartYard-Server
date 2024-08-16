@@ -181,6 +181,7 @@
                                 });
                             }
                         }
+                        console.log(result.flats);
                         console.log(f);
                         modules.addresses.subscriberDevices.doModifyDevice({
                             uid: result.uid,
