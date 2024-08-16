@@ -177,10 +177,11 @@
                             for (let i in flats) {
                                 f.push({
                                     flatId: flats[i].id,
-                                    voipEnabled: result.flats.indexOf(flats[i].id) >= 0,
+                                    voipEnabled: result.flats.indexOf(flats[i].id) >= 0 ? 1 : 0,
                                 });
                             }
                         }
+                        console.log(f);
                         modules.addresses.subscriberDevices.doModifyDevice({
                             uid: result.uid,
                             voipEnabled: result.voipEnabled,
