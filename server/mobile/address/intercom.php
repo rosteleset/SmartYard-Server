@@ -154,7 +154,7 @@
             $e = $households->getEntrance($entrance['entranceId']);
             if ($cameras) {
                 $vstream = $cameras->getCamera($e['cameraId']);
-                if (strlen($vstream["frs"]) > 1) {
+                if ($vstream && strlen($vstream["frs"]) > 1) {
                     $frsDisabled = 'f';
                     break;
                 }
