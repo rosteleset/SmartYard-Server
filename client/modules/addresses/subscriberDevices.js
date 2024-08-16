@@ -36,113 +36,149 @@
 
         let device = subscriber.devices.find( i => i.deviceId == deviceId);
 
-        cardForm({
-            title: i18n("addresses.device"),
-            footer: true,
-            borderless: true,
-            topApply: true,
-            apply: i18n("edit"),
-            delete: i18n("addresses.deleteDevice"),
-            size: "lg",
-            fields: [
-                {
-                    id: "uid",
-                    type: "text",
-                    title: "id",
-                    readonly: true,
-                    value: device.deviceId,
-                },
-                {
-                    id: "authToken",
-                    type: "text",
-                    title: i18n("addresses.authToken"),
-                    value: device.authToken,
-                    readonly: true,
-                },
-                {
-                    id: "pushToken",
-                    type: "text",
-                    title: i18n("addresses.pushToken"),
-                    value: device.pushToken,
-                    readonly: true,
-                },
-                {
-                    id: "voipToken",
-                    type: "text",
-                    title: i18n("addresses.voipToken"),
-                    value: device.voipToken,
-                    readonly: true,
-                },
-                {
-                    id: "platform",
-                    type: "text",
-                    title: i18n("addresses.platform"),
-                    value: this.platforms[device.platform],
-                    readonly: true,
-                },
-                {
-                    id: "voipEnabled",
-                    type: "select",
-                    title: i18n("addresses.voipEnabled"),
-                    placeholder: i18n("addresses.voipEnabled"),
-                    value: device.voipEnabled,
-                    options: [
-                        {
-                            id: "0",
-                            text: i18n("no"),
-                        },
-                        {
-                            id: "1",
-                            text: i18n("yes"),
-                        },
-                    ],
-                },
-                {
-                    id: "pushDisable",
-                    type: "select",
-                    title: i18n("addresses.pushDisable"),
-                    value: device.pushDisable,
-                    options: [
-                        {
-                            id: "1",
-                            text: i18n("no"),
-                        },
-                        {
-                            id: "0",
-                            text: i18n("yes"),
-                        },
-                    ],
-                },
-                {
-                    id: "moneyDisable",
-                    type: "select",
-                    title: i18n("addresses.moneyDisable"),
-                    value: device.moneyDisable,
-                    options: [
-                        {
-                            id: "1",
-                            text: i18n("no"),
-                        },
-                        {
-                            id: "0",
-                            text: i18n("yes"),
-                        },
-                    ],
-                }
-            ],
-            callback: function (result) {
-                if (result.delete === "yes") {
-                    modules.addresses.subscriberDevices.doDeleteDevice(result.uid);
-                } else {
-                    modules.addresses.subscriberDevices.doModifyDevice({
-                        uid: result.uid,
-                        voipEnabled: result.voipEnabled,
-                        pushDisable: result.pushDisable,
-                        moneyDisable: result.moneyDisable,
+        QUERY("subscribers", "subscribers", {
+            by: "subscriberId",
+            query: device.subscriberId,
+        }).done(r => {
+            let flats = [];
+
+            if (r && r.subscribers) {
+
+                for (let i in r.subscribers[0].flats) {
+                    let link = '';
+
+                    if (r.subscribers[0].flats[i].house.streetId) {
+                        link = `<a href='#addresses.subscribers&streetId=${r.subscribers[0].flats[i].house.streetId}&flatId=${r.subscribers[0].flats[i].flatId}&houseId=${r.subscribers[0].flats[i].house.houseId}&flat=${r.subscribers[0].flats[i].flat}&house=${encodeURIComponent(r.subscribers[0].flats[i].house.houseFull)}'><i class='fas fa-fw fa-xs fa-link'></i></a>`;
+                    }
+
+                    if (r.subscribers[0].flats[i].house.settlementId) {
+                        link = `<a href='#addresses.subscribers&settlementId=${r.subscribers[0].flats[i].house.settlementId}&flatId=${r.subscribers[0].flats[i].flatId}&houseId=${r.subscribers[0].flats[i].house.houseId}&flat=${r.subscribers[0].flats[i].flat}&house=${encodeURIComponent(r.subscribers[0].flats[i].house.houseFull)}'><i class='fas fa-fw fa-xs fa-link'></i></a>`;
+                    }
+
+                    flats.push({
+                        "id": r.subscribers[0].flats[i].flatId,
+                        "text": trimStr($.trim(r.subscribers[0].flats[i].house.houseFull + ", " + r.subscribers[0].flats[i].flat), 64, true) + " " + link,
+                        "checked": true,
                     });
                 }
             }
-        }).show();
+
+            cardForm({
+                title: i18n("addresses.device"),
+                footer: true,
+                borderless: true,
+                topApply: true,
+                apply: i18n("edit"),
+                delete: i18n("addresses.deleteDevice"),
+                size: "lg",
+                fields: [
+                    {
+                        id: "uid",
+                        type: "text",
+                        title: "id",
+                        readonly: true,
+                        value: device.deviceId,
+                    },
+                    {
+                        id: "authToken",
+                        type: "text",
+                        title: i18n("addresses.authToken"),
+                        value: device.authToken,
+                        readonly: true,
+                    },
+                    {
+                        id: "pushToken",
+                        type: "text",
+                        title: i18n("addresses.pushToken"),
+                        value: device.pushToken,
+                        readonly: true,
+                    },
+                    {
+                        id: "voipToken",
+                        type: "text",
+                        title: i18n("addresses.voipToken"),
+                        value: device.voipToken,
+                        readonly: true,
+                    },
+                    {
+                        id: "platform",
+                        type: "text",
+                        title: i18n("addresses.platform"),
+                        value: this.platforms[device.platform],
+                        readonly: true,
+                    },
+                    {
+                        id: "voipEnabled",
+                        type: "select",
+                        title: i18n("addresses.voipEnabled"),
+                        placeholder: i18n("addresses.voipEnabled"),
+                        value: device.voipEnabled,
+                        options: [
+                            {
+                                id: "0",
+                                text: i18n("no"),
+                            },
+                            {
+                                id: "1",
+                                text: i18n("yes"),
+                            },
+                        ],
+                    },
+                    {
+                        id: "pushDisable",
+                        type: "select",
+                        title: i18n("addresses.pushDisable"),
+                        value: device.pushDisable,
+                        options: [
+                            {
+                                id: "1",
+                                text: i18n("no"),
+                            },
+                            {
+                                id: "0",
+                                text: i18n("yes"),
+                            },
+                        ],
+                    },
+                    {
+                        id: "moneyDisable",
+                        type: "select",
+                        title: i18n("addresses.moneyDisable"),
+                        value: device.moneyDisable,
+                        options: [
+                            {
+                                id: "1",
+                                text: i18n("no"),
+                            },
+                            {
+                                id: "0",
+                                text: i18n("yes"),
+                            },
+                        ],
+                    },
+                    {
+                        id: "flats",
+                        type: "multiselect",
+                        title: i18n("addresses.voipEnabledFlats"),
+                        options: flats,
+                        hidden: flats.length == 0,
+                    },
+
+                ],
+                callback: function (result) {
+                    if (result.delete === "yes") {
+                        modules.addresses.subscriberDevices.doDeleteDevice(result.uid);
+                    } else {
+                        modules.addresses.subscriberDevices.doModifyDevice({
+                            uid: result.uid,
+                            voipEnabled: result.voipEnabled,
+                            pushDisable: result.pushDisable,
+                            moneyDisable: result.moneyDisable,
+                        });
+                    }
+                }
+            }).show();
+        });
     },
 
     renderSubscriberDevices: function (subscriberId) {
