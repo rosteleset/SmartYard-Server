@@ -169,9 +169,15 @@
                     },
                 ],
                 callback: function (result) {
+                    console.log(result.flats);
                     if (result.delete === "yes") {
                         modules.addresses.subscriberDevices.doDeleteDevice(result.uid);
                     } else {
+                        if (flats.length) {
+                            flats = [];
+                            for (let i in result.flats) {
+                            }
+                        }
                         modules.addresses.subscriberDevices.doModifyDevice({
                             uid: result.uid,
                             voipEnabled: result.voipEnabled,
