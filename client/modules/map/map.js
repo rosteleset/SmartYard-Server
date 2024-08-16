@@ -57,9 +57,9 @@
             }
         }
 
-        L.tileLayer((config.map && config.map.tile)?config.map.tile:'https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            minZoom: (config.map && config.map.min)?config.map.min:4,
-            maxZoom: (config.map && config.map.max)?config.map.max:18,
+        L.tileLayer((config.map && config.map.tile) ? config.map.tile : 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            minZoom: (config.map && config.map.min) ? config.map.min : 4,
+            maxZoom: (config.map && config.map.max) ? config.map.max : 18,
         }).addTo(modules.map.map);
 
         let
