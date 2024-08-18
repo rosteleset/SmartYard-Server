@@ -30,11 +30,11 @@
              * @param string $ua user agent
              * @param string $did device id
              * @param string $ip client ip
+             * @param string $secret totp secret
              * @return array
              */
 
-            public function login($login, $password, $rememberMe, $ua = "", $did = "", $ip = "")
-            {
+            public function login($login, $password, $rememberMe, $ua = "", $did = "", $ip = "", $secret = "") {
                 $uid = $this->check_auth($login, $password);
 
                 if ($uid !== false) {

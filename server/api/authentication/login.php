@@ -52,7 +52,15 @@
 
             public static function POST($params) {
 
-                $auth = $params["_backends"]["authentication"]->login($params["login"], $params["password"], $params["rememberMe"] && $params["ua"] && $params["did"], trim($params["ua"]), trim($params["did"]), $params["_ip"]);
+                $auth = $params["_backends"]["authentication"]->login($params["login"], $params["password"], $params["rememberMe"] && $params["ua"] && $params["did"], trim($params["ua"]), trim($params["did"]), $params["_ip"], @$params["secret"]);
+
+                if ($auth["result"] == "2fa") {
+                    return [
+                        "200" => [
+                            "2fa" => true,
+                        ],
+                    ];
+                }
 
                 if ($auth["result"]) {
                     return [
@@ -60,13 +68,13 @@
                             "token" => $auth["token"],
                         ],
                     ];
-                } else {
-                    return [
-                        $auth["code"] => [
-                            "error" => $auth["error"],
-                        ]
-                    ];
                 }
+
+                return [
+                    $auth["code"] => [
+                        "error" => $auth["error"],
+                    ]
+                ];
             }
 
             public static function index() {
