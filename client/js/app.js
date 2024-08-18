@@ -580,6 +580,40 @@ function initAll() {
         return false;
     })
 
+    $("#loginBoxLogin").off("keypress").on("keypress", e => {
+        if (e.keyCode == 13) {
+            if ($.trim($("#loginBoxPassword").val())) {
+                login();
+            } else {
+                $("#loginBoxPassword").focus();
+            }
+        }
+    });
+
+    $("#loginBoxPassword").off("keypress").on("keypress", e => {
+        if (e.keyCode == 13) {
+            login();
+        }
+    });
+
+    $("#forgotBoxEMail").off("keypress").on("keypress", e => {
+        if (e.keyCode == 13 && $.trim($("#forgotBoxEMail").val())) {
+            forgot();
+        }
+    });
+
+    $("#2faBoxCode").off("keypress").on("keypress", e => {
+        if (e.keyCode == 13) {
+            login();
+        } else {
+            setTimeout(() => {
+                if ($.trim($("#2faBoxCode").val()).length == 6) {
+                    login();
+                }
+            }, 50);
+        }
+    });
+
     if (lStoreEngine && lStoreEngine !== "cookie") {
         lStore("_cookie", "1");
     }
@@ -806,37 +840,3 @@ function loadCustomSubModules(parent, subModules) {
         fail(FAIL);
     }
 }
-
-$("#loginBoxLogin").off("keypress").on("keypress", e => {
-    if (e.keyCode == 13) {
-        if ($.trim($("#loginBoxPassword").val())) {
-            login();
-        } else {
-            $("#loginBoxPassword").focus();
-        }
-    }
-});
-
-$("#loginBoxPassword").off("keypress").on("keypress", e => {
-    if (e.keyCode == 13) {
-        login();
-    }
-});
-
-$("#forgotBoxEMail").off("keypress").on("keypress", e => {
-    if (e.keyCode == 13 && $.trim($("#forgotBoxEMail").val())) {
-        forgot();
-    }
-});
-
-$("#2faBoxCode").off("keypress").on("keypress", e => {
-    if (e.keyCode == 13) {
-        login();
-    } else {
-        setTimeout(() => {
-            if ($.trim($("#2faBoxCode").val()).length == 6) {
-                login();
-            }
-        }, 50);
-    }
-});
