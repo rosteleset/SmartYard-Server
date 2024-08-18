@@ -7,7 +7,6 @@
     namespace backends\authentication {
 
         use backends\backend;
-        use MongoDB\Exception\BadMethodCallException;
 
         /**
          * base authentication class
@@ -216,8 +215,12 @@
             }
 
             /**
+             * @param string $uid uid
              * @param string $otp one time password
+             *
+             * @return boolean
              */
+
             public function totp($token, $otp) {
 /*
 https://github.com/PHPGangsta/GoogleAuthenticator/blob/master/PHPGangsta/GoogleAuthenticator.php
