@@ -537,8 +537,7 @@
              * @inheritDoc
              */
 
-            public function two_fa($uid, $secret = "")
-            {
+            public function two_fa($uid, $secret = "") {
                 if ($secret === "") {
                     return $this->db->get("select secret from core_users where uid = :uid", false, [
                         "secret" => "secret",

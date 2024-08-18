@@ -54,15 +54,15 @@
 
                 $auth = $params["_backends"]["authentication"]->login($params["login"], $params["password"], $params["rememberMe"] && $params["ua"] && $params["did"], trim($params["ua"]), trim($params["did"]), $params["_ip"], @$params["oneCode"]);
 
-                if ($auth["result"] == "2fa") {
+                if ($auth && $auth["otp"]) {
                     return [
                         "200" => [
-                            "2fa" => true,
+                            "otp" => true,
                         ],
                     ];
                 }
 
-                if ($auth["result"]) {
+                if ($auth && $auth["result"]) {
                     return [
                         "200" => [
                             "token" => $auth["token"],

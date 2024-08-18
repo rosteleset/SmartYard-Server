@@ -48,9 +48,7 @@
                         $ga = new PHPGangsta_GoogleAuthenticator();
 
                         if (!$ga->verifyCode($two_fa, $oneCode, 2)) {
-                            return [
-                                "result" => "2fa",
-                            ];
+                            return "otp";
                         }
                     }
 
