@@ -43,12 +43,14 @@
                     $two_fa = $users->two_fa($uid);
 
                     if ($two_fa) {
-                        require_once "../lib/GoogleAuthenticator/GoogleAuthenticator.php";
+                        require_once "lib/GoogleAuthenticator/GoogleAuthenticator.php";
 
-                        $ga = new PHPGangsta_GoogleAuthenticator();
+                        $ga = new \PHPGangsta_GoogleAuthenticator();
 
                         if (!$ga->verifyCode($two_fa, $oneCode, 2)) {
-                            return "otp";
+                            return [
+                                "otp" => true,
+                            ];
                         }
                     }
 
@@ -233,9 +235,9 @@
              */
 
             public function two_fa($token, $oneCode) {
-                require_once "../lib/GoogleAuthenticator/GoogleAuthenticator.php";
+                require_once "lib/GoogleAuthenticator/GoogleAuthenticator.php";
 
-                $ga = new PHPGangsta_GoogleAuthenticator();
+                $ga = new \PHPGangsta_GoogleAuthenticator();
 
                 $users = loadBackend("users");
 

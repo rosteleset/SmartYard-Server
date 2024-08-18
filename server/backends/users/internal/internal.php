@@ -539,7 +539,9 @@
 
             public function two_fa($uid, $secret = "") {
                 if ($secret === "") {
-                    return $this->db->get("select secret from core_users where uid = :uid", false, [
+                    return $this->db->get("select secret from core_users where uid = :uid", [
+                        "uid" => $uid,
+                    ], [
                         "secret" => "secret",
                     ], [
                         "fieldlify",
