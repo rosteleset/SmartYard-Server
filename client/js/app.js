@@ -217,6 +217,7 @@ function hashChange() {
 
             $("#loginForm").hide();
             $("#forgotForm").hide();
+            $("#2faForm").hide();
 
             let module = modules;
 
@@ -279,12 +280,74 @@ function ping(server) {
     });
 }
 
+function showLoginForm() {
+    $("#mainForm").html("");
+    $("#altForm").hide();
+    $("#page404").hide();
+    $("#pageError").hide();
+    $("#forgotForm").hide();
+    $("#2faForm").hide();
+    $("#loginForm").show();
+
+    $("#loginBoxLogin").val(lStore("_login"));
+    $("#loginBoxServer").val(lStore("_server"));
+
+    if (!$("#loginBoxServer").val()) {
+        $("#loginBoxServer").val(config.defaultServer);
+    }
+
+    let server = $("#loginBoxServer").val();
+
+    while (server[server.length - 1] === "/") {
+        server = server.substring(0, server.length - 1);
+    }
+
+    $.get(server + "/accounts/forgot?available=ask").done(() => {
+        $("#loginBoxForgot").show();
+    });
+
+    loadingDone(true);
+
+    setTimeout(() => {
+        if ($("#loginBoxLogin").val()) {
+            $("#loginBoxPassword").focus();
+        } else {
+            $("#loginBoxLogin").focus();
+        }
+    }, 150);
+}
+
+function showForgotPasswordForm() {
+    $("#mainForm").html("");
+    $("#altForm").hide();
+    $("#page404").hide();
+    $("#pageError").hide();
+    $("#loginForm").hide();
+    $("#2faForm").hide();
+    $("#forgotForm").show();
+
+    $("#forgotBoxServer").val(lStore("_server"));
+    if (!$("#forgotBoxServer").val()) {
+        $("#forgotBoxServer").val($("#loginBoxServer").val());
+    }
+    if (!$("#forgotBoxServer").val()) {
+        $("#forgotBoxServer").val(config.defaultServer);
+    }
+
+    loadingDone(true);
+
+    setTimeout(() => {
+        $("#forgotBoxEMail").focus();
+    }, 150);
+}
+
 function login() {
     loadingStart();
 
     let login = $.trim($("#loginBoxLogin").val());
     let password = $.trim($("#loginBoxPassword").val());
     let server = $.trim($("#loginBoxServer").val());
+    let code = $.trim($("#2faBoxCode").val());
 
     while (server[server.length - 1] === "/") {
         server = server.substring(0, server.length - 1);
@@ -303,13 +366,23 @@ function login() {
                 password: password,
                 rememberMe: true,
                 did: lStore("_did"),
+                oneCode: code,
             }),
             success: response => {
                 if (response && response.token) {
                     lStore("_token", response.token);
                     window.location.reload();
                 } else {
-                    error(i18n("errors.unknown"), i18n("error"), 30);
+                    if (response && response.otp) {
+                        loadingDone();
+                        $("#loginForm").hide();
+                        $("#2faForm").show();
+                        setTimeout(() => {
+                            $("#2faBoxCode").focus();
+                        }, 150);
+                    } else {
+                        error(i18n("errors.unknown"), i18n("error"), 30);
+                    }
                 }
             },
             error: response => {
@@ -432,6 +505,7 @@ function initAll() {
         $("#leftSideToggler").attr("src", "img/" + config.logo + ".png");
         $("#loginBoxLogo").html("<img class='mb-2' src='img/" + config.logo + "Text.png' width='285px'/>");
         $("#forgotBoxLogo").html("<img class='mb-2' src='img/" + config.logo + "Text.png' width='285px'/>");
+        $("#2faBoxLogo").html("<img class='mb-2' src='img/" + config.logo + "Text.png' width='285px'/>");
     }
 
     $(document.body).css("background-color", '#e9ecef');
@@ -463,6 +537,11 @@ function initAll() {
     $("#forgotBoxButton").text(i18n("forgotAction"));
     $("#forgotBoxLogin").text(i18n("forgotLogin"));
     $("#forgotBoxServer").attr("placeholder", i18n("server"));
+
+    $("#2faBoxTitle").text(i18n("2faFormTitle"));
+    $("#2faBoxCode").attr("placeholder", i18n("2faCode"));
+    $("#2faBoxButton").text(i18n("2faAction"));
+    $("#2faBoxLogin").text(i18n("2faLogin"));
 
     $(".back-to-top").attr("aria-label", i18n("scrollToTop"));
     $(".back-to-top").attr("title", i18n("scrollToTop"));
@@ -728,8 +807,36 @@ function loadCustomSubModules(parent, subModules) {
     }
 }
 
+$("#loginBoxLogin").off("keypress").on("keypress", e => {
+    if (e.keyCode == 13) {
+        if ($.trim($("#loginBoxPassword").val())) {
+            login();
+        } else {
+            $("#loginBoxPassword").focus();
+        }
+    }
+});
+
 $("#loginBoxPassword").off("keypress").on("keypress", e => {
     if (e.keyCode == 13) {
         login();
+    }
+});
+
+$("#forgotBoxEMail").off("keypress").on("keypress", e => {
+    if (e.keyCode == 13 && $.trim($("#forgotBoxEMail").val())) {
+        forgot();
+    }
+});
+
+$("#2faBoxCode").off("keypress").on("keypress", e => {
+    if (e.keyCode == 13) {
+        login();
+    } else {
+        setTimeout(() => {
+            if ($.trim($("#2faBoxCode").val()).length == 6) {
+                login();
+            }
+        }, 50);
     }
 });

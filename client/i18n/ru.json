@@ -18,7 +18,7 @@
     "eMail": "E-Mail",
     "phone": "Телефон",
     "forgotAction": "Восстановить",
-    "forgotLogin": "Войти",
+    "forgotLogin": "Назад",
     "search": "Поиск",
     "logout": "Выйти",
     "logoutQuestion": "Завершить все сессии?",
@@ -69,6 +69,10 @@
     "scrollToTop": "Пролистать наверх",
     "default": "По умолчанию",
     "withoutIcon": "Без значка",
+    "2faFormTitle": "Код авторизации",
+    "2faCode": "Код авторизации",
+    "2faAction": "Войти",
+    "2faLogin": "Назад",
     "tz": {
         "Europe/Moscow": "Европа/Москва"
     },

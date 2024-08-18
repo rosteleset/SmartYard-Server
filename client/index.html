@@ -389,10 +389,10 @@
                 <div class="card-body login-card-body">
                     <p class="login-box-msg" id="loginBoxTitle"></p>
                     <div class="input-group mb-3">
-                        <input id="loginBoxLogin" type="text" class="form-control" placeholder="">
+                        <input id="loginBoxLogin" type="text" class="form-control" placeholder="" autofocus>
                         <div class="input-group-append">
                             <div class="input-group-text">
-                                <span class="fas fa-user"></span>
+                                <span class="fas fa-fw fa-user"></span>
                             </div>
                         </div>
                     </div>
@@ -400,7 +400,7 @@
                         <input id="loginBoxPassword" type="password" class="form-control" placeholder="">
                         <div class="input-group-append">
                             <div class="input-group-text">
-                                <span class="fas fa-lock"></span>
+                                <span class="fas fa-fw fa-lock"></span>
                             </div>
                         </div>
                     </div>
@@ -408,7 +408,7 @@
                         <input id="loginBoxServer" type="text" class="form-control" placeholder="">
                         <div class="input-group-append">
                             <div class="input-group-text">
-                                <span class="fas fa-server"></span>
+                                <span class="fas fa-fw fa-server"></span>
                             </div>
                         </div>
                     </div>
@@ -417,11 +417,11 @@
                         </select>
                     </div>
                     <div class="row">
-                        <div class="col-4">
+                        <div class="col-12">
                             <button type="button" class="btn btn-primary btn-block" onclick="login()" id="loginBoxLoginButton"></button>
                         </div>
                     </div>
-                    <p id="loginBoxForgot" class="mb-1 mt-2" style="display: none;">
+                    <p id="loginBoxForgot" class="mb-1 mt-4" style="display: none;">
                         <span class="pointer" onclick="showForgotPasswordForm()" id="loginBoxForgotPassword"></span>
                     </p>
                 </div>
@@ -437,10 +437,10 @@
                 <div class="card-body login-card-body">
                     <p class="login-box-msg" id="forgotBoxTitle"></p>
                     <div class="input-group mb-3">
-                        <input id="forgotBoxEMail" type="email" class="form-control">
+                        <input id="forgotBoxEMail" type="email" class="form-control" autofocus>
                         <div class="input-group-append">
                             <div class="input-group-text">
-                                <span class="fas fa-envelope"></span>
+                                <span class="fas fa-fw fa-envelope"></span>
                             </div>
                         </div>
                     </div>
@@ -448,7 +448,7 @@
                         <input id="forgotBoxServer" type="text" class="form-control" placeholder="">
                         <div class="input-group-append">
                             <div class="input-group-text">
-                                <span class="fas fa-server"></span>
+                                <span class="fas fa-fw fa-server"></span>
                             </div>
                         </div>
                     </div>
@@ -459,6 +459,34 @@
                     </div>
                     <p class="mt-4 mb-1">
                         <span class="pointer" onclick="showLoginForm()" id="forgotBoxLogin"></span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2faForm -->
+    <div class="centre-of-all" id="2faForm" style="display: none;">
+        <div class="login-box">
+            <div class="login-logo font-weight-bold" id="2faBoxLogo"></div>
+            <div class="card">
+                <div class="card-body login-card-body">
+                    <p class="login-box-msg" id="2faBoxTitle"></p>
+                    <div class="input-group mb-3">
+                        <input id="2faBoxCode" type="text" class="form-control" autofocus>
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-fw fa-key"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <button type="button" class="btn btn-primary btn-block" onclick="login()" id="2faBoxButton"></button>
+                        </div>
+                    </div>
+                    <p class="mt-4 mb-1">
+                        <span class="pointer" onclick="showLoginForm()" id="2faBoxLogin"></span>
                     </p>
                 </div>
             </div>
@@ -541,7 +569,6 @@
     <script src="js/i18n.js"></script>
     <script src="js/rest.js"></script>
     <script src="js/tz.js"></script>
-    <script src="js/greetings.js"></script>
     <script src="js/faicons.js"></script>
     <script src="js/app.js"></script>
 </body>
