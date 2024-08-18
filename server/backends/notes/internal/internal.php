@@ -15,6 +15,7 @@
             /**
              * @inheritDoc
              */
+
             public function getNotes()
             {
                 return $notes = $this->db->get("select * from notes where owner = :owner order by position_order", [
@@ -39,6 +40,7 @@
             /**
              * @inheritDoc
              */
+
             public function addNote($subject, $body, $checks, $category, $remind, $icon, $font, $color, $x, $y, $z)
             {
                 $body = trim($body);
@@ -90,6 +92,7 @@
             /**
              * @inheritDoc
              */
+
             public function modifyNote11($id, $subject, $body, $category, $remind, $icon, $font, $color, $x, $y, $z)
             {
                 $body = trim($body);
@@ -119,6 +122,7 @@
             /**
              * @inheritDoc
              */
+
             public function modifyNote4($id, $x, $y, $z)
             {
                 if (!checkInt($id)) {
@@ -138,6 +142,7 @@
             /**
              * @inheritDoc
              */
+
             public function modifyNote3($id, $line, $checked)
             {
                 if (!checkInt($id) || !checkInt($line) || !checkInt($checked)) {
@@ -170,6 +175,7 @@
             /**
              * @inheritDoc
              */
+
             public function deleteNote($id)
             {
                 if (!checkInt($id)) {
@@ -203,6 +209,7 @@
             /**
              * @inheritDoc
              */
+
             public function cron($part)
             {
                 if ($part == "minutely") {
@@ -218,7 +225,7 @@
                     $users = loadBackend("users");
 
                     foreach ($notes as $note) {
-                        $users->notify($note["owner"], $note["subject"], $note["body"]);
+                        $users->notify($users->getUidByLogin($note["owner"]), $note["subject"], $note["body"]);
                         $this->db->modify("update notes set reminded = 1 where note_id = ${note["id"]}");
                     }
                 }

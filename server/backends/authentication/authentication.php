@@ -33,12 +33,15 @@
              * @return array
              */
 
-            public function login($login, $password, $rememberMe, $ua = "", $did = "", $ip = "") {
+            public function login($login, $password, $rememberMe, $ua = "", $did = "", $ip = "")
+            {
                 $uid = $this->check_auth($login, $password);
+
                 if ($uid !== false) {
                     $keys = $this->redis->keys("auth_*_" . $uid);
                     $first_key = "";
                     $first_key_time = time();
+
                     if (count($keys) > $this->config["redis"]["max_allowed_tokens"]) {
                         foreach ($keys as $key) {
                             try {
@@ -52,6 +55,7 @@
                         }
                         $this->redis->delete($first_key);
                     }
+
                     if ($rememberMe) {
                         $token = md5($uid . ":" . $login . ":" . $password . ":" . $did);
                     } else {
@@ -61,7 +65,8 @@
                             $token = md5(GUIDv4());
                         }
                     }
-                    $this->redis->setex("auth_" . $token . "_" . $uid, $rememberMe?(7 * 24 * 60 * 60):$this->config["redis"]["token_idle_ttl"], json_encode([
+
+                    $this->redis->setex("auth_" . $token . "_" . $uid, $rememberMe ? (7 * 24 * 60 * 60) : $this->config["redis"]["token_idle_ttl"], json_encode([
                         "uid" => (string)$uid,
                         "login" => $login,
                         "persistent" => $rememberMe,
@@ -71,7 +76,9 @@
                         "started" => time(),
                         "updated" => time(),
                     ]));
+
                     $this->redis->set("last_login_" . md5($login), time());
+
                     return [
                         "result" => true,
                         "token" => $token,
@@ -96,7 +103,8 @@
              * @return false|array
              */
 
-            public function auth($authorization, $ua = "", $ip = "") {
+            public function auth($authorization, $ua = "", $ip = "")
+            {
                 $authorization = explode(" ", $authorization);
 
                 if ($authorization[0] === "Bearer") {
@@ -183,7 +191,8 @@
              * @return void
              */
 
-            public function logout($token, $all = false) {
+            public function logout($token, $all = false)
+            {
                 $keys = $this->redis->keys("auth_" . $token . "_*");
 
                 if ($all) {
@@ -209,8 +218,7 @@
             /**
              * @param string $otp one time password
              */
-
-            public function totp($otp) {
+            public function totp($token, $otp) {
 /*
 https://github.com/PHPGangsta/GoogleAuthenticator/blob/master/PHPGangsta/GoogleAuthenticator.php
 require_once 'GoogleAuthenticator.php';

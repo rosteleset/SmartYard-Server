@@ -10,13 +10,15 @@
          * internal.db users class
          */
 
-        class internal extends users {
+        class internal extends users
+        {
 
             /**
              * @inheritDoc
              */
 
-            public function getUsers($withSessions = false) {
+            public function getUsers($withSessions = false)
+            {
                 if (!$withSessions) {
 
                     $cache = $this->cacheGet("USERS");
@@ -278,6 +280,7 @@
             /**
              * @inheritDoc
              */
+
             public function modifyUser($uid, $realName = '', $eMail = '', $phone = '', $tg = '', $notification = 'tgEmail', $enabled = true, $defaultRoute = '', $persistentToken = false, $primaryGroup = -1) {
                 $this->clearCache();
 
@@ -410,6 +413,7 @@
             /**
              * @inheritDoc
              */
+
             public function getUidByLogin($login)
             {
                 $key = "UIDBYLOGIN:$login";
@@ -441,6 +445,7 @@
             /**
              * @inheritDoc
              */
+
             public function putSettings($settings)
             {
                 try {
@@ -456,6 +461,7 @@
             /**
              * @inheritDoc
              */
+
             public function getSettings()
             {
                 try {
@@ -483,6 +489,7 @@
             /**
              * @inheritDoc
              */
+
             public function sendMessage($from, $to, $subject, $body, $type, $handler)
             {
 
@@ -491,7 +498,8 @@
             /**
              * @inheritDoc
              */
-            public function unreaded($login)
+
+            public function unreaded($uid)
             {
 
             }
@@ -499,6 +507,7 @@
             /**
              * @inheritDoc
              */
+
             public function readed($id)
             {
 
@@ -507,6 +516,7 @@
             /**
              * @inheritDoc
              */
+
             public function getMessages($ids)
             {
 
@@ -515,10 +525,36 @@
             /**
              * @inheritDoc
              */
+
             public function deleteMessages($ids)
             {
 
             }
 
+            /**
+             * @inheritDoc
+             */
+
+            public function two_fa($uid, $secret = "")
+            {
+                if ($secret === "") {
+                    return $this->db->get("select secret from core_users where uid = :uid", false, [
+                        "secret" => "secret",
+                    ], [
+                        "fieldlify",
+                    ]);
+                }
+
+                if (!$secret) {
+                    return $this->db->modify("update core_users set secret = null where uid = :uid", [
+                        "uid" => $uid,
+                    ]);
+                }
+
+                return $this->db->modify("update core_users set secret = :secret where uid = :uid", [
+                    "secret" => $secret,
+                    "uid" => $uid,
+                ]);
+            }
         }
     }

@@ -174,9 +174,9 @@
                     ]);
 
                     $sandbox->registerLibrary("users", [
-                        "notify" => function (...$args) {
+                        "notify" => function ($login, $subject, $body) {
                             $users = loadBackend("users");
-                            return [ $users->notify(...$args) ];
+                            return [ $users->notify($users->getUidByLogin($login), $subject, $body) ];
                         },
                     ]);
 
@@ -353,6 +353,7 @@
              * @param $body
              * @return boolean
              */
+
             public function putWorkflow($workflow, $body) {
                 $this->clearCache();
 
@@ -385,6 +386,7 @@
              * @param $workflow
              * @return boolean
              */
+
             public function deleteWorkflow($workflow) {
                 $this->clearCache();
 
@@ -498,6 +500,7 @@
              * @param $body
              * @return boolean
              */
+
             public function putWorkflowLib($lib, $body)
             {
                 $files = loadBackend("files");
@@ -529,6 +532,7 @@
              * @param $workflow
              * @return boolean
              */
+
             public function deleteWorkflowLib($lib)
             {
                 $files = loadBackend("files");
@@ -555,6 +559,7 @@
              *
              * @return false|array[]
              */
+
             abstract public function getProjects($acronym = false);
 
             /**
@@ -562,6 +567,7 @@
              * @param $project
              * @return false|integer
              */
+
             abstract public function addProject($acronym, $project);
 
             /**
@@ -575,6 +581,7 @@
              * @param $assigned
              * @return boolean
              */
+
             abstract public function modifyProject($projectId, $acronym, $project, $maxFileSize, $searchSubject, $searchDescription, $searchComments, $assigned);
 
             /**
@@ -733,6 +740,7 @@
              * @param $projectRoleId
              * @return boolean
              */
+
             abstract public function deleteRole($projectRoleId);
 
             /**
@@ -740,6 +748,7 @@
              * @param $nameDisplay
              * @return boolean
              */
+
             abstract public function setRoleDisplay($roleId, $nameDisplay);
 
             /**
@@ -757,18 +766,21 @@
              * @param $editor
              * @return boolean
              */
+
             abstract public function modifyCustomField($customFieldId, $catalog, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indx, $search, $required, $editor);
 
             /**
              * @param $customFieldId
              * @return boolean
              */
+
             abstract public function deleteCustomField($customFieldId);
 
             /**
              * @param $projectId
              * @return false|array
              */
+
             abstract public function getTags($projectId = false);
 
             /**
@@ -778,6 +790,7 @@
              * @param $background
              * @return false|integer
              */
+
             abstract public function addTag($projectId, $tag, $foreground, $background);
 
             /**
@@ -787,16 +800,19 @@
              * @param $background
              * @return boolean
              */
+
             abstract public function modifyTag($tagId, $tag, $foreground, $background);
 
             /**
              * @return boolean
              */
+
             abstract public function deleteTag($tagId);
 
             /**
              * @return false|array
              */
+
             public function getFilters() {
                 $files = loadBackend("files");
 
@@ -828,6 +844,7 @@
             /**
              * @return false|array
              */
+
             public function getFiltersExt() {
                 $files = loadBackend("files");
 
@@ -872,6 +889,7 @@
              * @param $owner
              * @return false|string
              */
+
             public function getFilter($filter, $owner = false) {
                 $files = loadBackend("files");
 
@@ -911,6 +929,7 @@
              * @param $owner
              * @return boolean
              */
+
             public function putFilter($filter, $body, $owner = false) {
                 $files = loadBackend("files");
 
@@ -962,6 +981,7 @@
              * @param $owner
              * @return boolean
              */
+
             public function deleteFilter($filter, $owner = false)
             {
                 $files = loadBackend("files");
@@ -1000,6 +1020,7 @@
              * @param $code
              * @return mixed
              */
+
             public function putViewer($field, $name, $code) {
                 $files = loadBackend("files");
 
@@ -1036,6 +1057,7 @@
              * @param $name
              * @return mixed
              */
+
             public function deleteViewer($field, $name) {
                 $files = loadBackend("files");
 
@@ -1061,6 +1083,7 @@
             /**
              * @return mixed
              */
+
             public function getViewers() {
                 $files = loadBackend("files");
 
@@ -1096,6 +1119,7 @@
              * @param $projectId
              * @return mixed
              */
+
             abstract public function getProjectViewers($projectId);
 
             /**
@@ -1103,11 +1127,13 @@
              * @param $viewers
              * @return mixed
              */
+
             abstract public function setProjectViewers($projectId, $viewers);
 
             /**
              * @return mixed
              */
+
             abstract public function getCrontabs();
 
             /**
@@ -1118,18 +1144,21 @@
              * @param $action
              * @return mixed
              */
+
             abstract public function addCrontab($crontab, $projectId, $filter, $uid, $action);
 
             /**
              * @param $crontabId
              * @return mixed
              */
+
             abstract public function deleteCrontab($crontabId);
 
             /**
              * @param $a
              * @return boolean
              */
+
             private static function al($a) {
                 if ($a === []) {
                     return true;
@@ -1141,6 +1170,7 @@
              * @param $a
              * @return boolean
              */
+
             private static function an($a){
                 return ctype_digit(implode('', array_keys($a)));
             }
@@ -1149,6 +1179,7 @@
              * @param $a
              * @return mixed
              */
+
             private static function av($a) {
                 $repeat = false;
                 if (!is_array($a) && !is_object($a)) {
@@ -1172,6 +1203,7 @@
              * @param $issue
              * @return mixed
              */
+
             public function checkIssue(&$issue)
             {
                 $acr = explode("-", $issue["issueId"])[0];
@@ -1273,6 +1305,7 @@
              * @param $issueId
              * @return void
              */
+
             public function getIssue($issueId)
             {
                 $acr = explode("-", $issueId)[0];
@@ -1332,6 +1365,7 @@
              * @param $issue
              * @return mixed
              */
+
             abstract protected function createIssue($issue);
 
             /**
@@ -1339,12 +1373,14 @@
              * @param $workflowAction
              * @return mixed
              */
+
             abstract protected function modifyIssue($issue, $workflowAction = false, $apUpdated = true);
 
             /**
              * @param $issueId
              * @return mixed
              */
+
             abstract public function deleteIssue($issueId);
 
             /**
@@ -1358,6 +1394,7 @@
              * @param array $types
              * @return mixed
              */
+
             abstract public function getIssues($collection, $query, $fields = [], $sort = [ "issueId" => 1 ], $skip = 0, $limit = 100, $preprocess = [], $types = [], $byPipeline = false);
 
             /**
@@ -1368,6 +1405,7 @@
              * @param $silent
              * @return mixed
              */
+
             abstract public function addComment($issueId, $comment, $private, $type = false, $silent = false);
 
             /**
@@ -1377,6 +1415,7 @@
              * @param $private
              * @return mixed
              */
+
             abstract public function modifyComment($issueId, $commentIndex, $comment, $private);
 
             /**
@@ -1384,6 +1423,7 @@
              * @param $commentIndex
              * @return mixed
              */
+
             abstract public function deleteComment($issueId, $commentIndex);
 
             /**
@@ -1391,6 +1431,7 @@
              * @param $attachments
              * @return mixed
              */
+
             abstract public function addAttachments($issueId, $attachments);
 
             /**
@@ -1398,6 +1439,7 @@
              * @param $filename
              * @return mixed
              */
+
             abstract public function deleteAttachment($issueId, $filename);
 
             /**
@@ -1406,6 +1448,7 @@
              * @param $value
              * @return mixed
              */
+
             abstract public function addArrayValue($issueId, $field, $value);
 
             /**
@@ -1414,29 +1457,34 @@
              * @param $value
              * @return mixed
              */
+
             abstract public function deleteArrayValue($issueId, $field, $value);
 
             /**
              * @param $uid
              * @return mixed
              */
+
             abstract public function myRoles($uid = false);
 
             /**
              * @param $returnGids
              * @return mixed
              */
+
             abstract public function myGroups($returnGids = false);
 
             /**
              * @param $returnGid
              * @return mixed
              */
+
             abstract public function myPrimaryGroup($returnGid = false);
 
             /**
              * @return mixed
              */
+
             abstract public function reCreateIndexes();
 
             /**
@@ -1448,6 +1496,7 @@
              * @param boolean $silent
              * @return void
              */
+
             public function addJournalRecord($issueId, $action, $old, $new, $workflowAction = false, $silent = false)
             {
                 if (!$silent) {
@@ -1469,6 +1518,7 @@
              * @param string $issueId
              * @return mixed
              */
+
             public function getJournal($issueId, $limit = false)
             {
                 if (!$this->myRoles()[explode("-", $issueId)[0]]) {
@@ -1482,6 +1532,7 @@
              * @param $issue
              * @return mixed
              */
+
             public function assignToMe($issue)
             {
                 $acr = explode("-", $issue)[0];
@@ -1512,6 +1563,7 @@
              * @param $issue
              * @return mixed
              */
+
             public function watch($issue)
             {
                 $acr = explode("-", $issue)[0];
@@ -1549,6 +1601,7 @@
              * @param $types
              * @return mixed
              */
+
             public function preprocessFilter($query, $params, $types)
             {
                 if ($query) {
@@ -1579,6 +1632,7 @@
              * @param $issue2
              * @return mixed
              */
+
             public function linkIssues($issue1, $issue2)
             {
                 $issue1 = $this->getIssue($issue1);
@@ -1662,6 +1716,7 @@
              * @param $issue2
              * @return mixed
              */
+
             public function unLinkIssues($issue1, $issue2)
             {
                 $issue1 = $this->getIssue($issue1);
@@ -1744,6 +1799,7 @@
              * @param $description
              * @return mixed
              */
+
             public function addPrint($formName, $extension, $description) {
                 $this->clearCache();
 
@@ -1758,6 +1814,7 @@
              * @param $id
              * @return mixed
              */
+
             public function printGetData($id) {
                 $print = $this->getPrint($id);
 
@@ -1784,6 +1841,7 @@
              * @param $file
              * @return mixed
              */
+
             public function printSetData($id, $file) {
                 if (!checkInt($id)) {
                     return false;
@@ -1812,6 +1870,7 @@
              * @param $id
              * @return mixed
              */
+
             public function printGetFormatter($id) {
                 $print = $this->getPrint($id);
 
@@ -1838,6 +1897,7 @@
              * @param $file
              * @return mixed
              */
+
             public function printSetFormatter($id, $file) {
                 if (!checkInt($id)) {
                     return false;
@@ -1866,7 +1926,9 @@
              * @param $id
              * @return mixed
              */
-            public function printGetTemplate($id) {
+
+            public function printGetTemplate($id)
+            {
                 $print = $this->getPrint($id);
 
                 if ($print) {
@@ -1896,7 +1958,9 @@
              * @param $file
              * @return mixed
              */
-            public function printSetTemplate($id, $fileName, $fileBody) {
+
+            public function printSetTemplate($id, $fileName, $fileBody)
+            {
                 if (!checkInt($id)) {
                     return false;
                 }
@@ -1926,7 +1990,9 @@
              * @param $id
              * @return mixed
              */
-            public function printDeleteTemplate($id) {
+
+            public function printDeleteTemplate($id)
+            {
                 if (!checkInt($id)) {
                     return false;
                 }
@@ -1956,7 +2022,9 @@
              * @param $description
              * @return mixed
              */
-            public function modifyPrint($id, $formName, $extension, $descripton) {
+
+            public function modifyPrint($id, $formName, $extension, $descripton)
+            {
                 if (!checkInt($id)) {
                     return false;
                 }
@@ -1974,7 +2042,9 @@
              * @param $id
              * @return mixed
              */
-            public function getPrint($id) {
+
+            public function getPrint($id)
+            {
                 if (!checkInt($id)) {
                     return false;
                 }
@@ -1993,7 +2063,9 @@
             /**
              * @return mixed
              */
-            public function getPrints() {
+
+            public function getPrints()
+            {
                 $cache = $this->cacheGet("PRINTS");
                 if ($cache) {
                     return $cache;
@@ -2032,7 +2104,9 @@
              * @param $id
              * @return mixed
              */
-            public function deletePrint($id) {
+
+            public function deletePrint($id)
+            {
                 if (!checkInt($id)) {
                     return false;
                 }
@@ -2068,7 +2142,9 @@
              * @param $data
              * @return mixed
              */
-            public function printExec($id, $data) {
+
+            public function printExec($id, $data)
+            {
                 $tmp = md5(time() . rand());
 
                 $print = $this->getPrint($id);
@@ -2150,6 +2226,7 @@
              * @param string $workflowAction
              * @return boolean
              */
+
             public abstract function journal($issueId, $action, $old, $new, $workflowAction);
 
             /**
@@ -2157,6 +2234,7 @@
              * @param mixed $limit
              * @return mixed
              */
+
             public abstract function journalGet($issueId, $limit = false);
 
             /**
@@ -2164,11 +2242,13 @@
              * @param integer $limit
              * @return mixed
              */
+
             public abstract function journalLast($login, $limit = 4096);
 
             /**
              * @return array
              */
+
             public abstract function getFavoriteFilters();
 
             /**
@@ -2178,6 +2258,7 @@
              * @param string $color
              * @return mixed
              */
+
             public abstract function addFavoriteFilter($filter, $rightSide, $icon, $color);
 
             /**
@@ -2185,11 +2266,13 @@
              * @param boolean $all
              * @return mixed
              */
+
             public abstract function deleteFavoriteFilter($filter, $all = false);
 
             /**
              * @inheritDoc
              */
+
             public function cron($part)
             {
                 $success = true;
@@ -2257,6 +2340,7 @@
             /**
              * @inheritDoc
              */
+
             public function capabilities()
             {
                 return [
@@ -2267,6 +2351,7 @@
             /**
              * @inheritDoc
              */
+
             public function cli($args)
             {
                 function cliUsage()

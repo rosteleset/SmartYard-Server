@@ -19,6 +19,7 @@
              * @param $db
              * @param $redis
              */
+
             function __construct($config, $db, $redis, $login = false)
             {
                 parent::__construct($config, $db, $redis, $login);
@@ -68,6 +69,7 @@
              * @param $login
              * @return mixed
              */
+
             abstract public function getUidByLogin($login);
 
             /**
@@ -131,7 +133,9 @@
              *
              * @return mixed
              */
-            private function sendTg($tg, $subject, $message, $token) {
+
+            private function sendTg($tg, $subject, $message, $token)
+            {
                 if ($tg && $token) {
                     try {
                         $tg = @json_decode(file_get_contents("https://api.telegram.org/bot{$token}/sendMessage?chat_id=" . urlencode($tg) . "&text=" . urlencode($subject . "\n\n" . $message)), true);
@@ -153,7 +157,9 @@
              *
              * @return mixed
              */
-            private function sendEmail($login, $email, $subject, $message, $config) {
+
+            private function sendEmail($login, $email, $subject, $message, $config)
+            {
                 try {
                     if ($email && $config && $login != $email) {
                         return eMail($config["email"], $email, $subject ? : "-", $message) === true;
@@ -166,16 +172,16 @@
             }
 
             /**
-             * @param string $login
+             * @param string $uid
              * @param string $subject
              * @param string $message
              *
              * @return mixed
              */
-            public function notify($login, $subject, $message) {
-                $uid = $this->getUidByLogin($login);
 
-                if (!$uid) {
+            public function notify($uid, $subject, $message)
+            {
+                if (!parseInt($uid)) {
                     return false;
                 }
 
@@ -226,11 +232,13 @@
             /**
              * @return mixed
              */
+
             abstract public function getSettings();
 
             /**
              * @param string $settings
              */
+
             abstract public function putSettings($settings);
 
             /**
@@ -243,6 +251,7 @@
              *
              * @return mixed
              */
+
             abstract public function sendMessage($from, $to, $subject, $body, $type, $handler);
 
             /**
@@ -250,13 +259,15 @@
              *
              * @return mixed
              */
-            abstract public function unreaded($login);
+
+            abstract public function unreaded($uid);
 
             /**
              * @param string $id
              *
              * @return mixed
              */
+
             abstract public function readed($id);
 
             /**
@@ -264,6 +275,7 @@
              *
              * @return mixed
              */
+
             abstract public function getMessages($ids);
 
             /**
@@ -271,6 +283,16 @@
              *
              * @return mixed
              */
+
             abstract public function deleteMessages($ids);
+
+            /**
+             * @param integer $uid
+             * @param string $secret
+             *
+             * @return mixed
+             */
+
+            abstract public function two_fa($uid, $secret = "");
         }
     }

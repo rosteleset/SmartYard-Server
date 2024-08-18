@@ -11,8 +11,8 @@
     require_once "data/install_clickhouse.php";
     require_once "data/install.php";
     require_once "data/install_tt_mobile_template.php";
-    require_once "utils/autoconfigure_device.php";
-    require_once "utils/autoconfigure_domophone.php";
+    require_once "hw/autoconfigure_device.php";
+    require_once "hw/autoconfigure_domophone.php";
     require_once "utils/checkint.php";
     require_once "utils/checkstr.php";
     require_once "utils/cleanup.php";
