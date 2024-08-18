@@ -29,14 +29,31 @@
              * @param string $ua user agent
              * @param string $did device id
              * @param string $ip client ip
-             * @param string $secret totp secret
+             * @param string $oneCode totp code
              * @return array
              */
 
-            public function login($login, $password, $rememberMe, $ua = "", $did = "", $ip = "", $secret = "") {
+            public function login($login, $password, $rememberMe, $ua = "", $did = "", $ip = "", $oneCode = "") {
                 $uid = $this->check_auth($login, $password);
 
+
                 if ($uid !== false) {
+                    $users = loadBackend("users");
+
+                    $two_fa = $users->two_fa($uid);
+
+                    if ($two_fa) {
+                        require_once "../lib/GoogleAuthenticator/GoogleAuthenticator.php";
+
+                        $ga = new PHPGangsta_GoogleAuthenticator();
+
+                        if (!$ga->verifyCode($two_fa, $oneCode, 2)) {
+                            return [
+                                "result" => "2fa",
+                            ];
+                        }
+                    }
+
                     $keys = $this->redis->keys("auth_*_" . $uid);
                     $first_key = "";
                     $first_key_time = time();
@@ -102,9 +119,10 @@
              * @return false|array
              */
 
-            public function auth($authorization, $ua = "", $ip = "")
-            {
+            public function auth($authorization, $ua = "", $ip = "") {
                 $authorization = explode(" ", $authorization);
+
+                $users = loadBackend("users");
 
                 if ($authorization[0] === "Bearer") {
                     $token = $authorization[1];
@@ -127,8 +145,6 @@
                         $auth["token"] = $token;
 
                         $this->redis->set($key, json_encode($auth));
-
-                        $users = loadBackend("users");
 
                         if ($users->getUidByLogin($auth["login"]) == $auth["uid"]) {
                             return $auth;
@@ -154,9 +170,7 @@
 
                         $auth["token"] = $token;
 
-                        $this->redis->setex($key, $auth["persistent"]?(7 * 24 * 60 * 60):$this->config["redis"]["token_idle_ttl"], json_encode($auth));
-
-                        $users = loadBackend("users");
+                        $this->redis->setex($key, $auth["persistent"] ? (7 * 24 * 60 * 60) : $this->config["redis"]["token_idle_ttl"], json_encode($auth));
 
                         if ($users->getUidByLogin($auth["login"]) == $auth["uid"]) {
                             return $auth;
@@ -190,8 +204,7 @@
              * @return void
              */
 
-            public function logout($token, $all = false)
-            {
+            public function logout($token, $all = false) {
                 $keys = $this->redis->keys("auth_" . $token . "_*");
 
                 if ($all) {
@@ -215,34 +228,39 @@
             }
 
             /**
-             * @param string $uid uid
-             * @param string $otp one time password
+             * @param string $token token
+             * @param string $oneCode one time password
              *
              * @return boolean
              */
 
-            public function totp($token, $otp) {
-/*
-https://github.com/PHPGangsta/GoogleAuthenticator/blob/master/PHPGangsta/GoogleAuthenticator.php
-require_once 'GoogleAuthenticator.php';
+            public function two_fa($token, $oneCode) {
+                require_once "../lib/GoogleAuthenticator/GoogleAuthenticator.php";
 
-$ga = new PHPGangsta_GoogleAuthenticator();
-//$secret = $ga->createSecret();
-$secret = 'JIGEIIFBJFF4BCZB';
-echo "Secret is: ".$secret."\n\n";
+                $ga = new PHPGangsta_GoogleAuthenticator();
 
-echo "QR-Code text: " . $ga->getQRCodeText('SmartYard', $secret, 'RBT')
+                $users = loadBackend("users");
 
-$oneCode = $ga->getCode($secret);
-echo "Checking Code '$oneCode' and Secret '$secret':\n";
+                $keys = $this->redis->keys("auth_" . $token . "_*");
 
-$checkResult = $ga->verifyCode($secret, $oneCode, 2);    // 2 = 2*30sec clock tolerance
-if ($checkResult) {
-    echo 'OK';
-} else {
-    echo 'FAILED';
-}
-*/
+                foreach ($keys as $key) {
+                    $auth = json_decode($this->redis->get($key), true);
+
+                    if ($oneCode) {
+                        if ($auth["secret"] && $ga->verifyCode($auth["secret"], $oneCode, 2)) {
+                            return $users->two_fa($auth["uid"], $auth["secret"]);
+                        } else {
+                            return false;
+                        }
+                    } else {
+                        $secret = $ga->createSecret();
+                        $auth["secret"] = $secret;
+
+                        $this->redis->setex($key, $auth["persistent"] ? (7 * 24 * 60 * 60) : $this->config["redis"]["token_idle_ttl"], json_encode($auth));
+
+                        return $ga->getQRCodeText('SmartYard', $secret, 'RBT');
+                    }
+                }
             }
         }
     }

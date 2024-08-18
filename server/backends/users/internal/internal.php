@@ -33,7 +33,7 @@
                 }
 
                 try {
-                    $users = $this->db->query("select uid, login, real_name, e_mail, phone, tg, enabled, primary_group, acronym primary_group_acronym, notification from core_users left join core_groups on core_users.primary_group = core_groups.gid order by real_name, login, uid", \PDO::FETCH_ASSOC)->fetchAll();
+                    $users = $this->db->query("select uid, login, real_name, e_mail, phone, tg, enabled, primary_group, acronym primary_group_acronym, notification, secret from core_users left join core_groups on core_users.primary_group = core_groups.gid order by real_name, login, uid", \PDO::FETCH_ASSOC)->fetchAll();
                     $_users = [];
 
                     foreach ($users as $user) {
@@ -50,6 +50,7 @@
                             "lastAction" => $this->redis->get("last_action_" . md5($user["login"])),
                             "primaryGroup" => $user["primary_group"],
                             "primaryGroupAcronym" => $user["primary_group_acronym"],
+                            "two_fa" => $user["secret"] ? 1 : 0,
                         ];
                     }
 
@@ -114,7 +115,7 @@
                 }
 
                 try {
-                    $user = $this->db->queryEx("select uid, login, real_name, e_mail, phone, tg, notification, enabled, default_route, primary_group, acronym primary_group_acronym from core_users left join core_groups on core_users.primary_group = core_groups.gid where uid = $uid");
+                    $user = $this->db->queryEx("select uid, login, real_name, e_mail, phone, tg, notification, enabled, default_route, primary_group, acronym primary_group_acronym, secret from core_users left join core_groups on core_users.primary_group = core_groups.gid where uid = $uid");
 
                     if (count($user)) {
                         $_user = [
@@ -129,6 +130,7 @@
                             "defaultRoute" => $user[0]["default_route"],
                             "primaryGroup" => $user[0]["primary_group"],
                             "primaryGroupAcronym" => $user[0]["primary_group_acronym"],
+                            "two_fa" => $user[0]["secret"] ? 1 : 0,
                         ];
 
                         $groups = loadBackend("groups");

@@ -52,7 +52,7 @@
 
             public static function POST($params) {
 
-                $auth = $params["_backends"]["authentication"]->login($params["login"], $params["password"], $params["rememberMe"] && $params["ua"] && $params["did"], trim($params["ua"]), trim($params["did"]), $params["_ip"], @$params["secret"]);
+                $auth = $params["_backends"]["authentication"]->login($params["login"], $params["password"], $params["rememberMe"] && $params["ua"] && $params["did"], trim($params["ua"]), trim($params["did"]), $params["_ip"], @$params["oneCode"]);
 
                 if ($auth["result"] == "2fa") {
                     return [
