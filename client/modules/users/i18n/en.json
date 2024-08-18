@@ -39,6 +39,8 @@
     "sessionOrdinal": "Regular",
     "sessionBase64": "API",
     "primaryGroup": "Primary Group",
+    "primary": "Primary",
+    "contacts": "Contacts",
     "methods": {
         "accounts": {
             "_title": "Accounts",

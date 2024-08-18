@@ -39,6 +39,8 @@
     "sessionOrdinal": "Обычная",
     "sessionBase64": "API",
     "primaryGroup": "Основная группа",
+    "primary": "Основные",
+    "contacts": "Контакты",
     "methods": {
         "accounts": {
             "_title": "Аккаунты",

@@ -21,7 +21,7 @@
 
     login2name: function (login) {
         let u = login;
-        
+
         for (let k in modules.users.meta) {
             if (modules.users.meta[k].login == login) {
                 if (modules.users.meta[k].realName) {
@@ -147,7 +147,7 @@
                         value: -1,
                         text: "-",
                     });
-    
+
                     for (let i in modules.groups.meta) {
                         gs.push({
                             value: modules.groups.meta[i].gid,
@@ -163,6 +163,7 @@
                     topApply: true,
                     size: "lg",
                     delete: (uid.toString() !== "0" && uid.toString() !== myself.uid.toString() && AVAIL("accounts", "user", "DELETE")) ? i18n("users.delete") : false,
+                    deleteTab: (uid.toString() !== "0" && uid.toString() !== myself.uid.toString() && AVAIL("accounts", "user", "DELETE")) ? i18n("users.primary") : false,
                     fields: [
                         {
                             id: "uid",
@@ -170,6 +171,7 @@
                             readonly: true,
                             value: response.user.uid.toString(),
                             title: i18n("users.uid"),
+                            tab: i18n("users.primary"),
                         },
                         {
                             id: "login",
@@ -177,6 +179,7 @@
                             readonly: true,
                             value: response.user.login,
                             title: i18n("users.login"),
+                            tab: i18n("users.primary"),
                         },
                         {
                             id: "realName",
@@ -187,7 +190,8 @@
                             placeholder: i18n("users.realName"),
                             validate: (v) => {
                                 return $.trim(v) !== "";
-                            }
+                            },
+                            tab: i18n("users.contacts"),
                         },
                         {
                             id: "eMail",
@@ -197,6 +201,7 @@
                             title: i18n("eMail"),
                             placeholder: i18n("eMail"),
                             hidden: !parseInt(response.user.uid),
+                            tab: i18n("users.contacts"),
                         },
                         {
                             id: "primaryGroup",
@@ -205,6 +210,7 @@
                             options: gs,
                             title: i18n("users.primaryGroup"),
                             hidden: !parseInt(response.user.uid) || gs.length == 0,
+                            tab: i18n("users.primary"),
                         },
                         {
                             id: "phone",
@@ -214,6 +220,7 @@
                             title: i18n("phone"),
                             placeholder: i18n("phone"),
                             hidden: !parseInt(response.user.uid),
+                            tab: i18n("users.contacts"),
                         },
                         {
                             id: "tg",
@@ -223,6 +230,7 @@
                             title: i18n("users.tg"),
                             placeholder: i18n("users.tg"),
                             hidden: !parseInt(response.user.uid),
+                            tab: i18n("users.contacts"),
                         },
                         {
                             id: "notification",
@@ -256,7 +264,8 @@
                             hidden: !parseInt(response.user.uid),
                             validate: (v) => {
                                 return $.trim(v) !== "";
-                            }
+                            },
+                            tab: i18n("users.primary"),
                         },
                         {
                             id: "password",
@@ -267,7 +276,8 @@
                             hidden: uid.toString() === "0",
                             validate: (v, prefix) => {
                                 return ($.trim(v).length === 0) || ($.trim(v).length >= 8 && $(`#${prefix}password`).val() === $(`#${prefix}confirm`).val());
-                            }
+                            },
+                            tab: i18n("users.primary"),
                         },
                         {
                             id: "confirm",
@@ -278,7 +288,8 @@
                             hidden: uid.toString() === "0",
                             validate: (v, prefix) => {
                                 return ($.trim(v).length === 0) || ($.trim(v).length >= 8 && $(`#${prefix}password`).val() === $(`#${prefix}confirm`).val());
-                            }
+                            },
+                            tab: i18n("users.primary"),
                         },
                         {
                             id: "defaultRoute",
@@ -295,7 +306,8 @@
                             },
                             validate: (v) => {
                                 return $.trim(v) === "" || $.trim(v)[0] === "#";
-                            }
+                            },
+                            tab: i18n("users.primary"),
                         },
                         {
                             id: "persistentToken",
@@ -313,7 +325,8 @@
                             },
                             validate: (v) => {
                                 return $.trim(v) === "" || $.trim(v).length === 32;
-                            }
+                            },
+                            tab: i18n("users.primary"),
                         },
                         {
                             id: "disabled",
@@ -331,7 +344,8 @@
                                     value: "no",
                                     text: i18n("no"),
                                 },
-                            ]
+                            ],
+                            tab: i18n("users.primary"),
                         },
                     ],
                     callback: function (result) {
@@ -423,16 +437,16 @@
                 ],
                 rows: () => {
                     let rows = [];
-    
+
                     let user = {};
-    
+
                     for (let i in modules.users.meta) {
                         if (modules.users.meta[i].uid == uid) {
                             user = modules.users.meta[i];
                             break;
                         }
                     }
-    
+
                     for (let i in user.sessions) {
                         rows.push({
                             uid: user.sessions[i].token,
@@ -470,7 +484,7 @@
                             },
                         });
                     }
-    
+
                     return rows;
                 },
             }).show();
@@ -507,7 +521,7 @@
 
             QUERY("accounts", "users", { withSessions: true }, true).done(response => {
                 modules.users.meta = response.users;
-    
+
                 cardTable({
                     target: "#mainForm",
                     title: {
@@ -557,7 +571,7 @@
                     ],
                     rows: () => {
                         let rows = [];
-    
+
                         for (let i = 0; i < response.users.length; i++) {
                             if (!parseInt(response.users[i].uid)) continue;
 
@@ -566,7 +580,7 @@
                             if ((response.users[i].notification == "emailTg" || response.users[i].notification == "tgEmail" || response.users[i].notification == "email") && !(response.users[i].eMail && response.users[i].eMail != response.users[i].login)) {
                                 cl = "bg-warning";
                             }
-                            
+
                             if ((response.users[i].notification == "tgEmail" || response.users[i].notification == "emailTg" || response.users[i].notification == "tg") && !response.users[i].tg) {
                                 cl = "bg-warning";
                             }
@@ -628,15 +642,15 @@
                                 },
                             });
                         }
-    
+
                         return rows;
                     },
                 });
-    
+
                 if (params && params.sessions && params.sessions !== true) {
                     modules.users.showSessions(params.sessions);
                 }
-                
+
                 loadingDone();
             }).
             fail(FAIL).
