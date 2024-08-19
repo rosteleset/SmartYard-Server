@@ -747,7 +747,11 @@ function cardForm(params) {
                 params.callback(result);
             }
         } else {
+            let t = false;
             for (let i in invalid) {
+                if (tabs.length > 1 && !t) {
+                    t = params.fields[invalid[i]].tab;
+                }
                 switch (params.fields[invalid[i]].type) {
                     case "select2":
                         $(`#${_prefix}${params.fields[invalid[i]].id}`).parent().addClass("select2-invalid");
@@ -768,6 +772,9 @@ function cardForm(params) {
                     default:
                         $(`#${_prefix}${params.fields[invalid[i]].id}`).addClass("is-invalid");
                         break;
+                }
+                if (t) {
+                    $(`#jsform-content-tab-${md5(t)}`).click();
                 }
             }
         }
