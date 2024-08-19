@@ -45,6 +45,7 @@
     "2faCode": "TOTP link",
     "2faConfirm": "One time code",
     "2faSecret": "Secret key",
+    "enable2FA": "Enable two-factor authentication",
     "errors": {
         "invalid2FACredentials": "Invalid authentication code"
     },

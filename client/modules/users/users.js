@@ -368,6 +368,27 @@
                             title: i18n("users.2faConfirm"),
                             hidden: uid != myself.uid || parseInt(response.user.twoFA),
                             tab: i18n("users.2fa"),
+                            button: {
+                                class: "fas fa-fw fa-power-off",
+                                hint: i18n("users.enable2FA"),
+                                click: prefix => {
+                                    if ($.trim($("#" + prefix + "2faConfirm").val())) {
+                                        mConfirm(i18n("users.enable2FA") + "?", i18n("confirm"), i18n("users.enable2FA"), () => {
+                                            POST("authentication", "two_fa", false, {
+                                                oneCode: $.trim($("#" + prefix + "2faConfirm").val()),
+                                            }).done(() => {
+                                                doLogout(true);
+                                            }).fail(response => {
+                                                if (response && response.responseJSON && response.responseJSON.error && response.getResponseHeader("x-last-error")) {
+                                                    error(i18n("errors." + response.getResponseHeader("x-last-error")), i18n("error"), 30);
+                                                } else {
+                                                    FAIL(response);
+                                                }
+                                            });
+                                        });
+                                    }
+                                },
+                            },
                         },
                     ],
                     done: function (prefix) {
@@ -392,22 +413,7 @@
                             modules.users.deleteUser(result.uid);
                         } else {
                             result.enabled = result.disabled === "no";
-                            modules.users.doModifyUser(result).
-                            done(() => {
-                                if (result["2faConfirm"] && $.trim(result["2faConfirm"]).length == 6) {
-                                    POST("authentication", "two_fa", false, {
-                                        oneCode: $.trim(result["2faConfirm"]),
-                                    }).done(() => {
-                                        doLogout(true);
-                                    }).fail(response => {
-                                        if (response && response.responseJSON && response.responseJSON.error && response.getResponseHeader("x-last-error")) {
-                                            error(i18n("errors." + response.getResponseHeader("x-last-error")), i18n("error"), 30);
-                                        } else {
-                                            FAIL(response);
-                                        }
-                                    });
-                                }
-                            });
+                            modules.users.doModifyUser(result);
                         }
                     },
                 }).show();
