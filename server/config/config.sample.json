@@ -54,7 +54,9 @@
 
     "backends": {
         "authentication": {
-            "backend": "internal"
+            "backend": "internal",
+            "2faName": "SmartYard",
+            "2faTitle": "RBT"
         },
 
         "authorization": {

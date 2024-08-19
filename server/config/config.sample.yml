@@ -48,6 +48,8 @@ clickhouse:
 backends:
   authentication:
     backend: internal
+    2faName: SmartYard
+    2faTitle: RBT
   authorization:
     backend: allow
   accounting:
