@@ -17,5 +17,8 @@
         "dvrErr": "Проблема с потоком DVR"
     },
 
-    "cantLoadBackend": "Ошибка загрузки модуля %s"
+    "cantLoadBackend": "Ошибка загрузки модуля %s",
+
+    "2faName": "SmartYard",
+    "2faTitle": "RBT"
 }

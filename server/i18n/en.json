@@ -17,5 +17,8 @@
         "dvrErr": "DVR stream bad health"
     },
 
-    "cantLoadBackend": "Failed to load module %s"
+    "cantLoadBackend": "Failed to load module %s",
+
+    "2faName": "SmartYard",
+    "2faTitle": "RBT"
 }

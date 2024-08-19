@@ -92,11 +92,13 @@ function cardForm(params) {
     let tabs = [];
     let others = false;
     for (let i in params.fields) {
-        if (params.fields[i].tab && tabs.indexOf(params.fields[i].tab) < 0) {
-            tabs.push(params.fields[i].tab);
-        }
-        if (!params.fields[i].tab) {
-            others = true;
+        if (!params.fields[i].hidden) {
+            if (params.fields[i].tab && tabs.indexOf(params.fields[i].tab) < 0) {
+                tabs.push(params.fields[i].tab);
+            }
+            if (!params.fields[i].tab) {
+                others = true;
+            }
         }
     }
 
@@ -120,7 +122,7 @@ function cardForm(params) {
         }
 
         for (let i in params.fields) {
-            params.fields[i].tab_hidden = tabs.indexOf(params.fields[i].tab) > 0;
+            params.fields[i].tabHidden = tabs.indexOf(params.fields[i].tab) > 0;
         }
     } else {
         tabs = [];
@@ -289,7 +291,10 @@ function cardForm(params) {
             }
         }
 
-        if (params.fields[i].hidden || params.fields[i].tab_hidden) {
+        if (params.fields[i].hidden) {
+            h += `<tr style="display: none;">`;
+        } else
+        if (params.fields[i].tabHidden) {
             h += `<tr style="display: none;" class="jsform-tabbed-item" data-tab-index='${tabs.indexOf(params.fields[i].tab)}'>`;
         } else {
             h += `<tr class="jsform-tabbed-item" data-tab-index='${tabs.indexOf(params.fields[i].tab)}'>`;
@@ -492,6 +497,10 @@ function cardForm(params) {
                         $("#" + _prefix + params.fields[i].id + "-add").click();
                     }, 100);
                 }
+                break;
+
+            case "empty":
+                h += `<div name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}"></div>`;
                 break;
         }
 

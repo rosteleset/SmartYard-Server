@@ -41,6 +41,9 @@
     "primaryGroup": "Primary Group",
     "primary": "Primary",
     "contacts": "Contacts",
+    "2fa": "Two-factor authentication",
+    "2faCode": "TOTP link",
+    "2faConfirm": "One time code",
     "methods": {
         "accounts": {
             "_title": "Accounts",

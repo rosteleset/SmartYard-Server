@@ -247,9 +247,15 @@
                     $auth = json_decode($this->redis->get($key), true);
 
                     if ($oneCode) {
-                        if ($auth["secret"] && $ga->verifyCode($auth["secret"], $oneCode, 2)) {
+                        $secret = $auth["secret"];
+
+                        unset($auth["secret"]);
+                        $this->redis->setex($key, $auth["persistent"] ? (7 * 24 * 60 * 60) : $this->config["redis"]["token_idle_ttl"], json_encode($auth));
+
+                        if ($secret && $ga->verifyCode($auth["secret"], $oneCode, 2)) {
                             return $users->two_fa($auth["uid"], $auth["secret"]);
                         } else {
+                            setLastError("invalid2FACredentials");
                             return false;
                         }
                     } else {
@@ -258,7 +264,7 @@
 
                         $this->redis->setex($key, $auth["persistent"] ? (7 * 24 * 60 * 60) : $this->config["redis"]["token_idle_ttl"], json_encode($auth));
 
-                        return $ga->getQRCodeText('SmartYard', $secret, 'RBT');
+                        return $ga->getQRCodeText(i18n("2faName"), $secret, i18n("2faTitle"));
                     }
                 }
             }

@@ -55,7 +55,7 @@
 
     doModifyUser: function (user) {
         loadingStart();
-        PUT("accounts", "user", user.uid, user).
+        return PUT("accounts", "user", user.uid, user).
         fail(FAIL).
         done(() => {
             if (user.uid == myself.uid) {
@@ -200,7 +200,7 @@
                             value: response.user.eMail,
                             title: i18n("eMail"),
                             placeholder: i18n("eMail"),
-                            hidden: !parseInt(response.user.uid),
+//                            hidden: !parseInt(response.user.uid),
                             tab: i18n("users.contacts"),
                         },
                         {
@@ -219,7 +219,7 @@
                             value: response.user.phone,
                             title: i18n("phone"),
                             placeholder: i18n("phone"),
-                            hidden: !parseInt(response.user.uid),
+//                            hidden: !parseInt(response.user.uid),
                             tab: i18n("users.contacts"),
                         },
                         {
@@ -229,7 +229,7 @@
                             value: response.user.tg,
                             title: i18n("users.tg"),
                             placeholder: i18n("users.tg"),
-                            hidden: !parseInt(response.user.uid),
+//                            hidden: !parseInt(response.user.uid),
                             tab: i18n("users.contacts"),
                         },
                         {
@@ -261,11 +261,11 @@
                                     text: i18n("users.notificationEmail"),
                                 },
                             ],
-                            hidden: !parseInt(response.user.uid),
+//                            hidden: !parseInt(response.user.uid),
                             validate: (v) => {
                                 return $.trim(v) !== "";
                             },
-                            tab: i18n("users.primary"),
+                            tab: i18n("users.contacts"),
                         },
                         {
                             id: "password",
@@ -347,13 +347,52 @@
                             ],
                             tab: i18n("users.primary"),
                         },
+                        {
+                            id: "2faCode",
+                            type: "empty",
+                            title: i18n("users.2faCode"),
+                            hidden: uid != myself.uid || parseInt(response.user.twoFA),
+                            tab: i18n("users.2fa"),
+                        },
+                        {
+                            id: "2faConfirm",
+                            type: "text",
+                            title: i18n("users.2faConfirm"),
+                            hidden: uid != myself.uid || parseInt(response.user.twoFA),
+                            tab: i18n("users.2fa"),
+                        },
                     ],
+                    done: function (prefix) {
+                        POST("authentication", "two_fa", false, {
+                            //
+                        }).done(result => {
+                            (new QRCode(document.getElementById(prefix + "2faCode"), {
+                                width: 256,
+                                height: 256,
+                            })).makeCode(result.two_fa);
+                        });
+                    },
                     callback: function (result) {
                         if (result.delete === "yes") {
                             modules.users.deleteUser(result.uid);
                         } else {
                             result.enabled = result.disabled === "no";
-                            modules.users.doModifyUser(result);
+                            modules.users.doModifyUser(result).
+                            done(() => {
+                                if (result["2faConfirm"] && $.trim(result["2faConfirm"]).length == 6) {
+                                    POST("authentication", "two_fa", false, {
+                                        oneCode: $.trim(result["2faConfirm"]),
+                                    }).done(() => {
+                                        doLogout(true);
+                                    }).fail(response => {
+                                        if (response && response.responseJSON && response.responseJSON.error && response.getResponseHeader("x-last-error")) {
+                                            error(i18n("errors." + response.getResponseHeader("x-last-error")), i18n("error"), 30);
+                                        } else {
+                                            FAIL(response);
+                                        }
+                                    });
+                                }
+                            });
                         }
                     },
                 }).show();
@@ -367,6 +406,7 @@
         }
 
         loadingStart();
+
         if (modules.groups) {
             modules.groups.loadGroups(() => {
                 realModifyUser(uid);
@@ -559,14 +599,16 @@
                             fullWidth: true,
                         },
                         {
-                            title: i18n("Почта"),
+                            title: `<i class="fas fa-fw fa-shield-alt" title="${i18n("users.2fa")}"></i>`,
                         },
                         {
-                            title: i18n("users.telegram"),
-                            nowrap: true,
+                            title: `<i class="fas fa-fw fa-at" title="${i18n("eMail")}"></i>`,
                         },
                         {
-                            title: i18n("phone"),
+                            title: `<i class="fab fa-fw fa-telegram" title="${i18n("users.tg")}"></i>`,
+                        },
+                        {
+                            title: `<i class="fas fa-fw fa-mobile-alt" title="${i18n("phone")}"></i>`,
                         },
                     ],
                     rows: () => {
@@ -613,6 +655,10 @@
                                         data: response.users[i].realName ? response.users[i].realName : i18n("no"),
                                         nowrap: true,
                                         fullWidth: true,
+                                    },
+                                    {
+                                        data: parseInt(response.users[i].twoFA) ? i18n("yes") : i18n("no"),
+                                        nowrap: true,
                                     },
                                     {
                                         data: (response.users[i].eMail && response.users[i].eMail != response.users[i].login) ? i18n("yes") : i18n("no"),

@@ -50,7 +50,7 @@
                             "lastAction" => $this->redis->get("last_action_" . md5($user["login"])),
                             "primaryGroup" => $user["primary_group"],
                             "primaryGroupAcronym" => $user["primary_group_acronym"],
-                            "two_fa" => $user["secret"] ? 1 : 0,
+                            "twoFA" => $user["secret"] ? 1 : 0,
                         ];
                     }
 
@@ -130,7 +130,7 @@
                             "defaultRoute" => $user[0]["default_route"],
                             "primaryGroup" => $user[0]["primary_group"],
                             "primaryGroupAcronym" => $user[0]["primary_group_acronym"],
-                            "two_fa" => $user[0]["secret"] ? 1 : 0,
+                            "twoFA" => $user[0]["secret"] ? 1 : 0,
                         ];
 
                         $groups = loadBackend("groups");
