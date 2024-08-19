@@ -23,6 +23,7 @@ var loasLoadedGroup = false;
 var lStoreEngine = false;
 var lStoreData = {};
 var availableFonts = [];
+var noGravatar = false;
 
 function lStore(key, val) {
     if (!lStoreEngine) {
@@ -474,7 +475,10 @@ function whoAmI(force) {
                 let gravUrl = "https://www.gravatar.com/avatar/" + md5($.trim(myself.eMail).toLowerCase()) + "?s=64&d=404";
                 $(".userAvatar").off("click").on("error", function () {
                     $(this).attr("src", "img/noavatar.png");
-                    error(i18n("errors.noGravatar"));
+                    if (!noGravatar) {
+                        noGravatar = true;
+                        error(i18n("errors.noGravatar"));
+                    }
                 }).attr("src", gravUrl);
             } else {
                 if (parseInt(myself.uid) === 0) {

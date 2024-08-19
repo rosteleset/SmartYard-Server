@@ -355,6 +355,14 @@
                             tab: i18n("users.2fa"),
                         },
                         {
+                            id: "2faSecret",
+                            type: "text",
+                            title: i18n("users.2faSecret"),
+                            hidden: uid != myself.uid || parseInt(response.user.twoFA),
+                            readonly: true,
+                            tab: i18n("users.2fa"),
+                        },
+                        {
                             id: "2faConfirm",
                             type: "text",
                             title: i18n("users.2faConfirm"),
@@ -366,6 +374,13 @@
                         POST("authentication", "two_fa", false, {
                             //
                         }).done(result => {
+                            let secret;
+                            try {
+                                secret = (new URL(result.two_fa)).searchParams.get("secret");
+                            } catch (_) {
+
+                            }
+                            $("#" + prefix + "2faSecret").val(secret);
                             (new QRCode(document.getElementById(prefix + "2faCode"), {
                                 width: 256,
                                 height: 256,
