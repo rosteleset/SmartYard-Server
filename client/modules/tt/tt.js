@@ -1333,7 +1333,7 @@
             if (AVAIL("tt", "customFilter")) {
                 rtd += `<li class="nav-item"><a href="?#tt&filter=empty&customSearch=yes&_=${Math.random()}" class="nav-link pointer" role="button" title="${i18n("tt.customSearch")}"><i class="fab fa-lg fa-fw fa-searchengin"></i></a></li>`;
                 rtd += `<li class="nav-item" style="display: none;"><span id="customFilterEdit" class="nav-link pointer" role="button" title="${i18n("tt.customFilterEdit")}"><i class="fas fa-lg fa-fw fa-pen-square"></i></span></li>`;
-                rtd += `<li class="nav-item" style="display: none;"><span id="customFilterDelete" class="nav-link pointer" role="button" title="${i18n("tt.customFilterDelete")}"><i class="fas fa-lg fa-fw fa-trash-alt"></i></span></li>`;
+                rtd += `<li class="nav-item" style="display: none;"><span id="customFilterDelete" class="nav-link pointer" role="button" title="${i18n("tt.customFilterDelete")}"><i class="fas fa-lg fa-fw fa-minus-square"></i></span></li>`;
             }
         }
 
