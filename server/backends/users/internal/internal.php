@@ -539,6 +539,8 @@
              */
 
             public function two_fa($uid, $secret = "") {
+                global $cli;
+
                 if ($secret === "") {
                     return $this->db->get("select secret from core_users where uid = :uid", [
                         "uid" => $uid,
@@ -550,9 +552,13 @@
                 }
 
                 if (!$secret) {
-                    return $this->db->modify("update core_users set secret = null where uid = :uid", [
-                        "uid" => $uid,
-                    ]);
+                    if ($cli) {
+                        return $this->db->modify("update core_users set secret = null where uid = :uid", [
+                            "uid" => $uid,
+                        ]);
+                    } else {
+                        return false;
+                    }
                 }
 
                 $result = $this->db->modify("update core_users set secret = :secret where uid = :uid", [
