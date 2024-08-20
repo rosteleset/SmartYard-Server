@@ -390,6 +390,7 @@
             public function capabilities() {
                 return [
                     "mode" => "rw",
+                    "cli" => true,
                 ];
             }
 
@@ -558,6 +559,45 @@
                     "secret" => $secret,
                     "uid" => $uid,
                 ]);
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+            public function cli($args) {
+                function cliUsage()
+                {
+                    global $argv;
+
+                    echo formatUsage("usage: {$argv[0]} users
+
+                        rfid:
+                            [--disable-2fa=<login>]
+                    ");
+
+                    exit(1);
+                }
+
+                if (count($args) == 1 && isset($args["--disable-2fa"])) {
+                    $uid = $this->getUidByLogin($args["--disable-2fa"]);
+
+                    if ($uid === false) {
+                        die("user not found\n");
+                    }
+
+                    if ($this->two_fa($uid, false)) {
+                        echo "2fa disabled for user: $uid\n";
+                    } else {
+                        echo "failed to disable 2fa for user: $uid\n";
+                    }
+
+                    exit(0);
+                }
+
+                cliUsage();
+
+                return true;
             }
         }
     }
