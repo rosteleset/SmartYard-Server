@@ -645,3 +645,8 @@ select {
   width: 250px!important;
   background-color: white;
 }
+
+.navbar-badge {
+  right: 10px;
+  top: 5px;
+}
