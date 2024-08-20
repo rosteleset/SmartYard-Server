@@ -316,7 +316,7 @@
                             value: parseInt(uid)?response.user.persistentToken:'',
                             title: i18n("users.persistentToken"),
                             placeholder: i18n("users.persistentToken"),
-                            hidden: !parseInt(uid),
+                            hidden: !parseInt(uid) || parseInt(response.user.twoFA),
                             button: {
                                 class: "fas fa-magic",
                                 click: prefix => {

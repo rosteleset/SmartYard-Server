@@ -555,10 +555,19 @@
                     ]);
                 }
 
-                return $this->db->modify("update core_users set secret = :secret where uid = :uid", [
+                $result = $this->db->modify("update core_users set secret = :secret where uid = :uid", [
                     "secret" => $secret,
                     "uid" => $uid,
                 ]);
+
+                if ($result) {
+                    $_keys = $this->redis->keys("persistent_*_" . $uid);
+                    foreach ($_keys as $_key) {
+                        $this->redis->del($_key);
+                    }
+                }
+
+                return $result;
             }
 
             /**

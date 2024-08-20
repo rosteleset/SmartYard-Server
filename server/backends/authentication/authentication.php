@@ -184,7 +184,15 @@
                     $login = base64_decode($authorization[1]);
                     $password = base64_decode($authorization[2]);
 
-                    $auth = $this->login($login, $password, false, $ua, "Base64", $ip);
+                    if (array_key_exists('X-Otp', apache_request_headers())) {
+                        $otp = apache_request_headers()["X-Otp"];
+                    }
+
+                    if ($otp) {
+                        $auth = $this->login($login, $password, false, $ua, "Base64", $ip, $otp);
+                    } else {
+                        $auth = $this->login($login, $password, false, $ua, "Base64", $ip);
+                    }
 
                     $auth["updated"] = time();
 
