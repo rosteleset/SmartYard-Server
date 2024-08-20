@@ -1291,8 +1291,6 @@
             issuesListId = md5(guid());
         }
 
-        let rtd = '';
-
         let current_project;
 
         if (target) {
@@ -1309,16 +1307,15 @@
 
         let pc = Object.keys(modules.tt.meta.myRoles).length;
 
+        let rtd = '';
+
         if (pc) {
-            let cog = "mt-1";
-            if (AVAIL("tt", "project", "POST")) {
-                cog = "";
-            }
             if (pc == 1) {
-                rtd += `<div class="form-inline"><div class="input-group input-group-sm mr-2 ${cog}"><select id="ttProjectSelect" class="form-control select-arrow" style="display: none;">`;
+                rtd += `<select id="ttProjectSelect" style="display: none;">`;
             } else {
-                rtd += `<div class="form-inline"><div class="input-group input-group-sm mr-2 ${cog}"><select id="ttProjectSelect" class="form-control select-arrow">`;
+                rtd += `<form autocomplete="off"><div class="form-inline ml-3 mr-3"><div class="input-group input-group-sm mt-1"><select id="ttProjectSelect" class="form-control select-arrow right-top-select">`;
             }
+
             for (let j in modules.tt.meta.myRoles) {
                 if (j == current_project) {
                     rtd += `<option selected="selected" value="${j}">${pn[j]} [${j}]</option>`;
@@ -1326,29 +1323,27 @@
                     rtd += `<option value="${j}">${pn[j]} [${j}]</option>`;
                 }
             }
-            rtd += `</select></div>`;
-            rtd += '<form autocomplete="off" onsubmit="return false;" method="post" action="">';
-            rtd += '<input autocomplete="false" name="hidden" type="text" style="display:none;">';
-            rtd += `<div class="input-group input-group-sm ${cog} ttSearchInputGroup">`;
-            rtd += `<input id="ttSearch" class="form-control tt-search" type="search" aria-label="Search" autocomplete="off"><div class="input-group-append"><button class="btn btn-default" id="ttSearchButton" title="${i18n("tt.search")}"><i class="fas fa-search"></i></button></div>`;
-            rtd += `</div>`;
-            rtd += '</form>';
-            if (AVAIL("tt", "project", "POST")) {
-                rtd += `<div class="nav-item mr-0 pr-0"><a href="?#tt.settings" class="nav-link text-primary mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("tt.settings")}"><i class="fas fa-lg fa-fw fa-cog"></i></a></div>`;
+
+            if (pc == 1) {
+                rtd += '</select>';
+            } else {
+                rtd += '</select></div></div></form>';
             }
-        } else {
-            if (AVAIL("tt", "project", "POST")) {
-                rtd += `<div class="nav-item mr-0 pr-0"><a href="?#tt.settings" class="nav-link text-primary mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("tt.settings")}"><i class="fas fa-lg fa-fw fa-cog"></i></a></div>`;
+
+            if (AVAIL("tt", "customFilter")) {
+                rtd += `<li class="nav-item"><a href="?#tt&filter=empty&customSearch=yes&_=${Math.random()}" class="nav-link pointer" role="button" title="${i18n("tt.customSearch")}"><i class="fab fa-lg fa-fw fa-searchengin"></i></a></li>`;
+                rtd += `<li class="nav-item" style="display: none;"><span id="customFilterEdit" class="nav-link pointer" role="button" title="${i18n("tt.customFilterEdit")}"><i class="fas fa-lg fa-fw fa-pen-square"></i></span></li>`;
+                rtd += `<li class="nav-item" style="display: none;"><span id="customFilterDelete" class="nav-link pointer" role="button" title="${i18n("tt.customFilterDelete")}"><i class="fas fa-lg fa-fw fa-trash-alt"></i></span></li>`;
             }
+        }
+
+        if (!AVAIL("tt", "project", "POST")) {
+            rtd += `<li class="nav-item"><a href="?#tt.settings" class="nav-link pointer" role="button" title="${i18n("tt.settings")}"><i class="fas fa-lg fa-fw fa-cog"></i></a></li>`;
         }
 
         if (!target) {
             $("#rightTopDynamic").html(rtd);
             current_project = $("#ttProjectSelect").val();
-        }
-
-        if (AVAIL("tt", "customFilter") && current_project && current_project !== true) {
-            $(".ttSearchInputGroup").prepend(`<div class="input-group-prepend"><span class="input-group-text pointer-input-group ttFilterCustom" title="${i18n("tt.customSearch")}"><i class="fas fa-fw fa-filter"></i></span></div>`);
         }
 
         $("#ttProjectSelect").off("change").on("change", () => {
@@ -1361,38 +1356,6 @@
             if (modules.tt.meta.projects[i].acronym == current_project) {
                 project = modules.tt.meta.projects[i];
             }
-        }
-
-        if (Object.keys(modules.tt.meta.myRoles).length) {
-            $("#ttProjectSelect").css("width", $("#ttSearch").parent().css("width"));
-        }
-
-        $(".ttFilterCustom").off("click").on("click", () => {
-            window.location.href = '?#tt&filter=empty&customSearch=yes&_=' + Math.random();
-        });
-
-        $("#ttSearch").off("keypress").on("keypress", ev => {
-            if (ev.keyCode == 13) {
-                $("#ttSearchButton").click();
-                ev.preventDefault();
-                return false;
-            }
-        });
-
-        $("#ttSearchButton").off("click").on("click", () => {
-            let s = $.trim($("#ttSearch").val());
-            if (s) {
-                let i = new RegExp("^[a-zA-Z]{2,}-[0-9]{1,}$");
-                if (i.test(s)) {
-                    window.location.href = "?#tt&issue=" + s.toUpperCase() + "&search=" + s.toUpperCase() + "&_=" + Math.random();
-                } else {
-                    modules.tt.selectFilter("#search", 0, modules.tt.defaultIssuesPerPage, s);
-                }
-            }
-        });
-
-        if ($.trim(params.search) && params.search !== true) {
-            $("#ttSearch").val($.trim(params.search));
         }
 
         let x = false;
@@ -1552,14 +1515,25 @@
                 }
             }
 
-            if (x != "#search") {
+            if (AVAIL("tt", "customFilter") && x && x != "#search") {
+                $("#customFilterEdit").off("click").on("click", function () {
+                    window.location.href = '?#tt&filter=' + x + '&customSearch=yes&_=' + Math.random();
+                }).parent().show();
+
                 if (md5(md5($.trim(modules.tt.meta.filters[x])) + "-" + md5(lStore("_login"))) == x && fp == myself.uid) {
-                    filters += '<span class="ml-4 hoverable customFilterEdit text-info" data-filter="' + x + '"><i class="far fa-fw fa-edit"></i></span><span class="ml-1 hoverable customFilterEdit text-info" data-filter="' + x + '">' + i18n("tt.customFilterEdit") + '</span>';
-                    filters += '<span class="ml-2 hoverable customFilterDelete text-danger" data-filter="' + x + '"><i class="far fa-fw fa-trash-alt"></i></span><span class="ml-1 hoverable customFilterDelete text-danger" data-filter="' + x + '">' + i18n("tt.customFilterDelete") + '</span>';
-                } else {
-                    if (AVAIL("tt", "customFilter") && x) {
-                        filters += '<span class="ml-4 hoverable customFilterEdit text-info" data-filter="' + x + '"><i class="far fa-fw fa-edit"></i></span><span class="ml-1 hoverable customFilterEdit text-info" data-filter="' + x + '">' + i18n("tt.customFilterEdit") + '</span>';
-                    }
+                    $("#customFilterDelete").off("click").on("click", function () {
+                        mConfirm(i18n("tt.filterDelete", modules.tt.meta.filters[x]), i18n("confirm"), i18n("delete"), () => {
+                            loadingStart();
+                            DELETE("tt", "customFilter", x, { "project": current_project }).
+                            done(() => {
+                                message(i18n("tt.filterWasDeleted"));
+                                lStore("ttIssueFilter:" + current_project, null);
+                                window.location.href = '?#tt&_=' + Math.random();
+                            }).
+                            fail(FAIL).
+                            fail(loadingDone);
+                        });
+                    }).parent().show();
                 }
             }
 
@@ -1939,25 +1913,6 @@
                 }
             }
 
-            $(".customFilterEdit").off("click").on("click", function () {
-                window.location.href = '?#tt&filter=' + $(this).attr("data-filter") + '&customSearch=yes&_=' + Math.random();
-            });
-
-            $(".customFilterDelete").off("click").on("click", function () {
-                let f = $(this).attr("data-filter");
-                mConfirm(i18n("tt.filterDelete", modules.tt.meta.filters[f]), i18n("confirm"), i18n("delete"), () => {
-                    loadingStart();
-                    DELETE("tt", "customFilter", f, { "project": current_project }).
-                    done(() => {
-                        message(i18n("tt.filterWasDeleted"));
-                        lStore("ttIssueFilter:" + current_project, null);
-                        window.location.href = '?#tt&_=' + Math.random();
-                    }).
-                    fail(FAIL).
-                    fail(loadingDone);
-                });
-            });
-
             let bookmarked = false;
 
             for (let i in modules.tt.meta.favoriteFilters) {
@@ -2244,5 +2199,17 @@
         }).
         fail(FAIL).
         fail(loadingDone);
+    },
+
+    search: function (s) {
+        s = $.trim(s);
+        if (s) {
+            let i = new RegExp("^[a-zA-Z]{2,}-[0-9]{1,}$");
+            if (i.test(s)) {
+                window.location.href = "?#tt&issue=" + s.toUpperCase() + "&search=" + s.toUpperCase() + "&_=" + Math.random();
+            } else {
+                modules.tt.selectFilter("#search", 0, modules.tt.defaultIssuesPerPage, s);
+            }
+        }
     },
 }).init();

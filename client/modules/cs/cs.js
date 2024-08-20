@@ -1143,19 +1143,17 @@
                     }
                 }
 
-                let rtd = "<div class='form-inline'>";
+                let rtd = "";
 
-                rtd += `<div class="input-group input-group-sm mr-2" style="width: 200px;"><select id="csSheet" class="form-control select-arrow">${sheetsOptions}</select></div>`;
-                rtd += `<div class="input-group input-group-sm" style="width: 150px;"><select id="csDate" class="form-control select-arrow">${datesOptions}</select></div>`;
+                rtd += `<form autocomplete="off"><div class="form-inline ml-3 mr-3"><div class="input-group input-group-sm mt-1"><select id="csSheet" class="form-control select-arrow right-top-select">${sheetsOptions}</select></div></div></form>`;
+                rtd += `<form autocomplete="off"><div class="form-inline ml-3 mr-3"><div class="input-group input-group-sm mt-1"><select id="csDate" class="form-control select-arrow right-top-select">${datesOptions}</select></div></div></form>`;
 
                 if (AVAIL("cs", "sheet", "PUT")) {
-                    rtd += `<div class="nav-item mr-0 pr-0"><span id="cloneCSsheet" class="nav-link text-info mr-1 pr-0" role="button" style="cursor: pointer" title="${i18n("cs.cloneSheet")}"><i class="fas fa-lg fa-fw fa-clone"></i></span></div>`;
-                    rtd += `<div class="nav-item mr-0 pr-0"><span id="addCSsheet" class="nav-link text-success mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("cs.addSheet")}"><i class="fas fa-lg fa-fw fa-plus-square"></i></span></div>`;
-                    rtd += `<div class="nav-item mr-0 pr-0"><span id="editCSsheet" class="nav-link text-primary mr-0 pr-0" role="button" style="cursor: pointer" title="${i18n("cs.editSheet")}"><i class="fas fa-lg fa-fw fa-pen-square"></i></span></div>`;
-                    rtd += `<div class="nav-item mr-0 pr-0"><span id="deleteCSsheet" class="nav-link text-danger mr-1 pr-0" role="button" style="cursor: pointer" title="${i18n("cs.deleteSheet")}"><i class="fas fa-lg fa-fw fa-minus-square"></i></span></div>`;
+                    rtd += `<li class="nav-item"><span id="cloneCSsheet" class="nav-link pointer" role="button" title="${i18n("cs.cloneSheet")}"><i class="fas fa-lg fa-fw fa-clone"></i></span></li>`;
+                    rtd += `<li class="nav-item"><span id="addCSsheet" class="nav-link pointer" role="button" title="${i18n("cs.addSheet")}"><i class="fas fa-lg fa-fw fa-plus-square"></i></span></li>`;
+                    rtd += `<li class="nav-item"><span id="editCSsheet" class="nav-link pointer" role="button" title="${i18n("cs.editSheet")}"><i class="fas fa-lg fa-fw fa-pen-square"></i></span></li>`;
+                    rtd += `<li class="nav-item"><span id="deleteCSsheet" class="nav-link pointer" role="button" title="${i18n("cs.deleteSheet")}"><i class="fas fa-lg fa-fw fa-minus-square"></i></span></li>`;
                 }
-
-                rtd += "</span>";
 
                 $("#rightTopDynamic").html(rtd);
 

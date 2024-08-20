@@ -15,5 +15,20 @@
     "deleteCompany": "Delete company",
     "confirmCompanyDelete": "Delete company \"#%s\"?",
     "type1": "Typ1",
-    "type2": "Typ2"
+    "type2": "Typ2",
+    "methods": {
+        "companies": {
+            "_title": "Companies",
+            "companies": {
+                "_title": "Companies",
+                "GET": "View"
+            },
+            "company": {
+                "_title": "Company",
+                "PUT": "Edit",
+                "POST": "Create",
+                "DELETE": "Delete"
+            }
+        }
+    }
 }

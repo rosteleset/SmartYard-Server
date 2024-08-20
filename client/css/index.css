@@ -640,3 +640,8 @@ select {
   cursor: not-allowed;
   pointer-events: none;
 }
+
+.right-top-select {
+  width: 250px!important;
+  background-color: white;
+}

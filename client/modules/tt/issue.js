@@ -522,37 +522,6 @@
 
         search = ($.trim(search) && typeof search === "string") ? $.trim(search) : "";
 
-        let rtd = "";
-        rtd += '<form autocomplete="off" onsubmit="return false;" method="post" action="">';
-        rtd += '<input autocomplete="false" name="hidden" type="text" style="display:none;">';
-        rtd += `<div class="input-group input-group-sm ttSearchInputGroup mt-1">`;
-        rtd += `<input id="ttSearch" class="form-control tt-search" type="search" aria-label="Search" autocomplete="off"><div class="input-group-append"><button class="btn btn-default" id="ttSearchButton" title="${i18n("tt.search")}"><i class="fas fa-search"></i></button></div>`;
-        rtd += `</div>`;
-        rtd += '</form>';
-
-        $("#rightTopDynamic").html(rtd);
-        $("#ttSearch").val(search);
-
-        $("#ttSearch").off("keypress").on("keypress", ev => {
-            if (ev.keyCode == 13) {
-                $("#ttSearchButton").click();
-                ev.preventDefault();
-                return false;
-            }
-        });
-
-        $("#ttSearchButton").off("click").on("click", () => {
-            let s = $.trim($("#ttSearch").val());
-            if (s) {
-                let i = new RegExp("^[a-zA-Z]{2,}-[0-9]{1,}$");
-                if (i.test(s)) {
-                    window.location.href = "?#tt&issue=" + s.toUpperCase() + "&search=" + s.toUpperCase() + "&_=" + Math.random();
-                } else {
-                    modules.tt.selectFilter("#search", 0, modules.tt.defaultIssuesPerPage, s);
-                }
-            }
-        });
-
         try {
             document.title = issue.issue["issueId"] + ": " + issue.issue["subject"];
         } catch (e) {
@@ -1589,4 +1558,8 @@
 
         loadingDone();
     },
+
+    search: function (s) {
+        modules.tt.search(s);
+    }
 }).init();

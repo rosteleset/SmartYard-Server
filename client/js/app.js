@@ -242,6 +242,11 @@ function hashChange() {
                 }
                 if (typeof module.search === "function") {
                     $("#searchForm").show();
+                    if (params.search) {
+                        $("#searchInput").val(params.search);
+                    } else {
+                        $("#searchInput").val("");
+                    }
                 } else {
                     $("#searchForm").hide();
                 }

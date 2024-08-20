@@ -678,7 +678,11 @@
             modules.notes.adjustStickiesContainer();
         });
 
-        $("#rightTopDynamic").html(`<div class="form-inline mt-1 mr-3"><div class="input-group input-group-sm"><select id="notesCategories" class="form-control select-arrow" style="width: 259px;"></select></div>`);
+        let rtd = '';
+
+        rtd += '<form autocomplete="off"><div class="form-inline ml-3 mr-3"><div class="input-group input-group-sm mt-1"><select id="notesCategories" class="form-control select-arrow right-top-select"></select></div></div></form>';
+
+        $("#rightTopDynamic").html(rtd);
 
         $("#notesCategories").off("change").on("change", () => {
             lStore("notesCategory", $("#notesCategories").val());
