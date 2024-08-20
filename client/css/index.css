@@ -517,11 +517,11 @@ select {
   background-color: deeppink;
 }
 
-.tt-search:focus {
+.common-search:focus {
   width: 500px;
 }
 
-.common-search:focus {
+.common-search:hover {
   width: 500px;
 }
 

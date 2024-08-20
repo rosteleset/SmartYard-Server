@@ -15,7 +15,7 @@
 
             $(`
                 <li class="nav-item">
-                    <span class="nav-link text-secondary pointer" role="button" title="${i18n("asterisk.asterisk")}" id="asteriskMenuRight">
+                    <span class="nav-link text-secondary" role="button" title="${i18n("asterisk.asterisk")}" id="asteriskMenuRight">
                         <i class="fas fa-lg fa-fw fa-phone-square"></i>
                     </span>
                 </li>
@@ -288,18 +288,18 @@
     updateButton: function () {
         if (modules.asterisk.ready) {
             if (modules.asterisk.currentSession) {
-                $('#asteriskMenuRight').removeClass("text-success");
-                $('#asteriskMenuRight').removeClass("text-secondary");
-                $('#asteriskMenuRight').addClass("text-danger");
+                $('#asteriskMenuRight').removeClass("text-success text-secondary");
+                $('#asteriskMenuRight').addClass("text-danger pointer");
+                $('#asteriskMenuRight').parent().addClass("nav-item-back-hover");
             } else {
                 $('#asteriskMenuRight').addClass("text-success");
-                $('#asteriskMenuRight').removeClass("text-secondary");
-                $('#asteriskMenuRight').removeClass("text-danger");
+                $('#asteriskMenuRight').removeClass("text-secondary text-danger pointer");
+                $('#asteriskMenuRight').parent().removeClass("nav-item-back-hover");
             }
         } else {
-            $('#asteriskMenuRight').removeClass("text-success");
+            $('#asteriskMenuRight').removeClass("text-success text-danger pointer");
             $('#asteriskMenuRight').addClass("text-secondary");
-            $('#asteriskMenuRight').removeClass("text-danger");
+            $('#asteriskMenuRight').parent().removeClass("nav-item-back-hover");
         }
     },
 
