@@ -187,20 +187,20 @@
 
                 <div id="rightTopDynamic" style="display: contents; white-space: nowrap; text-wrap: nowrap;"></div>
 
-                <li class="nav-item rs232-scanner-button" style="display: none;">
+                <li class="nav-item rs232-scanner-button nav-item-back-hover" style="display: none;">
                     <span class="nav-link rs232-scanner pointer" role="button">
                         <i class="fas fa-lg fa-fw fa-credit-card"></i>
                     </span>
                 </li>
 
-                <li class="nav-item">
+                <li class="nav-item nav-item-back-hover">
                     <span class="nav-link pointer" role="button" title="Notifications" id="myNotifications">
                         <i class="fas fa-lg fa-fw fa-bell"></i>
                         <span class="badge badge-danger navbar-badge text-bold" style="display: none;" id="myNotificationsBadge">3</span>
                     </span>
                 </li>
 
-                <li class="nav-item dropdown" id="usersExists">
+                <li class="nav-item dropdown nav-item-back-hover" id="usersExists">
                     <span class="nav-link myNameIs pointer" data-toggle="dropdown">
                         <i class="fas fa-lg fa-fw fa-user-cog"></i>
                     </span>
@@ -223,9 +223,9 @@
                     </div>
                 </li>
 
-                <li class="nav-item" id="usersNotExists" onclick="logout()" style="display: none;">
+                <li class="nav-item nav-item-back-hover" id="usersNotExists" onclick="logout()" style="display: none;">
                     <span class="nav-link pointer" role="button" title="Logout" id="logoutButton">
-                        <span class="float-right text-sm text-danger"><i class="fas fa-fw fa-sign-out-alt fa-lg"></i></span>
+                        <i class="fas fa-fw fa-sign-out-alt fa-lg"></i>
                     </span>
                 </li>
             </ul>

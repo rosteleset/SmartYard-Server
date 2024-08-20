@@ -24,7 +24,7 @@
     // Create the theme selection dropdown menu
     createThemeDropdown() {
         $(`
-            <li class="nav-item dropdown">
+            <li class="nav-item dropdown nav-item-back-hover">
                 <span class="nav-link pointer" data-toggle="dropdown">
                     <i class="fas fa-lg fa-fw fa-moon"></i>
                 </span>

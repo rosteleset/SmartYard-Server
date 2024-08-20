@@ -54,10 +54,10 @@
 
             rtd += '<form autocomplete="off"><div class="form-inline ml-3 mr-3"><div class="input-group input-group-sm mt-1"><select id="ttWorkspaceSelect" class="form-control select-arrow right-top-select"></select></div></div></form>';
 
-            rtd += `<li class="nav-item"><span id="editWorkspace" class="nav-link pointer" role="button" title="${i18n("tt.addModifyWorkspace")}"><i class="fas fa-lg fa-fw fa-pen-square"></i></span></li>`;
+            rtd += `<li class="nav-item nav-item-back-hover"><span id="editWorkspace" class="nav-link pointer" role="button" title="${i18n("tt.addModifyWorkspace")}"><i class="fas fa-lg fa-fw fa-pen-square"></i></span></li>`;
 
             if (currentWorkspace) {
-                rtd += `<li class="nav-item"><span id="deleteWorkspace" class="nav-link pointer" role="button" title="${i18n("tt.deleteWorkspace")}"><i class="fas fa-lg fa-fw fa-minus-square"></i></span></li>`;
+                rtd += `<li class="nav-item nav-item-back-hover"><span id="deleteWorkspace" class="nav-link pointer" role="button" title="${i18n("tt.deleteWorkspace")}"><i class="fas fa-lg fa-fw fa-minus-square"></i></span></li>`;
             }
 
             $("#rightTopDynamic").html(rtd);

@@ -1149,10 +1149,10 @@
                 rtd += `<form autocomplete="off"><div class="form-inline ml-3 mr-3"><div class="input-group input-group-sm mt-1"><select id="csDate" class="form-control select-arrow right-top-select">${datesOptions}</select></div></div></form>`;
 
                 if (AVAIL("cs", "sheet", "PUT")) {
-                    rtd += `<li class="nav-item"><span id="cloneCSsheet" class="nav-link pointer" role="button" title="${i18n("cs.cloneSheet")}"><i class="fas fa-lg fa-fw fa-clone"></i></span></li>`;
-                    rtd += `<li class="nav-item"><span id="addCSsheet" class="nav-link pointer" role="button" title="${i18n("cs.addSheet")}"><i class="fas fa-lg fa-fw fa-plus-square"></i></span></li>`;
-                    rtd += `<li class="nav-item"><span id="editCSsheet" class="nav-link pointer" role="button" title="${i18n("cs.editSheet")}"><i class="fas fa-lg fa-fw fa-pen-square"></i></span></li>`;
-                    rtd += `<li class="nav-item"><span id="deleteCSsheet" class="nav-link pointer" role="button" title="${i18n("cs.deleteSheet")}"><i class="fas fa-lg fa-fw fa-minus-square"></i></span></li>`;
+                    rtd += `<li class="nav-item nav-item-back-hover"><span id="cloneCSsheet" class="nav-link pointer" role="button" title="${i18n("cs.cloneSheet")}"><i class="fas fa-lg fa-fw fa-clone"></i></span></li>`;
+                    rtd += `<li class="nav-item nav-item-back-hover"><span id="addCSsheet" class="nav-link pointer" role="button" title="${i18n("cs.addSheet")}"><i class="fas fa-lg fa-fw fa-plus-square"></i></span></li>`;
+                    rtd += `<li class="nav-item nav-item-back-hover"><span id="editCSsheet" class="nav-link pointer" role="button" title="${i18n("cs.editSheet")}"><i class="fas fa-lg fa-fw fa-pen-square"></i></span></li>`;
+                    rtd += `<li class="nav-item nav-item-back-hover"><span id="deleteCSsheet" class="nav-link pointer" role="button" title="${i18n("cs.deleteSheet")}"><i class="fas fa-lg fa-fw fa-minus-square"></i></span></li>`;
                 }
 
                 $("#rightTopDynamic").html(rtd);
