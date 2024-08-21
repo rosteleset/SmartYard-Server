@@ -40,51 +40,51 @@
         "cityCams" => @$config["mobile"]["city_cams"] ? "t" : "f",
         "payments" => @$config["mobile"]["payments"] ? "t" : "f",
         "chat" => @$config["mobile"]["chat"] ? "t" : "f"
-        ];
+    ];
 
-        if (@$config["mobile"]["support_phone"]) {
-            $response["supportPhone"] = $config["mobile"]["support_phone"];
-        }
+    if (@$config["mobile"]["support_phone"]) {
+        $response["supportPhone"] = $config["mobile"]["support_phone"];
+    }
 
-        if (@$config["mobile"]["payments_url"]) {
-            $response["paymentsUrl"] = $config["mobile"]["payments_url"];
-        }
+    if (@$config["mobile"]["payments_url"]) {
+        $response["paymentsUrl"] = $config["mobile"]["payments_url"];
+    }
 
-        if (@$config["mobile"]["chat_url"]) {
-            $response["chatUrl"] = $config["mobile"]["chat_url"];
+    if (@$config["mobile"]["chat_url"]) {
+        $response["chatUrl"] = $config["mobile"]["chat_url"];
+    } else {
+        if (@$config["mobile"]["talk_me_id"] && @$config["mobile"]["talk_me_domain"] && @$config["mobile"]["talk_me_token"]) {
+            $response["chat"] = "t";
+            $response["chatOptions"] = [
+                "id" => $config["mobile"]["talk_me_id"],
+                "domain" => $config["mobile"]["talk_me_domain"],
+                "token" => $config["mobile"]["talk_me_token"]
+            ];
         } else {
-            if (@$config["mobile"]["talk_me_id"] && @$config["mobile"]["talk_me_domain"] && @$config["mobile"]["talk_me_token"]) {
-                $response["chat"] = "t";
-                $response["chatOptions"] = [
-                    "id" => $config["mobile"]["talk_me_id"],
-                    "domain" => $config["mobile"]["talk_me_domain"],
-                    "token" => $config["mobile"]["talk_me_token"]
-                ];
-            } else {
-                $response["chat"] = "f";
-            }
+            $response["chat"] = "f";
         }
+    }
 
-        if (@$config["mobile"]["time_zone"]) {
-            $response["timeZone"] = $config["mobile"]["time_zone"];
-        }
+    if (@$config["mobile"]["time_zone"]) {
+        $response["timeZone"] = $config["mobile"]["time_zone"];
+    }
 
-        if (@$config["mobile"]["guest_access"]) {
-            $response["guestAccess"] = $config["mobile"]["guest_access"];
-        }
+    if (@$config["mobile"]["guest_access"]) {
+        $response["guestAccess"] = $config["mobile"]["guest_access"];
+    }
 
-        $response["version"] = @$config["mobile"]["version"] ?: 0;
+    $response["version"] = @$config["mobile"]["version"] ?: 0;
 
-        if (@$config["mobile"]["cctv_view"]) {
-            $response["cctvView"] = $config["mobile"]["cctv_view"];
-        }
+    if (@$config["mobile"]["cctv_view"]) {
+        $response["cctvView"] = $config["mobile"]["cctv_view"];
+    }
 
-        if (@$config["mobile"]["active_tab"]) {
-            $response["activeTab"] = $config["mobile"]["active_tab"];
-        }
+    if (@$config["mobile"]["active_tab"]) {
+        $response["activeTab"] = $config["mobile"]["active_tab"];
+    }
 
-        if (@$config["mobile"]["issues_version"]) {
-            $response["issuesVersion"] = $config["mobile"]["issues_version"];
-        }
+    if (@$config["mobile"]["issues_version"]) {
+        $response["issuesVersion"] = $config["mobile"]["issues_version"];
+    }
 
     response(200, $response);
