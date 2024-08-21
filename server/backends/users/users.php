@@ -158,8 +158,7 @@
              * @return mixed
              */
 
-            private function sendEmail($login, $email, $subject, $message, $config)
-            {
+            private function sendEmail($login, $email, $subject, $message, $config) {
                 try {
                     if ($email && $config && $login != $email) {
                         return eMail($config["email"], $email, $subject ? : "-", $message) === true;
@@ -179,9 +178,8 @@
              * @return mixed
              */
 
-            public function notify($uid, $subject, $message)
-            {
-                if (!parseInt($uid)) {
+            public function notify($uid, $subject, $message) {
+                if (!checkInt($uid)) {
                     return false;
                 }
 
