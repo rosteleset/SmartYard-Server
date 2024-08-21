@@ -84,3 +84,5 @@ install/kamailio/kamctlrc
 static/portal
 static/portal/*
 static/portal/**
+/install/asterisk/phones/*.conf
+/install/asterisk/trunks/*.conf
