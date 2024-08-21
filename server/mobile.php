@@ -277,10 +277,14 @@
         if (count($m) == 4 && !$m[0] && $m[1] == 'mobile') {
             $module = $m[2];
             $method = $m[3];
+            if (file_exists(__DIR__ . "/mobile/{$module}/custom/{$method}.php")) {
+                require_once __DIR__ . "/mobile/{$module}/custom/{$method}.php";
+            } else
             if (file_exists(__DIR__ . "/mobile/{$module}/{$method}.php")) {
                 require_once __DIR__ . "/mobile/{$module}/{$method}.php";
             }
         }
+
         response(405);
     }
 
