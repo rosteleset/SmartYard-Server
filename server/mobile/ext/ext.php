@@ -21,7 +21,9 @@
      */
 
     auth();
+    response();
 
+/*
     switch ($postdata['extId']) {
         case "10001":
             response(200, [
@@ -33,3 +35,4 @@
             response(404);
             break;
     }
+*/
