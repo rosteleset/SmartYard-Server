@@ -2048,6 +2048,9 @@
                 $n += $this->db->modify("delete from houses_flats_devices where house_flat_id not in (select house_flat_id from houses_flats)");
                 $n += $this->db->modify("delete from houses_flats_devices where subscriber_device_id not in (select subscriber_device_id from houses_subscribers_devices)");
 
+                // autoclean ?
+                // $n += $this->db->modify("delete from houses_subscribers_devices where last_seen < 1724208851 - 7 * 24 * 60 * 60");
+
                 return $n;
             }
 
@@ -2108,8 +2111,8 @@
             /**
              * @inheritDoc
              */
-            public function capabilities()
-            {
+
+            public function capabilities() {
                 return [
                     "cli" => true,
                 ];
@@ -2118,10 +2121,10 @@
             /**
              * @inheritDoc
              */
-            public function cli($args)
-            {
-                function cliUsage()
-                {
+
+            public function cli($args) {
+
+                function cliUsage() {
                     global $argv;
 
                     echo formatUsage("usage: {$argv[0]} households
@@ -2201,8 +2204,8 @@
             /**
              * @inheritDoc
              */
-            public function getDevices($by, $query)
-            {
+
+            public function getDevices($by, $query) {
                 $q = "";
                 $p = false;
 
