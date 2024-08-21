@@ -42,6 +42,7 @@
     // setlocale (LC_TIME, 'ru_RU.UTF-8', 'Rus');
     $formatter = new IntlDateFormatter('ru_RU.UTF-8', IntlDateFormatter::LONG, IntlDateFormatter::NONE);
     $h = '';
+
     foreach ($msgs as $row) {
         $dd = $row['date'];
         $rd = $formatter->format($dd);
@@ -66,9 +67,9 @@
         $h .= $msg;
         $h .= "</p>";
         $h .= "<span class=\"inbox-message-time\">".date("H:i", $dd)."</span></div></div>";
-    //        $h .= "<script type=\"application/javascript\">scrollingElement = (document.scrollingElement || document.body);scrollingElement.scrollTop = scrollingElement.scrollHeight;</script>";
     }
-    $html = str_replace("%c", $h, file_get_contents(__DIR__ . "/../../mobile/templates/inbox.html"));
+
+    $html = str_replace("%c", $h, file_get_contents(__DIR__ . "/inbox.html"));
 
     // помечаем все сообщения как прочитанные
     $inbox->markMessageAsReaded($subscriber_id);
