@@ -1348,4 +1348,8 @@
 
         modules.cs.renderCS();
     },
+
+    search: function (s) {
+        modules.tt.search(s);
+    },
 }).init();

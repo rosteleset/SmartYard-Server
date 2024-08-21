@@ -44,19 +44,19 @@
                         `;
                         $(`.addressFavoriteIcon[data-object='${r.favorites[i].object}'][data-object-id='${r.favorites[i].id}']`).removeClass("far").addClass("fas");
                     }
-                        let i = $('#' + modules.addresses.menuItem);
-                        let f = false;
-                        while (i.next().length) {
-                            i = i.next();
-                            if ($.trim(i.text()) == "") {
-                                $(h).insertBefore(i);
-                                f = true;
-                                break;
-                            }
+                    let i = $('#' + modules.addresses.menuItem);
+                    let f = false;
+                    while (i.next().length) {
+                        i = i.next();
+                        if ($.trim(i.text()) == "") {
+                            $(h).insertBefore(i);
+                            f = true;
+                            break;
                         }
-                        if (!f && i.length) {
-                            $(h).insertAfter(i);
-                        }
+                    }
+                    if (!f && i.length) {
+                        $(h).insertAfter(i);
+                    }
                 }
             }).
             fail(FAIL);
