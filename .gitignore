@@ -87,3 +87,14 @@ static/portal/**
 /install/asterisk/phones/*.conf
 /install/asterisk/trunks/*.conf
 /server/mobile/custom/*.php
+/server/mobile/address/custom/*.php
+/server/mobile/call/custom/*.php
+/server/mobile/cctv/custom/*.php
+/server/mobile/ext/custom/*.php
+/server/mobile/frs/custom/*.php
+/server/mobile/geo/custom/*.php
+/server/mobile/inbox/custom/*.php
+/server/mobile/issues/custom/*.php
+/server/mobile/pay/custom/*.php
+/server/mobile/sip/custom/*.php
+/server/mobile/user/custom/*.php
