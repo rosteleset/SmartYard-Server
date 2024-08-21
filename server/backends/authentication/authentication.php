@@ -186,6 +186,8 @@
 
                     if (array_key_exists('X-Otp', apache_request_headers())) {
                         $otp = apache_request_headers()["X-Otp"];
+                    } else {
+                        $otp = false;
                     }
 
                     if ($otp) {
