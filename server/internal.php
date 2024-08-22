@@ -85,12 +85,18 @@
     }
 
     if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-        $m = explode('/', $_SERVER["REQUEST_URI"]);
-        if (count($m) == 5 && !$m[0] && $m[1] == 'internal') {
-            $module = $m[2];
-            $method = $m[3];
-            $param = $m[4];
-            require_once __DIR__ . "/internal/{$module}/{$method}.php";
+        $m = explode('/', trim($_SERVER["REQUEST_URI"], '/'));
+        if (count($m) >= 3 && $m[0] === 'internal') {
+            $module = $m[1];
+            $method = $m[2];
+
+            if ($m[3]){
+                $param = $m[3] ?? null;
+            }
+
+            if (file_exists(__DIR__ . "/internal/{$module}/{$method}.php")) {
+                require_once __DIR__ . "/internal/{$module}/{$method}.php";
+            }
         }
     }
 
