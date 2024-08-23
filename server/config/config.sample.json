@@ -170,7 +170,7 @@
                     "title": "SBC server | Kamailio",
                     "type": "kamailio",
                     "domain": "<!-- set your kamailio domain or external ip address --!>",
-                    "rpc_interface": "<!-- set smart-yard interface call to kamailio rpc (default 127.0.0.1)--!->",
+                    "rpc_interface": "<!-- set smart-yard interface call to kamailio rpc (default 127.0.0.1) --!>",
                     "rpc_path": "set path, default is 'RPC'",
                     "rpc_port": "<!-- set your kamailio json_rpc port here --!>",
                     "sip_tcp_port": "<!-- set your kamailio tcp port here --!>",
@@ -212,6 +212,18 @@
 
         "queue": {
             "backend": "internal"
+        },
+
+        "external": {
+            "backend": "internal",
+            "map": {
+                "<!!!!!!!!!!!!>": "<!-- EXAMPLE, EXAMPLE, EXAMPLE, EXAMPLE, EXAMPLE, EXAMPLE, EXAMPLE --!>",
+                "cameras": {
+                    "table": "cameras",
+                    "internal": "camera_id",
+                    "external": "external_id"
+                }
+            }
         }
     },
 

@@ -19,14 +19,10 @@ mobile:
   talk_me_domain: "<!-- put your talkMe chat domain id here --!>"
   talk_me_token: "<!-- put your talkMe chat rest Api Token here --!>"
   phonePattern: '7 (###) ###-##-##'
-  tt_project: TDM
-  tt_workflow: mobile
-  tt_user: mobile
   time_zone: Europe/Moscow
   guest_access: turnOnOnly
   cctv_view: map
-  _comments_active_tab: 'Active app''s tab at start. One of: addresses, notifications,
-    chat, pay, menu. The default value is addresses'
+  _comments_active_tab: 'Active app''s tab at start. One of: addresses, notifications, chat, pay, menu. The default value is addresses'
   active_tab: addresses
 db:
   dsn: pgsql:host=127.0.0.1;port=5433;dbname=rbt
@@ -64,6 +60,7 @@ backends:
     backend: mongo
   addresses:
     backend: internal
+    text_search_mode: fts
   households:
     backend: internal
   cameras:
@@ -77,20 +74,15 @@ backends:
     backend: clickhouse
   plog:
     backend: clickhouse
-    _comment_time_shift: "<!-- your time shift in seconds from current time as the
-      end timepoint for processing plog_* tables (hint 60) --!>"
+    _comment_time_shift: "<!-- your time shift in seconds from current time as the end timepoint for processing plog_* tables (hint 60) --!>"
     time_shift: 60
-    _comment_max_call_length: "<!-- your max call length in seconds for backward processing
-      call events (hint 120) --!>"
+    _comment_max_call_length: "<!-- your max call length in seconds for backward processing call events (hint 120) --!>"
     max_call_length: 120
-    _comment_ttl_temp_record: "<!-- your time to live in seconds for temporary data
-      in plog_* tables (hint 86400 - one day) --!>"
+    _comment_ttl_temp_record: "<!-- your time to live in seconds for temporary data in plog_* tables (hint 86400 - one day) --!>"
     ttl_temp_record: 86400
-    _comment_ttl_camshot_days: "<!-- your time to live in days for camshots (hint
-      180 - approx. half year) --!>"
+    _comment_ttl_camshot_days: "<!-- your time to live in days for camshots (hint 180 - approx. half year) --!>"
     ttl_camshot_days: 180
-    _comment_back_time_shift_video_shot: "<!-- your back time shift in seconds for
-      receiving video shot from media server (hint 3) --!>"
+    _comment_back_time_shift_video_shot: "<!-- your back time shift in seconds for receiving video shot from media server (hint 3) --!>"
     back_time_shift_video_shot: 3
     cron_process_events_scheduler: minutely
   configs:
@@ -125,15 +117,13 @@ backends:
     - title: SBC server | Kamailio
       type: kamailio
       domain: "<!-- set your kamailio domain or external ip address --!>"
-      rpc_interface: "<!-- set smart-yard interface call to kamailio rpc (default
-        127.0.0.1)--!->"
+      rpc_interface: "<!-- set smart-yard interface call to kamailio rpc (default 127.0.0.1) !-->"
       rpc_path: set path, default is 'RPC'
       rpc_port: "<!-- set your kamailio json_rpc port here --!>"
       sip_tcp_port: "<!-- set your kamailio tcp port here --!>"
       sip_udp_port: "<!-- set your kamailio udp port here --!>"
       sip_tls_port: "<!-- set your kamailio tls port here --!>"
-      auth_token: "<!-- id use bearer token for auth set token or remove this key
-        --!>"
+      auth_token: "<!-- id use bearer token for auth set token or remove this key --!>"
     stuns:
     - stun:stun.l.google.com:19302
   frs:
@@ -153,14 +143,16 @@ backends:
     mqtt: mqtt://127.0.0.1:1883
     username: rbt
     password: "<!-- your mosquitto password here --!>"
-  issue_adapter:
-    backend: lanta
-    tt_url: "<!-- your tt url here --!>"
-    tt_token: "<!-- your tt bearer token here --!>"
-    anti_spam_interval: "<!-- your minimum interval in seconds which permits creating
-      similar issue (hint 86400 - one day) --!>"
   queue:
     backend: internal
+  external:
+    backend: internal
+    map:
+      "<!!!!!!!!!!!!>": "<!-- EXAMPLE, EXAMPLE, EXAMPLE, EXAMPLE, EXAMPLE, EXAMPLE, EXAMPLE --!>"
+      cameras:
+        table: cameras
+        internal: camera_id
+        external: external_id
 email:
   server: 127.0.0.1
   port: 587
