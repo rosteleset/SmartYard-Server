@@ -55,19 +55,37 @@
 
     doModifyUser: function (user) {
         loadingStart();
-        return PUT("accounts", "user", user.uid, user).
+        PUT("accounts", "user", user.uid, user).
         fail(FAIL).
+        fail(loadingDone).
         done(() => {
-            if (user.uid == myself.uid) {
-                whoAmI(true);
-            }
-            message(i18n("users.userWasChanged"));
-        }).
-        always(() => {
-            if (currentPage === "users") {
-                modules.users.render();
+            if (user.userGroups) {
+                PUT("accounts", "userGroups", user.uid, {
+                    gids: user.userGroups,
+                }).
+                fail(FAIL).
+                fail(loadingDone).
+                done(() => {
+                    if (user.uid == myself.uid) {
+                        whoAmI(true);
+                    }
+                    message(i18n("users.userWasChanged"));
+                    if (currentPage === "users") {
+                        modules.users.render();
+                    } else {
+                        loadingDone();
+                    }
+                });
             } else {
-                loadingDone();
+                if (user.uid == myself.uid) {
+                    whoAmI(true);
+                }
+                message(i18n("users.userWasChanged"));
+                if (currentPage === "users") {
+                    modules.users.render();
+                } else {
+                    loadingDone();
+                }
             }
         });
     },
@@ -141,6 +159,7 @@
         function realModifyUser(uid) {
             GET("accounts", "user", uid, true).done(response => {
                 let gs = [];
+                let gu = [];
 
                 if (modules.groups) {
                     gs.push({
@@ -152,6 +171,12 @@
                         gs.push({
                             value: modules.groups.meta[i].gid,
                             text: $.trim(modules.groups.meta[i].name + " [" + modules.groups.meta[i].acronym + "]"),
+                        });
+                        gu.push({
+                            id: modules.groups.meta[i].gid,
+                            text: $.trim(modules.groups.meta[i].name + " [" + modules.groups.meta[i].acronym + "]"),
+                            checked: parseInt(modules.groups.meta[i].gid) == parseInt(response.user.primaryGroup) || (response.user.groups.filter(group => parseInt(group.gid) == parseInt(modules.groups.meta[i].gid)).length),
+                            disabled: parseInt(modules.groups.meta[i].gid) == parseInt(response.user.primaryGroup),
                         });
                     }
                 }
@@ -348,6 +373,14 @@
                             tab: i18n("users.primary"),
                         },
                         {
+                            id: "userGroups",
+                            type: "multiselect",
+                            title: i18n("users.userGroups"),
+                            tab: i18n("users.userGroups"),
+                            hidden: !parseInt(response.user.uid) || gu.length == 0,
+                            options: gu,
+                        },
+                        {
                             id: "2faCode",
                             type: "empty",
                             title: i18n("users.2faCode"),
@@ -409,6 +442,9 @@
                         });
                     },
                     callback: function (result) {
+                        if (!gu.length) {
+                            result.userGroups = false;
+                        }
                         if (result.delete === "yes") {
                             modules.users.deleteUser(result.uid);
                         } else {

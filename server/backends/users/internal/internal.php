@@ -58,6 +58,7 @@
                         $a = loadBackend("authorization");
 
                         if ($a->allow([
+                            "_login" => $this->login,
                             "_uid" => $this->uid,
                             "_path" => [
                                 "api" => "accounts",

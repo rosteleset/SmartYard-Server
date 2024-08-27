@@ -46,6 +46,7 @@
     "2faConfirm": "One time code",
     "2faSecret": "Secret key",
     "enable2FA": "Enable two-factor authentication",
+    "userGroups": "Groups",
     "errors": {
         "invalid2FACredentials": "Invalid authentication code"
     },

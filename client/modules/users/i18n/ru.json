@@ -46,6 +46,7 @@
     "2faConfirm": "Код авторизации",
     "2faSecret": "Секретный ключ",
     "enable2FA": "Включить двухфакторную авторизацию",
+    "userGroups": "Группы",
     "errors": {
         "invalid2FACredentials": "Неверный код авторизации"
     },
