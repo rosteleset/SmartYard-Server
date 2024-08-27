@@ -1,9 +1,10 @@
 ({
     meta: [],
+    menuItem: false,
 
     init: function () {
         if (AVAIL("queues", "queues")) {
-            leftSide("far fa-fw fa-clock", i18n("queues.queues"), "?#queues", "households");
+            this.menuItem = leftSide("far fa-fw fa-clock", i18n("queues.queues"), "?#queues", "households");
         }
         moduleLoaded("queues", this);
     },
@@ -68,6 +69,10 @@
 
         $("#altForm").hide();
         subTop();
+
+        if (modules.queues.menuItem) {
+            $("#" + modules.queues.menuItem).children().first().attr("href", refreshUrl());
+        }
 
         modules.queues.renderQueues(params);
     },
