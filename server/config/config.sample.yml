@@ -60,7 +60,7 @@ backends:
     backend: mongo
   addresses:
     backend: internal
-    text_search_mode: fts
+    text_search_mode: default
   households:
     backend: internal
   cameras:
