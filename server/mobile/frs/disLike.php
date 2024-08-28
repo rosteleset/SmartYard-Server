@@ -1,20 +1,20 @@
 <?php
 
-    /**
-     * @api {post} /frs/disLike "дизлайкнуть" (чужой, ложное срабатывание, разонравился)
-     * @apiVersion 1.0.0
-     * @apiDescription **[в работе]**
-     *
-     * для ленты событий указывать event (flat и face будут проигнорированы), для списка лиц указывать flat или flat и face
-     *
-     * @apiGroup FRS
-     *
-     * @apiHeader {String} authorization токен авторизации
-     *
-     * @apiParam {String} [event] идентификатор события (для ленты событий)
-     * @apiParam {Number} [flatId] идентификатор квартиры (адрес) (для списка лиц)
-     * @apiParam {Number} [faceId] идентификатор "лица" (для списка лиц)
-     */
+/**
+ * @api {post} /frs/disLike "дизлайкнуть" (чужой, ложное срабатывание, разонравился)
+ * @apiVersion 1.0.0
+ * @apiDescription **[в работе]**
+ *
+ * для ленты событий указывать event (flat и face будут проигнорированы), для списка лиц указывать flat или flat и face
+ *
+ * @apiGroup FRS
+ *
+ * @apiHeader {String} authorization токен авторизации
+ *
+ * @apiParam {String} [event] идентификатор события (для ленты событий)
+ * @apiParam {Number} [flatId] идентификатор квартиры (адрес) (для списка лиц)
+ * @apiParam {Number} [faceId] идентификатор "лица" (для списка лиц)
+ */
 
     use backends\plog\plog;
     use backends\frs\frs;
@@ -37,7 +37,7 @@
     if ($event_uuid) {
         $event_data = $plog->getEventDetails($event_uuid);
         if (!$event_data) {
-            response(404, false, 'Событие не найдено');
+            response(404, false, i18n("mobile.404"));
         }
         $flat_id = (int)$event_data[plog::COLUMN_FLAT_ID];
 
@@ -56,13 +56,13 @@
     }
 
     if (($face_id === null || $face_id <= 0) && ($face_id2 === null || $face_id2 <= 0)) {
-        response(403, false, 'face_id не найден');
+        response(403, false, i18n("mobile.404"));
     }
 
     $flat_ids = array_map(function($item) { return $item['flatId']; }, $subscriber['flats']);
     $f = in_array($flat_id, $flat_ids);
     if (!$f) {
-        response(403, false, 'Квартира не найдена');
+        response(403, false, i18n("mobile.404"));
     }
 
     // TODO: check if FRS is allowed for flat_id

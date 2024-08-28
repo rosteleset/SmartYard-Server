@@ -20,39 +20,39 @@
  * @apiSuccess {String} [-.hlsMode] режим HLS (used for flussonic only): "fmp4" (default for hevc support), "mpegts" (for flussonic below 21.02 version)
  */
 
-auth();
-$cameras = loadBackend("cameras");
-$dvr = loadBackend("dvr");
+    auth();
+    $cameras = loadBackend("cameras");
+    $dvr = loadBackend("dvr");
 
-$common_cameras = $cameras->getCameras("common");
-$resp = [];
+    $common_cameras = $cameras->getCameras("common");
+    $resp = [];
 
-foreach ($common_cameras as $camera) {
-    if ($camera['enabled']){
-        $dvrServer = $dvr->getDVRServerForCam($camera);
-        $url = $dvr->getDVRStreamURLForCam($camera);
-        // skip not valid url
-        if (!filter_var($url, FILTER_VALIDATE_URL)){
-            continue;
+    foreach ($common_cameras as $camera) {
+        if ($camera['enabled']){
+            $dvrServer = $dvr->getDVRServerForCam($camera);
+            $url = $dvr->getDVRStreamURLForCam($camera);
+            // skip not valid url
+            if (!filter_var($url, FILTER_VALIDATE_URL)){
+                continue;
+            }
+
+            $item = [
+                "id" => $camera["cameraId"],
+                "name" => $camera["name"],
+                "lat" => (string)$camera['lat'],
+                "lon" => (string)$camera['lon'],
+                "url" => $url,
+                "token" => $dvr->getDVRTokenForCam($camera, $subscriber['subscriberId']),
+                "serverType" => $dvrServer["type"],
+                "hasSound" => (bool)$camera['sound'],
+            ];
+
+            if (array_key_exists("hlsMode", $dvrServer)) {
+                $item["hlsMode"] = $dvrServer['hlsMode'];
+            }
+
+            $resp[] = $item;
         }
-
-        $item = [
-            "id" => $camera["cameraId"],
-            "name" => $camera["name"],
-            "lat" => (string)$camera['lat'],
-            "lon" => (string)$camera['lon'],
-            "url" => $url,
-            "token" => $dvr->getDVRTokenForCam($camera, $subscriber['subscriberId']),
-            "serverType" => $dvrServer["type"],
-            "hasSound" => (bool)$camera['sound'],
-        ];
-
-        if (array_key_exists("hlsMode", $dvrServer)) {
-            $item["hlsMode"] = $dvrServer['hlsMode'];
-        }
-
-        $resp[] = $item;
     }
-}
 
-response(200, $resp);
+    response(200, $resp);

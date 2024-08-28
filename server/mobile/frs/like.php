@@ -1,20 +1,20 @@
 <?php
 
-    /**
-     * @api {post} /frs/like "лайкнуть" (свой)
-     * @apiVersion 1.0.0
-     * @apiDescription **[в работе]**
-     *
-     * @apiGroup FRS
-     *
-     * @apiHeader {String} authorization токен авторизации
-     *
-     * @apiParam {String} event идентификатор события (uuid)
-     * @apiParam {String} comment комментарий
-     *
-     * @apiSuccess {Object} - объект
-     * @apiSuccess {Number} -.faceId FaceId
-     */
+/**
+ * @api {post} /frs/like "лайкнуть" (свой)
+ * @apiVersion 1.0.0
+ * @apiDescription **[в работе]**
+ *
+ * @apiGroup FRS
+ *
+ * @apiHeader {String} authorization токен авторизации
+ *
+ * @apiParam {String} event идентификатор события (uuid)
+ * @apiParam {String} comment комментарий
+ *
+ * @apiSuccess {Object} - объект
+ * @apiSuccess {Number} -.faceId FaceId
+ */
 
     use backends\plog\plog;
     use backends\frs\frs;
@@ -33,23 +33,23 @@
 
     $event_uuid = $postdata['event'];
     if (!$event_uuid) {
-        response(405, false, 'Событие не указано');
+        response(405, false, i18n("mobile.404"));
     }
 
     $event_data = $plog->getEventDetails($event_uuid);
     if (!$event_data) {
-        response(404, false, 'Событие не найдено');
+        response(404, false, i18n("mobile.404"));
     }
 
     if ($event_data[plog::COLUMN_PREVIEW] == plog::PREVIEW_NONE) {
-        response(403, false, 'Нет кадра события');
+        response(403, false, i18n("mobile.404"));
     }
 
     $flat_ids = array_map(function($item) { return $item['flatId']; }, $subscriber['flats']);
     $flat_id = (int)$event_data[plog::COLUMN_FLAT_ID];
     $f = in_array($flat_id, $flat_ids);
     if (!$f) {
-        response(403, false, 'Квартира не найдена');
+        response(403, false, i18n("mobile.404"));
     }
 
     // TODO: check if FRS is allowed for flat_id

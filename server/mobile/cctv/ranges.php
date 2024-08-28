@@ -16,17 +16,17 @@
  * @apiSuccess {Number} ranges.duration продолжительность периода
  */
 
-auth();
+    auth();
 
-$camera_id = (int)@$postdata['cameraId'];
+    $camera_id = (int)@$postdata['cameraId'];
 
-$cameras = loadBackend("cameras");
+    $cameras = loadBackend("cameras");
 
-$cam = $cameras->getCamera($camera_id);
-if (!$cam) {
-    response(404);
-}
+    $cam = $cameras->getCamera($camera_id);
+    if (!$cam) {
+        response(404);
+    }
 
-$ranges = loadBackend("dvr")->getRanges($cam, $subscriber['subscriberId']);
+    $ranges = loadBackend("dvr")->getRanges($cam, $subscriber['subscriberId']);
 
-response(200, $ranges);
+    response(200, $ranges);

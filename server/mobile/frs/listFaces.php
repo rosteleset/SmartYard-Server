@@ -1,19 +1,19 @@
 <?php
 
-    /**
-     * @api {post} /frs/listFaces список "лиц"
-     * @apiVersion 1.0.0
-     * @apiDescription **[в работе]**
-     *
-     * @apiGroup FRS
-     *
-     * @apiHeader {string} authorization токен авторизации
-     *
-     * @apiParam {integer} flatId идентификатор квартиры (адрес)
-     * @apiSuccess {object[]} - массив объектов
-     * @apiSuccess {string} -.faceId идентификатор "лица"
-     * @apiSuccess {string} -.image url картинки
-     */
+/**
+ * @api {post} /frs/listFaces список "лиц"
+ * @apiVersion 1.0.0
+ * @apiDescription **[в работе]**
+ *
+ * @apiGroup FRS
+ *
+ * @apiHeader {string} authorization токен авторизации
+ *
+ * @apiParam {integer} flatId идентификатор квартиры (адрес)
+ * @apiSuccess {object[]} - массив объектов
+ * @apiSuccess {string} -.faceId идентификатор "лица"
+ * @apiSuccess {string} -.image url картинки
+ */
 
     use backends\frs\frs;
 
@@ -32,7 +32,7 @@
     $flat_ids = array_map(function($item) { return $item['flatId']; }, $subscriber['flats']);
     $f = in_array($flat_id, $flat_ids);
     if (!$f) {
-        response(403, false, 'Квартира не найдена');
+        response(403, false, i18n("mobile.404"));
     }
 
     // TODO: check if FRS is allowed for flat_id

@@ -24,38 +24,5 @@
  * @apiSuccess {String} -.addressLine адрес (?)
  */
 
-auth();
-response();
-
-/*
-$id = (int)@$postdata['id'];
-
-if ($id) {
-    $vidos = demo('youtubeVideos', [ 'cameraId' => $id ]);
-} else {
-    $vidos = demo('youtubeVideos');
-}
-
-usort($vidos, function ($a, $b) {
-    if ($a['eventTime'] > $b['eventTime']) {
-        return -1;
-    } else
-        if ($a['eventTime'] < $b['eventTime']) {
-            return 1;
-        } else {
-            return 0;
-        }
-});
-
-foreach ($vidos as &$v) {
-    $v['id'] = $v['cameraId'];
-    $v['eventTime'] = date('Y-m-d H:i:s', $v['eventTime']);
-    unset($v['cameraId']);
-}
-
-if (count($vidos)) {
-    response(200, $vidos);
-} else {
+    auth();
     response();
-}
-*/
