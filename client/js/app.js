@@ -1,6 +1,5 @@
 const modules = {};
 const moduleLoadQueue = [];
-const loadingProgress = new ldBar("#loadingProgress");
 
 // TODO f..ck!
 let mainFormTop = 74;
