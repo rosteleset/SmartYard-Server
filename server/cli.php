@@ -713,7 +713,9 @@
 
         chdir(__DIR__);
 
-        system("git pull");
+        $code = false;
+
+        system("git pull", $code);
         echo "\n";
 
         initDB();
