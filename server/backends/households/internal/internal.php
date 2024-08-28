@@ -564,6 +564,11 @@
                         return false;
                     }
 
+                    if (array_key_exists("cmsEnabled", $params) && !checkInt($params["cmsEnabled"])) {
+                        setLastError("invalidParams");
+                        return false;
+                    }
+
                     if (array_key_exists("code", $params) && !checkStr($params["code"])) {
                         setLastError("invalidParams");
                         return false;
