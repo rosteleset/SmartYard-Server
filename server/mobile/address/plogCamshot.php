@@ -1,7 +1,9 @@
 <?php
+
     $files = loadBackend('files');
     $uuid = $files->fromGUIDv4($param);
     $img = $files->getFile($uuid);
+
     if ($img) {
         $content_type = "image/jpeg";
         $meta_data = $files->getFileMetadata($uuid);

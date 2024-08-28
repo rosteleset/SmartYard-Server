@@ -62,9 +62,9 @@
             }
         }
         catch (\Exception $e) {
-            response(404, false, 'Ошибка', 'Домофон недоступен');
+            response(404, false, i18n("mobile.error"), i18n("mobile.unavailable"));
         }
         response();
     } else {
-        response(404, false, 'Не найдено', 'Услуга недоступна (договор заблокирован либо не оплачен)');
+        response(404, false, i18n("mobile.404"), i18n("mobile.serviceUnavailable"));
     }

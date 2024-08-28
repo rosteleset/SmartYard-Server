@@ -89,7 +89,7 @@
             // TODO: проверить обработку блокировки
             //
             if ($flatDetail['autoBlock'] || $flatDetail['adminBlock']) {
-                $door['blocked'] = "Услуга домофонии заблокирована";
+                $door['blocked'] = i18n("mobile.blocked");
             }
 
             $house['doors'][$entrance['entranceId']] = $door;
