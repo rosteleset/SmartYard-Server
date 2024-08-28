@@ -41,7 +41,7 @@
             public static function GET($params) {
                 $suggestions = loadBackend("geocoder")->suggestions($params["search"]);
 
-                return api::ANSWER($suggestions, ($suggestions !== false)?"suggestions":"404");
+                return api::ANSWER($suggestions, ($suggestions !== false) ? "suggestions" : "404");
             }
 
             public static function index() {
@@ -55,4 +55,3 @@
             }
         }
     }
-
