@@ -22,35 +22,3 @@
 
     auth();
     response();
-
-/*
-    $nominals = [
-        100 => 100,
-        200 => 210,
-        300 => 330,
-    ];
-
-    $client_id = (int)$postdata['clientId'];
-    $amount = (float)$postdata['amount'];
-
-    $all_clients = all_clients();
-
-    if (!$client_id || !in_array($client_id, $all_clients)) {
-        response(404);
-    }
-
-    if (!@$nominals[$amount]) {
-        response(422);
-    }
-
-    $balance = pg_fetch_result(pg_query("select balance from bonus_v2.balance where client_id = $client_id"), 0);
-
-    if ($amount > $balance) {
-        response(422);
-    }
-
-    pg_query("select bonus_v2.activate_bonus($client_id, $amount, {$nominals[$amount]})");
-    pg_query("insert into webadmin.client_card_log (client_id, date, login, action) values ('$client_id', now(), 'dm', 'Подготовка бонусов к списанию')");
-
-    response(200);
-*/
