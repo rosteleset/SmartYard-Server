@@ -38,6 +38,12 @@
         "dataMissing": "No data available",
         "addressNotFound": "Address not found (%s)",
         "msgEmpty": "Message (msg) must not be empty",
-        "actionEmpty": "Action (action) must not be empty"
+        "actionEmpty": "Action (action) must not be empty",
+        "cantChangeIssue": "Failed to change the issue",
+        "cantCreateIssue": "Failed to create request",
+        "askSupport": ", for all questions, please call %s",
+        "issueCreatedTitle": "Issue created",
+        "issueCreatedBody": "Created issue %s",
+        "issueAlreadyExists": "There is already a previously created request %s in progress"
     }
 }

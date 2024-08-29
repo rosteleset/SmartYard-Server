@@ -16,12 +16,12 @@
  * 417 ожидание не удалось
  */
 
-auth();
+    auth();
 
-$adapter = loadBackend('issue_adapter');
-if (!$adapter)
+    $adapter = loadBackend('issue_adapter');
+    if (!$adapter)
+        response();
+
+    $adapter->commentIssue(@$postdata['key'], @$postdata['comment']);
+
     response();
-
-$adapter->commentIssue(@$postdata['key'], @$postdata['comment']);
-
-response();

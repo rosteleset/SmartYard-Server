@@ -21,12 +21,15 @@
  * 417 ожидание не удалось
  */
 
-auth();
-$adapter = loadBackend('issue_adapter');
-$r = [];
-if ($adapter) {
-    $issues = $adapter->listConnectIssues($subscriber['mobile']);
-    if ($issues !== false)
-        $r = $issues;
-}
-response($r ? 200 : 204, $r);
+    auth();
+
+    $adapter = loadBackend('issue_adapter');
+
+    $r = [];
+    if ($adapter) {
+        $issues = $adapter->listConnectIssues($subscriber['mobile']);
+        if ($issues !== false)
+            $r = $issues;
+    }
+
+    response($r ? 200 : 204, $r);

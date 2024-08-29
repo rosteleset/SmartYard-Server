@@ -38,6 +38,12 @@
         "dataMissing": "Отсутствуют данные",
         "addressNotFound": "Адрес не найден (%s)",
         "msgEmpty": "Сообщение (msg) не должно быть пустым",
-        "actionEmpty": "Действие (action) не должно быть пустым"
+        "actionEmpty": "Действие (action) не должно быть пустым",
+        "cantChangeIssue": "Не удалось изменить заявку",
+        "cantCreateIssue": "Не удалось создать заявку",
+        "askSupport": ", по всем вопросам обращайтесь по телефону %s",
+        "issueCreatedTitle": "Заявка создана",
+        "issueCreatedBody": "Создана заявка %s",
+        "issueAlreadyExists": "В работе уже есть ранее созданная заявка %s"
     }
 }

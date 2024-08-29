@@ -29,27 +29,31 @@
     auth();
 
     $adapter = loadBackend('issue_adapter');
-    if (!$adapter)
-        response(417, false, false, "Не удалось создать заявку.");
+
+    if (!$adapter) {
+        response(417, false, false, i18n("mobile.cantCreateIssue"));
+    }
 
     $result = $adapter->createIssue($subscriber['mobile'], $postdata);
-    if ($result === false)
-        response(417, false, false, "Не удалось создать заявку.");
+
+    if ($result === false) {
+        response(417, false, false, i18n("mobile.cantCreateIssue"));
+    }
 
     if (empty($result['issueId'])) {
-        response(417, false, false, "Не удалось создать заявку.");
+        response(417, false, false, i18n("mobile.cantCreateIssue"));
     } else {
         $issueId = $result['issueId'];
         $support_phone = @$config['mobile']['support_phone'];
         $suffix = "";
         if (isset($support_phone)) {
-            $suffix = " По всем вопросам обращайтесь $support_phone";
+            $suffix = i18n("mobile.askSupport", $support_phone);
         }
         if ($result['isNew'] === true) {
             $inbox = loadBackend("inbox");
-            $inbox->sendMessage($subscriber['subscriberId'], "Заявка создана", "Создана заявка $issueId." . $suffix);
+            $inbox->sendMessage($subscriber['subscriberId'], i18n("mobile.issueCreatedTitle"), i18n("mobile.issueCreatedBody", $issueId) . $suffix);
             response(200, $issueId);
         } else {
-            response(417, false, false, "В работе уже есть ранее созданная заявка $issueId." . $suffix);
+            response(417, false, false, i18n("mobile.issueAlreadyExists", $issueId) . $suffix);
         }
     }

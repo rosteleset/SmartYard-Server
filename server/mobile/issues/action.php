@@ -19,14 +19,14 @@
  * 417 ожидание не удалось
  */
 
-auth();
+    auth();
 
-$adapter = loadBackend('issue_adapter');
-if (!$adapter)
-    response(417, false, false, "Не удалось изменить заявку.");
+    $adapter = loadBackend('issue_adapter');
+    if (!$adapter)
+        response(417, false, false, i18n("mobile.cantChangeIssue"));
 
-$result = $adapter->actionIssue($postdata);
-if ($result === false)
-    response(417, false, false, "Не удалось изменить заявку.");
+    $result = $adapter->actionIssue($postdata);
+    if ($result === false)
+        response(417, false, false, i18n("mobile.cantChangeIssue"));
 
-response();
+    response();
