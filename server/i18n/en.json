@@ -34,6 +34,10 @@
         "500": "Internal server error",
         "badCode": "The QR code is not a code to access the apartment",
         "alreadyExists": "You already have access to this apartment.",
-        "requestAccepted": "Your request has been accepted and will be processed within one minute, please wait."
+        "requestAccepted": "Your request has been accepted and will be processed within one minute, please wait",
+        "dataMissing": "No data available",
+        "addressNotFound": "Address not found (%s)",
+        "msgEmpty": "Message (msg) must not be empty",
+        "actionEmpty": "Action (action) must not be empty"
     }
 }

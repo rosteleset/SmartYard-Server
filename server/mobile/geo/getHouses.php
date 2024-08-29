@@ -16,24 +16,24 @@
  * @apiSuccess {String} -.number номер дома
  */
 
-auth();
+    auth();
 
-$street_id = (int)@$postdata['streetId'];
-$addresses = loadBackend("addresses");
+    $street_id = (int)@$postdata['streetId'];
+    $addresses = loadBackend("addresses");
 
 
-if ($street_id > $emptyStreetIdOffset) {
-    $houses = $addresses->getHouses($street_id - $emptyStreetIdOffset, false);
-} else {
-    $houses = $addresses->getHouses(false, $street_id);
-}
+    if ($street_id > $emptyStreetIdOffset) {
+        $houses = $addresses->getHouses($street_id - $emptyStreetIdOffset, false);
+    } else {
+        $houses = $addresses->getHouses(false, $street_id);
+    }
 
-$houses_ = [];
+    $houses_ = [];
 
-foreach ($houses as $house) {
-    $houses_[] = array(
-        "houseId" => strval($house["houseId"]),
-        "number" => $house["house"]
-    );
-}
-response(200, $houses_);
+    foreach ($houses as $house) {
+        $houses_[] = array(
+            "houseId" => strval($house["houseId"]),
+            "number" => $house["house"]
+        );
+    }
+    response(200, $houses_);

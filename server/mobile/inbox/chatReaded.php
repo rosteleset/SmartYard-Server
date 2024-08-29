@@ -10,8 +10,8 @@
  * @apiHeader {String} authorization токен авторизации
  */
 
-auth();
+    auth();
 
-// TODO: добавить обработку прочтения чата.
+    // TODO: добавить обработку прочтения чата.
 
-response();
+    response();

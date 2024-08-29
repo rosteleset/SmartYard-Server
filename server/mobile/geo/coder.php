@@ -19,7 +19,7 @@
     auth();
 
     if (!@$postdata['address']) {
-        response(422, false, 'Отсутствуют данные', 'Отсутствуют данные');
+        response(422, false, i18n("mobile.dataMissing"), i18n("mobile.dataMissing"));
     }
     $query = $postdata['address'];
 
@@ -37,7 +37,7 @@
         $response = [
             "lat" => "0.0",
             "lon" => "0.0",
-            "address" => 'Адрес не найден ('.$postdata['address'].')',
+            "address" => i18n("mobile.addressNotFound", $postdata['address']),
         ];
     }
     response(200, $response);

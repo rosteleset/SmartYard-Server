@@ -14,15 +14,15 @@
  * @apiSuccess {Number=0,1} -.chat наличие непрочитанных сообщений в чате
  */
 
-auth();
+    auth();
 
-// TODO: получить число непрочитанных сообщений в чате
-$chat = 0;
+    // TODO: получить число непрочитанных сообщений в чате
+    $chat = 0;
 
-$inbox = loadBackend("inbox");
-$subscriber_id = (int)$subscriber['subscriberId'];
-$count_unread = (int)$inbox->unreaded($subscriber_id);
-response(200, [
-    'count' => $count_unread,
-    'chat' => $chat,
-]);
+    $inbox = loadBackend("inbox");
+    $subscriber_id = (int)$subscriber['subscriberId'];
+    $count_unread = (int)$inbox->unreaded($subscriber_id);
+    response(200, [
+        'count' => $count_unread,
+        'chat' => $chat,
+    ]);

@@ -18,37 +18,38 @@
  * @apiSuccess {String} -.type тип улицы
  */
 
-auth();
+    auth();
 
-$location_id = (int)@$postdata['locationId'];
-$addresses = loadBackend("addresses");
+    $location_id = (int)@$postdata['locationId'];
+    $addresses = loadBackend("addresses");
 
-if ($location_id > $offsetForCityId) {
-    $cityId = $location_id - $offsetForCityId;
-    $streets = $addresses->getStreets($cityId, false);
-} else {
-    $settlementId = $location_id;
-    $streets = $addresses->getStreets(false, $settlementId);
-    
-    if ($addresses->getHouses($settlementId, false)) {
-        $streets[] = array(
-                           "streetId" => strval($emptyStreetIdOffset + $settlementId),
-                           "streetUuid" => "", // TODO: сделать генерацию UUID
-                           "street" => "(отсутствует)",
-                           "streetType" => "улица"
-                       );
+    if ($location_id > $offsetForCityId) {
+        $cityId = $location_id - $offsetForCityId;
+        $streets = $addresses->getStreets($cityId, false);
+    } else {
+        $settlementId = $location_id;
+        $streets = $addresses->getStreets(false, $settlementId);
+
+        if ($addresses->getHouses($settlementId, false)) {
+            $streets[] = [
+                "streetId" => strval($emptyStreetIdOffset + $settlementId),
+                "streetUuid" => "", // TODO: сделать генерацию UUID
+                "street" => "(отсутствует)",
+                "streetType" => "улица",
+            ];
+        }
     }
-}
 
-$streets_ = [];
+    $streets_ = [];
 
 
-foreach ($streets as $street) {
-    $streets_[] = array(
-        "streetId" => strval($street["streetId"]),
-        "streetUUid" => $street["streetUuid"],
-        "name" => $street["street"],
-        "type" => $street["streetType"]
-    );
-}
-response(200, $streets_);
+    foreach ($streets as $street) {
+        $streets_[] = [
+            "streetId" => strval($street["streetId"]),
+            "streetUUid" => $street["streetUuid"],
+            "name" => $street["street"],
+            "type" => $street["streetType"],
+        ];
+    }
+
+    response(200, $streets_);
