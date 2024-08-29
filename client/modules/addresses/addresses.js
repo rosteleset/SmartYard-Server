@@ -191,7 +191,7 @@
                         color: r.color,
                     }).
                     done(() => {
-                        window.location = refreshUrl();
+                        window.location.reload();
                     }).
                     fail(FAIL).
                     fail(loadingDone);
