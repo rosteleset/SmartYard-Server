@@ -23,29 +23,29 @@
  * 400 имя не указано
  */
 
-auth();
+    auth();
 
-$last = htmlspecialchars(trim(@$postdata['last']));
-$name = htmlspecialchars(trim(@$postdata['name']));
-$patronymic = htmlspecialchars(trim(@$postdata['patronymic']));
+    $last = htmlspecialchars(trim(@$postdata['last']));
+    $name = htmlspecialchars(trim(@$postdata['name']));
+    $patronymic = htmlspecialchars(trim(@$postdata['patronymic']));
 
-$households = loadBackend("households");
+    $households = loadBackend("households");
 
-if (!$name) {
-    response(400);
-}
-
-if ($subscriber) {
-    $full_name = [];
-    if ($last) {
-         $full_name["subscriberLast"] = $last;
+    if (!$name) {
+        response(400);
     }
-    if ($patronymic) {
-         $full_name["subscriberPatronymic"] = $patronymic;
+
+    if ($subscriber) {
+        $full_name = [];
+        if ($last) {
+            $full_name["subscriberLast"] = $last;
+        }
+        if ($patronymic) {
+            $full_name["subscriberPatronymic"] = $patronymic;
+        }
+        $full_name["subscriberName"] = $name;
+        $households->modifySubscriber($subscriber["subscriberId"], $full_name);
+        response();
+    } else {
+        response(400);
     }
-    $full_name["subscriberName"] = $name;
-    $households->modifySubscriber($subscriber["subscriberId"], $full_name);
-    response();
-} else {
-    response(400);
-}

@@ -24,36 +24,6 @@
  * 406 неправильный токен
  */
 
-auth();
-// TODO: сделать управление обновлением приложения и сбор статистики о версии.
-response();
-
-/*
-$version = (int)@$postdata['version'];
-
-if (!$version) {
-    response(422);
-}
-
-if (!array_key_exists('platform', $postdata) || ($postdata['platform'] != 'ios' && $postdata['platform'] != 'android')) {
-    response(422);
-}
-
-pg_query("update domophones.bearers set version=$version, device_type='{$postdata['platform']}' where id='{$bearer['id']}'");
-
-$v = pg_fetch_assoc(pg_query("select upgrade, force_upgrade from domophones.versions where platform='{$postdata['platform']}'"));
-
-if (!$v) {
+    auth();
+    // TODO: сделать управление обновлением приложения и сбор статистики о версии.
     response();
-}
-
-if ($version < (int)$v['force_upgrade']) {
-    response(200, 'forceUpgrade');
-}
-
-if ($version < $v['upgrade']) {
-    response(200, 'upgrade');
-}
-
-response();
-*/

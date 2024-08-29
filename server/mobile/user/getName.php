@@ -23,14 +23,14 @@
  * 406 неверный тип токена
  */
 
-auth();
+    auth();
 
-$households = loadBackend("households");
+    $households = loadBackend("households");
 
-if ($subscriber) {
-    $names = ["name" => $subscriber["subscriberName"], "patronymic" => $subscriber["subscriberPatronymic"], "last" => $subscriber["subscriberLast"]];
+    if ($subscriber) {
+        $names = ["name" => $subscriber["subscriberName"], "patronymic" => $subscriber["subscriberPatronymic"], "last" => $subscriber["subscriberLast"]];
 
-    response(200, $names);
-} else {
-    response(404);
-}
+        response(200, $names);
+    } else {
+        response(404);
+    }

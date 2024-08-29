@@ -44,6 +44,11 @@
         "askSupport": ", for all questions, please call %s",
         "issueCreatedTitle": "Issue created",
         "issueCreatedBody": "Created issue %s",
-        "issueAlreadyExists": "There is already a previously created request %s in progress"
+        "issueAlreadyExists": "There is already a previously created request %s in progress",
+        "404Contract": "No contract found with the specified login and password",
+        "message": "Message",
+        "addressAlreadyExists": "Some addresses were already available to you in the app",
+        "maxAttempts": "Maximum number of login attempts exceeded",
+        "pinError": "The PIN code was entered incorrectly"
     }
 }

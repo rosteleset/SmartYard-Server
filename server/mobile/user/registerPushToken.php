@@ -87,13 +87,5 @@
     }
 
     $households->modifyDevice($device["deviceId"], [ "pushToken" => $push ?: "off" , "tokenType" => $type, "voipToken" => $voip ?: "off", "platform" => $platform ]);
-/*
-    if (!$push) {
-        $households->modifyDevice($device["deviceId"], [ "pushToken" => "off" ]);
-    }
 
-    if (!$voip) {
-        $households->modifyDevice($subscriber["subscriberId"], [ "voipToken" => "off" ]);
-    }
-*/
     response();

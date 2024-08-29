@@ -61,9 +61,9 @@
                 if ($attempts > 5) {
                     $redis->del("userpin_" . $user_phone);
                     $redis->del("userpin.attempts_" . $user_phone);
-                    response(403, false, "Превышено максимальное число попыток ввода", "Превышено максимальное число попыток ввода");
+                    response(403, false, i18n("mobile.maxAttempts"), i18n("mobile.maxAttempts"));
                 } else {
-                    response(403, false, "Пин-код введен неверно", "Пин-код введен неверно");
+                    response(403, false, i18n("pinError"), i18n("pinError"));
                 }
             } else {
                 $redis->del("userpin_" . $user_phone);

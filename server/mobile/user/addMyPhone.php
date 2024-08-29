@@ -37,7 +37,7 @@
     $households = loadBackend("households");
     $flats = $households->getFlats("credentials", ["login" => $login, "password" => $password]);
     if (!$flats) {
-        response(400, "Не найден", "Не найден договор с указанным логином и паролем");
+        response(400, i18n("mobile.404"), i18n("mobile.404Contract"));
     }
 
     $already_count = 0;
@@ -59,8 +59,8 @@
 
         if ($households->addSubscriber($subscriber["mobile"], "", "", "", $flat_id,
             [
-                'title' => 'Новый адрес',
-                'msg' => 'В вашу учётную запись добавлен новый адрес',
+                'title' => i18n("mobile.newAddressTitle"),
+                'msg' => i18n("mobile.newAddressBody"),
             ])) {
             $f_list = [];
             foreach ($subscriber['flats'] as $item) {
@@ -77,7 +77,7 @@
         }
     }
     if ($already_count > 0) {
-        response(404, "Сообщение", "Некоторые адреса уже были доступны вам в приложении");
+        response(404, i18n("mobile.message"), i18n("mobile.addressAlreadyExists"));
     }
 
     response();
