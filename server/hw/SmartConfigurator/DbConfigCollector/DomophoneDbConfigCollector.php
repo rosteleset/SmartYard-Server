@@ -230,7 +230,7 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
      */
     private function addEventServer(): self
     {
-        $url = $this->appConfig['syslog_servers'][$this->domophoneData['json']['eventServer']][0];
+        $url = $this->appConfig['syslog_servers'][$this->domophoneData['json']['eventServer']][0] ?? '';
         $this->builder->addEventServer($url);
         return $this;
     }

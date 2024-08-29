@@ -1,0 +1,10 @@
+{
+    "title": "SILINES RODOS",
+    "vendor": "SILINES",
+    "model": "RODOS",
+    "class": "rodos",
+    "eventServer": "",
+    "outputs": 1,
+    "useSmartConfigurator": true,
+    "cmses": []
+}
