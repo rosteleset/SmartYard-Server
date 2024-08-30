@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {put} /api/addresses/area:areaId update area
+     * @api {put} /api/addresses/area/:areaId update area
      *
      * @apiVersion 1.0.0
      *
@@ -10,7 +10,7 @@
      *
      * @apiHeader {String} authorization authentication token
      *
-     * @apiParam {Number} [areaId] regionId
+     * @apiParam {Number} areaId areaId
      * @apiBody {Number} regionId
      * @apiBody {String} areaUuid
      * @apiBody {String} areaWithType
@@ -44,7 +44,7 @@
      */
 
     /**
-     * @api {delete} /api/addresses/area:areaId delete area
+     * @api {delete} /api/addresses/area/:areaId delete area
      *
      * @apiVersion 1.0.0
      *
@@ -53,7 +53,7 @@
      *
      * @apiHeader {String} authorization authentication token
      *
-     * @apiParam {Number} [areaId] areaId
+     * @apiParam {Number} areaId areaId
      *
      * @apiSuccess {Boolean} operationResult
      */

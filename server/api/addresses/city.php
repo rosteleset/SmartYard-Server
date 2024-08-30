@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {put} /api/addresses/city:cityId update city
+     * @api {put} /api/addresses/city/:cityId update city
      *
      * @apiVersion 1.0.0
      *
@@ -10,7 +10,7 @@
      *
      * @apiHeader {String} authorization authentication token
      *
-     * @apiParam {Number} [cityId] cityId
+     * @apiParam {Number} cityId cityId
      * @apiBody {Number} regionId
      * @apiBody {Number} areaId
      * @apiBody {String} cityUuid
@@ -46,7 +46,7 @@
      */
 
     /**
-     * @api {delete} /api/addresses/city:cityId delete city
+     * @api {delete} /api/addresses/city/:cityId delete city
      *
      * @apiVersion 1.0.0
      *
@@ -55,7 +55,7 @@
      *
      * @apiHeader {String} authorization authentication token
      *
-     * @apiParam {Number} [cityId] cityId
+     * @apiParam {Number} cityId cityId
      *
      * @apiSuccess {Boolean} operationResult
      */
@@ -79,7 +79,7 @@
 
                 $success = $addresses->modifyCity($params["_id"], $params["regionId"], $params["areaId"], $params["cityUuid"], $params["cityWithType"], $params["cityType"], $params["cityTypeFull"], $params["city"], $params["timezone"]);
 
-                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
+                return api::ANSWER($success, ($success !== false) ? false : "notAcceptable");
             }
 
             public static function POST($params) {
@@ -87,7 +87,7 @@
 
                 $cityId = $addresses->addCity($params["regionId"], $params["areaId"], $params["cityUuid"], $params["cityWithType"], $params["cityType"], $params["cityTypeFull"], $params["city"], $params["timezone"]);
 
-                return api::ANSWER($cityId, ($cityId !== false)?"cityId":"notAcceptable");
+                return api::ANSWER($cityId, ($cityId !== false) ? "cityId" : "notAcceptable");
             }
 
             public static function DELETE($params) {
@@ -95,7 +95,7 @@
 
                 $success = $addresses->deleteCity($params["_id"]);
 
-                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
+                return api::ANSWER($success, ($success !== false) ? false : "notAcceptable");
             }
 
             public static function index() {

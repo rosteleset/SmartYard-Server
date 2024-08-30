@@ -1,6 +1,81 @@
 <?php
 
     /**
+     * @api {get} /api/addresses/house/:houseId get house
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName getHouse
+     * @apiGroup addresses
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {Number} houseId houseId
+     *
+     * @apiSuccess {Object} house
+     */
+
+    /**
+     * @api {put} /api/addresses/house/:houseId update house
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName updateHouse
+     * @apiGroup addresses
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {Number} houseId houseId
+     * @apiBody {Number} settlementId
+     * @apiBody {Number} streetId
+     * @apiBody {String} houseUuid
+     * @apiBody {String} houseType
+     * @apiBody {String} houseTypeFull
+     * @apiBody {String} houseFull
+     * @apiBody {String} house
+     * @apiBody {Number} companyId
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
+     * @api {post} /api/addresses/house create house
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName createHouse
+     * @apiGroup addresses
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiBody {Number} settlementId
+     * @apiBody {Number} streetId
+     * @apiBody {String} houseUuid
+     * @apiBody {String} houseType
+     * @apiBody {String} houseTypeFull
+     * @apiBody {String} houseFull
+     * @apiBody {String} house
+     * @apiBody {Number} companyId
+     *
+     * @apiSuccess {Number} houseId
+     */
+
+    /**
+     * @api {delete} /api/addresses/house/:houseId delete house
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName deleteHouse
+     * @apiGroup addresses
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {Number} houseId houseId
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
      * addresses api
      */
 
@@ -19,7 +94,7 @@
 
                 $house = $addresses->getHouse($params["_id"]);
 
-                return api::ANSWER($house, ($house !== false)?"house":"notAcceptable");
+                return api::ANSWER($house, ($house !== false) ? "house" : "notAcceptable");
             }
 
             public static function PUT($params) {
@@ -27,7 +102,7 @@
 
                 $success = $addresses->modifyHouse($params["_id"], $params["settlementId"], $params["streetId"], $params["houseUuid"], $params["houseType"], $params["houseTypeFull"], $params["houseFull"], $params["house"], $params["companyId"]);
 
-                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
+                return api::ANSWER($success, ($success !== false) ? false : "notAcceptable");
             }
 
             public static function POST($params) {
@@ -39,7 +114,7 @@
                     $houseId = $addresses->addHouse($params["settlementId"], $params["streetId"], $params["houseUuid"], $params["houseType"], $params["houseTypeFull"], $params["houseFull"], $params["house"], $params["companyId"]);
                 }
 
-                return api::ANSWER($houseId, ($houseId !== false)?"houseId":false);
+                return api::ANSWER($houseId, ($houseId !== false) ? "houseId" : false);
             }
 
             public static function DELETE($params) {
@@ -47,7 +122,7 @@
 
                 $success = $addresses->deleteHouse($params["_id"]);
 
-                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
+                return api::ANSWER($success, ($success !== false) ? false : "notAcceptable");
             }
 
             public static function index() {
