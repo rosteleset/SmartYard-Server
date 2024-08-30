@@ -1,6 +1,27 @@
 <?php
 
     /**
+     * @api {get} /api/addresses/addresses get addresses
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName addresses
+     * @apiGroup addresses
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiBody {Number} [regionId] regionId
+     * @apiBody {Number} [areaId] areaId
+     * @apiBody {Number} [cityId] cityId
+     * @apiBody {Number} [settlementId] settlementId
+     * @apiBody {Number} [streetId] streetId
+     * @apiBody {Number} [houseId] houseId
+     * @apiBody {String} [include="regions,areas,cities,settlements,streets,houses"] include parent objects
+     *
+     * @apiSuccess {Object} list of address objects
+     */
+
+    /**
      * addresses api
      */
 
@@ -24,7 +45,7 @@
                 $streetId = @(int)$params["streetId"];
                 $houseId = @(int)$params["houseId"];
 
-                $include = @$params["include"]?:"regions,areas,cities,settlements,streets,houses";
+                $include = @$params["include"] ?: "regions,areas,cities,settlements,streets,houses";
 
                 $r = [];
 
@@ -72,7 +93,7 @@
                     }
                 }
 
-                return api::ANSWER($r, ($r !== false)?"addresses":"badRequest");
+                return api::ANSWER($r, ($r !== false) ? "addresses" : "badRequest");
             }
 
             public static function index() {
