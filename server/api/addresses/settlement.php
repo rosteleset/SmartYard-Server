@@ -1,6 +1,64 @@
 <?php
 
     /**
+     * @api {put} /api/addresses/settlement/:settlementId update settlement
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName updateSettlement
+     * @apiGroup addresses
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {Number} settlementId settlementId
+     * @apiBody {Number} areaId
+     * @apiBody {Number} cityId
+     * @apiBody {String} settlementUuid
+     * @apiBody {String} settlementWithType
+     * @apiBody {String} settlementType
+     * @apiBody {String} settlementTypeFull
+     * @apiBody {String} settlement
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
+     * @api {post} /api/addresses/settlement create settlement
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName createSettlement
+     * @apiGroup addresses
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiBody {Number} areaId
+     * @apiBody {Number} cityId
+     * @apiBody {String} settlementUuid
+     * @apiBody {String} settlementWithType
+     * @apiBody {String} settlementType
+     * @apiBody {String} settlementTypeFull
+     * @apiBody {String} settlement
+     *
+     * @apiSuccess {Number} settlementId
+     */
+
+    /**
+     * @api {delete} /api/addresses/settlement/:settlementId delete settlement
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName deleteSettlement
+     * @apiGroup addresses
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {Number} settlementId settlementId
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
      * addresses api
      */
 

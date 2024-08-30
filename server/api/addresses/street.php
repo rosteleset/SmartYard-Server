@@ -1,6 +1,56 @@
 <?php
 
     /**
+     * @api {put} /api/addresses/street/:streetId update street
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName updateStreet
+     * @apiGroup addresses
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {Number} streetId streetId
+     * @apiBody {Number} cityId
+     * @apiBody {Number} settlementId
+     * @apiBody {String} streetUuid
+     * @apiBody {String} streetWithType
+     * @apiBody {String} streetType
+     * @apiBody {String} streetTypeFull
+     * @apiBody {String} street
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
+     * @api {post} /api/addresses/street create street
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName createStreet
+     * @apiGroup addresses
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiSuccess {Number} streetId
+     */
+
+    /**
+     * @api {delete} /api/addresses/street/:streetId delete street
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName deleteStreet
+     * @apiGroup addresses
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {Number} streetId streettId
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
      * addresses api
      */
 

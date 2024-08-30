@@ -1,6 +1,21 @@
 <?php
 
     /**
+     * @api {get} /api/addresses/search search for addresses
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName search
+     * @apiGroup addresses
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiQuery {String} search address
+     *
+     * @apiSuccess {Object[]} addresses
+     */
+
+    /**
      * addresses api
      */
 

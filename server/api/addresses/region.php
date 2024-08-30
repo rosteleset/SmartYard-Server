@@ -1,6 +1,64 @@
 <?php
 
     /**
+     * @api {put} /api/addresses/region/:regionId update region
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName updateRegion
+     * @apiGroup addresses
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {Number} regionId regionId
+     * @apiBody {String} regionUuid
+     * @apiBody {String} regionIsoCode
+     * @apiBody {String} regionWithType
+     * @apiBody {String} regionType
+     * @apiBody {String} regionTypeFull
+     * @apiBody {String} region
+     * @apiBody {String} timezone
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
+     * @api {post} /api/addresses/region create region
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName createRegion
+     * @apiGroup addresses
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiBody {String} regionUuid
+     * @apiBody {String} regionIsoCode
+     * @apiBody {String} regionWithType
+     * @apiBody {String} regionType
+     * @apiBody {String} regionTypeFull
+     * @apiBody {String} region
+     * @apiBody {String} timezone
+     *
+     * @apiSuccess {Number} regionId
+     */
+
+    /**
+     * @api {delete} /api/addresses/region/:regionId delete region
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName deleteRegion
+     * @apiGroup addresses
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {Number} regionId regionId
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
      * addresses api
      */
 
