@@ -1,6 +1,6 @@
 <?php
 
-namespace utils\SmartConfigurator\DbConfigCollector;
+namespace hw\SmartConfigurator\DbConfigCollector;
 
 /**
  * An interface that defines the contract for collecting device configuration data from a database.

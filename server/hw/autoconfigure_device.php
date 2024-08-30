@@ -1,10 +1,10 @@
 <?php
 
-require_once __DIR__ . '/SmartConfigurator/autoload.php';
+require_once __DIR__ . '/autoload.php';
 require_once __DIR__ . '/../utils/array_diff_assoc_recursive.php';
 
-use utils\SmartConfigurator\DbConfigCollector\{CameraDbConfigCollector, DomophoneDbConfigCollector};
-use utils\SmartConfigurator\SmartConfigurator;
+use hw\SmartConfigurator\DbConfigCollector\{CameraDbConfigCollector, DomophoneDbConfigCollector};
+use hw\SmartConfigurator\SmartConfigurator;
 
 /**
  * @throws Exception

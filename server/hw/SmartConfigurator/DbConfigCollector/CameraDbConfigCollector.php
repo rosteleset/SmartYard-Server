@@ -1,8 +1,8 @@
 <?php
 
-namespace utils\SmartConfigurator\DbConfigCollector;
+namespace hw\SmartConfigurator\DbConfigCollector;
 
-use utils\SmartConfigurator\ConfigurationBuilder\CameraConfigurationBuilder;
+use hw\SmartConfigurator\ConfigurationBuilder\CameraConfigurationBuilder;
 
 /**
  * This class is responsible for collecting camera configuration data from the database.

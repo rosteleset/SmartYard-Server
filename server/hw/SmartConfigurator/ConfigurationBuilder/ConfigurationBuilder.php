@@ -1,6 +1,6 @@
 <?php
 
-namespace utils\SmartConfigurator\ConfigurationBuilder;
+namespace hw\SmartConfigurator\ConfigurationBuilder;
 
 /**
  * This abstract class serves as a base for building configurations.

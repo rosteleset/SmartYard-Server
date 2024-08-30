@@ -1,6 +1,6 @@
 <?php
 
-namespace utils\SmartConfigurator\ConfigurationBuilder;
+namespace hw\SmartConfigurator\ConfigurationBuilder;
 
 /**
  * This class is responsible for building camera configuration.
