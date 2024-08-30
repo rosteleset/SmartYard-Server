@@ -1,4 +1,4 @@
-package.path = "/etc/asterisk/?.lua;./live/etc/asterisk/?.lua;/etc/asterisk/lua/?.lua;./live/etc/asterisk/lua/?.lua;./lua/?.lua;" .. package.path
+package.path = "/etc/asterisk/?.lua;./live/etc/asterisk/?.lua;/etc/asterisk/custom/?.lua;./live/etc/asterisk/custom/?.lua;/etc/asterisk/lua/?.lua;./live/etc/asterisk/lua/?.lua;./lua/?.lua;./cusom/?.lua;" .. package.path
 package.cpath = "/usr/lib/lua/5.4/?.so;" .. package.cpath
 
 log = require "log"
@@ -6,7 +6,7 @@ inspect = require "inspect"
 http = require "socket.http"
 ltn12 = require "ltn12"
 cjson = require "cjson"
-md5 = (require 'md5').sumhexa
+md5 = require "md5"
 redis = require "redis"
 
 require "config"
@@ -53,7 +53,7 @@ local function dm(action, request)
     return result
 end
 
-local function log_debug(v)
+local function logDebug(v)
     local m = ""
 
     if channel ~= nil then
@@ -74,33 +74,20 @@ local function log_debug(v)
     --dm("log", m)
 end
 
-local function has_value(tab, val)
-    for index, value in ipairs(tab) do
-        if value == val then
-            return true
-        end
-    end
-    return false
-end
-
-local function replace_char(str, pos, r)
-    return str:sub(1, pos - 1) .. r .. str:sub(pos + 1)
-end
-
 local function checkin()
     local src = channel.CALLERID("num"):get()
     if src:len() == 10 then
         local prefix = tonumber(src:sub(1, 1))
         if prefix == 4 or prefix == 2 then
-            log_debug("abnormal call: yes")
-            app.busy()
+            logDebug("abnormal call: yes")
+            app.Busy()
         end
     end
 end
 
 local function autoopen(flatId, domophoneId)
     if dm("autoopen", flatId) then
-        log_debug("autoopen: yes")
+        logDebug("autoopen: yes")
         app.Wait(2)
         app.Answer()
         app.Wait(1)
@@ -108,14 +95,14 @@ local function autoopen(flatId, domophoneId)
         app.Wait(1)
         return true
     end
-    log_debug("autoopen: no")
+    logDebug("autoopen: no")
     return false
 end
 
 local function blacklist(flatId)
     local flat = dm("flat", flatId)
     if flat.autoBlock > 0 or flat.manualBlock > 0 or flat.adminBlock > 0 then
-        log_debug("blacklist: yes")
+        logDebug("blacklist: yes")
         app.Answer()
         app.Wait(2)
         app.Playback(lang .. "/sorry")
@@ -123,12 +110,12 @@ local function blacklist(flatId)
         app.Wait(1)
         return true
     end
-    log_debug("blacklist: no")
+    logDebug("blacklist: no")
     return false
 end
 
 local function push(token, tokenType, platform, extension, hash, callerId, flatId, dtmf, mobile, flatNumber, domophoneId)
-    log_debug("sending push for: " .. extension .. " [" .. mobile .. "] (" .. tokenType .. ", " .. platform .. ", " .. domophoneId .. ")")
+    logDebug("sending push for: " .. extension .. " [" .. mobile .. "] (" .. tokenType .. ", " .. platform .. ", " .. domophoneId .. ")")
 
     dm("push", {
         token = token,
@@ -151,7 +138,7 @@ local function camshow(domophoneId)
     local hash = channel.HASH:get()
 
     if hash == nil then
-        hash = md5(domophoneId .. os.time())
+        hash = md5.sumhexa(domophoneId .. os.time())
 
         channel.HASH:set(hash)
 
@@ -164,8 +151,8 @@ local function camshow(domophoneId)
     return hash
 end
 
-local function mobile_intercom(flatId, flatNumber, domophoneId)
-    log_debug("mobile intercom: " .. flatId .. ", " .. flatNumber .. ", " .. domophoneId)
+local function mobileIntercom(flatId, flatNumber, domophoneId)
+    logDebug("mobile intercom: " .. flatId .. ", " .. flatNumber .. ", " .. domophoneId)
 
     local extension
     local res = ""
@@ -196,7 +183,7 @@ local function mobile_intercom(flatId, flatNumber, domophoneId)
             end
 
             if flatVoipEnabled == 1 then
-                log_debug(device)
+                logDebug(device)
 
                 redis:incr("autoextension")
                 extension = tonumber(redis:get("autoextension"))
@@ -211,7 +198,7 @@ local function mobile_intercom(flatId, flatNumber, domophoneId)
                     token = device.pushToken
                 end
                 if token ~= cjson.null and token ~= nil and token ~= "" then
-                    redis:setex("turn/realm/" .. realm .. "/user/" .. extension .. "/key", 3 * 60, md5(extension .. ":" .. realm .. ":" .. hash))
+                    redis:setex("turn/realm/" .. realm .. "/user/" .. extension .. "/key", 3 * 60, md5.sumhexa(extension .. ":" .. realm .. ":" .. hash))
                     redis:setex("mobile_extension_" .. extension, 3 * 60, hash)
                     if tonumber(device.tokenType) ~= 1 and tonumber(device.tokenType) ~= 2 then
                         -- not for apple's voips
@@ -246,19 +233,11 @@ local function mobile_intercom(flatId, flatNumber, domophoneId)
     end
 end
 
-local function flat_call(flatId)
-    --
-end
-
-function neighbour(extension)
-    --
-end
-
 -- call to mobile application
 local function handleMobileIntercom(context, extension)
     checkin()
 
-    log_debug("starting loop for: " .. extension)
+    logDebug("starting loop for: " .. extension)
 
     local timeout = os.time() + 35
     local voip_crutch = redis:get("voip_crutch_" .. extension)
@@ -288,13 +267,13 @@ local function handleMobileIntercom(context, extension)
         pjsip_extension = channel.PJSIP_DIAL_CONTACTS(extension):get()
         if pjsip_extension ~= "" and pjsip_extension ~= nil then
             if not skip then
-                log_debug("has registration: " .. extension)
+                logDebug("has registration: " .. extension)
                 skip = true
             end
             app.Dial(pjsip_extension, 35, "g")
             status = channel.DIALSTATUS:get()
             if status == "CHANUNAVAIL" then
-                log_debug(extension .. ': sleeping')
+                logDebug(extension .. ': sleeping')
                 app.Wait(35)
             end
         else
@@ -314,12 +293,12 @@ end
 local function handleCMSIntercom(context, extension)
     checkin()
 
-    log_debug("flat intercom call")
+    logDebug("flat intercom call")
 
     local flatId = tonumber(extension:sub(2))
     local flat = dm("flat", flatId)
 
-    log_debug(flat)
+    logDebug(flat)
 
     if flat then
         local dest = ""
@@ -327,7 +306,7 @@ local function handleCMSIntercom(context, extension)
             if e.apartment > 0 and e.domophoneId > 0 and e.matrix > 0 then
                 dest = dest .. "&PJSIP/" .. string.format("%d@1%05d", e.apartment, e.domophoneId)
                 channel.CALLERID("name"):set(math.floor(e.apartment))
-                log_debug(channel.CALLERID("num"):get() .. " >>> " .. string.format("%d@1%05d", e.apartment, e.domophoneId))
+                logDebug(channel.CALLERID("num"):get() .. " >>> " .. string.format("%d@1%05d", e.apartment, e.domophoneId))
             end
         end
         if dest ~= "" then
@@ -347,7 +326,7 @@ end
 local function handleSIPIntercom(context, extension)
     checkin()
 
-    log_debug("sip intercom call, dialing: " .. extension)
+    logDebug("sip intercom call, dialing: " .. extension)
 
     local dest = channel.PJSIP_DIAL_CONTACTS(extension):get()
     if dest ~= "" and dest ~= nil then
@@ -361,7 +340,7 @@ end
 local function handleMobileApp(context, extension)
     checkin()
 
-    log_debug("mobile intercom test call")
+    logDebug("mobile intercom test call")
 
     app.Answer()
     app.StartMusicOnHold()
@@ -370,13 +349,13 @@ local function handleMobileApp(context, extension)
 
     channel.CALLERID("name"):set("Support")
 
-    local dest = mobile_intercom(flatId, -1, -1)
+    local dest = mobileIntercom(flatId, -1, -1)
 
     if dest and dest ~= "" then
-        log_debug("dialing: " .. dest)
+        logDebug("dialing: " .. dest)
         app.Dial(dest, 120, "m")
     else
-        log_debug("nothing to dial")
+        logDebug("nothing to dial")
     end
 end
 
@@ -384,7 +363,7 @@ end
 local function handleSIPOutdoorIntercom(context, extension)
     checkin()
 
-    log_debug("intercom test call " .. string.format("1%05d", tonumber(extension:sub(2))))
+    logDebug("intercom test call " .. string.format("1%05d", tonumber(extension:sub(2))))
 
     app.Dial("PJSIP/" .. string.format("1%05d", tonumber(extension:sub(2))), 120, "m")
 end
@@ -392,7 +371,7 @@ end
 local function handleSOS()
     checkin()
 
-    log_debug(channel.CALLERID("num"):get() .. " >>> 112")
+    logDebug(channel.CALLERID("num"):get() .. " >>> 112")
 
     app.Answer()
     app.StartMusicOnHold()
@@ -403,7 +382,7 @@ end
 local function handleConcierge()
     checkin()
 
-    log_debug(channel.CALLERID("num"):get() .. " >>> 9999")
+    logDebug(channel.CALLERID("num"):get() .. " >>> 9999")
 
     app.Answer()
     app.StartMusicOnHold()
@@ -416,7 +395,7 @@ local function handleOtherCases(context, extension)
 
     local from = channel.CALLERID("num"):get()
 
-    log_debug("incoming ring from " .. from .. " >>> " .. extension)
+    logDebug("incoming ring from " .. from .. " >>> " .. extension)
 
     local flat
 
@@ -431,7 +410,7 @@ local function handleOtherCases(context, extension)
 
         -- sokol's crutch
         if extension:len() < 5 then
-            log_debug("bad extension, replacing...")
+            logDebug("bad extension, replacing...")
             local flats = dm("apartment", {
                 domophoneId = domophoneId,
                 flatNumber = tonumber(extension),
@@ -443,7 +422,7 @@ local function handleOtherCases(context, extension)
         if extension:len() == 10 and tonumber(extension:sub(1, 1)) == 1 then
             flatId = tonumber(extension:sub(2))
             if flatId ~= nil then
-                log_debug("ordinal call")
+                logDebug("ordinal call")
                 flat = dm("flat", flatId)
                 sipEnabled = flat.sipEnabled
                 for i, e in ipairs(flat.entrances) do
@@ -453,7 +432,7 @@ local function handleOtherCases(context, extension)
                 end
             end
         else
-            log_debug("more than one house, has prefix")
+            logDebug("more than one house, has prefix")
             flatNumber = tonumber(extension:sub(5))
             if flatNumber ~= nil then
                 local flats = dm("flatIdByPrefix", {
@@ -470,16 +449,16 @@ local function handleOtherCases(context, extension)
         end
     end
 
-    log_debug("domophoneId: " .. inspect(domophoneId))
-    log_debug("flatId: " .. inspect(flatId))
-    log_debug("flatNumber: " .. inspect(flatNumber))
-    log_debug("sipEnabled: " .. inspect(sipEnabled))
+    logDebug("domophoneId: " .. inspect(domophoneId))
+    logDebug("flatId: " .. inspect(flatId))
+    logDebug("flatNumber: " .. inspect(flatNumber))
+    logDebug("sipEnabled: " .. inspect(sipEnabled))
 
     if domophoneId and flatId and flatNumber then
-        log_debug("incoming ring from ip panel #" .. domophoneId .. " -> " .. flatId .. " (" .. flatNumber .. ")")
+        logDebug("incoming ring from ip panel #" .. domophoneId .. " -> " .. flatId .. " (" .. flatNumber .. ")")
 
         local entrance = dm("entrance", domophoneId)
-        log_debug("entrance: " .. inspect(entrance))
+        logDebug("entrance: " .. inspect(entrance))
 
         channel.CALLERID("name"):set(entrance.callerId .. ", " .. math.floor(flatNumber))
 
@@ -503,7 +482,7 @@ local function handleOtherCases(context, extension)
             end
 
             -- application(s) (mobile intercom(s))
-            local mi = mobile_intercom(flatId, flatNumber, domophoneId)
+            local mi = mobileIntercom(flatId, flatNumber, domophoneId)
             if mi then
                 dest = dest .. "&" .. mi
             end
@@ -518,14 +497,14 @@ local function handleOtherCases(context, extension)
             end
 
             if dest ~= "" then
-                log_debug("dialing: " .. dest)
+                logDebug("dialing: " .. dest)
                 app.Dial(dest, 120)
             else
-                log_debug("nothing to dial")
+                logDebug("nothing to dial")
             end
         end
     else
-        log_debug("something wrong, going out")
+        logDebug("something wrong, going out")
     end
 
     app.Hangup()
@@ -552,7 +531,7 @@ local function handleCallTermination(context, extension)
         token = "none"
     end
 
-    log_debug("call ended: " .. src .. " >>> " .. channel.CDR("dst"):get() .. ", channel status: " .. status .. ", hash: " .. hash .. ", token: " .. token)
+    logDebug("call ended: " .. src .. " >>> " .. channel.CDR("dst"):get() .. ", channel status: " .. status .. ", hash: " .. hash .. ", token: " .. token)
 end
 
 extensions = {
