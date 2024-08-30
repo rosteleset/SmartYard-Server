@@ -1,6 +1,19 @@
 <?php
 
     /**
+     * @api {get} /api/cameras/cameras get cameras, models and servers
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName cameras
+     * @apiGroup cameras
+     *
+     * @apiHeader {String} token authentication token
+     *
+     * @apiSuccess {Object[]} cameras
+     */
+
+    /**
      * cameras api
      */
 

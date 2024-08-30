@@ -1,6 +1,92 @@
 <?php
 
     /**
+     * @api {post} /api/cameras/camera create camera
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName addCamera
+     * @apiGroup cameras
+     *
+     * @apiHeader {String} token authentication token
+     *
+     * @apiBody {Boolean} enabled
+     * @apiBody {String} model
+     * @apiBody {String} url
+     * @apiBody {String} stream
+     * @apiBody {String} credentials
+     * @apiBody {String} name
+     * @apiBody {String} dvrStream
+     * @apiBody {String} timezone
+     * @apiBody {Number} lat
+     * @apiBody {Number} lon
+     * @apiBody {Number} direction
+     * @apiBody {Number} angle
+     * @apiBody {Number} distance
+     * @apiBody {String} frs
+     * @apiBody {Number} mdLeft
+     * @apiBody {Number} mdTop
+     * @apiBody {Number} mdWidth
+     * @apiBody {Number} mdHeight
+     * @apiBody {Boolean} common
+     * @apiBody {String} comments
+     * @apiBody {Boolean} sound
+     *
+     * @apiSuccess {Number} cameraId
+     */
+
+    /**
+     * @api {put} /api/cameras/camera/:cameraId modify camera
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName modifyCamera
+     * @apiGroup cameras
+     *
+     * @apiHeader {String} token authentication token
+     *
+     * @apiParam {Number} cameraId
+     * @apiBody {Boolean} enabled
+     * @apiBody {String} model
+     * @apiBody {String} url
+     * @apiBody {String} stream
+     * @apiBody {String} credentials
+     * @apiBody {String} name
+     * @apiBody {String} dvrStream
+     * @apiBody {String} timezone
+     * @apiBody {Number} lat
+     * @apiBody {Number} lon
+     * @apiBody {Number} direction
+     * @apiBody {Number} angle
+     * @apiBody {Number} distance
+     * @apiBody {String} frs
+     * @apiBody {Number} mdLeft
+     * @apiBody {Number} mdTop
+     * @apiBody {Number} mdWidth
+     * @apiBody {Number} mdHeight
+     * @apiBody {Boolean} common
+     * @apiBody {String} comments
+     * @apiBody {Boolean} sound
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
+     * @api {post} /api/cameras/camera/:cameraId delete camera
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName deleteCamera
+     * @apiGroup cameras
+     *
+     * @apiHeader {String} token authentication token
+     *
+     * @apiParam {Number} cameraId
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
      * cameras api
      */
 
@@ -17,7 +103,7 @@
             public static function POST($params) {
                 $cameras = loadBackend("cameras");
 
-                $cameraId = $cameras->addCamera($params["enabled"], $params["model"], $params["url"], $params["stream"], $params["credentials"], $params["name"], $params["dvrStream"], $params["timezone"], $params["lat"], $params["lon"], $params["direction"], $params["angle"], $params["distance"], $params["frs"], $params["mdLeft"], $params["mdTop"], $params["mdWidth"], $params["mdHeight"], $params["common"], $params["comments"], $params['sound']);
+                $cameraId = $cameras->addCamera($params["enabled"], $params["model"], $params["url"], $params["stream"], $params["credentials"], $params["name"], $params["dvrStream"], $params["timezone"], $params["lat"], $params["lon"], $params["direction"], $params["angle"], $params["distance"], $params["frs"], $params["mdLeft"], $params["mdTop"], $params["mdWidth"], $params["mdHeight"], $params["common"], $params["comments"], $params["sound"]);
 
                 return api::ANSWER($cameraId, ($cameraId !== false)?"cameraId":false);
             }
