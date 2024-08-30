@@ -1,6 +1,66 @@
 <?php
 
     /**
+     * @api {put} /api/addresses/city:cityId update city
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName updateCity
+     * @apiGroup addresses
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {Number} [cityId] cityId
+     * @apiBody {Number} regionId
+     * @apiBody {Number} areaId
+     * @apiBody {String} cityUuid
+     * @apiBody {String} cityWithType
+     * @apiBody {String} cityType
+     * @apiBody {String} cityTypeFull
+     * @apiBody {String} city
+     * @apiBody {String} timezone
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
+     * @api {post} /api/addresses/city create city
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName createCity
+     * @apiGroup addresses
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiBody {Number} regionId
+     * @apiBody {Number} areaId
+     * @apiBody {String} cityUuid
+     * @apiBody {String} cityWithType
+     * @apiBody {String} cityType
+     * @apiBody {String} cityTypeFull
+     * @apiBody {String} city
+     * @apiBody {String} timezone
+     *
+     * @apiSuccess {Number} cityId
+     */
+
+    /**
+     * @api {delete} /api/addresses/city:cityId delete city
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName deleteCity
+     * @apiGroup addresses
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {Number} [cityId] cityId
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
      * addresses api
      */
 

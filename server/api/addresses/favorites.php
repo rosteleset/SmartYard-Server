@@ -1,6 +1,54 @@
 <?php
 
     /**
+     * @api {get} /api/addresses/favorites get favorites list
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName getFavorites
+     * @apiGroup addresses
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiSuccess {Array} favorites
+     */
+
+    /**
+     * @api {POST} /api/addresses/favorites add favorite
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName addFavorite
+     * @apiGroup addresses
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiBody {String="area,region,city,settlement,street,house"} object
+     * @apiBody {Number} id
+     * @apiBody {String} title
+     * @apiBody {String} icon
+     * @apiBody {String} color
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
+     * @api {DELETE} /api/addresses/favorites delete favorite
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName deleteFavorite
+     * @apiGroup addresses
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiBody {String="area,region,city,settlement,street,house"} object
+     * @apiBody {Number} id
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
      * addresses api
      */
 

@@ -11,7 +11,7 @@
      * @apiHeader {String} authorization authentication token
      *
      * @apiParam {Number} [areaId] regionId
-     * @apiBody {String} regionId
+     * @apiBody {Number} regionId
      * @apiBody {String} areaUuid
      * @apiBody {String} areaWithType
      * @apiBody {String} areaType
@@ -19,7 +19,7 @@
      * @apiBody {String} area
      * @apiBody {String} timezone
      *
-     * @apiSuccess {Boolean} list of address objects
+     * @apiSuccess {Boolean} operationResult
      */
 
     /**
@@ -32,7 +32,7 @@
      *
      * @apiHeader {String} authorization authentication token
      *
-     * @apiBody {String} regionId
+     * @apiBody {Number} regionId
      * @apiBody {String} areaUuid
      * @apiBody {String} areaWithType
      * @apiBody {String} areaType
@@ -40,7 +40,7 @@
      * @apiBody {String} area
      * @apiBody {String} timezone
      *
-     * @apiSuccess {Boolean} list of address objects
+     * @apiSuccess {Number} areaId
      */
 
     /**
@@ -53,9 +53,9 @@
      *
      * @apiHeader {String} authorization authentication token
      *
-     * @apiParam {Number} [areaId] regionId
+     * @apiParam {Number} [areaId] areaId
      *
-     * @apiSuccess {Boolean} list of address objects
+     * @apiSuccess {Boolean} operationResult
      */
 
     /**
