@@ -566,3 +566,9 @@ extensions = {
         [ "h" ] = handleCallTermination,
     },
 }
+
+if custom ~= nil then
+    for i, c in ipairs(custom) do
+        require(c)
+    end
+end
