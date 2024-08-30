@@ -1,6 +1,21 @@
 <?php
 
     /**
+     * @api {post} /api/authentication/two_fa two_fa request and confirm
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName two_fa
+     * @apiGroup authentication
+     *
+     * @apiHeader {String} token authentication token
+     *
+     * @apiBody {String} [oneCode]
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
      * authentication api
      */
 

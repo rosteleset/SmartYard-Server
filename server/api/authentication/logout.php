@@ -10,7 +10,7 @@
      *
      * @apiHeader {String} token authentication token
      *
-     * @apiBody {String=all,this} [mode=this] logout all
+     * @apiBody {String=all,this} [mode=all] logout all
      */
 
     /**

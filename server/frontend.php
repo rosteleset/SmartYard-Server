@@ -175,7 +175,7 @@
     ];
 
     $params["_request_method"] = @$_SERVER['REQUEST_METHOD'];
-    $params["ua"] = @$_SERVER["HTTP_USER_AGENT"];
+    $params["_ua"] = @$_SERVER["HTTP_USER_AGENT"];
 
     $clearCache = false;
 

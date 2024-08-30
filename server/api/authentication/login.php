@@ -1,6 +1,23 @@
 <?php
 
     /**
+     * @api {post} /api/authentication/login login
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName login
+     * @apiGroup authentication
+     *
+     * @apiBody {String} login
+     * @apiBody {String} password
+     * @apiBody {String} rememberMe
+     * @apiBody {String} did
+     * @apiBody {String} [oneCode]
+     *
+     * @apiSuccess {Object} login or otp results
+     */
+
+    /**
      * authentication api
      */
 
@@ -16,7 +33,7 @@
 
             public static function POST($params) {
 
-                $auth = $params["_backends"]["authentication"]->login($params["login"], $params["password"], $params["rememberMe"] && $params["ua"] && $params["did"], trim($params["ua"]), trim($params["did"]), $params["_ip"], @$params["oneCode"]);
+                $auth = $params["_backends"]["authentication"]->login($params["login"], $params["password"], $params["rememberMe"] && $params["_ua"] && $params["did"], trim($params["ua"]), trim($params["did"]), $params["_ip"], @$params["oneCode"]);
 
                 if ($auth && @$auth["otp"]) {
                     return [
