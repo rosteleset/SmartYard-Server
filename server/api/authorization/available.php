@@ -1,6 +1,6 @@
 <?php
 
-/**
+    /**
      * @api {get} /api/authorization/available available methods
      *
      * @apiVersion 1.0.0
@@ -10,7 +10,7 @@
      *
      * @apiHeader {String} token authentication token
      *
-     * @apiSuccess {Array} available list of available methods
+     * @apiSuccess {Object} available list of available methods
      */
 
     /**

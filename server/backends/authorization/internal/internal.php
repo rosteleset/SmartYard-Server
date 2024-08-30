@@ -305,8 +305,8 @@
                     $deny = [ $deny ];
                 }
 
-                $tn = $user?"core_users_rights":"core_groups_rights";
-                $ci = $user?"uid":"gid";
+                $tn = $user ? "core_users_rights" : "core_groups_rights";
+                $ci = $user ? "uid" : "gid";
 
                 try {
                     $sth = $this->db->prepare("delete from $tn where aid in (select aid from core_api_methods where api = :api and method = :method and $ci = $id)");

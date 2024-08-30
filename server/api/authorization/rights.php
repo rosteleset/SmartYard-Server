@@ -5,10 +5,12 @@
      *
      * @apiVersion 1.0.0
      *
-     * @apiName rights
+     * @apiName getRights
      * @apiGroup authorization
      *
      * @apiHeader {String} token authentication token
+     *
+     * @apiSuccess {Object} rights
      */
 
     /**
@@ -16,10 +18,19 @@
      *
      * @apiVersion 1.0.0
      *
-     * @apiName rights
+     * @apiName setRights
      * @apiGroup authorization
      *
      * @apiHeader {String} token authentication token
+     *
+     * @apiBody {Boolean} user
+     * @apiBody {Number} id uid or gid
+     * @apiBody {String} api
+     * @apiBody {String} method
+     * @apiBody {String[]="GET,POST,PUT,DELETE"} allow
+     * @apiBody {String[]="GET,POST,PUT,DELETE"} deny
+     *
+     * @apiSuccess {Boolean} operationResult
      */
 
     /**
@@ -43,7 +54,7 @@
             }
 
             public static function POST($params) {
-                $success = $params["_backends"]["authorization"]->setRights($params["user"], $params["user"]?$params["uid"]:$params["gid"], $params["api"], $params["method"], $params["allow"], $params["deny"]);
+                $success = $params["_backends"]["authorization"]->setRights($params["user"], $params["user"] ? $params["uid"] : $params["gid"], $params["api"], $params["method"], $params["allow"], $params["deny"]);
 
                 return api::ANSWER($success, ($success !== false) ? false : "unknown");
             }
