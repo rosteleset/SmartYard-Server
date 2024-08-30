@@ -3,7 +3,7 @@
 namespace hw\ip\domophone;
 
 use hw\ip\ip;
-use utils\SmartConfigurator\ConfigurationBuilder\DomophoneConfigurationBuilder;
+use hw\SmartConfigurator\ConfigurationBuilder\DomophoneConfigurationBuilder;
 
 /**
  * Abstract class representing a domophone.

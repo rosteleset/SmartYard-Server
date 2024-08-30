@@ -1,8 +1,8 @@
 <?php
 
-namespace utils\SmartConfigurator;
+namespace hw\SmartConfigurator;
 
-use utils\SmartConfigurator\DbConfigCollector\IDbConfigCollector;
+use hw\SmartConfigurator\DbConfigCollector\IDbConfigCollector;
 
 class SmartConfigurator
 {

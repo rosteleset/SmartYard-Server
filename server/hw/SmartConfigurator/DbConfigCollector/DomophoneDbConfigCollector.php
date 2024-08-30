@@ -1,12 +1,12 @@
 <?php
 
-namespace utils\SmartConfigurator\DbConfigCollector;
+namespace hw\SmartConfigurator\DbConfigCollector;
 
 use backends\addresses\addresses;
 use backends\configs\configs;
 use backends\households\households;
 use backends\sip\sip;
-use utils\SmartConfigurator\ConfigurationBuilder\DomophoneConfigurationBuilder;
+use hw\SmartConfigurator\ConfigurationBuilder\DomophoneConfigurationBuilder;
 
 class DomophoneDbConfigCollector implements IDbConfigCollector
 {

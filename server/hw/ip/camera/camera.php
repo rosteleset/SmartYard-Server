@@ -3,7 +3,7 @@
 namespace hw\ip\camera;
 
 use hw\ip\ip;
-use utils\SmartConfigurator\ConfigurationBuilder\CameraConfigurationBuilder;
+use hw\SmartConfigurator\ConfigurationBuilder\CameraConfigurationBuilder;
 
 /**
  * Abstract class representing a camera.
