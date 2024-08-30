@@ -939,6 +939,7 @@
             /**
              * @inheritDoc
              */
+
             public function addDomophone($enabled, $model, $server, $url,  $credentials, $dtmf, $nat, $comments, $name)
             {
                 if (!$model) {
@@ -985,13 +986,15 @@
                     "name" => $name,
                 ]);
 
-                $queue = loadBackend("queue");
-                if ($queue) {
-                    $queue->changed("domophone", $domophoneId);
-                }
+                if ($domophoneId) {
+                    $queue = loadBackend("queue");
+                    if ($queue) {
+                        $queue->changed("domophone", $domophoneId);
+                    }
 
-                // for SPUTNIK
-                $this->updateDeviceIds($domophoneId, $model, $url, $credentials);
+                    // for SPUTNIK
+                    $this->updateDeviceIds($domophoneId, $model, $url, $credentials);
+                }
 
                 return $domophoneId;
             }
@@ -2096,8 +2099,7 @@
                     $device = loadDevice('domophone', $model, $url, $credentials);
 
                     if ($device) {
-                        $query = "update houses_domophones set sub_id = :sub_id where house_domophone_id = " . $deviceId;
-                        $this->db->modify($query, [
+                        $this->db->modify("update houses_domophones set sub_id = :sub_id where house_domophone_id = " . $deviceId, [
                             "sub_id" => $device->uuid
                         ]);
                     }
@@ -2105,8 +2107,7 @@
                     $ip = gethostbyname(parse_url($url, PHP_URL_HOST));
 
                     if (filter_var($ip, FILTER_VALIDATE_IP) !== false) {
-                        $query = "update houses_domophones set ip = :ip where house_domophone_id = " . $deviceId;
-                        $this->db->modify($query, [
+                        $this->db->modify("update houses_domophones set ip = :ip where house_domophone_id = " . $deviceId, [
                             "ip" => $ip
                         ]);
                     }

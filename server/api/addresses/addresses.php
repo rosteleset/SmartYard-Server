@@ -16,7 +16,7 @@
      * @apiBody {Number} [settlementId] settlementId
      * @apiBody {Number} [streetId] streetId
      * @apiBody {Number} [houseId] houseId
-     * @apiBody {String} [include="regions,areas,cities,settlements,streets,houses"] include parent objects
+     * @apiBody {String} [include="regions,areas,cities,settlements,streets,houses"] include objects
      *
      * @apiSuccess {Object} list of address objects
      */
