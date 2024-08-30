@@ -20,7 +20,7 @@ if redis_server_auth and redis_server_auth ~= nil then
     redis:auth(redis_server_auth)
 end
 
-local function dm(action, request)
+function dm(action, request)
     local body = {}
 
     if not request then
@@ -53,7 +53,7 @@ local function dm(action, request)
     return result
 end
 
-local function logDebug(v)
+function logDebug(v)
     local m = ""
 
     if channel ~= nil then
@@ -74,7 +74,7 @@ local function logDebug(v)
     --dm("log", m)
 end
 
-local function checkin()
+function checkin()
     local src = channel.CALLERID("num"):get()
     if src:len() == 10 then
         local prefix = tonumber(src:sub(1, 1))
@@ -85,7 +85,7 @@ local function checkin()
     end
 end
 
-local function autoopen(flatId, domophoneId)
+function autoopen(flatId, domophoneId)
     if dm("autoopen", flatId) then
         logDebug("autoopen: yes")
         app.Wait(2)
@@ -99,7 +99,7 @@ local function autoopen(flatId, domophoneId)
     return false
 end
 
-local function blacklist(flatId)
+function blacklist(flatId)
     local flat = dm("flat", flatId)
     if flat.autoBlock > 0 or flat.manualBlock > 0 or flat.adminBlock > 0 then
         logDebug("blacklist: yes")
@@ -114,7 +114,7 @@ local function blacklist(flatId)
     return false
 end
 
-local function push(token, tokenType, platform, extension, hash, callerId, flatId, dtmf, mobile, flatNumber, domophoneId)
+function push(token, tokenType, platform, extension, hash, callerId, flatId, dtmf, mobile, flatNumber, domophoneId)
     logDebug("sending push for: " .. extension .. " [" .. mobile .. "] (" .. tokenType .. ", " .. platform .. ", " .. domophoneId .. ")")
 
     dm("push", {
@@ -134,7 +134,7 @@ local function push(token, tokenType, platform, extension, hash, callerId, flatI
     })
 end
 
-local function camshow(domophoneId)
+function camshow(domophoneId)
     local hash = channel.HASH:get()
 
     if hash == nil then
@@ -151,7 +151,7 @@ local function camshow(domophoneId)
     return hash
 end
 
-local function mobileIntercom(flatId, flatNumber, domophoneId)
+function mobileIntercom(flatId, flatNumber, domophoneId)
     logDebug("mobile intercom: " .. flatId .. ", " .. flatNumber .. ", " .. domophoneId)
 
     local extension
@@ -234,7 +234,7 @@ local function mobileIntercom(flatId, flatNumber, domophoneId)
 end
 
 -- call to mobile application
-local function handleMobileIntercom(context, extension)
+function handleMobileIntercom(context, extension)
     checkin()
 
     logDebug("starting loop for: " .. extension)
@@ -290,7 +290,7 @@ local function handleMobileIntercom(context, extension)
 end
 
 -- Call to CMS intercom
-local function handleCMSIntercom(context, extension)
+function handleCMSIntercom(context, extension)
     checkin()
 
     logDebug("flat intercom call")
@@ -323,7 +323,7 @@ local function handleCMSIntercom(context, extension)
 end
 
 -- Call to client SIP intercom
-local function handleSIPIntercom(context, extension)
+function handleSIPIntercom(context, extension)
     checkin()
 
     logDebug("sip intercom call, dialing: " .. extension)
@@ -337,7 +337,7 @@ local function handleSIPIntercom(context, extension)
 end
 
 -- from "PSTN" to mobile application call (for testing)
-local function handleMobileApp(context, extension)
+function handleMobileApp(context, extension)
     checkin()
 
     logDebug("mobile intercom test call")
@@ -360,7 +360,7 @@ local function handleMobileApp(context, extension)
 end
 
 -- panel's call
-local function handleSIPOutdoorIntercom(context, extension)
+function handleSIPOutdoorIntercom(context, extension)
     checkin()
 
     logDebug("intercom test call " .. string.format("1%05d", tonumber(extension:sub(2))))
@@ -368,7 +368,7 @@ local function handleSIPOutdoorIntercom(context, extension)
     app.Dial("PJSIP/" .. string.format("1%05d", tonumber(extension:sub(2))), 120, "m")
 end
 
-local function handleSOS()
+function handleSOS()
     checkin()
 
     logDebug(channel.CALLERID("num"):get() .. " >>> 112")
@@ -379,7 +379,7 @@ local function handleSOS()
 end
 
 -- concierge call
-local function handleConcierge()
+function handleConcierge()
     checkin()
 
     logDebug(channel.CALLERID("num"):get() .. " >>> 9999")
@@ -390,7 +390,7 @@ local function handleConcierge()
 end
 
 -- all others
-local function handleOtherCases(context, extension)
+function handleOtherCases(context, extension)
     checkin()
 
     local from = channel.CALLERID("num"):get()
@@ -511,7 +511,7 @@ local function handleOtherCases(context, extension)
 end
 
 -- terminate active call
-local function handleCallTermination(context, extension)
+function handleCallTermination(context, extension)
     local src = channel.CDR("src"):get()
     local status = channel.DIALSTATUS:get()
 
