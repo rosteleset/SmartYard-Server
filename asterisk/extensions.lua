@@ -535,7 +535,6 @@ function handleCallTermination(context, extension)
 end
 
 extensions = {
-
     [ "default" ] = {
 
         -- call to mobile application
