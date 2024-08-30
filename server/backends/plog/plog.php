@@ -86,7 +86,7 @@
              * @param false|int $event_id идентификатор события FRS
              * @return false|object
              */
-            abstract public function getCamshot(int $domophone_id, $date, $event_id = false);
+            abstract public function getCamshot(int $domophone_id, int $output, $date, $event_id = false);
 
             /**
              * Добавить данные открытия двери для последующего формирования события
