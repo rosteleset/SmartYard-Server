@@ -1,6 +1,19 @@
 <?php
 
     /**
+     * @api {get} /api/companies/companies get companies
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName companies
+     * @apiGroup companies
+     *
+     * @apiHeader {String} token authentication token
+     *
+     * @apiSuccess {Object[]} companies
+     */
+
+    /**
      * companies api
      */
 
@@ -23,7 +36,7 @@
                     $list = $companies->getCompanies();
                 }
 
-                return api::ANSWER($list, ($list !== false)?"companies":"notFound");
+                return api::ANSWER($list, ($list !== false) ? "companies" : "notFound");
             }
 
             public static function index() {

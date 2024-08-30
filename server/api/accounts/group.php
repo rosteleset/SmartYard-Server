@@ -45,6 +45,8 @@
      * @apiBody {String} acronym group acronym
      * @apiBody {String} name group name
      * @apiBody {Number} admin group admin uid
+     *
+     * @apiSuccess {Boolean} operationResult
      */
 
     /**
@@ -58,6 +60,8 @@
      * @apiHeader {String} authorization authentication token
      *
      * @apiParam {Number} gid group id
+     *
+     * @apiSuccess {Boolean} operationResult
      */
 
     /**

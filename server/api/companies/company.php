@@ -1,6 +1,74 @@
 <?php
 
     /**
+     * @api {get} /api/companies/company/:companyId get company
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName getCompany
+     * @apiGroup companies
+     *
+     * @apiHeader {String} token authentication token
+     *
+     * @apiParam {Number} companyId
+     *
+     * @apiSuccess {Object} company
+     */
+
+    /**
+     * @api {post} /api/companies/company create company
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName addCompany
+     * @apiGroup companies
+     *
+     * @apiHeader {String} token authentication token
+     *
+     * @apiBody {String} type
+     * @apiBody {String} uid
+     * @apiBody {String} name
+     * @apiBody {String} contacts
+     * @apiBody {String} comments
+     *
+     * @apiSuccess {Number} companyId
+     */
+
+    /**
+     * @api {put} /api/companies/company/:companyId modify company
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName modifyCompany
+     * @apiGroup companies
+     *
+     * @apiHeader {String} token authentication token
+     *
+     * @apiParam {Number} companyId
+     * @apiBody {String} uid
+     * @apiBody {String} name
+     * @apiBody {String} contacts
+     * @apiBody {String} comments
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
+     * @api {delete} /api/companies/company/:companyId delete company
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName deleteCompany
+     * @apiGroup companies
+     *
+     * @apiHeader {String} token authentication token
+     *
+     * @apiParam {Number} companyId
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
      * companies api
      */
 
