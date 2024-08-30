@@ -23,7 +23,7 @@
                     $answer = $custom->GET($params);
                 }
 
-                return api::ANSWER($answer, ($answer !== false)?"custom":false);
+                return api::ANSWER($answer, ($answer !== false) ? "custom" : false);
             }
 
             public static function POST($params) {
@@ -35,7 +35,7 @@
                     $answer = $custom->POST($params);
                 }
 
-                return api::ANSWER($answer, ($answer !== false)?"custom":false);
+                return api::ANSWER($answer, ($answer !== false) ? "custom" : false);
             }
 
             public static function PUT($params) {
@@ -47,7 +47,7 @@
                     $answer = $custom->PUT($params);
                 }
 
-                return api::ANSWER($answer, ($answer !== false)?"custom":false);
+                return api::ANSWER($answer, ($answer !== false) ? "custom" : false);
             }
 
             public static function DELETE($params) {
@@ -59,7 +59,7 @@
                     $answer = $custom->DELETE($params);
                 }
 
-                return api::ANSWER($answer, ($answer !== false)?"custom":false);
+                return api::ANSWER($answer, ($answer !== false) ? "custom" : false);
             }
 
             public static function index() {

@@ -21,7 +21,7 @@
                     "FRSServers" => $frs->servers(),
                 ];
 
-                return api::ANSWER($sections, ($sections !== false)?"sections":false);
+                return api::ANSWER($sections, ($sections !== false) ? "sections" : false);
             }
 
             public static function index() {
