@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {get} /accounts/groupUsers/:gid get group users
+     * @api {get} /api/accounts/groupUsers/:gid get group users
      *
      * @apiVersion 1.0.0
      *
@@ -13,25 +13,10 @@
      * @apiParam {Number} gid gid
      *
      * @apiSuccess {Object[]} groups groups
-     *
-     * @apiSuccessExample Success-Response:
-     *  HTTP/1.1 200 OK
-     *  {
-     *      "users": [
-     *          {
-     *              "uid": 1,
-     *              "realName": "Mikhail",
-     *              "login": "mmikel",
-     *          }
-     *      ]
-     *  }
-     *
-     * @apiExample {curl} Example usage:
-     *  curl http://127.0.0.1:8000/server/api.php/accounts/groupUsers/
      */
 
     /**
-     * @api {put} /accounts/groupUsers/:gid set group users
+     * @api {put} /api/accounts/groupUsers/:gid set group users
      *
      * @apiVersion 1.0.0
      *
@@ -41,15 +26,7 @@
      * @apiHeader {String} authorization authentication token
      *
      * @apiParam {Number} gid gid
-     * @apiParam {Number[]} uids uids
-     *
-     * @apiSuccessExample Success-Response:
-     *  HTTP/1.1 204 OK
-     *
-     * @apiExample {curl} Example usage:
-     *  curl -X PUT http://127.0.0.1:8000/server/api.php/accounts/setGroupUsers/
-     *      -H 'Content-Type: application/json' \
-     *      -d '[1, 2, 3]'
+     * @apiBody {Number[]} uids uids
      */
 
     /**
@@ -98,4 +75,3 @@
             }
         }
     }
-

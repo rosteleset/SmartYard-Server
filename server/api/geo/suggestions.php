@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {get} /geo/suggestions get geo suggestions for address
+     * @api {get} /api/geo/suggestions get geo suggestions for address
      *
      * @apiVersion 1.0.0
      *
@@ -10,18 +10,9 @@
      *
      * @apiHeader {String} authorization authentication token
      *
-     * @apiParam {String} search address
+     * @apiQuery {String} search address
      *
      * @apiSuccess {Object[]} suggestions
-     *
-     * @apiSuccessExample Success-Response:
-     *  HTTP/1.1 200 OK
-     *  {
-     *      "suggestions": [ ]
-     *  }
-     *
-     * @apiExample {curl} Example usage:
-     *  curl -X GET http://127.0.0.1:8000/server/api.php/geo/suggestions?search=<query>
      */
 
     /**

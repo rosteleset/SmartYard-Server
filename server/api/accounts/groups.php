@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {get} /accounts/groups get groups
+     * @api {get} /api/accounts/groups get groups
      *
      * @apiVersion 1.0.0
      *
@@ -11,20 +11,6 @@
      * @apiHeader {String} authorization authentication token
      *
      * @apiSuccess {Object[]} groups groups
-     *
-     * @apiSuccessExample Success-Response:
-     *  HTTP/1.1 200 OK
-     *  {
-     *      "groups": [
-     *          {
-     *              "gid": 1,
-     *              "groupName": "Group name",
-     *          }
-     *      ]
-     *  }
-     *
-     * @apiExample {curl} Example usage:
-     *  curl http://127.0.0.1:8000/server/api.php/accounts/groups
      */
 
     /**
@@ -43,7 +29,7 @@
 
             public static function GET($params) {
                 $groups = loadBackend("groups");
-                
+
                 if ($groups) {
                     $groups = $groups->getGroups(false);
                 }
@@ -62,4 +48,3 @@
             }
         }
     }
-

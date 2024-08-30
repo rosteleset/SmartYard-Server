@@ -1,14 +1,14 @@
 <?php
 
     /**
-     * @api {get} /authorization/methods get all methods available on server
+     * @api {get} /api/authorization/methods get all methods available on server
      *
      * @apiVersion 1.0.0
      *
      * @apiName methods
      * @apiGroup authorization
      *
-     * @apiHeader {string} token authentication token
+     * @apiHeader {String} token authentication token
      */
 
     /**

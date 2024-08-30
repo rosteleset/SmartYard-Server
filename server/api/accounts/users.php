@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {get} /accounts/users get users
+     * @api {get} /api/accounts/users get users
      *
      * @apiVersion 1.0.0
      *
@@ -9,31 +9,6 @@
      * @apiGroup users
      *
      * @apiHeader {String} authorization authentication token
-     *
-     * @apiError forbidden access denied
-     *
-     * @apiErrorExample Error-Response:
-     *  HTTP/1.1 404 Not Found
-     *  {
-     *      "error": "userNotFound"
-     *  }
-     *
-     * @apiSuccess {Object[]} users array of users
-     *
-     * @apiSuccessExample Success-Response:
-     *  HTTP/1.1 200 OK
-     *  {
-     *      "users": [
-     *          {
-     *              "uid": 1,
-     *              "login": "my_loggin",
-     *              "realName": "my_real_name"
-     *          }
-     *      ]
-     *  }
-     *
-     * @apiExample {curl} Example usage:
-     *  curl http://127.0.0.1:8000/server/api.php/accounts/users
      */
 
     /**
@@ -63,4 +38,3 @@
             }
         }
     }
-

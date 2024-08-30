@@ -1,6 +1,7 @@
 ---
 language: ru
 api:
+  api: https://example.com/api
   frontend: https://example.com/frontend
   asterisk: http://127.0.0.1/asterisk
   internal: http://127.0.0.1/internal
@@ -13,8 +14,7 @@ mobile:
   city_cams: false
   support_phone: "+7(4752)429999"
   chat: true
-  chat_url: "<!-- your chat url or remove it and use talkMe by default with options
-    below--!>"
+  chat_url: "<!-- your chat url or remove it and use talkMe by default with options below--!>"
   talk_me_id: "<!-- put your talkMe chat id here --!>"
   talk_me_domain: "<!-- put your talkMe chat domain id here --!>"
   talk_me_token: "<!-- put your talkMe chat rest Api Token here --!>"

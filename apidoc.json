@@ -4,5 +4,8 @@
     "header": {
         "title": "Project description",
         "filename": "readme.md"
+    },
+    "template": {
+        "forceLanguage": "en"
     }
 }

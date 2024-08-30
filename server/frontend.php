@@ -135,16 +135,27 @@
         ]);
     }
 
-    $path = explode("?", $_SERVER["REQUEST_URI"])[0];
+    $request = explode("?", $_SERVER["REQUEST_URI"])[0];
 
-    $server = parse_url($config["api"]["frontend"]);
+    $frontend = parse_url(@$config["api"]["frontend"]);
+    $api = parse_url(@$config["api"]["api"]);
 
-    if ($server && $server['path']) {
-        $path = substr($path, strlen($server['path']));
+    $path = "";
+
+    if ($frontend && $frontend['path'] && strpos($request, $frontend["path"]) === 0) {
+        $path = substr($request, strlen($frontend['path']));
+    }
+
+    if ($api && $api['path'] && strpos($request, $api["path"]) === 0) {
+        $path = substr($request, strlen($api['path']));
     }
 
     if ($path && $path[0] == '/') {
         $path = substr($path, 1);
+    }
+
+    if (!$path) {
+        response(403);
     }
 
     $m = explode('/', $path);

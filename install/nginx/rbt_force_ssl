@@ -70,6 +70,10 @@ server {
                 rewrite ^.*$ /frontend.php last;
         }
 
+        location /api {
+                rewrite ^.*$ /frontend.php last;
+        }
+
         location = /frontend.php {
                 root /opt/rbt/server;
                 include snippets/fastcgi-php.conf;

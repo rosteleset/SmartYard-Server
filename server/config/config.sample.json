@@ -2,6 +2,7 @@
     "language": "ru",
 
     "api": {
+        "api": "https://example.com/api",
         "frontend": "https://example.com/frontend",
         "asterisk": "http://127.0.0.1/asterisk",
         "internal": "http://127.0.0.1/internal",
