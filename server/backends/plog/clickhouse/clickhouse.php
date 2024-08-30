@@ -65,13 +65,13 @@
             /**
              * @inheritDoc
              */
-            public function getCamshot($domophone_id, $date, $event_id = false)
+            public function getCamshot($domophone_id, $output, $date, $event_id = false)
             {
                 $files = loadBackend('files');
                 $camshot_data = [];
 
                 $households = loadBackend("households");
-                $entrances = $households->getEntrances("domophoneId", [ "domophoneId" => $domophone_id, "output" => "0" ]);
+                $entrances = $households->getEntrances("domophoneId", [ "domophoneId" => $domophone_id, "output" => $output ]);
                 if ($entrances && $entrances[0]) {
                     $cameras = $households->getCameras("id", $entrances[0]["cameraId"]);
                     if ($cameras && $cameras[0]) {
@@ -515,7 +515,7 @@
                     $flat_list = [];
                     unset($face_id);
 
-                    ['date' => $plog_date, 'ip' => $ip, 'sub_id' => $sub_id] = $row;
+                    ['date' => $plog_date, 'ip' => $ip, 'sub_id' => $sub_id, 'door' => $output] = $row;
 
                     $domophone_id = $this->getDomophoneIdByIp($ip) ?? $this->getDomophoneIdBySubId($sub_id);
                     $event_type = (int)$row['event'];
@@ -579,7 +579,7 @@
                     }
 
                     //получение кадра события
-                    $image_data = $this->getCamshot($domophone_id, $plog_date, $event_id);
+                    $image_data = $this->getCamshot($domophone_id, $output, $plog_date, $event_id);
                     if ($image_data) {
                         if (isset($image_data[self::COLUMN_IMAGE_UUID])) {
                             $event_data[self::COLUMN_IMAGE_UUID] = $image_data[self::COLUMN_IMAGE_UUID];
@@ -1286,7 +1286,7 @@
                     }
 
                     //получение кадра события
-                    $image_data = $this->getCamshot($domophone_id, $event_data[self::COLUMN_DATE]);
+                    $image_data = $this->getCamshot($domophone_id, $output, $event_data[self::COLUMN_DATE]);
                     if ($image_data) {
                         if (isset($image_data[self::COLUMN_IMAGE_UUID])) {
                             $event_data[self::COLUMN_IMAGE_UUID] = $image_data[self::COLUMN_IMAGE_UUID];
