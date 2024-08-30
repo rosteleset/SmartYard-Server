@@ -98,3 +98,5 @@ static/portal/**
 /server/mobile/pay/custom/*.php
 /server/mobile/sip/custom/*.php
 /server/mobile/user/custom/*.php
+/asterisk/custom/*
+/asterisk/custom/**
