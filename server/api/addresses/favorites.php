@@ -14,7 +14,7 @@
      */
 
     /**
-     * @api {POST} /api/addresses/favorites add favorite
+     * @api {post} /api/addresses/favorites add favorite
      *
      * @apiVersion 1.0.0
      *
@@ -33,7 +33,7 @@
      */
 
     /**
-     * @api {DELETE} /api/addresses/favorites delete favorite
+     * @api {delete} /api/addresses/favorites delete favorite
      *
      * @apiVersion 1.0.0
      *
