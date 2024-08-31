@@ -1,6 +1,48 @@
 <?php
 
     /**
+     * @api {get} /api/cs/cs get CS
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName getCS
+     * @apiGroup cs
+     *
+     * @apiHeader {String} token authentication token
+     *
+     * @apiBody {String} [uid]
+     * @apiBody {String} [sheet]
+     * @apiBody {String} [date]
+     * @apiBody {String} [col]
+     * @apiBody {String} [row]
+     *
+     * @apiSuccess {Object} cs
+     */
+
+    /**
+     * @api {get} /api/cs/cs update CS
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName putCS
+     * @apiGroup cs
+     *
+     * @apiHeader {String} token authentication token
+     *
+     * @apiBody {String="claim,release"} action
+     * @apiBody {String} sheet
+     * @apiBody {Timestamp} date
+     * @apiBody {String} col
+     * @apiBody {String} row
+     * @apiBody {Number} uid
+     * @apiBody {Timestamp} expire
+     * @apiBody {String} sid
+     * @apiBody {String} step
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
      * cs api
      */
 
@@ -18,7 +60,7 @@
                 $cs = loadBackend("cs");
 
                 $sheet = false;
-                
+
                 if ($cs) {
                     if (@$params["uid"]) {
                         $success = $cs->getCellByUID($params["uid"]);
@@ -27,7 +69,7 @@
                     }
                 }
 
-                return api::ANSWER($sheet, ($sheet !== false)?"sheet":"notFound");
+                return api::ANSWER($sheet, ($sheet !== false) ? "sheet" : "notFound");
             }
 
             public static function PUT($params) {

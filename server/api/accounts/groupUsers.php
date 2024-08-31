@@ -11,6 +11,8 @@
      * @apiHeader {String} authorization authentication token
      *
      * @apiParam {Number} gid gid
+     *
+     * @apiSuccess {Array} groupUsers
      */
 
     /**
@@ -25,6 +27,8 @@
      *
      * @apiParam {Number} gid gid
      * @apiBody {Number[]} uids uids
+     *
+     * @apiSuccess {Boolean} operationResult
      */
 
     /**
