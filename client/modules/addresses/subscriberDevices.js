@@ -257,7 +257,7 @@
                                     nowrap: true,
                                 },
                                 {
-                                    data: devices[i].version,
+                                    data: devices[i].version ? devices[i].version : i18n("addresses.unknown"),
                                     nowrap: true,
                                 },
                                 {
