@@ -287,19 +287,19 @@
 
             $headers = apache_request_headers();
 
-            $device = [ "ip" => $ip ];
+            $updateDevice = [ "ip" => $ip ];
 
             if (@$headers['Accept-Language'] && @$headers['X-System-Info']) {
                 $ua = $headers['X-System-Info'];
                 $ua = str_replace(", ", ",", $ua);
-                $device["ua"] = $headers['Accept-Language'] . ',' . $ua;
+                $updateDevice["ua"] = $headers['Accept-Language'] . ',' . $ua;
             }
 
             if (@$headers['X-App-Version']) {
-                $device["version"] = $headers['X-App-Version'];
+                $updateDevice["version"] = $headers['X-App-Version'];
             }
 
-            $households->modifyDevice($device["deviceId"], $device);
+            $households->modifyDevice($device["deviceId"], $updateDevice);
         }
     }
 
