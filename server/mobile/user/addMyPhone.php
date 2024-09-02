@@ -35,7 +35,7 @@
     }
 
     $households = loadBackend("households");
-    $flats = $households->getFlats("credentials", ["login" => $login, "password" => $password]);
+    $flats = $households->getFlats("credentials", [ "login" => $login, "password" => $password ]);
     if (!$flats) {
         response(400, i18n("mobile.404"), i18n("mobile.404Contract"));
     }
@@ -76,6 +76,7 @@
             $households->setSubscriberFlats($subscriber['subscriberId'], $f_list);
         }
     }
+
     if ($already_count > 0) {
         response(404, i18n("mobile.message"), i18n("mobile.addressAlreadyExists"));
     }

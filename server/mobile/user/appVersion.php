@@ -24,6 +24,12 @@
  * 406 неправильный токен
  */
 
-    auth();
-    // TODO: сделать управление обновлением приложения и сбор статистики о версии.
-    response();
+   auth();
+
+   $households = loadBackend("households");
+
+   if (trim(@$postdata['version'])) {
+      $households->modifyDevice($device["deviceId"], [ "version" => trim(@$postdata['version']) ]);
+   }
+
+   response();
