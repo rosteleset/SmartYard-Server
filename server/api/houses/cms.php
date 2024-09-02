@@ -1,6 +1,37 @@
 <?php
 
     /**
+     * @api {get} /api/houses/cms/:entranceId get CMS matrix
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName getCMS
+     * @apiGroup houses
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {Number} entranceId
+     *
+     * @apiSuccess {Object} CMS
+     */
+
+    /**
+     * @api {put} /api/houses/cms/:entranceId set CMS matrix
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName putCMS
+     * @apiGroup houses
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiBody {Number} entranceId
+     * @apiBody {Object} cms
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
      * houses api
      */
 
