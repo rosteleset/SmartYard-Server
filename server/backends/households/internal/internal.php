@@ -2266,6 +2266,7 @@
                     "voip_enabled" => "voipEnabled",
                     "push_disable" => "pushDisable",
                     "money_disable" => "moneyDisable",
+                    "version" => "version",
                 ]);
 
                 foreach ($devices as &$device) {
@@ -2455,6 +2456,12 @@
 
                 if (array_key_exists("ip", $params)) {
                     if ($this->db->modify("update houses_subscribers_devices set ip = :ip where subscriber_device_id = $deviceId", [ "ip" => $params["ip"] ]) !== false) {
+                        $result++;
+                    }
+                }
+
+                if (array_key_exists("version", $params)) {
+                    if ($this->db->modify("update houses_subscribers_devices set version = :version where subscriber_device_id = $deviceId", [ "version" => $params["version"] ]) !== false) {
                         $result++;
                     }
                 }

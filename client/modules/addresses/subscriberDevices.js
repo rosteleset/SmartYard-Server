@@ -220,6 +220,9 @@
                         title: i18n("addresses.platform"),
                     },
                     {
+                        title: i18n("addresses.version"),
+                    },
+                    {
                         title: i18n("addresses.tokenType"),
                     },
                     {
@@ -251,6 +254,10 @@
                                 },
                                 {
                                     data: this.platforms[devices[i].platform],
+                                    nowrap: true,
+                                },
+                                {
+                                    data: devices[i].version,
                                     nowrap: true,
                                 },
                                 {

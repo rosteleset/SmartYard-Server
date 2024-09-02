@@ -287,13 +287,20 @@
             }
 
             $headers = apache_request_headers();
-            if (@$headers['Accept-Language'] && @$headers['X-System-Info']) {
+
+            $device = [ "ip" => $ip ];
+
+            if (@$headers['Accept-Language'] && @$headers['X-System-Info'] && @$headers['X-App-Version']) {
                 $ua = $headers['X-System-Info'];
                 $ua = str_replace(", ", ",", $ua);
-                $households->modifyDevice($device["deviceId"], [ "ua" => $headers['Accept-Language'] . ',' . $ua, "ip" => $ip ]);
-            } else {
-                $households->modifyDevice($device["deviceId"], [ "ip" => $ip ]);
+                $device["ua"] = $headers['Accept-Language'] . ',' . $ua;
             }
+
+            if (@$headers['X-App-Version']) {
+                $device["version"] = $headers['X-App-Version'];
+            }
+
+            $households->modifyDevice($device["deviceId"], $device);
         }
     }
 
