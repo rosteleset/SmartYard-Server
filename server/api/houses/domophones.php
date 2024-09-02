@@ -1,6 +1,19 @@
 <?php
 
     /**
+     * @api {get} /api/houses/domophones get all domophones devices
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName domophones
+     * @apiGroup houses
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiSuccess {Object} domophones
+     */
+
+    /**
      * houses api
      */
 

@@ -1,6 +1,71 @@
 <?php
 
     /**
+     * @api {post} /api/houses/domophone add domophone device
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName addDomophone
+     * @apiGroup houses
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiBody {Boolean} enabled
+     * @apiBody {String} model
+     * @apiBody {String} server
+     * @apiBody {String} url
+     * @apiBody {String} credentials
+     * @apiBody {String} dtmf
+     * @apiBody {Boolean} nat
+     * @apiBody {String} comments
+     * @apiBody {String} name
+     *
+     * @apiSuccess {Number} domophoneId
+     */
+
+    /**
+     * @api {put} /api/houses/domophone/:domophoneId modify domophone device
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName modifyDomophone
+     * @apiGroup houses
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {Number} domophoneId
+     * @apiBody {Boolean} enabled
+     * @apiBody {String} model
+     * @apiBody {String} server
+     * @apiBody {String} url
+     * @apiBody {String} credentials
+     * @apiBody {String} dtmf
+     * @apiBody {Boolean} firstTime
+     * @apiBody {Boolean} nat
+     * @apiBody {Boolean} locksAreOpen
+     * @apiBody {String} comments
+     * @apiBody {String} name
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
+     * @api {delete} /api/houses/domophone/:domophoneId get CMS matrix
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName deleteDomophone
+     * @apiGroup houses
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {Number} domophoneId
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+
+    /**
      * houses api
      */
 

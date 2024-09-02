@@ -25,7 +25,7 @@
      *
      * @apiHeader {String} authorization authentication token
      *
-     * @apiBody {Number} entranceId
+     * @apiParam {Number} entranceId
      * @apiBody {Object} cms
      *
      * @apiSuccess {Boolean} operationResult
