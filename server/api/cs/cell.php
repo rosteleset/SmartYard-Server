@@ -1,11 +1,11 @@
 <?php
 
     /**
-     * @api {get} /api/cs/cs get CS
+     * @api {get} /api/cs/cell get CS
      *
      * @apiVersion 1.0.0
      *
-     * @apiName getCS
+     * @apiName getCell
      * @apiGroup cs
      *
      * @apiHeader {String} token authentication token
@@ -24,7 +24,7 @@
      *
      * @apiVersion 1.0.0
      *
-     * @apiName putCS
+     * @apiName putCell
      * @apiGroup cs
      *
      * @apiHeader {String} token authentication token

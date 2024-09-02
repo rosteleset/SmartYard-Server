@@ -1,6 +1,48 @@
 <?php
 
     /**
+     * @api {put} /api/cs/reserveCell reserver CS cell
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName reserveCell
+     * @apiGroup cs
+     *
+     * @apiHeader {String} token authentication token
+     *
+     * @apiBody {String} sheet
+     * @apiBody {Timestamp} date
+     * @apiBody {String} col
+     * @apiBody {String} row
+     * @apiBody {String} uid
+     * @apiBody {Timestamp} expire
+     * @apiBody {String} sid
+     * @apiBody {String} comments
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
+     * @api {delete} /api/cs/reserveCell reserver CS cell
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName releaseCell
+     * @apiGroup cs
+     *
+     * @apiHeader {String} token authentication token
+     *
+     * @apiBody {String} sheet
+     * @apiBody {Timestamp} date
+     * @apiBody {String} col
+     * @apiBody {String} row
+     * @apiBody {String} uid
+     * @apiBody {String} sid
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
      * cs api
      */
 

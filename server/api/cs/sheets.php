@@ -1,6 +1,19 @@
 <?php
 
     /**
+     * @api {get} /api/cs/sheets get CS sheets
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName getSheet
+     * @apiGroup cs
+     *
+     * @apiHeader {String} token authentication token
+     *
+     * @apiSuccess {Object[]} sheets
+     */
+
+    /**
      * cs api
      */
 
@@ -23,7 +36,7 @@
                     $sheets = $cs->getCSes();
                 }
 
-                return api::ANSWER($sheets, ($sheets !== false)?"sheets":"notFound");
+                return api::ANSWER($sheets, ($sheets !== false) ? "sheets" : "notFound");
             }
 
             public static function index() {
