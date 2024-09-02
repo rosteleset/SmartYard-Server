@@ -264,7 +264,7 @@
     } else
     if ($api == "authentication" && $method == "login") {
         if  (!@$params["login"] || !@$params["password"]) {
-            $params["_login"] = @$params["login"]?:"-";
+            $params["_login"] = @$params["login"] ? : "-";
             $params["_ip"] = $ip;
             response(403, [
                 "error" => "noCredentials",

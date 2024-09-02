@@ -374,8 +374,8 @@ function login() {
                 oneCode: code,
             }),
             success: response => {
-                $("#loginBoxPassword").val("");
                 if (response && response.token) {
+                    $("#loginBoxPassword").val("");
                     lStore("_token", response.token);
                     window.location.reload();
                 } else {

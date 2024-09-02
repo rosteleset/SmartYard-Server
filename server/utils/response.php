@@ -33,7 +33,7 @@
         if ($backends && $backends["accounting"]) {
             $backends["accounting"]->log($params, $code);
         } else {
-            $login = @($params["_login"]?:$params["login"]);
+            $login = @($params["_login"] ? : $params["login"]);
             $login = $login ?: "-";
             error_log("{$_SERVER['REMOTE_ADDR']}:{$_SERVER['REMOTE_PORT']} [$code]: {$_SERVER['REQUEST_METHOD']} $login {$_SERVER["REQUEST_URI"]}");
         }
