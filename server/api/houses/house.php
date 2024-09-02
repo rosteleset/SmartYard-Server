@@ -4,8 +4,7 @@
      * houses api
      */
 
-    namespace api\houses
-    {
+    namespace api\houses {
 
         use api\api;
 
@@ -13,11 +12,9 @@
          * house method
          */
 
-        class house extends api
-        {
+        class house extends api {
 
-            public static function GET($params)
-            {
+            public static function GET($params) {
                 $households = loadBackend("households");
                 $configs = loadBackend("configs");
 
@@ -38,8 +35,7 @@
                 }
             }
 
-            public static function index()
-            {
+            public static function index() {
                 return [
                     "GET" => "#same(addresses,house,GET)",
                 ];

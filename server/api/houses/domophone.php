@@ -19,7 +19,7 @@
 
                 $domophoneId = $households->addDomophone($params["enabled"], $params["model"], $params["server"], $params["url"], $params["credentials"], $params["dtmf"], $params["nat"], $params["comments"], $params["name"]);
 
-                return api::ANSWER($domophoneId, ($domophoneId !== false)?"domophoneId":false);
+                return api::ANSWER($domophoneId, ($domophoneId !== false) ? "domophoneId" : false);
             }
 
             public static function PUT($params) {

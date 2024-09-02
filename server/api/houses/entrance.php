@@ -4,8 +4,7 @@
      * houses api
      */
 
-    namespace api\houses
-    {
+    namespace api\houses {
 
         use api\api;
 
@@ -13,12 +12,9 @@
          * entrance method
          */
 
-        class entrance extends api
-        {
+        class entrance extends api {
 
-
-            public static function POST($params)
-            {
+            public static function POST($params) {
                 $households = loadBackend("households");
 
                 if (@$params["entranceId"]) {
@@ -28,12 +24,11 @@
                 } else {
                     $entranceId = $households->createEntrance($params["houseId"], $params["entranceType"], $params["entrance"], $params["lat"], $params["lon"], $params["shared"], $params["plog"], $params["prefix"], $params["callerId"], $params["domophoneId"], $params["domophoneOutput"], $params["cms"], $params["cmsType"], $params["cameraId"], $params["cmsLevels"], $params["video"]);
 
-                    return api::ANSWER($entranceId, ($entranceId !== false)?"entranceId":false);
+                    return api::ANSWER($entranceId, ($entranceId !== false) ? "entranceId" : false);
                 }
             }
 
-            public static function PUT($params)
-            {
+            public static function PUT($params) {
                 $households = loadBackend("households");
 
                 $success = $households->modifyEntrance($params["_id"], $params["houseId"], $params["entranceType"], $params["entrance"], $params["lat"], $params["lon"], $params["shared"], $params["plog"], $params["prefix"], $params["callerId"], $params["domophoneId"], $params["domophoneOutput"], $params["cms"], $params["cmsType"], $params["cameraId"], $params["cmsLevels"], $params["video"]);
@@ -41,8 +36,7 @@
                 return api::ANSWER($success);
             }
 
-            public static function DELETE($params)
-            {
+            public static function DELETE($params) {
                 $households = loadBackend("households");
 
                 if (@$params["houseId"]) {
@@ -54,8 +48,7 @@
                 return api::ANSWER($success);
             }
 
-            public static function index()
-            {
+            public static function index() {
                 return [
                     "POST" => "#same(addresses,house,PUT)",
                     "PUT" => "#same(addresses,house,PUT)",

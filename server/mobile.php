@@ -289,7 +289,7 @@
 
             $device = [ "ip" => $ip ];
 
-            if (@$headers['Accept-Language'] && @$headers['X-System-Info'] && @$headers['X-App-Version']) {
+            if (@$headers['Accept-Language'] && @$headers['X-System-Info']) {
                 $ua = $headers['X-System-Info'];
                 $ua = str_replace(", ", ",", $ua);
                 $device["ua"] = $headers['Accept-Language'] . ',' . $ua;
