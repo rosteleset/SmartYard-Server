@@ -12,7 +12,7 @@
      *
      * @apiParam {Number} id
      * @apiBody {String} object
-     * @apiBody {boolean} [firstTime]
+     * @apiBody {Boolean} [firstTime]
      *
      * @apiSuccess {Boolean} operationResult
      */
@@ -26,7 +26,7 @@
         use api\api;
 
         /**
-         * house method
+         * autoconfigure method
          */
 
         class autoconfigure extends api {

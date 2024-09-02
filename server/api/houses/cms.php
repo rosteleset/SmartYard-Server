@@ -9,7 +9,7 @@
         use api\api;
 
         /**
-         * house method
+         * cms method
          */
 
         class cms extends api {

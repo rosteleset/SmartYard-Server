@@ -1,6 +1,38 @@
 <?php
 
     /**
+     * @api {post} /api/houses/cameras add camera to house
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName addCamera
+     * @apiGroup houses
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiBody {Number} houseId
+     * @apiBody {Number} cameraId
+     *
+     * @apiSuccess {Number} cameraId
+     */
+
+    /**
+     * @api {delete} /api/houses/cameras remove camera from house
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName removeCamera
+     * @apiGroup houses
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiBody {Number} houseId
+     * @apiBody {Number} cameraId
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
      * houses api
      */
 
@@ -9,7 +41,7 @@
         use api\api;
 
         /**
-         * entrance method
+         * cameras method
          */
 
         class cameras extends api {
