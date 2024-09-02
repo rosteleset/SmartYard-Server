@@ -1,6 +1,74 @@
 <?php
 
     /**
+     * @api {get} /api/files/file get file
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName getFile
+     * @apiGroup files
+     *
+     * @apiHeader {String} token authentication token
+     *
+     * @apiBody {String} [type]
+     * @apiBody {String} [filename]
+     *
+     * @apiSuccess {Object} operationResult
+     */
+
+    /**
+     * @api {put} /api/files/file put file
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName putFile
+     * @apiGroup files
+     *
+     * @apiHeader {String} token authentication token
+     *
+     * @apiBody {String} type
+     * @apiBody {String} [filename]
+     * @apiBody {Object} [metadata]
+     * @apiBody {String} file
+     *
+     * @apiSuccess {Object} operationResult
+     */
+
+    /**
+     * @api {post} /api/files/file put file
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName postFile
+     * @apiGroup files
+     *
+     * @apiHeader {String} token authentication token
+     *
+     * @apiBody {String} [type]
+     * @apiBody {String} [filename]
+     * @apiBody {Object} [metadata]
+     * @apiBody {String} file
+     *
+     * @apiSuccess {Object} operationResult
+     */
+
+    /**
+     * @api {delete} /api/files/file delete file
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName deleteFile
+     * @apiGroup files
+     *
+     * @apiHeader {String} token authentication token
+     *
+     * @apiBody {String} [type]
+     * @apiBody {String} [filename]
+     *
+     * @apiSuccess {Object} operationResult
+     */
+
+    /**
      * files api
      */
 
@@ -30,7 +98,7 @@
                     break;
                 }
 
-                return api::ANSWER($file, ($file !== false)?"file":false);
+                return api::ANSWER($file, ($file !== false) ? "file" : false);
             }
 
             public static function POST($params) {

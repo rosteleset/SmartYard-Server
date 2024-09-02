@@ -1,6 +1,22 @@
 <?php
 
     /**
+     * @api {get} /api/files/files get files
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName getFiles
+     * @apiGroup files
+     *
+     * @apiHeader {String} token authentication token
+     *
+     * @apiBody {String} [type]
+     * @apiBody {Boolean} [withContent]
+     *
+     * @apiSuccess {Object} operationResult
+     */
+
+    /**
      * files api
      */
 
@@ -32,7 +48,7 @@
                     }
                 }
 
-                return api::ANSWER($_files, ($_files !== false)?"files":false);
+                return api::ANSWER($_files, ($_files !== false) ? "files" : false);
             }
 
             public static function index() {
