@@ -1,6 +1,58 @@
 <?php
 
     /**
+     * @api {get} /api/custom/custom custom GET method
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName getCustom
+     * @apiGroup custom
+     *
+     * @apiHeader {String} token authentication token
+     *
+     * @apiSuccess {Object} operationResult
+     */
+
+    /**
+     * @api {post} /api/custom/custom custom POST method
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName postCustom
+     * @apiGroup custom
+     *
+     * @apiHeader {String} token authentication token
+     *
+     * @apiSuccess {Object} operationResult
+     */
+
+    /**
+     * @api {put} /api/custom/custom custom PUT method
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName putCustom
+     * @apiGroup custom
+     *
+     * @apiHeader {String} token authentication token
+     *
+     * @apiSuccess {Object} operationResult
+     */
+
+    /**
+     * @api {delete} /api/custom/custom custom DELETE method
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName deleteCustom
+     * @apiGroup custom
+     *
+     * @apiHeader {String} token authentication token
+     *
+     * @apiSuccess {Object} operationResult
+     */
+
+    /**
      * custom api
      */
 
