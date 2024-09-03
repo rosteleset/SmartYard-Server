@@ -1,6 +1,21 @@
 <?php
 
     /**
+     * @api {get} /api/houses/house/:houseId get flats
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName getHouse
+     * @apiGroup houses
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {Number} houseId
+     *
+     * @apiSuccess {Object[]} house
+     */
+
+    /**
      * houses api
      */
 
@@ -29,7 +44,7 @@
                         "cmses" => $configs->getCMSes(),
                     ];
 
-                    $house = ($house["flats"] !== false && $house["entrances"] !== false && $house["domophoneModels"] !== false && $house["cmses"] !== false)?$house:false;
+                    $house = ($house["flats"] !== false && $house["entrances"] !== false && $house["domophoneModels"] !== false && $house["cmses"] !== false) ? $house : false;
 
                     return api::ANSWER($house, "house");
                 }

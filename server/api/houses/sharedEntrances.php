@@ -1,6 +1,21 @@
 <?php
 
     /**
+     * @api {get} /api/houses/sharedEntrances/:houseId get shared entrances
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName getSharedEntrances
+     * @apiGroup houses
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {Number} [houseId]
+     *
+     * @apiSuccess {Object[]} entrances
+     */
+
+    /**
      * addresses api
      */
 
@@ -9,7 +24,7 @@
         use api\api;
 
         /**
-         * house method
+         * sharedEntrances method
          */
 
         class sharedEntrances extends api {

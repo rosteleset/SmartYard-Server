@@ -1,6 +1,21 @@
 <?php
 
     /**
+     * @api {get} /api/houses/search search houses
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName searchHouses
+     * @apiGroup houses
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiQuery {String} search
+     *
+     * @apiSuccess {Object[]} houses
+     */
+
+    /**
      * houses api
      */
 
