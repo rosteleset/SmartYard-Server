@@ -1,6 +1,40 @@
 <?php
 
     /**
+     * @api {get} /api/inbox/message/:subscriberId get messages
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName getMessages
+     * @apiGroup inbox
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {Number} subscriberId
+     * @apiBody {Number} [messageId]
+     *
+     * @apiSuccess {Object[]} messages
+     */
+
+    /**
+     * @api {post} /api/inbox/message/:subscriberId send message
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName sendMessage
+     * @apiGroup inbox
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {Number} subscriberId
+     * @apiBody {String} title
+     * @apiBody {String} body
+     * @apiBody {String} action
+     *
+     * @apiSuccess {Number} msgId
+     */
+
+    /**
      * inbox api
      */
 
