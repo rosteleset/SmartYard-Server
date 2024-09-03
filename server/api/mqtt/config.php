@@ -1,6 +1,19 @@
 <?php
 
     /**
+     * @api {get} /api/mqtt/mqtt get mqtt config
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName config
+     * @apiGroup mqtt
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiSuccess {Object} config
+     */
+
+    /**
      * mqtt api
      */
 
@@ -21,7 +34,7 @@
                     $config = $mqtt->getConfig();
                 }
 
-                return api::ANSWER($config, ($config !== false)?"config":false);
+                return api::ANSWER($config, ($config !== false) ? "config" : false);
             }
 
             public static function index() {
