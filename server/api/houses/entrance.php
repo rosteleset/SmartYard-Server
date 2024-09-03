@@ -1,6 +1,101 @@
 <?php
 
     /**
+     * @api {post} /api/houses/entrance create or add entrance
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName createEntrance
+     * @apiGroup houses
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiBody {Number} entranceId
+     * @apiBody {Number} houseId
+     * @apiBody {Number} prefix
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
+     * @api {post} /api/houses/entrance create or add entrance
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName addEntrance
+     * @apiGroup houses
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiBody {Number} houseId
+     * @apiBody {Number} prefix
+     * @apiBody {String="entrance,wicket,gate,barrier"} entranceType
+     * @apiBody {String} entrance
+     * @apiBody {Number} lat
+     * @apiBody {Number} lon
+     * @apiBody {Boolean} shared
+     * @apiBody {Boolean} plog
+     * @apiBody {Number} prefix
+     * @apiBody {String} callerId
+     * @apiBody {Number} domophoneId
+     * @apiBody {Number} domophoneOutput
+     * @apiBody {String} cms
+     * @apiBody {Number} cmsType
+     * @apiBody {Number} cameraId
+     * @apiBody {String} cmsLevels
+     * @apiBody {String} video
+     *
+     * @apiSuccess {Number} entranceId
+     */
+
+    /**
+     * @api {put} /api/houses/entrance/:entranceId modify entrance
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName modifyEntrance
+     * @apiGroup houses
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {Number} entranceId
+     * @apiBody {Number} houseId
+     * @apiBody {String="entrance,wicket,gate,barrier"} entranceType
+     * @apiBody {String} entrance
+     * @apiBody {Number} lat
+     * @apiBody {Number} lon
+     * @apiBody {Boolean} shared
+     * @apiBody {Boolean} plog
+     * @apiBody {Number} prefix
+     * @apiBody {String} callerId
+     * @apiBody {Number} domophoneId
+     * @apiBody {Number} domophoneOutput
+     * @apiBody {String} cms
+     * @apiBody {Number} cmsType
+     * @apiBody {Number} cameraId
+     * @apiBody {String} cmsLevels
+     * @apiBody {String} video
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
+     * @api {delete} /api/houses/entrance/:entranceId modify entrance
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName modifyEntrance
+     * @apiGroup houses
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {Number} entranceId
+     * @apiBody {Number} [houseId]
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
      * houses api
      */
 
