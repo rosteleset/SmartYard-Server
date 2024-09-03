@@ -1,6 +1,19 @@
 <?php
 
     /**
+     * @api {put} /api/notes/check (un)check note line
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName check
+     * @apiGroup notes
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
      * notes api
      */
 
