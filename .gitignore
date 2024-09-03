@@ -21,6 +21,8 @@ package.json
 package-lock.json
 .stylelintrc.json
 .templates
+.templates/*
+.templates/**
 
 client/lib/
 client/lib/AdminLTE/
