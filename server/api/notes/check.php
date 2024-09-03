@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {put} /api/notes/check (un)check note line
+     * @api {put} /api/notes/check/:noteId (un)check note line
      *
      * @apiVersion 1.0.0
      *
@@ -9,6 +9,10 @@
      * @apiGroup notes
      *
      * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {Number} noteId
+     * @apiBody {Number} line
+     * @apiBody {Boolean} checked
      *
      * @apiSuccess {Boolean} operationResult
      */
