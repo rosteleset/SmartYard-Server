@@ -1,6 +1,22 @@
 <?php
 
     /**
+     * @api {get} /api/houses/flats get flats
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName getFlats
+     * @apiGroup houses
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiBody {String="flatIdByPrefix,apartment,code,openCode,rfId,subscriberId,houseId,domophoneId,credentials,login,contract"} by
+     * @apiBody {Mixed} params
+     *
+     * @apiSuccess {Object[]} flats
+     */
+
+    /**
      * houses api
      */
 
