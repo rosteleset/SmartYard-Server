@@ -20,6 +20,7 @@ RBT/RBT.xcodeproj/
 package.json
 package-lock.json
 .stylelintrc.json
+.templates
 
 client/lib/
 client/lib/AdminLTE/
