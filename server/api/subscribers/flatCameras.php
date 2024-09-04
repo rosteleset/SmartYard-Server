@@ -17,7 +17,7 @@
      */
 
     /**
-     * @api {delete} /subscribers/flatCameras add camera to flat
+     * @api {delete} /subscribers/flatCameras delete camera from flat
      *
      * @apiVersion 1.0.0
      *

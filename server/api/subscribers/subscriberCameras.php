@@ -17,7 +17,7 @@
      */
 
     /**
-     * @api {delete} /subscribers/subscriberCameras add camera to subscriber
+     * @api {delete} /subscribers/subscriberCameras delete camera from subscriber
      *
      * @apiVersion 1.0.0
      *
