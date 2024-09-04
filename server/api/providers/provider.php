@@ -1,6 +1,77 @@
 <?php
 
     /**
+     * @api {get} /api/providers/provider get providers
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName getProviders
+     * @apiGroup providers
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiSuccess {Object} providers
+     */
+
+    /**
+     * @api {put} /api/providers/provider/:providerId modify provider
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName modifyProvider
+     * @apiGroup providers
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {Number} providerId
+     * @apiBody {Number} uid
+     * @apiBody {String} name
+     * @apiBody {String} baseUrl
+     * @apiBody {String} logo
+     * @apiBody {String} tokenCommon
+     * @apiBody {String} tokenSms
+     * @apiBody {Boolean} hidden
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
+     * @api {post} /api/providers/provider create provider
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName createProvider
+     * @apiGroup providers
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiBody {Number} uid
+     * @apiBody {String} name
+     * @apiBody {String} baseUrl
+     * @apiBody {String} logo
+     * @apiBody {String} tokenCommon
+     * @apiBody {String} tokenSms
+     * @apiBody {Boolean} hidden
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
+     * @api {delete} /api/providers/provider/:providerId delete provider
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName deleteProvider
+     * @apiGroup providers
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {Number} providerId
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
      * providers api
      */
 
@@ -19,7 +90,7 @@
 
                 $providers = $providers->getProviders();
 
-                return api::ANSWER($providers, ($providers !== false)?"providers":"notAcceptable");
+                return api::ANSWER($providers, ($providers !== false) ? "providers" : "notAcceptable");
             }
 
             public static function PUT($params) {

@@ -1,6 +1,34 @@
 <?php
 
     /**
+     * @api {get} /api/providers/json get providers json
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName getProvidersJson
+     * @apiGroup providers
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiSuccess {Object} json
+     */
+
+    /**
+     * @api {put} /api/providers/json put providers json
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName putProvidersJson
+     * @apiGroup providers
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiBody {String} body
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
      * providers api
      */
 
@@ -19,7 +47,7 @@
 
                 $providers = $providers->getJson();
 
-                return api::ANSWER($providers, ($providers !== false)?"json":"notAcceptable");
+                return api::ANSWER($providers, ($providers !== false) ? "json" : "notAcceptable");
             }
 
             public static function PUT($params) {

@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {put} /api/notes/xyz/:noteId create note
+     * @api {put} /api/notes/xyz/:noteId move note
      *
      * @apiVersion 1.0.0
      *

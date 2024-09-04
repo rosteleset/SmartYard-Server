@@ -1,32 +1,52 @@
 <?php
 
-namespace api\queues;
+    /**
+     * @api {get} /api/queues/queues get queues
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName queues
+     * @apiGroup queues
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiSuccess {Object[]} queues
+     */
 
-use api\api;
+    /**
+     * queues api
+     */
 
-class queues extends api
-{
+    namespace api\queues {
 
-    public static function GET($params)
-    {
-        $queue = loadBackend('queue');
+        use api\api;
 
-        if (!$queue) {
-            return api::ERROR();
+        /**
+         * queues method
+         */
+
+         class queues extends api {
+
+            public static function GET($params) {
+                $queue = loadBackend('queue');
+
+                if (!$queue) {
+                    return api::ERROR();
+                }
+
+                $tasks = $queue->getTasks();
+
+                return api::ANSWER($tasks, 'queues');
+            }
+
+            public static function index() {
+                if (loadBackend("queue")) {
+                    return [
+                        "GET",
+                    ];
+                } else {
+                    return false;
+                }
+            }
         }
-
-        $tasks = $queue->getTasks();
-
-        return api::ANSWER($tasks, 'queues');
     }
-
-    public static function index() {
-        if (loadBackend("queue")) {
-            return [
-                "GET",
-            ];
-        } else {
-            return false;
-        }
-    }
-}
