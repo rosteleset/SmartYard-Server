@@ -73,9 +73,12 @@
                 $households = loadBackend("households");
                 $entrances = $households->getEntrances("domophoneId", [ "domophoneId" => $domophone_id, "output" => $output ]);
                 if ($entrances && $entrances[0]) {
+                    $camshot_data['house_id'] = $entrances[0]["houseId"];
+                    $camshot_data['entrance_id'] = $entrances[0]["entranceId"];
                     $cameras = $households->getCameras("id", $entrances[0]["cameraId"]);
                     if ($cameras && $cameras[0]) {
                         try {
+                            $camshot_data['camera_id'] = $entrances[0]["cameraId"];
                             $frs = loadBackend("frs");
                             if ($frs) {
                                 if ($event_id === false) {
@@ -115,11 +118,13 @@
                                 }
                             }
                         } catch (\Exception $e) {
-                            $camshot_data = [];
+                            unset($camshot_data[self::COLUMN_PREVIEW]);
+                            unset($camshot_data[self::COLUMN_IMAGE_UUID]);
+                            unset($camshot_data[self::COLUMN_FACE]);
                             error_log(print_r($e, true));
                         }
 
-                        if (!$camshot_data) {
+                        if (!isset($camshot_data[self::COLUMN_PREVIEW])) {
                             try {
                                 //получение кадра с DVR-серевера, если нет кадра от FRS
                                 $prefix = $cameras[0]["dvrStream"];
@@ -153,7 +158,8 @@
                                     $camshot_data[self::COLUMN_PREVIEW] = self::PREVIEW_NONE;
                                 }
                             } catch (\Exception $e) {
-                                $camshot_data = [];
+                                unset($camshot_data[self::COLUMN_IMAGE_UUID]);
+                                unset($camshot_data[self::COLUMN_FACE]);
                                 $camshot_data[self::COLUMN_PREVIEW] = self::PREVIEW_NONE;
                                 error_log(print_r($e, true));
                             }
@@ -590,6 +596,15 @@
                             if (isset($face_id)) {
                                 $event_data[self::COLUMN_FACE][frs::P_FACE_ID] = $face_id;
                             }
+                        }
+                        if (isset($image_data['house_id'])) {
+                            $event_data[self::COLUMN_DOMOPHONE]['house_id'] = $image_data['house_id'];
+                        }
+                        if (isset($image_data['entrance_id'])) {
+                            $event_data[self::COLUMN_DOMOPHONE]['entrance_id'] = $image_data['entrance_id'];
+                        }
+                        if (isset($image_data['camera_id'])) {
+                            $event_data[self::COLUMN_DOMOPHONE]['camera_id'] = $image_data['camera_id'];
                         }
                     }
                     $this->writeEventData($event_data, $flat_list);
@@ -1286,7 +1301,7 @@
                     }
 
                     //получение кадра события
-                    $image_data = $this->getCamshot($domophone_id, $output, $event_data[self::COLUMN_DATE]);
+                    $image_data = $this->getCamshot($domophone_id, $event_data[self::COLUMN_DOMOPHONE]['domophone_output'], $event_data[self::COLUMN_DATE]);
                     if ($image_data) {
                         if (isset($image_data[self::COLUMN_IMAGE_UUID])) {
                             $event_data[self::COLUMN_IMAGE_UUID] = $image_data[self::COLUMN_IMAGE_UUID];
@@ -1297,6 +1312,15 @@
                             if (isset($face_id)) {
                                 $event_data[self::COLUMN_FACE][frs::P_FACE_ID] = $face_id;
                             }
+                        }
+                        if (isset($image_data['house_id'])) {
+                            $event_data[self::COLUMN_DOMOPHONE]['house_id'] = $image_data['house_id'];
+                        }
+                        if (isset($image_data['entrance_id'])) {
+                            $event_data[self::COLUMN_DOMOPHONE]['entrance_id'] = $image_data['entrance_id'];
+                        }
+                        if (isset($image_data['camera_id'])) {
+                            $event_data[self::COLUMN_DOMOPHONE]['camera_id'] = $image_data['camera_id'];
                         }
                     }
 
