@@ -1,6 +1,71 @@
 <?php
 
     /**
+     * @api {post} /api/notes/note create note
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName createNote
+     * @apiGroup notes
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiBody {String} subject
+     * @apiBody {String} body
+     * @apiBody {Boolean} checks
+     * @apiBody {String} category
+     * @apiBody {Timestamp} remind
+     * @apiBody {String} icon
+     * @apiBody {String} font
+     * @apiBody {String} color
+     * @apiBody {Number} x
+     * @apiBody {Number} y
+     * @apiBody {Number} z
+     *
+     * @apiSuccess {Object} Note
+     */
+
+    /**
+     * @api {put} /api/notes/note/:noteId create note
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName createNote
+     * @apiGroup notes
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {Number} noteId
+     * @apiBody {String} subject
+     * @apiBody {String} body
+     * @apiBody {String} category
+     * @apiBody {Timestamp} remind
+     * @apiBody {String} icon
+     * @apiBody {String} font
+     * @apiBody {String} color
+     * @apiBody {Number} x
+     * @apiBody {Number} y
+     * @apiBody {Number} z
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
+     * @api {delete} /api/notes/note/:noteId delete note
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName deleteNote
+     * @apiGroup notes
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {Number} noteId
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
      * notes api
      */
 

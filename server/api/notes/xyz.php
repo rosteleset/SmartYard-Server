@@ -1,6 +1,24 @@
 <?php
 
     /**
+     * @api {put} /api/notes/xyz/:noteId create note
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName moveNote
+     * @apiGroup notes
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {Number} noteId
+     * @apiBody {Number} x
+     * @apiBody {Number} y
+     * @apiBody {Number} z
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
      * notes api
      */
 

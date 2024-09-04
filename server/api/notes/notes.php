@@ -1,6 +1,19 @@
 <?php
 
     /**
+     * @api {get} /api/notes/notes get notes
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName notes
+     * @apiGroup notes
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiSuccess {Object[]} notes
+     */
+
+    /**
      * notes api
      */
 
