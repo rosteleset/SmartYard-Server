@@ -23,7 +23,7 @@
                     if ($issue) {
                         $workflow = $tt->loadWorkflow($issue["workflow"]);
                         $template = $workflow->getActionTemplate($issue, $params["action"]);
-                        return api::ANSWER($template, ($template !== false)?"template":"notAcceptable");
+                        return api::ANSWER($template, ($template !== false) ? "template" : "notAcceptable");
                     }
                 }
 
