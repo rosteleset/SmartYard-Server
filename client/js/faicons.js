@@ -2862,9 +2862,6 @@ const faIcons = [
         title: "fab fa-pinterest-p",
         searchTerms: []
     }, {
-        title: "fab fa-pinterest-square",
-        searchTerms: []
-    }, {
         title: "fas fa-place-of-worship",
         searchTerms: []
     }, {
