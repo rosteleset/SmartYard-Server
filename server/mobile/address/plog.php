@@ -20,6 +20,9 @@
  * @apiSuccess {integer="0"} -.objectType тип объекта (0 - домофон)
  * @apiSuccess {integer="0","1","2"} -.objectMechanizma идентификатор нагрузки (двери)
  * @apiSuccess {string} -.mechanizmaDescription описание нагрузки (двери)
+ * @apiSuccess {integer} [-.houseId] идентификатор дома
+ * @apiSuccess {integer} [-.entranceId] идентификатор входа
+ * @apiSuccess {integer} [-.cameraId] идентификатор камеры
  * @apiSuccess {string="1 - не отвечен","2 - отвечен","3 - открытие ключом","4 - открытие приложением","5 - открытие по морде лица","6 - открытие кодом открытия","7 - открытие звонком (гость, калитка)"} -.event тип события
  * @apiSuccess {string} [-.preview] url картинки
  * @apiSuccess {integer="0","1","2"} -.previewType тип каринки (0 - нет, 1 - DVR, 2 - FRS)
@@ -121,6 +124,15 @@
                         $e_details['mechanizmaDescription'] = $domophone->domophone_description;
                     } else {
                         $e_details['mechanizmaDescription'] = '';
+                    }
+                    if (isset($domophone->house_id) && $domophone->house_id > 0) {
+                        $e_details['houseId'] = $domophone->house_id;
+                    }
+                    if (isset($domophone->entrance_id) && $domophone->entrance_id > 0) {
+                        $e_details['entranceId'] = $domophone->entrance_id;
+                    }
+                    if (isset($domophone->camera_id) && $domophone->camera_id > 0) {
+                        $e_details['cameraId'] = $domophone->camera_id;
                     }
                 }
 

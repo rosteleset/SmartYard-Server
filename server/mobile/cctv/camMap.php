@@ -10,7 +10,8 @@
  * @apiHeader {String} authorization токен авторизации
  *
  * @apiSuccess {Object[]} - массив c настройками
- * @apiSuccess {String} -.id id домофона
+ * @apiSuccess {String} [-.entranceId] идентификатор входа
+ * @apiSuccess {String} -.id идентификатор домофона
  * @apiSuccess {String} -.url url камеры
  * @apiSuccess {String} -.token токен
  * @apiSuccess {String="t","f"} -.frs подключен FRS
@@ -71,6 +72,7 @@
             $frs = strlen($vstream["frs"]) > 1 ? 't' : 'f';
         }
         $item = [
+            'entranceId' => strval($e['entranceId']),
             'id' => strval($e['domophoneId']),
             'url' => loadBackend("dvr")->getDVRStreamURLForCam($cam),
             'token' => loadBackend("dvr")->getDVRTokenForCam($cam, $subscriber['subscriberId']),
