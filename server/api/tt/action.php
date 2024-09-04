@@ -1,6 +1,39 @@
 <?php
 
     /**
+     * @api {get} /tt/action/:issueId get action template
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName actionTemplate
+     * @apiGroup tt
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {String} issueId
+     * @apiBody {String} action
+     *
+     * @apiSuccess {Object} template
+     */
+
+    /**
+     * @api {put} /tt/action/:issueId modify issue
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName modifyIssue
+     * @apiGroup tt
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {String} issueId
+     * @apiBody {String} action
+     * @apiBody {Object} set
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
      * tt api
      */
 
