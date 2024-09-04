@@ -14,8 +14,7 @@
 
         class arrays extends api {
 
-            public static function POST($params)
-            {
+            public static function POST($params) {
                 $tt = loadBackend("tt");
 
                 if (!$tt) {
@@ -27,8 +26,7 @@
                 return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
             }
 
-            public static function DELETE($params)
-            {
+            public static function DELETE($params) {
                 $tt = loadBackend("tt");
 
                 if (!$tt) {
