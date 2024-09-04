@@ -1,45 +1,82 @@
 <?php
 
-/**
- * devices api
- */
-
-namespace api\subscribers
-{
-
-    use api\api;
-
     /**
-     * devices method
+     * @api {put} /subscribers/device/:deviceId modify device
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName modifyDevice
+     * @apiGroup subscribers
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {Number} [deviceId]
+     * @apiBody {String} [authToken]
+     * @apiBody {String} [platform]
+     * @apiBody {String} [pushToken]
+     * @apiBody {String} [tokenType]
+     * @apiBody {String} [voipToken]
+     * @apiBody {Boolean} [voipEnabled]
+     * @apiBody {Boolean} [pushDisable]
+     * @apiBody {Boolean} [moneyDisable]
+     * @apiBody {Object[]} [voipFlats]
+     * @apiBody {String} [ua]
+     * @apiBody {String} [ip]
+     * @apiBody {String} [version]
+     *
+     * @apiSuccess {Boolean} operationResult
      */
 
-    class device extends api
-    {
+    /**
+     * @api {put} /subscribers/device/:deviceId delete device
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName deleteDevice
+     * @apiGroup subscribers
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {Number} [deviceId]
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
 
-        public static function PUT($params)
-        {
-            $households = loadBackend("households");
+    /**
+     * subscribers api
+     */
 
-            $success = $households->modifyDevice($params["_id"], $params);
+    namespace api\subscribers {
 
-            return api::ANSWER($success);
-        }
+        use api\api;
 
-        public static function DELETE($params)
-        {
-            $households = loadBackend("households");
+        /**
+         * device method
+         */
 
-            $success = $households->deleteDevice($params["_id"]);
+        class device extends api {
 
-            return api::ANSWER($params);
-        }
+            public static function PUT($params) {
+                $households = loadBackend("households");
 
-        public static function index()
-        {
-            return [
-                "PUT" => "#same(addresses,house,PUT)",
-                "DELETE" => "#same(addresses,house,DELETE)",
-            ];
+                $success = $households->modifyDevice($params["_id"], $params);
+
+                return api::ANSWER($success);
+            }
+
+            public static function DELETE($params) {
+                $households = loadBackend("households");
+
+                $success = $households->deleteDevice($params["_id"]);
+
+                return api::ANSWER($params);
+            }
+
+            public static function index() {
+                return [
+                    "PUT" => "#same(addresses,house,PUT)",
+                    "DELETE" => "#same(addresses,house,DELETE)",
+                ];
+            }
         }
     }
-}

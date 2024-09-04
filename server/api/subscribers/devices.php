@@ -1,35 +1,34 @@
 <?php
 
-/**
- * devices api
- */
-
-namespace api\subscribers
-{
-
-    use api\api;
-
     /**
-     * devices method
+     * devices api
      */
 
-    class devices extends api
-    {
+    namespace api\subscribers {
 
-        public static function GET($params)
+        use api\api;
+
+        /**
+         * devices method
+         */
+
+        class devices extends api
         {
-            $households = loadBackend("households");
 
-            $devices = $households->getDevices(@$params["by"], @$params["query"]);
+            public static function GET($params)
+            {
+                $households = loadBackend("households");
 
-            return api::ANSWER($devices, $devices?"devices":false);
-        }
+                $devices = $households->getDevices(@$params["by"], @$params["query"]);
 
-        public static function index()
-        {
-            return [
-                "GET" => "#same(addresses,house,GET)",
-            ];
+                return api::ANSWER($devices, $devices ? "devices" : false);
+            }
+
+            public static function index()
+            {
+                return [
+                    "GET" => "#same(addresses,house,GET)",
+                ];
+            }
         }
     }
-}

@@ -11,15 +11,6 @@
      * @apiHeader {String} authorization authentication token
      *
      * @apiSuccess {String} serverVersion server version
-     *
-     * @apiSuccessExample Success-Response:
-     *  HTTP/1.1 200 OK
-     *  {
-     *      "serverVersion": "1"
-     *  }
-     *
-     * @apiExample {curl} Example usage:
-     *  curl -X GET http://127.0.0.1:8000/server/api.php/server/version
      */
 
     /**

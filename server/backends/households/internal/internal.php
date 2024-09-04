@@ -2338,8 +2338,10 @@
             /**
              * @inheritDoc
              */
-            public function modifyDevice($deviceId, $params = [])
-            {
+
+            public function modifyDevice($deviceId, $params = []) {
+                global $mobile;
+
                 if (!checkInt($deviceId)) {
                     return false;
                 }
@@ -2466,7 +2468,7 @@
                     }
                 }
 
-                if ($this->db->modify("update houses_subscribers_devices set last_seen = :last_seen where subscriber_device_id = $deviceId", [ "last_seen" => time() ]) !== false) {
+                if ($mobile && $this->db->modify("update houses_subscribers_devices set last_seen = :last_seen where subscriber_device_id = $deviceId", [ "last_seen" => time() ]) !== false) {
                     $result++;
                 }
 

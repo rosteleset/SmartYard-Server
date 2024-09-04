@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {post} /server/clearCache get version
+     * @api {post} /server/clearCache clear cache
      *
      * @apiVersion 1.0.0
      *
@@ -10,11 +10,7 @@
      *
      * @apiHeader {String} authorization authentication token
      *
-     * @apiSuccessExample Success-Response:
-     *  HTTP/1.1 204 OK
-     *
-     * @apiExample {curl} Example usage:
-     *  curl -X POST http://127.0.0.1:8000/server/api.php/server/clearCache
+     * @apiSuccess {Boolean} operationResult
      */
 
     /**
