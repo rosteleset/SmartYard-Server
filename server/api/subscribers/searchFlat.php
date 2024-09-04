@@ -1,6 +1,21 @@
 <?php
 
     /**
+     * @api {get} /subscribers/search search subscribers
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName searchFlat
+     * @apiGroup subscribers
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiQuery {String} search
+     *
+     * @apiSuccess {Object[]} flats
+     */
+
+    /**
      * subscribers api
      */
 
