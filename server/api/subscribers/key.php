@@ -1,56 +1,98 @@
 <?php
 
-/**
- * subscribers api
- */
-
-namespace api\subscribers
-{
-
-    use api\api;
-
     /**
-     * key method
+     * @api {post} /subscribers/key add rfId
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName addKey
+     * @apiGroup subscribers
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiBody {String} rfId
+     * @apiBody {Number="0,1,2,3,4,5"} accessType 0 - universal, 1 - subscriber, 2 - flat, 3 - entrance, 4 - house, 5 - company
+     * @apiBody {Number} accessTo
+     * @apiBody {String} comments
+     *
+     * @apiSuccess {Number} key
      */
 
-    class key extends api
-    {
+    /**
+     * @api {put} /subscribers/key/:keyId modify rfId
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName modifyKey
+     * @apiGroup subscribers
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {Number} keyId
+     * @apiBody {String} comments
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
 
-        public static function POST($params)
-        {
-            $households = loadBackend("households");
+    /**
+     * @api {delete} /subscribers/key/:keyId delete rfId
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName deleteKey
+     * @apiGroup subscribers
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {Number} keyId
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
 
-            $keyId = $households->addKey($params["rfId"], $params["accessType"], $params["accessTo"], $params["comments"]);
+    /**
+     * subscribers api
+     */
 
-            return api::ANSWER($keyId, ($keyId !== false) ? "key" : false);
-        }
+    namespace api\subscribers {
 
-        public static function PUT($params)
-        {
-            $households = loadBackend("households");
+        use api\api;
 
-            $success = $households->modifyKey($params["_id"], $params["comments"]);
+        /**
+         * key method
+         */
 
-            return api::ANSWER($success);
-        }
+        class key extends api {
 
-        public static function DELETE($params)
-        {
-            $households = loadBackend("households");
+            public static function POST($params) {
+                $households = loadBackend("households");
 
-            $success = $households->deleteKey($params["_id"]);
+                $keyId = $households->addKey($params["rfId"], $params["accessType"], $params["accessTo"], $params["comments"]);
 
-            return api::ANSWER($success);
-        }
+                return api::ANSWER($keyId, ($keyId !== false) ? "key" : false);
+            }
 
-        public static function index()
-        {
-            return [
-                "GET" => "#same(addresses,house,GET)",
-                "PUT" => "#same(addresses,house,PUT)",
-                "POST" => "#same(addresses,house,POST)",
-                "DELETE" => "#same(addresses,house,DELETE)",
-            ];
+            public static function PUT($params) {
+                $households = loadBackend("households");
+
+                $success = $households->modifyKey($params["_id"], $params["comments"]);
+
+                return api::ANSWER($success);
+            }
+
+            public static function DELETE($params) {
+                $households = loadBackend("households");
+
+                $success = $households->deleteKey($params["_id"]);
+
+                return api::ANSWER($success);
+            }
+
+            public static function index() {
+                return [
+                    "PUT" => "#same(addresses,house,PUT)",
+                    "POST" => "#same(addresses,house,POST)",
+                    "DELETE" => "#same(addresses,house,DELETE)",
+                ];
+            }
         }
     }
-}

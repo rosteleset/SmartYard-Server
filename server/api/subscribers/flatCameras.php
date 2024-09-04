@@ -1,6 +1,38 @@
 <?php
 
     /**
+     * @api {post} /subscribers/flatCameras add camera to flat
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName addFlatCamera
+     * @apiGroup subscribers
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiBody {Number} flatId
+     * @apiBody {Number} cameraId
+     *
+     * @apiSuccess {Number} cameraId
+     */
+
+    /**
+     * @api {delete} /subscribers/flatCameras add camera to flat
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName deleteFlatCamera
+     * @apiGroup subscribers
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiBody {Number} flatId
+     * @apiBody {Number} cameraId
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
      * subscribers api
      */
 

@@ -1,35 +1,63 @@
 <?php
 
-/**
- * subscribers api
- */
-
-namespace api\subscribers
-{
-
-    use api\api;
-
     /**
-     * keys method
+     * @api {get} /subscribers/keys get rfIds
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName getKeysBy
+     * @apiGroup subscribers
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiBody {String="flatId,rfId,keyId,domophoneId"} by
+     * @apiBody {String} query
+     *
+     * @apiSuccess {Object[]} keys
      */
 
-    class keys extends api
-    {
+    /**
+     * @api {get} /subscribers/keys get rfIds
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName getKeys
+     * @apiGroup subscribers
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiBody {Number} by 0 - universal, 1 - subscriber, 2 - flat, 3 - entrance, 4 - house, 5 - company
+     * @apiBody {Number} query
+     *
+     * @apiSuccess {Object[]} keys
+     */
 
-        public static function GET($params)
-        {
-            $households = loadBackend("households");
+    /**
+     * subscribers api
+     */
 
-            $keys = $households->getKeys(@$params["by"], @$params["query"]);
+    namespace api\subscribers {
 
-            return api::ANSWER($keys, ($keys !== false)?"keys":false);
-        }
+        use api\api;
 
-        public static function index()
-        {
-            return [
-                "GET" => "#same(addresses,house,GET)",
-            ];
+        /**
+         * keys method
+         */
+
+        class keys extends api {
+
+            public static function GET($params) {
+                $households = loadBackend("households");
+
+                $keys = $households->getKeys(@$params["by"], @$params["query"]);
+
+                return api::ANSWER($keys, ($keys !== false) ? "keys" : false);
+            }
+
+            public static function index() {
+                return [
+                    "GET" => "#same(addresses,house,GET)",
+                ];
+            }
         }
     }
-}
