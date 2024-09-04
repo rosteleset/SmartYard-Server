@@ -3828,9 +3828,6 @@ const faIcons = [
         title: "fab fa-tumblr",
         searchTerms: []
     }, {
-        title: "fab fa-tumblr-square",
-        searchTerms: []
-    }, {
         title: "fas fa-tv",
         searchTerms: [ "computer", "display", "monitor", "television" ]
     }, {
