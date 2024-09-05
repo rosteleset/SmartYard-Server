@@ -6,11 +6,14 @@
      * @apiVersion 1.0.0
      *
      * @apiName getGroups
-     * @apiGroup groups
+     * @apiGroup accounts
      *
      * @apiHeader {String} authorization authentication token
      *
      * @apiSuccess {Object[]} groups groups
+     *
+     * @apiSuccessExample {json} Success
+     * {"groups":[{"gid":2,"name":"LanTa","acronym":"lanta","users":1,"admin":null,"adminLogin":null},{"gid":1,"name":"users","acronym":"users","users":2,"admin":null,"adminLogin":null}]}
      */
 
     /**

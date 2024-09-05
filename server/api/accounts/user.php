@@ -6,7 +6,7 @@
      * @apiVersion 1.0.0
      *
      * @apiName getUser
-     * @apiGroup users
+     * @apiGroup accounts
      *
      * @apiHeader {String} authorization authentication token
      *
@@ -19,7 +19,7 @@
      * @apiVersion 1.0.0
      *
      * @apiName createUser
-     * @apiGroup users
+     * @apiGroup accounts
      *
      * @apiHeader {String} authorization authentication token
      *
@@ -35,7 +35,7 @@
      * @apiVersion 1.0.0
      *
      * @apiName updateUser
-     * @apiGroup users
+     * @apiGroup accounts
      *
      * @apiHeader {String} authorization authentication token
      *
@@ -58,7 +58,7 @@
      * @apiVersion 1.0.0
      *
      * @apiName deleteUser
-     * @apiGroup users
+     * @apiGroup accounts
      *
      * @apiHeader {String} authorization authentication token
      *

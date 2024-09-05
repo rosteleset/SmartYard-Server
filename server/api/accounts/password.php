@@ -6,7 +6,7 @@
      * @apiVersion 1.0.0
      *
      * @apiName password
-     * @apiGroup users
+     * @apiGroup accounts
      *
      * @apiHeader {String} authorization authentication token
      *

@@ -6,7 +6,7 @@
      * @apiVersion 1.0.0
      *
      * @apiName getGroup
-     * @apiGroup groups
+     * @apiGroup accounts
      *
      * @apiHeader {String} authorization authentication token
      *
@@ -21,14 +21,20 @@
      * @apiVersion 1.0.0
      *
      * @apiName createGroup
-     * @apiGroup groups
+     * @apiGroup accounts
      *
      * @apiHeader {String} authorization authentication token
      *
-     * @apiBody {String} acronym
-     * @apiBody {String} name
+     * @apiBody {String} acronym group acronym, i.e. short name
+     * @apiBody {String} name group name
      *
      * @apiSuccess {Number} gid group id
+     *
+     * @apiSuccessExample {json} Create
+     * {"acronym":"test","name":"ТЕСТ"}
+     *
+     * @apiSuccessExample {json} Success
+     * {"gid":4}
      */
 
     /**
@@ -37,7 +43,7 @@
      * @apiVersion 1.0.0
      *
      * @apiName updateGroup
-     * @apiGroup groups
+     * @apiGroup accounts
      *
      * @apiHeader {String} authorization authentication token
      *
@@ -55,7 +61,7 @@
      * @apiVersion 1.0.0
      *
      * @apiName deleteGroup
-     * @apiGroup groups
+     * @apiGroup accounts
      *
      * @apiHeader {String} authorization authentication token
      *
@@ -85,7 +91,9 @@
             }
 
             public static function POST($params) {
-                $gid = !!loadBackend("groups")->addGroup($params["acronym"], $params["name"]);
+                $gid = loadBackend("groups")->addGroup($params["acronym"], $params["name"]);
+
+                error_log(">>>>>>>>>>" . $gid . "<<<<<<<<<<");
 
                 return api::ANSWER($gid, ($gid !== false) ? "gid" : "notAcceptable");
             }

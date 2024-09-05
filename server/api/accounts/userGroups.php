@@ -6,7 +6,7 @@
      * @apiVersion 1.0.0
      *
      * @apiName groupUsers
-     * @apiGroup groups
+     * @apiGroup accounts
      *
      * @apiHeader {String} authorization authentication token
      *
@@ -21,7 +21,7 @@
      * @apiVersion 1.0.0
      *
      * @apiName setGroupUsers
-     * @apiGroup groups
+     * @apiGroup accounts
      *
      * @apiHeader {String} authorization authentication token
      *
