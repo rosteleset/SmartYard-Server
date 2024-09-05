@@ -1,6 +1,39 @@
 <?php
 
     /**
+     * @api {post} /tt/favoriteFilter/:customFilterId add filter to favorites
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName addFavoriteFilter
+     * @apiGroup tt
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {String} customFilterId
+     * @apiBody {Boolean} rightSide
+     * @apiBody {String} icon
+     * @apiBody {String} color
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
+     * @api {delete} /tt/favoriteFilter/:customFilterId delete filter from favorites
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName addFavoriteFilter
+     * @apiGroup tt
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {String} customFilterId
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
      * tt api
      */
 

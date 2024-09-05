@@ -1,6 +1,54 @@
 <?php
 
     /**
+     * @api {get} /tt/file get attachment
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName addFavoriteFilter
+     * @apiGroup tt
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiQuery {String} issueId
+     * @apiQuery {String} filename
+     *
+     * @apiSuccess {Mixed} operationResult
+     */
+
+    /**
+     * @api {post} /tt/file add attachments to issue
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName addFavoriteFilter
+     * @apiGroup tt
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiBody {String} issueId
+     * @apiBody {Object[]} attachments
+     *
+     * @apiSuccess {Mixed} operationResult
+     */
+
+    /**
+     * @api {delete} /tt/file delete attachment from issue
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName addFavoriteFilter
+     * @apiGroup tt
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiBody {String} issueId
+     * @apiBody {String} filename
+     *
+     * @apiSuccess {Mixed} operationResult
+     */
+
+    /**
      * tt api
      */
 
@@ -103,8 +151,7 @@
                 api::ERROR("notFound");
             }
 
-            public static function POST($params)
-            {
+            public static function POST($params) {
                 $tt = loadBackend("tt");
 
                 if (!$tt) {
@@ -120,8 +167,7 @@
                 }
             }
 
-            public static function DELETE($params)
-            {
+            public static function DELETE($params) {
                 $tt = loadBackend("tt");
 
                 if (!$tt) {
@@ -130,7 +176,7 @@
 
                 $success = $tt->deleteAttachment($params["issueId"], $params["filename"]);
 
-                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
+                return api::ANSWER($success, ($success !== false) ? false : "notAcceptable");
             }
 
             public static function index() {
