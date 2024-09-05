@@ -33,8 +33,11 @@
      * @apiSuccessExample {json} Create
      * {"acronym":"test","name":"ТЕСТ"}
      *
-     * @apiSuccessExample {json} Success
+     * @apiSuccessExample {json} Success 200
      * {"gid":4}
+     *
+     * @apiSuccessExample {json} Error 406
+     * {"error":"notAcceptable"}
      */
 
     /**
