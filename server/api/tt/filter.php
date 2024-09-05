@@ -1,6 +1,65 @@
 <?php
 
     /**
+     * @api {get} /tt/filter/:filterId get filter
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName getFilter
+     * @apiGroup tt
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiparam {String} filterId
+     *
+     * @apiSuccess {String} body
+     */
+
+    /**
+     * @api {get} /tt/filter get filters
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName addFavoriteFilter
+     * @apiGroup tt
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiSuccess {Object[]} filters
+     */
+
+    /**
+     * @api {put} /tt/filter/:filterId modify filter
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName putFilter
+     * @apiGroup tt
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {String} filterId
+     * @apiBody {String} body
+     *
+     * @apiSuccess {String} body
+     */
+
+    /**
+     * @api {delete} /tt/filter/:filterId delete filter
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName deleteFilter
+     * @apiGroup tt
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {String} filterId
+     *
+     * @apiSuccess {String} body
+     */
+
+    /**
      * tt api
      */
 
@@ -33,13 +92,13 @@
             public static function PUT($params) {
                 $success = loadBackend("tt")->putFilter($params["_id"], $params["body"]);
 
-                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
+                return api::ANSWER($success, ($success !== false) ? false : "notAcceptable");
             }
 
             public static function DELETE($params) {
                 $success = loadBackend("tt")->deleteFilter($params["_id"]);
 
-                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
+                return api::ANSWER($success, ($success !== false) ? false : "notAcceptable");
             }
 
             public static function index() {

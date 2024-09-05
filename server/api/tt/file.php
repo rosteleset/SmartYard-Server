@@ -5,7 +5,7 @@
      *
      * @apiVersion 1.0.0
      *
-     * @apiName addFavoriteFilter
+     * @apiName getAttachment
      * @apiGroup tt
      *
      * @apiHeader {String} authorization authentication token
@@ -21,7 +21,7 @@
      *
      * @apiVersion 1.0.0
      *
-     * @apiName addFavoriteFilter
+     * @apiName addAttachments
      * @apiGroup tt
      *
      * @apiHeader {String} authorization authentication token
@@ -37,7 +37,7 @@
      *
      * @apiVersion 1.0.0
      *
-     * @apiName addFavoriteFilter
+     * @apiName deleteAttachment
      * @apiGroup tt
      *
      * @apiHeader {String} authorization authentication token
