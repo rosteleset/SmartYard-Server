@@ -1,6 +1,22 @@
 <?php
 
     /**
+     * @api {get} /tt/journal/:issueId get issue journal
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName getIssueJournal
+     * @apiGroup tt
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {String} issueId
+     * @apiQuery {Number} [limit]
+     *
+     * @apiSuccess {Object[]} journal
+     */
+
+    /**
      * tt api
      */
 
@@ -21,7 +37,7 @@
                     return API::ERROR(500);
                 }
 
-                $journal = $tt->getJournal($params["_id"], @!!$params["limit"]);
+                $journal = $tt->getJournal($params["_id"], (@$params["limit"] === false) ? false : (@(int)$params["limit"] ? : false));
 
                 return api::ANSWER($journal, "journal");
             }

@@ -1,6 +1,44 @@
 <?php
 
     /**
+     * @api {get} /tt/issue get issues by filter
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName getIssues
+     * @apiGroup tt
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiQuery {String} filter
+     * @apiQuery {String} search
+     * @apiQuery {String} parent
+     *
+     * @apiSuccess {Object[]} issues
+     */
+
+    /**
+     * @api {post} /tt/issue get issues by query
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName getIssues
+     * @apiGroup tt
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiBody {String} project
+     * @apiBody {Object} query
+     * @apiBody {Object} fields
+     * @apiBody {Object} [sort]
+     * @apiBody {Number} [skip=0]
+     * @apiBody {Number} [limit=5]
+     * @apiBody {Object} [preprocess]
+     *
+     * @apiSuccess {Object[]} issues
+     */
+
+    /**
      * tt api
      */
 
@@ -28,7 +66,7 @@
                             if ($params && array_key_exists("search", $params) && trim($params["search"])) {
                                 $preprocess["%%search"] = trim($params["search"]);
                             }
-            
+
                             if ($params && array_key_exists("parent", $params) && trim($params["parent"])) {
                                 $preprocess["%%parent"] = trim($params["parent"]);
                             }
@@ -49,7 +87,7 @@
                     }
                 }
 
-                return api::ANSWER($issues, ($issues !== false)?"issues":"notFound");
+                return api::ANSWER($issues, ($issues !== false) ? "issues" : "notFound");
             }
 
             public static function POST($params) {
@@ -66,7 +104,7 @@
                     }
                 }
 
-                return api::ANSWER($issues, ($issues !== false)?"issues":"notFound");
+                return api::ANSWER($issues, ($issues !== false) ? "issues" : "notFound");
             }
 
             public static function index() {
