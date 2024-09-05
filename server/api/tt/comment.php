@@ -31,7 +31,7 @@
      * @apiBody {String} issueId
      * @apiBody {Number} commentIndex
      * @apiBody {String} comment
-     * @apiBody {Booleaning} commentPrivate
+     * @apiBody {Boolean} commentPrivate
      *
      * @apiSuccess {Boolean} operationResult
      */
