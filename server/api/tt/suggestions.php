@@ -1,6 +1,23 @@
 <?php
 
     /**
+     * @api {get} /tt/suggestions get suggestions
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName suggestions
+     * @apiGroup tt
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiQuery {String} project
+     * @apiQuery {String} field
+     * @apiQuery {String} field
+     *
+     * @apiSuccess {Object[]} suggestions
+     */
+
+    /**
      * tt api
      */
 

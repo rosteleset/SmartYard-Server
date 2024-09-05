@@ -1,6 +1,19 @@
 <?php
 
     /**
+     * @api {get} /tt/tt get metadata
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName suggestions
+     * @apiGroup tt
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiSuccess {Object} meta
+     */
+
+    /**
      * tt api
      */
 
