@@ -1,6 +1,67 @@
 <?php
 
     /**
+     * @api {get} /tt/issue/:issueId get issue
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName getIssue
+     * @apiGroup tt
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {String} issueId
+     *
+     * @apiSuccess {Object} issue
+     */
+
+    /**
+     * @api {post} /tt/issue create issue
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName createIssue
+     * @apiGroup tt
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiBody {Object} issue
+     *
+     * @apiSuccess {String} issueId
+     */
+
+    /**
+     * @api {put} /tt/issue/:issueId modify issue (special action)
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName modifyIssue
+     * @apiGroup tt
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {String} issueId
+     * @apiBody {String} action
+     *
+     * @apiSuccess {Mixed} operationResult
+     */
+
+    /**
+     * @api {delete} /tt/issue/:issueId delete issue
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName modifyIssue
+     * @apiGroup tt
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {String} issueId
+     *
+     * @apiSuccess {Mixed} operationResult
+     */
+
+    /**
      * tt api
      */
 
@@ -51,7 +112,7 @@
 
                 $id = $tt->loadWorkflow($params["issue"]["workflow"])->createIssue($params["issue"]);
 
-                return api::ANSWER($id, ($id !== false)?"id":false);
+                return api::ANSWER($id, ($id !== false) ? "id" : false);
             }
 
             public static function PUT($params) {
@@ -74,7 +135,7 @@
                     }
                 }
 
-                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
+                return api::ANSWER($success, ($success !== false) ? false : "notAcceptable");
             }
 
             public static function DELETE($params) {

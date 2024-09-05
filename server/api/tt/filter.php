@@ -10,7 +10,7 @@
      *
      * @apiHeader {String} authorization authentication token
      *
-     * @apiparam {String} filterId
+     * @apiParam {String} filterId
      *
      * @apiSuccess {String} body
      */
