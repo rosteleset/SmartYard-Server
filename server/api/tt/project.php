@@ -1,6 +1,21 @@
 <?php
 
     /**
+     * @api {post} /tt/project create project
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName createProject
+     * @apiGroup tt
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {String} customFilterId
+     *
+     * @apiSuccess {String} body
+     */
+
+    /**
      * tt api
      */
 
@@ -24,7 +39,7 @@
                 } else {
                     $projectId = $tt->addProject($params["acronym"], $params["project"]);
 
-                    return api::ANSWER($projectId, ($projectId !== false)?"projectId":"notAcceptable");
+                    return api::ANSWER($projectId, ($projectId !== false) ? "projectId" : "notAcceptable");
                 }
             }
 
@@ -68,7 +83,7 @@
                     $success = $tt->deleteProject($params["_id"]);
                 }
 
-                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
+                return api::ANSWER($success, ($success !== false) ? false : "notAcceptable");
             }
 
             public static function index() {
