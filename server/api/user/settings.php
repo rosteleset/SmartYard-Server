@@ -6,7 +6,7 @@
      * @apiVersion 1.0.0
      *
      * @apiName getSettings
-     * @apiGroup tt
+     * @apiGroup user
      *
      * @apiHeader {String} authorization authentication token
      *
@@ -19,7 +19,7 @@
      * @apiVersion 1.0.0
      *
      * @apiName putSettings
-     * @apiGroup tt
+     * @apiGroup user
      *
      * @apiHeader {String} authorization authentication token
      *
