@@ -11,10 +11,10 @@
      * @apiHeader {String} authorization authentication token
      *
      * @apiParam {String} [projectId]
-     * @apiParam {String} [filter]
-     * @apiParam {String} [personal]
-     * @apiParam {String} [acronym]
-     * @apiParam {String} [project]
+     * @apiBody {String} [filter]
+     * @apiBody {String} [personal]
+     * @apiBody {String} [acronym]
+     * @apiBody {String} [project]
      *
      * @apiSuccess {Number} [projectId]
      * @apiSuccess {Boolean} [operationResult]
@@ -31,18 +31,18 @@
      * @apiHeader {String} authorization authentication token
      *
      * @apiParam {String} projectId
-     * @apiParam {String} [acronym]
-     * @apiParam {String} [project]
-     * @apiParam {Number} [maxFileSize]
-     * @apiParam {Boolean} [searchSubject]
-     * @apiParam {Boolean} [searchDescription]
-     * @apiParam {Boolean} [searchComments]
-     * @apiParam {String} [assigned] uid
-     * @apiParam {Object} [workflows]
-     * @apiParam {Object} [resolutions]
-     * @apiParam {Object} [customFields]
-     * @apiParam {Object} [customFieldsNoJournal]
-     * @apiParam {Object} [viewers]
+     * @apiBody {String} [acronym]
+     * @apiBody {String} [project]
+     * @apiBody {Number} [maxFileSize]
+     * @apiBody {Boolean} [searchSubject]
+     * @apiBody {Boolean} [searchDescription]
+     * @apiBody {Boolean} [searchComments]
+     * @apiBody {String} [assigned] uid
+     * @apiBody {Object} [workflows]
+     * @apiBody {Object} [resolutions]
+     * @apiBody {Object} [customFields]
+     * @apiBody {Object} [customFieldsNoJournal]
+     * @apiBody {Object} [viewers]
      *
      * @apiSuccess {Boolean} operationResult
      */

@@ -17,19 +17,19 @@
             public static function GET($params) {
                 $success = loadBackend("tt")->getViewers();
 
-                return api::ANSWER($success, ($success !== false)?"viewers":"notAcceptable");
+                return api::ANSWER($success, ($success !== false) ? "viewers" : "notAcceptable");
             }
 
             public static function PUT($params) {
                 $success = loadBackend("tt")->putViewer($params['field'], $params["name"], $params['code']);
 
-                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
+                return api::ANSWER($success, ($success !== false) ? false : "notAcceptable");
             }
 
             public static function DELETE($params) {
                 $success = loadBackend("tt")->deleteViewer($params['field'], $params['name']);
 
-                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
+                return api::ANSWER($success, ($success !== false) ? false : "notAcceptable");
             }
 
             public static function index() {

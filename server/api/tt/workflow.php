@@ -27,13 +27,13 @@
             public static function PUT($params) {
                 $success = loadBackend("tt")->putWorkflow($params["_id"], $params["body"]);
 
-                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
+                return api::ANSWER($success, ($success !== false) ? false : "notAcceptable");
             }
 
             public static function DELETE($params) {
                 $success = loadBackend("tt")->deleteWorkflow($params["_id"]);
 
-                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
+                return api::ANSWER($success, ($success !== false) ? false : "notAcceptable");
             }
 
             public static function index() {
