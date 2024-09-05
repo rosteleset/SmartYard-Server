@@ -1,6 +1,22 @@
 <?php
 
     /**
+     * @api {post} /tt/link/:printId print issues
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName printIssue
+     * @apiGroup tt
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {Number} printId
+     * @apiBody {Object} data
+     *
+     * @apiSuccess {Object} file
+     */
+
+    /**
      * tt api
      */
 
@@ -19,7 +35,7 @@
 
                 $success = $tt->printExec($params["_id"], $params["data"]);
 
-                return api::ANSWER($success, ($success !== false)?"file":"cantGenerateForm");
+                return api::ANSWER($success, ($success !== false) ? "file" : "cantGenerateForm");
             }
 
             public static function index() {

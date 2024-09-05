@@ -1,6 +1,52 @@
 <?php
 
     /**
+     * @api {get} /tt/lib/:libId get workflow lib
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName getWorkflowLib
+     * @apiGroup tt
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {String} libId
+     *
+     * @apiSuccess {Object} body
+     */
+
+    /**
+     * @api {put} /tt/lib/:libId modify (add) workflow lib
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName putWorkflowLib
+     * @apiGroup tt
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {String} libId
+     * @apiBody {String} body
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
+     * @api {delete} /tt/lib/:libId delete workflow lib
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName deleteWorkflowLib
+     * @apiGroup tt
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {String} libId
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
      * tt api
      */
 
@@ -27,13 +73,13 @@
             public static function PUT($params) {
                 $success = loadBackend("tt")->putWorkflowLib($params["_id"], $params["body"]);
 
-                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
+                return api::ANSWER($success, ($success !== false) ? false : "notAcceptable");
             }
 
             public static function DELETE($params) {
                 $success = loadBackend("tt")->deleteWorkflowLib($params["_id"]);
 
-                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
+                return api::ANSWER($success, ($success !== false) ? false : "notAcceptable");
             }
 
             public static function index() {

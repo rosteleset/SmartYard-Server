@@ -1,6 +1,38 @@
 <?php
 
     /**
+     * @api {post} /tt/link/:issueId1 add issues link
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName addIssuesLink
+     * @apiGroup tt
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {String} issueId1
+     * @apiBody {String} issueId2
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
+     * @api {delete} /tt/link/:issueId1 delete issues link
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName addIssuesLink
+     * @apiGroup tt
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {String} issueId1
+     * @apiBody {String} issueId2
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
      * tt api
      */
 

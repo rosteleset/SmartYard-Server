@@ -1,6 +1,70 @@
 <?php
 
     /**
+     * @api {get} /tt/prints/:printId get print's part
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName getPrint
+     * @apiGroup tt
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {String} printId
+     * @apiBody {String} mode
+     *
+     * @apiSuccess {Mixed} $mode
+     */
+
+    /**
+     * @api {post} /tt/prints/:printId add print
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName addPrint
+     * @apiGroup tt
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {String} [printId]
+     * @apiBody {String} mode
+     *
+     * @apiSuccess {Mixed} $mode
+     */
+
+    /**
+     * @api {post} /tt/prints/:printId modify print
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName modifyPrint
+     * @apiGroup tt
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {String} printId
+     * @apiBody {String} mode
+     *
+     * @apiSuccess {Mixed} $mode
+     */
+
+    /**
+     * @api {post} /tt/prints/:printId delete print
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName deletePrint
+     * @apiGroup tt
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {String} printId
+     * @apiBody {String} mode
+     *
+     * @apiSuccess {Mixed} $mode
+     */
+
+    /**
      * tt api
      */
 
@@ -30,16 +94,16 @@
 
                     case "template":
                         $template = $tt->printGetTemplate($params["_id"]);
-        
+
                         if ($template) {
                             header("Content-Disposition: attachment; filename=" . urlencode($template["name"]));
                             header('Cache-Control: public, must-revalidate, max-age=0');
                             header('Pragma: no-cache');
                             header('Content-Length:' . $template["size"]);
                             header('Content-Transfer-Encoding: binary');
-        
+
                             echo $template["body"];
-        
+
                             exit();
                         }
                         break;
@@ -50,7 +114,7 @@
                         break;
                 }
 
-                return api::ANSWER($success, ($success !== false)?$mode:"notAcceptable");
+                return api::ANSWER($success, ($success !== false) ? $mode : "notAcceptable");
             }
 
             public static function POST($params) {
@@ -61,7 +125,7 @@
                     case "exec":
                         $success = $tt->printExec($params["_id"], $params["data"]);
                         break;
-    
+
                     default:
                         $success = $tt->addPrint($params["formName"], $params["extension"], $params["description"]);
                         break;
