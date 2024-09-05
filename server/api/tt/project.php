@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {post} /tt/project create project
+     * @api {post} /tt/project/:projectId create or modify project
      *
      * @apiVersion 1.0.0
      *
@@ -10,9 +10,56 @@
      *
      * @apiHeader {String} authorization authentication token
      *
-     * @apiParam {String} customFilterId
+     * @apiParam {String} [projectId]
+     * @apiParam {String} [filter]
+     * @apiParam {String} [personal]
+     * @apiParam {String} [acronym]
+     * @apiParam {String} [project]
      *
-     * @apiSuccess {String} body
+     * @apiSuccess {Number} [projectId]
+     * @apiSuccess {Boolean} [operationResult]
+     */
+
+    /**
+     * @api {put} /tt/project/:projectId modify project
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName modifyProject
+     * @apiGroup tt
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {String} projectId
+     * @apiParam {String} [acronym]
+     * @apiParam {String} [project]
+     * @apiParam {Number} [maxFileSize]
+     * @apiParam {Boolean} [searchSubject]
+     * @apiParam {Boolean} [searchDescription]
+     * @apiParam {Boolean} [searchComments]
+     * @apiParam {String} [assigned] uid
+     * @apiParam {Object} [workflows]
+     * @apiParam {Object} [resolutions]
+     * @apiParam {Object} [customFields]
+     * @apiParam {Object} [customFieldsNoJournal]
+     * @apiParam {Object} [viewers]
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
+     * @api {delete} /tt/project/:projectId modify project
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName deleteProject
+     * @apiGroup tt
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {String} projectId
+     *
+     * @apiSuccess {Boolean} operationResult
      */
 
     /**
