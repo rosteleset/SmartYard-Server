@@ -1,6 +1,24 @@
 <?php
 
     /**
+     * @api {put} /tt/action modify issues
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName modifyIssues
+     * @apiGroup tt
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiBody {String} project
+     * @apiBody {Object} query
+     * @apiBody {String} action
+     * @apiBody {Object} set
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
      * tt api
      */
 

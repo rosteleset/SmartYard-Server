@@ -1,6 +1,40 @@
 <?php
 
     /**
+     * @api {post} /tt/arrays/:issueId add value to array (field)
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName arrayAddValue
+     * @apiGroup tt
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {String} issueId
+     * @apiBody {String} field
+     * @apiBody {String} value
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
+     * @api {delete} /tt/arrays/:issueId remove value from array (field)
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName deleteAddValue
+     * @apiGroup tt
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {String} issueId
+     * @apiBody {String} field
+     * @apiBody {String} value
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
      * tt api
      */
 

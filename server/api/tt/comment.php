@@ -1,6 +1,58 @@
 <?php
 
     /**
+     * @api {put} /tt/comment add comment
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName addComment
+     * @apiGroup tt
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiBody {String} issueId
+     * @apiBody {String} comment
+     * @apiBody {Booleaning} commentPrivate
+     * @apiBody {String} type
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
+     * @api {put} /tt/comment modify comment
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName modifyComment
+     * @apiGroup tt
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiBody {String} issueId
+     * @apiBody {Number} commentIndex
+     * @apiBody {String} comment
+     * @apiBody {Booleaning} commentPrivate
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
+     * @api {delete} /tt/comment delete comment
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName modifyComment
+     * @apiGroup tt
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiBody {String} issueId
+     * @apiBody {Number} commentIndex
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
      * tt api
      */
 
@@ -9,13 +61,12 @@
         use api\api;
 
         /**
-         * tt (task tracker metadata(s)) method
+         * comment method
          */
 
         class comment extends api {
 
-            public static function POST($params)
-            {
+            public static function POST($params) {
                 $tt = loadBackend("tt");
 
                 if (!$tt) {
@@ -24,11 +75,10 @@
 
                 $success =  $tt->addComment($params["issueId"], $params["comment"], !!@$params["commentPrivate"], @$params["type"]);
 
-                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
+                return api::ANSWER($success, ($success !== false) ? false : "notAcceptable");
             }
 
-            public static function PUT($params)
-            {
+            public static function PUT($params) {
                 $tt = loadBackend("tt");
 
                 if (!$tt) {
@@ -37,11 +87,10 @@
 
                 $success =  $tt->modifyComment($params["issueId"], $params["commentIndex"], $params["comment"], !!@$params["commentPrivate"]);
 
-                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
+                return api::ANSWER($success, ($success !== false) ? false : "notAcceptable");
             }
 
-            public static function DELETE($params)
-            {
+            public static function DELETE($params) {
                 $tt = loadBackend("tt");
 
                 if (!$tt) {
@@ -50,7 +99,7 @@
 
                 $success =  $tt->deleteComment($params["issueId"], $params["commentIndex"]);
 
-                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
+                return api::ANSWER($success, ($success !== false) ? false : "notAcceptable");
             }
 
             public static function index() {
