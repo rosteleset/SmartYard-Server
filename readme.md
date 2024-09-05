@@ -6,5 +6,4 @@ start from 01.nooble.md
 
 ### [Wiki](https://github.com/rosteleset/SmartYard-Server/wiki)
 
-### [API](https://rosteleset.github.io/SmartYard-Server/doc/api/)
-***!!! incomplete, work in progress !!!***
+### [API](https://rosteleset.github.io/SmartYard-Server/doc/api/) (WiP)

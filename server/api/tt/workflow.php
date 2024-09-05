@@ -1,6 +1,52 @@
 <?php
 
     /**
+     * @api {get} /tt/workflow/:workflowId get workflow
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName getWorkflow
+     * @apiGroup tt
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {String} workflowId
+     *
+     * @apiSuccess {Object} body
+     */
+
+    /**
+     * @api {put} /tt/workflow/:workflowId add or modify workflow
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName modifyWorkflow
+     * @apiGroup tt
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {String} workflowId
+     * @apiBody {String} body
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
+     * @api {delete} /tt/workflow/:workflowId delete workflow
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName deleteWorkflow
+     * @apiGroup tt
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {String} workflowId
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
      * tt api
      */
 

@@ -1,6 +1,52 @@
 <?php
 
     /**
+     * @api {get} /tt/viewer get viewers
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName getViewers
+     * @apiGroup tt
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiSuccess {Object[]} viewers
+     */
+
+    /**
+     * @api {put} /tt/viewer add or modify viewer
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName modifyViewer
+     * @apiGroup tt
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiBody {String} field
+     * @apiBody {String} name
+     * @apiBody {String} body
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
+     * @api {delete} /tt/viewer delete viewer
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName deleteViewer
+     * @apiGroup tt
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiBody {String} field
+     * @apiBody {String} name
+     *
+     * @apiSuccess {Boolean} operationResult
+     */
+
+    /**
      * tt api
      */
 

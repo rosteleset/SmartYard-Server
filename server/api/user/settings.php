@@ -1,6 +1,34 @@
 <?php
 
     /**
+     * @api {get} /user/settings get user settings
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName getSettings
+     * @apiGroup tt
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiSuccess {Object} settings
+     */
+
+    /**
+     * @api {put} /user/settings put user settings
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName putSettings
+     * @apiGroup tt
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiBody {Object} settings
+     *
+     * @apiSuccess {Boolean} true
+     */
+
+    /**
      * user namespace
      */
 
