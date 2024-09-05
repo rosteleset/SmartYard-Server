@@ -9,7 +9,7 @@
         use api\api;
 
         /**
-         * status method
+         * role method
          */
 
         class role extends api {

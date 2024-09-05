@@ -9,7 +9,7 @@
         use api\api;
 
         /**
-         * tt (task tracker metadata(s)) method
+         * issue method
          */
 
         class issue extends api {

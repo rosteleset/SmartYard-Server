@@ -9,7 +9,7 @@
         use api\api;
 
         /**
-         * tt (task tracker metadata(s)) method
+         * file method
          */
 
         class file extends api {

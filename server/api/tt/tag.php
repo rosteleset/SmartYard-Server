@@ -9,7 +9,7 @@
         use api\api;
 
         /**
-         * resolution method
+         * tag method
          */
 
         class tag extends api {
