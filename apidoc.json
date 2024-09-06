@@ -1,10 +1,6 @@
 {
     "name": "RBT",
     "version": "1.0.0",
-    "header": {
-        "title": "Project description",
-        "filename": "readme.md"
-    },
     "template": {
         "forceLanguage": "en"
     }
