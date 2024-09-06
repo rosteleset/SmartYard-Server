@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @api {get} /cctv/download скачать файл
+ * @api {get} /mobile/cctv/download скачать файл
  * @apiVersion 1.0.0
  * @apiDescription ***почти готов***
  *

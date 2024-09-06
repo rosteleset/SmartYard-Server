@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {post} /tt/link/:issueId1 add issues link
+     * @api {post} /api/tt/link/:issueId1 add issues link
      *
      * @apiVersion 1.0.0
      *
@@ -17,7 +17,7 @@
      */
 
     /**
-     * @api {delete} /tt/link/:issueId1 delete issues link
+     * @api {delete} /api/tt/link/:issueId1 delete issues link
      *
      * @apiVersion 1.0.0
      *

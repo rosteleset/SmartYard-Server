@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {post} /tt/arrays/:issueId add value to array (field)
+     * @api {post} /api/tt/arrays/:issueId add value to array (field)
      *
      * @apiVersion 1.0.0
      *
@@ -18,7 +18,7 @@
      */
 
     /**
-     * @api {delete} /tt/arrays/:issueId remove value from array (field)
+     * @api {delete} /api/tt/arrays/:issueId remove value from array (field)
      *
      * @apiVersion 1.0.0
      *

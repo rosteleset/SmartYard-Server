@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {post} /user/pushTokens получить пуш токены для проверки
+     * @api {post} /mobile/user/pushTokens получить пуш токены для проверки
      * @apiVersion 1.0.0
      * @apiDescription **[метод готов]**
      *

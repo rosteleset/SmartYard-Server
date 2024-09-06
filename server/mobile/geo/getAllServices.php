@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {post} /geo/getAllServices список всех возможных услуг
+     * @api {post} /mobile/geo/getAllServices список всех возможных услуг
      * @apiVersion 1.0.0
      * @apiDescription **[метод готов]**
      *

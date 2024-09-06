@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {post} /tt/link/:printId print issues
+     * @api {post} /api/tt/link/:printId print issues
      *
      * @apiVersion 1.0.0
      *

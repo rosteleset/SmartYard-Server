@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @api {post} /ext/options получение конфига поставщика услуг для приложения
+ * @api {post} /mobile/ext/options получение конфига поставщика услуг для приложения
  * @apiVersion 1.0.0
  * @apiDescription **[метод в разработке]**
  *

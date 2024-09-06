@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {get} /tt/issue/:issueId get issue
+     * @api {get} /api/tt/issue/:issueId get issue
      *
      * @apiVersion 1.0.0
      *
@@ -16,7 +16,7 @@
      */
 
     /**
-     * @api {post} /tt/issue create issue
+     * @api {post} /api/tt/issue create issue
      *
      * @apiVersion 1.0.0
      *
@@ -31,7 +31,7 @@
      */
 
     /**
-     * @api {put} /tt/issue/:issueId modify issue (special action)
+     * @api {put} /api/tt/issue/:issueId modify issue (special action)
      *
      * @apiVersion 1.0.0
      *
@@ -47,7 +47,7 @@
      */
 
     /**
-     * @api {delete} /tt/issue/:issueId delete issue
+     * @api {delete} /api/tt/issue/:issueId delete issue
      *
      * @apiVersion 1.0.0
      *

@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {get} /tt/action/:issueId get action template
+     * @api {get} /api/tt/action/:issueId get action template
      *
      * @apiVersion 1.0.0
      *
@@ -17,7 +17,7 @@
      */
 
     /**
-     * @api {put} /tt/action/:issueId modify issue
+     * @api {put} /api/tt/action/:issueId modify issue
      *
      * @apiVersion 1.0.0
      *

@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {get} /tt/journal/:issueId get issue journal
+     * @api {get} /api/tt/journal/:issueId get issue journal
      *
      * @apiVersion 1.0.0
      *

@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {get} /tt/issueTemplate/:workflowId get issue creation template
+     * @api {get} /api/tt/issueTemplate/:workflowId get issue creation template
      *
      * @apiVersion 1.0.0
      *

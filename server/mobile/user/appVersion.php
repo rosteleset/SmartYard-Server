@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @api {post} /user/appVersion сообщить версию приложения
+ * @api {post} /mobile/user/appVersion сообщить версию приложения
  * @apiVersion 1.0.0
  * @apiDescription **[метод готов]**
  *

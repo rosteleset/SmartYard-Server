@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @api {post} /user/addMyPhone добавить свой телефон
+ * @api {post} /mobile/user/addMyPhone добавить свой телефон
  * @apiVersion 1.0.0
  * @apiDescription **[метод готов]**
  *

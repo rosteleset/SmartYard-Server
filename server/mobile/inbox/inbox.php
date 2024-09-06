@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {post} /inbox/inbox входящие
+     * @api {post} /mobile/inbox/inbox входящие
      * @apiVersion 1.0.0
      * @apiDescription **[нет верстки]**
      *

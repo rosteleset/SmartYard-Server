@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @api {post} /inbox/readed отметить сообщение (все сообщения) как прочитанное
+ * @api {post} /mobile/inbox/readed отметить сообщение (все сообщения) как прочитанное
  * @apiVersion 1.0.0
  * @apiDescription **[метод готов]**
  *

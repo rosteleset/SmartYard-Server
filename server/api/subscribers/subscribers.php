@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {get} /subscribers/subscribers get subscribers by flat
+     * @api {get} /api/subscribers/subscribers get subscribers by flat
      *
      * @apiVersion 1.0.0
      *
@@ -17,7 +17,7 @@
      */
 
     /**
-     * @api {get} /subscribers/subscribers get subscribers by id
+     * @api {get} /api/subscribers/subscribers get subscribers by id
      *
      * @apiVersion 1.0.0
      *

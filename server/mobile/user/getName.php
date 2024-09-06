@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @api {post} /user/getName получить "обращение"
+ * @api {post} /mobile/user/getName получить "обращение"
  * @apiVersion 1.0.0
  * @apiDescription **[метод готов]**
  *

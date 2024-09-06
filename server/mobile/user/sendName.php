@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @api {post} /user/sendName установить "обращение"
+ * @api {post} /mobile/user/sendName установить "обращение"
  * @apiVersion 1.0.0
  * @apiDescription **[метод готов]**
  *

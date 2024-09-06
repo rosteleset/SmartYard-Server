@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @api {post} /cctv/overview получить список видовых камер
+ * @api {post} /mobile/cctv/overview получить список видовых камер
  * @apiVersion 1.0.0
  * @apiDescription ***почти готов***
  *

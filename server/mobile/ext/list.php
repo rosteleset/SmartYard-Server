@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @api {post} /ext/list список глобальных расширений (меню)
+ * @api {post} /mobile/ext/list список глобальных расширений (меню)
  * @apiVersion 1.0.0
  * @apiDescription **[нет верстки]**
  *

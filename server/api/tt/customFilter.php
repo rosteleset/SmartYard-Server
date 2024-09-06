@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {get} /tt/customFilter/:customFilterId get custom filter
+     * @api {get} /api/tt/customFilter/:customFilterId get custom filter
      *
      * @apiVersion 1.0.0
      *
@@ -16,7 +16,7 @@
      */
 
     /**
-     * @api {put} /tt/customFilter/:customFilterId add (modify) custom filter
+     * @api {put} /api/tt/customFilter/:customFilterId add (modify) custom filter
      *
      * @apiVersion 1.0.0
      *
@@ -33,7 +33,7 @@
      */
 
     /**
-     * @api {delete} /tt/customFilter/:customFilterId delete custom filter
+     * @api {delete} /api/tt/customFilter/:customFilterId delete custom filter
      *
      * @apiVersion 1.0.0
      *

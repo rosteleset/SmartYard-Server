@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {get} /tt/workflow/:workflowId get workflow
+     * @api {get} /api/tt/workflow/:workflowId get workflow
      *
      * @apiVersion 1.0.0
      *
@@ -16,7 +16,7 @@
      */
 
     /**
-     * @api {put} /tt/workflow/:workflowId add or modify workflow
+     * @api {put} /api/tt/workflow/:workflowId add or modify workflow
      *
      * @apiVersion 1.0.0
      *
@@ -32,7 +32,7 @@
      */
 
     /**
-     * @api {delete} /tt/workflow/:workflowId delete workflow
+     * @api {delete} /api/tt/workflow/:workflowId delete workflow
      *
      * @apiVersion 1.0.0
      *

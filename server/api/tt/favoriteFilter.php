@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {post} /tt/favoriteFilter/:customFilterId add filter to favorites
+     * @api {post} /api/tt/favoriteFilter/:customFilterId add filter to favorites
      *
      * @apiVersion 1.0.0
      *
@@ -19,7 +19,7 @@
      */
 
     /**
-     * @api {delete} /tt/favoriteFilter/:customFilterId delete filter from favorites
+     * @api {delete} /api/tt/favoriteFilter/:customFilterId delete filter from favorites
      *
      * @apiVersion 1.0.0
      *

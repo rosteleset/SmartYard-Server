@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {post} /user/requestCode запросить код подтверждения
+     * @api {post} /mobile/user/requestCode запросить код подтверждения
      * @apiVersion 1.0.0
      * @apiDescription **[метод готов]**
      *

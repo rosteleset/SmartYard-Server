@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {post} /tt/tag create tag
+     * @api {post} /api/tt/tag create tag
      *
      * @apiVersion 1.0.0
      *
@@ -19,7 +19,7 @@
      */
 
     /**
-     * @api {put} /tt/tag/:tagId modify tag
+     * @api {put} /api/tt/tag/:tagId modify tag
      *
      * @apiVersion 1.0.0
      *
@@ -37,7 +37,7 @@
      */
 
     /**
-     * @api {delete} /tt/tag/:tagId delete tag
+     * @api {delete} /api/tt/tag/:tagId delete tag
      *
      * @apiVersion 1.0.0
      *

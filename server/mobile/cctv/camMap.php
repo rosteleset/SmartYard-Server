@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @api {post} /cctv/camMap отношения домофонов и камер
+ * @api {post} /mobile/cctv/camMap отношения домофонов и камер
  * @apiVersion 1.0.0
  * @apiDescription ***в работе***
  *

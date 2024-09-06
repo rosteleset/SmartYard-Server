@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @api {post} /inbox/unreaded количество непрочитанных сообщений
+ * @api {post} /mobile/inbox/unreaded количество непрочитанных сообщений
  * @apiVersion 1.0.0
  * @apiDescription **[метод готов]**
  *

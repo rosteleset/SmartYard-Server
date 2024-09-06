@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {post} /user/ping проверка доступности сервиса
+     * @api {post} /mobile/user/ping проверка доступности сервиса
      * @apiVersion 1.0.0
      * @apiDescription ***готово***
      *

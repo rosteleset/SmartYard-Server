@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {post} /tt/customField add custom field
+     * @api {post} /api/tt/customField add custom field
      *
      * @apiVersion 1.0.0
      *
@@ -19,7 +19,7 @@
      */
 
     /**
-     * @api {put} /tt/customField/:customFieldId modify custom field
+     * @api {put} /api/tt/customField/:customFieldId modify custom field
      *
      * @apiVersion 1.0.0
      *
@@ -45,7 +45,7 @@
      */
 
     /**
-     * @api {put} /tt/customField/:customFieldId delete custom field
+     * @api {put} /api/tt/customField/:customFieldId delete custom field
      *
      * @apiVersion 1.0.0
      *

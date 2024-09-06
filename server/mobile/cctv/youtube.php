@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @api {post} /cctv/youtube получить список роликов на YouTube
+ * @api {post} /mobile/cctv/youtube получить список роликов на YouTube
  * @apiVersion 1.0.0
  * @apiDescription ***почти готов***
  *

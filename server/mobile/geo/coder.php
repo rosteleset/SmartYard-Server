@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @api {post} /geo/coder геокоординаты по адресу
+ * @api {post} /mobile/geo/coder геокоординаты по адресу
  * @apiVersion 1.0.0
  * @apiDescription **[метод готов]**
  *

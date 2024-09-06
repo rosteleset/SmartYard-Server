@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {get} /tt/prints/:printId get print's part
+     * @api {get} /api/tt/prints/:printId get print's part
      *
      * @apiVersion 1.0.0
      *
@@ -17,7 +17,7 @@
      */
 
     /**
-     * @api {post} /tt/prints/:printId add print
+     * @api {post} /api/tt/prints/:printId add print
      *
      * @apiVersion 1.0.0
      *
@@ -33,7 +33,7 @@
      */
 
     /**
-     * @api {post} /tt/prints/:printId modify print
+     * @api {post} /api/tt/prints/:printId modify print
      *
      * @apiVersion 1.0.0
      *
@@ -49,7 +49,7 @@
      */
 
     /**
-     * @api {post} /tt/prints/:printId delete print
+     * @api {post} /api/tt/prints/:printId delete print
      *
      * @apiVersion 1.0.0
      *

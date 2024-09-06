@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {get} /subscribers/keys get rfIds
+     * @api {get} /api/subscribers/keys get rfIds
      *
      * @apiVersion 1.0.0
      *
@@ -17,7 +17,7 @@
      */
 
     /**
-     * @api {get} /subscribers/keys get rfIds
+     * @api {get} /api/subscribers/keys get rfIds
      *
      * @apiVersion 1.0.0
      *

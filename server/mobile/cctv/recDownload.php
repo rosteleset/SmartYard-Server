@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @api {post} /cctv/recDownload запросить url фрагмента архива
+ * @api {post} /mobile/cctv/recDownload запросить url фрагмента архива
  * @apiVersion 1.0.0
  * @apiDescription ***почти готов***
  *

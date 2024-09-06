@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {post} /user/notification управление уведомлениями
+     * @api {post} /mobile/user/notification управление уведомлениями
      * @apiVersion 1.0.0
      * @apiDescription ***в работе***
      *

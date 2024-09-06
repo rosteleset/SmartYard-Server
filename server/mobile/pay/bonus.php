@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @api {post} /pay/bonus активировать бонусы
+ * @api {post} /mobile/pay/bonus активировать бонусы
  * @apiVersion 1.0.0
  * @apiDescription ***в работе***
  *

@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {get} /tt/viewer get viewers
+     * @api {get} /api/tt/viewer get viewers
      *
      * @apiVersion 1.0.0
      *
@@ -14,7 +14,7 @@
      */
 
     /**
-     * @api {put} /tt/viewer add or modify viewer
+     * @api {put} /api/tt/viewer add or modify viewer
      *
      * @apiVersion 1.0.0
      *
@@ -31,7 +31,7 @@
      */
 
     /**
-     * @api {delete} /tt/viewer delete viewer
+     * @api {delete} /api/tt/viewer delete viewer
      *
      * @apiVersion 1.0.0
      *

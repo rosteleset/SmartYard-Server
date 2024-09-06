@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {post} /tt/status create status
+     * @api {post} /api/tt/status create status
      *
      * @apiVersion 1.0.0
      *
@@ -17,7 +17,7 @@
      */
 
     /**
-     * @api {put} /tt/status/:statusId modify status
+     * @api {put} /api/tt/status/:statusId modify status
      *
      * @apiVersion 1.0.0
      *
@@ -34,7 +34,7 @@
      */
 
     /**
-     * @api {delete} /tt/status/:statusId delete status
+     * @api {delete} /api/tt/status/:statusId delete status
      *
      * @apiVersion 1.0.0
      *

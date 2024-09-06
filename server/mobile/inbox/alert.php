@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {post} /inbox/alert отправить сообщение самому себе
+     * @api {post} /mobile/inbox/alert отправить сообщение самому себе
      * @apiVersion 1.0.0
      * @apiDescription **[метод готов]**
      *

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @api {post} /inbox/chatReaded отметить что все сообщения в чате доставлены (прочитаны)
+ * @api {post} /mobile/inbox/chatReaded отметить что все сообщения в чате доставлены (прочитаны)
  * @apiVersion 1.0.0
  * @apiDescription **[метод готов]**
  *

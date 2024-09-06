@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @api {post} /address/openDoor открыть дверь (калитку, ворота, шлагбаум)
+ * @api {post} /mobile/address/openDoor открыть дверь (калитку, ворота, шлагбаум)
  * @apiVersion 1.0.0
  * @apiDescription ***нуждается в доработке***
  *

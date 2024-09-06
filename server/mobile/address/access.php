@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @api {post} /address/access управление доступами
+ * @api {post} /mobile/address/access управление доступами
  * @apiVersion 1.0.0
  * @apiDescription **должен работать**
  *

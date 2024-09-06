@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {get} /tt/filter/:filterId get filter
+     * @api {get} /api/tt/filter/:filterId get filter
      *
      * @apiVersion 1.0.0
      *
@@ -16,7 +16,7 @@
      */
 
     /**
-     * @api {get} /tt/filter get filters
+     * @api {get} /api/tt/filter get filters
      *
      * @apiVersion 1.0.0
      *
@@ -29,7 +29,7 @@
      */
 
     /**
-     * @api {put} /tt/filter/:filterId modify filter
+     * @api {put} /api/tt/filter/:filterId modify filter
      *
      * @apiVersion 1.0.0
      *
@@ -45,7 +45,7 @@
      */
 
     /**
-     * @api {delete} /tt/filter/:filterId delete filter
+     * @api {delete} /api/tt/filter/:filterId delete filter
      *
      * @apiVersion 1.0.0
      *

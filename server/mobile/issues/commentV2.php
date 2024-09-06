@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @api {post} /issues/commentV2 оставить комментарий в заявке
+ * @api {post} /mobile/issues/commentV2 оставить комментарий в заявке
  * @apiDescription ***нет проверки на принадлежность заявки именно этому абоненту***
  * @apiVersion 1.0.0
  * @apiGroup Issues

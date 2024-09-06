@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @api {post} /frs/like "лайкнуть" (свой)
+ * @api {post} /mobile/frs/like "лайкнуть" (свой)
  * @apiVersion 1.0.0
  * @apiDescription **[в работе]**
  *

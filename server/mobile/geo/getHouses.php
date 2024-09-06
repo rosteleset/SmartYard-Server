@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @api {post} /geo/getHouses список домов
+ * @api {post} /mobile/geo/getHouses список домов
  * @apiVersion 1.0.0
  * @apiDescription **[метод готов]**
  *

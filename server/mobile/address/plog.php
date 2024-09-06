@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @api {post} /address/plog получить журнал событий объекта за день
+ * @api {post} /mobile/address/plog получить журнал событий объекта за день
  * @apiVersion 1.0.0
  * @apiDescription ***в работе***
  *

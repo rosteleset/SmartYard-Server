@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {post} /subscribers/subscriber add subscriber
+     * @api {post} /api/subscribers/subscriber add subscriber
      *
      * @apiVersion 1.0.0
      *
@@ -21,7 +21,7 @@
      */
 
     /**
-     * @api {post} /subscribers/subscriber/:subscriberId modify subscriber
+     * @api {post} /api/subscribers/subscriber/:subscriberId modify subscriber
      *
      * @apiVersion 1.0.0
      *
@@ -41,7 +41,7 @@
      */
 
     /**
-     * @api {delete} /subscribers/subscriber/:subscriberId delete subscriber
+     * @api {delete} /api/subscribers/subscriber/:subscriberId delete subscriber
      *
      * @apiVersion 1.0.0
      *
@@ -56,7 +56,7 @@
      */
 
     /**
-     * @api {delete} /subscribers/subscriber/:flatId delete subscriber from flat
+     * @api {delete} /api/subscribers/subscriber/:flatId delete subscriber from flat
      *
      * @apiVersion 1.0.0
      *

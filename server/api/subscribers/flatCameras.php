@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {post} /subscribers/flatCameras add camera to flat
+     * @api {post} /api/subscribers/flatCameras add camera to flat
      *
      * @apiVersion 1.0.0
      *
@@ -17,7 +17,7 @@
      */
 
     /**
-     * @api {delete} /subscribers/flatCameras delete camera from flat
+     * @api {delete} /api/subscribers/flatCameras delete camera from flat
      *
      * @apiVersion 1.0.0
      *

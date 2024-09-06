@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @api {post} /issues/listConnect получить список заявок на подключение
+ * @api {post} /mobile/issues/listConnect получить список заявок на подключение
  * @apiDescription **[метод готов]**
  *
  * cf[11841]="$userPhone" and cf[10011]=-1 and Status!="Выполнено" and Status!="Закрыто"

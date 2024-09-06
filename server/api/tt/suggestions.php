@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {get} /tt/suggestions get suggestions
+     * @api {get} /api/tt/suggestions get suggestions
      *
      * @apiVersion 1.0.0
      *

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @api {post} /geo/getAllLocations список населенных пунктов
+ * @api {post} /mobile/geo/getAllLocations список населенных пунктов
  * @apiVersion 1.0.0
  * @apiDescription **[метод готов]**
  *

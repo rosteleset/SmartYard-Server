@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @api {post} /frs/listFaces список "лиц"
+ * @api {post} /mobile/frs/listFaces список "лиц"
  * @apiVersion 1.0.0
  * @apiDescription **[в работе]**
  *

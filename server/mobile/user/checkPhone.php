@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {post} /user/checkPhone подтвердить телефон по исходящему звонку из приложения
+     * @api {post} /mobile/user/checkPhone подтвердить телефон по исходящему звонку из приложения
      * @apiVersion 1.0.0
      * @apiDescription **[метод готов]**
      *

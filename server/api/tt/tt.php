@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {get} /tt/tt get metadata
+     * @api {get} /api/tt/tt get metadata
      *
      * @apiVersion 1.0.0
      *

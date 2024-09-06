@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {post} /issues/create создать заявку
+     * @api {post} /mobile/issues/create создать заявку
      * @apiDescription **[метод готов]**
      *
      * в cf[11841] всегда (принудительно) прописывается "$userPhone"

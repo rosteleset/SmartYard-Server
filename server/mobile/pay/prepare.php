@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @api {post} /pay/prepare подготовка к платежу
+ * @api {post} /mobile/pay/prepare подготовка к платежу
  * @apiVersion 1.0.0
  * @apiDescription ***в работе***
  *

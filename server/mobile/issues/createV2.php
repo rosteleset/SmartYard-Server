@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {post} /issues/createV2 создать заявку
+     * @api {post} /mobile/issues/createV2 создать заявку
      * @apiDescription **[метод готов]**
      *
      * @apiVersion 1.0.0

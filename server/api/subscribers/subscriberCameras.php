@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {post} /subscribers/subscriberCameras add camera to subscriber
+     * @api {post} /api/subscribers/subscriberCameras add camera to subscriber
      *
      * @apiVersion 1.0.0
      *
@@ -17,7 +17,7 @@
      */
 
     /**
-     * @api {delete} /subscribers/subscriberCameras delete camera from subscriber
+     * @api {delete} /api/subscribers/subscriberCameras delete camera from subscriber
      *
      * @apiVersion 1.0.0
      *

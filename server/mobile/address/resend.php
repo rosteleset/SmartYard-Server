@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @api {post} /address/resend повторная отправка информации для гостя
+ * @api {post} /mobile/address/resend повторная отправка информации для гостя
  * @apiVersion 1.0.0
  * @apiDescription **должен работать**
  *

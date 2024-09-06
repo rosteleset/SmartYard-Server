@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {get} /subscribers/devices get devices
+     * @api {get} /api/subscribers/devices get devices
      *
      * @apiVersion 1.0.0
      *

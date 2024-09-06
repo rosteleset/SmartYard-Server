@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @api {post} /user/restore восстановить доступ в ЛК
+ * @api {post} /mobile/user/restore восстановить доступ в ЛК
  * @apiVersion 1.0.0
  * @apiDescription **[метод готов]**
  *

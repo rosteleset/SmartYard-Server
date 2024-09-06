@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {post} /tt/crontab add crontab task
+     * @api {post} /api/tt/crontab add crontab task
      *
      * @apiVersion 1.0.0
      *
@@ -20,7 +20,7 @@
      */
 
     /**
-     * @api {post} /tt/crontab/:taskId delete crontab task
+     * @api {post} /api/tt/crontab/:taskId delete crontab task
      *
      * @apiVersion 1.0.0
      *

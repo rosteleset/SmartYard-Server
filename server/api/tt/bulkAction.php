@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {put} /tt/action modify issues
+     * @api {put} /api/tt/action modify issues
      *
      * @apiVersion 1.0.0
      *

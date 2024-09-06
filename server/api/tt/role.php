@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {post} /tt/role create role
+     * @api {post/api/role create role
      *
      * @apiVersion 1.0.0
      *
@@ -19,7 +19,7 @@
      */
 
     /**
-     * @api {put} /tt/role/:roleId modify role
+     * @api {put} /api/tt/role/:roleId modify role
      *
      * @apiVersion 1.0.0
      *
@@ -35,7 +35,7 @@
      */
 
     /**
-     * @api {delete} /tt/role/:roleId delete role
+     * @api {delete} /api/tt/role/:roleId delete role
      *
      * @apiVersion 1.0.0
      *

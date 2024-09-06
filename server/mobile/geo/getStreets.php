@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @api {post} /geo/getStreets список улиц
+ * @api {post} /mobile/geo/getStreets список улиц
  * @apiVersion 1.0.0
  * @apiDescription **[метод готов]**
  *

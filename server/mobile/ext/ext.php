@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @api {post} /ext/ext расширение
+ * @api {post} /mobile/ext/ext расширение
  * @apiVersion 1.0.0
  * @apiDescription **[нет верстки]**
  *

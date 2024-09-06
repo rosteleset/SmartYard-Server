@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {post} /user/phonePattern определяет формат телефонного номера пользователя
+     * @api {post} /mobile/user/phonePattern определяет формат телефонного номера пользователя
      * @apiVersion 1.0.0
      * @apiDescription ***готово***
      *

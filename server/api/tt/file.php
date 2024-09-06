@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {get} /tt/file get attachment
+     * @api {get} /api/tt/file get attachment
      *
      * @apiVersion 1.0.0
      *
@@ -17,7 +17,7 @@
      */
 
     /**
-     * @api {post} /tt/file add attachments to issue
+     * @api {post} /api/tt/file add attachments to issue
      *
      * @apiVersion 1.0.0
      *
@@ -33,7 +33,7 @@
      */
 
     /**
-     * @api {delete} /tt/file delete attachment from issue
+     * @api {delete} /api/tt/file delete attachment from issue
      *
      * @apiVersion 1.0.0
      *

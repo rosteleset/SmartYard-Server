@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @api {post} /address/resetCode перегенерировать код открытия двери
+ * @api {post} /mobile/address/resetCode перегенерировать код открытия двери
  * @apiVersion 1.0.0
  * @apiDescription **[метод готов]**
  *

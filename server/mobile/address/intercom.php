@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {post} /address/intercom настройки домофона (квартиры)
+     * @api {post} /mobile/address/intercom настройки домофона (квартиры)
      * @apiVersion 1.0.0
      * @apiDescription **[метод готов]**
      *

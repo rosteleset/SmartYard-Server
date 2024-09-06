@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {get} /tt/issue get issues by filter
+     * @api {get} /api/tt/issue get issues by filter
      *
      * @apiVersion 1.0.0
      *
@@ -18,7 +18,7 @@
      */
 
     /**
-     * @api {post} /tt/issue get issues by query
+     * @api {post} /api/tt/issue get issues by query
      *
      * @apiVersion 1.0.0
      *

@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {put} /tt/comment add comment
+     * @api {put} /api/tt/comment add comment
      *
      * @apiVersion 1.0.0
      *
@@ -19,7 +19,7 @@
      */
 
     /**
-     * @api {put} /tt/comment modify comment
+     * @api {put} /api/tt/comment modify comment
      *
      * @apiVersion 1.0.0
      *
@@ -37,7 +37,7 @@
      */
 
     /**
-     * @api {delete} /tt/comment delete comment
+     * @api {delete} /api/tt/comment delete comment
      *
      * @apiVersion 1.0.0
      *

@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {post} /tt/project/:projectId create or modify project
+     * @api {post} /api/tt/project/:projectId create or modify project
      *
      * @apiVersion 1.0.0
      *
@@ -21,7 +21,7 @@
      */
 
     /**
-     * @api {put} /tt/project/:projectId modify project
+     * @api {put} /api/tt/project/:projectId modify project
      *
      * @apiVersion 1.0.0
      *
@@ -48,7 +48,7 @@
      */
 
     /**
-     * @api {delete} /tt/project/:projectId modify project
+     * @api {delete} /api/tt/project/:projectId modify project
      *
      * @apiVersion 1.0.0
      *

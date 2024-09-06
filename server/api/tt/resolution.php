@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {post} /tt/resolution create resolution
+     * @api {post} /api/tt/resolution create resolution
      *
      * @apiVersion 1.0.0
      *
@@ -16,7 +16,7 @@
      */
 
     /**
-     * @api {put} /tt/resolution/:resolutionId modify resolution
+     * @api {put} /api/tt/resolution/:resolutionId modify resolution
      *
      * @apiVersion 1.0.0
      *
@@ -32,7 +32,7 @@
      */
 
     /**
-     * @api {delete} /tt/resolution/:resolutionId delete resolution
+     * @api {delete} /api/tt/resolution/:resolutionId delete resolution
      *
      * @apiVersion 1.0.0
      *

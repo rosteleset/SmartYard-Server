@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @api {post} /address/registerQR зарегистрировать QR код
+ * @api {post} /mobile/address/registerQR зарегистрировать QR код
  * @apiVersion 1.0.0
  * @apiDescription ***в работе***
  *

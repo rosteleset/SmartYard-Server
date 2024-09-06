@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {get} /tt/lib/:libId get workflow lib
+     * @api {get} /api/tt/lib/:libId get workflow lib
      *
      * @apiVersion 1.0.0
      *
@@ -16,7 +16,7 @@
      */
 
     /**
-     * @api {put} /tt/lib/:libId modify (add) workflow lib
+     * @api {put} /api/tt/lib/:libId modify (add) workflow lib
      *
      * @apiVersion 1.0.0
      *
@@ -32,7 +32,7 @@
      */
 
     /**
-     * @api {delete} /tt/lib/:libId delete workflow lib
+     * @api {delete} /api/tt/lib/:libId delete workflow lib
      *
      * @apiVersion 1.0.0
      *

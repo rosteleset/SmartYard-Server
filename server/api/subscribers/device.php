@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {put} /subscribers/device/:deviceId modify device
+     * @api {put} /api/subscribers/device/:deviceId modify device
      *
      * @apiVersion 1.0.0
      *
@@ -28,7 +28,7 @@
      */
 
     /**
-     * @api {put} /subscribers/device/:deviceId delete device
+     * @api {put} /api/subscribers/device/:deviceId delete device
      *
      * @apiVersion 1.0.0
      *

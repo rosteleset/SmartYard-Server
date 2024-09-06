@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @api {post} /cctv/all получить список камер
+ * @api {post} /mobile/cctv/all получить список камер
  * @apiVersion 1.0.0
  * @apiDescription ***почти готов***
  *

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @api {post} /sip/helpMe звонок в техподержку
+ * @api {post} /mobile/sip/helpMe звонок в техподержку
  * @apiVersion 1.0.0
  * @apiDescription ***в работе***
  *

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @api {post} /issues/actionV2 выполнить переход
+ * @api {post} /mobile/issues/actionV2 выполнить переход
  * @apiDescription ***нет проверки на принадлежность заявки именно этому абоненту***
  * @apiVersion 1.0.0
  * @apiGroup Issues

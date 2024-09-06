@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {post} /user/registerPushToken зарегистрировать токен(ы) для пуш уведомлений
+     * @api {post} /mobile/user/registerPushToken зарегистрировать токен(ы) для пуш уведомлений
      * @apiVersion 1.0.0
      * @apiDescription **[метод готов]**
      *

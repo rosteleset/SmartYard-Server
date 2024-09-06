@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @api {post} /address/getAddressList получить список адресов на главный экран
+ * @api {post} /mobile/address/getAddressList получить список адресов на главный экран
  * @apiVersion 1.0.0
  * @apiDescription **[не готов]**
  *

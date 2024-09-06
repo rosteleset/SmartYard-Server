@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {post} /server/clearCache clear cache
+     * @api {post} /api/server/clearCache clear cache
      *
      * @apiVersion 1.0.0
      *

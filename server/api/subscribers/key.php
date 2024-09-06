@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {post} /subscribers/key add rfId
+     * @api {post} /api/subscribers/key add rfId
      *
      * @apiVersion 1.0.0
      *
@@ -19,7 +19,7 @@
      */
 
     /**
-     * @api {put} /subscribers/key/:keyId modify rfId
+     * @api {put} /api/subscribers/key/:keyId modify rfId
      *
      * @apiVersion 1.0.0
      *
@@ -35,7 +35,7 @@
      */
 
     /**
-     * @api {delete} /subscribers/key/:keyId delete rfId
+     * @api {delete} /api/subscribers/key/:keyId delete rfId
      *
      * @apiVersion 1.0.0
      *

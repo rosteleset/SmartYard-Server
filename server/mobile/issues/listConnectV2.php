@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @api {post} /issues/listConnectV2 получить список заявок на подключение
+ * @api {post} /mobile/issues/listConnectV2 получить список заявок на подключение
  * @apiDescription **[метод готов]**
  *
  * @apiVersion 1.0.0
