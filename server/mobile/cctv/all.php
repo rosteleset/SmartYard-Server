@@ -1,13 +1,13 @@
 <?php
 
-/**
+    /**
      * @api {post} /mobile/cctv/all получить список камер
      * @apiVersion 1.0.0
      * @apiDescription ***почти готов***
      *
      * @apiGroup CCTV
      *
-     * @apiParam {Number} [houseId] идентификатор дома
+     * @apiBody {Number} [houseId] идентификатор дома
      *
      * @apiBody {String} authorization токен авторизации
      *
