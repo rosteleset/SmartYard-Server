@@ -3,23 +3,23 @@
     /**
      * @api {post} /mobile/address/intercom настройки домофона (квартиры)
      * @apiVersion 1.0.0
-     * @apiDescription **[метод готов]**
+     * @apiDescription **метод готов**
      *
      * @apiGroup Address
      *
      * @apiHeader {string} authorization токен авторизации
      *
-     * @apiParam {integer} flatId идентификатор квартиры
-     * @apiParam {object} [settings] настройки квартиры
-     * @apiParam {string="t","f"} [settings.enableDoorCode] разрешить код открытия двери
-     * @apiParam {string="t","f"} [settings.CMS] разрешить КМС
-     * @apiParam {string="t","f"} [settings.VoIP] разрешить VoIP
-     * @apiParam {string="Y-m-d H:i:s"} [settings.autoOpen] автооткрытие двери
-     * @apiParam {string="0","1","2","3","5","7","10"} [settings.whiteRabbit] автооткрытие двери
-     * @apiParam {string="t","f"} [settings.paperBill] печатать бумажные платежки (если нет значит недоступен)
-     * @apiParam {string="t","f"} [settings.disablePlog] прекратить "следить" за квартирой
-     * @apiParam {string="t","f"} [settings.hiddenPlog] показывать журнал только владельцу
-     * @apiParam {string="t","f"} [settings.FRSDisabled] отключить распознование лиц для квартиры (если нет значит недоступен)
+     * @apiBody {integer} flatId идентификатор квартиры
+     * @apiBody {object} [settings] настройки квартиры
+     * @apiBody {string="t","f"} [settings.enableDoorCode] разрешить код открытия двери
+     * @apiBody {string="t","f"} [settings.CMS] разрешить КМС
+     * @apiBody {string="t","f"} [settings.VoIP] разрешить VoIP
+     * @apiBody {string="Y-m-d H:i:s"} [settings.autoOpen] автооткрытие двери
+     * @apiBody {string="0","1","2","3","5","7","10"} [settings.whiteRabbit] автооткрытие двери
+     * @apiBody {string="t","f"} [settings.paperBill] печатать бумажные платежки (если нет значит недоступен)
+     * @apiBody {string="t","f"} [settings.disablePlog] прекратить "следить" за квартирой
+     * @apiBody {string="t","f"} [settings.hiddenPlog] показывать журнал только владельцу
+     * @apiBody {string="t","f"} [settings.FRSDisabled] отключить распознование лиц для квартиры (если нет значит недоступен)
      *
      * @apiSuccess {object} - настройки квартиры
      * @apiSuccess {string="t","f"} -.allowDoorCode="t" код открытия двери разрешен

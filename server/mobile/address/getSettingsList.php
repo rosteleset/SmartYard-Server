@@ -1,41 +1,41 @@
 <?php
 
-/**
- * @api {post} /mobile/address/getSettingsList получить список адресов для настроек
- * @apiVersion 1.0.0
- * @apiDescription ***в работе***
- *
- * @apiGroup Address
- *
- * @apiHeader {string} authorization токен авторизации
- *
- * @apiSuccess {object[]} - массив объектов
- * @apiSuccess {string} [-.clientId] идентификатор клиента
- * @apiSuccess {string} [-.clientName] имя абонента
- * @apiSuccess {string} [-.contractName] номер договора
- * @apiSuccess {string="t","f"} [-.flatOwner] владелец квартиры
- * @apiSuccess {string="t","f"} [-.contractOwner] владелец договора
- * @apiSuccess {string="t","f"} [-.hasGates] есть ворота и (или) шлагбаумы
- * @apiSuccess {string} [-.houseId] идентификатор дома
- * @apiSuccess {string} [-.flatId] идентификатор квартиры
- * @apiSuccess {string} [-.flatNumber] номер квартиры
- * @apiSuccess {string="t","f"} [-.hasPlog] доступность журнала событий
- * @apiSuccess {string} -.address адрес
- * @apiSuccess {string[]="internet","iptv","ctv","phone","cctv","domophone","gsm"} -.services подключенные услуги
- * @apiSuccess {string} [-.lcab] личный кабинет
- * @apiSuccess {object[]} [-.roommates] сокамерники
- * @apiSuccess {string} -.roommates.phone телефон
- * @apiSuccess {integer} [-.roommates.timezone] часовой пояс (default - Moscow Time)
- * @apiSuccess {string="Y-m-d H:i:s"} -.roommates.expire дата до которой действует доступ
- * @apiSuccess {string="inner","outer","owner"} -.roommates.type тип inner - доступ к домофону, outer - только калитки и ворота, owner - владелец
- *
- * @apiErrorExample Ошибки
- * 403 требуется авторизация
- * 422 неверный формат данных
- * 404 пользователь не найден
- * 410 авторизация отозвана
- * 424 неверный токен
- */
+    /**
+     * @api {post} /mobile/address/getSettingsList получить список адресов для настроек
+     * @apiVersion 1.0.0
+     * @apiDescription ***в работе***
+     *
+     * @apiGroup Address
+     *
+     * @apiHeader {string} authorization токен авторизации
+     *
+     * @apiSuccess {object[]} - массив объектов
+     * @apiSuccess {string} [-.clientId] идентификатор клиента
+     * @apiSuccess {string} [-.clientName] имя абонента
+     * @apiSuccess {string} [-.contractName] номер договора
+     * @apiSuccess {string="t","f"} [-.flatOwner] владелец квартиры
+     * @apiSuccess {string="t","f"} [-.contractOwner] владелец договора
+     * @apiSuccess {string="t","f"} [-.hasGates] есть ворота и (или) шлагбаумы
+     * @apiSuccess {string} [-.houseId] идентификатор дома
+     * @apiSuccess {string} [-.flatId] идентификатор квартиры
+     * @apiSuccess {string} [-.flatNumber] номер квартиры
+     * @apiSuccess {string="t","f"} [-.hasPlog] доступность журнала событий
+     * @apiSuccess {string} -.address адрес
+     * @apiSuccess {string[]="internet","iptv","ctv","phone","cctv","domophone","gsm"} -.services подключенные услуги
+     * @apiSuccess {string} [-.lcab] личный кабинет
+     * @apiSuccess {object[]} [-.roommates] сокамерники
+     * @apiSuccess {string} -.roommates.phone телефон
+     * @apiSuccess {integer} [-.roommates.timezone] часовой пояс (default - Moscow Time)
+     * @apiSuccess {string="Y-m-d H:i:s"} -.roommates.expire дата до которой действует доступ
+     * @apiSuccess {string="inner","outer","owner"} -.roommates.type тип inner - доступ к домофону, outer - только калитки и ворота, owner - владелец
+     *
+     * @apiErrorExample Ошибки
+     * 403 требуется авторизация
+     * 422 неверный формат данных
+     * 404 пользователь не найден
+     * 410 авторизация отозвана
+     * 424 неверный токен
+     */
 
     use backends\plog\plog;
 

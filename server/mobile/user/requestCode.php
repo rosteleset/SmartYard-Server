@@ -3,12 +3,12 @@
     /**
      * @api {post} /mobile/user/requestCode запросить код подтверждения
      * @apiVersion 1.0.0
-     * @apiDescription **[метод готов]**
+     * @apiDescription **метод готов**
      *
      * @apiGroup User
      *
-     * @apiParam {String{11}} userPhone номер телефона
-     * @apiParam {String="sms","outgoingCall"} method номер телефона способ авторизации
+     * @apiBody {String{11}} userPhone номер телефона
+     * @apiBody {String="sms","outgoingCall"} method номер телефона способ авторизации
      *
      * @apiSuccess {string="sms","outgoingCall"} [method="sms"] способ авторизации
      * @apiSuccess {string[]} [confirmationNumbers] список номеров для авторизации исходящим звонком (outgoingCall)

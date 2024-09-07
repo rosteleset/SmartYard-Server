@@ -1,23 +1,23 @@
 <?php
 
-/**
- * @api {post} /mobile/cctv/camMap отношения домофонов и камер
- * @apiVersion 1.0.0
- * @apiDescription ***в работе***
- *
- * @apiGroup CCTV
- *
- * @apiHeader {String} authorization токен авторизации
- *
- * @apiSuccess {Object[]} - массив c настройками
- * @apiSuccess {String} [-.entranceId] идентификатор входа
- * @apiSuccess {String} -.id идентификатор домофона
- * @apiSuccess {String} -.url url камеры
- * @apiSuccess {String} -.token токен
- * @apiSuccess {String="t","f"} -.frs подключен FRS
- * @apiSuccess {String="nimble","flussonic", "macroscop", "trassir"} [-.serverType] тип видео-сервера ('flussonic' by default)
- * @apiSuccess {String = "fmp4", "mpegts"} [-.hlsMode] режим HLS (used for flussonic only): "fmp4" (default for hevc support), "mpegts" (for flussonic below 21.02 version)
- */
+    /**
+     * @api {post} /mobile/cctv/camMap отношения домофонов и камер
+     * @apiVersion 1.0.0
+     * @apiDescription ***в работе***
+     *
+     * @apiGroup CCTV
+     *
+     * @apiHeader {String} authorization токен авторизации
+     *
+     * @apiSuccess {Object[]} - массив c настройками
+     * @apiSuccess {String} [-.entranceId] идентификатор входа
+     * @apiSuccess {String} -.id идентификатор домофона
+     * @apiSuccess {String} -.url url камеры
+     * @apiSuccess {String} -.token токен
+     * @apiSuccess {String="t","f"} -.frs подключен FRS
+     * @apiSuccess {String="nimble","flussonic", "macroscop", "trassir"} [-.serverType] тип видео-сервера ('flussonic' by default)
+     * @apiSuccess {String = "fmp4", "mpegts"} [-.hlsMode] режим HLS (used for flussonic only): "fmp4" (default for hevc support), "mpegts" (for flussonic below 21.02 version)
+     */
 
     auth();
 

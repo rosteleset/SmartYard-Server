@@ -1,18 +1,18 @@
 <?php
 
-/**
- * @api {post} /mobile/address/registerQR зарегистрировать QR код
- * @apiVersion 1.0.0
- * @apiDescription ***в работе***
- *
- * @apiGroup Address
- *
- * @apiHeader {String} authorization токен авторизации
- *
- * @apiSuccess {String} - показать alert c текстом
- *
- * @apiParam {String} QR QR код
- */
+    /**
+     * @api {post} /mobile/address/registerQR зарегистрировать QR код
+     * @apiVersion 1.0.0
+     * @apiDescription ***в работе***
+     *
+     * @apiGroup Address
+     *
+     * @apiHeader {String} authorization токен авторизации
+     *
+     * @apiSuccess {String} - показать alert c текстом
+     *
+     * @apiBody {String} QR QR код
+     */
 
     auth();
     $code = trim(@$postdata['QR']);

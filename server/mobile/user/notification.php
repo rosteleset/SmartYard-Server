@@ -9,8 +9,8 @@
      *
      * @apiHeader {String} authorization токен авторизации
      *
-     * @apiParam {String="t","f"} [money] присылать сообщения "необходимо пополнить баланс (31<sup>*</sup>,1,3,10)"
-     * @apiParam {String="t","f"} [enable] разрешить входящие текстовые сообщения
+     * @apiBody {String="t","f"} [money] присылать сообщения "необходимо пополнить баланс (31<sup>*</sup>,1,3,10)"
+     * @apiBody {String="t","f"} [enable] разрешить входящие текстовые сообщения
      *
      * @apiSuccess {String="t","f"} money присылать сообщения "необходимо пополнить баланс (31<sup>*</sup>,1,3,10)"
      * @apiSuccess {String="t","f"} enable разрешить входящие текстовые сообщения

@@ -1,14 +1,14 @@
 <?php
 
-/**
- * @api {post} /mobile/inbox/chatReaded отметить что все сообщения в чате доставлены (прочитаны)
- * @apiVersion 1.0.0
- * @apiDescription **[метод готов]**
- *
- * @apiGroup Inbox
- *
- * @apiHeader {String} authorization токен авторизации
- */
+   /**
+    * @api {post} /mobile/inbox/chatReaded отметить что все сообщения в чате доставлены (прочитаны)
+    * @apiVersion 1.0.0
+    * @apiDescription **метод готов**
+    *
+    * @apiGroup Inbox
+    *
+    * @apiHeader {String} authorization токен авторизации
+    */
 
     auth();
 

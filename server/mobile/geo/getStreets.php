@@ -1,22 +1,22 @@
 <?php
 
-/**
- * @api {post} /mobile/geo/getStreets список улиц
- * @apiVersion 1.0.0
- * @apiDescription **[метод готов]**
- *
- * @apiGroup Geo
- *
- * @apiHeader {String} authorization токен авторизации
- *
- * @apiParam {String} locationId локация
- *
- * @apiSuccess {Object[]} - массив объектов
- * @apiSuccess {String} -.streetId идентификатор улицы
- * @apiSuccess {String} -.streetUuid идентификатор улицы
- * @apiSuccess {String} -.name наименование улицы
- * @apiSuccess {String} -.type тип улицы
- */
+    /**
+     * @api {post} /mobile/geo/getStreets список улиц
+     * @apiVersion 1.0.0
+     * @apiDescription **метод готов**
+     *
+     * @apiGroup Geo
+     *
+     * @apiHeader {String} authorization токен авторизации
+     *
+     * @apiBody {String} locationId локация
+     *
+     * @apiSuccess {Object[]} - массив объектов
+     * @apiSuccess {String} -.streetId идентификатор улицы
+     * @apiSuccess {String} -.streetUuid идентификатор улицы
+     * @apiSuccess {String} -.name наименование улицы
+     * @apiSuccess {String} -.type тип улицы
+     */
 
     auth();
 

@@ -1,21 +1,21 @@
 <?php
 
-/**
- * @api {post} /mobile/geo/getAllLocations список населенных пунктов
- * @apiVersion 1.0.0
- * @apiDescription **[метод готов]**
- *
- * @apiGroup Geo
- *
- * @apiHeader {String} authorization токен авторизации
- *
- * @apiSuccess {Object[]} - массив объектов
- * @apiSuccess {String} [-.locationId] идентификатор населенного пункта
- * @apiSuccess {String} [-.locationUuid] идентификатор населенного пункта
- * @apiSuccess {String} [-.areaName] наименование района
- * @apiSuccess {String} -.locationName наименование населенного пункта
- * @apiSuccess {String} -.name наименование населенного пункта
- */
+    /**
+     * @api {post} /mobile/geo/getAllLocations список населенных пунктов
+     * @apiVersion 1.0.0
+     * @apiDescription **метод готов**
+     *
+     * @apiGroup Geo
+     *
+     * @apiHeader {String} authorization токен авторизации
+     *
+     * @apiSuccess {Object[]} - массив объектов
+     * @apiSuccess {String} [-.locationId] идентификатор населенного пункта
+     * @apiSuccess {String} [-.locationUuid] идентификатор населенного пункта
+     * @apiSuccess {String} [-.areaName] наименование района
+     * @apiSuccess {String} -.locationName наименование населенного пункта
+     * @apiSuccess {String} -.name наименование населенного пункта
+     */
 
     auth();
 

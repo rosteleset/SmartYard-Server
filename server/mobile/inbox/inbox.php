@@ -3,7 +3,7 @@
     /**
      * @api {post} /mobile/inbox/inbox входящие
      * @apiVersion 1.0.0
-     * @apiDescription **[нет верстки]**
+     * @apiDescription **нет верстки**
      *
      * @apiGroup Inbox
      *

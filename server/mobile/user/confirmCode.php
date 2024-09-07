@@ -3,14 +3,14 @@
     /**
      * @api {post} /mobile/user/confirmCode подтвердить телефон
      * @apiVersion 1.0.0
-     * @apiDescription **[метод готов]**
+     * @apiDescription **метод готов**
      *
      * @apiGroup User
      *
-     * @apiParam {String{11}} userPhone номер телефона
-     * @apiParam {String} deviceToken токен устройства
-     * @apiParam {Number=0,1,2} platform тип клиента 0 - android, 1 - ios, 2 - web
-     * @apiParam {String{4}} smsCode код подтверждения
+     * @apiBody {String{11}} userPhone номер телефона
+     * @apiBody {String} deviceToken токен устройства
+     * @apiBody {Number=0,1,2} platform тип клиента 0 - android, 1 - ios, 2 - web
+     * @apiBody {String{4}} smsCode код подтверждения
      *
      * @apiErrorExample Ошибки
      * 401 неверный код подтверждения

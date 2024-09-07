@@ -3,17 +3,17 @@
     /**
      * @api {post} /mobile/user/registerPushToken зарегистрировать токен(ы) для пуш уведомлений
      * @apiVersion 1.0.0
-     * @apiDescription **[метод готов]**
+     * @apiDescription **метод готов**
      *
      * @apiGroup User
      *
      * @apiHeader {String} authorization токен авторизации
      *
-     * @apiParam {String} [pushToken] токен
-     * @apiParam {String} [voipToken] токен
-     * @apiParam {String="t","f"} [production="t"] использовать боевой сервер для voip пушей (ios only)
-     * @apiParam {String="ios","android","web"} platform тип устройства: ios, android, web
-     * @apiParam {String="fcm","apn","hms","rustore"} pushService поставщик услуг отправки пушей
+     * @apiBody {String} [pushToken] токен
+     * @apiBody {String} [voipToken] токен
+     * @apiBody {String="t","f"} [production="t"] использовать боевой сервер для voip пушей (ios only)
+     * @apiBody {String="ios","android","web"} platform тип устройства: ios, android, web
+     * @apiBody {String="fcm","apn","hms","rustore"} pushService поставщик услуг отправки пушей
      *
      * @apiErrorExample Ошибки
      * 403 требуется авторизация

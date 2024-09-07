@@ -1,25 +1,25 @@
 <?php
 
-/**
- * @api {post} /mobile/address/resetCode перегенерировать код открытия двери
- * @apiVersion 1.0.0
- * @apiDescription **[метод готов]**
- *
- * @apiGroup Address
- *
- * @apiHeader {String} authorization токен авторизации
- *
- * @apiParam {Number} flatId идентификатор квартиры
- *
- * @apiSuccess {Number} code новый код
- *
- * @apiErrorExample Ошибки
- * 403 требуется авторизация
- * 422 неверный формат данных
- * 404 пользователь не найден
- * 410 авторизация отозвана
- * 424 неверный токен
- */
+    /**
+     * @api {post} /mobile/address/resetCode перегенерировать код открытия двери
+     * @apiVersion 1.0.0
+     * @apiDescription **метод готов**
+     *
+     * @apiGroup Address
+     *
+     * @apiHeader {String} authorization токен авторизации
+     *
+     * @apiBody {Number} flatId идентификатор квартиры
+     *
+     * @apiSuccess {Number} code новый код
+     *
+     * @apiErrorExample Ошибки
+     * 403 требуется авторизация
+     * 422 неверный формат данных
+     * 404 пользователь не найден
+     * 410 авторизация отозвана
+     * 424 неверный токен
+     */
 
     auth();
     $households = loadBackend("households");

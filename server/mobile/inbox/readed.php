@@ -1,16 +1,16 @@
 <?php
 
-/**
- * @api {post} /mobile/inbox/readed отметить сообщение (все сообщения) как прочитанное
- * @apiVersion 1.0.0
- * @apiDescription **[метод готов]**
- *
- * @apiGroup Inbox
- *
- * @apiHeader {String} authorization токен авторизации
- *
- * @apiParam {String} [messageId] идентификатор сообщения
- */
+    /**
+     * @api {post} /mobile/inbox/readed отметить сообщение (все сообщения) как прочитанное
+     * @apiVersion 1.0.0
+     * @apiDescription **метод готов**
+     *
+     * @apiGroup Inbox
+     *
+     * @apiHeader {String} authorization токен авторизации
+     *
+     * @apiBody {String} [messageId] идентификатор сообщения
+     */
 
     auth();
 

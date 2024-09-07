@@ -1,19 +1,20 @@
 <?php
 
-/**
- * @api {post} /mobile/frs/listFaces список "лиц"
- * @apiVersion 1.0.0
- * @apiDescription **[в работе]**
- *
- * @apiGroup FRS
- *
- * @apiHeader {string} authorization токен авторизации
- *
- * @apiParam {integer} flatId идентификатор квартиры (адрес)
- * @apiSuccess {object[]} - массив объектов
- * @apiSuccess {string} -.faceId идентификатор "лица"
- * @apiSuccess {string} -.image url картинки
- */
+    /**
+     * @api {post} /mobile/frs/listFaces список "лиц"
+     * @apiVersion 1.0.0
+     * @apiDescription **в работе**
+     *
+     * @apiGroup FRS
+     *
+     * @apiHeader {string} authorization токен авторизации
+     *
+     * @apiBody {integer} flatId идентификатор квартиры (адрес)
+     *
+     * @apiSuccess {object[]} - массив объектов
+     * @apiSuccess {string} -.faceId идентификатор "лица"
+     * @apiSuccess {string} -.image url картинки
+     */
 
     use backends\frs\frs;
 

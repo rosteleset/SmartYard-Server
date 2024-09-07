@@ -3,7 +3,7 @@
     /**
      * @api {post} /mobile/user/pushTokens получить пуш токены для проверки
      * @apiVersion 1.0.0
-     * @apiDescription **[метод готов]**
+     * @apiDescription **метод готов**
      *
      * @apiGroup User
      *

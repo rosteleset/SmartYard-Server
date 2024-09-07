@@ -1,26 +1,26 @@
 <?php
 
-/**
- * @api {post} /mobile/user/addMyPhone добавить свой телефон
- * @apiVersion 1.0.0
- * @apiDescription **[метод готов]**
- *
- * @apiGroup User
- *
- * @apiHeader {String} authorization токен авторизации
- *
- * @apiParam {String} login логин
- * @apiParam {String} password пароль
- * @apiParam {String} [comment] комментарий
- *
- * @apiErrorExample Ошибки
- * 403 требуется авторизация
- * 422 неверный формат данных
- * 404 пользователь не найден
- * 410 авторизация отозвана
- * 424 неверный токен
- * 449 неверный clientId
- */
+    /**
+     * @api {post} /mobile/user/addMyPhone добавить свой телефон
+     * @apiVersion 1.0.0
+     * @apiDescription **метод готов**
+     *
+     * @apiGroup User
+     *
+     * @apiHeader {String} authorization токен авторизации
+     *
+     * @apiBody {String} login логин
+     * @apiBody {String} password пароль
+     * @apiBody {String} [comment] комментарий
+     *
+     * @apiErrorExample Ошибки
+     * 403 требуется авторизация
+     * 422 неверный формат данных
+     * 404 пользователь не найден
+     * 410 авторизация отозвана
+     * 424 неверный токен
+     * 449 неверный clientId
+     */
 
     auth();
 

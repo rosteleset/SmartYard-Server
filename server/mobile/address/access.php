@@ -1,27 +1,27 @@
 <?php
 
-/**
- * @api {post} /mobile/address/access управление доступами
- * @apiVersion 1.0.0
- * @apiDescription **должен работать**
- *
- * @apiGroup Address
- *
- * @apiHeader {string} authorization токен авторизации
- *
- * @apiParam {integer} flatId идентификатор квартиры
- * @apiParam {string} [clientId] идентификатор договора (для удаления подселенцев)
- * @apiParam {string{11}} [guestPhone=myPhone] номер телефона
- * @apiParam {string="inner","outer"} [type="inner"] тип inner - доступ к домофону, outer - только калитки и ворота
- * @apiParam {string="Y-m-d H:i:s"} [expire="3001-01-01"] время до которого действует доступ
- *
- * @apiErrorExample Ошибки
- * 403 требуется авторизация
- * 422 неверный формат данных
- * 404 пользователь не найден
- * 410 авторизация отозвана
- * 424 неверный токен
- */
+    /**
+     * @api {post} /mobile/address/access управление доступами
+     * @apiVersion 1.0.0
+     * @apiDescription **должен работать**
+     *
+     * @apiGroup Address
+     *
+     * @apiHeader {string} authorization токен авторизации
+     *
+     * @apiBody {integer} flatId идентификатор квартиры
+     * @apiBody {string} [clientId] идентификатор договора (для удаления подселенцев)
+     * @apiBody {string{11}} [guestPhone=myPhone] номер телефона
+     * @apiBody {string="inner","outer"} [type="inner"] тип inner - доступ к домофону, outer - только калитки и ворота
+     * @apiBody {string="Y-m-d H:i:s"} [expire="3001-01-01"] время до которого действует доступ
+     *
+     * @apiErrorExample Ошибки
+     * 403 требуется авторизация
+     * 422 неверный формат данных
+     * 404 пользователь не найден
+     * 410 авторизация отозвана
+     * 424 неверный токен
+     */
 
     auth();
     $households = loadBackend("households");

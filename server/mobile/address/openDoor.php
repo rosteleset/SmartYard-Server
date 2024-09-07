@@ -1,24 +1,24 @@
 <?php
 
-/**
- * @api {post} /mobile/address/openDoor открыть дверь (калитку, ворота, шлагбаум)
- * @apiVersion 1.0.0
- * @apiDescription ***нуждается в доработке***
- *
- * @apiGroup Address
- *
- * @apiHeader {String} authorization токен авторизации
- *
- * @apiParam {Number} domophoneId идентификатор домофона
- * @apiParam {Number=0,1,2} [doorId=0] идентификатор двери (калитки, ворот, шлагбаума)
- *
- * @apiErrorExample Ошибки
- * 403 требуется авторизация
- * 422 неверный формат данных
- * 404 пользователь не найден
- * 410 авторизация отозвана
- * 424 неверный токен
- */
+    /**
+     * @api {post} /mobile/address/openDoor открыть дверь (калитку, ворота, шлагбаум)
+     * @apiVersion 1.0.0
+     * @apiDescription ***нуждается в доработке***
+     *
+     * @apiGroup Address
+     *
+     * @apiHeader {String} authorization токен авторизации
+     *
+     * @apiBody {Number} domophoneId идентификатор домофона
+     * @apiBody {Number=0,1,2} [doorId=0] идентификатор двери (калитки, ворот, шлагбаума)
+     *
+     * @apiErrorExample Ошибки
+     * 403 требуется авторизация
+     * 422 неверный формат данных
+     * 404 пользователь не найден
+     * 410 авторизация отозвана
+     * 424 неверный токен
+     */
 
     auth();
 

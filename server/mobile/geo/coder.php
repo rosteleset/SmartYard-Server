@@ -1,20 +1,20 @@
 <?php
 
-/**
- * @api {post} /mobile/geo/coder геокоординаты по адресу
- * @apiVersion 1.0.0
- * @apiDescription **[метод готов]**
- *
- * @apiGroup Geo
- *
- * @apiHeader {String} authorization токен авторизации
- *
- * @apiParam {String} address адрес
- *
- * @apiSuccess {Number} lat широта
- * @apiSuccess {Number} lon долгота
- * @apiSuccess {String} address адрес
- */
+    /**
+     * @api {post} /mobile/geo/coder геокоординаты по адресу
+     * @apiVersion 1.0.0
+     * @apiDescription **метод готов**
+     *
+     * @apiGroup Geo
+     *
+     * @apiHeader {String} authorization токен авторизации
+     *
+     * @apiBody {String} address адрес
+     *
+     * @apiSuccess {Number} lat широта
+     * @apiSuccess {Number} lon долгота
+     * @apiSuccess {String} address адрес
+     */
 
     auth();
 

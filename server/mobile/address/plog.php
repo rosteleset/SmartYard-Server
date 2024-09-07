@@ -1,58 +1,58 @@
 <?php
 
-/**
- * @api {post} /mobile/address/plog получить журнал событий объекта за день
- * @apiVersion 1.0.0
- * @apiDescription ***в работе***
- *
- * @apiGroup Address
- *
- * @apiHeader {string} authorization токен авторизации
- *
- * @apiParam {string} flatId идентификатор квартиры
- * @apiParam {string="Y-m-d"} day дата (день)
- *
- * @apiSuccess {object[]} - массив объектов
- * @apiSuccess {string="Y-m-d H:i:s"} -.date дата
- * @apiSuccess {integer} [-.timezone] часовой пояс (default - Moscow Time)
- * @apiSuccess {UUID} -.uuid UUID события (уникален)
- * @apiSuccess {integer} -.objectId идентификатор объекта (домофона)
- * @apiSuccess {integer="0"} -.objectType тип объекта (0 - домофон)
- * @apiSuccess {integer="0","1","2"} -.objectMechanizma идентификатор нагрузки (двери)
- * @apiSuccess {string} -.mechanizmaDescription описание нагрузки (двери)
- * @apiSuccess {integer} [-.houseId] идентификатор дома
- * @apiSuccess {integer} [-.entranceId] идентификатор входа
- * @apiSuccess {integer} [-.cameraId] идентификатор камеры
- * @apiSuccess {string="1 - не отвечен","2 - отвечен","3 - открытие ключом","4 - открытие приложением","5 - открытие по морде лица","6 - открытие кодом открытия","7 - открытие звонком (гость, калитка)"} -.event тип события
- * @apiSuccess {string} [-.preview] url картинки
- * @apiSuccess {integer="0","1","2"} -.previewType тип каринки (0 - нет, 1 - DVR, 2 - FRS)
- * @apiSuccess {string} [-.detail] непонятная фигня
- * @apiSuccess {object} [-.detailX] детализация события
- * @apiSuccess {string="t","f"} [-.detailX.opened] открыли или нет (1, 2)
- * @apiSuccess {string} [-.detailX.key] ключ (3)
- * @apiSuccess {string} [-.detailX.phone] телефон (4)
- * @apiSuccess {string} [-.detailX.faceId] идентификатор лица (5+)
- * @apiSuccess {string} [-.detailX.code] код открытия (6)
- * @apiSuccess {string} [-.detailX.phoneFrom] телефон (7)
- * @apiSuccess {string} [-.detailX.phoneTo] телефон (7)
- * @apiSuccess {object} [-.detailX.flags] доп. флаги
- * @apiSuccess {void} [-.detailX.flags.canLike] можно "лайкать"
- * @apiSuccess {void} [-.detailX.flags.canDislike] можно "дизлайкать"
- * @apiSuccess {void} [-.detailX.flags.liked] уже "лайкнуто"
- * @apiSuccess {object} [-.detailX.face] координаты распознанного лица
- * @apiSuccess {integer} [-.detailX.face.left] отступ по X
- * @apiSuccess {integer} [-.detailX.face.top] отступ по Y
- * @apiSuccess {integer} [-.detailX.face.width] ширина
- * @apiSuccess {integer} [-.detailX.face.height] высота
- *
- * @apiErrorExample Ошибки
- * 402 требуется оплата
- * 403 требуется авторизация
- * 422 неверный формат данных
- * 404 пользователь не найден
- * 410 авторизация отозвана
- * 424 неверный токен
- */
+    /**
+     * @api {post} /mobile/address/plog получить журнал событий объекта за день
+     * @apiVersion 1.0.0
+     * @apiDescription ***в работе***
+     *
+     * @apiGroup Address
+     *
+     * @apiHeader {string} authorization токен авторизации
+     *
+     * @apiBody {string} flatId идентификатор квартиры
+     * @apiBody {string="Y-m-d"} day дата (день)
+     *
+     * @apiSuccess {object[]} - массив объектов
+     * @apiSuccess {string="Y-m-d H:i:s"} -.date дата
+     * @apiSuccess {integer} [-.timezone] часовой пояс (default - Moscow Time)
+     * @apiSuccess {UUID} -.uuid UUID события (уникален)
+     * @apiSuccess {integer} -.objectId идентификатор объекта (домофона)
+     * @apiSuccess {integer="0"} -.objectType тип объекта (0 - домофон)
+     * @apiSuccess {integer="0","1","2"} -.objectMechanizma идентификатор нагрузки (двери)
+     * @apiSuccess {string} -.mechanizmaDescription описание нагрузки (двери)
+     * @apiSuccess {integer} [-.houseId] идентификатор дома
+     * @apiSuccess {integer} [-.entranceId] идентификатор входа
+     * @apiSuccess {integer} [-.cameraId] идентификатор камеры
+     * @apiSuccess {string="1 - не отвечен","2 - отвечен","3 - открытие ключом","4 - открытие приложением","5 - открытие по морде лица","6 - открытие кодом открытия","7 - открытие звонком (гость, калитка)"} -.event тип события
+     * @apiSuccess {string} [-.preview] url картинки
+     * @apiSuccess {integer="0","1","2"} -.previewType тип каринки (0 - нет, 1 - DVR, 2 - FRS)
+     * @apiSuccess {string} [-.detail] непонятная фигня
+     * @apiSuccess {object} [-.detailX] детализация события
+     * @apiSuccess {string="t","f"} [-.detailX.opened] открыли или нет (1, 2)
+     * @apiSuccess {string} [-.detailX.key] ключ (3)
+     * @apiSuccess {string} [-.detailX.phone] телефон (4)
+     * @apiSuccess {string} [-.detailX.faceId] идентификатор лица (5+)
+     * @apiSuccess {string} [-.detailX.code] код открытия (6)
+     * @apiSuccess {string} [-.detailX.phoneFrom] телефон (7)
+     * @apiSuccess {string} [-.detailX.phoneTo] телефон (7)
+     * @apiSuccess {object} [-.detailX.flags] доп. флаги
+     * @apiSuccess {void} [-.detailX.flags.canLike] можно "лайкать"
+     * @apiSuccess {void} [-.detailX.flags.canDislike] можно "дизлайкать"
+     * @apiSuccess {void} [-.detailX.flags.liked] уже "лайкнуто"
+     * @apiSuccess {object} [-.detailX.face] координаты распознанного лица
+     * @apiSuccess {integer} [-.detailX.face.left] отступ по X
+     * @apiSuccess {integer} [-.detailX.face.top] отступ по Y
+     * @apiSuccess {integer} [-.detailX.face.width] ширина
+     * @apiSuccess {integer} [-.detailX.face.height] высота
+     *
+     * @apiErrorExample Ошибки
+     * 402 требуется оплата
+     * 403 требуется авторизация
+     * 422 неверный формат данных
+     * 404 пользователь не найден
+     * 410 авторизация отозвана
+     * 424 неверный токен
+     */
 
     use backends\plog\plog;
     use backends\frs\frs;

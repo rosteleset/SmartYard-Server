@@ -1,27 +1,27 @@
 <?php
 
 /**
- * @api {post} /mobile/cctv/all получить список камер
- * @apiVersion 1.0.0
- * @apiDescription ***почти готов***
- *
- * @apiGroup CCTV
- *
- * @apiParam {Number} [houseId] идентификатор дома
- *
- * @apiHeader {String} authorization токен авторизации
- *
- * @apiSuccess {Object[]} - массив камер
- * @apiSuccess {Number} [-.houseId] идентификатор дома
- * @apiSuccess {Number} -.id id камеры
- * @apiSuccess {String} -.name наименование камеры
- * @apiSuccess {Number} -.lat широта
- * @apiSuccess {Number} -.lon долгота
- * @apiSuccess {String} -.url базовый url потока
- * @apiSuccess {String} -.token token авторизации
- * @apiSuccess {String} [-.serverType] тип DVR сервера: "flussonic" (default), "nimble", "trassir", "macroscop", "forpost"
- * @apiSuccess {String} [-.hlsMode] режим HLS (used for flussonic only): "fmp4" (default for hevc support), "mpegts" (for flussonic below 21.02 version)
- */
+     * @api {post} /mobile/cctv/all получить список камер
+     * @apiVersion 1.0.0
+     * @apiDescription ***почти готов***
+     *
+     * @apiGroup CCTV
+     *
+     * @apiParam {Number} [houseId] идентификатор дома
+     *
+     * @apiBody {String} authorization токен авторизации
+     *
+     * @apiSuccess {Object[]} - массив камер
+     * @apiSuccess {Number} [-.houseId] идентификатор дома
+     * @apiSuccess {Number} -.id id камеры
+     * @apiSuccess {String} -.name наименование камеры
+     * @apiSuccess {Number} -.lat широта
+     * @apiSuccess {Number} -.lon долгота
+     * @apiSuccess {String} -.url базовый url потока
+     * @apiSuccess {String} -.token token авторизации
+     * @apiSuccess {String} [-.serverType] тип DVR сервера: "flussonic" (default), "nimble", "trassir", "macroscop", "forpost"
+     * @apiSuccess {String} [-.hlsMode] режим HLS (used for flussonic only): "fmp4" (default for hevc support), "mpegts" (for flussonic below 21.02 version)
+     */
 
     auth();
 

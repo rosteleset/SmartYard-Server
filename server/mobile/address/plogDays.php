@@ -1,31 +1,31 @@
 <?php
 
-/**
- * @api {post} /mobile/address/plogDays получить список дат (дней) на которые есть записи в журнале событий объекта
- * @apiVersion 1.0.0
- * @apiDescription ***в работе***
- *
- * @apiGroup Address
- *
- * @apiHeader {String} authorization токен авторизации
- *
- * @apiParam {String} flatId идентификатор квартиры
- * @apiParam {String} [events] фильтр типов событий (через запятую)
- *
- * @apiSuccess {Object[]} - массив объектов
- * @apiSuccess {String="Y-m-d"} -.day дата (день)
- * @apiSuccess {integer} [-.timezone] часовой пояс (default - Moscow Time)
- * @apiSuccess {Number} -.events количество событий
- *
- *
- * @apiErrorExample Ошибки
- * 402 требуется оплата
- * 403 требуется авторизация
- * 422 неверный формат данных
- * 404 пользователь не найден
- * 410 авторизация отозвана
- * 424 неверный токен
- */
+    /**
+     * @api {post} /mobile/address/plogDays получить список дат (дней) на которые есть записи в журнале событий объекта
+     * @apiVersion 1.0.0
+     * @apiDescription ***в работе***
+     *
+     * @apiGroup Address
+     *
+     * @apiHeader {String} authorization токен авторизации
+     *
+     * @apiBody {String} flatId идентификатор квартиры
+     * @apiBody {String} [events] фильтр типов событий (через запятую)
+     *
+     * @apiSuccess {Object[]} - массив объектов
+     * @apiSuccess {String="Y-m-d"} -.day дата (день)
+     * @apiSuccess {integer} [-.timezone] часовой пояс (default - Moscow Time)
+     * @apiSuccess {Number} -.events количество событий
+     *
+     *
+     * @apiErrorExample Ошибки
+     * 402 требуется оплата
+     * 403 требуется авторизация
+     * 422 неверный формат данных
+     * 404 пользователь не найден
+     * 410 авторизация отозвана
+     * 424 неверный токен
+     */
 
     auth();
     $households = loadBackend("households");

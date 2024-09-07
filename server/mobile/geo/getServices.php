@@ -3,13 +3,13 @@
     /**
      * @api {post} /mobile/geo/getServices список доступных услуг
      * @apiVersion 1.0.0
-     * @apiDescription **[метод готов]**
+     * @apiDescription **метод готов**
      *
      * @apiGroup Geo
      *
      * @apiHeader {String} authorization токен авторизации
      *
-     * @apiParam {Number} houseId дом
+     * @apiBody {Number} houseId дом
      *
      * @apiSuccess {Object[]} - массив объектов
      * @apiSuccess {String="internet","iptv","ctv","phone","cctv","domophone","gsm"} -.icon иконка услуги

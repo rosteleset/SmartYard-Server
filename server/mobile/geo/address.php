@@ -1,18 +1,18 @@
 <?php
 
-/**
- * @api {post} /mobile/geo/address адрес дома
- * @apiVersion 1.0.0
- * @apiDescription **[метод готов]**
- *
- * @apiGroup Geo
- *
- * @apiHeader {String} authorization токен авторизации
- *
- * @apiParam {Number} houseId идентификатор дома
- *
- * @apiSuccess {String} - адрес
- */
+    /**
+     * @api {post} /mobile/geo/address адрес дома
+     * @apiVersion 1.0.0
+     * @apiDescription **метод готов**
+     *
+     * @apiGroup Geo
+     *
+     * @apiHeader {String} authorization токен авторизации
+     *
+     * @apiBody {Number} houseId идентификатор дома
+     *
+     * @apiSuccess {String} - адрес
+     */
 
     auth();
 

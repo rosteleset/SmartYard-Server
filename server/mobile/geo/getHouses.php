@@ -1,20 +1,20 @@
 <?php
 
-/**
- * @api {post} /mobile/geo/getHouses список домов
- * @apiVersion 1.0.0
- * @apiDescription **[метод готов]**
- *
- * @apiGroup Geo
- *
- * @apiHeader {String} authorization токен авторизации
- *
- * @apiParam {Number} streetId улица
- *
- * @apiSuccess {Object[]} - массив объектов
- * @apiSuccess {String} -.houseId идентификатор дома
- * @apiSuccess {String} -.number номер дома
- */
+    /**
+     * @api {post} /mobile/geo/getHouses список домов
+     * @apiVersion 1.0.0
+     * @apiDescription **метод готов**
+     *
+     * @apiGroup Geo
+     *
+     * @apiHeader {String} authorization токен авторизации
+     *
+     * @apiBody {Number} streetId улица
+     *
+     * @apiSuccess {Object[]} - массив объектов
+     * @apiSuccess {String} -.houseId идентификатор дома
+     * @apiSuccess {String} -.number номер дома
+     */
 
     auth();
 

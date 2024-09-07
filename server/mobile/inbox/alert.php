@@ -3,15 +3,15 @@
     /**
      * @api {post} /mobile/inbox/alert отправить сообщение самому себе
      * @apiVersion 1.0.0
-     * @apiDescription **[метод готов]**
+     * @apiDescription **метод готов**
      *
      * @apiGroup Inbox
      *
      * @apiHeader {String} authorization токен авторизации
      *
-     * @apiParam {String} msg сообщение
-     * @apiParam {String} action действие
-     * @apiParam {String="t","f"} [pushOnly="t"] недублировать отправку через SMS
+     * @apiBody {String} msg сообщение
+     * @apiBody {String} action действие
+     * @apiBody {String="t","f"} [pushOnly="t"] недублировать отправку через SMS
      */
 
     auth();

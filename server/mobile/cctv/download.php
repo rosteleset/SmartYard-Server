@@ -1,14 +1,14 @@
 <?php
 
-/**
- * @api {get} /mobile/cctv/download скачать файл
- * @apiVersion 1.0.0
- * @apiDescription ***почти готов***
- *
- * @apiGroup CCTV
- *
- * @apiParam {String} id идентификатор файла
- */
+    /**
+     * @api {get} /mobile/cctv/download скачать файл
+     * @apiVersion 1.0.0
+     * @apiDescription ***почти готов***
+     *
+     * @apiGroup CCTV
+     *
+     * @apiBody {String} id идентификатор файла
+     */
 
     $contentType = "video/mp4";
     $files = loadBackend("files");

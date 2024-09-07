@@ -1,40 +1,40 @@
 <?php
 
-/**
- * @api {post} /mobile/address/getAddressList получить список адресов на главный экран
- * @apiVersion 1.0.0
- * @apiDescription **[не готов]**
- *
- * @apiGroup Address
- *
- * @apiHeader {string} authorization токен авторизации
- *
- * @apiSuccess {object[]} - массив объектов
- * @apiSuccess {integer} -.houseId идентификатор дома
- * @apiSuccess {string} -.address адрес
- * @apiSuccess {Object[]} [-.doors] замки домофонов
- * @apiSuccess {integer} -.doors.domophoneId идентификатор домофона
- * @apiSuccess {integer=0,1,2} -.doors.doorId идентификатор замка
- * @apiSuccess {integer} [-.doors.entrance] подъезд
- * @apiSuccess {string="entrance","wicket","gate","barrier"} -.doors.icon иконка замка
- * @apiSuccess {string} -.doors.name наименование замка
- * @apiSuccess {string} [-.doors.blocked] причина ограничения доступа к домофону
- * @apiSuccess {string} [-.doors.dst] номер открытия
- * @apiSuccess {string="t","f"} [-.hasPlog] доступность журнала событий
- * @apiSuccess {integer} -.cctv количество видеокамер
- * @apiSuccess {object[]} [-.ext] массив объектов
- * @apiSuccess {string} -.ext.caption имя расширения (для отображения)
- * @apiSuccess {string} -.ext.icon иконка расширения (svg)
- * @apiSuccess {string} -.ext.extId идентификатор расширения
- * @apiSuccess {string="t","f"} [-.ext.highlight="f"] "подсветка" (красная точка)
- *
- * @apiErrorExample Ошибки
- * 403 требуется авторизация
- * 422 неверный формат данных
- * 404 пользователь не найден
- * 410 авторизация отозвана
- * 424 неверный токен
- */
+    /**
+     * @api {post} /mobile/address/getAddressList получить список адресов на главный экран
+     * @apiVersion 1.0.0
+     * @apiDescription **не готов**
+     *
+     * @apiGroup Address
+     *
+     * @apiHeader {string} authorization токен авторизации
+     *
+     * @apiSuccess {object[]} - массив объектов
+     * @apiSuccess {integer} -.houseId идентификатор дома
+     * @apiSuccess {string} -.address адрес
+     * @apiSuccess {Object[]} [-.doors] замки домофонов
+     * @apiSuccess {integer} -.doors.domophoneId идентификатор домофона
+     * @apiSuccess {integer=0,1,2} -.doors.doorId идентификатор замка
+     * @apiSuccess {integer} [-.doors.entrance] подъезд
+     * @apiSuccess {string="entrance","wicket","gate","barrier"} -.doors.icon иконка замка
+     * @apiSuccess {string} -.doors.name наименование замка
+     * @apiSuccess {string} [-.doors.blocked] причина ограничения доступа к домофону
+     * @apiSuccess {string} [-.doors.dst] номер открытия
+     * @apiSuccess {string="t","f"} [-.hasPlog] доступность журнала событий
+     * @apiSuccess {integer} -.cctv количество видеокамер
+     * @apiSuccess {object[]} [-.ext] массив объектов
+     * @apiSuccess {string} -.ext.caption имя расширения (для отображения)
+     * @apiSuccess {string} -.ext.icon иконка расширения (svg)
+     * @apiSuccess {string} -.ext.extId идентификатор расширения
+     * @apiSuccess {string="t","f"} [-.ext.highlight="f"] "подсветка" (красная точка)
+     *
+     * @apiErrorExample Ошибки
+     * 403 требуется авторизация
+     * 422 неверный формат данных
+     * 404 пользователь не найден
+     * 410 авторизация отозвана
+     * 424 неверный токен
+     */
 
     use backends\plog\plog;
 

@@ -3,13 +3,13 @@
     /**
      * @api {post} /mobile/user/checkPhone подтвердить телефон по исходящему звонку из приложения
      * @apiVersion 1.0.0
-     * @apiDescription **[метод готов]**
+     * @apiDescription **метод готов**
      *
      * @apiGroup User
      *
-     * @apiParam {String{11}} userPhone номер телефона с кодом страны без "+"
-     * @apiParam {String} deviceToken токен устройства
-     * @apiParam {Number=0,1,2} platform тип клиента 0 - android, 1 - ios, 2 - web
+     * @apiBody {String{11}} userPhone номер телефона с кодом страны без "+"
+     * @apiBody {String} deviceToken токен устройства
+     * @apiBody {Number=0,1,2} platform тип клиента 0 - android, 1 - ios, 2 - web
      *
      * @apiErrorExample Ошибки
      * 401 неверный код подтверждения

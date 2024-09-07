@@ -1,20 +1,20 @@
 <?php
 
-/**
- * @api {post} /mobile/frs/like "лайкнуть" (свой)
- * @apiVersion 1.0.0
- * @apiDescription **[в работе]**
- *
- * @apiGroup FRS
- *
- * @apiHeader {String} authorization токен авторизации
- *
- * @apiParam {String} event идентификатор события (uuid)
- * @apiParam {String} comment комментарий
- *
- * @apiSuccess {Object} - объект
- * @apiSuccess {Number} -.faceId FaceId
- */
+    /**
+     * @api {post} /mobile/frs/like "лайкнуть" (свой)
+     * @apiVersion 1.0.0
+     * @apiDescription **в работе**
+     *
+     * @apiGroup FRS
+     *
+     * @apiHeader {String} authorization токен авторизации
+     *
+     * @apiBody {String} event идентификатор события (uuid)
+     * @apiBody {String} comment комментарий
+     *
+     * @apiSuccess {Object} - объект
+     * @apiSuccess {Number} -.faceId FaceId
+     */
 
     use backends\plog\plog;
     use backends\frs\frs;

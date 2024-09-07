@@ -2,22 +2,22 @@
 
     /**
      * @api {post} /mobile/issues/create создать заявку
-     * @apiDescription **[метод готов]**
+     * @apiDescription **метод готов**
      *
-     * в cf[11841] всегда (принудительно) прописывается "$userPhone"
+     * в cf11841 всегда (принудительно) прописывается "$userPhone"
      *
-     * в cf[11947] всегда (принудительно) прописывается "11208"
+     * в cf11947 всегда (принудительно) прописывается "11208"
      *
-     * в cf[11840] всегда (принудительно) прописывается date('d.m.y H:i')
+     * в cf11840 всегда (принудительно) прописывается date('d.m.y H:i')
      *
      * @apiVersion 1.0.0
      * @apiGroup Issues
      *
      * @apiHeader {String} authorization токен авторизации
      *
-     * @apiParam {Object} issue заявка
-     * @apiParam {Object} [customFields] дополнительные поля
-     * @apiParam {String[]} [actions] действия после создания
+     * @apiBody {Object} issue заявка
+     * @apiBody {Object} [customFields] дополнительные поля
+     * @apiBody {String[]} [actions] действия после создания
      *
      * @apiSuccess {String} - созданная заявка
      *

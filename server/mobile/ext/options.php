@@ -1,36 +1,36 @@
 <?php
 
-/**
- * @api {post} /mobile/ext/options получение конфига поставщика услуг для приложения
- * @apiVersion 1.0.0
- * @apiDescription **[метод в разработке]**
- *
- * @apiGroup Ext
- *
- * @apiHeader {String} authorization токен авторизации
- *
- * @apiSuccess {String="t","f"} [cityCams="f"] городские камеры
- * @apiSuccess {String="t","f"} [issues="f"] заявки
- * @apiSuccess {String="t","f"} [payments="f"] вкладка оплата
- * @apiSuccess {String} [paymentsUrl] URL платёжной системы (версия web-расширений 2). Если отсутствует, то будет нативная поддержка платежей через /user/getPaymentsList
- * @apiSuccess {String="t","f"} [chat="f"] вкладка чат
- * @apiSuccess {String} [chatUrl] URL страницы чата (версия web-расширений 2). Если отсутствует, то будет нативная поддержка meTalk с chatOptions
- * @apiSuccess {Object} [chatOptions] Опции для meTalk
- * @apiSuccess {String} chatOptions.id id чата meTalk
- * @apiSuccess {String} chatOptions.domain domain чата meTalk
- * @apiSuccess {String} chatOptions.token token чата meTalk
- * @apiSuccess {String} [supportPhone] номер телефона техподдержки
- * @apiSuccess {String} [timeZone = "Europe/Moscow"] Time Zone identifier
- * @apiSuccess {String="turnOnOnly","turnOnAndOff"} [guestAccess = "turnOnOnly"] Тип гостевого доступа.
- * @apiSuccess {Number} [version] Версия API
- *
- * @apiErrorExample Ошибки
- * 403 требуется авторизация
- * 422 неверный формат данных
- * 404 пользователь не найден
- * 410 авторизация отозвана
- * 424 неверный токен
- */
+    /**
+     * @api {post} /mobile/ext/options получение конфига поставщика услуг для приложения
+     * @apiVersion 1.0.0
+     * @apiDescription **метод в разработке**
+     *
+     * @apiGroup Ext
+     *
+     * @apiHeader {String} authorization токен авторизации
+     *
+     * @apiSuccess {String="t","f"} [cityCams="f"] городские камеры
+     * @apiSuccess {String="t","f"} [issues="f"] заявки
+     * @apiSuccess {String="t","f"} [payments="f"] вкладка оплата
+     * @apiSuccess {String} [paymentsUrl] URL платёжной системы (версия web-расширений 2). Если отсутствует, то будет нативная поддержка платежей через /user/getPaymentsList
+     * @apiSuccess {String="t","f"} [chat="f"] вкладка чат
+     * @apiSuccess {String} [chatUrl] URL страницы чата (версия web-расширений 2). Если отсутствует, то будет нативная поддержка meTalk с chatOptions
+     * @apiSuccess {Object} [chatOptions] Опции для meTalk
+     * @apiSuccess {String} chatOptions.id id чата meTalk
+     * @apiSuccess {String} chatOptions.domain domain чата meTalk
+     * @apiSuccess {String} chatOptions.token token чата meTalk
+     * @apiSuccess {String} [supportPhone] номер телефона техподдержки
+     * @apiSuccess {String} [timeZone = "Europe/Moscow"] Time Zone identifier
+     * @apiSuccess {String="turnOnOnly","turnOnAndOff"} [guestAccess = "turnOnOnly"] Тип гостевого доступа.
+     * @apiSuccess {Number} [version] Версия API
+     *
+     * @apiErrorExample Ошибки
+     * 403 требуется авторизация
+     * 422 неверный формат данных
+     * 404 пользователь не найден
+     * 410 авторизация отозвана
+     * 424 неверный токен
+     */
 
     auth();
 

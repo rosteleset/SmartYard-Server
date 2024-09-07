@@ -2,23 +2,23 @@
 
     /**
      * @api {post} /mobile/issues/createV2 создать заявку
-     * @apiDescription **[метод готов]**
+     * @apiDescription **метод готов**
      *
      * @apiVersion 1.0.0
      * @apiGroup Issues
      *
      * @apiHeader {String} authorization токен авторизации
      *
-     * @apiParam {String="requestCallback","requestFragment","removeAddress","connectServicesNoCommon","connectServicesHasCommon","connectServicesNoNetwork","requestQRCodeOffice","requestQRCodeCourier","requestCredentials"} type тип заявки
-     * @apiParam {String} [userName] ФИО
-     * @apiParam {String} [inputAddress] адрес, введённый пользователем
-     * @apiParam {String} [services] список услуг
-     * @apiParam {String} [comments] комментарий к заявке
-     * @apiParam {String} [cameraId] идентификатор камеры
-     * @apiParam {String} [cameraName] название камеры
-     * @apiParam {String} [fragmentDate] дата
-     * @apiParam {String} [fragmentTime] время
-     * @apiParam {String} [fragmentDuration] длительность фрагмента в минутах
+     * @apiBody {String="requestCallback","requestFragment","removeAddress","connectServicesNoCommon","connectServicesHasCommon","connectServicesNoNetwork","requestQRCodeOffice","requestQRCodeCourier","requestCredentials"} type тип заявки
+     * @apiBody {String} [userName] ФИО
+     * @apiBody {String} [inputAddress] адрес, введённый пользователем
+     * @apiBody {String} [services] список услуг
+     * @apiBody {String} [comments] комментарий к заявке
+     * @apiBody {String} [cameraId] идентификатор камеры
+     * @apiBody {String} [cameraName] название камеры
+     * @apiBody {String} [fragmentDate] дата
+     * @apiBody {String} [fragmentTime] время
+     * @apiBody {String} [fragmentDuration] длительность фрагмента в минутах
      *
      * @apiSuccess {String} - созданная заявка
      *

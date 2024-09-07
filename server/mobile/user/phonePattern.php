@@ -3,7 +3,7 @@
     /**
      * @api {post} /mobile/user/phonePattern определяет формат телефонного номера пользователя
      * @apiVersion 1.0.0
-     * @apiDescription ***готово***
+     * @apiDescription **метод готов**
      *
      * @apiGroup User
      *
