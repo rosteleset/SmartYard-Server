@@ -3,7 +3,7 @@
     /**
      * @api {post} /mobile/cctv/camMap отношения домофонов и камер
      * @apiVersion 1.0.0
-     * @apiDescription ***в работе***
+     * @apiDescription **в работе**
      *
      * @apiGroup CCTV
      *

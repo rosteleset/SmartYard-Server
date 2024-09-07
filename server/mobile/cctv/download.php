@@ -3,7 +3,7 @@
     /**
      * @api {get} /mobile/cctv/download скачать файл
      * @apiVersion 1.0.0
-     * @apiDescription ***почти готов***
+     * @apiDescription **почти готов**
      *
      * @apiGroup CCTV
      *

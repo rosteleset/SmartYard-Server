@@ -3,7 +3,7 @@
     /**
      * @api {post} /mobile/address/plogDays получить список дат (дней) на которые есть записи в журнале событий объекта
      * @apiVersion 1.0.0
-     * @apiDescription ***в работе***
+     * @apiDescription **в работе
      *
      * @apiGroup Address
      *

@@ -3,7 +3,7 @@
     /**
      * @api {post} /mobile/cctv/recPrepare запросить фрагмент архива
      * @apiVersion 1.0.0
-     * @apiDescription ***почти готов***
+     * @apiDescription **почти готов**
      *
      * @apiGroup CCTV
      *

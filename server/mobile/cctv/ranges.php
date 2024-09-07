@@ -3,7 +3,7 @@
     /**
      * @api {post} /mobile/cctv/ranges получить список доступных периодов в архиве
      * @apiVersion 1.0.0
-     * @apiDescription ***почти готов***
+     * @apiDescription **почти готов**
      *
      * @apiGroup CCTV
      *

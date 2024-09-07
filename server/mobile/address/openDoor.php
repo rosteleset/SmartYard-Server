@@ -3,7 +3,7 @@
     /**
      * @api {post} /mobile/address/openDoor открыть дверь (калитку, ворота, шлагбаум)
      * @apiVersion 1.0.0
-     * @apiDescription ***нуждается в доработке***
+     * @apiDescription **нуждается в доработке**
      *
      * @apiGroup Address
      *

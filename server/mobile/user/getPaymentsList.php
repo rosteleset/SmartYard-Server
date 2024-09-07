@@ -1,10 +1,9 @@
 <?php
 
-
    /**
     * @api {post} /mobile/user/getPaymentsList получить список договоров для оплаты
     * @apiVersion 1.0.0
-    * @apiDescription ***в работе***
+    * @apiDescription в работе**
     *
     * @apiGroup User
     *

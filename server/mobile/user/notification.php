@@ -3,7 +3,7 @@
     /**
      * @api {post} /mobile/user/notification управление уведомлениями
      * @apiVersion 1.0.0
-     * @apiDescription ***в работе***
+     * @apiDescription **в работе**
      *
      * @apiGroup User
      *
