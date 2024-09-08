@@ -91,12 +91,15 @@
                                 }
                             }
                         } else {
+                            echo "\n\n$file\n\n$class\n\n";
                             echo "warning: possible incomplete method $api/$method\n";
                         }
                     }
                 }
             }
         }
+
         $db->exec("delete from core_api_methods as a1 where permissions_same is not null and permissions_same not in (select aid from core_api_methods as a2)");
+
         echo "reindex done\n";
     }

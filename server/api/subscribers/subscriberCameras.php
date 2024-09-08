@@ -36,7 +36,7 @@
      * subscribers api
      */
 
-    namespace api\subscriber {
+    namespace api\subscribers {
 
         use api\api;
 

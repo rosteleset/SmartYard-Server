@@ -467,6 +467,13 @@
         echo "\n";
 
         maintenance(false);
+
+        try {
+            $db->exec("commit");
+        } catch (\Exception $e) {
+            //
+        }
+
         exit(0);
     }
 
