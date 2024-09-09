@@ -15,3 +15,4 @@ CREATE TABLE houses_paths (
 CREATE INDEX houses_paths_tree on houses_paths(house_path_tree);
 CREATE INDEX houses_paths_parent on houses_paths(house_path_parent);
 CREATE INDEX houses_paths_name on houses_paths(house_path_name);
+CREATE UNIQUE INDEX houses_paths_uniq on houses_paths(house_path_parent, house_path_name);
