@@ -1277,9 +1277,9 @@
                                             }
                                             QUERYID("houses", "path", nodeId, pathFirst ? {
                                                 withParents: true,
+                                                tree: "houses",
                                             } : null).
                                             done(result => {
-                                                console.log(result.tree);
                                                 if (result && result.tree) {
                                                     cb(result.tree);
                                                 } else {
@@ -1307,7 +1307,7 @@
                                         if (result && result.nodeId) {
                                             let node = {
                                                 id: result.nodeId,
-                                                name: i18n("addresses.newNode"),
+                                                text: i18n("addresses.newNode"),
                                             };
                                             instance.jstree().create_node("#", node, 'last', newNode => {
                                                 setTimeout(() => {
@@ -1329,7 +1329,7 @@
                                         if (result && result.nodeId) {
                                             let node = {
                                                 id: result.nodeId,
-                                                name: i18n("addresses.newNode"),
+                                                text: i18n("addresses.newNode"),
                                             };
                                             instance.jstree().create_node(parent, node, 'last', newNode => {
                                                 setTimeout(() => {
@@ -1352,7 +1352,7 @@
                                 renamed: function (e, data) {
                                     if (data && data.obj && data.obj.id && data.text) {
                                         PUT("houses", "path", data.obj.id, {
-                                            name: data.text,
+                                            text: data.text,
                                         }).
                                         fail(FAIL);
                                     }

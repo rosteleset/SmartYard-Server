@@ -2730,7 +2730,7 @@
              * @inheritDoc
              */
 
-            function getPath($treeOrFrom, $withParents = false, $childrens = false, $selected = false) {
+            function getPath($treeOrFrom, $withParents = false, $childrens = false, $selected = false, $tree = false) {
                 if ($withParents) {
                     $node = $this->db->get("select house_path_id, house_path_tree, coalesce(house_path_parent, 0) house_path_parent, house_path_name, house_path_icon, (select count (*) from houses_paths as p2 where p2.house_path_parent = p1.house_path_id) childrens from houses_paths as p1 where house_path_id = :house_path_id", [
                         "house_path_id" => $treeOrFrom,
@@ -2746,7 +2746,7 @@
                     ]);
 
                     if (!$node || !count($node)) {
-                        return;
+                        return $this->getPath($tree);
                     }
 
                     if ((int)$node["parentId"]) {
@@ -2798,7 +2798,7 @@
                     return $tree;
                 } else {
                     if (is_numeric($treeOrFrom)) {
-                        return $this->db->get("select house_path_id, house_path_tree, coalesce(house_path_parent, 0) house_path_parent, house_path_name, house_path_icon, (select count (*) from houses_paths as p2 where p2.house_path_parent = p1.house_path_id) childrens from houses_paths as p1 where house_path_parent = :house_path_parent order by house_path_name", [
+                        $siblings = $this->db->get("select house_path_id, house_path_tree, coalesce(house_path_parent, 0) house_path_parent, house_path_name, house_path_icon, (select count (*) from houses_paths as p2 where p2.house_path_parent = p1.house_path_id) childrens from houses_paths as p1 where house_path_parent = :house_path_parent order by house_path_name", [
                             "house_path_parent" => $treeOrFrom,
                         ], [
                             "house_path_id" => "id",
@@ -2809,7 +2809,7 @@
                             "childrens" => "children",
                         ]);
                     } else {
-                        return $this->db->get("select house_path_id, house_path_tree, coalesce(house_path_parent, 0) house_path_parent, house_path_name, house_path_icon, (select count (*) from houses_paths as p2 where p2.house_path_parent = p1.house_path_id) childrens from houses_paths as p1 where house_path_tree = :house_path_tree and house_path_parent is null order by house_path_name", [
+                        $siblings = $this->db->get("select house_path_id, house_path_tree, coalesce(house_path_parent, 0) house_path_parent, house_path_name, house_path_icon, (select count (*) from houses_paths as p2 where p2.house_path_parent = p1.house_path_id) childrens from houses_paths as p1 where house_path_tree = :house_path_tree and house_path_parent is null order by house_path_name", [
                             "house_path_tree" => $treeOrFrom,
                         ], [
                             "house_path_id" => "id",
@@ -2820,6 +2820,10 @@
                             "childrens" => "children",
                         ]);
                     }
+                    foreach ($siblings as &$sibling) {
+                        $sibling["children"] = !!(int)$sibling["children"];
+                    }
+                    return $siblings;
                 }
             }
 
@@ -2827,15 +2831,15 @@
              * @inheritDoc
              */
 
-             function addRootPathNode($tree, $name, $icon) {
-                if (!checkStr($tree) || !checkStr($name)) {
+             function addRootPathNode($tree, $text, $icon) {
+                if (!checkStr($tree) || !checkStr($text)) {
                     return false;
                 }
 
                 return $this->db->insert("insert into houses_paths (house_path_tree, house_path_parent, house_path_name, house_path_icon) values (:house_path_tree, :house_path_parent, :house_path_name, :house_path_icon)", [
                     "house_path_tree" => $tree,
                     "house_path_parent" => null,
-                    "house_path_name" => $name,
+                    "house_path_name" => $text,
                     "house_path_icon" => $icon,
                 ]);
             }
@@ -2844,8 +2848,8 @@
              * @inheritDoc
              */
 
-             function addPathNode($parentId, $name, $icon) {
-                if (!checkInt($parentId) || !checkStr($name)) {
+             function addPathNode($parentId, $text, $icon) {
+                if (!checkInt($parentId) || !checkStr($text)) {
                     return false;
                 }
 
@@ -2861,7 +2865,7 @@
                     return $this->db->insert("insert into houses_paths (house_path_tree, house_path_parent, house_path_name, house_path_icon) values (:house_path_tree, :house_path_parent, :house_path_name, :house_path_icon)", [
                         "house_path_tree" => $tree,
                         "house_path_parent" => $parentId,
-                        "house_path_name" => $name,
+                        "house_path_name" => $text,
                         "house_path_icon" => $icon,
                     ]);
                 } else {
@@ -2873,14 +2877,14 @@
              * @inheritDoc
              */
 
-            function modifyPathNode($nodeId, $name, $icon) {
-                if (!checkInt($nodeId) || !checkStr($name)) {
+            function modifyPathNode($nodeId, $text, $icon) {
+                if (!checkInt($nodeId) || !checkStr($text)) {
                     return false;
                 }
 
                 return $this->db->modify("update houses_paths set house_path_name = :house_path_name, house_path_icon = :house_path_icon where house_path_id = :house_path_id", [
                     "house_path_id" => $nodeId,
-                    "house_path_name" => $name,
+                    "house_path_name" => $text,
                     "house_path_icon" => $icon,
                 ]);
             }
@@ -2894,9 +2898,12 @@
                     "house_path_id" => $nodeId,
                 ]);
 
-                while ($c) {
-                    $c += $this->db->modify("delete from houses_paths where house_path_parent not in (select house_path_id from houses_paths)");
-                }
+                $r = 0;
+
+                do {
+                    $r = $this->db->modify("delete from houses_paths where house_path_parent not in (select house_path_id from houses_paths)");
+                    $c += $r;
+                } while ($r);
 
                 return $c;
             }

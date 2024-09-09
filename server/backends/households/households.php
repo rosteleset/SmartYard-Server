@@ -414,33 +414,33 @@
 
             /**
              * @param string tree
-             * @param string name
+             * @param string text
              * @param string icon
              *
              * @return mixed
              */
 
-             abstract function addRootPathNode($tree, $name, $icon);
+             abstract function addRootPathNode($tree, $text, $icon);
 
             /**
              * @param string parentId
-             * @param string name
+             * @param string text
              * @param string icon
              *
              * @return mixed
              */
 
-            abstract function addPathNode($parentId, $name, $icon);
+            abstract function addPathNode($parentId, $text, $icon);
 
             /**
              * @param string nodeId
-             * @param string name
+             * @param string text
              * @param string icon
              *
              * @return mixed
              */
 
-             abstract function modifyPathNode($nodeId, $name, $icon);
+             abstract function modifyPathNode($nodeId, $text, $icon);
 
             /**
              * @param string nodeId

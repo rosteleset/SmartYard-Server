@@ -13,6 +13,7 @@
      * @apiParam {String} treeOrFrom tree or parent
      * @apiQuery {String} [search]
      * @apiQuery {String} [from]
+     * @apiQuery {String} [tree]
      * @apiQuery {Boolean} [withParents]
      *
      * @apiSuccess {Object[]} tree
@@ -29,7 +30,7 @@
      * @apiHeader {String} authorization authentication token
      *
      * @apiParam {Number} parentId
-     * @apiBody {String} name
+     * @apiBody {String} text
      * @apiBody {String} icon
      *
      * @apiSuccess {Number} nodeId
@@ -46,7 +47,7 @@
      * @apiHeader {String} authorization authentication token
      *
      * @apiParam {Number} nodeId
-     * @apiBody {String} name
+     * @apiBody {String} text
      * @apiBody {String} icon
      *
      * @apiSuccess {Boolean} oprationResult
@@ -92,7 +93,7 @@
                     if (@$params["search"]) {
                         $tree = $households->searchPath($params["_id"], $params["search"]);
                     } else {
-                        $tree = $households->getPath($params["_id"], !!@$params["withParents"], false, !!@$params["withParents"] ? $params["_id"] : false);
+                        $tree = $households->getPath($params["_id"], !!@$params["withParents"], false, !!@$params["withParents"] ? $params["_id"] : false, @$params["tree"]);
                     }
 
                     return api::ANSWER($tree, "tree");
@@ -106,9 +107,9 @@
                     return api::ERROR();
                 } else {
                     if ((int)$params["_id"]) {
-                        return api::ANSWER($households->addPathNode($params["_id"], @$params["name"], @$params["icon"]), "nodeId");
+                        return api::ANSWER($households->addPathNode($params["_id"], @$params["text"], @$params["icon"]), "nodeId");
                     } else {
-                        return api::ANSWER($households->addRootPathNode($params["_id"], @$params["name"], @$params["icon"]), "nodeId");
+                        return api::ANSWER($households->addRootPathNode($params["_id"], @$params["text"], @$params["icon"]), "nodeId");
                     }
                 }
             }
@@ -119,7 +120,7 @@
                 if (!$households) {
                     return api::ERROR();
                 } else {
-                    return api::ANSWER($households->modifyPathNode($params["_id"], @$params["name"], @$params["icon"]));
+                    return api::ANSWER($households->modifyPathNode($params["_id"], @$params["text"], @$params["icon"]));
                 }
             }
 
