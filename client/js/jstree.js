@@ -4571,10 +4571,13 @@
 			h1 = $("<"+"div></div>", { css : { "position" : "absolute", "top" : "-200px", "left" : (rtl ? "0px" : "-1000px"), "visibility" : "hidden" } }).appendTo(document.body);
 			h2 = $("<"+"input />", {
 						"value" : t,
-						"class" : "jstree-rename-input",
+						"class" : "jstree-rename-input form-control",
 						// "size" : t.length,
 						"css" : {
-							"padding" : "5px",
+							"padding-left" : "5px",
+							"padding-right" : "5px",
+							"padding-top" : "0",
+							"padding-bottom" : "0",
 							"border" : "1px solid silver",
 							"box-sizing" : "border-box",
 							"display" : "inline-block",
