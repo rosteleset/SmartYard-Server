@@ -986,6 +986,8 @@
                 });
             }
 
+            let pathFirst = true;
+
             GET("houses", "domophones").
             done(response => {
                 modules.addresses.houses.meta.domophones = response.domophones;
@@ -1253,7 +1255,7 @@
                                 title: i18n("addresses.prefix"),
                                 tab: i18n("addresses.primary"),
                                 placeholder: i18n("addresses.prefix"),
-                                value: entrance.prefix?entrance.prefix.toString():"0",
+                                value: entrance.prefix ? entrance.prefix.toString() : "0",
                                 hidden: !parseInt(entrance.shared) || parseInt(entrance.domophoneOutput) > 0 || parseInt(entrance.cms) !== 0,
                                 validate: (v, prefix) => {
                                     return !parseInt($("#" + prefix + "shared").val()) || parseInt(v) >= 1;
@@ -1261,31 +1263,34 @@
                             },
                             {
                                 id: "path",
-                                type: "jsTree",
-                                title: i18n("addresses.path"),
+                                type: "jstree",
+                                title: false,
                                 tab: i18n("addresses.path"),
                                 tree: {
                                     core: {
                                         data: function (node, cb) {
-                                            QUERYID("houses", "path", (node.id === "#") ? "houses" : node.id).
+                                            let nodeId;
+                                            if (pathFirst && entrance.path) {
+                                                nodeId = entrance.path;
+                                            } else {
+                                                nodeId = (node.id === "#") ? "houses" : node.id;
+                                            }
+                                            QUERYID("houses", "path", nodeId, pathFirst ? {
+                                                withParents: true,
+                                            } : null).
                                             done(result => {
-                                                let tree = [];
+                                                console.log(result.tree);
                                                 if (result && result.tree) {
-                                                    for (let i in result.tree) {
-                                                        tree.push({
-                                                            text: result.tree[i].name,
-                                                            id: result.tree[i].nodeId,
-                                                            icon: result.tree[i].icon,
-                                                            children: !!parseInt(result.tree[i].childrens),
-                                                        });
-                                                    }
+                                                    cb(result.tree);
+                                                } else {
+                                                    cb([]);
                                                 }
-                                                cb(tree);
                                             }).
                                             fail(FAIL).
                                             fail(() => {
                                                 cb([]);
                                             });
+                                            pathFirst = false;
                                         },
                                         check_callback: true,
                                         animation: 0,
@@ -1295,36 +1300,76 @@
                                     ],
                                 },
 
+                                addRoot: function (instance) {
+                                    POST("houses", "path", "houses", {
+                                        text: i18n("addresses.newNode"),
+                                    }).done(result => {
+                                        if (result && result.nodeId) {
+                                            let node = {
+                                                id: result.nodeId,
+                                                name: i18n("addresses.newNode"),
+                                            };
+                                            instance.jstree().create_node("#", node, 'last', newNode => {
+                                                setTimeout(() => {
+                                                    instance.jstree().deselect_all();
+                                                    instance.jstree().select_node(newNode);
+                                                    instance.jstree().edit(newNode);
+                                                }, 100);
+                                            });
+                                        }
+                                    }).fail(FAIL);
+                                },
+
                                 add: function (instance) {
-                                    let parent = instance.jstree('get_selected');
+                                    let parent = instance.jstree().get_selected();
                                     parent = parent.length ? parent[0] : "#";
-                                    let node = { id: 123, text: "New node" };
-                                    instance.jstree().create_node(parent, node, 'last', newNode => {
-                                        setTimeout(() => {
-                                            instance.jstree().deselect_all();
-                                            instance.jstree().select_node(newNode);
-                                            instance.jstree().edit(newNode);
-                                        }, 100);
-                                    });
+                                    POST("houses", "path", (parent === "#") ? "houses" : parent, {
+                                        text: i18n("addresses.newNode"),
+                                    }).done(result => {
+                                        if (result && result.nodeId) {
+                                            let node = {
+                                                id: result.nodeId,
+                                                name: i18n("addresses.newNode"),
+                                            };
+                                            instance.jstree().create_node(parent, node, 'last', newNode => {
+                                                setTimeout(() => {
+                                                    instance.jstree().deselect_all();
+                                                    instance.jstree().select_node(newNode);
+                                                    instance.jstree().edit(newNode);
+                                                }, 100);
+                                            });
+                                        }
+                                    }).fail(FAIL);
                                 },
 
                                 rename: function (instance) {
-                                    let node = instance.jstree('get_selected');
+                                    let node = instance.jstree().get_selected();
                                     setTimeout(() => {
-                                        instance.jstree().edit(node, console.log);
+                                        instance.jstree().edit(node);
                                     }, 100);
                                 },
 
                                 renamed: function (e, data) {
-                                    if (data && data.text) {
-                                        console.log('renamed-2', data);
+                                    if (data && data.obj && data.obj.id && data.text) {
+                                        PUT("houses", "path", data.obj.id, {
+                                            name: data.text,
+                                        }).
+                                        fail(FAIL);
                                     }
                                 },
 
                                 delete: function (instance) {
-                                    console.log('delete', instance);
                                     let node = instance.jstree().get_selected();
-                                    instance.jstree().delete_node(node);
+                                    if (node && node.length) {
+                                        node = instance.jstree().get_node(node[0]);
+                                        mConfirm(i18n("addresses.confirmDeleteNode", escapeHTML(node.text)), i18n("confirm"), `danger:${i18n("addresses.deleteNode")}`, () => {
+                                            DELETE("houses", "path", node.id).
+                                            done(() => {
+                                                instance.jstree().delete_node(node.id);
+                                            }).
+                                            fail(FAIL);
+                                        });
+                                    }
                                 },
                             }
                         ],

@@ -303,21 +303,31 @@ function cardForm(params) {
         params.fields[i].type = params.fields[i].type ? params.fields[i].type : "text";
 
         if (!params.singleColumn) {
-            if (params.fields[i].hint || params.fields[i].type === "files") {
-                h += `<td class="pb-0 pt-3 tdform${first}" style="vertical-align: top!important;">${params.fields[i].title}</td>`;
-            } else {
-                if (params.fields[i].type == "select2") {
-                    h += `<td class="tdform${first}" style="vertical-align: top!important; padding-top: 19px!important;">${params.fields[i].title}</td>`;
+            if (params.fields[i].title !== false) {
+                if (params.fields[i].hint || params.fields[i].type === "files") {
+                    h += `<td class="pb-0 pt-3 tdform${first}" style="vertical-align: top!important;">${params.fields[i].title}</td>`;
                 } else {
-                    h += `<td class="pt-3 tdform${first}" style="vertical-align: top!important;">${params.fields[i].title}</td>`;
+                    if (params.fields[i].type == "select2") {
+                        h += `<td class="tdform${first}" style="vertical-align: top!important; padding-top: 19px!important;">${params.fields[i].title}</td>`;
+                    } else {
+                        h += `<td class="pt-3 tdform${first}" style="vertical-align: top!important;">${params.fields[i].title}</td>`;
+                    }
                 }
             }
         }
 
-        if (params.fields[i].hint || params.fields[i].type === "files") {
-            h += `<td class="pb-0 tdform-right${first}">`;
+        if (params.fields[i].title !== false) {
+            if (params.fields[i].hint || params.fields[i].type === "files") {
+                h += `<td class="pb-0 tdform-right${first}">`;
+            } else {
+                h += `<td class="tdform-right${first}">`;
+            }
         } else {
-            h += `<td class="tdform-right${first}">`;
+            if (params.fields[i].hint || params.fields[i].type === "files") {
+                h += `<td class="pb-0 tdform-right${first}" colspan='2'>`;
+            } else {
+                h += `<td class="tdform-right${first}" colspan='2'>`;
+            }
         }
 
         first = "";
@@ -503,7 +513,7 @@ function cardForm(params) {
                 h += `<div name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}"></div>`;
                 break;
 
-            case "jsTree":
+            case "jstree":
                 if (params.fields[i].search) {
                     h += `<div class="input-group mb-2">`;
                     h += `<input id="${_prefix}${params.fields[i].id}-search" id="${_prefix}${params.fields[i].id}-search" type="search" class="form-control modalFormField" style="cursor: text;" autocomplete="off" placeholder="${i18n("search")}">`;
@@ -512,17 +522,20 @@ function cardForm(params) {
                     h += `</div>`;
                     h += `</div>`;
                 }
-                h += `<div name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" class="overflow-y-auto" style="max-height: 400px; min-height: 400px; height: 400px; overflow-y: auto!important; position: relative; border: solid thin lightgray; border-radius: 3px;"></div>`;
+                h += `<div name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" class="overflow-y-auto p-2" style="max-height: 400px; min-height: 400px; height: 400px; overflow-y: auto!important; position: relative; border: solid thin lightgray; border-radius: 3px;"></div>`;
                 if (params.fields[i].add || params.fields[i].rename || params.fields[i].delete) {
                     h += `<div class="mt-2">`;
+                    if (params.fields[i].addRoot) {
+                        h += `<button id="${_prefix}${params.fields[i].id}-addRoot" type="button" class="btn btn-success mr-2" title="${i18n("addRoot")}"><i class="fas fa-fw fa-folder-plus"></i></button>`;
+                    }
                     if (params.fields[i].add) {
-                        h += `<button id="${_prefix}${params.fields[i].id}-add" type="button" class="btn btn-success" title="${i18n("add")}"><i class="fas fa-fw fa-plus-circle"></i></button>`;
+                        h += `<button id="${_prefix}${params.fields[i].id}-add" type="button" class="btn btn-info mr-2" title="${i18n("add")}"><i class="fas fa-fw fa-plus-circle"></i></button>`;
                     }
                     if (params.fields[i].rename) {
-                        h += `<button id="${_prefix}${params.fields[i].id}-rename" type="button" class="btn btn-warning ml-2" title="${i18n("rename")}"><i class="fas fa-fw fa-pencil-alt"></i></button>`;
+                        h += `<button id="${_prefix}${params.fields[i].id}-rename" type="button" class="btn btn-warning mr-2" title="${i18n("rename")}"><i class="fas fa-fw fa-pencil-alt"></i></button>`;
                     }
                     if (params.fields[i].delete) {
-                        h += `<button id="${_prefix}${params.fields[i].id}-delete" type="button" class="btn btn-danger ml-2" title="${i18n("delete")}"><i class="fas fa-fw fa-trash-alt"></i></button>`;
+                        h += `<button id="${_prefix}${params.fields[i].id}-delete" type="button" class="btn btn-danger mr-2" title="${i18n("delete")}"><i class="fas fa-fw fa-trash-alt"></i></button>`;
                     }
                     h += `</div>`;
                 }
@@ -749,6 +762,15 @@ function cardForm(params) {
                     }
                 });
                 return value;
+
+            case "jstree":
+                let node = $(`#${_prefix}${params.fields[i].id}`).jstree().get_selected();
+
+                if (node && node.length) {
+                    return node[0];
+                }
+
+                return null;
         }
     }
 
@@ -1208,13 +1230,18 @@ function cardForm(params) {
             });
         }
 
-        if (params.fields[i].type === "jsTree") {
+        if (params.fields[i].type === "jstree") {
             $(`#${_prefix}${params.fields[i].id}`).parent().parent().addClass("nohover");
             $(`#${_prefix}${params.fields[i].id}`).jstree(params.fields[i].tree);
 
             $(`#${_prefix}${params.fields[i].id}-add`).off("click").on("click", () => {
                 xblur();
                 params.fields[i].add($(`#${_prefix}${params.fields[i].id}`));
+            });
+
+            $(`#${_prefix}${params.fields[i].id}-addRoot`).off("click").on("click", () => {
+                xblur();
+                params.fields[i].addRoot($(`#${_prefix}${params.fields[i].id}`));
             });
 
             $(`#${_prefix}${params.fields[i].id}-rename`).off("click").on("click", () => {

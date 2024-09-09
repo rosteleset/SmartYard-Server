@@ -374,8 +374,7 @@
             /**
              * @inheritDoc
              */
-            function modifyEntrance($entranceId, $houseId, $entranceType, $entrance, $lat, $lon, $shared, $plog, $prefix, $callerId, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $cmsLevels, $video)
-            {
+            function modifyEntrance($entranceId, $houseId, $entranceType, $entrance, $lat, $lon, $shared, $plog, $prefix, $callerId, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $cmsLevels, $video, $path) {
                 if (!checkInt($entranceId) || !trim($entranceType) || !trim($entrance) || !checkInt($cmsType) || !checkInt($plog)) {
                     return false;
                 }
@@ -406,7 +405,7 @@
                     ":prefix" => $prefix,
                 ]) !== false;
 
-                $r2 = $this->db->modify("update houses_entrances set entrance_type = :entrance_type, entrance = :entrance, lat = :lat, lon = :lon, shared = :shared, plog = :plog, caller_id = :caller_id, house_domophone_id = :house_domophone_id, domophone_output = :domophone_output, cms = :cms, cms_type = :cms_type, camera_id = :camera_id, cms_levels = :cms_levels, video = :video where house_entrance_id = $entranceId", [
+                $r2 = $this->db->modify("update houses_entrances set entrance_type = :entrance_type, entrance = :entrance, lat = :lat, lon = :lon, shared = :shared, plog = :plog, caller_id = :caller_id, house_domophone_id = :house_domophone_id, domophone_output = :domophone_output, cms = :cms, cms_type = :cms_type, camera_id = :camera_id, cms_levels = :cms_levels, video = :video, path = :path where house_entrance_id = $entranceId", [
                     ":entrance_type" => $entranceType,
                     ":entrance" => $entrance,
                     ":lat" => (float)$lat,
@@ -421,6 +420,7 @@
                     ":camera_id" => (int)$cameraId ? : null,
                     ":cms_levels" => $cmsLevels,
                     ":video" => $video,
+                    ":path" => (int)$path ? : null,
                 ]) !== false;
 
                 if (!$cms) {
@@ -1681,13 +1681,13 @@
             /**
              * @inheritDoc
              */
-            function getEntrance($entranceId)
-            {
+
+            function getEntrance($entranceId) {
                 if (!checkInt($entranceId)) {
                     return false;
                 }
 
-                return $this->db->get("select house_entrance_id, entrance_type, entrance, lat, lon, shared, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, coalesce(cms_levels, '') as cms_levels, plog, video from houses_entrances where house_entrance_id = $entranceId order by entrance_type, entrance",
+                return $this->db->get("select house_entrance_id, entrance_type, entrance, lat, lon, shared, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, coalesce(cms_levels, '') as cms_levels, plog, video, path from houses_entrances where house_entrance_id = $entranceId order by entrance_type, entrance",
                     false,
                     [
                         "house_entrance_id" => "entranceId",
@@ -1705,6 +1705,7 @@
                         "camera_id" => "cameraId",
                         "cms_levels" => "cmsLevels",
                         "video" => "video",
+                        "path" => "path",
                     ],
                     [ "singlify" ]
                 );
@@ -1713,8 +1714,8 @@
             /**
              * @inheritDoc
              */
-            public function dismissToken($token)
-            {
+
+            public function dismissToken($token) {
                 return
                     $this->db->modify("update houses_subscribers_devices set push_token = null where push_token = :push_token", [ "push_token" => $token ])
                     or
@@ -1724,8 +1725,8 @@
             /**
              * @inheritDoc
              */
-            function getEntrances($by, $query)
-            {
+
+            function getEntrances($by, $query) {
                 $where = '';
                 $p = [];
                 $q = '';
@@ -1750,19 +1751,19 @@
                         if (!checkInt($query)) {
                             return false;
                         }
-                        $q = "select address_house_id, prefix, house_entrance_id, entrance_type, entrance, lat, lon, shared, plog, prefix, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, coalesce(cms_levels, '') as cms_levels, video from houses_houses_entrances left join houses_entrances using (house_entrance_id) where address_house_id = $query order by entrance_type, entrance";
+                        $q = "select address_house_id, prefix, house_entrance_id, entrance_type, entrance, lat, lon, shared, plog, prefix, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, coalesce(cms_levels, '') as cms_levels, video, path from houses_houses_entrances left join houses_entrances using (house_entrance_id) where address_house_id = $query order by entrance_type, entrance";
                         break;
 
                     case "flatId":
                         if (!checkInt($query)) {
                             return false;
                         }
-                        $q = "select address_house_id, prefix, house_entrance_id, entrance_type, entrance, lat, lon, shared, plog, prefix, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, coalesce(cms_levels, '') as cms_levels, video from houses_houses_entrances left join houses_entrances using (house_entrance_id) where house_entrance_id in (select house_entrance_id from houses_entrances_flats where house_flat_id = $query) order by entrance_type, entrance";
+                        $q = "select address_house_id, prefix, house_entrance_id, entrance_type, entrance, lat, lon, shared, plog, prefix, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, coalesce(cms_levels, '') as cms_levels, video, path from houses_houses_entrances left join houses_entrances using (house_entrance_id) where house_entrance_id in (select house_entrance_id from houses_entrances_flats where house_flat_id = $query) order by entrance_type, entrance";
                         break;
                 }
 
                 if (!$q) {
-                    $q = "select address_house_id, prefix, house_entrance_id, entrance_type, entrance, lat, lon, shared, plog, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, coalesce(cms_levels, '') as cms_levels, video from houses_entrances left join houses_houses_entrances using (house_entrance_id) where $where order by entrance_type, entrance";
+                    $q = "select address_house_id, prefix, house_entrance_id, entrance_type, entrance, lat, lon, shared, plog, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, coalesce(cms_levels, '') as cms_levels, video, path from houses_entrances left join houses_houses_entrances using (house_entrance_id) where $where order by entrance_type, entrance";
                 }
 
                 return $this->db->get($q,
@@ -1785,6 +1786,7 @@
                         "camera_id" => "cameraId",
                         "cms_levels" => "cmsLevels",
                         "video" => "video",
+                        "path" => "path",
                     ]
                 );
             }
@@ -2728,29 +2730,96 @@
              * @inheritDoc
              */
 
-            function getPath($treeOrFrom) {
-                if ((int)$treeOrFrom) {
-                    return $this->db->get("select house_path_id, house_path_tree, house_path_parent, house_path_name, house_path_icon, (select count (*) from houses_paths as p2 where p2.house_path_parent = p1.house_path_id) childrens from houses_paths as p1 where house_path_parent = :house_path_parent order by house_path_name", [
-                        "house_path_parent" => $treeOrFrom,
+            function getPath($treeOrFrom, $withParents = false, $childrens = false, $selected = false) {
+                if ($withParents) {
+                    $node = $this->db->get("select house_path_id, house_path_tree, coalesce(house_path_parent, 0) house_path_parent, house_path_name, house_path_icon, (select count (*) from houses_paths as p2 where p2.house_path_parent = p1.house_path_id) childrens from houses_paths as p1 where house_path_id = :house_path_id", [
+                        "house_path_id" => $treeOrFrom,
                     ], [
-                        "house_path_id" => "nodeId",
+                        "house_path_id" => "id",
                         "house_path_tree" => "tree",
                         "house_path_parent" => "parentId",
-                        "house_path_name" => "name",
+                        "house_path_name" => "text",
                         "house_path_icon" => "icon",
-                        "childrens" => "childrens",
+                        "childrens" => "children",
+                    ], [
+                        "singlify"
                     ]);
+
+                    if (!$node || !count($node)) {
+                        return;
+                    }
+
+                    if ((int)$node["parentId"]) {
+                        $siblings = $this->db->get("select house_path_id, house_path_tree, coalesce(house_path_parent, 0) house_path_parent, house_path_name, house_path_icon, (select count (*) from houses_paths as p2 where p2.house_path_parent = p1.house_path_id) childrens from houses_paths as p1 where house_path_parent in (select house_path_id from houses_paths where house_path_id = :house_path_id) order by house_path_name", [
+                            "house_path_id" => $node["parentId"],
+                        ], [
+                            "house_path_id" => "id",
+                            "house_path_tree" => "tree",
+                            "house_path_parent" => "parentId",
+                            "house_path_name" => "text",
+                            "house_path_icon" => "icon",
+                            "childrens" => "children",
+                        ]);
+                    } else {
+                        $siblings = $this->db->get("select house_path_id, house_path_tree, coalesce(house_path_parent, 0) house_path_parent, house_path_name, house_path_icon, (select count (*) from houses_paths as p2 where p2.house_path_parent = p1.house_path_id) childrens from houses_paths as p1 where house_path_parent is null and house_path_tree = :house_path_tree order by house_path_name", [
+                            "house_path_tree" => $node["tree"],
+                        ], [
+                            "house_path_id" => "id",
+                            "house_path_tree" => "tree",
+                            "house_path_parent" => "parentId",
+                            "house_path_name" => "text",
+                            "house_path_icon" => "icon",
+                            "childrens" => "children",
+                        ]);
+                    }
+
+                    foreach ($siblings as &$sibling) {
+                        if ($sibling["id"] == $selected) {
+                            $sibling["state"]["selected"] = true;
+                        }
+                        $sibling["children"] = !!(int)$sibling["children"];
+                    }
+
+                    if ($childrens && count($childrens)) {
+                        foreach ($siblings as &$sibling) {
+                            if ($sibling["id"] == $childrens[0]["parentId"]) {
+                                $sibling["children"] = $childrens;
+                                $sibling["state"]["opened"] = true;
+                            }
+                        }
+                    }
+
+                    if ($node["parentId"]) {
+                        return $this->getPath($node["parentId"], true, $siblings);
+                    } else {
+                        return $siblings;
+                    }
+
+                    return $tree;
                 } else {
-                    return $this->db->get("select house_path_id, house_path_tree, house_path_parent, house_path_name, house_path_icon, (select count (*) from houses_paths as p2 where p2.house_path_parent = p1.house_path_id) childrens from houses_paths as p1 where house_path_tree = :house_path_tree and house_path_parent is null order by house_path_name", [
-                        "house_path_tree" => $treeOrFrom,
-                    ], [
-                        "house_path_id" => "nodeId",
-                        "house_path_tree" => "tree",
-                        "house_path_parent" => "parentId",
-                        "house_path_name" => "name",
-                        "house_path_icon" => "icon",
-                        "childrens" => "childrens",
-                    ]);
+                    if (is_numeric($treeOrFrom)) {
+                        return $this->db->get("select house_path_id, house_path_tree, coalesce(house_path_parent, 0) house_path_parent, house_path_name, house_path_icon, (select count (*) from houses_paths as p2 where p2.house_path_parent = p1.house_path_id) childrens from houses_paths as p1 where house_path_parent = :house_path_parent order by house_path_name", [
+                            "house_path_parent" => $treeOrFrom,
+                        ], [
+                            "house_path_id" => "id",
+                            "house_path_tree" => "tree",
+                            "house_path_parent" => "parentId",
+                            "house_path_name" => "text",
+                            "house_path_icon" => "icon",
+                            "childrens" => "children",
+                        ]);
+                    } else {
+                        return $this->db->get("select house_path_id, house_path_tree, coalesce(house_path_parent, 0) house_path_parent, house_path_name, house_path_icon, (select count (*) from houses_paths as p2 where p2.house_path_parent = p1.house_path_id) childrens from houses_paths as p1 where house_path_tree = :house_path_tree and house_path_parent is null order by house_path_name", [
+                            "house_path_tree" => $treeOrFrom,
+                        ], [
+                            "house_path_id" => "id",
+                            "house_path_tree" => "tree",
+                            "house_path_parent" => "parentId",
+                            "house_path_name" => "text",
+                            "house_path_icon" => "icon",
+                            "childrens" => "children",
+                        ]);
+                    }
                 }
             }
 

@@ -75,9 +75,11 @@
              * @param $cameraId
              * @param $cmsLevels
              * @param $video
+             * @param $path
+             *
              * @return boolean
              */
-            abstract function modifyEntrance($entranceId, $houseId, $entranceType, $entrance, $lat, $lon, $shared, $plog, $prefix, $callerId, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $cmsLevels, $video);
+            abstract function modifyEntrance($entranceId, $houseId, $entranceType, $entrance, $lat, $lon, $shared, $plog, $prefix, $callerId, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $cmsLevels, $video, $path);
 
             /**
              * @param $entranceId
@@ -408,7 +410,7 @@
              * @return mixed
              */
 
-            abstract function getPath($treeOrFrom);
+            abstract function getPath($treeOrFrom, $withParents = false);
 
             /**
              * @param string tree

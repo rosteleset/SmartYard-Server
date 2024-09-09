@@ -75,6 +75,7 @@
      * @apiBody {Number} cameraId
      * @apiBody {String} cmsLevels
      * @apiBody {String} video
+     * @apiBody {Number} path
      *
      * @apiSuccess {Boolean} operationResult
      */
@@ -126,7 +127,7 @@
             public static function PUT($params) {
                 $households = loadBackend("households");
 
-                $success = $households->modifyEntrance($params["_id"], $params["houseId"], $params["entranceType"], $params["entrance"], $params["lat"], $params["lon"], $params["shared"], $params["plog"], $params["prefix"], $params["callerId"], $params["domophoneId"], $params["domophoneOutput"], $params["cms"], $params["cmsType"], $params["cameraId"], $params["cmsLevels"], $params["video"]);
+                $success = $households->modifyEntrance($params["_id"], $params["houseId"], $params["entranceType"], $params["entrance"], $params["lat"], $params["lon"], $params["shared"], $params["plog"], $params["prefix"], $params["callerId"], $params["domophoneId"], $params["domophoneOutput"], $params["cms"], $params["cmsType"], $params["cameraId"], $params["cmsLevels"], $params["video"], $params["path"]);
 
                 return api::ANSWER($success);
             }

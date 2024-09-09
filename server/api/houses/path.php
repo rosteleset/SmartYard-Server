@@ -13,6 +13,7 @@
      * @apiParam {String} treeOrFrom tree or parent
      * @apiQuery {String} [search]
      * @apiQuery {String} [from]
+     * @apiQuery {Boolean} [withParents]
      *
      * @apiSuccess {Object[]} tree
      */
@@ -91,7 +92,7 @@
                     if (@$params["search"]) {
                         $tree = $households->searchPath($params["_id"], $params["search"]);
                     } else {
-                        $tree = $households->getPath($params["_id"]);
+                        $tree = $households->getPath($params["_id"], !!@$params["withParents"], false, !!@$params["withParents"] ? $params["_id"] : false);
                     }
 
                     return api::ANSWER($tree, "tree");
