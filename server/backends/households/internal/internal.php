@@ -2895,10 +2895,10 @@
                 ]);
 
                 while ($c) {
-                    $c = $this->db->modify("delete from houses_paths where house_path_parent not in (select house_path_id from houses_paths)");
+                    $c += $this->db->modify("delete from houses_paths where house_path_parent not in (select house_path_id from houses_paths)");
                 }
 
-                return true;
+                return $c;
             }
         }
     }
