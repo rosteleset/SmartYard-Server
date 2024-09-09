@@ -390,6 +390,64 @@
              *
              * @return mixed
              */
-            abstract function searchRf($search);
+
+             abstract function searchRf($search);
+
+            /**
+             * @param string tree
+             * @param string search
+             *
+             * @return mixed
+             */
+
+            abstract function searchPath($tree, $search);
+
+            /**
+             * @param mixed treeOrFrom
+             *
+             * @return mixed
+             */
+
+            abstract function getPath($treeOrFrom);
+
+            /**
+             * @param string tree
+             * @param string name
+             * @param string icon
+             *
+             * @return mixed
+             */
+
+             abstract function addRootPathNode($tree, $name, $icon);
+
+            /**
+             * @param string parentId
+             * @param string name
+             * @param string icon
+             *
+             * @return mixed
+             */
+
+            abstract function addPathNode($parentId, $name, $icon);
+
+            /**
+             * @param string nodeId
+             * @param string name
+             * @param string icon
+             *
+             * @return mixed
+             */
+
+             abstract function modifyPathNode($nodeId, $name, $icon);
+
+            /**
+             * @param string nodeId
+             * @param string name
+             * @param string icon
+             *
+             * @return mixed
+             */
+
+            abstract function deletePathNode($nodeId);
         }
     }

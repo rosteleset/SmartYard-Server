@@ -1050,12 +1050,14 @@
                         topApply: true,
                         apply: i18n("edit"),
                         delete: i18n("addresses.deleteEntrance"),
+                        deleteTab: i18n("addresses.primary"),
                         size: "lg",
                         fields: [
                             {
                                 id: "entranceId",
                                 type: "text",
                                 title: i18n("addresses.entranceId"),
+                                tab: i18n("addresses.primary"),
                                 value: entranceId,
                                 readonly: true,
                             },
@@ -1063,6 +1065,7 @@
                                 id: "entranceType",
                                 type: "select",
                                 title: i18n("addresses.entranceType"),
+                                tab: i18n("addresses.primary"),
                                 options: [
                                     {
                                         id: "entrance",
@@ -1087,6 +1090,7 @@
                                 id: "entrance",
                                 type: "text",
                                 title: i18n("addresses.entrance"),
+                                tab: i18n("addresses.primary"),
                                 placeholder: i18n("addresses.entrance"),
                                 validate: (v) => {
                                     return $.trim(v) !== "";
@@ -1097,6 +1101,7 @@
                                 id: "geo",
                                 type: "text",
                                 title: i18n("addresses.geo"),
+                                tab: i18n("addresses.primary"),
                                 placeholder: "0.0,0.0",
                                 hint: i18n("addresses.lat") + "," + i18n("addresses.lon").toLowerCase(),
                                 value: entrance.lat + "," + entrance.lon,
@@ -1110,6 +1115,7 @@
                                 id: "callerId",
                                 type: "text",
                                 title: i18n("addresses.callerId"),
+                                tab: i18n("addresses.primary"),
                                 value: entrance.callerId,
                                 validate: (v) => {
                                     return $.trim(v) !== "";
@@ -1119,6 +1125,7 @@
                                 id: "cameraId",
                                 type: "select2",
                                 title: i18n("addresses.cameraId"),
+                                tab: i18n("addresses.primary"),
                                 value: entrance.cameraId,
                                 options: cameras,
                             },
@@ -1126,6 +1133,7 @@
                                 id: "domophoneId",
                                 type: "select2",
                                 title: i18n("domophone"),
+                                tab: i18n("addresses.primary"),
                                 value: modules.addresses.houses.meta.domophoneModelsById[entrance.domophoneId] ? entrance.domophoneId : "0",
                                 options: domophones,
                                 select: modules.addresses.houses.domophoneIdSelect,
@@ -1137,6 +1145,7 @@
                                 id: "domophoneOutput",
                                 type: "select",
                                 title: i18n("addresses.domophoneOutput"),
+                                tab: i18n("addresses.primary"),
                                 placeholder: i18n("addresses.domophoneOutput"),
                                 options: modules.addresses.houses.outputs(modules.addresses.houses.meta.domophoneModelsById[entrance.domophoneId], entrance.domophoneOutput),
                                 select: modules.addresses.houses.outputsSelect,
@@ -1145,6 +1154,7 @@
                                 id: "video",
                                 type: "select2",
                                 title: i18n("addresses.video"),
+                                tab: i18n("addresses.primary"),
                                 options: [
                                     {
                                         id: "inband",
@@ -1161,6 +1171,7 @@
                                 id: "cms",
                                 type: "select2",
                                 title: i18n("addresses.cms"),
+                                tab: i18n("addresses.primary"),
                                 placeholder: i18n("addresses.cms"),
                                 options: modules.addresses.houses.cmses(modules.addresses.houses.meta.domophoneModelsById[entrance.domophoneId]),
                                 hidden: parseInt(entrance.domophoneOutput) > 0,
@@ -1171,6 +1182,7 @@
                                 id: "cmsType",
                                 type: "select",
                                 title: i18n("addresses.cmsType"),
+                                tab: i18n("addresses.primary"),
                                 value: entrance.cmsType,
                                 hidden: parseInt(entrance.domophoneOutput) > 0 || parseInt(entrance.cms) === 0,
                                 options: [
@@ -1188,6 +1200,7 @@
                                 id: "cmsLevels",
                                 type: "text",
                                 title: i18n("addresses.cmsLevels"),
+                                tab: i18n("addresses.primary"),
                                 placeholder: i18n("addresses.cmsLevelsOrder"),
                                 value: entrance.cmsLevels,
                                 hidden: parseInt(entrance.domophoneOutput) > 0 || parseInt(entrance.cms) === 0,
@@ -1196,6 +1209,7 @@
                                 id: "shared",
                                 type: "select",
                                 title: i18n("addresses.shared"),
+                                tab: i18n("addresses.primary"),
                                 hidden: parseInt(entrance.domophoneOutput) > 0 || parseInt(entrance.cms) !== 0,
                                 value: entrance.shared.toString(),
                                 options: [
@@ -1220,6 +1234,7 @@
                                 id: "plog",
                                 type: "select",
                                 title: i18n("addresses.plog"),
+                                tab: i18n("addresses.primary"),
                                 value: entrance.plog,
                                 options: [
                                     {
@@ -1236,6 +1251,7 @@
                                 id: "prefix",
                                 type: "text",
                                 title: i18n("addresses.prefix"),
+                                tab: i18n("addresses.primary"),
                                 placeholder: i18n("addresses.prefix"),
                                 value: entrance.prefix?entrance.prefix.toString():"0",
                                 hidden: !parseInt(entrance.shared) || parseInt(entrance.domophoneOutput) > 0 || parseInt(entrance.cms) !== 0,
@@ -1243,6 +1259,74 @@
                                     return !parseInt($("#" + prefix + "shared").val()) || parseInt(v) >= 1;
                                 },
                             },
+                            {
+                                id: "path",
+                                type: "jsTree",
+                                title: i18n("addresses.path"),
+                                tab: i18n("addresses.path"),
+                                tree: {
+                                    core: {
+                                        data: function (node, cb) {
+                                            QUERYID("houses", "path", (node.id === "#") ? "houses" : node.id).
+                                            done(result => {
+                                                let tree = [];
+                                                if (result && result.tree) {
+                                                    for (let i in result.tree) {
+                                                        tree.push({
+                                                            text: result.tree[i].name,
+                                                            id: result.tree[i].nodeId,
+                                                            icon: result.tree[i].icon,
+                                                            children: !!parseInt(result.tree[i].childrens),
+                                                        });
+                                                    }
+                                                }
+                                                cb(tree);
+                                            }).
+                                            fail(FAIL).
+                                            fail(() => {
+                                                cb([]);
+                                            });
+                                        },
+                                        check_callback: true,
+                                        animation: 0,
+                                    },
+                                    plugins: [
+                                        "sort"
+                                    ],
+                                },
+
+                                add: function (instance) {
+                                    let parent = instance.jstree('get_selected');
+                                    parent = parent.length ? parent[0] : "#";
+                                    let node = { id: 123, text: "New node" };
+                                    instance.jstree().create_node(parent, node, 'last', newNode => {
+                                        setTimeout(() => {
+                                            instance.jstree().deselect_all();
+                                            instance.jstree().select_node(newNode);
+                                            instance.jstree().edit(newNode);
+                                        }, 100);
+                                    });
+                                },
+
+                                rename: function (instance) {
+                                    let node = instance.jstree('get_selected');
+                                    setTimeout(() => {
+                                        instance.jstree().edit(node, console.log);
+                                    }, 100);
+                                },
+
+                                renamed: function (e, data) {
+                                    if (data && data.text) {
+                                        console.log('renamed-2', data);
+                                    }
+                                },
+
+                                delete: function (instance) {
+                                    console.log('delete', instance);
+                                    let node = instance.jstree().get_selected();
+                                    instance.jstree().delete_node(node);
+                                },
+                            }
                         ],
                         callback: result => {
                             if (result.delete === "yes") {

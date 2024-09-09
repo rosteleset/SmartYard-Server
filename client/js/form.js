@@ -502,6 +502,31 @@ function cardForm(params) {
             case "empty":
                 h += `<div name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}"></div>`;
                 break;
+
+            case "jsTree":
+                if (params.fields[i].search) {
+                    h += `<div class="input-group mb-2">`;
+                    h += `<input id="${_prefix}${params.fields[i].id}-search" id="${_prefix}${params.fields[i].id}-search" type="search" class="form-control modalFormField" style="cursor: text;" autocomplete="off" placeholder="${i18n("search")}">`;
+                    h += `<div class="input-group-append">`;
+                    h += `<span id="${_prefix}${params.fields[i].id}-search-button" title="${i18n("search")}" class="input-group-text pointer"><i class="fas fa-fw fa-search"></i></span>`;
+                    h += `</div>`;
+                    h += `</div>`;
+                }
+                h += `<div name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" class="overflow-y-auto" style="max-height: 400px; min-height: 400px; height: 400px; overflow-y: auto!important; position: relative; border: solid thin lightgray; border-radius: 3px;"></div>`;
+                if (params.fields[i].add || params.fields[i].rename || params.fields[i].delete) {
+                    h += `<div class="mt-2">`;
+                    if (params.fields[i].add) {
+                        h += `<button id="${_prefix}${params.fields[i].id}-add" type="button" class="btn btn-success" title="${i18n("add")}"><i class="fas fa-fw fa-plus-circle"></i></button>`;
+                    }
+                    if (params.fields[i].rename) {
+                        h += `<button id="${_prefix}${params.fields[i].id}-rename" type="button" class="btn btn-warning ml-2" title="${i18n("rename")}"><i class="fas fa-fw fa-pencil-alt"></i></button>`;
+                    }
+                    if (params.fields[i].delete) {
+                        h += `<button id="${_prefix}${params.fields[i].id}-delete" type="button" class="btn btn-danger ml-2" title="${i18n("delete")}"><i class="fas fa-fw fa-trash-alt"></i></button>`;
+                    }
+                    h += `</div>`;
+                }
+                break;
         }
 
         if (params.fields[i].hint) {
@@ -1181,6 +1206,30 @@ function cardForm(params) {
                     }
                 });
             });
+        }
+
+        if (params.fields[i].type === "jsTree") {
+            $(`#${_prefix}${params.fields[i].id}`).parent().parent().addClass("nohover");
+            $(`#${_prefix}${params.fields[i].id}`).jstree(params.fields[i].tree);
+
+            $(`#${_prefix}${params.fields[i].id}-add`).off("click").on("click", () => {
+                xblur();
+                params.fields[i].add($(`#${_prefix}${params.fields[i].id}`));
+            });
+
+            $(`#${_prefix}${params.fields[i].id}-rename`).off("click").on("click", () => {
+                xblur();
+                params.fields[i].rename($(`#${_prefix}${params.fields[i].id}`));
+            });
+
+            $(`#${_prefix}${params.fields[i].id}-delete`).off("click").on("click", () => {
+                xblur();
+                params.fields[i].delete($(`#${_prefix}${params.fields[i].id}`));
+            });
+
+            if (params.fields[i].renamed) {
+                $(`#${_prefix}${params.fields[i].id}`).off("set_text.jstree").on("set_text.jstree", params.fields[i].renamed);
+            }
         }
     }
 

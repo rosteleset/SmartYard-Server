@@ -41,6 +41,34 @@ function QUERY(api, method, query, fresh) {
     });
 }
 
+function QUERYID(api, method, id, query, fresh) {
+    let l = lStore("_lang");
+    if (!l) {
+        l = config.defaultLanguage;
+    }
+    if (!l) {
+        l = "ru";
+    }
+    if (fresh) {
+        if (!query) {
+            query = {};
+        }
+        query["_"] = Math.random();
+    }
+    return $.ajax({
+        url: lStore("_server") + "/" + encodeURIComponent(api) + "/" + encodeURIComponent(method) + "/" + encodeURIComponent(id) + (query ? ("?" + $.param(query)) : ""),
+        beforeSend: xhr => {
+            xhr.setRequestHeader("Authorization", "Bearer " + lStore("_token"));
+            xhr.setRequestHeader("Accept-Language", l);
+            if (fresh) {
+                xhr.setRequestHeader("X-Api-Refresh", "1");
+            }
+        },
+        type: "GET",
+        contentType: "json",
+    });
+}
+
 function GET(api, method, id, fresh) {
     let l = lStore("_lang");
     if (!l) {

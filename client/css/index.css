@@ -650,3 +650,7 @@ select {
   right: 10px;
   top: 5px;
 }
+
+.nohover:hover {
+  background-color: transparent!important;
+}
