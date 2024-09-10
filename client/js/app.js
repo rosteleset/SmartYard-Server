@@ -568,7 +568,7 @@ function initAll() {
     $('.rs232-scanner').attr('title', i18n("connectScanner"));
 
     $("#searchInput").attr("placeholder", i18n("search")).off("keypress").on("keypress", e => {
-        if (e.charCode === 13 && $.trim($("#searchInput").val())) {
+        if (e.keyCode === 13 && $.trim($("#searchInput").val())) {
             pathToObject(modules, currentPage).search($.trim($("#searchInput").val()));
             e.preventDefault();
         }

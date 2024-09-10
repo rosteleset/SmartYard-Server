@@ -1257,6 +1257,22 @@ function cardForm(params) {
             if (params.fields[i].renamed) {
                 $(`#${_prefix}${params.fields[i].id}`).off("set_text.jstree").on("set_text.jstree", params.fields[i].renamed);
             }
+
+            $(`#${_prefix}${params.fields[i].id}-search`).off("keypress").on("keypress", e => {
+                if (e.keyCode === 13) {
+                    e.preventDefault();
+                    $(`#${_prefix}${params.fields[i].id}-search-button`).click();
+                    return false;
+                }
+            });
+
+            $(`#${_prefix}${params.fields[i].id}-search-button`).off("click").on("click", e => {
+                let str = $(`#${_prefix}${params.fields[i].id}-search`).val();
+
+                if (str.length >= 3 || str.length == 0) {
+                    params.fields[i].search($(`#${_prefix}${params.fields[i].id}`), str);
+                }
+            });
         }
     }
 

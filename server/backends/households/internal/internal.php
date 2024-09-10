@@ -2530,8 +2530,8 @@
             /**
              * @inheritDoc
              */
-            public function searchSubscriber($search)
-            {
+
+            public function searchSubscriber($search) {
                 $search = trim(preg_replace('/\s+/', ' ', $search));
                 $text_search_config = $this->config["db"]["text_search_config"] ?? "simple";
 
@@ -2718,12 +2718,67 @@
                 return $rfs;
             }
 
+            function mergePaths($paths, $first = true) {
+                if ($first) {
+                    $roots = [];
+//                    foreach ($paths)
+                }
+                return $paths;
+            }
+
             /**
              * @inheritDoc
              */
 
             function searchPath($tree, $search) {
+                $search = trim(preg_replace('/\s+/', ' ', $search));
 
+                switch ($this->db->parseDsn()["protocol"]) {
+                    case "pgsql":
+                        $tokens = explode(" ", $search);
+                        $query = [];
+                        $params = [];
+                        for ($i = 0; $i < count($tokens); $i++) {
+                            $query[] = "(house_path_name ilike '%' || :s$i || '%')";
+                            $params["s$i"] = $tokens[$i];
+                        }
+                        $query = implode(" and ", $query);
+                        break;
+
+                    case "sqlite";
+                        $tokens = explode(" ", $search);
+                        $query = [];
+                        $params = [];
+                        for ($i = 0; $i < count($tokens); $i++) {
+                            $query[] = "(mb_strtoupper(house_path_name) like concat('%', :s$i, '%'))";
+                            $params["s$i"] = mb_strtoupper($tokens[$i]);
+                        }
+                        $query = implode(" and ", $query);
+                        break;
+                }
+
+                $params["house_path_tree"] = $tree;
+
+                $nodes = $this->db->get("select house_path_id, house_path_tree, coalesce(house_path_parent, 0) house_path_parent, house_path_name, house_path_icon, (select count (*) from houses_paths as p2 where p2.house_path_parent = p1.house_path_id) childrens from houses_paths as p1 where house_path_tree = :house_path_tree and ($query) order by house_path_name", $params, [
+                    "house_path_id" => "id",
+                    "house_path_tree" => "tree",
+                    "house_path_parent" => "parentId",
+                    "house_path_name" => "text",
+                    "house_path_icon" => "icon",
+                    "childrens" => "children",
+                ]);
+
+                $raw = [];
+
+                foreach ($nodes as $node) {
+                    if ((int)$node["parentId"]) {
+                        $raw[] = $this->getPath($node["id"], true, false, false, $tree);
+                    } else {
+                        $raw[] = [ $node ];
+                    }
+                }
+
+                return $this->mergePaths($raw);
             }
 
             /**

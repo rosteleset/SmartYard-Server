@@ -1296,7 +1296,8 @@
                                         animation: 0,
                                     },
                                     plugins: [
-                                        "sort"
+                                        "sort",
+                                        "search",
                                     ],
                                 },
 
@@ -1371,8 +1372,24 @@
                                         });
                                     }
                                 },
+
+                                search: function (instance, str) {
+                                    QUERYID("houses", "path", "houses", { search: str }).
+                                    done(result => {
+                                        console.log(result.tree);
+                                        instance.jstree(true).settings.core.data = result.tree;
+                                        instance.jstree(true).refresh();
+                                        setTimeout(() => {
+                                            instance.jstree(true).search(str);
+                                        }, 500);
+                                    }).
+                                    fail(FAIL);
+                                }
                             }
                         ],
+                        done: function (prefix) {
+                            console.log(prefix);
+                        },
                         callback: result => {
                             if (result.delete === "yes") {
                                 modules.addresses.houses.deleteEntrance(entranceId, parseInt(entrance.shared), houseId);
