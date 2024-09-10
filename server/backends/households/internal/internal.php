@@ -1818,14 +1818,14 @@
                         if (!checkInt($params)) {
                             return [];
                         }
-                        $q = "select camera_id from houses_cameras_houses where address_house_id = $params";
+                        $q = "select camera_id, path from houses_cameras_houses where address_house_id = $params";
                         break;
 
                     case "flatId":
                         if (!checkInt($params)) {
                             return [];
                         }
-                        $q = "select camera_id from houses_cameras_flats where house_flat_id = $params";
+                        $q = "select camera_id, path from houses_cameras_flats where house_flat_id = $params";
                         break;
 
                     case "subscriberId":
@@ -1841,11 +1841,15 @@
 
                     $ids = $this->db->get($q, $p, [
                         "camera_id" => "cameraId",
+                        "path" => "path",
                     ]);
 
                     foreach ($ids as $id) {
                         $cam = $cameras->getCamera($id["cameraId"]);
                         if ($cam) {
+                            if ($id["path"]) {
+                                $cam["path"] = $id["path"];
+                            }
                             $list[] = $cam;
                         }
                     }
@@ -1888,8 +1892,8 @@
             /**
              * @inheritDoc
              */
-            public function unlinkCamera($from, $id, $cameraId)
-            {
+
+            public function unlinkCamera($from, $id, $cameraId) {
                 switch ($from) {
                     case "house":
                         if (checkInt($id) !== false && checkInt($cameraId) !== false) {
@@ -1906,6 +1910,29 @@
                     case "subscriber":
                         if (checkInt($id) !== false && checkInt($cameraId) !== false) {
                             return $this->db->modify("delete from houses_cameras_subscribers where camera_id = $cameraId and house_subscriber_id = $id");
+                        } else {
+                            return false;
+                        }
+                }
+
+                return false;
+            }
+
+            public function modifyCamera($from, $id, $cameraId, $path) {
+                switch ($from) {
+                    case "house":
+                        if (checkInt($id) !== false && checkInt($cameraId) !== false) {
+                            return $this->db->modify("update houses_cameras_houses set path = :path where camera_id = $cameraId and address_house_id = $id", [
+                                "path" => $path ? : null,
+                            ]);
+                        } else {
+                            return false;
+                        }
+                    case "flat":
+                        if (checkInt($id) !== false && checkInt($cameraId) !== false) {
+                            return $this->db->modify("update houses_cameras_flats set path = :path where camera_id = $cameraId and house_flat_id = $id", [
+                                "path" => $path ? : null,
+                            ]);
                         } else {
                             return false;
                         }

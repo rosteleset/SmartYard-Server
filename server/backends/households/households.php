@@ -336,6 +336,17 @@
             abstract public function unlinkCamera($from, $id, $cameraId);
 
             /**
+             * @param $from
+             * @param $id
+             * @param $cameraId
+             * @param $path
+             *
+             * @return mixed
+             */
+
+            abstract public function modifyCamera($from, $id, $cameraId, $path);
+
+            /**
              * @param $by - "id", "subscriber", "flat", "authToken"
              * @param $query
              * @return false|array

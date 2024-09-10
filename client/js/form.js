@@ -521,6 +521,12 @@ function cardForm(params) {
                     h += `<span id="${_prefix}${params.fields[i].id}-search-button" title="${i18n("search")}" class="input-group-text pointer"><i class="fas fa-fw fa-search"></i></span>`;
                     h += `</div>`;
                     h += `</div>`;
+                    if (focus == _prefix + params.fields[i].id) {
+                        focus = _prefix + params.fields[i].id + "-search";
+                    };
+                    if (autofocus == _prefix + params.fields[i].id) {
+                        autofocus = _prefix + params.fields[i].id + "-search";
+                    };
                 }
                 h += `<div name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" class="overflow-y-auto p-2" style="max-height: 400px; min-height: 400px; height: 400px; overflow-y: auto!important; position: relative; border: solid thin lightgray; border-radius: 3px;"></div>`;
                 if (params.fields[i].add || params.fields[i].rename || params.fields[i].delete) {
