@@ -1367,7 +1367,7 @@
                                 },
 
                                 renamed: function (e, data) {
-                                    if (data && data.obj && data.obj.id && data.text) {
+                                    if (data && data.obj && data.obj.id && data.text && data.text != i18n("addresses.newNode")) {
                                         PUT("houses", "path", data.obj.id, {
                                             text: data.text,
                                         }).
@@ -1589,7 +1589,7 @@
                         },
 
                         renamed: function (e, data) {
-                            if (data && data.obj && data.obj.id && data.text) {
+                            if (data && data.obj && data.obj.id && data.text && data.text != i18n("addresses.newNode")) {
                                 PUT("houses", "path", data.obj.id, {
                                     text: data.text,
                                 }).
