@@ -6,6 +6,7 @@
     houseId: "0",
     settlementId: "0",
     streetId: "0",
+    pathNodes: {},
 
     houseMagic: function () {
         cardForm({
@@ -1348,6 +1349,7 @@
                                                 id: result.nodeId,
                                                 text: i18n("addresses.newNode"),
                                             };
+                                            modules.addresses.houses.pathNodes[result.nodeId] = i18n("addresses.newNode");
                                             instance.jstree().create_node(parent, node, 'last', newNode => {
                                                 setTimeout(() => {
                                                     instance.jstree().deselect_all();
@@ -1361,15 +1363,22 @@
 
                                 rename: function (instance) {
                                     let node = instance.jstree().get_selected();
-                                    setTimeout(() => {
-                                        instance.jstree().edit(node);
-                                    }, 100);
+                                    if (node && node.length) {
+                                        node = instance.jstree().get_node(node[0]);
+                                        modules.addresses.houses.pathNodes[node.id] = node.text;
+                                        setTimeout(() => {
+                                            instance.jstree().edit(node);
+                                        }, 100);
+                                    }
                                 },
 
                                 renamed: function (e, data) {
-                                    if (data && data.obj && data.obj.id && data.text && data.text != i18n("addresses.newNode")) {
+                                    if (data && data.obj && data.obj.id && data.text && data.text != modules.addresses.houses.pathNodes[data.obj.id]) {
                                         PUT("houses", "path", data.obj.id, {
                                             text: data.text,
+                                        }).
+                                        done(() => {
+                                            modules.addresses.houses.pathNodes[data.obj.id] = data.text;
                                         }).
                                         fail(FAIL);
                                     }
@@ -1570,6 +1579,7 @@
                                         id: result.nodeId,
                                         text: i18n("addresses.newNode"),
                                     };
+                                    modules.addresses.houses.pathNodes[result.nodeId] = i18n("addresses.newNode");
                                     instance.jstree().create_node(parent, node, 'last', newNode => {
                                         setTimeout(() => {
                                             instance.jstree().deselect_all();
@@ -1583,15 +1593,22 @@
 
                         rename: function (instance) {
                             let node = instance.jstree().get_selected();
-                            setTimeout(() => {
-                                instance.jstree().edit(node);
-                            }, 100);
+                            if (node && node.length) {
+                                node = instance.jstree().get_node(node[0]);
+                                modules.addresses.houses.pathNodes[node.id] = node.text;
+                                setTimeout(() => {
+                                    instance.jstree().edit(node);
+                                }, 100);
+                            }
                         },
 
                         renamed: function (e, data) {
-                            if (data && data.obj && data.obj.id && data.text && data.text != i18n("addresses.newNode")) {
+                            if (data && data.obj && data.obj.id && data.text && data.text != modules.addresses.houses.pathNodes[data.obj.id]) {
                                 PUT("houses", "path", data.obj.id, {
                                     text: data.text,
+                                }).
+                                done(() => {
+                                    modules.addresses.houses.pathNodes[data.obj.id] = data.text;
                                 }).
                                 fail(FAIL);
                             }
