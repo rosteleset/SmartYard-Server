@@ -1306,19 +1306,7 @@
                                 type: "jstree",
                                 title: false,
                                 tab: i18n("addresses.path"),
-                                tree: {
-                                    core: {
-                                        data: path,
-                                        check_callback: true,
-                                        animation: 0,
-                                        multiple: false,
-                                    },
-                                    plugins: [
-                                        "sort",
-                                        "search",
-                                        "changed",
-                                    ],
-                                },
+                                data: path,
 
                                 addRoot: function (instance) {
                                     POST("houses", "path", treeName, {
@@ -1538,19 +1526,7 @@
                         type: "jstree",
                         title: false,
                         tab: i18n("addresses.path"),
-                        tree: {
-                            core: {
-                                data: path,
-                                check_callback: true,
-                                animation: 0,
-                                multiple: false,
-                            },
-                            plugins: [
-                                "sort",
-                                "search",
-                                "changed",
-                            ],
-                        },
+                        data: path,
 
                         addRoot: function (instance) {
                             POST("houses", "path", treeName, {

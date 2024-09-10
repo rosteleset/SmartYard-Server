@@ -1239,7 +1239,22 @@ function cardForm(params) {
 
         if (params.fields[i].type === "jstree") {
             $(`#${_prefix}${params.fields[i].id}`).parent().parent().addClass("nohover");
-            $(`#${_prefix}${params.fields[i].id}`).jstree(params.fields[i].tree);
+
+            let tree = {
+                core: {
+                    data: params.fields[i].data,
+                    check_callback: true,
+                    animation: 0,
+                    multiple: false,
+                },
+                plugins: [
+                    "sort",
+                    "search",
+                    "changed",
+                ],
+            };
+
+            $(`#${_prefix}${params.fields[i].id}`).jstree(tree);
 
             $(`#${_prefix}${params.fields[i].id}-addRoot`).off("click").on("click", () => {
                 xblur();

@@ -415,8 +415,6 @@
             function mergePaths($paths) {
                 $nodes = [];
 
-                error_log(print_r($paths, true));
-
                 foreach ($paths as $p) {
                     $f = false;
                     foreach ($nodes as &$n) {
