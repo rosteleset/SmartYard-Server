@@ -1044,7 +1044,17 @@
                     }
 
                     let pathFirst = true;
-                    let treeName = "houses";
+                    let treeName;
+
+                    switch (config.camTree) {
+                        case "perHouse":
+                            treeName = "house" + houseId;
+                            break;
+
+                        default:
+                            treeName = "houses";
+                            break;
+                    }
 
                     function path (node, cb) {
                         let nodeId;
