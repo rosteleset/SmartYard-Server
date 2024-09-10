@@ -407,13 +407,51 @@
              abstract function searchRf($search);
 
             /**
+             * @param array $paths
+             *
+             * @return mixed
+             */
+
+            function mergePaths($paths) {
+                $nodes = [];
+
+                error_log(print_r($paths, true));
+
+                foreach ($paths as $p) {
+                    $f = false;
+                    foreach ($nodes as &$n) {
+                        if ($p["id"] == $n["id"]) {
+                            $f = true;
+                            if (is_array($n["children"]) && is_array($p["children"])) {
+                                $n["children"] = array_merge($n["children"], $p["children"]);
+                            }
+                            if (!is_array($n["children"]) && is_array($p["children"])) {
+                                $n["children"] = $p["children"];
+                            }
+                        }
+                    }
+                    if (!$f) {
+                        $nodes[] = $p;
+                    } else {
+                        foreach ($nodes as &$n) {
+                            if (is_array($n["children"])) {
+                                $n["children"] = $this->mergePaths($n["children"]);
+                            }
+                        }
+                    }
+                }
+
+                return $nodes;
+            }
+
+            /**
              * @param string tree
              * @param string search
              *
              * @return mixed
              */
 
-            abstract function searchPath($tree, $search);
+             abstract function searchPath($tree, $search);
 
             /**
              * @param mixed treeOrFrom
