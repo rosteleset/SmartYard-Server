@@ -525,6 +525,7 @@ function cardForm(params) {
                 h += `<div name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" class="overflow-y-auto p-2" style="max-height: 400px; min-height: 400px; height: 400px; overflow-y: auto!important; position: relative; border: solid thin lightgray; border-radius: 3px;"></div>`;
                 if (params.fields[i].add || params.fields[i].rename || params.fields[i].delete) {
                     h += `<div class="mt-2">`;
+                    h += `<button id="${_prefix}${params.fields[i].id}-clear" type="button" class="btn btn-secondary mr-2" title="${i18n("clearSelection")}"><i class="fas fa-fw fa-eraser"></i></button>`;
                     if (params.fields[i].addRoot) {
                         h += `<button id="${_prefix}${params.fields[i].id}-addRoot" type="button" class="btn btn-success mr-2" title="${i18n("addRoot")}"><i class="fas fa-fw fa-folder-plus"></i></button>`;
                     }
@@ -1234,14 +1235,19 @@ function cardForm(params) {
             $(`#${_prefix}${params.fields[i].id}`).parent().parent().addClass("nohover");
             $(`#${_prefix}${params.fields[i].id}`).jstree(params.fields[i].tree);
 
-            $(`#${_prefix}${params.fields[i].id}-add`).off("click").on("click", () => {
-                xblur();
-                params.fields[i].add($(`#${_prefix}${params.fields[i].id}`));
-            });
-
             $(`#${_prefix}${params.fields[i].id}-addRoot`).off("click").on("click", () => {
                 xblur();
                 params.fields[i].addRoot($(`#${_prefix}${params.fields[i].id}`));
+            });
+
+            $(`#${_prefix}${params.fields[i].id}-clear`).off("click").on("click", () => {
+                xblur();
+                $(`#${_prefix}${params.fields[i].id}`).jstree().deselect_all();
+            });
+
+            $(`#${_prefix}${params.fields[i].id}-add`).off("click").on("click", () => {
+                xblur();
+                params.fields[i].add($(`#${_prefix}${params.fields[i].id}`));
             });
 
             $(`#${_prefix}${params.fields[i].id}-rename`).off("click").on("click", () => {
@@ -1266,8 +1272,8 @@ function cardForm(params) {
                 }
             });
 
-            $(`#${_prefix}${params.fields[i].id}-search-button`).off("click").on("click", e => {
-                let str = $(`#${_prefix}${params.fields[i].id}-search`).val();
+            $(`#${_prefix}${params.fields[i].id}-search-button`).off("click").on("click", () => {
+                let str = $.trim($(`#${_prefix}${params.fields[i].id}-search`).val());
 
                 if (str.length >= 3 || str.length == 0) {
                     params.fields[i].search($(`#${_prefix}${params.fields[i].id}`), str);

@@ -986,8 +986,6 @@
                 });
             }
 
-            let pathFirst = true;
-
             GET("houses", "domophones").
             done(response => {
                 modules.addresses.houses.meta.domophones = response.domophones;
@@ -1043,6 +1041,37 @@
                             id: response.domophones.domophones[i].domophoneId,
                             text: text,
                         });
+                    }
+
+                    let pathFirst = true;
+                    let treeName = "houses";
+
+                    function path (node, cb) {
+                        let nodeId;
+
+                        if (pathFirst && entrance.path) {
+                            nodeId = entrance.path;
+                        } else {
+                            nodeId = (node.id === "#") ? treeName : node.id;
+                        }
+
+                        QUERYID("houses", "path", nodeId, pathFirst ? {
+                            withParents: true,
+                            tree: treeName,
+                        } : null).
+                        done(result => {
+                            if (result && result.tree) {
+                                cb(result.tree);
+                            } else {
+                                cb([]);
+                            }
+                        }).
+                        fail(FAIL).
+                        fail(() => {
+                            cb([]);
+                        });
+
+                        pathFirst = false;
                     }
 
                     cardForm({
@@ -1268,30 +1297,7 @@
                                 tab: i18n("addresses.path"),
                                 tree: {
                                     core: {
-                                        data: function (node, cb) {
-                                            let nodeId;
-                                            if (pathFirst && entrance.path) {
-                                                nodeId = entrance.path;
-                                            } else {
-                                                nodeId = (node.id === "#") ? "houses" : node.id;
-                                            }
-                                            QUERYID("houses", "path", nodeId, pathFirst ? {
-                                                withParents: true,
-                                                tree: "houses",
-                                            } : null).
-                                            done(result => {
-                                                if (result && result.tree) {
-                                                    cb(result.tree);
-                                                } else {
-                                                    cb([]);
-                                                }
-                                            }).
-                                            fail(FAIL).
-                                            fail(() => {
-                                                cb([]);
-                                            });
-                                            pathFirst = false;
-                                        },
+                                        data: path,
                                         check_callback: true,
                                         animation: 0,
                                     },
@@ -1302,7 +1308,7 @@
                                 },
 
                                 addRoot: function (instance) {
-                                    POST("houses", "path", "houses", {
+                                    POST("houses", "path", treeName, {
                                         text: i18n("addresses.newNode"),
                                     }).done(result => {
                                         if (result && result.nodeId) {
@@ -1324,7 +1330,7 @@
                                 add: function (instance) {
                                     let parent = instance.jstree().get_selected();
                                     parent = parent.length ? parent[0] : "#";
-                                    POST("houses", "path", (parent === "#") ? "houses" : parent, {
+                                    POST("houses", "path", (parent === "#") ? treeName : parent, {
                                         text: i18n("addresses.newNode"),
                                     }).done(result => {
                                         if (result && result.nodeId) {
@@ -1374,22 +1380,42 @@
                                 },
 
                                 search: function (instance, str) {
-                                    QUERYID("houses", "path", "houses", { search: str }).
-                                    done(result => {
-                                        console.log(result.tree);
-                                        instance.jstree(true).settings.core.data = result.tree;
-                                        instance.jstree(true).refresh();
+                                    if (str) {
+                                        QUERYID("houses", "path", treeName, { search: str }).
+                                        done(result => {
+                                            instance.jstree().settings.core.data = result.tree;
+                                            instance.jstree().refresh();
+                                            setTimeout(() => {
+                                                instance.jstree().search(str);
+                                                instance.jstree().settings.core.data = path;
+                                            }, 100);
+                                        }).
+                                        fail(FAIL);
+                                    } else {
+                                        instance.jstree().clear_search();
+
+                                        QUERYID("houses", "path", entrance.path ? entrance.path : treeName, {
+                                            withParents: true,
+                                            tree: treeName,
+                                        }).
+                                        done(result => {
+                                            if (result && result.tree) {
+                                                instance.jstree().settings.core.data = result.tree;
+                                            } else {
+                                                instance.jstree().settings.core.data = [];
+                                            }
+                                            instance.jstree().refresh();
+                                        }).
+                                        fail(FAIL);
+
                                         setTimeout(() => {
-                                            instance.jstree(true).search(str);
-                                        }, 500);
-                                    }).
-                                    fail(FAIL);
+                                            instance.jstree().select_node(entrance.path);
+                                            instance.jstree().settings.core.data = path;
+                                        }, 100);
+                                    }
                                 }
                             }
                         ],
-                        done: function (prefix) {
-                            console.log(prefix);
-                        },
                         callback: result => {
                             if (result.delete === "yes") {
                                 modules.addresses.houses.deleteEntrance(entranceId, parseInt(entrance.shared), houseId);
