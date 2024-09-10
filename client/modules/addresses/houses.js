@@ -1311,10 +1311,12 @@
                                         data: path,
                                         check_callback: true,
                                         animation: 0,
+                                        multiple: false,
                                     },
                                     plugins: [
                                         "sort",
                                         "search",
+                                        "changed",
                                     ],
                                 },
 
@@ -1541,10 +1543,12 @@
                                 data: path,
                                 check_callback: true,
                                 animation: 0,
+                                multiple: false,
                             },
                             plugins: [
                                 "sort",
                                 "search",
+                                "changed",
                             ],
                         },
 

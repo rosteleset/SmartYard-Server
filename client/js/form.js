@@ -1248,22 +1248,30 @@ function cardForm(params) {
 
             $(`#${_prefix}${params.fields[i].id}-clear`).off("click").on("click", () => {
                 xblur();
-                $(`#${_prefix}${params.fields[i].id}`).jstree().deselect_all();
+                if (!$(`#${_prefix}${params.fields[i].id}-clear`).hasClass("disabled")) {
+                    $(`#${_prefix}${params.fields[i].id}`).jstree().deselect_all();
+                }
             });
 
             $(`#${_prefix}${params.fields[i].id}-add`).off("click").on("click", () => {
                 xblur();
-                params.fields[i].add($(`#${_prefix}${params.fields[i].id}`));
+                if (!$(`#${_prefix}${params.fields[i].id}-add`).hasClass("disabled")) {
+                    params.fields[i].add($(`#${_prefix}${params.fields[i].id}`));
+                }
             });
 
             $(`#${_prefix}${params.fields[i].id}-rename`).off("click").on("click", () => {
                 xblur();
-                params.fields[i].rename($(`#${_prefix}${params.fields[i].id}`));
+                if (!$(`#${_prefix}${params.fields[i].id}-rename`).hasClass("disabled")) {
+                    params.fields[i].rename($(`#${_prefix}${params.fields[i].id}`));
+                }
             });
 
             $(`#${_prefix}${params.fields[i].id}-delete`).off("click").on("click", () => {
                 xblur();
-                params.fields[i].delete($(`#${_prefix}${params.fields[i].id}`));
+                if (!$(`#${_prefix}${params.fields[i].id}-delete`).hasClass("disabled")) {
+                    params.fields[i].delete($(`#${_prefix}${params.fields[i].id}`));
+                }
             });
 
             if (params.fields[i].renamed) {
@@ -1284,6 +1292,32 @@ function cardForm(params) {
                 if (str.length >= 3 || str.length == 0) {
                     params.fields[i].search($(`#${_prefix}${params.fields[i].id}`), str);
                 }
+            });
+
+            function jstreectl(enabled) {
+                if (enabled) {
+                    $(`#${_prefix}${params.fields[i].id}-clear`).removeClass("disabled");
+                    $(`#${_prefix}${params.fields[i].id}-add`).removeClass("disabled");
+                    $(`#${_prefix}${params.fields[i].id}-rename`).removeClass("disabled");
+                    $(`#${_prefix}${params.fields[i].id}-delete`).removeClass("disabled");
+                } else {
+                    $(`#${_prefix}${params.fields[i].id}-clear`).addClass("disabled");
+                    $(`#${_prefix}${params.fields[i].id}-add`).addClass("disabled");
+                    $(`#${_prefix}${params.fields[i].id}-rename`).addClass("disabled");
+                    $(`#${_prefix}${params.fields[i].id}-delete`).addClass("disabled");
+                }
+            }
+
+            $(`#${_prefix}${params.fields[i].id}`).off("select_node.jstree").on("select_node.jstree", (e, data) => {
+                jstreectl(data && data.selected && data.selected.length);
+            });
+
+            $(`#${_prefix}${params.fields[i].id}`).off("deselect_node.jstree").on("deselect_node.jstree", (e, data) => {
+                jstreectl(data && data.selected && data.selected.length);
+            });
+
+            $(`#${_prefix}${params.fields[i].id}`).off("changed.jstree").on("changed.jstree", (e, data) => {
+                jstreectl(data && data.selected && data.selected.length);
             });
         }
     }
