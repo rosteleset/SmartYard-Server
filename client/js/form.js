@@ -1334,6 +1334,10 @@ function cardForm(params) {
             $(`#${_prefix}${params.fields[i].id}`).off("changed.jstree").on("changed.jstree", (e, data) => {
                 jstreectl(data && data.selected && data.selected.length);
             });
+
+            $(`#${_prefix}${params.fields[i].id}`).off("loaded.jstree").on("changed.jstree", (e, data) => {
+                jstreectl(data && data.selected && data.selected.length);
+            });
         }
     }
 
