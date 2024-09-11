@@ -7,7 +7,7 @@
      *
      * @apiGroup CCTV
      *
-     * @apiParam {Number} [houseId] идентификатор дома
+     * @apiBody {Number} [houseId] идентификатор дома
      *
      * @apiHeader {String} authorization токен авторизации
      *

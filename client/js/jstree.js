@@ -5178,7 +5178,7 @@
 					.on('changed.jstree uncheck_node.jstree check_node.jstree uncheck_all.jstree check_all.jstree move_node.jstree copy_node.jstree redraw.jstree open_node.jstree', function () {
 							// only if undetermined is in setting
 							if(this._data.checkbox.uto) { clearTimeout(this._data.checkbox.uto); }
-							this._data.checkbox.uto = setTimeout(this._undetermined.bind(this), 50);
+							this._data.checkbox.uto = setTimeout(this._undetermined.bind(this), 10);
 						}.bind(this));
 			}
 			if(!this.settings.checkbox.tie_selection) {
@@ -5565,7 +5565,7 @@
 			}
 			if(!is_callback && this.settings.checkbox.cascade.indexOf('undetermined') !== -1) {
 				if(this._data.checkbox.uto) { clearTimeout(this._data.checkbox.uto); }
-				this._data.checkbox.uto = setTimeout(this._undetermined.bind(this), 50);
+				this._data.checkbox.uto = setTimeout(this._undetermined.bind(this), 10);
 			}
 			return obj;
 		};
@@ -6146,7 +6146,7 @@
 							try {
 								inst.edit(new_node);
 							} catch (ex) {
-								setTimeout(function () { inst.edit(new_node); },0);
+								setTimeout(function () { inst.edit(new_node); }, 0);
 							}
 						});
 					}
