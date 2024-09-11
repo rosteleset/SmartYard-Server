@@ -3,11 +3,14 @@
     function language() {
         global $config;
 
-        return @apache_request_headers()["Accept-Language"] ?: (@$config["language"] ?: "ru");
+        $al = @apache_request_headers()["Accept-Language"] ? : "";
+
+        $al = explode("-", explode(",", explode(";", $al)[0])[0])[0];
+
+        return $al ?: (@$config["language"] ?: "ru");
     }
 
-    function isAssoc($array)
-    {
+    function isAssoc($array) {
         return ($array !== array_values($array));
     }
 
@@ -16,7 +19,11 @@
         try {
             $lang = json_decode(file_get_contents(__DIR__ . "/../i18n/$lang.json"), true);
         } catch (\Exception $e) {
-            $lang = [];
+            try {
+                $lang = json_decode(file_get_contents(__DIR__ . "/../i18n/en.json"), true);
+            } catch (\Excaption $e) {
+                die("can't load language file\n");
+            }
         }
         try {
             $t = explode(".", $msg);
