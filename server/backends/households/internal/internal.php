@@ -2813,6 +2813,7 @@
 
             function getPath($treeOrFrom, $withParents = false, $childrens = false, $selected = false, $tree = false) {
                 if ($withParents) {
+                    error_log($treeOrFrom);
                     $node = $this->db->get("select house_path_id, house_path_tree, coalesce(house_path_parent, 0) house_path_parent, house_path_name, house_path_icon, (select count (*) from houses_paths as p2 where p2.house_path_parent = p1.house_path_id) childrens from houses_paths as p1 where house_path_id = :house_path_id", [
                         "house_path_id" => $treeOrFrom,
                     ], [
