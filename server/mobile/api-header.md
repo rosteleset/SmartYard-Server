@@ -1,22 +1,22 @@
-Для взаимодействия между платформой и мобильными приложениями применяются веб-сервисы, работающие по протоколу REST.
-Вызовы веб-сервисов осуществляются через метод POST.
-Входящие параметры и ответы сервисов являются объектами в формате JSON.
-Формат ответа сервиса
+For interaction between the platform and mobile applications, web services operating on the REST protocol are used.
+Web services calls are carried out through the POST method.
+The incoming parameters and services of services are objects in JSON format.
+Service response format
 
 Name|Type|Descr
 ----|----|-----
-code|Number|код результата (a'la HTTP)
-name|String|краткое сообщение (a'la HTTP)
-message|String|расшифровка (для пользователя)
-data|Object|payload
+Code | Number | The result code (A'LA http)
+NAME | String | Short post (a'la http)
+Message | String | Decryption (for the user)
+Data | Object | Payload
 
-Коды 2хх считаются "успешными", все остальные - ошибки, 3xx (redirect) не используются 
+2xx codes are considered “successful”, all the rest are errors, 3xx (redirect) are not used
 
 ```
 {
     "code": 200,
     "name": "OK",
-    "message": "хорошо",
+    "message": "ok",
     "data": {
         "doorCode": "40374",
         "allowed": "t"
@@ -27,13 +27,15 @@ data|Object|payload
 {
     "code": 404,
     "name": "Not Found",
-    "message": "не найдено"
+    "message": "Not Found"
 }
 ```
-В описаниях методов возвращаемые значения указаны без "обертки" в data
 
-При голосовом вызове на устройство отправляется PUSH сообщение содержащее следующие данные (пример)
-[stun* и turn* - опциональные параметры, могут отсутствовать]
+In the descriptions of the methods, the return values ​​are indicated without "wrapper" in Data
+
+With a voice call to the device, PUSH posts containing the following data are sent (example)
+[Stun* and Turn* - optional parameters, may be absent]
+
 ```
 {
     "server": "yourserver.yourdomain",
@@ -52,7 +54,7 @@ data|Object|payload
     "live": "https://yourserver.yourdomain/live/e4bb3f86073a270ec8d9291c10d26dfe/image.jpg",
     "timestamp": "1231231",
     "ttl": "30",
-    "callerId": "Домофон"
+    "callerId": "Intercom"
     "platform": "ios",
     "flatId": "12345",
     "flatNumber": "11",
@@ -60,25 +62,27 @@ data|Object|payload
 }
 ```
 
-При отправке текстового сообщения текст и заголовок сообщения отправляются как обычно, также отправляются
-следующие данные
+When sending a text message, the text and the heading of the messages are sent as usual, also sent
+The following data
+
 ```
 {
     "messageId": "e4bb3f86073a270ec8d9291c10d26dfe",
     "action": "inbox",
     "badge": "0",
-    "ext": "id расширения", // опционально
+    "Ext": "ID extensions", // optionally
 }
 ```
-messageId - идентификатор сообщения (используется в методах delivered и readed),
 
-badge - количество непрочитанных сообщений,
+Messageid - message identifier (used in Delvedred and Readed methods),
 
-action - указывает на то как отображать (использовать) данное сообщение
-- inbox - сообщение
-- chat - сообщение в чате
-- newAddress - доступен новый адрес
-- paySuccess - платеж прошел успешно
-- payError - платеж завершился с ошибкой
-- videoReady - ролик готов к загрузке
-- ext - сообщение для расширения
+badge - the number of unread messages,
+
+action - indicates how to display (use) this message
+- inbox - message
+- chat - Message in the chat
+- newaddress - A new address is available
+- paysuccess - payment was successful
+- payerror - payment ended with an error
+- videoredy - the video is ready to download
+- ext - message for expansion

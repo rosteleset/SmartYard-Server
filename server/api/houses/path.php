@@ -41,7 +41,7 @@
      *
      * @apiVersion 1.0.0
      *
-     * @apiName addTreeNode
+     * @apiName modifyTreeNode
      * @apiGroup houses
      *
      * @apiHeader {String} authorization authentication token
@@ -54,11 +54,11 @@
      */
 
     /**
-     * @api {delete} /api/houses/house/nodeId delete node
+     * @api {delete} /api/houses/house/:nodeId delete node
      *
      * @apiVersion 1.0.0
      *
-     * @apiName addTreeNode
+     * @apiName deleteTreeNode
      * @apiGroup houses
      *
      * @apiHeader {String} authorization authentication token
