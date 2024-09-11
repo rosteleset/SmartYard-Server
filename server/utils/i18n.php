@@ -3,7 +3,7 @@
     function language() {
         global $config;
 
-        $al = @apache_request_headers()["Accept-Language"] ? : "";
+        $al = trim(@apache_request_headers()["Accept-Language"] ? : "");
 
         $al = explode("-", explode(",", explode(";", $al)[0])[0])[0];
 
