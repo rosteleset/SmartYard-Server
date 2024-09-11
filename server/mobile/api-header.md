@@ -5,10 +5,10 @@ Service response format
 
 Name|Type|Descr
 ----|----|-----
-Code | Number | The result code (A'LA http)
-NAME | String | Short post (a'la http)
-Message | String | Decryption (for the user)
-Data | Object | Payload
+code | Number | The result code (A'LA http)
+name | String | Short post (a'la http)
+message | String | Decryption (for the user)
+data | Object | Payload
 
 2xx codes are considered “successful”, all the rest are errors, 3xx (redirect) are not used
 
@@ -34,7 +34,7 @@ Data | Object | Payload
 In the descriptions of the methods, the return values ​​are indicated without "wrapper" in Data
 
 With a voice call to the device, PUSH posts containing the following data are sent (example)
-[Stun* and Turn* - optional parameters, may be absent]
+[stun* and turn* - optional parameters, may be absent]
 
 ```
 {
