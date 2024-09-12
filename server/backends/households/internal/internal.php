@@ -1811,7 +1811,7 @@
                         if (!checkInt($params)) {
                             return [];
                         }
-                        $q = "select camera_id from cameras where camera_id = $params";
+                        $q = "select camera_id, null path from cameras where camera_id = $params";
                         break;
 
                     case "houseId":
@@ -1832,7 +1832,7 @@
                         if (!checkInt($params)) {
                             return [];
                         }
-                        $q = "select camera_id from houses_cameras_subscribers where house_subscriber_id = $params";
+                        $q = "select camera_id, null path from houses_cameras_subscribers where house_subscriber_id = $params";
                         break;
                 }
 
