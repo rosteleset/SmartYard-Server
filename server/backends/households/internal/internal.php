@@ -1847,9 +1847,7 @@
                     foreach ($ids as $id) {
                         $cam = $cameras->getCamera($id["cameraId"]);
                         if ($cam) {
-                            if ($id["path"]) {
-                                $cam["path"] = $id["path"];
-                            }
+                            $cam["path"] = $id["path"];
                             $list[] = $cam;
                         }
                     }
