@@ -73,10 +73,11 @@ trait ufanet
      * @param string $resource API endpoint.
      * @param string $method (Optional) HTTP method. Default is "GET".
      * @param array|null $payload (Optional) Query params or request body. Empty array by default.
+     * @param int $timeout (Optional) The maximum number of seconds to allow cURL functions to execute.
      *
      * @return array|string|null API response or null if an error occurred.
      */
-    protected function apiCall(string $resource, string $method = 'GET', ?array $payload = null)
+    protected function apiCall(string $resource, string $method = 'GET', ?array $payload = null, int $timeout = 0)
     {
         if ($payload !== null && $method === 'GET') {
             $payload = array_map(fn($value) => str_replace(' ', '%20', $value), $payload); // Replace spaces with %20
@@ -92,6 +93,7 @@ trait ufanet
         curl_setopt($ch, CURLOPT_USERPWD, "$this->login:$this->password");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_VERBOSE, false);
+        curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
 
         if ($payload !== null && $method !== 'GET') {
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload, JSON_UNESCAPED_UNICODE));

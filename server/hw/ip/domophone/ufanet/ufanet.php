@@ -187,7 +187,7 @@ abstract class ufanet extends domophone
     public function openLock(int $lockNumber = 0)
     {
         $lockNumber++;
-        $this->apiCall("/api/v1/doors/$lockNumber/open", 'POST');
+        $this->apiCall("/api/v1/doors/$lockNumber/open", 'POST', null, 3);
     }
 
     public function prepare()

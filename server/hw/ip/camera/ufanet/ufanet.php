@@ -31,7 +31,7 @@ class ufanet extends camera
 
     public function getCamshot(): string
     {
-        return $this->apiCall('/image.jpg');
+        return $this->apiCall('/image.jpg', 'GET', null, 3);
     }
 
     public function setOsdText(string $text = '')
