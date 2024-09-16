@@ -36,7 +36,7 @@ trait ufanet
 
     public function getSysinfo(): array
     {
-        $serialNumber = $this->apiCall('/cgi-bin/magicBox.cgi', 'GET', ['action' => 'getSerialNo']);
+        $serialNumber = $this->apiCall('/cgi-bin/magicBox.cgi', 'GET', ['action' => 'getSerialNo'], 3);
 
         if ($serialNumber !== null) {
             return ['DeviceID' => $serialNumber];
