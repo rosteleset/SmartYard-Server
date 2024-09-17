@@ -699,7 +699,7 @@
                         zoom = (config.map && config.map.default && config.map.default.zoom) ? config.map.default.zoom : 13
                     ;
 
-                    if (camera.lat && camera.lon) {
+                    if (parseFloat(camera.lat) && parseFloat(camera.lon)) {
                         lat = camera.lat;
                         lon = camera.lon;
                         zoom = 18;
