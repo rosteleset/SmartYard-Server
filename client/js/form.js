@@ -1237,7 +1237,7 @@ function cardForm(params) {
             });
         }
 
-        if (params.fields[i].type === "jstree") {
+        if (params.fields[i].type === "jstree" || params.fields[i].noHover) {
             $(`#${_prefix}${params.fields[i].id}`).parent().parent().addClass("nohover");
 
             let tree = {

@@ -4,16 +4,14 @@
     * backends households namespace
     */
 
-    namespace backends\households
-    {
+    namespace backends\households {
 
         use backends\backend;
 
         /**
          * base addresses class
          */
-        abstract class households extends backend
-        {
+        abstract class households extends backend {
 
             /**
              * @param $houseId
@@ -32,12 +30,15 @@
              * @param $cameraId
              * @param $cmsLevels
              * @param $video
+             * @param $path
+             *
              * @return boolean|integer
              */
-            abstract function createEntrance($houseId, $entranceType, $entrance, $lat, $lon, $shared, $plog, $prefix, $callerId, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $cmsLevels, $video);
+            abstract function createEntrance($houseId, $entranceType, $entrance, $lat, $lon, $shared, $plog, $prefix, $callerId, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $cmsLevels, $video, $path);
 
             /**
              * @param $entranceId
+             *
              * @return false|array
              */
             abstract function getEntrance($entranceId);
@@ -45,6 +46,7 @@
             /**
              * @param $by
              * @param $query
+             *
              * @return false|array
              */
             abstract function getEntrances($by, $query);

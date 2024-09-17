@@ -7,6 +7,9 @@
     },
 
     meta: false,
+    map: false,
+    fiases: {},
+    marker: false,
 
     doAddCamera: function (camera) {
         loadingStart();
@@ -255,7 +258,102 @@
                     },
                     tab: i18n("addresses.secondary"),
                 },
+                {
+                    id: "geoSuggestion",
+                    type: "select2",
+                    title: false,
+                    placeholder: i18n("addresses.address"),
+                    tab: i18n("addresses.map"),
+                    hidden: !AVAIL("geo", "suggestions"),
+                    ajax: {
+                        delay: 1000,
+                        transport: function (params, success) {
+                            if (params.data.term) {
+                                QUERY("geo", "suggestions", {
+                                    search: params.data.term,
+                                }).
+                                then(success).
+                                fail(response => {
+                                    FAIL(response);
+                                    success({
+                                        suggestions: [],
+                                    });
+                                });
+                            } else {
+                                success({
+                                    suggestions: [],
+                                });
+                            }
+                        },
+                        processResults: function (data) {
+                            let suggestions = [];
+                            for (let i in data.suggestions) {
+                                if (parseInt(data.suggestions[i].data.fias_level) === 8 || (parseInt(data.suggestions[i].data.fias_level) === -1 && data.suggestions[i].data.house)) {
+                                    suggestions.push({
+                                        id: data.suggestions[i].data.house_fias_id,
+                                        text: data.suggestions[i].value,
+                                    });
+                                    modules.addresses.cameras.fiases[data.suggestions[i].data.house_fias_id] = data.suggestions[i].data;
+                                }
+                            }
+                            return {
+                                results: suggestions,
+                            };
+                        },
+                    },
+                },
+                {
+                    id: "geoMap",
+                    type: "empty",
+                    title: false,
+                    placeholder: i18n("search"),
+                    tab: i18n("addresses.map"),
+                    noHover: true,
+                },
             ],
+            done: function (prefix) {
+                $("#" + prefix + "geoSuggestion").off("change").on("change", e => {
+                    let fias = $("#" + prefix + "geoSuggestion").val();
+                    if (modules.addresses.cameras.fiases[fias] && modules.addresses.cameras.fiases[fias].geo_lat && modules.addresses.cameras.fiases[fias].geo_lon) {
+                        modules.addresses.cameras.map.setView([modules.addresses.cameras.fiases[fias].geo_lat, modules.addresses.cameras.fiases[fias].geo_lon], 18);
+                        modules.addresses.cameras.marker.setLatLng([modules.addresses.cameras.fiases[fias].geo_lat, modules.addresses.cameras.fiases[fias].geo_lon]).update();
+                        $("#" + prefix + "geo").val(modules.addresses.cameras.marker.getLatLng().lat + "," + modules.addresses.cameras.marker.getLatLng().lng);
+                    }
+                });
+
+                $("#" + prefix + "geoMap").css("height", "400px");
+
+                modules.addresses.cameras.map = L.map(prefix + "geoMap");
+
+                if (config.map && config.map.crs) {
+                    switch (config.map.crs) {
+                        case "EPSG3395":
+                            modules.addresses.cameras.map.options.crs = L.CRS.EPSG3395;
+                            break;
+                        case "EPSG3857":
+                            modules.addresses.cameras.map.options.crs = L.CRS.EPSG3857;
+                            break;
+                    }
+                }
+
+                let
+                    lat = (config.map && config.map.default && config.map.default.lat) ? config.map.default.lat : 51.505,
+                    lon = (config.map && config.map.default && config.map.default.lon) ? config.map.default.lon : -0.09,
+                    zoom = (config.map && config.map.default && config.map.default.zoom) ? config.map.default.zoom : 13
+                ;
+
+                L.tileLayer((config.map && config.map.tile) ? config.map.tile : 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    minZoom: (config.map && config.map.min) ? config.map.min : 4,
+                    maxZoom: (config.map && config.map.max) ? config.map.max : 18,
+                }).addTo(modules.addresses.cameras.map);
+
+                modules.addresses.cameras.map.setView([lat, lon], zoom);
+                modules.addresses.cameras.marker = L.marker([lat, lon], { draggable: true }).addTo(modules.addresses.cameras.map);
+
+                modules.addresses.cameras.marker.on('dragend', () => {
+                    $("#" + prefix + "geo").val(modules.addresses.cameras.marker.getLatLng().lat + "," + modules.addresses.cameras.marker.getLatLng().lng);
+                });
+            },
             callback: result => {
                 let g = result.geo.split(",");
                 result.lat = $.trim(g[0]);
@@ -517,7 +615,108 @@
                         },
                         tab: i18n("addresses.secondary"),
                     },
+                    {
+                        id: "geoSuggestion",
+                        type: "select2",
+                        title: false,
+                        placeholder: i18n("addresses.address"),
+                        tab: i18n("addresses.map"),
+                        hidden: !AVAIL("geo", "suggestions"),
+                        ajax: {
+                            delay: 1000,
+                            transport: function (params, success) {
+                                if (params.data.term) {
+                                    QUERY("geo", "suggestions", {
+                                        search: params.data.term,
+                                    }).
+                                    then(success).
+                                    fail(response => {
+                                        FAIL(response);
+                                        success({
+                                            suggestions: [],
+                                        });
+                                    });
+                                } else {
+                                    success({
+                                        suggestions: [],
+                                    });
+                                }
+                            },
+                            processResults: function (data) {
+                                let suggestions = [];
+                                for (let i in data.suggestions) {
+                                    if (parseInt(data.suggestions[i].data.fias_level) === 8 || (parseInt(data.suggestions[i].data.fias_level) === -1 && data.suggestions[i].data.house)) {
+                                        suggestions.push({
+                                            id: data.suggestions[i].data.house_fias_id,
+                                            text: data.suggestions[i].value,
+                                        });
+                                        modules.addresses.cameras.fiases[data.suggestions[i].data.house_fias_id] = data.suggestions[i].data;
+                                    }
+                                }
+                                return {
+                                    results: suggestions,
+                                };
+                            },
+                        },
+                    },
+                    {
+                        id: "geoMap",
+                        type: "empty",
+                        title: false,
+                        placeholder: i18n("search"),
+                        tab: i18n("addresses.map"),
+                        noHover: true,
+                    },
                 ],
+                done: function (prefix) {
+                    $("#" + prefix + "geoSuggestion").off("change").on("change", e => {
+                        let fias = $("#" + prefix + "geoSuggestion").val();
+                        if (modules.addresses.cameras.fiases[fias] && modules.addresses.cameras.fiases[fias].geo_lat && modules.addresses.cameras.fiases[fias].geo_lon) {
+                            modules.addresses.cameras.map.setView([modules.addresses.cameras.fiases[fias].geo_lat, modules.addresses.cameras.fiases[fias].geo_lon], 18);
+                            modules.addresses.cameras.marker.setLatLng([modules.addresses.cameras.fiases[fias].geo_lat, modules.addresses.cameras.fiases[fias].geo_lon]).update();
+                            $("#" + prefix + "geo").val(modules.addresses.cameras.marker.getLatLng().lat + "," + modules.addresses.cameras.marker.getLatLng().lng);
+                        }
+                    });
+
+                    $("#" + prefix + "geoMap").css("height", "400px");
+
+                    modules.addresses.cameras.map = L.map(prefix + "geoMap");
+
+                    if (config.map && config.map.crs) {
+                        switch (config.map.crs) {
+                            case "EPSG3395":
+                                modules.addresses.cameras.map.options.crs = L.CRS.EPSG3395;
+                                break;
+                            case "EPSG3857":
+                                modules.addresses.cameras.map.options.crs = L.CRS.EPSG3857;
+                                break;
+                        }
+                    }
+
+                    let
+                        lat = (config.map && config.map.default && config.map.default.lat) ? config.map.default.lat : 51.505,
+                        lon = (config.map && config.map.default && config.map.default.lon) ? config.map.default.lon : -0.09,
+                        zoom = (config.map && config.map.default && config.map.default.zoom) ? config.map.default.zoom : 13
+                    ;
+
+                    if (camera.lat && camera.lon) {
+                        lat = camera.lat;
+                        lon = camera.lon;
+                        zoom = 18;
+                    }
+
+                    L.tileLayer((config.map && config.map.tile) ? config.map.tile : 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        minZoom: (config.map && config.map.min) ? config.map.min : 4,
+                        maxZoom: (config.map && config.map.max) ? config.map.max : 18,
+                    }).addTo(modules.addresses.cameras.map);
+
+                    modules.addresses.cameras.map.setView([lat, lon], zoom);
+                    modules.addresses.cameras.marker = L.marker([lat, lon], { draggable: true }).addTo(modules.addresses.cameras.map);
+
+                    modules.addresses.cameras.marker.on('dragend', () => {
+                        $("#" + prefix + "geo").val(modules.addresses.cameras.marker.getLatLng().lat + "," + modules.addresses.cameras.marker.getLatLng().lng);
+                    });
+                },
                 callback: result => {
                     let g = result.geo.split(",");
                     result.lat = $.trim(g[0]);
@@ -573,7 +772,7 @@
             <span class="status-indicator ${statusClass}">
                 <div class="status-tooltip">${status}</div>
             </span>
-        </div>  
+        </div>
     `;
     },
 
@@ -627,7 +826,7 @@
 
                     for (let i in modules.addresses.cameras.meta.cameras) {
                         if (params && params.filter && params.filter != modules.addresses.cameras.meta.cameras[i].cameraId) continue;
-                        
+
                         rows.push({
                             uid: modules.addresses.cameras.meta.cameras[i].cameraId,
                             cols: [

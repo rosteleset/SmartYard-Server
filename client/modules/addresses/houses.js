@@ -7,6 +7,9 @@
     settlementId: "0",
     streetId: "0",
     pathNodes: {},
+    map: false,
+    fiases: {},
+    marker: false,
 
     houseMagic: function () {
         cardForm({
@@ -426,6 +429,43 @@
                         })
                     }
 
+                    let pathFirst = true;
+                    let treeName;
+
+                    switch (config.camTree) {
+                        case "perHouse":
+                            treeName = "house" + houseId;
+                            break;
+
+                        default:
+                            treeName = "houses";
+                            break;
+                    }
+
+                    function path(node, cb) {
+                        let nodeId;
+
+                        nodeId = (node.id === "#") ? treeName : node.id;
+
+                        QUERYID("houses", "path", nodeId, pathFirst ? {
+                            withParents: true,
+                            tree: treeName,
+                        } : null).
+                        done(result => {
+                            if (result && result.tree) {
+                                cb(result.tree);
+                            } else {
+                                cb([]);
+                            }
+                        }).
+                        fail(FAIL).
+                        fail(() => {
+                            cb([]);
+                        });
+
+                        pathFirst = false;
+                    }
+
                     cardForm({
                         title: i18n("addresses.addEntrance"),
                         footer: true,
@@ -455,7 +495,8 @@
                                         id: "barrier",
                                         text: i18n("addresses.entranceTypeBarrierFull"),
                                     }
-                                ]
+                                ],
+                                tab: i18n("addresses.primary"),
                             },
                             {
                                 id: "entrance",
@@ -464,7 +505,8 @@
                                 placeholder: i18n("addresses.entrance"),
                                 validate: (v) => {
                                     return $.trim(v) !== "";
-                                }
+                                },
+                                tab: i18n("addresses.primary"),
                             },
                             {
                                 id: "geo",
@@ -478,6 +520,7 @@
 
                                     return regex.exec(v) !== null;
                                 },
+                                tab: i18n("addresses.primary"),
                             },
                             {
                                 id: "callerId",
@@ -486,12 +529,14 @@
                                 validate: (v) => {
                                     return $.trim(v) !== "";
                                 },
+                                tab: i18n("addresses.primary"),
                             },
                             {
                                 id: "cameraId",
                                 type: "select2",
                                 title: i18n("addresses.cameraId"),
                                 options: cameras,
+                                tab: i18n("addresses.primary"),
                             },
                             {
                                 id: "domophoneId",
@@ -502,6 +547,7 @@
                                     return parseInt(v) > 0;
                                 },
                                 select: modules.addresses.houses.domophoneIdSelect,
+                                tab: i18n("addresses.primary"),
                             },
                             {
                                 id: "video",
@@ -517,6 +563,7 @@
                                         text: i18n("addresses.webrtc"),
                                     },
                                 ],
+                                tab: i18n("addresses.primary"),
                             },
                             {
                                 id: "domophoneOutput",
@@ -525,6 +572,7 @@
                                 placeholder: i18n("addresses.domophoneOutput"),
                                 options: modules.addresses.houses.outputs(modules.addresses.houses.meta.domophoneModelsById[first]),
                                 select: modules.addresses.houses.outputsSelect,
+                                tab: i18n("addresses.primary"),
                             },
                             {
                                 id: "cms",
@@ -533,6 +581,7 @@
                                 placeholder: i18n("addresses.cms"),
                                 options: modules.addresses.houses.cmses(modules.addresses.houses.meta.domophoneModelsById[first]),
                                 select: modules.addresses.houses.cmsSelect,
+                                tab: i18n("addresses.primary"),
                             },
                             {
                                 id: "cmsType",
@@ -548,7 +597,8 @@
                                         id: "2",
                                         text: i18n("addresses.cmsAV"),
                                     },
-                                ]
+                                ],
+                                tab: i18n("addresses.primary"),
                             },
                             {
                                 id: "cmsLevels",
@@ -571,12 +621,14 @@
                                         id: "1",
                                         text: i18n("yes"),
                                     }
-                                ]
+                                ],
+                                tab: i18n("addresses.primary"),
                             },
                             {
                                 id: "plog",
                                 type: "yesno",
                                 title: i18n("addresses.plog"),
+                                tab: i18n("addresses.primary"),
                             },
                             {
                                 id: "prefix",
@@ -588,8 +640,227 @@
                                 validate: (v, prefix) => {
                                     return !parseInt($("#" + prefix + "shared").val()) || parseInt(v) >= 1;
                                 },
+                                tab: i18n("addresses.primary"),
+                            },
+                            {
+                                id: "path",
+                                type: "jstree",
+                                title: false,
+                                tab: i18n("addresses.path"),
+                                data: path,
+
+                                addRoot: function (instance) {
+                                    POST("houses", "path", treeName, {
+                                        text: i18n("addresses.newNode"),
+                                    }).done(result => {
+                                        if (result && result.nodeId) {
+                                            let node = {
+                                                id: result.nodeId,
+                                                text: i18n("addresses.newNode"),
+                                            };
+                                            instance.jstree().create_node("#", node, 'last', newNode => {
+                                                setTimeout(() => {
+                                                    instance.jstree().deselect_all();
+                                                    instance.jstree().select_node(newNode);
+                                                    instance.jstree().edit(newNode);
+                                                }, 100);
+                                            });
+                                        }
+                                    }).fail(FAIL);
+                                },
+
+                                add: function (instance) {
+                                    let parent = instance.jstree().get_selected();
+                                    parent = parent.length ? parent[0] : "#";
+                                    POST("houses", "path", (parent === "#") ? treeName : parent, {
+                                        text: i18n("addresses.newNode"),
+                                    }).done(result => {
+                                        if (result && result.nodeId) {
+                                            let node = {
+                                                id: result.nodeId,
+                                                text: i18n("addresses.newNode"),
+                                            };
+                                            modules.addresses.houses.pathNodes[result.nodeId] = i18n("addresses.newNode");
+                                            instance.jstree().create_node(parent, node, 'last', newNode => {
+                                                setTimeout(() => {
+                                                    instance.jstree().deselect_all();
+                                                    instance.jstree().select_node(newNode);
+                                                    instance.jstree().edit(newNode);
+                                                }, 100);
+                                            });
+                                        }
+                                    }).fail(FAIL);
+                                },
+
+                                rename: function (instance) {
+                                    let node = instance.jstree().get_selected();
+                                    if (node && node.length) {
+                                        node = instance.jstree().get_node(node[0]);
+                                        modules.addresses.houses.pathNodes[node.id] = node.text;
+                                        setTimeout(() => {
+                                            instance.jstree().edit(node);
+                                        }, 100);
+                                    }
+                                },
+
+                                renamed: function (e, data) {
+                                    if (data && data.obj && data.obj.id && data.text && data.text != modules.addresses.houses.pathNodes[data.obj.id]) {
+                                        PUT("houses", "path", data.obj.id, {
+                                            text: data.text,
+                                        }).
+                                        done(() => {
+                                            modules.addresses.houses.pathNodes[data.obj.id] = data.text;
+                                        }).
+                                        fail(FAIL);
+                                    }
+                                },
+
+                                delete: function (instance) {
+                                    let node = instance.jstree().get_selected();
+                                    if (node && node.length) {
+                                        node = instance.jstree().get_node(node[0]);
+                                        mConfirm(i18n("addresses.confirmDeleteNode", escapeHTML(node.text)), i18n("confirm"), `danger:${i18n("addresses.deleteNode")}`, () => {
+                                            DELETE("houses", "path", node.id).
+                                            done(() => {
+                                                instance.jstree().delete_node(node.id);
+                                            }).
+                                            fail(FAIL);
+                                        });
+                                    }
+                                },
+
+                                search: function (instance, str) {
+                                    if (str) {
+                                        QUERYID("houses", "path", treeName, { search: str }).
+                                        done(result => {
+                                            instance.jstree().settings.core.data = result.tree;
+                                            instance.jstree().refresh();
+                                            setTimeout(() => {
+                                                instance.jstree().search(str);
+                                                instance.jstree().settings.core.data = path;
+                                            }, 100);
+                                        }).
+                                        fail(FAIL);
+                                    } else {
+                                        instance.jstree().clear_search();
+
+                                        QUERYID("houses", "path", entrance.path ? entrance.path : treeName, {
+                                            withParents: true,
+                                            tree: treeName,
+                                        }).
+                                        done(result => {
+                                            if (result && result.tree) {
+                                                instance.jstree().settings.core.data = result.tree;
+                                            } else {
+                                                instance.jstree().settings.core.data = [];
+                                            }
+                                            instance.jstree().refresh();
+                                        }).
+                                        fail(FAIL);
+
+                                        setTimeout(() => {
+                                            instance.jstree().select_node(entrance.path);
+                                            instance.jstree().settings.core.data = path;
+                                        }, 100);
+                                    }
+                                }
+                            },
+                            {
+                                id: "geoSuggestion",
+                                type: "select2",
+                                title: false,
+                                placeholder: i18n("addresses.address"),
+                                tab: i18n("addresses.map"),
+                                hidden: !AVAIL("geo", "suggestions"),
+                                ajax: {
+                                    delay: 1000,
+                                    transport: function (params, success) {
+                                        if (params.data.term) {
+                                            QUERY("geo", "suggestions", {
+                                                search: params.data.term,
+                                            }).
+                                            then(success).
+                                            fail(response => {
+                                                FAIL(response);
+                                                success({
+                                                    suggestions: [],
+                                                });
+                                            });
+                                        } else {
+                                            success({
+                                                suggestions: [],
+                                            });
+                                        }
+                                    },
+                                    processResults: function (data) {
+                                        let suggestions = [];
+                                        for (let i in data.suggestions) {
+                                            if (parseInt(data.suggestions[i].data.fias_level) === 8 || (parseInt(data.suggestions[i].data.fias_level) === -1 && data.suggestions[i].data.house)) {
+                                                suggestions.push({
+                                                    id: data.suggestions[i].data.house_fias_id,
+                                                    text: data.suggestions[i].value,
+                                                });
+                                                modules.addresses.houses.fiases[data.suggestions[i].data.house_fias_id] = data.suggestions[i].data;
+                                            }
+                                        }
+                                        return {
+                                            results: suggestions,
+                                        };
+                                    },
+                                },
+                            },
+                            {
+                                id: "geoMap",
+                                type: "empty",
+                                title: false,
+                                placeholder: i18n("search"),
+                                tab: i18n("addresses.map"),
+                                noHover: true,
                             },
                         ],
+                        done: function (prefix) {
+                            $("#" + prefix + "geoSuggestion").off("change").on("change", e => {
+                                let fias = $("#" + prefix + "geoSuggestion").val();
+                                if (modules.addresses.houses.fiases[fias] && modules.addresses.houses.fiases[fias].geo_lat && modules.addresses.houses.fiases[fias].geo_lon) {
+                                    modules.addresses.houses.map.setView([modules.addresses.houses.fiases[fias].geo_lat, modules.addresses.houses.fiases[fias].geo_lon], 18);
+                                    modules.addresses.houses.marker.setLatLng([modules.addresses.houses.fiases[fias].geo_lat, modules.addresses.houses.fiases[fias].geo_lon]).update();
+                                    $("#" + prefix + "geo").val(modules.addresses.houses.marker.getLatLng().lat + "," + modules.addresses.houses.marker.getLatLng().lng);
+                                }
+                            });
+
+                            $("#" + prefix + "geoMap").css("height", "400px");
+
+                            modules.addresses.houses.map = L.map(prefix + "geoMap");
+
+                            if (config.map && config.map.crs) {
+                                switch (config.map.crs) {
+                                    case "EPSG3395":
+                                        modules.addresses.houses.map.options.crs = L.CRS.EPSG3395;
+                                        break;
+                                    case "EPSG3857":
+                                        modules.addresses.houses.map.options.crs = L.CRS.EPSG3857;
+                                        break;
+                                }
+                            }
+
+                            let
+                                lat = (config.map && config.map.default && config.map.default.lat) ? config.map.default.lat : 51.505,
+                                lon = (config.map && config.map.default && config.map.default.lon) ? config.map.default.lon : -0.09,
+                                zoom = (config.map && config.map.default && config.map.default.zoom) ? config.map.default.zoom : 13
+                            ;
+
+                            L.tileLayer((config.map && config.map.tile) ? config.map.tile : 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                minZoom: (config.map && config.map.min) ? config.map.min : 4,
+                                maxZoom: (config.map && config.map.max) ? config.map.max : 18,
+                            }).addTo(modules.addresses.houses.map);
+
+                            modules.addresses.houses.map.setView([lat, lon], zoom);
+                            modules.addresses.houses.marker = L.marker([lat, lon], { draggable: true }).addTo(modules.addresses.houses.map);
+
+                            modules.addresses.houses.marker.on('dragend', () => {
+                                $("#" + prefix + "geo").val(modules.addresses.houses.marker.getLatLng().lat + "," + modules.addresses.houses.marker.getLatLng().lng);
+                            });
+                        },
                         callback: result => {
                             let g = result.geo.split(",");
                             result.lat = g[0];
@@ -1423,8 +1694,109 @@
                                         }, 100);
                                     }
                                 }
-                            }
+                            },
+                            {
+                                id: "geoSuggestion",
+                                type: "select2",
+                                title: false,
+                                placeholder: i18n("addresses.address"),
+                                tab: i18n("addresses.map"),
+                                hidden: !AVAIL("geo", "suggestions"),
+                                ajax: {
+                                    delay: 1000,
+                                    transport: function (params, success) {
+                                        if (params.data.term) {
+                                            QUERY("geo", "suggestions", {
+                                                search: params.data.term,
+                                            }).
+                                            then(success).
+                                            fail(response => {
+                                                FAIL(response);
+                                                success({
+                                                    suggestions: [],
+                                                });
+                                            });
+                                        } else {
+                                            success({
+                                                suggestions: [],
+                                            });
+                                        }
+                                    },
+                                    processResults: function (data) {
+                                        let suggestions = [];
+                                        for (let i in data.suggestions) {
+                                            if (parseInt(data.suggestions[i].data.fias_level) === 8 || (parseInt(data.suggestions[i].data.fias_level) === -1 && data.suggestions[i].data.house)) {
+                                                suggestions.push({
+                                                    id: data.suggestions[i].data.house_fias_id,
+                                                    text: data.suggestions[i].value,
+                                                });
+                                                modules.addresses.houses.fiases[data.suggestions[i].data.house_fias_id] = data.suggestions[i].data;
+                                            }
+                                        }
+                                        return {
+                                            results: suggestions,
+                                        };
+                                    },
+                                },
+                            },
+                            {
+                                id: "geoMap",
+                                type: "empty",
+                                title: false,
+                                placeholder: i18n("search"),
+                                tab: i18n("addresses.map"),
+                                noHover: true,
+                            },
                         ],
+                        done: function (prefix) {
+                            $("#" + prefix + "geoSuggestion").off("change").on("change", e => {
+                                let fias = $("#" + prefix + "geoSuggestion").val();
+                                if (modules.addresses.houses.fiases[fias] && modules.addresses.houses.fiases[fias].geo_lat && modules.addresses.houses.fiases[fias].geo_lon) {
+                                    modules.addresses.houses.map.setView([modules.addresses.houses.fiases[fias].geo_lat, modules.addresses.houses.fiases[fias].geo_lon], 18);
+                                    modules.addresses.houses.marker.setLatLng([modules.addresses.houses.fiases[fias].geo_lat, modules.addresses.houses.fiases[fias].geo_lon]).update();
+                                    $("#" + prefix + "geo").val(modules.addresses.houses.marker.getLatLng().lat + "," + modules.addresses.houses.marker.getLatLng().lng);
+                                }
+                            });
+
+                            $("#" + prefix + "geoMap").css("height", "400px");
+
+                            modules.addresses.houses.map = L.map(prefix + "geoMap");
+
+                            if (config.map && config.map.crs) {
+                                switch (config.map.crs) {
+                                    case "EPSG3395":
+                                        modules.addresses.houses.map.options.crs = L.CRS.EPSG3395;
+                                        break;
+                                    case "EPSG3857":
+                                        modules.addresses.houses.map.options.crs = L.CRS.EPSG3857;
+                                        break;
+                                }
+                            }
+
+                            let
+                                lat = (config.map && config.map.default && config.map.default.lat) ? config.map.default.lat : 51.505,
+                                lon = (config.map && config.map.default && config.map.default.lon) ? config.map.default.lon : -0.09,
+                                zoom = (config.map && config.map.default && config.map.default.zoom) ? config.map.default.zoom : 13
+                            ;
+
+                            if (entrance.lat && entrance.lon) {
+                                lat = entrance.lat;
+                                lon = entrance.lon;
+                                zoom = 18;
+                            }
+
+                            L.tileLayer((config.map && config.map.tile) ? config.map.tile : 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                minZoom: (config.map && config.map.min) ? config.map.min : 4,
+                                maxZoom: (config.map && config.map.max) ? config.map.max : 18,
+                            }).addTo(modules.addresses.houses.map);
+
+                            modules.addresses.houses.map.setView([lat, lon], zoom);
+                            modules.addresses.houses.marker = L.marker([lat, lon], { draggable: true }).addTo(modules.addresses.houses.map);
+
+                            modules.addresses.houses.marker.on('dragend', () => {
+                                $("#" + prefix + "geo").val(modules.addresses.houses.marker.getLatLng().lat + "," + modules.addresses.houses.marker.getLatLng().lng);
+                            });
+                        },
                         callback: result => {
                             if (result.delete === "yes") {
                                 modules.addresses.houses.deleteEntrance(entranceId, parseInt(entrance.shared), houseId);
@@ -2500,7 +2872,7 @@
     addCamera: function (houseId) {
         GET("cameras", "cameras", false, true).
         done(response => {
-            modules.addresses.cameras.meta = response.cameras;
+            modules.addresses.houses.meta = response.cameras;
             let cameras = [];
 
             for (let i in response.cameras.cameras) {

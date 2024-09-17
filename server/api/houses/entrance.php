@@ -44,6 +44,7 @@
      * @apiBody {Number} cameraId
      * @apiBody {String} cmsLevels
      * @apiBody {String} video
+     * @apiBody {Number} path
      *
      * @apiSuccess {Number} entranceId
      */
@@ -118,7 +119,7 @@
 
                     return api::ANSWER($success);
                 } else {
-                    $entranceId = $households->createEntrance($params["houseId"], $params["entranceType"], $params["entrance"], $params["lat"], $params["lon"], $params["shared"], $params["plog"], $params["prefix"], $params["callerId"], $params["domophoneId"], $params["domophoneOutput"], $params["cms"], $params["cmsType"], $params["cameraId"], $params["cmsLevels"], $params["video"]);
+                    $entranceId = $households->createEntrance($params["houseId"], $params["entranceType"], $params["entrance"], $params["lat"], $params["lon"], $params["shared"], $params["plog"], $params["prefix"], $params["callerId"], $params["domophoneId"], $params["domophoneOutput"], $params["cms"], $params["cmsType"], $params["cameraId"], $params["cmsLevels"], $params["video"], $params["path"]);
 
                     return api::ANSWER($entranceId, ($entranceId !== false) ? "entranceId" : false);
                 }

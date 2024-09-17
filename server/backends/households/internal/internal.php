@@ -291,8 +291,8 @@
             /**
              * @inheritDoc
              */
-            function createEntrance($houseId, $entranceType, $entrance, $lat, $lon, $shared, $plog, $prefix, $callerId, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $cmsLevels, $video)
-            {
+
+            function createEntrance($houseId, $entranceType, $entrance, $lat, $lon, $shared, $plog, $prefix, $callerId, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $cmsLevels, $video, $path) {
                 if (!checkInt($houseId) || !trim($entranceType) || !trim($entrance) || !checkInt($cmsType) || !checkInt($plog)) {
                     return false;
                 }
@@ -313,7 +313,7 @@
                     return false;
                 }
 
-                $entranceId = $this->db->insert("insert into houses_entrances (entrance_type, entrance, lat, lon, shared, plog, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, cms_levels, video) values (:entrance_type, :entrance, :lat, :lon, :shared, :plog, :caller_id, :house_domophone_id, :domophone_output, :cms, :cms_type, :camera_id, :cms_levels, :video)", [
+                $entranceId = $this->db->insert("insert into houses_entrances (entrance_type, entrance, lat, lon, shared, plog, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, cms_levels, video, path) values (:entrance_type, :entrance, :lat, :lon, :shared, :plog, :caller_id, :house_domophone_id, :domophone_output, :cms, :cms_type, :camera_id, :cms_levels, :video, :path)", [
                     ":entrance_type" => $entranceType,
                     ":entrance" => $entrance,
                     ":lat" => (float)$lat,
@@ -328,6 +328,7 @@
                     ":camera_id" => $cameraId ? : null,
                     ":cms_levels" => $cmsLevels,
                     ":video" => $video,
+                    ":path" => (int)$path ? : null,
                 ]);
 
                 if (!$entranceId) {
@@ -1861,8 +1862,8 @@
             /**
              * @inheritDoc
              */
-            public function addCamera($to, $id, $cameraId)
-            {
+
+            public function addCamera($to, $id, $cameraId) {
                 switch ($to) {
                     case "house":
                         if (checkInt($id) !== false && checkInt($cameraId) !== false ) {
