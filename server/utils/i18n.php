@@ -15,9 +15,10 @@
     }
 
     function i18n($msg, ...$args) {
-        $lang = language();
+        $l = language();
+        $lang = false;
         try {
-            $lang = json_decode(@file_get_contents(__DIR__ . "/../i18n/$lang.json"), true, 512, JSON_THROW_ON_ERROR);
+            $lang = json_decode(@file_get_contents(__DIR__ . "/../i18n/$l.json"), true, 512, JSON_THROW_ON_ERROR);
         } catch (\Exception $e) {
             try {
                 $lang = json_decode(@file_get_contents(__DIR__ . "/../i18n/en.json"), true, 512, JSON_THROW_ON_ERROR);
@@ -25,7 +26,7 @@
                 die("can't load language file\n");
             }
         }
-        if (!$lang || !count($lang)) {
+        if (!$lang || !is_array($lang)) {
             die("can't load language file\n");
         }
         try {
