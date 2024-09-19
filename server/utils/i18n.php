@@ -7,7 +7,7 @@
 
         $al = explode("-", explode(",", explode(";", $al)[0])[0])[0];
 
-        return $al ?: (@$config["language"] ?: "ru");
+        return $al ?: (@$config["language"] ?: "en");
     }
 
     function isAssoc($array) {
@@ -24,6 +24,9 @@
             } catch (\Exception $e) {
                 die("can't load language file\n");
             }
+        }
+        if (!$lang) {
+            die("can't load language file\n");
         }
         try {
             $t = explode(".", $msg);
