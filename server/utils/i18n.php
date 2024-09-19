@@ -17,15 +17,15 @@
     function i18n($msg, ...$args) {
         $lang = language();
         try {
-            $lang = json_decode(file_get_contents(__DIR__ . "/../i18n/$lang.json"), true, 512, JSON_THROW_ON_ERROR);
+            $lang = json_decode(@file_get_contents(__DIR__ . "/../i18n/$lang.json"), true, 512, JSON_THROW_ON_ERROR);
         } catch (\Exception $e) {
             try {
-                $lang = json_decode(file_get_contents(__DIR__ . "/../i18n/en.json"), true, 512, JSON_THROW_ON_ERROR);
+                $lang = json_decode(@file_get_contents(__DIR__ . "/../i18n/en.json"), true, 512, JSON_THROW_ON_ERROR);
             } catch (\Exception $e) {
                 die("can't load language file\n");
             }
         }
-        if (!$lang) {
+        if (!$lang || !count($lang)) {
             die("can't load language file\n");
         }
         try {
