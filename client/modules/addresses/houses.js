@@ -771,7 +771,7 @@
                                 title: false,
                                 placeholder: i18n("addresses.address"),
                                 tab: i18n("addresses.map"),
-                                hidden: !AVAIL("geo", "suggestions"),
+                                hidden: !AVAIL("geo", "suggestions") || !modules.map,
                                 ajax: {
                                     delay: 1000,
                                     transport: function (params, success) {
@@ -1701,7 +1701,7 @@
                                 title: false,
                                 placeholder: i18n("addresses.address"),
                                 tab: i18n("addresses.map"),
-                                hidden: !AVAIL("geo", "suggestions"),
+                                hidden: !AVAIL("geo", "suggestions") || !modules.map,
                                 ajax: {
                                     delay: 1000,
                                     transport: function (params, success) {
