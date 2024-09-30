@@ -2034,7 +2034,7 @@
                     $rl = $this->db->get("select access_to as address_house_id from houses_rfids where access_type = 4 group by access_to");
                     foreach ($rl as $ri) {
                         if (!in_array($ri["address_house_id"], $hi)) {
-                            $n += $this->db->modify("delete from houses_rfids where access_id = :address_house_id and access_type = 4", [
+                            $n += $this->db->modify("delete from houses_rfids where access_to = :address_house_id and access_type = 4", [
                                 "address_house_id" => $ri["address_house_id"],
                             ]);
                         }
@@ -2057,7 +2057,7 @@
                     $rl = $this->db->get("select access_to as company_id from houses_rfids where access_type = 5 group by access_to");
                     foreach ($rl as $ri) {
                         if (!in_array($ri["company_id"], $ol)) {
-                            $n += $this->db->modify("delete from houses_rfids where access_id = :company_id and access_type = 5", [
+                            $n += $this->db->modify("delete from houses_rfids where access_to = :company_id and access_type = 5", [
                                 "company_id" => $ri["company_id"],
                             ]);
                         }
