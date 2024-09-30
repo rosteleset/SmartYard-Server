@@ -73,7 +73,8 @@
         "Proguard start",
         "UART_EV",
         "HI_MPI_VENC",
-        "GetExposureAttr"
+        "GetExposureAttr",
+        "RFID Registers"
     ],
     "qtech": [
         "Heart Beat",
