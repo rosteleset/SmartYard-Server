@@ -73,7 +73,9 @@
 
                             if (@$filter["pipeline"]) {
                                 $issues = $tt->getIssues(@$params["project"] ? : "TT", @$filter["pipeline"], @$filter["fields"], [], @$params["skip"] ? : 0, @$params["limit"] ? : 5, $preprocess, [], true);
-                            } else {
+                            }
+
+                            if (@$filter["filter"]) {
                                 $issues = $tt->getIssues(@$params["project"] ? : "TT", @$filter["filter"], @$filter["fields"], @$params["sort"] ? : (array_key_exists("sort", $filter) ? $filter["sort"] : [ "created" => 1 ]), @$params["skip"] ? : 0, @$params["limit"] ? : 5, $preprocess);
                             }
                         } else {
@@ -95,12 +97,23 @@
 
                 $tt = loadBackend("tt");
 
-                if ($tt && @$params["query"]) {
-                    try {
-                        $issues = $tt->getIssues(@$params["project"] ? : "TT", @$params["query"], @$params["fields"], @$params["sort"] ? : [ "created" => 1 ], @$params["skip"] ? : 0, @$params["limit"] ? : 5, @$params["preprocess"] ? : []);
-                    } catch (\Exception $e) {
-                        setLastError($e->getMessage());
-                        return api::ERROR();
+                if ($tt) {
+                    if (@$params["query"]) {
+                        try {
+                            $issues = $tt->getIssues(@$params["project"] ? : "TT", @$params["query"], @$params["fields"], @$params["sort"] ? : [ "created" => 1 ], @$params["skip"] ? : 0, @$params["limit"] ? : 5, @$params["preprocess"] ? : []);
+                        } catch (\Exception $e) {
+                            setLastError($e->getMessage());
+                            return api::ERROR();
+                        }
+                    }
+
+                    if (@$params["pipeline"]) {
+                        try {
+                            $issues = $tt->getIssues(@$params["project"] ? : "TT", @$params["pipeline"], @$params["fields"], [], @$params["skip"] ? : 0, @$params["limit"] ? : 5, @$params["preprocess"] ? : [], [], true);
+                        } catch (\Exception $e) {
+                            setLastError($e->getMessage());
+                            return api::ERROR();
+                        }
                     }
                 }
 
