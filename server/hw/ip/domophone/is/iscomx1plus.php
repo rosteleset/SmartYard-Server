@@ -8,26 +8,9 @@ namespace hw\ip\domophone\is;
 class iscomx1plus extends is
 {
 
-    public function configureApartment(
-        int   $apartment,
-        int   $code = 0,
-        array $sipNumbers = [],
-        bool  $cmsEnabled = true,
-        array $cmsLevels = []
-    )
-    {
-        parent::configureApartment($apartment, $code, $sipNumbers, $cmsEnabled, $cmsLevels);
-
-        // FIXME: This crutch is here because at the moment SIP numbers aren't set when creating a new apartment
-        $this->apiCall("/panelCode/$apartment", 'PUT', [
-            'sipAccounts' => array_map('strval', $sipNumbers)
-        ]);
-    }
-
     public function prepare()
     {
         parent::prepare();
-        $this->configureEncoding();
         $this->setServiceCode();
     }
 

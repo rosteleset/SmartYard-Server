@@ -37,11 +37,6 @@ class iscomx1 extends is
     {
         $parentDbConfig = parent::transformDbConfig($dbConfig);
         $parentDbConfig['tickerText'] = '';
-
-        foreach ($parentDbConfig['apartments'] as &$apartment) {
-            $apartment['sipNumbers'] = [$apartment['apartment']];
-        }
-
         return $parentDbConfig;
     }
 

@@ -64,7 +64,7 @@ abstract class is extends domophone
             ],
             'soundOpenTh' => null, // inheritance from general settings
             'typeSound' => 3, // inheritance from general settings
-            'sipAccounts' => array_map('strval', $sipNumbers),
+            // 'sipAccounts' => array_map('strval', $sipNumbers), FIXME: doesn't work well
         ];
 
         $resistanceParams = $this->getApartmentResistanceParams($cmsLevels);
@@ -327,6 +327,8 @@ abstract class is extends domophone
         $dbConfig['sip']['stunPort'] = 3478;
 
         foreach ($dbConfig['apartments'] as &$apartment) {
+            $apartment['sipNumbers'] = [$apartment['apartment']];
+
             if (count($apartment['cmsLevels']) === 4) {
                 $apartment['cmsLevels'] = array_slice($apartment['cmsLevels'], 2, 2);
             }
