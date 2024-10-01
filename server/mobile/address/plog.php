@@ -120,7 +120,7 @@
                     $e_details['objectId'] = strval($domophone->domophone_id);
                     $e_details['objectType'] = "0";
                     $e_details['objectMechanizma'] = strval($domophone->domophone_output);
-                    if (isset($domophone->domophone_description)) {
+                    if (isset($domophone->domophone_description) && $domophone->domophone_description !== false) {
                         $e_details['mechanizmaDescription'] = $domophone->domophone_description;
                     } else {
                         $e_details['mechanizmaDescription'] = '';
