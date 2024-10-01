@@ -20,14 +20,29 @@ trait is
 
     public function configureEventServer(string $url)
     {
-        // Until better times...
-//        ['host' => $server, 'port' => $port] = parse_url_ext($url);
-//
-//        $this->apiCall('/v1/network/syslog', 'PUT', [
-//            'addr' => $server,
-//            'port' => (int)$port,
-//        ]);
+        if ($this->isLegacyVersion()) {
+            $this->configureEventServerLegacy($url);
+            return;
+        }
 
+        ['host' => $server, 'port' => $port] = parse_url_ext($url);
+
+        $this->apiCall('/v1/network/syslog', 'PUT', [
+            'addr' => $server,
+            'port' => (int)$port,
+        ]);
+    }
+
+    /**
+     * @param string $url
+     *
+     * @return void
+     *
+     * @deprecated
+     * @see configureEventSever()
+     */
+    public function configureEventServerLegacy(string $url)
+    {
         ['host' => $server, 'port' => $port] = parse_url_ext($url);
 
         $template = file_get_contents(__DIR__ . '/templates/custom.conf');
@@ -122,10 +137,22 @@ trait is
 
     protected function getEventServer(): string
     {
-        // Until better times...
-//        ['addr' => $server, 'port' => $port] = $this->apiCall('/v1/network/syslog');
-//        return 'syslog.udp' . ':' . $server . ':' . $port;
+        if ($this->isLegacyVersion()) {
+            return $this->getEventServerLegacy();
+        }
 
+        ['addr' => $server, 'port' => $port] = $this->apiCall('/v1/network/syslog');
+        return 'syslog.udp' . ':' . $server . ':' . $port;
+    }
+
+    /**
+     * @return string
+     *
+     * @deprecated
+     * @see getEventServer()
+     */
+    protected function getEventServerLegacy(): string
+    {
         $host = parse_url($this->url)['host'];
         exec(__DIR__ . "/scripts/get_syslog_conf $host $this->login $this->password", $output);
         [$server, $port] = explode(':', explode(';', explode('@', $output[7])[1])[0]);
@@ -176,5 +203,21 @@ trait is
     {
         $this->login = 'root';
         $this->defaultPassword = '123456';
+    }
+
+    /**
+     * Determines if the current hardware and software version combination is considered legacy.
+     *
+     * @return bool True if the combination is legacy, false otherwise.
+     */
+    protected function isLegacyVersion(): bool
+    {
+        $hardwareVersion = $this->getHardwareVersion();
+        $softwareVersion = $this->getSoftwareVersion();
+
+        $isLegacyVersion2 = $hardwareVersion === 2 && $softwareVersion < '2.2.5.15.7';
+        $isLegacyVersion5 = $hardwareVersion === 5 && $softwareVersion < '2.5.0.10.13';
+
+        return $isLegacyVersion2 || $isLegacyVersion5;
     }
 }
