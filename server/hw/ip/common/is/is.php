@@ -8,6 +8,16 @@ namespace hw\ip\common\is;
 trait is
 {
 
+    /**
+     * @var int|null Caches the hardware version once fetched.
+     */
+    protected ?int $hardwareVersion = null;
+
+    /**
+     * @var string|null Caches the software version once fetched.
+     */
+    protected ?string $softwareVersion = null;
+
     public function configureEventServer(string $url)
     {
         // Until better times...
@@ -123,6 +133,20 @@ trait is
         return 'syslog.udp' . ':' . $server . ':' . $port;
     }
 
+    /**
+     * Retrieves the hardware version from system information, with caching.
+     *
+     * @return int|null The hardware version or null if not available.
+     */
+    protected function getHardwareVersion(): ?int
+    {
+        if ($this->hardwareVersion === null) {
+            $this->hardwareVersion = $this->getSysinfo()['HardwareVersion'] ?? null;
+        }
+
+        return $this->hardwareVersion;
+    }
+
     protected function getNtpConfig(): array
     {
         $settings = $this->apiCall('/system/settings');
@@ -132,6 +156,20 @@ trait is
             'port' => 123,
             'timezone' => $settings['tz'],
         ];
+    }
+
+    /**
+     * Retrieves the software version from system information, with caching.
+     *
+     * @return string|null The software version or null if not available.
+     */
+    protected function getSoftwareVersion(): ?string
+    {
+        if ($this->softwareVersion === null) {
+            $this->softwareVersion = $this->getSysinfo()['SoftwareVersion'] ?? null;
+        }
+
+        return $this->softwareVersion;
     }
 
     protected function initializeProperties()
