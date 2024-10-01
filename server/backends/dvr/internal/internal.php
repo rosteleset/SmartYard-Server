@@ -133,7 +133,7 @@
                 
                     $path = explode("/", $path);
                     
-                    if ($path && (count($path) > 0) && str_contains('.m3u8', end($path))) {
+                    if ($path && (count($path) > 0) && str_contains(end($path), '.m3u8')) {
                         array_pop($path);
                     }
                     $stream_name = implode("/", $path);
