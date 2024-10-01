@@ -41,11 +41,11 @@ class is extends camera
 
     public function setOsdText(string $text = '')
     {
-        $hwVer = floor($this->getSysinfo()['HardwareVersion'] ?? 0);
+        $hwVer = $this->getHardwareVersion();
 
         $firstStringParams = [
             'size' => 1,
-            'text' => $hwVer == 5 ? $text : '',
+            'text' => $hwVer === 5 ? $text : '',
             'color' => '0xFFFFFF',
             'date' => [
                 'enable' => true,
@@ -65,7 +65,7 @@ class is extends camera
             ],
         ];
 
-        $secondStringParams = $hwVer == 5 ? [] : [
+        $secondStringParams = $hwVer === 5 ? [] : [
             'size' => 1,
             'text' => $text,
             'color' => '0xFFFFFF',
