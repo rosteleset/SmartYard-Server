@@ -48,6 +48,10 @@
         exit(1);
     }
 
+    if (@$config["db"]["schema"]) {
+        $db->exec("SET search_path TO " . $config["db"]["schema"]);
+    }
+
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $raw_postdata = file_get_contents("php://input");
         $postdata = json_decode($raw_postdata, true);

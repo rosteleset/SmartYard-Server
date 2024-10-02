@@ -11,6 +11,7 @@
     require_once "data/install_clickhouse.php";
     require_once "data/install.php";
     require_once "data/install_tt_mobile_template.php";
+    require_once "data/schema.php";
     require_once "hw/autoconfigure_device.php";
     require_once "hw/autoconfigure_domophone.php";
     require_once "utils/checkint.php";
@@ -89,6 +90,7 @@
                 [--backup-db]
                 [--list-db-backups]
                 [--restore-db=<backup_file_without_path_and_extension>]
+                [--shema=<schema>]
 
             config:
                 [--print-config]
@@ -335,6 +337,10 @@
         echo "can't open database " . $config["db"]["dsn"] . "\n\n";
         echo $e->getMessage() . "\n\n";
         exit(1);
+    }
+
+    if (@$config["db"]["schema"]) {
+        $db->exec("SET search_path TO " . $config["db"]["schema"]);
     }
 
     try {
@@ -706,6 +712,16 @@
         wait_all();
 
         restore_db($args["--restore-db"]);
+
+        maintenance(false);
+        exit(0);
+    }
+
+    if (count($args) == 1 && array_key_exists("--schema", $args) && isset($args["--schema"])) {
+        maintenance(true);
+        wait_all();
+
+        schema($args["--schema"]);
 
         maintenance(false);
         exit(0);

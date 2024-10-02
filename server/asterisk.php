@@ -51,6 +51,10 @@
         exit(1);
     }
 
+    if (@$config["db"]["schema"]) {
+        $db->exec("SET search_path TO " . $config["db"]["schema"]);
+    }
+
     try {
         $redis = new Redis();
         $redis->connect($config["redis"]["host"], $config["redis"]["port"]);

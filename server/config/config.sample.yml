@@ -30,6 +30,7 @@ db:
   username: rbt
   password: rbt
   text_search_config: russian
+  schema: <!-- remove this line if you are not using schemas --!>
 redis:
   host: 127.0.0.1
   port: 6379

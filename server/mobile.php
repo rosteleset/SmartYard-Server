@@ -135,6 +135,10 @@
         ]);
     }
 
+    if (@$config["db"]["schema"]) {
+        $db->exec("SET search_path TO " . $config["db"]["schema"]);
+    }
+
     function response($code = 204, $data = false, $name = false, $message = false) {
 
         $response_codes = [
