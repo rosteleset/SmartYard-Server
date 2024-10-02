@@ -37,8 +37,8 @@
 
                 $this->dbName = @$config["backends"]["tt"]["db"]?:"tt";
 
-                if (@$config["backends"]["tt"]["uri"]) {
-                    $this->mongo = new \MongoDB\Client($config["backends"]["tt"]["uri"]);
+                if (@$config["mongo"]["uri"]) {
+                    $this->mongo = new \MongoDB\Client($config["mongo"]["uri"]);
                 } else {
                     $this->mongo = new \MongoDB\Client();
                 }

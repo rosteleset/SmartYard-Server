@@ -25,8 +25,8 @@
 
                 $this->dbName = @$config["backends"]["files"]["db"]?:"rbt";
 
-                if (@$config["backends"]["files"]["uri"]) {
-                    $this->mongo = new \MongoDB\Client($config["backends"]["files"]["uri"]);
+                if (@$config["mongo"]["uri"]) {
+                    $this->mongo = new \MongoDB\Client($config["mongo"]["uri"]);
                 } else {
                     $this->mongo = new \MongoDB\Client();
                 }

@@ -91,6 +91,7 @@
                 [--list-db-backups]
                 [--restore-db=<backup_file_without_path_and_extension>]
                 [--shema=<schema>]
+                [--mongodb-set-fcv=<FeatureCompatibilityVersion>]
 
             config:
                 [--print-config]
@@ -722,6 +723,33 @@
         wait_all();
 
         schema($args["--schema"]);
+
+        maintenance(false);
+        exit(0);
+    }
+
+    if (count($args) == 1 && array_key_exists("--mongodb-set-fcv", $args) && isset($args["--mongodb-set-fcv"])) {
+        maintenance(true);
+        wait_all();
+
+        if (@$config["mongo"]["uri"]) {
+            $manager = new \MongoDB\Driver\Manager($config["mongo"]["uri"]);
+        } else {
+            $manager = new \MongoDB\Driver\Manager();
+        }
+
+        $command = new \MongoDB\Driver\Command([ "setFeatureCompatibilityVersion" => $args["--mongodb-set-fcv"], "confirm" => true ]);
+
+        try {
+            $cursor = $manager->executeCommand('admin', $command);
+        } catch(\Exception $e) {
+            echo $e->getMessage(), "\n";
+            exit;
+        }
+
+        $response = $cursor->toArray()[0];
+
+        // print_r($response);
 
         maintenance(false);
         exit(0);
