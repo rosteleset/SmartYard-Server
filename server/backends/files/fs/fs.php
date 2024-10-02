@@ -7,23 +7,23 @@
     namespace backends\files {
 
         /**
-         * gridFS storage
+         * filesystem storage
          */
 
-        class mongo extends files {
+        class fs extends files {
 
             private $mongo, $dbName;
 
             /**
              * @inheritDoc
              */
-            public function __construct($config, $db, $redis, $login = false)
-            {
+
+            public function __construct($config, $db, $redis, $login = false) {
                 require_once __DIR__ . "/../../../mzfc/mongodb/vendor/autoload.php";
 
                 parent::__construct($config, $db, $redis, $login);
 
-                $this->dbName = @$config["backends"]["files"]["db"]?:"rbt";
+                $this->dbName = @$config["backends"]["files"]["db"] ? : "rbt";
 
                 if (@$config["mongo"]["uri"]) {
                     $this->mongo = new \MongoDB\Client($config["mongo"]["uri"]);
@@ -35,8 +35,8 @@
             /**
              * @inheritDoc
              */
-            public function addFile($realFileName, $stream, $metadata = [])
-            {
+
+            public function addFile($realFileName, $stream, $metadata = []) {
                 $db = $this->dbName;
 
                 $bucket = $this->mongo->$db->selectGridFSBucket();

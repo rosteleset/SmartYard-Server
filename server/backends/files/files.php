@@ -24,6 +24,7 @@
              * @param array $metadata
              * @return string uuid
              */
+
             abstract public function addFile($realFileName, $stream, $metadata = []);
 
             /**
@@ -32,18 +33,21 @@
              * @param $uuid
              * @return object stream, fileInfo
              */
+
             abstract public function getFile($uuid);
 
             /**
              * @param $uuid
              * @return mixed
              */
+
             abstract public function getFileStream($uuid);
 
             /**
              * @param $uuid
              * @return mixed
              */
+
             abstract public function getFileInfo($uuid);
 
             /**
@@ -51,18 +55,21 @@
              * @param $metadata
              * @return mixed
              */
+
             abstract public function setFileMetadata($uuid, $metadata);
 
             /**
              * @param $uuid
              * @return mixed
              */
+
             abstract public function getFileMetadata($uuid);
 
             /**
              * @param $query
              * @return mixed
              */
+
             abstract public function searchFiles($query);
 
             /**
@@ -71,32 +78,44 @@
              * @param $uuid
              * @return boolean
              */
+
             abstract public function deleteFile($uuid);
 
-            /** 
+            /**
              * delete files
-             * 
+             *
              * @param mixed
              * @return boolean
              */
+
             abstract public function deleteFiles($query);
 
             /**
              * @param $uuid
              * @return mixed
              */
-            abstract public function toGUIDv4($uuid);
+
+            public function toGUIDv4($uuid) {
+                $uuid = "10001000" . $uuid;
+
+                $hyphen = chr(45);
+                return substr($uuid,  0,  8) . $hyphen . substr($uuid,  8,  4) . $hyphen . substr($uuid, 12,  4) . $hyphen . substr($uuid, 16,  4) . $hyphen . substr($uuid, 20, 12);
+            }
 
             /**
              * @param $guidv4
              * @return mixed
              */
-            abstract public function fromGUIDv4($guidv4);
+
+            public function fromGUIDv4($guidv4) {
+                return str_replace("-", "", substr($guidv4, 8));
+            }
 
             /**
              * @param $contents
              * @return false|resource
              */
+
             public function contentsToStream($contents) {
                 $fd = fopen("php://temp", "w+");
 
@@ -110,6 +129,7 @@
              * @param $fd
              * @return false|string
              */
+
             public function streamToContents($fd) {
                 fseek($fd, 0);
 
