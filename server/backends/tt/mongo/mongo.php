@@ -566,6 +566,7 @@
                         "description",
                         "status",
                         "catalog",
+                        "workflow",
                     ];
 
                     foreach ($project["customFields"] as $c => $p) {
