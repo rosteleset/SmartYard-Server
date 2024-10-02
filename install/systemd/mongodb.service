@@ -3,6 +3,12 @@ Description=MongoDB NoSQL database
 After=network.target
 
 [Service]
+LimitFSIZE=infinity
+LimitCPU=infinity
+LimitAS=infinity
+LimitMEMLOCK=infinity
+LimitNOFILE=64000
+LimitNPROC=64000
 Type=simple
 Environment=HOME=/var/lib/mongodb
 WorkingDirectory=/var/lib/mongodb
