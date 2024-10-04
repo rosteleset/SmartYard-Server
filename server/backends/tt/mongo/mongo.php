@@ -1299,8 +1299,8 @@
             /**
              * @inheritDoc
              */
-            public function journalLast($login, $limit = 4096)
-            {
+
+            public function journalLast($login, $limit = 4096) {
                 $limit = (int)$limit;
 
                 return $this->clickhouse->select("select issue from ttlog where login='$login' group by issue order by max(date) desc limit $limit");
@@ -1323,8 +1323,7 @@
              */
 
              public function cli($args) {
-                function cliUsage()
-                {
+                function cliUsage() {
                     global $argv;
 
                     echo formatUsage("usage: {$argv[0]} tt

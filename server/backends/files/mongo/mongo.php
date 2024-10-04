@@ -202,8 +202,7 @@
              */
 
              public function cli($args) {
-                function cliUsage()
-                {
+                function cliUsage() {
                     global $argv;
 
                     echo formatUsage("usage: {$argv[0]} files
