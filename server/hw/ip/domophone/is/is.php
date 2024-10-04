@@ -127,36 +127,6 @@ abstract class is extends domophone
         ]);
     }
 
-    public function configureMatrix(array $matrix)
-    {
-        $params = [];
-        $this->refreshApartmentList();
-        $matrix = $this->disfigureMatrix($matrix);
-
-        foreach ($matrix as $matrixCell) {
-            [
-                // 'hundreds' => $hundreds,
-                'tens' => $tens,
-                'units' => $units,
-                'apartment' => $apartment
-            ] = $matrixCell;
-
-            $params[$tens][$units] = $apartment;
-        }
-
-        [, $capacity, $columns, $rows] = self::CMS_PARAMS[$this->getCmsModel()];
-
-        $zeroMatrix = array_fill(0, $columns, array_fill(0, $rows, 0));
-        $fullMatrix = array_replace_recursive($zeroMatrix, $params);
-
-        $this->apiCall('/switch/matrix/1', 'PUT', [
-            'capacity' => $capacity,
-            'matrix' => $fullMatrix,
-        ]);
-
-        $this->removeUnwantedApartments();
-    }
-
     public function configureSip(
         string $login,
         string $password,
@@ -365,6 +335,44 @@ abstract class is extends domophone
     }
 
     /**
+     * @param array $matrix
+     *
+     * @return void
+     *
+     * @deprecated
+     * @see configureMatrix()
+     */
+    protected function configureMatrixLegacy(array $matrix)
+    {
+        $params = [];
+        $this->refreshApartmentList();
+        $matrix = $this->disfigureMatrix($matrix);
+
+        foreach ($matrix as $matrixCell) {
+            [
+                // 'hundreds' => $hundreds,
+                'tens' => $tens,
+                'units' => $units,
+                'apartment' => $apartment
+            ] = $matrixCell;
+
+            $params[$tens][$units] = $apartment;
+        }
+
+        [, $capacity, $columns, $rows] = self::CMS_PARAMS[$this->getCmsModel()];
+
+        $zeroMatrix = array_fill(0, $columns, array_fill(0, $rows, 0));
+        $fullMatrix = array_replace_recursive($zeroMatrix, $params);
+
+        $this->apiCall('/switch/matrix/1', 'PUT', [
+            'capacity' => $capacity,
+            'matrix' => $fullMatrix,
+        ]);
+
+        $this->removeUnwantedApartments();
+    }
+
+    /**
      * Configure RFID operation mode.
      *
      * @return void
@@ -566,6 +574,22 @@ abstract class is extends domophone
     }
 
     protected function getMatrix(): array
+    {
+        if ($this->isLegacyVersion()) {
+            return $this->getMatrixLegacy();
+        }
+
+        // TODO: replace with new logic
+        return $this->getMatrixLegacy();
+    }
+
+    /**
+     * @return array
+     *
+     * @deprecated
+     * @see getMatrix()
+     */
+    protected function getMatrixLegacy(): array
     {
         $matrix = [];
 
