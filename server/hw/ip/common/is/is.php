@@ -33,24 +33,6 @@ trait is
         ]);
     }
 
-    /**
-     * @param string $url
-     *
-     * @return void
-     *
-     * @deprecated
-     * @see configureEventSever()
-     */
-    public function configureEventServerLegacy(string $url)
-    {
-        ['host' => $server, 'port' => $port] = parse_url_ext($url);
-
-        $template = file_get_contents(__DIR__ . '/templates/custom.conf');
-        $template .= "*.*;cron.none     @$server:$port;ProxyForwardFormat";
-        $host = parse_url($this->url)['host'];
-        exec(__DIR__ . "/scripts/upload_syslog_conf $host $this->login $this->password '$template'");
-    }
-
     public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow')
     {
         $this->apiCall('/system/settings', 'PUT', [
@@ -133,6 +115,24 @@ trait is
         }
 
         return $array_res;
+    }
+
+    /**
+     * @param string $url
+     *
+     * @return void
+     *
+     * @deprecated
+     * @see configureEventSever()
+     */
+    protected function configureEventServerLegacy(string $url)
+    {
+        ['host' => $server, 'port' => $port] = parse_url_ext($url);
+
+        $template = file_get_contents(__DIR__ . '/templates/custom.conf');
+        $template .= "*.*;cron.none     @$server:$port;ProxyForwardFormat";
+        $host = parse_url($this->url)['host'];
+        exec(__DIR__ . "/scripts/upload_syslog_conf $host $this->login $this->password '$template'");
     }
 
     protected function getEventServer(): string
