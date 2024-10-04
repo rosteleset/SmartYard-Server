@@ -8,6 +8,17 @@ namespace hw\ip\domophone\is;
 class iscomx1plus extends is
 {
 
+    public function configureMatrix(array $matrix)
+    {
+        if ($this->isLegacyVersion()) {
+            $this->configureMatrixLegacy($matrix);
+            return;
+        }
+
+        // TODO: replace with new logic
+        $this->configureMatrixLegacy($matrix);
+    }
+
     public function prepare()
     {
         parent::prepare();
