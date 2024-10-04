@@ -588,7 +588,7 @@
 
                     echo formatUsage("usage: {$argv[0]} users
 
-                        rfid:
+                        2fa:
                             [--disable-2fa=<login>]
                     ");
 

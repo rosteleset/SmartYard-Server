@@ -492,8 +492,8 @@
             /**
              * @inheritDoc
              */
-            public function reCreateIndexes()
-            {
+
+            public function reCreateIndexes() {
                 $db = $this->dbName;
 
                 // fullText
@@ -502,6 +502,8 @@
 
                 $projects = [];
                 $customFields = [];
+
+                $cnt = 0;
 
                 foreach ($c_ as $c) {
                     $customFields[$c["customFieldId"]] = [
@@ -550,10 +552,16 @@
                     if ($this->redis->get("FTS:" . $acr) != $md5) {
                         try {
                             $this->mongo->$db->$acr->dropIndex("fullText");
+                            $cnt++;
                         } catch (\Exception $e) {
                             //
                         }
-                        $this->mongo->$db->$acr->createIndex($fullText, [ "default_language" => @$this->config["language"] ? : "en", "name" => "fullText" ]);
+                        try {
+                            $this->mongo->$db->$acr->createIndex($fullText, [ "default_language" => @$this->config["language"] ? : "en", "name" => "fullText" ]);
+                            $cnt++;
+                        } catch (\Exception $e) {
+                            //
+                        }
                         $this->redis->set("FTS:" . $acr, $md5);
                     }
                 }
@@ -588,18 +596,28 @@
 
                     foreach ($indexes as $i) {
                         if (!in_array($i, $already)) {
-                            $this->mongo->$db->$acr->createIndex([ $i => 1 ], [ "collation" => [ "locale" => @$this->config["language"] ? : "en" ], "name" => "index_" . $i ]);
+                            try {
+                                $this->mongo->$db->$acr->createIndex([ $i => 1 ], [ "name" => "index_" . $i ]);
+                                $cnt++;
+                            } catch (\Exception $e) {
+                                //
+                            }
                         }
                     }
 
                     foreach ($already as $i) {
                         if (!in_array($i, $indexes)) {
-                            $this->mongo->$db->$acr->dropIndex("index_" . $i);
+                            try {
+                                $this->mongo->$db->$acr->dropIndex("index_" . $i);
+                                $cnt++;
+                            } catch (\Exception $e) {
+                                //
+                            }
                         }
                     }
                 }
 
-                return true;
+                return $cnt ? : true;
             }
 
             /**
@@ -1286,6 +1304,85 @@
                 $limit = (int)$limit;
 
                 return $this->clickhouse->select("select issue from ttlog where login='$login' group by issue order by max(date) desc limit $limit");
+            }
+
+            /**
+             * returns class capabilities
+             *
+             * @return mixed
+             */
+
+             public function capabilities() {
+                return [
+                    "cli" => true,
+                ];
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+             public function cli($args) {
+                function cliUsage()
+                {
+                    global $argv;
+
+                    echo formatUsage("usage: {$argv[0]} tt
+
+                        indexes:
+                            [--create-indexes]
+                            [--drop-indexes]
+                    ");
+
+                    exit(1);
+                }
+
+                if (count($args) == 1 && array_key_exists("--create-indexes", $args)) {
+                    $c = $this->reCreateIndexes();
+
+                    if ($c === true) {
+                        $c = 0;
+                    }
+
+                    echo "$c indexes [re]created\n";
+
+                    exit(0);
+                }
+
+                if (count($args) == 1 && array_key_exists("--drop-indexes", $args)) {
+                    $db = $this->dbName;
+
+                    $c = 0;
+
+                    $projects = $this->getProjects();
+
+                    foreach ($projects as $p) {
+                        $acr = $p["acronym"];
+
+                        $indexes = array_map(function ($indexInfo) {
+                            return [ 'v' => $indexInfo->getVersion(), 'key' => $indexInfo->getKey(), 'name' => $indexInfo->getName(), 'ns' => $indexInfo->getNamespace() ];
+                        }, iterator_to_array($this->mongo->$db->$acr->listIndexes()));
+
+                        foreach ($indexes as $i) {
+                            if (strpos($i["name"], "index_") === 0) {
+                                try {
+                                    $this->mongo->$db->$acr->dropIndex($i["name"]);
+                                    $c++;
+                                } catch (\Exception $e) {
+                                    //
+                                }
+                            }
+                        }
+                    }
+
+                    echo "$c indexes dropped\n";
+
+                    exit(0);
+                }
+
+                cliUsage();
+
+                return true;
             }
         }
     }

@@ -99,16 +99,16 @@
             /**
              * @inheritDoc
              */
-            public function getFileMetadata($uuid)
-            {
+
+            public function getFileMetadata($uuid) {
                 return $this->getFileInfo($uuid)->metadata;
             }
 
             /**
              * @inheritDoc
              */
-            public function searchFiles($query)
-            {
+
+            public function searchFiles($query) {
                 $collection = "fs.files";
                 $db = $this->dbName;
 
@@ -132,8 +132,8 @@
             /**
              * @inheritDoc
              */
-            public function deleteFile($uuid)
-            {
+
+            public function deleteFile($uuid) {
                 $db = $this->dbName;
 
                 $bucket = $this->mongo->$db->selectGridFSBucket();
@@ -181,6 +181,105 @@
                         $this->deleteFile($document->_id);
                     }
                 }
+
+                return true;
+            }
+
+            /**
+             * returns class capabilities
+             *
+             * @return mixed
+             */
+
+             public function capabilities() {
+                return [
+                    "cli" => true,
+                ];
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+             public function cli($args) {
+                function cliUsage()
+                {
+                    global $argv;
+
+                    echo formatUsage("usage: {$argv[0]} files
+
+                        indexes:
+                            [--create-indexes]
+                            [--drop-indexes]
+                    ");
+
+                    exit(1);
+                }
+
+                if (count($args) == 1 && array_key_exists("--create-indexes", $args)) {
+                    $indexes = [
+                        "filename",
+                        "uploadDate",
+                        "md5"
+                    ];
+
+                    $files = $this->searchFiles([]);
+                    foreach ($files as $file) {
+                        if ($file["metadata"] && is_array($file["metadata"])) {
+                            foreach ($file["metadata"] as $i => $m) {
+                                $indexes[] = "metadata.$i";
+                            }
+                        }
+                    }
+
+                    $indexes = array_unique($indexes);
+
+                    $collection = "fs.files";
+                    $db = $this->dbName;
+
+                    $c = 0;
+
+                    foreach ($indexes as $index) {
+                        try {
+                            $this->mongo->$db->$collection->createIndex([ $index => 1 ], [ "name" => "index_" . $index . "_1" ]);
+                            $c++;
+                        } catch (\Exception $e) {
+                            //
+                        }
+                    }
+
+                    echo "$c indexes created\n";
+
+                    exit(0);
+                }
+
+                if (count($args) == 1 && array_key_exists("--drop-indexes", $args)) {
+                    $collection = "fs.files";
+                    $db = $this->dbName;
+
+                    $indexes = array_map(function ($indexInfo) {
+                        return [ 'v' => $indexInfo->getVersion(), 'key' => $indexInfo->getKey(), 'name' => $indexInfo->getName(), 'ns' => $indexInfo->getNamespace() ];
+                    }, iterator_to_array($this->mongo->$db->$collection->listIndexes()));
+
+                    $c = 0;
+
+                    foreach ($indexes as $i) {
+                        if (strpos($i["name"], "index_") === 0) {
+                            try {
+                                $this->mongo->$db->$collection->dropIndex($i["name"]);
+                                $c++;
+                            } catch (\Exception $e) {
+                                //
+                            }
+                        }
+                    }
+
+                    echo "$c indexes dropped\n";
+
+                    exit(0);
+                }
+
+                cliUsage();
 
                 return true;
             }

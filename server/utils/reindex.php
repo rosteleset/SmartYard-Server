@@ -3,8 +3,6 @@
     function reindex() {
         global $db;
 
-        $apis = scandir("api");
-
         $db->exec("delete from core_api_methods");
         $db->exec("delete from core_api_methods_common");
         $db->exec("delete from core_api_methods_by_backend");
@@ -17,9 +15,10 @@
 
         $n = 0;
 
+        $apis = scandir("api");
         foreach ($apis as $api) {
             if ($api != "." && $api != ".." && is_dir("api/$api")) {
-                $methods = scandir("api/$api");
+                $methods = array_unique(array_merge(scandir("api/$api"), scandir("api/$api/custom")));
 
                 foreach ($methods as $method) {
                     if ($method != "." && $method != ".." && substr($method, -4) == ".php" && is_file("api/$api/$method")) {
