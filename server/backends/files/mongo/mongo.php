@@ -240,7 +240,7 @@
 
                     foreach ($indexes as $index) {
                         try {
-                            $this->mongo->$db->$collection->createIndex([ $index => 1 ], [ "name" => "index_" . $index . "_1" ]);
+                            $this->mongo->$db->$collection->createIndex([ $index => 1 ], [ "name" => "index_" . $index ]);
                             $c++;
                         } catch (\Exception $e) {
                             //
