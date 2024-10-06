@@ -820,11 +820,13 @@
                                     } catch (e) {
                                         modules.cs.currentSheet.sheet.weights = {};
                                     }
+/*
                                     for (let i in modules.cs.currentSheet.sheet.weights) {
                                         if (!cols[i]) {
                                             delete modules.cs.currentSheet.sheet.weights[i];
                                         }
                                     }
+*/
                                     if ($.trim(result.colWeight)) {
                                         modules.cs.currentSheet.sheet.weights[$.trim(result.colName)] = $.trim(result.colWeight);
                                     } else {
