@@ -433,6 +433,8 @@ select {
   right: 0px;
   padding-right: 3px;
   font-size: small;
+  white-space: pre-wrap;
+  text-align: right;
 }
 
 .datatable {
