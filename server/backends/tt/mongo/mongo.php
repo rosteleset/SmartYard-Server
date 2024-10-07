@@ -1331,6 +1331,8 @@
                         indexes:
                             [--create-indexes]
                             [--drop-indexes]
+                            [--create-index=<field1[,field2...]> --project=<projectAcronym>]
+                            [--drop-index=<indexName> --project=<projectAcronym>]
                     ");
 
                     exit(1);
@@ -1370,6 +1372,63 @@
                                 } catch (\Exception $e) {
                                     //
                                 }
+                            }
+                        }
+                    }
+
+                    echo "$c indexes dropped\n";
+
+                    exit(0);
+                }
+
+                if (count($args) == 2 && isset($args["--create-index"]) && isset($args["--project"])) {
+                    $db = $this->dbName;
+
+                    $c = 0;
+
+                    $acr = $args["--project"];
+
+                    $fields = explode(",", $args["--create-index"]);
+
+                    $index = [];
+                    $indexName = "";
+
+                    foreach ($fields as $f) {
+                        $index[$f] = 1;
+                        $indexName .= "_" . $f;
+                    }
+
+
+                    try {
+                        $this->mongo->$db->$acr->createIndex($index, [ "name" => "index" . $indexName ]);
+                        $c++;
+                    } catch (\Exception $e) {
+                        //
+                    }
+
+                    echo "$c indexes created\n";
+
+                    exit(0);
+                }
+
+                if (count($args) == 2 && isset($args["--drop-index"]) && isset($args["--project"])) {
+                    $db = $this->dbName;
+
+                    $c = 0;
+
+                    $acr = $args["--project"];
+
+                    $indexes = array_map(function ($indexInfo) {
+                        return [ 'v' => $indexInfo->getVersion(), 'key' => $indexInfo->getKey(), 'name' => $indexInfo->getName(), 'ns' => $indexInfo->getNamespace() ];
+                    }, iterator_to_array($this->mongo->$db->$acr->listIndexes()));
+
+                    foreach ($indexes as $i) {
+                        if ($i["name"] == $args["--drop-index"]) {
+                            try {
+                                $this->mongo->$db->$acr->dropIndex($i["name"]);
+                                $c++;
+                            } catch (\Exception $e) {
+                                //
                             }
                         }
                     }
