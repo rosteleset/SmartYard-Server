@@ -17,7 +17,7 @@
      * @apiBody {String} uid
      * @apiBody {Timestamp} expire
      * @apiBody {String} sid
-     * @apiBody {String} comments
+     * @apiBody {String} comment
      *
      * @apiSuccess {Boolean} operationResult
      */
