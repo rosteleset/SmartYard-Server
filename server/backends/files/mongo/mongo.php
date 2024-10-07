@@ -208,11 +208,34 @@
                     echo formatUsage("usage: {$argv[0]} files
 
                         indexes:
+                            [--list-indexes]
                             [--create-indexes]
                             [--drop-indexes]
+                            [--create-index=<field1[,field2...]>]
+                            [--drop-index=<indexName>]
                     ");
 
                     exit(1);
+                }
+
+                if (count($args) == 1 && array_key_exists("--list-indexes", $args)) {
+                    $collection = "fs.files";
+                    $db = $this->dbName;
+
+                    $c = 0;
+
+                    $indexes = array_map(function ($indexInfo) {
+                        return [ 'v' => $indexInfo->getVersion(), 'key' => $indexInfo->getKey(), 'name' => $indexInfo->getName(), 'ns' => $indexInfo->getNamespace() ];
+                    }, iterator_to_array($this->mongo->$db->$collection->listIndexes()));
+
+                    foreach ($indexes as $i) {
+                        echo $i["name"] . "\n";
+                        $c++;
+                    }
+
+                    echo "$c indexes total\n";
+
+                    exit(0);
                 }
 
                 if (count($args) == 1 && array_key_exists("--create-indexes", $args)) {
@@ -264,6 +287,61 @@
 
                     foreach ($indexes as $i) {
                         if (strpos($i["name"], "index_") === 0) {
+                            try {
+                                $this->mongo->$db->$collection->dropIndex($i["name"]);
+                                $c++;
+                            } catch (\Exception $e) {
+                                //
+                            }
+                        }
+                    }
+
+                    echo "$c indexes dropped\n";
+
+                    exit(0);
+                }
+
+                if (count($args) == 1 && isset($args["--create-index"])) {
+                    $collection = "fs.files";
+                    $db = $this->dbName;
+
+                    $c = 0;
+
+                    $fields = explode(",", $args["--create-index"]);
+
+                    $index = [];
+                    $indexName = "";
+
+                    foreach ($fields as $f) {
+                        $index[$f] = 1;
+                        $indexName .= "_" . $f;
+                    }
+
+
+                    try {
+                        $this->mongo->$db->$collection->createIndex($index, [ "name" => "index" . $indexName ]);
+                        $c++;
+                    } catch (\Exception $e) {
+                        //
+                    }
+
+                    echo "$c indexes created\n";
+
+                    exit(0);
+                }
+
+                if (count($args) == 1 && isset($args["--drop-index"])) {
+                    $collection = "fs.files";
+                    $db = $this->dbName;
+
+                    $c = 0;
+
+                    $indexes = array_map(function ($indexInfo) {
+                        return [ 'v' => $indexInfo->getVersion(), 'key' => $indexInfo->getKey(), 'name' => $indexInfo->getName(), 'ns' => $indexInfo->getNamespace() ];
+                    }, iterator_to_array($this->mongo->$db->$acr->listIndexes()));
+
+                    foreach ($indexes as $i) {
+                        if ($i["name"] == $args["--drop-index"]) {
                             try {
                                 $this->mongo->$db->$collection->dropIndex($i["name"]);
                                 $c++;

@@ -1329,6 +1329,7 @@
                     echo formatUsage("usage: {$argv[0]} tt
 
                         indexes:
+                            [--list-indexes --project=<projectAcronym>]
                             [--create-indexes]
                             [--drop-indexes]
                             [--create-index=<field1[,field2...]> --project=<projectAcronym>]
@@ -1336,6 +1337,27 @@
                     ");
 
                     exit(1);
+                }
+
+                if (count($args) == 2 && array_key_exists("--list-indexes", $args) && isset($args["--project"])) {
+                    $db = $this->dbName;
+
+                    $c = 0;
+
+                    $acr = $args["--project"];
+
+                    $indexes = array_map(function ($indexInfo) {
+                        return [ 'v' => $indexInfo->getVersion(), 'key' => $indexInfo->getKey(), 'name' => $indexInfo->getName(), 'ns' => $indexInfo->getNamespace() ];
+                    }, iterator_to_array($this->mongo->$db->$acr->listIndexes()));
+
+                    foreach ($indexes as $i) {
+                        echo $i["name"] . "\n";
+                        $c++;
+                    }
+
+                    echo "$c indexes total\n";
+
+                    exit(0);
                 }
 
                 if (count($args) == 1 && array_key_exists("--create-indexes", $args)) {
