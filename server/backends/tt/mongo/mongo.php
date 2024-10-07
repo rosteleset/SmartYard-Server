@@ -1328,6 +1328,11 @@
 
                     echo formatUsage("usage: {$argv[0]} tt
 
+                        files:
+                            [--export-filters]
+                            [--export-viewers]
+                            [--export-workflows]
+
                         indexes:
                             [--list-indexes --project=<projectAcronym>]
                             [--create-indexes]
@@ -1458,6 +1463,14 @@
                     echo "$c indexes dropped\n";
 
                     exit(0);
+                }
+
+                if (
+                    (count($args) == 1 && array_key_exists("--export-filters", $args) && !isset($args["--export-filters"])) ||
+                    (count($args) == 1 && array_key_exists("--export-viewers", $args) && !isset($args["--export-viewers"])) ||
+                    (count($args) == 1 && array_key_exists("--export-workflows", $args) && !isset($args["--export-workflows"]))
+                ) {
+                    parent::cli($args);
                 }
 
                 cliUsage();

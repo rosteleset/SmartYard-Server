@@ -2352,21 +2352,22 @@
              * @inheritDoc
              */
 
-            public function cli($args)
-            {
-                function cliUsage()
-                {
-                    global $argv;
+            public function cli($args) {
 
-                    echo formatUsage("usage: {$argv[0]} tt
+                if (!function_exists("\\backends\\tt\\cliUsage")) {
+                    function cliUsage() {
+                        global $argv;
 
-                        files:
-                            [--export-filters]
-                            [--export-viewers]
-                            [--export-workflows]
-                    ");
+                        echo formatUsage("usage: {$argv[0]} tt
 
-                    exit(1);
+                            files:
+                                [--export-filters]
+                                [--export-viewers]
+                                [--export-workflows]
+                        ");
+
+                        exit(1);
+                    }
                 }
 
                 if (count($args) == 1 && array_key_exists("--export-workflows", $args) && !isset($args["--export-workflows"])) {
