@@ -134,6 +134,8 @@
                     if (isset($domophone->camera_id) && $domophone->camera_id > 0) {
                         $e_details['cameraId'] = $domophone->camera_id;
                     }
+                } else {
+                    continue;
                 }
 
                 $event_type = (int)$row[plog::COLUMN_EVENT];
