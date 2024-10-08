@@ -10,23 +10,25 @@
          * internal.db users class
          */
 
-        class internal extends users
-        {
+        class internal extends users {
+
+            private $logins, $users;
 
             /**
              * @inheritDoc
              */
 
-            public function getUsers($withSessions = false)
-            {
+            public function getUsers($withSessions = false, $withLast = false) {
                 if (!$withSessions) {
 
                     $cache = $this->cacheGet("USERS");
                     if ($cache) {
-                        foreach ($cache as $i => $user) {
-                            $user["lastLogin"] = $this->redis->get("last_login_" . md5($user["login"]));
-                            $user["lastAction"] = $this->redis->get("last_action_" . md5($user["login"]));
+                        if ($withLast) {
+                            foreach ($cache as $i => $user) {
+                                $user["lastLogin"] = $this->redis->get("last_login_" . md5($user["login"]));
+                                $user["lastAction"] = $this->redis->get("last_action_" . md5($user["login"]));
 
+                            }
                         }
                         return $cache;
                     }
@@ -46,8 +48,8 @@
                             "tg" => $user["tg"],
                             "notification" => $user["notification"],
                             "enabled" => $user["enabled"],
-                            "lastLogin" => $this->redis->get("last_login_" . md5($user["login"])),
-                            "lastAction" => $this->redis->get("last_action_" . md5($user["login"])),
+                            "lastLogin" => $withLast ? $this->redis->get("last_login_" . md5($user["login"])) : null,
+                            "lastAction" => $withLast ? $this->redis->get("last_action_" . md5($user["login"])) : null,
                             "primaryGroup" => $user["primary_group"],
                             "primaryGroupAcronym" => $user["primary_group_acronym"],
                             "twoFA" => $user["secret"] ? 1 : 0,
@@ -85,6 +87,7 @@
                     if (!$withSessions) {
                         $this->cacheSet("USERS", $_users);
                     }
+
                     return $_users;
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
@@ -103,7 +106,7 @@
              * @return array|false
              */
 
-            public function getUser($uid) {
+            public function getUser($uid, $withGroups = true) {
                 $key = "USER:$uid";
 
                 $cache = $this->cacheGet($key);
@@ -115,52 +118,110 @@
                     return false;
                 }
 
-                try {
-                    $user = $this->db->queryEx("select uid, login, real_name, e_mail, phone, tg, notification, enabled, default_route, primary_group, acronym primary_group_acronym, secret from core_users left join core_groups on core_users.primary_group = core_groups.gid where uid = $uid");
+                if ($uid >= 0) {
 
-                    if (count($user)) {
-                        $_user = [
-                            "uid" => $user[0]["uid"],
-                            "login" => $user[0]["login"],
-                            "realName" => $user[0]["real_name"],
-                            "eMail" => $user[0]["e_mail"],
-                            "phone" => $user[0]["phone"],
-                            "tg" => $user[0]["tg"],
-                            "notification" => $user[0]["notification"],
-                            "enabled" => $user[0]["enabled"],
-                            "defaultRoute" => $user[0]["default_route"],
-                            "primaryGroup" => $user[0]["primary_group"],
-                            "primaryGroupAcronym" => $user[0]["primary_group_acronym"],
-                            "twoFA" => $user[0]["secret"] ? 1 : 0,
-                        ];
+                    if (@$this->users[$uid]) {
+                        return $this->users[$uid];
+                    }
 
-                        $groups = loadBackend("groups");
+                    try {
+                        $user = $this->db->queryEx("select uid, login, real_name, e_mail, phone, tg, notification, enabled, default_route, primary_group, acronym primary_group_acronym, secret from core_users left join core_groups on core_users.primary_group = core_groups.gid where uid = $uid");
 
-                        if ($groups !== false) {
-                            $_user["groups"] = $groups->getGroups($uid);
+                        if (count($user)) {
+                            $_user = [
+                                "uid" => $user[0]["uid"],
+                                "login" => $user[0]["login"],
+                                "realName" => $user[0]["real_name"],
+                                "eMail" => $user[0]["e_mail"],
+                                "phone" => $user[0]["phone"],
+                                "tg" => $user[0]["tg"],
+                                "notification" => $user[0]["notification"],
+                                "enabled" => $user[0]["enabled"],
+                                "defaultRoute" => $user[0]["default_route"],
+                                "primaryGroup" => $user[0]["primary_group"],
+                                "primaryGroupAcronym" => $user[0]["primary_group_acronym"],
+                                "twoFA" => $user[0]["secret"] ? 1 : 0,
+                            ];
+
+                            if ($withGroups) {
+                                $groups = loadBackend("groups");
+
+                                if ($groups !== false) {
+                                    $_user["groups"] = $groups->getGroups($uid);
+                                }
+                            }
+
+                            $persistent = false;
+                            $_keys = $this->redis->keys("persistent_*_" . $user[0]["uid"]);
+                            foreach ($_keys as $_key) {
+                                $persistent = explode("_", $_key)[1];
+                                break;
+                            }
+
+                            if ($persistent) {
+                                $_user["persistentToken"] = $persistent;
+                            }
+
+                            $this->cacheSet($key, $_user);
+                            $this->users[$uid] = $_user;
+
+                            return $_user;
+                        } else {
+                            $this->unCache($key);
+                            return false;
                         }
-
-                        $persistent = false;
-                        $_keys = $this->redis->keys("persistent_*_" . $user[0]["uid"]);
-                        foreach ($_keys as $_key) {
-                            $persistent = explode("_", $_key)[1];
-                            break;
-                        }
-
-                        if ($persistent) {
-                            $_user["persistentToken"] = $persistent;
-                        }
-
-                        $this->cacheSet($key, $_user);
-                        return $_user;
-                    } else {
+                    } catch (\Exception $e) {
+                        error_log(print_r($e, true));
                         $this->unCache($key);
                         return false;
                     }
-                } catch (\Exception $e) {
-                    error_log(print_r($e, true));
-                    $this->unCache($key);
-                    return false;
+                } else {
+                    try {
+                        $users = $this->db->queryEx("select uid, login, real_name, e_mail, phone, tg, notification, enabled, default_route, primary_group, acronym primary_group_acronym, secret from core_users left join core_groups on core_users.primary_group = core_groups.gid");
+
+                        if ($withGroups) {
+                            $groups = loadBackend("groups");
+                        }
+
+                        for ($i = 0; $i < count($users); $i++) {
+                            $_user = [
+                                "uid" => $users[$i]["uid"],
+                                "login" => $users[$i]["login"],
+                                "realName" => $users[$i]["real_name"],
+                                "eMail" => $users[$i]["e_mail"],
+                                "phone" => $users[$i]["phone"],
+                                "tg" => $users[$i]["tg"],
+                                "notification" => $users[$i]["notification"],
+                                "enabled" => $users[$i]["enabled"],
+                                "defaultRoute" => $users[$i]["default_route"],
+                                "primaryGroup" => $users[$i]["primary_group"],
+                                "primaryGroupAcronym" => $users[$i]["primary_group_acronym"],
+                                "twoFA" => $users[$i]["secret"] ? 1 : 0,
+                            ];
+
+                            if (@$groups) {
+                                $_user["groups"] = $groups->getGroups($_user["uid"]);
+                            }
+
+                            $persistent = false;
+                            $_keys = $this->redis->keys("persistent_*_" . $users[$i]["uid"]);
+                            foreach ($_keys as $_key) {
+                                $persistent = explode("_", $_key)[1];
+                                break;
+                            }
+
+                            if ($persistent) {
+                                $_user["persistentToken"] = $persistent;
+                            }
+
+                            $this->users[$users[$i]["uid"]] = $_user;
+                        }
+
+                        return true;
+                    } catch (\Exception $e) {
+                        error_log(print_r($e, true));
+                        return false;
+                    }
                 }
             }
 
@@ -380,6 +441,31 @@
                 } catch (\Exception $e) {
                     return false;
                 }
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+             function getLoginByUid($uid) {
+                if ($this->users[$uid]) {
+                    return $this->users[$uid]["login"];
+                }
+
+                if ($this->logins[$uid]) {
+                    return $this->logins[$uid] = $login;
+                }
+
+                $login = $this->db->get("select login from core_users where uid = :uid",
+                    [
+                        "uid" => $uid
+                    ],
+                    false,
+                    [
+                        "fieldlify"
+                    ]
+                );
+                $this->logins[$uid] = $login;
             }
 
             /**

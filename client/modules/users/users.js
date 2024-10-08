@@ -616,7 +616,7 @@
                 }
             }
 
-            QUERY("accounts", "users", { withSessions: true }, true).done(response => {
+            QUERY("accounts", "users", { withSessions: true, withLast: true }, true).done(response => {
                 modules.users.meta = response.users;
 
                 cardTable({

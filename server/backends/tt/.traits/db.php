@@ -41,9 +41,8 @@
             /**
              * @inheritDoc
              */
-            public function getProjects($acronym = false)
-            {
-                $key = $acronym?"PROJECT:$acronym":"PROJECTS";
+            public function getProjects($acronym = false) {
+                $key = $acronym ? "PROJECT:$acronym" : "PROJECTS";
 
                 $cache = $this->cacheGet($key);
                 if ($cache) {
@@ -81,6 +80,7 @@
                         } else {
                             $filters = $this->db->query("select project_filter_id, filter, coalesce(personal, 0) as personal from tt_projects_filters where project_id = {$project["project_id"]} order by coalesce(personal, 999999999), filter", \PDO::FETCH_ASSOC)->fetchAll();
                         }
+
                         $f = [];
                         foreach ($filters as $filter) {
                             $f[] = [
@@ -114,6 +114,9 @@
                         $usersBackend = loadBackend("users");
                         $groupsBackend = loadBackend("groups");
 
+                        // precache
+                        $usersBackend->getUser(-1, false);
+
                         $groups = $this->db->query("select project_role_id, gid, role_id, level from tt_projects_roles left join tt_roles using (role_id) where project_id = {$project["project_id"]} and gid is not null and gid > 0");
 
                         foreach ($groups as $group) {
@@ -121,7 +124,7 @@
                                 "projectRoleId" => $group["project_role_id"],
                                 "gid" => $group["gid"],
                                 "roleId" => $group["role_id"],
-                                "acronym" => $groupsBackend?$groupsBackend->getGroup($group["gid"])["acronym"]:null,
+                                "acronym" => $groupsBackend ? $groupsBackend->getGroup($group["gid"])["acronym"] : null,
                             ];
 
                             if ($groupsBackend) {
@@ -131,7 +134,7 @@
                             }
 
                             foreach ($users as $user) {
-                                $user = $usersBackend->getUser($user);
+                                $user = $usersBackend->getUser($user, false);
                                 if ($user && $user["uid"] > 0) {
                                     $_f = false;
                                     foreach ($u as &$_u) {
@@ -165,23 +168,25 @@
                         $users = $this->db->query("select project_role_id, uid, role_id, level from tt_projects_roles left join tt_roles using (role_id) where project_id = {$project["project_id"]} and uid is not null and uid > 0");
                         foreach ($users as $user) {
                             $_f = false;
+
                             foreach ($u as &$_u) {
                                 if ($_u["uid"] == $user["uid"]) {
                                     $_u["projectRoleId"] = $user["project_role_id"];
                                     $_u["roleId"] = $user["role_id"];
                                     $_u["level"] = $user["level"];
-                                    $_u["login"] = $usersBackend->getUser($user["uid"])["login"];
+                                    $_u["login"] = $usersBackend->getLoginByUid($user["uid"]);
                                     $_u["byGroup"] = false;
                                     $_f = true;
                                 }
                             }
+
                             if (!$_f) {
                                 $u[] = [
                                     "projectRoleId" => $user["project_role_id"],
                                     "uid" => $user["uid"],
                                     "roleId" => $user["role_id"],
                                     "level" => $user["level"],
-                                    "login" => $usersBackend->getUser($user["uid"])["login"],
+                                    "login" => $usersBackend->getLoginByUid($user["uid"]),
                                     "byGroup" => false,
                                 ];
                             }
