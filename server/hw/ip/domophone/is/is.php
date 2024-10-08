@@ -263,12 +263,12 @@ abstract class is extends domophone
 
     public function setCmsModel(string $model = '')
     {
-        $id = self::CMS_PARAMS[$model][0];
-        $nowMatrix = $this->getMatrix();
+        if ($this->isLegacyVersion()) {
+            $this->setCmsModelLegacy($model);
+            return;
+        }
 
-        $this->apiCall('/switch/settings', 'PUT', ['modelId' => $id]);
-
-        $this->configureMatrix($nowMatrix);
+        $this->apiCall('/switch/settings', 'PUT', ['modelId' => self::CMS_PARAMS[$model][0]]);
     }
 
     public function setConciergeNumber(int $sipNumber)
@@ -354,6 +354,10 @@ abstract class is extends domophone
                 'firstFlat' => 1,
                 'lastFlat' => 1,
             ];
+        }
+
+        if (!$this->isLegacyVersion()) {
+            $dbConfig['cmsModel'] = self::CMS_PARAMS[$dbConfig['cmsModel']][0];
         }
 
         return $dbConfig;
@@ -562,6 +566,25 @@ abstract class is extends domophone
 
     protected function getCmsModel(): string
     {
+        if ($this->isLegacyVersion()) {
+            return $this->getCmsModelLegacy();
+        }
+
+        return $this->getCmsModelId() ?? '';
+    }
+
+    /**
+     * Retrieves the current CMS model ID.
+     *
+     * @return string|null The CMS model ID if available, otherwise null.
+     */
+    protected function getCmsModelId(): ?string
+    {
+        return $this->apiCall('/switch/settings')['modelId'] ?? null;
+    }
+
+    protected function getCmsModelLegacy(): string
+    {
         $idModelMap = [
             'FACTORIAL' => [
                 64 => 'FACTORIAL 8x8'
@@ -585,16 +608,6 @@ abstract class is extends domophone
         $cmsModelId = $this->apiCall('/switch/settings')['modelId'];
 
         return $idModelMap[$cmsModelId][$cmsCapacity] ?? '';
-    }
-
-    /**
-     * Retrieves the current CMS model ID.
-     *
-     * @return string|null The CMS model ID if available, otherwise null.
-     */
-    protected function getCmsModelId(): ?string
-    {
-        return $this->apiCall('/switch/settings')['modelId'] ?? null;
     }
 
     protected function getDtmfConfig(): array
@@ -809,6 +822,24 @@ abstract class is extends domophone
         }
 
         return $matrix;
+    }
+
+    /**
+     * @param string $model
+     *
+     * @return void
+     *
+     * @deprecated
+     * @see setCmsModel()
+     */
+    protected function setCmsModelLegacy(string $model = '')
+    {
+        $id = self::CMS_PARAMS[$model][0];
+        $nowMatrix = $this->getMatrix();
+
+        $this->apiCall('/switch/settings', 'PUT', ['modelId' => $id]);
+
+        $this->configureMatrix($nowMatrix);
     }
 
     /**
