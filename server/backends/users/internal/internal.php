@@ -12,6 +12,8 @@
 
         class internal extends users {
 
+            private $logins;
+
             /**
              * @inheritDoc
              */
@@ -381,6 +383,26 @@
                 } catch (\Exception $e) {
                     return false;
                 }
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+             function getLoginByUid($uid) {
+                if (!$this->logins[$uid]) {
+                    $login = $this->db->get("select login from core_users where uid = :uid",
+                        [
+                            "uid" => $uid
+                        ],
+                        false,
+                        [
+                            "fieldlify"
+                        ]
+                    );
+                    $this->logins[$uid] = $login;
+                }
+                return $this->logins[$uid] = $login;
             }
 
             /**

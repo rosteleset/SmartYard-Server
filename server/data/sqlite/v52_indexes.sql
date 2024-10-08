@@ -1,0 +1,1 @@
+CREATE INDEX core_users_primary_group ON core_users(primary_group);

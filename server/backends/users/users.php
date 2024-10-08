@@ -73,6 +73,13 @@
             abstract public function getUidByLogin($login);
 
             /**
+             * @param $uid
+             * @return mixed
+             */
+
+            abstract function getLoginByUid($uid);
+
+            /**
              * add user
              *
              * @param string $login
