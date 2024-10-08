@@ -28,7 +28,7 @@
             public static function GET($params) {
                 $users = $params["_backends"]["users"]->getUsers(@$params["withSessions"]);
 
-                return api::ANSWER($users, ($users !== false)?"users":"notFound");
+                return api::ANSWER($users, ($users !== false) ? "users" : "notFound");
             }
 
             public static function index() {

@@ -17,8 +17,7 @@
              * @inheritDoc
              */
 
-            public function getUsers($withSessions = false)
-            {
+            public function getUsers($withSessions = false) {
                 if (!$withSessions) {
 
                     $cache = $this->cacheGet("USERS");
@@ -28,6 +27,7 @@
                             $user["lastAction"] = $this->redis->get("last_action_" . md5($user["login"]));
 
                         }
+                        header("X-Api-Cached: true");
                         return $cache;
                     }
                 }
