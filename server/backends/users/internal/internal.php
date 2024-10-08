@@ -10,8 +10,7 @@
          * internal.db users class
          */
 
-        class internal extends users
-        {
+        class internal extends users {
 
             /**
              * @inheritDoc
