@@ -319,7 +319,7 @@
 
 
                     try {
-                        $this->mongo->$db->$collection->createIndex($index, [ "name" => "index" . $indexName ]);
+                        $this->mongo->$db->$collection->createIndex($index, [ "name" => "manual_index" . $indexName ]);
                         $c++;
                     } catch (\Exception $e) {
                         //
