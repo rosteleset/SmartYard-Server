@@ -120,7 +120,7 @@
 
                 if ($uid >= 0) {
 
-                    if ($this->users[$uid]) {
+                    if (@$this->users[$uid]) {
                         return $this->users[$uid];
                     }
 
