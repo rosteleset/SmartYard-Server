@@ -85,6 +85,7 @@
                     if (!$withSessions) {
                         $this->cacheSet("USERS", $_users);
                     }
+
                     return $_users;
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
