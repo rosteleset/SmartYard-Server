@@ -18,7 +18,7 @@
                 $mail->isSMTP();
                 $mail->Host = $config["email"]["server"];
                 $mail->SMTPAuth = true;
-                $mail->Username = $configv["username"];
+                $mail->Username = $config["email"]["username"];
                 $mail->Password = $config["email"]["password"];
                 $mail->SMTPSecure = 'tls';
                 $mail->Port = $config["email"]["port"];
