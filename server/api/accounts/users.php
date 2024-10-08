@@ -9,6 +9,9 @@
      * @apiGroup accounts
      *
      * @apiHeader {String} authorization authentication token
+     *
+     * @apiQuery {boolean} [withSessions]
+     * @apiQuery {boolean} [withLast]
      */
 
     /**
@@ -26,7 +29,7 @@
         class users extends api {
 
             public static function GET($params) {
-                $users = $params["_backends"]["users"]->getUsers(@$params["withSessions"]);
+                $users = $params["_backends"]["users"]->getUsers(@$params["withSessions"], @$params["withLast"]);
 
                 return api::ANSWER($users, ($users !== false) ? "users" : "notFound");
             }

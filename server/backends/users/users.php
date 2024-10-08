@@ -20,8 +20,7 @@
              * @param $redis
              */
 
-            function __construct($config, $db, $redis, $login = false)
-            {
+            function __construct($config, $db, $redis, $login = false) {
                 parent::__construct($config, $db, $redis, $login);
 
                 require_once __DIR__ . '/../../utils/clickhouse.php';
@@ -39,11 +38,12 @@
              * get list of all users
              *
              * @param boolean $withSessions
+             * @param boolean $withLast
              *
              * @return array
              */
 
-            abstract public function getUsers($withSessions = false);
+            abstract public function getUsers($withSessions = false, $withLast = false);
 
             /**
              * get user by uid

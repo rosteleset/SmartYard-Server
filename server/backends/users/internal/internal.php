@@ -16,17 +16,18 @@
              * @inheritDoc
              */
 
-            public function getUsers($withSessions = false) {
+            public function getUsers($withSessions = false, $withLast = false) {
                 if (!$withSessions) {
 
                     $cache = $this->cacheGet("USERS");
                     if ($cache) {
-                        foreach ($cache as $i => $user) {
-                            $user["lastLogin"] = $this->redis->get("last_login_" . md5($user["login"]));
-                            $user["lastAction"] = $this->redis->get("last_action_" . md5($user["login"]));
+                        if ($withLast) {
+                            foreach ($cache as $i => $user) {
+                                $user["lastLogin"] = $this->redis->get("last_login_" . md5($user["login"]));
+                                $user["lastAction"] = $this->redis->get("last_action_" . md5($user["login"]));
 
+                            }
                         }
-                        header("X-Api-Cached: true");
                         return $cache;
                     }
                 }
@@ -45,8 +46,8 @@
                             "tg" => $user["tg"],
                             "notification" => $user["notification"],
                             "enabled" => $user["enabled"],
-                            "lastLogin" => $this->redis->get("last_login_" . md5($user["login"])),
-                            "lastAction" => $this->redis->get("last_action_" . md5($user["login"])),
+                            "lastLogin" => $withLast ? $this->redis->get("last_login_" . md5($user["login"])) : null,
+                            "lastAction" => $withLast ? $this->redis->get("last_action_" . md5($user["login"])) : null,
                             "primaryGroup" => $user["primary_group"],
                             "primaryGroupAcronym" => $user["primary_group_acronym"],
                             "twoFA" => $user["secret"] ? 1 : 0,
