@@ -12,7 +12,7 @@
 
         class internal extends users {
 
-            private $logins;
+            private $logins, $users;
 
             /**
              * @inheritDoc
@@ -155,6 +155,8 @@
                         }
 
                         $this->cacheSet($key, $_user);
+                        $this->users[$uid] = $_user;
+
                         return $_user;
                     } else {
                         $this->unCache($key);
@@ -390,19 +392,24 @@
              */
 
              function getLoginByUid($uid) {
-                if (!$this->logins[$uid]) {
-                    $login = $this->db->get("select login from core_users where uid = :uid",
-                        [
-                            "uid" => $uid
-                        ],
-                        false,
-                        [
-                            "fieldlify"
-                        ]
-                    );
-                    $this->logins[$uid] = $login;
+                if ($this->users[$uid]) {
+                    return $this->users[$uid]["login"];
                 }
-                return $this->logins[$uid] = $login;
+
+                if ($this->logins[$uid]) {
+                    return $this->logins[$uid] = $login;
+                }
+
+                $login = $this->db->get("select login from core_users where uid = :uid",
+                    [
+                        "uid" => $uid
+                    ],
+                    false,
+                    [
+                        "fieldlify"
+                    ]
+                );
+                $this->logins[$uid] = $login;
             }
 
             /**
