@@ -184,6 +184,10 @@ function hashChange() {
     if (hash !== lastHash) {
         lastHash = hash;
 
+        if (params["_skipRouting"] == "1") {
+            return;
+        }
+
         loadingStart();
 
         setTimeout(() => {
