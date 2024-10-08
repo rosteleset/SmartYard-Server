@@ -37,7 +37,7 @@
             if (pretty) {
                 pretty.sheet = params.sheet;
                 pretty.date = params.date;
-                pretty = JSON.stringify(pretty, null, 4);  
+                pretty = JSON.stringify(pretty, null, 4);
                 editor.setValue(pretty, -1);
             } else {
                 editor.setValue(response.sheet, -1);
@@ -53,7 +53,7 @@
                 name: "removeline",
                 description: "Remove line",
                 bindKey: {
-                    win: "Ctrl-Y", 
+                    win: "Ctrl-Y",
                     mac: "Cmd-Y"
                 },
                 exec: function (editor) { editor.removeLines(); },
@@ -72,7 +72,7 @@
             editor.commands.addCommand({
                 name: 'save',
                 bindKey: {
-                    win: "Ctrl-S", 
+                    win: "Ctrl-S",
                     mac: "Cmd-S"
                 },
                 exec: (() => {
@@ -81,15 +81,24 @@
             });
             $("#sheetSave").off("click").on("click", () => {
                 loadingStart();
+                let json;
+                try {
+                    json = JSON.parse(editor.getValue());
+                } catch (_) {
+                    json = false;
+                }
+                let sheet = (json && json.sheet) ? json.sheet : params.sheet;
+                let date = (json && json.date) ? json.date : params.date;
                 PUT("cs", "sheet", false, {
-                    "sheet": params.sheet,
-                    "date": params.date,
+                    "sheet": sheet,
+                    "date": date,
                     "data": $.trim(editor.getValue()),
                 }).
                 fail(FAIL).
                 done(() => {
                     message(i18n("cs.sheetWasSaved"));
                     currentAceEditorOriginalValue = currentAceEditor.getValue();
+                    window.location.href = "?#cs.sheet&sheet=" + encodeURIComponent(sheet) + "&date=" + encodeURIComponent(date) + "&_skipRouting=1";
                 }).
                 always(() => {
                     loadingDone();

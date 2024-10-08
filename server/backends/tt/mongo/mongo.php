@@ -1427,7 +1427,7 @@
 
 
                     try {
-                        $this->mongo->$db->$acr->createIndex($index, [ "name" => "index" . $indexName ]);
+                        $this->mongo->$db->$acr->createIndex($index, [ "name" => "manual_index" . $indexName ]);
                         $c++;
                     } catch (\Exception $e) {
                         //
