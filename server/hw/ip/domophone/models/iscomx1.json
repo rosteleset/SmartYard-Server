@@ -8,11 +8,19 @@
     "camera": "is",
     "useSmartConfigurator": true,
     "cmses": [
+        "bk-4",
+        "bk-10",
         "bk-100",
+        "com-80u",
         "com-100u",
+        "com-160u",
         "com-220u",
         "factorial_8x8",
+        "kkm-100s2",
+        "kkm-105",
+        "kkm-108",
         "km100-7.1",
+        "km100-7.2",
         "kmg-100"
     ]
 }
