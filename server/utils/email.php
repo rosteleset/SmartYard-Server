@@ -5,7 +5,7 @@
 
     function eMail($config, $to, $subj, $text) {
 
-        if (@$config) {
+        if (@$config && @$config["email"]) {
             require_once 'lib/PHPMailer/src/Exception.php';
             require_once 'lib/PHPMailer/src/PHPMailer.php';
             require_once 'lib/PHPMailer/src/SMTP.php';
@@ -16,16 +16,16 @@
                 $mail->SMTPDebug = 0;
                 $mail->CharSet = 'UTF-8';
                 $mail->isSMTP();
-                $mail->Host = $config["server"];
+                $mail->Host = $config["email"]["server"];
                 $mail->SMTPAuth = true;
-                $mail->Username = $config["username"];
-                $mail->Password = $config["password"];
+                $mail->Username = $configv["username"];
+                $mail->Password = $config["email"]["password"];
                 $mail->SMTPSecure = 'tls';
-                $mail->Port = $config["port"];
+                $mail->Port = $config["email"]["port"];
                 if (@$config["from_name"]) {
-                    $mail->setFrom($config["from"], $config["from_name"]);
+                    $mail->setFrom($config["email"]["from"], $config["email"]["from_name"]);
                 } else {
-                    $mail->setFrom($config["from"], $config["from"]);
+                    $mail->setFrom($config["email"]["from"], $config["email"]["from"]);
                 }
                 $mail->addAddress($to);
                 $mail->isHTML(true);
