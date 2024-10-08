@@ -12,6 +12,8 @@
 
         class internal extends groups {
 
+            private $groups, $allGroups;
+
             /**
              * get list of all groups
              *
@@ -25,14 +27,22 @@
                 if ($cache) {
                     return $cache;
                 }
-                
+
                 if ($uid === false) {
+                    if ($this->allGroups) {
+                        return $this->allGroups;
+                    }
                     $_groups = $this->db->queryEx("select gid, name, acronym, (select count(*) from (select uid from (select uid from core_users_groups g1 where g1.gid=g2.gid union select admin from core_groups g3 where g3.gid=g2.gid and admin is not null union select uid from core_users u1 where u1.primary_group=g2.gid) as t2 group by uid) as t3) as users, admin, login as \"adminLogin\" from core_groups as g2 left join core_users on g2.admin = core_users.uid order by name, acronym, gid");
+                    $this->allGroups = $_groups;
                 } else {
                     if (!checkInt($uid)) {
                         return false;
                     }
+                    if (@$this->groups[$uid]) {
+                        return $this->groups[$uid];
+                    }
                     $_groups = $this->db->queryEx("select gid, name, acronym, (select count(*) from (select uid from (select uid from core_users_groups g1 where g1.gid=g2.gid union select admin from core_groups g3 where g3.gid=g2.gid and admin is not null union select uid from core_users u1 where u1.primary_group=g2.gid) as t2 group by uid) as t3) as users, admin, login as \"adminLogin\" from core_groups as g2 left join core_users on g2.admin = core_users.uid where gid in (select gid from core_users_groups where uid = $uid) or gid in (select primary_group from core_users where uid = $uid) or admin = $uid order by name, acronym, gid");
+                    $this->groups[$uid] = $_groups;
                 }
 
                 $this->cacheSet($key, $_groups);
@@ -54,7 +64,7 @@
                 if ($cache) {
                     return $cache;
                 }
-                
+
                 if (!checkInt($gid)) {
                     return false;
                 }
@@ -135,7 +145,7 @@
              *
              * @return boolean
              */
-            
+
             public function deleteGroup($gid) {
                 $this->clearCache();
 
@@ -270,7 +280,7 @@
                         return false;
                     }
                 }
-                
+
                 clearCache($uid);
 
                 return true;
