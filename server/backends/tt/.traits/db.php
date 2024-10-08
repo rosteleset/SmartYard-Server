@@ -131,7 +131,7 @@
                             }
 
                             foreach ($users as $user) {
-                                $user = $usersBackend->getUser($user);
+                                $user = $usersBackend->getUser($user, false);
                                 if ($user && $user["uid"] > 0) {
                                     $_f = false;
                                     foreach ($u as &$_u) {

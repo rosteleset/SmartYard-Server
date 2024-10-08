@@ -106,7 +106,7 @@
              * @return array|false
              */
 
-            public function getUser($uid) {
+            public function getUser($uid, $withGroups = true) {
                 $key = "USER:$uid";
 
                 $cache = $this->cacheGet($key);
@@ -137,10 +137,12 @@
                             "twoFA" => $user[0]["secret"] ? 1 : 0,
                         ];
 
-                        $groups = loadBackend("groups");
+                        if ($withGroups) {
+                            $groups = loadBackend("groups");
 
-                        if ($groups !== false) {
-                            $_user["groups"] = $groups->getGroups($uid);
+                            if ($groups !== false) {
+                                $_user["groups"] = $groups->getGroups($uid);
+                            }
                         }
 
                         $persistent = false;

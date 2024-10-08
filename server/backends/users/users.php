@@ -49,11 +49,12 @@
              * get user by uid
              *
              * @param integer $uid uid
+             * @param integer $withGroups withGroups
              *
              * @return array
              */
 
-            abstract public function getUser($uid);
+            abstract public function getUser($uid, $withGroups = true);
 
             /**
              * get uid by e-mail
