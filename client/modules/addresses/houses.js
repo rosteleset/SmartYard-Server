@@ -966,15 +966,15 @@
 
         for (let i in modules.addresses.houses.meta.entrances) {
             if (parseInt(modules.addresses.houses.meta.entrances[i].domophoneOutput) === 0 && parseInt(modules.addresses.houses.meta.entrances[i].shared) === 0) {
-                let inputs = `<div class="row mt-2 ${prefx}" data-entrance-id="${modules.addresses.houses.meta.entrances[i].entranceId}" style="display: none;">`;
+                let inputs = `<div class="row mt-2 ${prefx}" data-entrance-id="${modules.addresses.houses.meta.entrances[i].entranceId}" style="display: none; margin-right: 0px!important;">`;
                 inputs += `
-                    <div class="col">
+                    <div class="col" style="padding-right: 0px!important;">
                         <input type="text" class="form-control form-control-sm ${prefx}-apartment" data-entrance-id="${modules.addresses.houses.meta.entrances[i].entranceId}" placeholder="${i18n("addresses.apartment")}">
                     </div>
                 `;
                 if (modules.addresses.houses.meta.entrances[i].cms.toString() !== "0") {
                     inputs += `
-                        <div class="col">
+                        <div class="col" style="padding-right: 0px!important;">
                             <input type="text" class="form-control form-control-sm ${prefx}-apartmentLevels" data-entrance-id="${modules.addresses.houses.meta.entrances[i].entranceId}" placeholder="${i18n("addresses.apartmentLevels")}">
                         </div>
                     `;
