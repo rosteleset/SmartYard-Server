@@ -199,7 +199,7 @@
                                 "twoFA" => $users[$i]["secret"] ? 1 : 0,
                             ];
 
-                            if ($groups) {
+                            if (@$groups) {
                                 $_user["groups"] = $groups->getGroups($_user["uid"]);
                             }
 
