@@ -1,0 +1,2 @@
+ALTER TABLE nlog (ADD COLUMN IF NOT EXISTS `id` String AFTER login);
+ALTER TABLE nlog (ADD COLUMN IF NOT EXISTS `uid` Integer AFTER login);

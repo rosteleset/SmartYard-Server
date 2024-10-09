@@ -216,23 +216,47 @@
                     return false;
                 }
 
-                $this->clickhouse->insert("nlog", [ [ "date" => time(), "login" => $this->login, "subject" => $subject, "message" => $message, "target" => $user["notification"] ] ]);
+                $id = false;
 
                 if ($user["notification"] == "tg") {
-                    return $this->sendTg($user["tg"], $subject, $message, @$this->config["telegram"]["bot"]);
-                }
+                    if ($this->sendTg(@$user["tg"], $subject, $message, @$this->config["telegram"]["bot"])) {
+                        $id = $user["tg"];
+                    }
+                } else
 
                 if ($user["notification"] == "tgEmail") {
-                    return $this->sendTg(@$user["tg"], $subject, $message, @$this->config["telegram"]["bot"]) || $this->sendEmail($login, @$user["eMail"], $subject, $message, $this->config);
-                }
+                    if ($this->sendTg(@$user["tg"], $subject, $message, @$this->config["telegram"]["bot"])) {
+                        $id = $user["tg"];
+                    } else {
+                        if ($this->sendEmail($login, @$user["eMail"], $subject, $message, $this->config)) {
+                            $id = $user["eMail"];
+                        }
+                    }
+                } else
 
                 if ($user["notification"] == "email") {
-                    return $this->sendEmail($login, $user["eMail"], $subject, $message, $this->config);
-                }
+                    if ($this->sendEmail($login, @$user["eMail"], $subject, $message, $this->config)) {
+                        $id = $user["eMail"];
+                    }
+                } else
 
                 if ($user["notification"] == "emailTg") {
-                    return $this->sendEmail($login, @$user["eMail"], $subject, $message, $this->config) || $this->sendTg(@$user["tg"], $subject, $message, @$this->config["telegram"]["bot"]);
+                    if ($this->sendEmail($login, @$user["eMail"], $subject, $message, $this->config)) {
+                        $id = $user["eMail"];
+                    } else {
+                        if ($this->sendTg(@$user["tg"], $subject, $message, @$this->config["telegram"]["bot"])) {
+                            $id = $user["tg"];
+                        }
+                    }
                 }
+
+                if ($id) {
+                    $this->clickhouse->insert("nlog", [ [ "date" => time(), "login" => $this->login, uid => $uid, id => $id, "subject" => $subject, "message" => $message, "target" => $user["notification"] ] ]);
+                } else {
+                    $this->clickhouse->insert("nlog", [ [ "date" => time(), "login" => $this->login, uid => $uid, id => "none", "subject" => $subject, "message" => $message, "target" => $user["notification"] ] ]);
+                }
+
+                return $id;
             }
 
             /**
