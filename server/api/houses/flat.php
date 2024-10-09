@@ -46,6 +46,7 @@
      * @apiBody {Object[]} [apartmentsAndLevels]
      * @apiBody {Boolean} [manualBlock]
      * @apiBody {Boolean} [adminBlock]
+     * @apiBody {Boolean} [autoBlock]
      * @apiBody {String} [openCode]
      * @apiBody {Boolean} [plog]
      * @apiBody {Number} [autoOpen]
