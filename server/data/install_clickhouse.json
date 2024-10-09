@@ -20,6 +20,6 @@
         "v5_inbox.sql"
     ],
     "6": [
-        "v6_inbox.sql"
+        "v6_nlog.sql"
     ]
 }
