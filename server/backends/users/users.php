@@ -228,20 +228,20 @@
                     if ($this->sendTg(@$user["tg"], $subject, $message, @$this->config["telegram"]["bot"])) {
                         $id = $user["tg"];
                     } else {
-                        if ($this->sendEmail($login, @$user["eMail"], $subject, $message, $this->config)) {
+                        if ($this->sendEmail(@$user["login"], @$user["eMail"], $subject, $message, $this->config)) {
                             $id = $user["eMail"];
                         }
                     }
                 } else
 
                 if ($user["notification"] == "email") {
-                    if ($this->sendEmail($login, @$user["eMail"], $subject, $message, $this->config)) {
+                    if ($this->sendEmail(@$user["login"], @$user["eMail"], $subject, $message, $this->config)) {
                         $id = $user["eMail"];
                     }
                 } else
 
                 if ($user["notification"] == "emailTg") {
-                    if ($this->sendEmail($login, @$user["eMail"], $subject, $message, $this->config)) {
+                    if ($this->sendEmail(@$user["login"], @$user["eMail"], $subject, $message, $this->config)) {
                         $id = $user["eMail"];
                     } else {
                         if ($this->sendTg(@$user["tg"], $subject, $message, @$this->config["telegram"]["bot"])) {
