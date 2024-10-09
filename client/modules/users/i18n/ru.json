@@ -47,6 +47,8 @@
     "2faSecret": "Секретный ключ",
     "enable2FA": "Включить двухфакторную авторизацию",
     "userGroups": "Группы",
+    "testNotify": "Тест уведомлений",
+    "notificationSent": "Уведомление отправлено",
     "errors": {
         "invalid2FACredentials": "Неверный код авторизации"
     },

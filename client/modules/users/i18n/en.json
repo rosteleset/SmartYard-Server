@@ -47,6 +47,8 @@
     "2faSecret": "Secret key",
     "enable2FA": "Enable two-factor authentication",
     "userGroups": "Groups",
+    "testNotify": "Test notification",
+    "notificationSent": "Notification was sent",
     "errors": {
         "invalid2FACredentials": "Invalid authentication code"
     },

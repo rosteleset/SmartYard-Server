@@ -741,6 +741,25 @@
                                                 modules.users.showSessions(uid);
                                             },
                                         },
+                                        {
+                                            title: "-",
+                                        },
+                                        {
+                                            icon: "far fa-comment-alt",
+                                            title: i18n("users.testNotify"),
+                                            click: uid => {
+                                                loadingStart();
+                                                POST("user", "notify", uid, {
+                                                    subject: i18n("users.testNotify"),
+                                                    message: i18n("users.testNotify"),
+                                                }).
+                                                fail(FAIL).
+                                                done(() => {
+                                                    message(i18n("users.notificationSent"));
+                                                }).
+                                                always(loadingDone);
+                                            },
+                                        },
                                     ],
                                 },
                             });
