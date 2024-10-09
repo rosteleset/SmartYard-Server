@@ -251,9 +251,9 @@
                 }
 
                 if ($id) {
-                    $this->clickhouse->insert("nlog", [ [ "date" => time(), "login" => $this->login, "uid" => $uid, "id" => $id, "subject" => $subject, "message" => $message, "target" => $user["notification"] ] ]);
+                    $this->clickhouse->insert("nlog", [ [ "date" => time(), "login" => $this->login, "to" => $user["login"], "uid" => $uid, "id" => $id, "subject" => $subject, "message" => $message, "target" => $user["notification"] ] ]);
                 } else {
-                    $this->clickhouse->insert("nlog", [ [ "date" => time(), "login" => $this->login, "uid" => $uid, "id" => "none", "subject" => $subject, "message" => $message, "target" => $user["notification"] ] ]);
+                    $this->clickhouse->insert("nlog", [ [ "date" => time(), "login" => $this->login, "to" => $user["login"], "uid" => $uid, "id" => "none", "subject" => $subject, "message" => $message, "target" => $user["notification"] ] ]);
                 }
 
                 return $id;
