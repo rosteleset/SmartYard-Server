@@ -26,6 +26,9 @@ abstract class is extends domophone
     protected array $apartments = [];
     protected array $matrix = [];
 
+    protected string $sosNumber = 'SOS';
+    protected string $conciergeNumber = '999';
+
     public function addRfid(string $code, int $apartment = 0)
     {
         // TODO
@@ -187,6 +190,12 @@ abstract class is extends domophone
                 'port' => $port,
             ],
         ]);
+
+        // Set SOS and concierge numbers
+        $this->apiCall('/panelCode/settings', 'PUT', [
+            'sosRoom' => "$this->sosNumber@$server:$port",
+            'consiergeRoom' => "$this->conciergeNumber@$server:$port",
+        ]);
     }
 
     public function configureUserAccount(string $password)
@@ -273,8 +282,7 @@ abstract class is extends domophone
 
     public function setConciergeNumber(int $sipNumber)
     {
-        $this->apiCall('/panelCode/settings', 'PUT', ['consiergeRoom' => (string)$sipNumber]);
-        // $this->configureApartment($sipNumber, 0, [$sipNumber], false);
+        $this->conciergeNumber = $sipNumber;
     }
 
     public function setDtmfCodes(string $code1 = '1', string $code2 = '2', string $code3 = '3', string $codeCms = '1')
@@ -304,8 +312,7 @@ abstract class is extends domophone
 
     public function setSosNumber(int $sipNumber)
     {
-        $this->apiCall('/panelCode/settings', 'PUT', ['sosRoom' => (string)$sipNumber]);
-        // $this->configure_apartment($number, false, false, [ $number ]);
+        $this->sosNumber = $sipNumber;
     }
 
     public function setTalkTimeout(int $timeout)
