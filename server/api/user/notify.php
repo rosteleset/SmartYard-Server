@@ -32,12 +32,7 @@
         class notify extends api {
 
             public static function POST($params) {
-
-                error_log(print_r([
-                    @$params["_id"], @$params["subject"], @$param["message"],
-                ], 1));
-
-                $params["_backends"]["users"]->notify(@$params["_id"], @$params["subject"], @$param["message"]);
+                $params["_backends"]["users"]->notify(@$params["_id"], @$params["subject"], @$params["message"]);
 
                 return api::ANSWER();
             }
