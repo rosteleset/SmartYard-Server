@@ -26,8 +26,10 @@ abstract class is extends domophone
     protected array $apartments = [];
     protected array $matrix = [];
 
-    protected string $sosNumber = 'SOS';
-    protected string $conciergeNumber = '999';
+    protected ?string $sosNumber = null;
+    protected ?string $conciergeNumber = null;
+    protected ?string $sipServer = null;
+    protected ?int $sipPort = null;
 
     public function addRfid(string $code, int $apartment = 0)
     {
@@ -191,11 +193,8 @@ abstract class is extends domophone
             ],
         ]);
 
-        // Set SOS and concierge numbers
-        $this->apiCall('/panelCode/settings', 'PUT', [
-            'sosRoom' => "$this->sosNumber@$server:$port",
-            'consiergeRoom' => "$this->conciergeNumber@$server:$port",
-        ]);
+        $this->sipServer = $server;
+        $this->sipPort = $port;
     }
 
     public function configureUserAccount(string $password)
@@ -336,6 +335,11 @@ abstract class is extends domophone
         foreach ($relays as $relay) {
             $this->apiCall("/relay/$relay/settings", 'PUT', ['alwaysOpen' => $unlocked]);
         }
+    }
+
+    public function syncData()
+    {
+        $this->uploadServiceSipNumbers();
     }
 
     public function transformDbConfig(array $dbConfig): array
@@ -847,6 +851,42 @@ abstract class is extends domophone
         $this->apiCall('/switch/settings', 'PUT', ['modelId' => $id]);
 
         $this->configureMatrix($nowMatrix);
+    }
+
+    /**
+     * Upload SOS and concierge SIP numbers to the intercom.
+     *
+     * @return void
+     */
+    protected function uploadServiceSipNumbers()
+    {
+        if (
+            $this->sipServer === null &&
+            $this->sipPort === null &&
+            $this->sosNumber === null &&
+            $this->conciergeNumber === null
+        ) {
+            return;
+        }
+
+        if ($this->sipServer === null || $this->sipPort === null) {
+            [
+                'server' => $this->sipServer,
+                'port' => $this->sipPort,
+            ] = $this->getSipConfig();
+        }
+
+        if ($this->sosNumber === null || $this->conciergeNumber === null) {
+            [
+                'sosRoom' => $this->sosNumber,
+                'consiergeRoom' => $this->conciergeNumber,
+            ] = $this->apiCall('/panelCode/settings');
+        }
+
+        $this->apiCall('/panelCode/settings', 'PUT', [
+            'sosRoom' => "$this->sosNumber@$this->sipServer:$this->sipPort",
+            'consiergeRoom' => "$this->conciergeNumber@$this->sipServer:$this->sipPort",
+        ]);
     }
 
     /**
