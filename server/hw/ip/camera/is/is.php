@@ -90,6 +90,11 @@ class is extends camera
         $this->apiCall('/v2/camera/osd', 'PUT', [$firstStringParams, $secondStringParams]);
     }
 
+    public function syncData()
+    {
+        // Empty implementation
+    }
+
     public function transformDbConfig(array $dbConfig): array
     {
         $md = $dbConfig['motionDetection'];
