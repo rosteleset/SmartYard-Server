@@ -53,6 +53,7 @@ server/lib/parsedown/
 server/db/mongo/
 server/storage/
 server/services/nodejs
+server/mzfc/json5/
 server/mzfc/mongodb/
 server/backends/**/custom
 server/backends/**/custom/
