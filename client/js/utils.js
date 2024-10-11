@@ -60,7 +60,7 @@ function trimStr(str, len, abbr) {
     }
 }
 
-function setFavicon(icon, unreaded) {
+function setFavicon(icon, unreaded, bgColor) {
     if (typeof unreaded == 'undefined') {
         unreaded = 0;
     }
@@ -80,7 +80,7 @@ function setFavicon(icon, unreaded) {
         document.head.appendChild(link);
     }
 
-    badge = new Favico({ animation: 'none', bgColor: '#000000' });
+    badge = new Favico({ animation: 'none', bgColor: bgColor ? bgColor : '#000000' });
 
     if (unreaded) {
         if (unreaded <= 9 || !parseInt(unreaded)) {
