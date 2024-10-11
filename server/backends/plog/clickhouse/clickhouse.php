@@ -524,6 +524,13 @@
                     ['date' => $plog_date, 'ip' => $ip, 'sub_id' => $sub_id, 'door' => $output] = $row;
 
                     $domophone_id = $this->getDomophoneIdByIp($ip) ?? $this->getDomophoneIdBySubId($sub_id);
+
+                    // skip event with an unknown domophone
+                    if ($domophone_id === null) {
+                        echo("Skip event with an unknown domophone: ip = " . $ip . "; sub_id = " . $sub_id . "\n");
+                        continue;
+                    }
+
                     $event_type = (int)$row['event'];
 
                     $event_data[self::COLUMN_DATE] = $plog_date;
@@ -637,6 +644,12 @@
                     $sub_id = $row['sub_id'];
 
                     $domophone_id = $this->getDomophoneIdByIp($ip) ?? $this->getDomophoneIdBySubId($sub_id);
+
+                    // skip event with an unknown domophone
+                    if ($domophone_id === null) {
+                        echo("Skip event with an unknown domophone: ip = " . $ip . "; sub_id = " . $sub_id . "\n");
+                        continue;
+                    }
 
                     $event_data = [];
                     $event_data[self::COLUMN_DATE] = $row['date'];
