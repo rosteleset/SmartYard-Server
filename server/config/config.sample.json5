@@ -113,22 +113,16 @@
 
         "plog": {
             "backend": "clickhouse",
-
             // your time shift in seconds from current time as the end timepoint for processing plog_* tables (hint 60)
             "time_shift": 60,
-
             // your max call length in seconds for backward processing call events (hint 120)
             "max_call_length": 120,
-
             // your time to live in seconds for temporary data in plog_* tables (hint 86400 - one day)
             "ttl_temp_record": 86400,
-
             // your time to live in days for camshots (hint 180 - approx. half year)
             "ttl_camshot_days": 180,
-
             // your back time shift in seconds for receiving video shot from media server (hint 3)
             "back_time_shift_video_shot": 3,
-
             "cron_process_events_scheduler": "minutely"
         },
 
