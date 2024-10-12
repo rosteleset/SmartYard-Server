@@ -9,4 +9,4 @@
      *
      */
 
-    response(200, @$config["mobile"]["phonePattern"] ?: "");
+    response(200, @$config["mobile"]["phone_pattern"] ? : "");
