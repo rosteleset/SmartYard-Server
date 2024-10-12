@@ -1,7 +1,7 @@
-### [Important](https://github.com/rosteleset/SmartYard-Server/blob/main/important.md)
-
 ### RoBoT - RBT (SmartYard-Server)
 Fully autonomous server part for quick launch of your intercom and video surveillance service
+
+### [Important](https://github.com/rosteleset/SmartYard-Server/blob/main/important.md)
 
 ### [Installation](https://github.com/rosteleset/SmartYard-Server/tree/main/install)
 start from 01.nooble.md
