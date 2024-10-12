@@ -244,6 +244,14 @@ function findBootstrapEnvironment() {
 
 $.deparam = function (query) {
     if (query) {
+        if (query[0] == "?") {
+            query = query.substring(1);
+        }
+
+        if (query[0] == "&") {
+            query = query.substring(1);
+        }
+
         let setValue = function (root, path, value) {
             if (path.length > 1) {
                 let  dir = path.shift();
@@ -263,7 +271,7 @@ $.deparam = function (query) {
         let nvp = query.split('&');
         let data = {};
 
-        for (let i = 0 ; i < nvp.length ; i++) {
+        for (let i = 0; i < nvp.length; i++) {
             let pair = nvp[i].split('=');
             let name = decodeURIComponent(pair[0]);
             let value = decodeURIComponent(pair[1]);

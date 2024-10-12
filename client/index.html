@@ -15,8 +15,6 @@
     <link rel="stylesheet" href="css/leaflet.awesome-markers.css">
     <link rel="stylesheet" href="css/MarkerCluster.css">
     <link rel="stylesheet" href="css/MarkerCluster.Default.css">
-    <!-- jQuery -->
-    <script src="lib/AdminLTE/plugins/jquery/jquery.min.js"></script>
     <!-- cookie for jQuery -->
     <!--
     <script src="js/cookie.js"></script>
@@ -39,10 +37,6 @@
     <script type="application/javascript">
         var version = 'unknown';
         var serviceWorker;
-
-        $.ajaxSetup({
-            cache: true
-        });
 
         function ver(c) {
             let needRestart = false;
@@ -116,7 +110,13 @@
         }
 
         document.addEventListener("DOMContentLoaded", () => {
+            $.ajaxSetup({
+                cache: true
+            });
+            $.ajaxSettings.converters["text json5"] = JSON5.parse;
+
             lStore(() => {
+/*
                 $.get("config/config.json?_=" + Math.random()).
                 done(ver).
                 fail(() => {
@@ -127,6 +127,20 @@
                     fail(() => {
                         error("Woops can't get config");
                     });
+                });
+*/
+                $.ajax({
+                    url: "config/config.json?_=" + Math.random(),
+                    dataType: "json5",
+                    cache: false,
+                    success: c => {
+                        ver(c);
+                    },
+                    error: e => {
+                        error("Woops can't get config");
+                    },
+                    timeout: 5000,
+                    converters: { "json5": JSON5.parse }
                 });
             });
         });
@@ -489,6 +503,8 @@
     <!-- REQUIRED SCRIPTS -->
 
     <!-- jQuery -->
+    <script src="lib/AdminLTE/plugins/jquery/jquery.min.js"></script>
+    <!-- jQueryUI -->
     <script src="lib/AdminLTE/plugins/jquery-ui/jquery-ui.min.js"></script>
     <!-- DOMPurify -->
     <script src="js/purify.min.js"></script>
@@ -545,7 +561,9 @@
     <script src="js/linkify.min.js"></script>
     <script src="js/linkify-html.min.js"></script>
     <!-- yaml support -->
+    <!--
     <script src="js/js-yaml.min.js"></script>
+    -->
     <!-- json5 support -->
     <script src="js/json5.min.js"></script>
     <!-- KV store -->

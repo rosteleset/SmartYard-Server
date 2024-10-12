@@ -44,6 +44,10 @@ function deparam(query) {
             query = query.substring(1);
         }
 
+        if (query[0] == "&") {
+            query = query.substring(1);
+        }
+
         let setValue = function (root, path, value) {
             if (path.length > 1) {
                 let  dir = path.shift();
@@ -70,6 +74,7 @@ function deparam(query) {
 
             let path = name.match(/(^[^\[]+)(\[.*\]$)?/);
             let first = path[1];
+
             if (path[2]) {
                 path = path[2].match(/(?=\[(.*)\]$)/)[1].split('][')
             } else {
@@ -138,7 +143,7 @@ self.addEventListener('fetch', event => {
                 }
             }
         } else {
-            if (parseInt(deparam(url.search).ver) === parseInt(version) && endsWith(url.pathname, cacheFirstResources)) {
+            if (url.search && parseInt(deparam(url.search).ver) === parseInt(version) && endsWith(url.pathname, cacheFirstResources)) {
                 event.respondWith(cacheFirst(event.request));
             }
         }
