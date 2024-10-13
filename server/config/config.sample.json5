@@ -7,7 +7,7 @@
         "asterisk": "http://127.0.0.1/asterisk",
         "internal": "http://127.0.0.1/internal",
         "mobile": "https://example.com/mobile",
-        "kamailio": "http://127.0.0.1/kamailio"
+        "kamailio": "http://127.0.0.1/kamailio",
     },
 
     "mobile": {
@@ -27,7 +27,7 @@
         // How to show cameras in the mobile app. One of: list, tree, userDefined. List(default) - cameras are shown on the map; tree - cameras are shown as a tree structure; userDefined - user has a switch in the common settings
         "cctv_view": "list",
         // Active app's tab at start. One of: addresses, notifications, chat, pay, menu. The default value is addresses
-        "active_tab": "addresses"
+        "active_tab": "addresses",
     },
 
     "db": {
@@ -35,11 +35,11 @@
         "username": "rbt",
         "password": "rbt",
         "text_search_config": "russian",
-        "schema": "<!-- remove this line if you are not using schemas --!>"
+        "schema": "<!-- remove this line if you are not using schemas --!>",
     },
 
     "mongo": {
-        "uri": "mongodb://localhost:27017"
+        "uri": "mongodb://localhost:27017",
     },
 
     "redis": {
@@ -48,7 +48,7 @@
         "frontend_cache_ttl": 600,
         "backends_cache_ttl": 604800,
         "max_allowed_tokens": 15,
-        "token_idle_ttl": 3600
+        "token_idle_ttl": 3600,
     },
 
     "clickhouse": {
@@ -56,7 +56,7 @@
         "port": "8123",
         "username": "default",
         "password": "qqq",
-        "database": "default"
+        "database": "default",
     },
 
     "backends": {

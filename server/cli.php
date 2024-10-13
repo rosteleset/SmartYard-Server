@@ -38,6 +38,10 @@
     require_once "utils/apache_request_headers.php";
     require_once "utils/mb_levenshtein.php";
 
+    if (file_exists("mzfc/json5/vendor/autoload.php")) {
+        require_once "mzfc/json5/vendor/autoload.php";
+    }
+
     require_once "backends/backend.php";
 
     require_once "api/api.php";
@@ -95,8 +99,7 @@
 
             config:
                 [--print-config]
-                [--write-yaml-config]
-                [--write-json-config]
+                [--strip-config]
         ");
 
         exit(1);
@@ -308,15 +311,15 @@
         exit(1);
     }
 
-    try {
-        $config = @json_decode(file_get_contents("config/config.json"), true);
-    } catch (Exception $e) {
-        $config = false;
-    }
-
-    if (!$config) {
+    if (function_exists("json5_decode")) {
         try {
-            $config = @json_decode(json_encode(yaml_parse_file("config/config.yml")), true);
+            $config = @json5_decode(file_get_contents("config/config.json"), true);
+        } catch (Exception $e) {
+            $config = false;
+        }
+    } else {
+        try {
+            $config = @json_decode(file_get_contents("config/config.json"), true);
         } catch (Exception $e) {
             $config = false;
         }
@@ -678,12 +681,7 @@
         exit(0);
     }
 
-    if (count($args) == 1 && array_key_exists("--write-yaml-config", $args) && !isset($args["--write-yaml-config"])) {
-        file_put_contents("config/config.yml", yaml_emit($config));
-        exit(0);
-    }
-
-    if (count($args) == 1 && array_key_exists("--write-json-config", $args) && !isset($args["--write-json-config"])) {
+    if (count($args) == 1 && array_key_exists("--strip-config", $args) && !isset($args["--strip-config"])) {
         file_put_contents("config/config.json", json_encode($config, JSON_PRETTY_PRINT));
         exit(0);
     }
@@ -749,7 +747,7 @@
 
         $response = $cursor->toArray()[0];
 
-        // print_r($response);
+        echo "ok\n";
 
         maintenance(false);
         exit(0);
