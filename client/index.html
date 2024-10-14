@@ -15,10 +15,6 @@
     <link rel="stylesheet" href="css/leaflet.awesome-markers.css">
     <link rel="stylesheet" href="css/MarkerCluster.css">
     <link rel="stylesheet" href="css/MarkerCluster.Default.css">
-    <!-- cookie for jQuery -->
-    <!--
-    <script src="js/cookie.js"></script>
-    -->
     <!-- icheck bootstrap -->
     <link rel="stylesheet" href="lib/AdminLTE/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
     <!-- select2 -->
@@ -116,19 +112,6 @@
             $.ajaxSettings.converters["text json5"] = JSON5.parse;
 
             lStore(() => {
-/*
-                $.get("config/config.json?_=" + Math.random()).
-                done(ver).
-                fail(() => {
-                    $.get("config/config.yml?_=" + Math.random()).
-                    done(y => {
-                        ver(jsyaml.load(y));
-                    }).
-                    fail(() => {
-                        error("Woops can't get config");
-                    });
-                });
-*/
                 $.ajax({
                     url: "config/config.json?_=" + Math.random(),
                     dataType: "json5",
