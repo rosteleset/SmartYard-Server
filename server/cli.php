@@ -315,12 +315,14 @@
         try {
             $config = @json5_decode(file_get_contents("config/config.json"), true);
         } catch (Exception $e) {
+            echo $e->getMessage() . "\n";
             $config = false;
         }
     } else {
         try {
-            $config = @json_decode(file_get_contents("config/config.json"), true);
+            $config = @json_decode(file_get_contents("config/config.json"), true, 512, JSON_THROW_ON_ERROR);
         } catch (Exception $e) {
+            echo $e->getMessage() . "\n";
             $config = false;
         }
     }
