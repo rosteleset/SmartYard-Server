@@ -394,7 +394,7 @@
                             ":phone" => trim($phone),
                             ":tg" => trim($tg),
                             ":notification" => trim($notification),
-                            ":enabled" => $enabled?"1":"0",
+                            ":enabled" => $enabled ? "1" : "0",
                             ":default_route" => trim($defaultRoute),
                             ":primary_group" => (int)$primaryGroup,
                         ]);
@@ -405,7 +405,7 @@
                             ":phone" => trim($phone),
                             ":tg" => trim($tg),
                             ":notification" => trim($notification),
-                            ":enabled" => $enabled?"1":"0",
+                            ":enabled" => $enabled ? "1" : "0",
                             ":default_route" => trim($defaultRoute),
                         ]);
                     }

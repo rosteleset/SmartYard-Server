@@ -59,7 +59,7 @@
         fail(FAIL).
         fail(loadingDone).
         done(() => {
-            if (user.userGroups) {
+            if (user.userGroups && AVAIL("accounts", "userGroups", "PUT")) {
                 PUT("accounts", "userGroups", user.uid, {
                     gids: user.userGroups,
                 }).
