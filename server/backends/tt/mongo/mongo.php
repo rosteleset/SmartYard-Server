@@ -262,6 +262,9 @@
                 $preprocess["%%timestamp+3days"] = strtotime(date("Y-m-d", strtotime("+3 day")));
                 $preprocess["%%timestamp+7days"] = strtotime(date("Y-m-d", strtotime("+7 day")));
                 $preprocess["%%timestamp+1month"] = strtotime(date("Y-m-d", strtotime("+1 month")));
+                $preprocess["%%timestamp+2month"] = strtotime(date("Y-m-d", strtotime("+2 month")));
+                $preprocess["%%timestamp+3month"] = strtotime(date("Y-m-d", strtotime("+3 month")));
+                $preprocess["%%timestamp+6month"] = strtotime(date("Y-m-d", strtotime("+6 month")));
                 $preprocess["%%timestamp+1year"] = strtotime(date("Y-m-d", strtotime("+1 year")));
                 $preprocess["%%timestamp+2years"] = strtotime(date("Y-m-d", strtotime("+2 year")));
                 $preprocess["%%timestamp+3years"] = strtotime(date("Y-m-d", strtotime("+3 year")));
@@ -276,6 +279,7 @@
                 $preprocess["%%timestamp-1month"] = strtotime(date("Y-m-d", strtotime("-1 month")));
                 $preprocess["%%timestamp-2month"] = strtotime(date("Y-m-d", strtotime("-2 month")));
                 $preprocess["%%timestamp-3month"] = strtotime(date("Y-m-d", strtotime("-3 month")));
+                $preprocess["%%timestamp-6month"] = strtotime(date("Y-m-d", strtotime("-6 month")));
                 $preprocess["%%timestamp-1year"] = strtotime(date("Y-m-d", strtotime("-1 year")));
                 $preprocess["%%timestamp-2years"] = strtotime(date("Y-m-d", strtotime("-2 year")));
                 $preprocess["%%timestamp-3years"] = strtotime(date("Y-m-d", strtotime("-3 year")));
