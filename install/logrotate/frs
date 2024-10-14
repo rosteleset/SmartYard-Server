@@ -1,8 +1,8 @@
 /var/log/frs/*.log {
-  rotate 3
-  daily
-  compress
-  missingok
-  notifempty
-  copytruncate
+    rotate 3
+    daily
+    compress
+    missingok
+    notifempty
+    copytruncate
 }

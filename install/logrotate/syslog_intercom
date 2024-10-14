@@ -1,7 +1,7 @@
 /var/log/syslog_intercom/*.log {
-        daily
-        missingok
-        rotate 3
-        compress
-        notifempty
+    daily
+    missingok
+    rotate 3
+    compress
+    notifempty
 }

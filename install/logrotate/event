@@ -1,10 +1,10 @@
 /var/log/event_service/*.log {
-        daily
-        missingok
-        rotate 3
-        compress
-        notifempty
-        copytruncate
-        dateext
-        dateformat -%Y-%m-%d
+    daily
+    missingok
+    rotate 3
+    compress
+    notifempty
+    copytruncate
+    dateext
+    dateformat -%Y-%m-%d
 }
