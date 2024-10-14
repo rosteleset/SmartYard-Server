@@ -12,15 +12,29 @@ abstract class is extends domophone
 
     use \hw\ip\common\is\is;
 
-    protected const CMS_PARAMS = [
+    /**
+     * Mapping of CMS models to their corresponding parameters.
+     *
+     * Example entry:
+     * 'MODEL' => ['VENDOR', CAPACITY, COLUMNS, ROWS]
+     *
+     * @var array<string, array{0: string, 1: int, 2: int, 3: int}>
+     */
+    protected const CMS_MODEL_TO_PARAMS = [
+        'BK-4' => ['VIZIT', 4, 1, 4],
+        'BK-10' => ['VIZIT', 10, 1, 10],
         'BK-100' => ['VIZIT', 100, 10, 10],
-        'KMG-100' => ['CYFRAL', 100, 10, 10],
-        'KKM-100S2' => ['CYFRAL', 100, 10, 10],
-        'KM100-7.1' => ['ELTIS', 100, 10, 10],
-        'KM100-7.5' => ['ELTIS', 100, 10, 10],
+        'COM-80U' => ['METAKOM', 80, 8, 10],
         'COM-100U' => ['METAKOM', 100, 10, 10],
+        'COM-160U' => ['METAKOM', 160, 16, 10],
         'COM-220U' => ['METAKOM', 220, 22, 10],
         'FACTORIAL 8x8' => ['FACTORIAL', 64, 8, 8],
+        'KKM-100S2' => ['CYFRAL', 100, 10, 10],
+        'KKM-105' => ['CYFRAL', 100, 10, 10],
+        'KKM-108' => ['CYFRAL', 100, 10, 10],
+        'KM100-7.1' => ['ELTIS', 100, 10, 10],
+        'KM100-7.2' => ['ELTIS', 100, 10, 10],
+        'KMG-100' => ['CYFRAL', 100, 10, 10],
     ];
 
     protected array $apartments = [];
@@ -141,7 +155,7 @@ abstract class is extends domophone
 
         $this->refreshApartmentList();
         $params = [0 => [], 1 => [], 2 => [], 3 => []];
-        [, $capacity, $columns, $rows] = self::CMS_PARAMS[$this->getCmsModel()];
+        [, $capacity, $columns, $rows] = self::CMS_MODEL_TO_PARAMS[$this->getCmsModel()];
 
         $cmsModelId = $this->getCmsModelId();
         $zeroMatrix = array_fill(0, $columns, array_fill(0, $rows, 0));
@@ -276,7 +290,7 @@ abstract class is extends domophone
             return;
         }
 
-        $this->apiCall('/switch/settings', 'PUT', ['modelId' => self::CMS_PARAMS[$model][0]]);
+        $this->apiCall('/switch/settings', 'PUT', ['modelId' => self::CMS_MODEL_TO_PARAMS[$model][0]]);
     }
 
     public function setConciergeNumber(int $sipNumber)
@@ -368,7 +382,7 @@ abstract class is extends domophone
         }
 
         if (!$this->isLegacyVersion()) {
-            $dbConfig['cmsModel'] = self::CMS_PARAMS[$dbConfig['cmsModel']][0];
+            $dbConfig['cmsModel'] = self::CMS_MODEL_TO_PARAMS[$dbConfig['cmsModel']][0];
         }
 
         return $dbConfig;
@@ -415,7 +429,7 @@ abstract class is extends domophone
             $params[$tens][$units] = $apartment;
         }
 
-        [, $capacity, $columns, $rows] = self::CMS_PARAMS[$this->getCmsModel()];
+        [, $capacity, $columns, $rows] = self::CMS_MODEL_TO_PARAMS[$this->getCmsModel()];
 
         $zeroMatrix = array_fill(0, $columns, array_fill(0, $rows, 0));
         $fullMatrix = array_replace_recursive($zeroMatrix, $params);
@@ -465,7 +479,7 @@ abstract class is extends domophone
      */
     protected function disfigureMatrix(array $matrix): array
     {
-        [$id, , $columns, $rows] = self::CMS_PARAMS[$this->getCmsModel()];
+        [$id, , $columns, $rows] = self::CMS_MODEL_TO_PARAMS[$this->getCmsModel()];
         $wrongCmses = ['METAKOM', 'FACTORIAL'];
 
         if (!in_array($id, $wrongCmses)) {
@@ -809,7 +823,7 @@ abstract class is extends domophone
      */
     protected function restoreMatrix(array $matrix): array
     {
-        [$id, , $columns, $rows] = self::CMS_PARAMS[$this->getCmsModel()];
+        [$id, , $columns, $rows] = self::CMS_MODEL_TO_PARAMS[$this->getCmsModel()];
         $wrongCmses = ['METAKOM', 'FACTORIAL'];
 
         if (!in_array($id, $wrongCmses)) {
@@ -845,7 +859,7 @@ abstract class is extends domophone
      */
     protected function setCmsModelLegacy(string $model = '')
     {
-        $id = self::CMS_PARAMS[$model][0];
+        $id = self::CMS_MODEL_TO_PARAMS[$model][0];
         $nowMatrix = $this->getMatrix();
 
         $this->apiCall('/switch/settings', 'PUT', ['modelId' => $id]);
