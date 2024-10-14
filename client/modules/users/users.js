@@ -234,7 +234,7 @@
                             value: response.user.primaryGroup,
                             options: gs,
                             title: i18n("users.primaryGroup"),
-                            hidden: !parseInt(response.user.uid) || gs.length == 0,
+                            hidden: (!parseInt(response.user.uid) || gs.length == 0) || !AVAIL("accounts", "groupUsers", "PUT"),
                             tab: i18n("users.primary"),
                         },
                         {
@@ -448,6 +448,9 @@
                         if (result.delete === "yes") {
                             modules.users.deleteUser(result.uid);
                         } else {
+                            if ((!parseInt(response.user.uid) || gs.length == 0) || !AVAIL("accounts", "groupUsers", "PUT")) {
+                                delete result.primaryGroup;
+                            }
                             result.enabled = result.disabled === "no";
                             modules.users.doModifyUser(result);
                         }
