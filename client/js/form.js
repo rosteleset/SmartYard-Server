@@ -129,6 +129,10 @@ function cardForm(params) {
     }
 
     for (let i in params.fields) {
+        if (params.fields[i].type == "jstree") {
+            params.fields[i].noHover = true;
+        }
+
         if (params.fields[i].type === "yesno") {
             params.fields[i].type = "select";
             params.fields[i].options = [
@@ -295,9 +299,9 @@ function cardForm(params) {
             h += `<tr style="display: none;">`;
         } else
         if (params.fields[i].tabHidden) {
-            h += `<tr style="display: none;" class="jsform-tabbed-item" data-tab-index='${tabs.indexOf(params.fields[i].tab)}'>`;
+            h += `<tr style="display: none;" class="jsform-tabbed-item ${params.fields[i].noHover ? 'nohover' : ''}" data-tab-index='${tabs.indexOf(params.fields[i].tab)}'>`;
         } else {
-            h += `<tr class="jsform-tabbed-item" data-tab-index='${tabs.indexOf(params.fields[i].tab)}'>`;
+            h += `<tr class="jsform-tabbed-item ${params.fields[i].noHover ? 'nohover' : ''}" data-tab-index='${tabs.indexOf(params.fields[i].tab)}'>`;
         }
 
         params.fields[i].type = params.fields[i].type ? params.fields[i].type : "text";
@@ -1237,9 +1241,7 @@ function cardForm(params) {
             });
         }
 
-        if (params.fields[i].type === "jstree" || params.fields[i].noHover) {
-            $(`#${_prefix}${params.fields[i].id}`).parent().parent().addClass("nohover");
-
+        if (params.fields[i].type === "jstree") {
             let tree = {
                 core: {
                     data: params.fields[i].data,
