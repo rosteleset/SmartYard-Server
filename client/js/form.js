@@ -133,7 +133,7 @@ function cardForm(params) {
             params.fields[i].noHover = true;
         }
 
-        if (params.fields[i].type === "yesno") {
+        if (params.fields[i].type == "yesno") {
             params.fields[i].type = "select";
             params.fields[i].options = [
                 {
@@ -147,7 +147,7 @@ function cardForm(params) {
             ];
         }
 
-        if (params.fields[i].type === "noyes") {
+        if (params.fields[i].type == "noyes") {
             params.fields[i].type = "select";
             params.fields[i].options = [
                 {
@@ -161,7 +161,7 @@ function cardForm(params) {
             ];
         }
 
-        if (params.fields[i].type === "font") {
+        if (params.fields[i].type == "font") {
             let fonts = [
                 {
                     text: i18n("default"),
@@ -181,7 +181,7 @@ function cardForm(params) {
             params.fields[i].options = fonts;
         }
 
-        if (params.fields[i].type === "themeColor") {
+        if (params.fields[i].type == "themeColor") {
             params.fields[i].type = "select2";
             params.fields[i].options = [
                 {
@@ -247,7 +247,7 @@ function cardForm(params) {
             ];
         }
 
-        if (params.fields[i].type === "icon") {
+        if (params.fields[i].type == "icon") {
             let icons = [
                 {
                     text: i18n("withoutIcon"),
@@ -308,7 +308,7 @@ function cardForm(params) {
 
         if (!params.singleColumn) {
             if (params.fields[i].title !== false) {
-                if (params.fields[i].hint || params.fields[i].type === "files") {
+                if (params.fields[i].hint || params.fields[i].type == "files") {
                     h += `<td class="pb-0 pt-3 tdform${first}" style="vertical-align: top!important;">${params.fields[i].title}</td>`;
                 } else {
                     if (params.fields[i].type == "select2") {
@@ -321,13 +321,13 @@ function cardForm(params) {
         }
 
         if (params.fields[i].title !== false) {
-            if (params.fields[i].hint || params.fields[i].type === "files") {
+            if (params.fields[i].hint || params.fields[i].type == "files") {
                 h += `<td class="pb-0 tdform-right${first}">`;
             } else {
                 h += `<td class="tdform-right${first}">`;
             }
         } else {
-            if (params.fields[i].hint || params.fields[i].type === "files") {
+            if (params.fields[i].hint || params.fields[i].type == "files") {
                 h += `<td class="pb-0 tdform-right${first}" colspan='2'>`;
             } else {
                 h += `<td class="tdform-right${first}" colspan='2'>`;
@@ -973,7 +973,7 @@ function cardForm(params) {
             });
         }
 
-        if (params.fields[i].type === "select") {
+        if (params.fields[i].type == "select") {
             if (typeof params.fields[i].select === "function") {
                 $(`#${_prefix}${params.fields[i].id}`).off("change").on("change", function () {
                     params.fields[i].select($(this), params.fields[i].id, _prefix);
@@ -981,7 +981,7 @@ function cardForm(params) {
             }
         }
 
-        if (params.fields[i].type === "select2") {
+        if (params.fields[i].type == "select2") {
             let s2p = {
                 language: lang["_code"],
                 width: '100%',
@@ -1075,7 +1075,7 @@ function cardForm(params) {
             $(`#${_prefix}${params.fields[i].id}`).next().css("width", "100%");
         }
 
-        if (params.fields[i].type === "rich") {
+        if (params.fields[i].type == "rich") {
             $(`#${_prefix}${params.fields[i].id}`).summernote({
                 tabDisable: false,
                 tabsize: 4,
@@ -1095,7 +1095,7 @@ function cardForm(params) {
             }
         }
 
-        if (params.fields[i].type === "code") {
+        if (params.fields[i].type == "code") {
             let editor = ace.edit(`${_prefix}${params.fields[i].id}`);
             editor.setTheme("ace/theme/chrome");
             editor.setOptions({
@@ -1136,7 +1136,7 @@ function cardForm(params) {
             });
         }
 
-        if (params.fields[i].type === "json") {
+        if (params.fields[i].type == "json") {
             let editor = ace.edit(`${_prefix}${params.fields[i].id}`);
             editor.setTheme("ace/theme/chrome");
             editor.setOptions({
@@ -1175,7 +1175,7 @@ function cardForm(params) {
             });
         }
 
-        if (params.fields[i].type === "files") {
+        if (params.fields[i].type == "files") {
             $(`#${_prefix}${params.fields[i].id}`).off("dblclick").on("dblclick", function () {
                 let id = $(this).attr("id");
                 let fileNames = $(this).val();
@@ -1241,7 +1241,7 @@ function cardForm(params) {
             });
         }
 
-        if (params.fields[i].type === "jstree") {
+        if (params.fields[i].type == "jstree") {
             let tree = {
                 core: {
                     data: params.fields[i].data,
