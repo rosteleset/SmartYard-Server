@@ -589,15 +589,6 @@ abstract class is extends domophone
         return array_map('intval', array_values($this->apiCall('/levels')['resistances']));
     }
 
-    protected function getCmsModel(): string
-    {
-        if ($this->isLegacyVersion()) {
-            return $this->getCmsModelLegacy();
-        }
-
-        return $this->getCmsModelId() ?? '';
-    }
-
     /**
      * Retrieves the current CMS model ID.
      *

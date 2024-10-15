@@ -8,6 +8,27 @@ namespace hw\ip\domophone\is;
 class iscomx1plus extends is
 {
 
+    /**
+     * Mapping of CMS models to their corresponding ID.
+     *
+     * @var array<string, int>
+     */
+    protected const CMS_MODEL_ID = [
+        'BK-4' => 50,
+        'BK-10' => 51,
+        'BK-100' => 52,
+        'COM-80U' => 61,
+        'COM-100U' => 3, // other
+        'COM-160U' => 63,
+        'COM-220U' => 65,
+        'FACTORIAL 8x8' => 0, // other
+        'KKM-100S2' => 13,
+        'KKM-105' => 11,
+        'KKM-108' => 12,
+        'KM100-7.2' => 30,
+        'KMG-100' => 20,
+    ];
+
     public function prepare()
     {
         parent::prepare();
@@ -50,6 +71,18 @@ class iscomx1plus extends is
         }
 
         return null;
+    }
+
+    protected function getCmsModel(): string
+    {
+        if ($this->isLegacyVersion()) {
+            return $this->getCmsModelLegacy();
+        }
+
+        $typeId = $this->apiCall('/v1/switch/1')['type'] ?? null; // TODO: caching?
+        $cmsModel = array_search($typeId, self::CMS_MODEL_ID);
+
+        return $typeId !== null && $cmsModel !== false ? $cmsModel : '';
     }
 
     /**

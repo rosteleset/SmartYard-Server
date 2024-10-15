@@ -65,4 +65,13 @@ class iscomx1 extends is
 
         return null;
     }
+
+    protected function getCmsModel(): string
+    {
+        if ($this->isLegacyVersion()) {
+            return $this->getCmsModelLegacy();
+        }
+
+        return $this->apiCall('/switch/settings')['modelId'] ?? '';
+    }
 }
