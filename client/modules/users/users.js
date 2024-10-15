@@ -378,6 +378,7 @@
                             title: i18n("users.userGroups"),
                             tab: i18n("users.userGroups"),
                             hidden: !parseInt(response.user.uid) || gu.length == 0 || !AVAIL("accounts", "userGroups", "PUT"),
+                            noHover: true,
                             options: gu,
                         },
                         {
