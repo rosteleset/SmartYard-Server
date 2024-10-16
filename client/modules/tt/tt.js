@@ -1441,9 +1441,9 @@
                     let i = ts[sk];
                     if (t[i].filter) {
                         if (x == t[i].filter) {
-                            filters += `<li class="dropdown-item${hasSub?' nomenu':''} pointer tt_issues_filter font-weight-bold mr-3" data-filter-name="${t[i].filter}">`;
+                            filters += `<li class="dropdown-item${hasSub ? ' nomenu' : ''} pointer tt_issues_filter font-weight-bold mr-3" data-filter-name="${t[i].filter}">`;
                         } else {
-                            filters += `<li class="dropdown-item${hasSub?' nomenu':''} pointer tt_issues_filter mr-3" data-filter-name="${t[i].filter}">`;
+                            filters += `<li class="dropdown-item${hasSub ? ' nomenu' : ''} pointer tt_issues_filter mr-3" data-filter-name="${t[i].filter}">`;
                         }
                         if (parseInt(t[i].personal) > 1000000) {
                             filters += '<i class="fas fa-fw fa-users mr-2"></i>';
@@ -1504,7 +1504,9 @@
                     filters += "<i class='fas fa-fw fa-xs fa-angle-double-right ml-2 mr-2'></i>";
                 }
 
-                filtersTree = filtersTree[filterNames[o].trim()];
+                if (filtersTree[filterNames[o].trim()]) {
+                    filtersTree = filtersTree[filterNames[o].trim()];
+                }
             }
 
             let fp = -1;
