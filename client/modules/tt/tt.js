@@ -1544,8 +1544,8 @@
             }
         }
 
-        let skip = parseInt(params.skip?params.skip:0);
-        let limit = parseInt(params.limit?params.limit:modules.tt.defaultIssuesPerPage);
+        let skip = parseInt(params.skip ? params.skip : 0);
+        let limit = parseInt(params.limit ? params.limit : modules.tt.defaultIssuesPerPage);
 
         let _ = Math.random();
 
