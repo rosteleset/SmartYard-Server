@@ -1292,6 +1292,9 @@ function strtotime(text, now) {
   if (!isNaN(parsed = Date.parse(text))) {
     return parsed / 1000 | 0
   }
+  if (!isNaN(parsed = Date.parse(text.toUpperCase()))) {
+    return parsed / 1000 | 0
+  }
   // Browsers !== Chrome have problems parsing ISO 8601 date strings, as they do
   // not accept lower case characters, space, or shortened time zones.
   // Therefore, fix these problems and try again.
