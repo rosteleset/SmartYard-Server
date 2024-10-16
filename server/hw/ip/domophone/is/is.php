@@ -599,6 +599,12 @@ abstract class is extends domophone
         return $this->apiCall('/switch/settings')['modelId'] ?? null;
     }
 
+    /**
+     * @return string
+     *
+     * @deprecated
+     * @see getCmsModel()
+     */
     protected function getCmsModelLegacy(): string
     {
         $idModelMap = [
