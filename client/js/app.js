@@ -182,6 +182,14 @@ function hashChange() {
     let [ route, params, hash ] = hashParse();
 
     if (hash !== lastHash) {
+
+        if (typeof window.onbeforeunload == "function") {
+            if (!confirm(i18n("unsavedChanges"))) {
+                return;
+            }
+            window.onbeforeunload = null;
+        }
+
         lastHash = hash;
 
         if (params["_skipRouting"] == "1") {
