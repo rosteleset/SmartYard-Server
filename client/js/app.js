@@ -185,6 +185,7 @@ function hashChange() {
 
         if (typeof window.onbeforeunload == "function") {
             if (!confirm(i18n("unsavedChanges"))) {
+                window.history.back();
                 return;
             }
             window.onbeforeunload = null;
