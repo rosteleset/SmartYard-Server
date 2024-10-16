@@ -404,6 +404,20 @@ function cardForm(params) {
                 break;
 
             case "multiselect":
+                if (params.fields[i].filter) {
+                    h += `<div class="input-group mb-2">`;
+                    h += `<input name="${_prefix}${params.fields[i].id}-filter" id="${_prefix}${params.fields[i].id}-filter" type="text" class="form-control modalFormField" style="cursor: text;" autocomplete="off" placeholder="${i18n("filter")}">`;
+                    h += `<div class="input-group-append">`;
+                    h += `<span id="${_prefix}${params.fields[i].id}-filter-button" title="${i18n("filter")}" class="input-group-text pointer"><i class="fas fa-fw fa-filter"></i></span>`;
+                    h += `</div>`;
+                    h += `</div>`;
+                    if (focus == _prefix + params.fields[i].id) {
+                        focus = _prefix + params.fields[i].id + "-filter";
+                    };
+                    if (autofocus == _prefix + params.fields[i].id) {
+                        autofocus = _prefix + params.fields[i].id + "-filter";
+                    };
+                }
                 if (params.target) {
                     h += `<div name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" class="overflow-y-auto" style="position: relative; border: solid thin transparent; border-radius: 3px;">`;
                 } else {
@@ -863,27 +877,6 @@ function cardForm(params) {
     } else {
         target = modal(h);
 
-        setTimeout(() => {
-            $(".select2-selection__rendered:visible").each(function () {
-                let s2 = $(this);
-                s2.css("width", s2.css("width"));
-            });
-
-            if (params.title) {
-                $("#modal").draggable({
-                    handle: "#modalHeader",
-                });
-            }
-
-            if (autofocus && !focus) {
-                $("#" + autofocus).focus();
-            }
-
-            if (focus) {
-                $("#" + focus).focus();
-            }
-        }, 150);
-
         if (params.timeout) {
             $('#modal').attr("data-prefix", _prefix);
             setTimeout(() => {
@@ -893,6 +886,27 @@ function cardForm(params) {
             }, params.timeout);
         }
     }
+
+    setTimeout(() => {
+        $(".select2-selection__rendered:visible").each(function () {
+            let s2 = $(this);
+            s2.css("width", s2.css("width"));
+        });
+
+        if (params.title) {
+            $("#modal").draggable({
+                handle: "#modalHeader",
+            });
+        }
+
+        if (autofocus && !focus) {
+            $("#" + autofocus).focus();
+        }
+
+        if (focus) {
+            $("#" + focus).focus();
+        }
+    }, 150);
 
     $("#" + _prefix + "form").submit(function(e) { e.preventDefault(); });
 
@@ -1006,11 +1020,6 @@ function cardForm(params) {
             }
 
             function s2FormatR(item) {
-/*
-                if (!item.id) {
-                    return item.text;
-                }
-*/
                 let c = '';
                 let f = '';
 
@@ -1030,11 +1039,6 @@ function cardForm(params) {
             }
 
             function s2FormatS(item) {
-/*
-                if (!item.id) {
-                    return item.text;
-                }
-*/
                 let c = '';
                 let f = '';
 
@@ -1343,6 +1347,52 @@ function cardForm(params) {
 
             $(`#${_prefix}${params.fields[i].id}`).off("ready.jstree").on("ready.jstree", (e, data) => {
                 jstreectl(data && data.selected && data.selected.length);
+            });
+        }
+
+        if (params.fields[i].type == "multiselect") {
+            function msf(id, filter) {
+                if (filter) {
+                    filter = filter.toLowerCase();
+                    for (let i = 0; i < $("#" + id).children().length; i++) {
+                        if ($("#" + id).children()[i].tagName == "DIV") {
+                            if ($($("#" + id).children()[i]).text().toLowerCase().indexOf(filter) >= 0) {
+                                $($("#" + id).children()[i]).show();
+                            } else {
+                                $($("#" + id).children()[i]).hide();
+                            }
+                        }
+                    }
+                } else {
+                    for (let i = 0; i < $("#" + id).children().length; i++) {
+                        if ($("#" + id).children()[i].tagName == "DIV") {
+                            $($("#" + id).children()[i]).show();
+                        }
+                    }
+                }
+            }
+
+            $(`#${_prefix}${params.fields[i].id}-filter-button`).off("click").on("click", function () {
+                let i = $(this).attr("id");
+                let f = $.trim($("#" + $(i.substring(0, i.length - 7))).val());
+                msf(i.substring(0, i.length - 14));
+            });
+
+            $(`#${_prefix}${params.fields[i].id}-filter`).off("keypress").on("keypress", function (e) {
+                let f = $.trim($(this).val());
+                let i = $(this).attr("id");
+                if (f) {
+                    if (e.keyCode === 13) {
+                        $(i + "-button").click();
+                        e.preventDefault();
+                    }
+                }
+            });
+
+            $(`#${_prefix}${params.fields[i].id}-filter`).keyup(function (e) {
+                let f = $.trim($(this).val());
+                let i = $(this).attr("id");
+                msf(i.substring(0, i.length - 7), f);
             });
         }
     }
