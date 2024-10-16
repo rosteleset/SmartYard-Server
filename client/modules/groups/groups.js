@@ -216,7 +216,7 @@
                     });
 
                     cardForm({
-                        title: i18n("groups.users") + " " + i18n("groups.gid") + gid,
+                        title: i18n("groups.users") + " " + i18n("groups.gid") + gid + " (" + group.group.name + ")",
                         footer: true,
                         borderless: true,
                         topApply: true,
