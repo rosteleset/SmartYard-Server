@@ -196,23 +196,41 @@
                 GET("accounts", "groupUsers", gid, true).done(uids => {
                     let users_list = [];
                     let defaults = [];
+                    let new_list = [];
 
                     for (let i in users.users) {
                         if (users.users[i].uid) {
                             if (parseInt(users.users[i].uid) == parseInt(group.group.admin) || parseInt(users.users[i].primaryGroup) == parseInt(gid)) {
                                 defaults.push(parseInt(users.users[i].uid));
                             }
-                            users_list.push({
-                                id: users.users[i].uid,
-                                text: $.trim(users.users[i].realName ? (users.users[i].realName + " (" + users.users[i].login + ")") : users.users[i].login),
-                                checked: parseInt(users.users[i].uid) == parseInt(group.group.admin) || parseInt(users.users[i].primaryGroup) == parseInt(gid) || uids.uids.indexOf(parseInt(users.users[i].uid)) >= 0,
-                                disabled: parseInt(users.users[i].uid) == parseInt(group.group.admin) || parseInt(users.users[i].primaryGroup) == parseInt(gid),
-                            });
+                            if (parseInt(users.users[i].uid) == parseInt(group.group.admin) || parseInt(users.users[i].primaryGroup) == parseInt(gid) || uids.uids.indexOf(parseInt(users.users[i].uid)) >= 0) {
+                                users_list.push({
+                                    id: users.users[i].uid,
+                                    text: $.trim(users.users[i].realName ? (users.users[i].realName + " (" + users.users[i].login + ")") : users.users[i].login),
+                                    checked: parseInt(users.users[i].uid) == parseInt(group.group.admin) || parseInt(users.users[i].primaryGroup) == parseInt(gid) || uids.uids.indexOf(parseInt(users.users[i].uid)) >= 0,
+                                    disabled: parseInt(users.users[i].uid) == parseInt(group.group.admin) || parseInt(users.users[i].primaryGroup) == parseInt(gid),
+                                });
+                            }
+//                            if (!(parseInt(users.users[i].uid) == parseInt(group.group.admin) || parseInt(users.users[i].primaryGroup) == parseInt(gid)) && !(parseInt(users.users[i].uid) == parseInt(group.group.admin) || parseInt(users.users[i].primaryGroup) == parseInt(gid) || uids.uids.indexOf(parseInt(users.users[i].uid)) >= 0)) {
+                                new_list.push({
+                                    id: users.users[i].uid,
+                                    text: $.trim(users.users[i].realName ? (users.users[i].realName + " (" + users.users[i].login + ")") : users.users[i].login),
+                                });
+//                            }
                         }
                     }
 
                     users_list.sort((a, b) => {
                         return a.text.localeCompare(b.text);
+                    });
+
+                    new_list.sort((a, b) => {
+                        return a.text.localeCompare(b.text);
+                    });
+
+                    new_list.unshift({
+                        id: -1,
+                        text: "-",
                     });
 
                     cardForm({
@@ -225,13 +243,51 @@
                         noHover: true,
                         fields: [
                             {
+                                id: "new",
+                                type: "select2",
+                                options: new_list,
+                            },
+                            {
                                 id: "users",
                                 type: "multiselect",
                                 options: users_list,
                                 allButtons: false,
-                                filter: true,
                             }
                         ],
+                        done: prefix => {
+                            $("#" + prefix + "new").on("change", () => {
+                                let f = false;
+                                let u = false;
+                                let l = false;
+                                $(`.checkBoxOption-${prefix}-users`).each(function () {
+                                    if (parseInt($(this).attr("data-id")) == parseInt($("#" + prefix + "new").val())) {
+                                        f = true;
+                                    }
+                                    l = $(this);
+                                });
+                                if (!f) {
+                                    for (let i in users.users) {
+                                        if (parseInt(users.users[i].uid) == parseInt($("#" + prefix + "new").val())) {
+                                            u = $.trim(users.users[i].realName ? (users.users[i].realName + " (" + users.users[i].login + ")") : users.users[i].login);
+                                        }
+                                    }
+                                }
+                                if (u) {
+                                    let h = '';
+                                    let id = md5(guid());
+                                    h += `
+                                        <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="ml-1 checkBoxOption-${prefix}-users custom-control-input multiselect-checkbox" id="${id}" data-id="${$("#" + prefix + "new").val()}" checked="checked" />
+                                        <label for="${id}" class="custom-control-label form-check-label" style="text-wrap: pretty;">${u}</label>
+                                    `;
+                                    $("#" + prefix + "users").append(h);
+                                    if (l) {
+                                        l.parent().addClass("mb-3");
+                                    }
+                                }
+                                return;
+                            });
+                        },
                         callback: result => {
                             loadingStart();
                             let uids = [];

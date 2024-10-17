@@ -337,12 +337,24 @@ function cardForm(params) {
         first = "";
         let height = 0;
 
-        if (!focus && params.fields[i].focus && params.fields[i].hidden !== true && params.fields[i].disabled !== true) {
-            focus = _prefix + params.fields[i].id;
+        if (!focus && params.fields[i].focus && !params.fields[i].hidden && !params.fields[i].disabled && !params.fields[i].readonly) {
+            if (tabs.length) {
+                if (params.fields[i].tab == tabs[0]) {
+                    focus = _prefix + params.fields[i].id;
+                }
+            } else {
+                focus = _prefix + params.fields[i].id;
+            }
         }
 
-        if (!autofocus && params.fields[i].hidden !== true && params.fields[i].disabled !== true) {
-            autofocus = _prefix + params.fields[i].id;
+        if (!autofocus && !params.fields[i].hidden && !params.fields[i].disabled && !params.fields[i].readonly) {
+            if (tabs.length) {
+                if (params.fields[i].tab == tabs[0]) {
+                    autofocus = _prefix + params.fields[i].id;
+                }
+            } else {
+                autofocus = _prefix + params.fields[i].id;
+            }
         }
 
         switch (params.fields[i].type) {
@@ -430,7 +442,7 @@ function cardForm(params) {
                     let c = params.fields[i].options[j].checked || (typeof params.fields[i].value === "object" && Array.isArray(params.fields[i].value) && params.fields[i].value.indexOf(params.fields[i].options[j].id) >= 0);
                     h += `
                         <div class="custom-control custom-checkbox${(j !== params.fields[i].options.length - 1) ? " mb-3" : ""}">
-                        <input type="checkbox" class="ml-1 checkBoxOption-${params.fields[i].id} custom-control-input multiselect-checkbox" id="${id}" data-id="${params.fields[i].options[j].id}"${c ? " checked" : ""}${params.fields[i].options[j].disabled ? " disabled" : ""}/>
+                        <input type="checkbox" class="ml-1 checkBoxOption-${_prefix}-${params.fields[i].id} custom-control-input multiselect-checkbox" id="${id}" data-id="${params.fields[i].options[j].id}"${c ? " checked" : ""}${params.fields[i].options[j].disabled ? " disabled" : ""}/>
                         <label for="${id}" class="custom-control-label form-check-label" style="text-wrap: pretty;">${params.fields[i].options[j].text}</label>
                     `;
                     if (params.fields[i].options[j].append) {
@@ -734,7 +746,7 @@ function cardForm(params) {
 
             case "multiselect":
                 let o = [];
-                $(`.checkBoxOption-${params.fields[i].id}`).each(function () {
+                $(`.checkBoxOption-${_prefix}-${params.fields[i].id}`).each(function () {
                     if ($(this).prop("checked")) {
                         o.push($(this).attr("data-id"));
                     }
@@ -973,9 +985,9 @@ function cardForm(params) {
                     break;
 
                 case "multiselect":
-                    $(`.checkBoxOption-${params.fields[i].id}`).prop("checked", false);
+                    $(`.checkBoxOption-${_prefix}-${params.fields[i].id}`).prop("checked", false);
                     for (let j in params.fields[i].value) {
-                        $(`.checkBoxOption-${params.fields[i].id}[data-id='${params.fields[i].value[j]}']`).prop("checked", true);
+                        $(`.checkBoxOption-${_prefix}-${params.fields[i].id}[data-id='${params.fields[i].value[j]}']`).prop("checked", true);
                     }
                     break;
             }
