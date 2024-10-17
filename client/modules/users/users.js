@@ -183,6 +183,7 @@
 
                 let cropper = false;
                 let croppable = false;
+                let avatar = false;
 
                 cardForm({
                     title: i18n("users.edit"),
@@ -454,6 +455,7 @@
                                 width: 256,
                                 height: 256,
                             })).makeCode(result.two_fa);
+                            $($("#" + prefix + "2faCode").children()[1]).css("width", "100%");
                         });
 
                         $("#" + prefix + "avatar").html(`
@@ -461,14 +463,18 @@
                                 <img id="${prefix}-avatar-image" src="img/noimage.png" width="100%" />
                             </div>
                             <div class="mt-2">
-                                <button id="${prefix}-avatar-load" type="button" class="btn btn-secondary mr-2" title="${i18n("clearSelection")}"><i class="fas fa-fw fa-eraser"></i></button>
-                                <button id="${prefix}-avatar-clear" type="button" class="btn btn-secondary mr-2" title="${i18n("clearSelection")}"><i class="fas fa-fw fa-eraser"></i></button>
-                                <button id="${prefix}-avatar-apply" type="button" class="btn btn-secondary mr-2" title="${i18n("clearSelection")}"><i class="fas fa-fw fa-eraser"></i></button>
+                                <button id="${prefix}-avatar-load" type="button" class="btn btn-secondary mr-2" title="${i18n("users.loadAvatar")}"><i class="fas fa-fw fa-user-circle"></i></button>
+                                <button id="${prefix}-avatar-apply" type="button" class="btn btn-success mr-2 disabled" title="${i18n("users.applyAvatar")}"><i class="fas fa-fw fa-check"></i></button>
                             </div>
                         `);
 
-                        $("#" + prefix + "-avatar-span").on("click", () => {
+                        $("#" + prefix + "-avatar-load").on("click", () => {
+                            avatar = false;
+
+                            xblur();
+
                             $("#fileInput").attr("accept", "image/*");
+
                             $("#fileInput").off("change").val("").click().on("change", () => {
                                 files = document.querySelector("#fileInput").files;
 
@@ -484,7 +490,7 @@
 
                                 file = files[0];
 
-                                if (file.size > 1.5 * 1024 * 1024) {
+                                if (file.size > 0.5 * 1024 * 1024) {
                                     error("exceededSize");
                                     return;
                                 }
@@ -509,6 +515,7 @@
                                                     viewMode: 1,
                                                     ready: function () {
                                                         croppable = true;
+                                                        $("#" + prefix + "-avatar-apply").removeClass("disabled");
                                                     },
                                                 });
                                             };
@@ -517,6 +524,46 @@
                                     });
                                 }
                             });
+                        });
+
+                        $("#" + prefix + "-avatar-apply").on("click", () => {
+                            xblur();
+
+                            if (croppable) {
+                                let croppedCanvas;
+
+                                croppedCanvas = cropper.getCroppedCanvas();
+
+                                let canvas = document.createElement('canvas');
+                                let context = canvas.getContext('2d');
+                                let width = croppedCanvas.width;
+                                let height = croppedCanvas.height;
+
+                                canvas.width = width;
+                                canvas.height = height;
+                                context.imageSmoothingEnabled = true;
+                                context.drawImage(croppedCanvas, 0, 0, width, height);
+                                context.globalCompositeOperation = 'destination-in';
+                                context.beginPath();
+                                context.arc(width / 2, height / 2, Math.min(width, height) / 2, 0, 2 * Math.PI, true);
+                                context.fill();
+                                croppedCanvas = canvas;
+
+                                cropper.destroy();
+
+                                avatar = croppedCanvas.toDataURL();
+
+                                $("#" + prefix + "-avatar-image").attr("src", avatar);
+
+                                cropper = false;
+                                croppable = false;
+
+                                $("#" + prefix + "-avatar-apply").addClass("disabled");
+                            }
+                        });
+
+                        $("#" + prefix + "-avatar-image").on("click", () => {
+                            $("#" + prefix + "-avatar-load").click();
                         });
 
                         $("#" + prefix + "-avatar-span").on("proxy-paste", (e, f) => {
@@ -537,6 +584,7 @@
                                             viewMode: 1,
                                             ready: function () {
                                                 croppable = true;
+                                                $("#" + prefix + "-avatar-apply").removeClass("disabled");
                                             },
                                         });
                                     }
