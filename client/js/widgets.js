@@ -446,6 +446,20 @@ $(window).off("resize").on("resize", () => {
     }
 });
 
+$(document).on("paste", e => {
+    if ($(".paste-target:visible").length) {
+        e.preventDefault();
+        if (!e.originalEvent.clipboardData.files.length) {
+            return;
+        }
+        let files = [];
+        Array.from(e.originalEvent.clipboardData.files).forEach(file => {
+            files.push(file);
+        });
+        $(".paste-target:visible").trigger("proxy-paste", [files]);
+    }
+});
+
 setInterval(() => {
     if (hasUnsavedChanges || ($("#editorContainer").length && currentAceEditor && currentAceEditorOriginalValue !== false && currentAceEditor.getValue() != currentAceEditorOriginalValue)) {
         if (typeof window.onbeforeunload != "function") {

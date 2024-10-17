@@ -181,6 +181,9 @@
                     }
                 }
 
+                let cropper = false;
+                let croppable = false;
+
                 cardForm({
                     title: i18n("users.edit"),
                     footer: true,
@@ -375,13 +378,14 @@
                         {
                             id: "userGroups",
                             type: "multiselect",
-                            title: i18n("users.userGroups"),
+                            title: false,
                             tab: i18n("users.userGroups"),
                             hidden: !parseInt(response.user.uid) || gu.length == 0 || !AVAIL("accounts", "userGroups", "PUT"),
                             noHover: true,
                             allButtons: false,
                             options: gu,
                             filter: true,
+                            singleColumn: true,
                         },
                         {
                             id: "2faCode",
@@ -426,6 +430,14 @@
                                 },
                             },
                         },
+                        {
+                            id: "avatar",
+                            type: "empty",
+                            title: false,
+                            tab: i18n("users.avatar"),
+                            noHover: true,
+                            singleColumn: true,
+                        }
                     ],
                     done: function (prefix) {
                         POST("authentication", "two_fa", false, {
@@ -443,6 +455,95 @@
                                 height: 256,
                             })).makeCode(result.two_fa);
                         });
+
+                        $("#" + prefix + "avatar").html(`
+                            <div id="${prefix}-avatar-span" class="paste-target">
+                                <img id="${prefix}-avatar-image" src="img/noimage.png" width="100%" />
+                            </div>
+                            <div class="mt-2">
+                                <button id="${prefix}-avatar-load" type="button" class="btn btn-secondary mr-2" title="${i18n("clearSelection")}"><i class="fas fa-fw fa-eraser"></i></button>
+                                <button id="${prefix}-avatar-clear" type="button" class="btn btn-secondary mr-2" title="${i18n("clearSelection")}"><i class="fas fa-fw fa-eraser"></i></button>
+                                <button id="${prefix}-avatar-apply" type="button" class="btn btn-secondary mr-2" title="${i18n("clearSelection")}"><i class="fas fa-fw fa-eraser"></i></button>
+                            </div>
+                        `);
+
+                        $("#" + prefix + "-avatar-span").on("click", () => {
+                            $("#fileInput").attr("accept", "image/*");
+                            $("#fileInput").off("change").val("").click().on("change", () => {
+                                files = document.querySelector("#fileInput").files;
+
+                                if (files.length === 0) {
+                                    error(i18n("noFileSelected"));
+                                    return;
+                                }
+
+                                if (files.length > 1) {
+                                    error(i18n("multiuploadNotSupported"));
+                                    return;
+                                }
+
+                                file = files[0];
+
+                                if (file.size > 1.5 * 1024 * 1024) {
+                                    error("exceededSize");
+                                    return;
+                                }
+
+                                if (file) {
+                                    fetch(URL.createObjectURL(file)).then(response => {
+                                        return response.blob();
+                                    }).then(blob => {
+                                        setTimeout(() => {
+                                            let reader = new FileReader();
+                                            reader.onloadend = () => {
+                                                if (cropper) {
+                                                    cropper.destroy();
+                                                }
+
+                                                $("#" + prefix + "-avatar-image").attr("src", reader.result);
+
+                                                croppable = false;
+
+                                                cropper = new Cropper(document.getElementById(prefix + "-avatar-image"), {
+                                                    aspectRatio: 1,
+                                                    viewMode: 1,
+                                                    ready: function () {
+                                                        croppable = true;
+                                                    },
+                                                });
+                                            };
+                                            reader.readAsDataURL(blob);
+                                        }, 100);
+                                    });
+                                }
+                            });
+                        });
+
+                        $("#" + prefix + "-avatar-span").on("proxy-paste", (e, f) => {
+                            if (f && f[0]) {
+                                if (f[0].type.startsWith('image/')) {
+                                    let blob = URL.createObjectURL(f[0]);
+                                    if (blob) {
+                                        if (cropper) {
+                                            cropper.destroy();
+                                        }
+
+                                        $("#" + prefix + "-avatar-image").attr("src", blob);
+
+                                        croppable = false;
+
+                                        cropper = new Cropper(document.getElementById(prefix + "-avatar-image"), {
+                                            aspectRatio: 1,
+                                            viewMode: 1,
+                                            ready: function () {
+                                                croppable = true;
+                                            },
+                                        });
+                                    }
+                                }
+                            }
+                        });
+
                     },
                     callback: function (result) {
                         if (!gu.length) {

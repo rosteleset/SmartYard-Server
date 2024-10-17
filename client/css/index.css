@@ -656,3 +656,12 @@ select {
 .nohover:hover {
   background-color: transparent!important;
 }
+
+.cropper-view-box, .cropper-face {
+  border-radius: 50%;
+}
+
+.cropper-view-box {
+  outline: 0;
+  box-shadow: 0 0 0 1px #39f;
+}

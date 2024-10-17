@@ -18,7 +18,7 @@ const mime2fa = {
 };
 
 function uploadForm(mimeTypes, button) {
-    mimeTypes = mimeTypes?escapeHTML(mimeTypes.join(",")):"";
+    mimeTypes = mimeTypes ? escapeHTML(mimeTypes.join(",")) : "";
 
     $("#fileInput").attr("accept", mimeTypes);
     $("#uploadModalTitle").text(i18n("upload"));
