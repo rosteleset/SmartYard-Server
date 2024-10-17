@@ -1888,6 +1888,7 @@
                             message(i18n("tt.filterWasSaved"));
                             lStore("ttIssueFilter:" + current_project, n);
                             currentAceEditorOriginalValue = currentAceEditor.getValue();
+                            window.onbeforeunload = null;
                             window.location.href = '?#tt&filter=' + n + '&customSearch=yes&_=' + Math.random();
                         }).
                         fail(FAIL).
