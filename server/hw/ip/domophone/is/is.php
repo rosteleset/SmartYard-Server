@@ -283,16 +283,6 @@ abstract class is extends domophone
         $this->apiCall('/sip/options', 'PUT', ['ringDuration' => $timeout]);
     }
 
-    public function setCmsModel(string $model = '')
-    {
-        if ($this->isLegacyVersion()) {
-            $this->setCmsModelLegacy($model);
-            return;
-        }
-
-        $this->apiCall('/switch/settings', 'PUT', ['modelId' => self::CMS_MODEL_TO_PARAMS[$model][0]]);
-    }
-
     public function setConciergeNumber(int $sipNumber)
     {
         $this->conciergeNumber = $sipNumber;
