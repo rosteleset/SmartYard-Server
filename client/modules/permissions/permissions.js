@@ -58,7 +58,7 @@
             for (let i in modules.permissions.groups) {
                 g.push({
                     value: modules.permissions.groups[i].gid,
-                    text: modules.permissions.groups[i].name ? modules.permissions.groups[i].name : modules.permissions.groups[i].acronym,
+                    text: modules.permissions.groups[i].name ? (modules.permissions.groups[i].name + " (" + modules.permissions.groups[i].acronym + ")") : modules.permissions.groups[i].acronym,
                 });
             }
         } else {
@@ -66,7 +66,7 @@
                 if (modules.permissions.users[i].uid > 0) {
                     u.push({
                         value: modules.permissions.users[i].uid,
-                        text: modules.permissions.users[i].login,
+                        text: modules.permissions.users[i].realName ? (modules.permissions.users[i].realName + " (" + modules.permissions.users[i].login + ")") : modules.permissions.users[i].login,
                     });
                 }
             }
@@ -199,7 +199,7 @@
         }).show();
     },
 
-    editRights: function (group, group_login, api_name, method_name, allow, deny, options, guid, api, method) {
+    editRights: function (group, group_user, api_name, method_name, allow, deny, options, guid, api, method) {
         cardForm({
             title: i18n("permissions.edit"),
             footer: true,
@@ -208,10 +208,10 @@
             size: "lg",
             fields: [
                 {
-                    id: group?"gid":"uid",
+                    id: group ? "gid" : "uid",
                     type: "text",
-                    title: group?i18n("groups.group"):i18n("users.login"),
-                    value: group_login,
+                    title: group ? i18n("groups.group") : i18n("users.user"),
+                    value: group_user,
                     readonly: true,
                 },
                 {
@@ -331,7 +331,7 @@
                         modules.permissions.addRights(group);
                     },
                 },
-                caption: group?i18n("permissions.groups"):i18n("permissions.users"),
+                caption: group ? i18n("permissions.groups") : i18n("permissions.users"),
                 filter: true,
             },
             edit: uid => {
@@ -352,9 +352,9 @@
                 }
                 modules.permissions.editRights(
                     group,
-                    group?(g[uid[0]].name ? g[uid[0]].name : g[uid[0]].acronym):u[uid[0]].login,
-                    (lang.methods[uid[1]] && lang.methods[uid[1]]["_title"])?lang.methods[uid[1]]["_title"]:uid[1],
-                    (lang.methods[uid[1]] && lang.methods[uid[1]][uid[2]])?lang.methods[uid[1]][uid[2]]["_title"]:uid[2],
+                    group ? (g[uid[0]].name ? (g[uid[0]].name + " (" + g[uid[0]].acronym + ")"): g[uid[0]].acronym) : (u[uid[0]].realName ? (u[uid[0]].realName + " (" + u[uid[0]].login + ")") : u[uid[0]].login),
+                    (lang.methods[uid[1]] && lang.methods[uid[1]]["_title"]) ? lang.methods[uid[1]]["_title"] : uid[1],
+                    (lang.methods[uid[1]] && lang.methods[uid[1]][uid[2]]) ? lang.methods[uid[1]][uid[2]]["_title"] : uid[2],
                     a,
                     d,
                     o,
@@ -363,7 +363,7 @@
                     uid[2]
                 );
             },
-            startPage: group?modules.permissions.groupsStartPage:modules.permissions.usersStartPage,
+            startPage: group ? modules.permissions.groupsStartPage : modules.permissions.usersStartPage,
             pageChange: page => {
                 if (group) {
                     modules.permissions.groupsStartPage = page;
@@ -373,7 +373,7 @@
             },
             columns: [
                 {
-                    title: group?i18n("groups.group"):i18n("users.login"),
+                    title: group ? i18n("groups.group") : i18n("users.user"),
                     nowrap: true,
                 },
                 {
@@ -440,7 +440,7 @@
                                 uid: i.toString() + '-' + j + '-' + k,
                                 cols: [
                                     {
-                                        data: group?(g[i].name ? g[i].name : g[i].acronym):u[i].login,
+                                        data: group ? (g[i].name ? (g[i].name + " (" + g[i].acronym + ")") : g[i].acronym) : (u[i].realName ? (u[i].realName + " (" + u[i].login + ")") : u[i].login),
                                         nowrap: true,
                                     },
                                     {

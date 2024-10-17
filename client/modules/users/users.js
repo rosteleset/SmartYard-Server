@@ -381,6 +381,7 @@
                             noHover: true,
                             allButtons: false,
                             options: gu,
+                            filter: true,
                         },
                         {
                             id: "2faCode",
