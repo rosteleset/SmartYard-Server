@@ -476,7 +476,7 @@
                             $("#fileInput").attr("accept", "image/*");
 
                             $("#fileInput").off("change").val("").click().on("change", () => {
-                                files = document.querySelector("#fileInput").files;
+                                let files = document.querySelector("#fileInput").files;
 
                                 if (files.length === 0) {
                                     error(i18n("noFileSelected"));
@@ -488,41 +488,39 @@
                                     return;
                                 }
 
-                                file = files[0];
+                                let file = files[0];
 
                                 if (file.size > 0.5 * 1024 * 1024) {
                                     error("exceededSize");
                                     return;
                                 }
 
-                                if (file) {
-                                    fetch(URL.createObjectURL(file)).then(response => {
-                                        return response.blob();
-                                    }).then(blob => {
-                                        setTimeout(() => {
-                                            let reader = new FileReader();
-                                            reader.onloadend = () => {
-                                                if (cropper) {
-                                                    cropper.destroy();
-                                                }
+                                fetch(URL.createObjectURL(file)).then(response => {
+                                    return response.blob();
+                                }).then(blob => {
+                                    setTimeout(() => {
+                                        let reader = new FileReader();
+                                        reader.onloadend = () => {
+                                            if (cropper) {
+                                                cropper.destroy();
+                                            }
 
-                                                $("#" + prefix + "-avatar-image").attr("src", reader.result);
+                                            $("#" + prefix + "-avatar-image").attr("src", reader.result);
 
-                                                croppable = false;
+                                            croppable = false;
 
-                                                cropper = new Cropper(document.getElementById(prefix + "-avatar-image"), {
-                                                    aspectRatio: 1,
-                                                    viewMode: 1,
-                                                    ready: function () {
-                                                        croppable = true;
-                                                        $("#" + prefix + "-avatar-apply").removeClass("disabled");
-                                                    },
-                                                });
-                                            };
-                                            reader.readAsDataURL(blob);
-                                        }, 100);
-                                    });
-                                }
+                                            cropper = new Cropper(document.getElementById(prefix + "-avatar-image"), {
+                                                aspectRatio: 1,
+                                                viewMode: 1,
+                                                ready: function () {
+                                                    croppable = true;
+                                                    $("#" + prefix + "-avatar-apply").removeClass("disabled");
+                                                },
+                                            });
+                                        };
+                                        reader.readAsDataURL(blob);
+                                    }, 100);
+                                });
                             });
                         });
 
