@@ -28,6 +28,16 @@ class iscomx1 extends is
         }
     }
 
+    public function setCmsModel(string $model = '')
+    {
+        if ($this->isLegacyVersion()) {
+            $this->setCmsModelLegacy($model);
+            return;
+        }
+
+        $this->apiCall('/switch/settings', 'PUT', ['modelId' => self::CMS_MODEL_TO_PARAMS[$model][0]]);
+    }
+
     public function setTickerText(string $text = '')
     {
         // Empty implementation

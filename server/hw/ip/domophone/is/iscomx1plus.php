@@ -12,24 +12,25 @@ class iscomx1plus extends is
 {
 
     /**
-     * Mapping of CMS models to their corresponding ID.
+     * Mapping of CMS models to their corresponding type ID and capacity.
      *
-     * @var array<string, int>
+     * @var array<string, array{id: int, capacity: int}>
      */
-    protected const CMS_MODEL_ID = [
-        'BK-4' => 50,
-        'BK-10' => 51,
-        'BK-100' => 52,
-        'COM-80U' => 61,
-        'COM-100U' => 3, // other
-        'COM-160U' => 63,
-        'COM-220U' => 65,
-        'FACTORIAL 8x8' => 0, // other
-        'KKM-100S2' => 13,
-        'KKM-105' => 11,
-        'KKM-108' => 12,
-        'KM100-7.2' => 30,
-        'KMG-100' => 20,
+    protected const CMS_MODEL_DATA = [
+        'BK-4' => ['type' => 50, 'capacity' => 4],
+        'BK-10' => ['type' => 51, 'capacity' => 10],
+        'BK-100' => ['type' => 52, 'capacity' => 100],
+        'COM-80U' => ['type' => 61, 'capacity' => 80],
+        'COM-100U' => ['type' => 3, 'capacity' => 100], // other
+        'COM-160U' => ['type' => 63, 'capacity' => 160],
+        'COM-220U' => ['type' => 65, 'capacity' => 220],
+        'FACTORIAL 8x8' => ['type' => 0, 'capacity' => 64], // other
+        'KKM-100S2' => ['type' => 13, 'capacity' => 100],
+        'KKM-105' => ['type' => 11, 'capacity' => 100],
+        'KKM-108' => ['type' => 12, 'capacity' => 100],
+        'KM100-7.2' => ['type' => 30, 'capacity' => 100],
+        'KMG-100' => ['type' => 20, 'capacity' => 100],
+        'QAD-100' => ['type' => 40, 'capacity' => 260],
     ];
 
     /**
@@ -54,6 +55,21 @@ class iscomx1plus extends is
                     'answer' => $levels[1],
                 ],
             ]);
+        }
+    }
+
+    public function setCmsModel(string $model = ''): void
+    {
+        if ($this->isLegacyVersion()) {
+            $this->setCmsModelLegacy($model);
+            return;
+        }
+
+        for ($number = 1; $number <= 4; $number++) {
+            $cmsMatrixObject = $this->getCmsMatrixObject($number);
+            $cmsMatrixObject->type = self::CMS_MODEL_DATA[$model]['type'];
+            $cmsMatrixObject->capacity = self::CMS_MODEL_DATA[$model]['capacity'];
+            // TODO: set full matrix
         }
     }
 
@@ -124,9 +140,14 @@ class iscomx1plus extends is
         }
 
         $cmsTypeId = $this->getCmsMatrixObject()->type;
-        $cmsModel = array_search($cmsTypeId, self::CMS_MODEL_ID);
 
-        return $cmsTypeId !== null && $cmsModel !== false ? $cmsModel : '';
+        foreach (self::CMS_MODEL_DATA as $cmsModel => $cmsData) {
+            if ($cmsData['id'] === $cmsTypeId) {
+                return $cmsModel;
+            }
+        }
+
+        return '';
     }
 
     /**
