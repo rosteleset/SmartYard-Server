@@ -623,8 +623,7 @@
              * @inheritDoc
              */
 
-            public function sendMessage($from, $to, $subject, $body, $type, $handler)
-            {
+            public function sendMessage($from, $to, $subject, $body, $type, $handler) {
 
             }
 
@@ -632,8 +631,7 @@
              * @inheritDoc
              */
 
-            public function unreaded($uid)
-            {
+            public function unreaded($uid) {
 
             }
 
@@ -641,8 +639,7 @@
              * @inheritDoc
              */
 
-            public function readed($id)
-            {
+            public function readed($id) {
 
             }
 
@@ -650,8 +647,7 @@
              * @inheritDoc
              */
 
-            public function getMessages($ids)
-            {
+            public function getMessages($ids) {
 
             }
 
@@ -659,8 +655,7 @@
              * @inheritDoc
              */
 
-            public function deleteMessages($ids)
-            {
+            public function deleteMessages($ids) {
 
             }
 
