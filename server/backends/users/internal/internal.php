@@ -602,15 +602,13 @@
               */
 
              public function getAvatar($uid) {
-                if (!checkInt($uid)) {
-                    return false;
-                }
-
                 if ($this->uid != 0) {
                     $uid = $this->uid;
                 }
 
-                error_log(">>>>>>>>>>>>>>> $uid");
+                if (!checkInt($uid)) {
+                    return false;
+                }
 
                 return $this->db->get("select avatar from core_users where uid = :uid", [
                     "uid" => $uid,

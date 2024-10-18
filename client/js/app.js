@@ -492,7 +492,7 @@ function whoAmI(force) {
                 config.defaultRoute = _me.user.defaultRoute;
             }
 
-            GET("user", "avatar", false, true).
+            GET("user", "avatar", myself.uid, true).
             always(a => {
                 if (a && a.avatar) {
                     $(".userAvatar").attr("src", a.avatar);
