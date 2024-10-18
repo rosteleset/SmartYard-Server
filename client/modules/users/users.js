@@ -186,6 +186,32 @@
                 let avatar = false;
                 let originalAvatar = false;
 
+                function crop() {
+                    let croppedCanvas;
+
+                    croppedCanvas = cropper.getCroppedCanvas();
+
+                    let canvas = document.createElement("canvas");
+                    let context = canvas.getContext("2d");
+                    let width = croppedCanvas.width;
+                    let height = croppedCanvas.height;
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    context.imageSmoothingEnabled = true;
+                    context.drawImage(croppedCanvas, 0, 0, width, height);
+                    context.globalCompositeOperation = "destination-in";
+                    context.beginPath();
+                    context.arc(width / 2, height / 2, Math.min(width, height) / 2, 0, 2 * Math.PI, true);
+                    context.fill();
+                    croppedCanvas = canvas;
+
+                    cropper.destroy();
+                    cropper = false;
+
+                    avatar = croppedCanvas.toDataURL();
+                }
+
                 cardForm({
                     title: i18n("users.edit"),
                     footer: true,
@@ -437,6 +463,7 @@
                             singleColumn: true,
                         }
                     ],
+
                     done: function (prefix) {
                         POST("authentication", "two_fa", false, {
                             //
@@ -548,36 +575,14 @@
                             xblur();
 
                             if (croppable) {
-                                let croppedCanvas;
-
-                                croppedCanvas = cropper.getCroppedCanvas();
-
-                                let canvas = document.createElement('canvas');
-                                let context = canvas.getContext('2d');
-                                let width = croppedCanvas.width;
-                                let height = croppedCanvas.height;
-
-                                canvas.width = width;
-                                canvas.height = height;
-                                context.imageSmoothingEnabled = true;
-                                context.drawImage(croppedCanvas, 0, 0, width, height);
-                                context.globalCompositeOperation = 'destination-in';
-                                context.beginPath();
-                                context.arc(width / 2, height / 2, Math.min(width, height) / 2, 0, 2 * Math.PI, true);
-                                context.fill();
-                                croppedCanvas = canvas;
-
-                                cropper.destroy();
-                                cropper = false;
-
-                                avatar = croppedCanvas.toDataURL();
+                                crop();
 
                                 $("#" + prefix + "-avatar-image").attr("src", avatar);
 
                                 croppable = false;
-
-                                checkABtn();
                             }
+
+                            checkABtn();
                         });
 
                         $("#" + prefix + "-avatar-clear").on("click", () => {
@@ -666,14 +671,21 @@
                         });
 
                     },
+
                     callback: function (result) {
+                        if (croppable) {
+                            crop();
+                        }
+
                         if (avatar) {
                             $(".userAvatar").attr("src", avatar);
                             PUT("user", "avatar", false, { avatar });
                         }
+
                         if (!gu.length) {
                             result.userGroups = false;
                         }
+
                         if (result.delete === "yes") {
                             modules.users.deleteUser(result.uid);
                         } else {
