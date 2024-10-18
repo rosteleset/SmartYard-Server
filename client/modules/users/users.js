@@ -606,7 +606,7 @@
                                     checkABtn();
                                 } else {
                                     if (myself.eMail) {
-                                        let gravUrl = "https://www.gravatar.com/avatar/" + md5($.trim(myself.eMail).toLowerCase()) + "?s=256&d=404";
+                                        let gravUrl = "https://www.gravatar.com/avatar/" + md5($.trim($("#" + prefix + "-eMail").val()).toLowerCase()) + "?s=256&d=404";
                                         originalAvatar = gravUrl;
                                         checkABtn();
                                         $("#" + prefix + "-avatar-image").on("error", function () {
@@ -918,7 +918,7 @@
                         for (let i = 0; i < response.users.length; i++) {
                             if (!parseInt(response.users[i].uid)) continue;
 
-                            let cl = (response.users[i].enabled == 1)?"bg-white":"bg-light text-decoration-line-through";
+                            let cl = (response.users[i].enabled == 1) ? "bg-white" : "bg-light text-decoration-line-through";
 
                             if ((response.users[i].notification == "emailTg" || response.users[i].notification == "tgEmail" || response.users[i].notification == "email") && !(response.users[i].eMail && response.users[i].eMail != response.users[i].login)) {
                                 cl = "bg-warning";
