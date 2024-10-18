@@ -583,7 +583,7 @@
                     return false;
                 }
 
-                if ($uid !== 0) {
+                if ($this->uid != 0) {
                     $uid = $this->uid;
                 }
 
@@ -606,9 +606,11 @@
                     return false;
                 }
 
-                if ($uid !== 0) {
+                if ($this->uid != 0) {
                     $uid = $this->uid;
                 }
+
+                error_log(">>>>>>>>>>>>>>> $uid");
 
                 return $this->db->get("select avatar from core_users where uid = :uid", [
                     "uid" => $uid,
