@@ -464,7 +464,7 @@ function forgot() {
 function whoAmI(force) {
     return GET("user", "whoAmI", false, force).done(_me => {
         if (_me && _me.user) {
-            $(".myNameIs").attr("title", _me.user.realName?_me.user.realName:_me.user.login);
+            $(".myNameIs").attr("title", _me.user.realName ? _me.user.realName : _me.user.login);
             myself.uid = _me.user.uid;
             myself.login = _me.user.login;
             myself.realName = _me.user.realName;
@@ -474,6 +474,7 @@ function whoAmI(force) {
             myself.webRtcPassword = _me.user.webRtcPassword;
             myself.settings = _me.user.settings;
             myself.groups = {};
+
             if (_me.user.groups) {
                 for (let i in _me.user.groups) {
                     if (_me.user.groups[i].acronym == _me.user.primaryGroupAcronym) {
@@ -486,9 +487,32 @@ function whoAmI(force) {
                     };
                 }
             }
+
             if (_me.user.defaultRoute) {
                 config.defaultRoute = _me.user.defaultRoute;
             }
+
+            GET("user", "avatar", false, true).
+            always(a => {
+                if (a && a.avatar) {
+                    $(".userAvatar").attr("src", a.avatar);
+                } else {
+                    if (myself.eMail) {
+                        let gravUrl = "https://www.gravatar.com/avatar/" + md5($.trim(myself.eMail).toLowerCase()) + "?s=64&d=404";
+                        $(".userAvatar").off("click").on("error", function () {
+                            $(this).attr("src", "img/noavatar.png");
+                            if (!noGravatar) {
+                                noGravatar = true;
+                                error(i18n("errors.noGravatar"));
+                            }
+                        }).attr("src", gravUrl);
+                    } else {
+                        if (parseInt(myself.uid) === 0) {
+                            $(".userAvatar").attr("src", "img/admin.png");
+                        }
+                    }
+                }
+            });
             if (myself.eMail) {
                 let gravUrl = "https://www.gravatar.com/avatar/" + md5($.trim(myself.eMail).toLowerCase()) + "?s=64&d=404";
                 $(".userAvatar").off("click").on("error", function () {
@@ -503,19 +527,25 @@ function whoAmI(force) {
                     $(".userAvatar").attr("src", "img/admin.png");
                 }
             }
+
             $("#selfSettings").off("click").on("click", () => {
                 modules.users.modifyUser(myself.uid, true);
             });
+
             let userCard = _me.user.login;
+
             if (_me.user.realName) {
                 userCard += "<br />" + _me.user.realName;
             }
+
             if (myself.primaryGroupName) {
                 userCard += "<br />" + myself.primaryGroupName;
             }
+
             if (_me.user.eMail) {
                 userCard += "<br />" + _me.user.eMail;
             }
+
             $("#userCard").html(userCard);
         }
     });

@@ -272,6 +272,18 @@
             abstract public function putSettings($settings);
 
             /**
+             * @return mixed
+             */
+
+            abstract public function getAvatar();
+
+            /**
+              * @param string $settings
+              */
+
+            abstract public function putAvatar($settings);
+
+            /**
              * @param string $from
              * @param string $to
              * @param string $subject

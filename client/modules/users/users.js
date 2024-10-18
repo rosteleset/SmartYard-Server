@@ -184,6 +184,7 @@
                 let cropper = false;
                 let croppable = false;
                 let avatar = false;
+                let originalAvatar = false;
 
                 cardForm({
                     title: i18n("users.edit"),
@@ -229,7 +230,6 @@
                             value: response.user.eMail,
                             title: i18n("eMail"),
                             placeholder: i18n("eMail"),
-//                            hidden: !parseInt(response.user.uid),
                             tab: i18n("users.contacts"),
                         },
                         {
@@ -248,7 +248,6 @@
                             value: response.user.phone,
                             title: i18n("phone"),
                             placeholder: i18n("phone"),
-//                            hidden: !parseInt(response.user.uid),
                             tab: i18n("users.contacts"),
                         },
                         {
@@ -258,7 +257,6 @@
                             value: response.user.tg,
                             title: i18n("users.tg"),
                             placeholder: i18n("users.tg"),
-//                            hidden: !parseInt(response.user.uid),
                             tab: i18n("users.contacts"),
                         },
                         {
@@ -290,7 +288,6 @@
                                     text: i18n("users.notificationEmail"),
                                 },
                             ],
-//                            hidden: !parseInt(response.user.uid),
                             validate: (v) => {
                                 return $.trim(v) !== "";
                             },
@@ -460,13 +457,37 @@
 
                         $("#" + prefix + "avatar").html(`
                             <div id="${prefix}-avatar-span" class="paste-target">
-                                <img id="${prefix}-avatar-image" src="img/noimage.png" width="100%" />
+                                <img id="${prefix}-avatar-image" width="100%" />
                             </div>
                             <div class="mt-2">
-                                <button id="${prefix}-avatar-load" type="button" class="btn btn-secondary mr-2" title="${i18n("users.loadAvatar")}"><i class="fas fa-fw fa-user-circle"></i></button>
-                                <button id="${prefix}-avatar-apply" type="button" class="btn btn-success mr-2 disabled" title="${i18n("users.applyAvatar")}"><i class="fas fa-fw fa-check"></i></button>
+                                <button id="${prefix}-avatar-load" type="button" class="btn btn-secondary mr-2" title="${i18n("users.avatarLoad")}"><i class="fas fa-fw fa-user-circle"></i></button>
+                                <button id="${prefix}-avatar-apply" type="button" class="btn btn-success mr-2" title="${i18n("users.avatarApply")}"><i class="fas fa-fw fa-crop-alt"></i></button>
+                                <button id="${prefix}-avatar-clear" type="button" class="btn btn-primary mr-2" title="${i18n("users.avatarClear")}"><i class="fas fa-fw fa-undo-alt"></i></button>
+                                <button id="${prefix}-avatar-delete" type="button" class="btn btn-danger mr-2" title="${i18n("users.avatarDelete")}"><i class="fas fa-fw fa-recycle"></i></button>
                             </div>
                         `);
+
+                        function checkABtn() {
+                            $("#" + prefix + "-avatar-load").removeClass("disabled");
+                            if (croppable) {
+                                $("#" + prefix + "-avatar-apply").removeClass("disabled");
+                            } else {
+                                $("#" + prefix + "-avatar-apply").addClass("disabled");
+                            }
+                            if ((avatar && avatar != originalAvatar ) || cropper) {
+                                $("#" + prefix + "-avatar-clear").removeClass("disabled");
+                            } else {
+                                $("#" + prefix + "-avatar-clear").addClass("disabled");
+                            }
+                            $("#" + prefix + "-avatar-delete").removeClass("disabled");
+                            if (avatar && avatar == "img/noavatar.png") {
+                                $("#" + prefix + "-avatar-delete").addClass("disabled");
+                            } else {
+                                if (originalAvatar && originalAvatar == "img/noavatar.png") {
+                                    $("#" + prefix + "-avatar-delete").addClass("disabled");
+                                }
+                            }
+                        }
 
                         $("#" + prefix + "-avatar-load").on("click", () => {
                             avatar = false;
@@ -503,18 +524,17 @@
                                         reader.onloadend = () => {
                                             if (cropper) {
                                                 cropper.destroy();
+                                                cropper = false;
                                             }
 
                                             $("#" + prefix + "-avatar-image").attr("src", reader.result);
-
-                                            croppable = false;
 
                                             cropper = new Cropper(document.getElementById(prefix + "-avatar-image"), {
                                                 aspectRatio: 1,
                                                 viewMode: 1,
                                                 ready: function () {
                                                     croppable = true;
-                                                    $("#" + prefix + "-avatar-apply").removeClass("disabled");
+                                                    checkABtn();
                                                 },
                                             });
                                         };
@@ -548,16 +568,70 @@
                                 croppedCanvas = canvas;
 
                                 cropper.destroy();
+                                cropper = false;
 
                                 avatar = croppedCanvas.toDataURL();
 
                                 $("#" + prefix + "-avatar-image").attr("src", avatar);
 
-                                cropper = false;
                                 croppable = false;
 
-                                $("#" + prefix + "-avatar-apply").addClass("disabled");
+                                checkABtn();
                             }
+                        });
+
+                        $("#" + prefix + "-avatar-clear").on("click", () => {
+                            xblur();
+
+                            avatar = false;
+                            croppable = false;
+
+                            if (cropper) {
+                                cropper.destroy();
+                                cropper = false;
+                            }
+
+                            checkABtn();
+
+                            GET("user", "avatar", false, true).
+                            always(a => {
+                                if (a && a.avatar) {
+                                    $("#" + prefix + "-avatar-image").attr("src", a.avatar);
+                                    originalAvatar = a.avatar;
+                                    checkABtn();
+                                } else {
+                                    if (myself.eMail) {
+                                        let gravUrl = "https://www.gravatar.com/avatar/" + md5($.trim(myself.eMail).toLowerCase()) + "?s=256&d=404";
+                                        originalAvatar = gravUrl;
+                                        checkABtn();
+                                        $("#" + prefix + "-avatar-image").on("error", function () {
+                                            $(this).attr("src", "img/noimage.png");
+                                            originalAvatar = false;
+                                            checkABtn();
+                                        }).attr("src", gravUrl);
+                                    } else {
+                                        $(this).attr("src", "img/noimage.png");
+                                        originalAvatar = false;
+                                        checkABtn();
+                                    }
+                                }
+                            });
+                        }).click();
+
+                        $("#" + prefix + "-avatar-delete").on("click", () => {
+                            xblur();
+
+                            avatar = "img/noavatar.png";
+                            croppable = false;
+
+                            if (cropper) {
+                                cropper.destroy();
+                                cropper = false;
+                            }
+
+                            $("#" + prefix + "-avatar-image").attr("src", avatar);
+
+                            checkABtn();
                         });
 
                         $("#" + prefix + "-avatar-image").on("click", () => {
@@ -571,6 +645,7 @@
                                     if (blob) {
                                         if (cropper) {
                                             cropper.destroy();
+                                            cropper = false;
                                         }
 
                                         $("#" + prefix + "-avatar-image").attr("src", blob);
@@ -582,7 +657,7 @@
                                             viewMode: 1,
                                             ready: function () {
                                                 croppable = true;
-                                                $("#" + prefix + "-avatar-apply").removeClass("disabled");
+                                                checkABtn();
                                             },
                                         });
                                     }
@@ -592,6 +667,10 @@
 
                     },
                     callback: function (result) {
+                        if (avatar) {
+                            $(".userAvatar").attr("src", avatar);
+                            PUT("user", "avatar", false, { avatar });
+                        }
                         if (!gu.length) {
                             result.userGroups = false;
                         }

@@ -126,7 +126,7 @@
         "v37_tt.sql"
     ],
     "38": [
-        "v38_core.sql"
+        "v38_settings.sql"
     ],
     "39": [
         "v39_core.sql"
@@ -170,5 +170,8 @@
     ],
     "52": [
         "v52_indexes.sql"
+    ],
+    "53": [
+        "v53_avatar.sql"
     ]
 }

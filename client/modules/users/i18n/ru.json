@@ -50,6 +50,11 @@
     "userGroups": "Группы",
     "testNotify": "Тест уведомлений",
     "notificationSent": "Уведомление отправлено",
+    "avatar": "Аватар",
+    "avatarLoad": "Загрузить аватар",
+    "avatarClear": "Отменить изменения",
+    "avatarApply": "Обрезать",
+    "avatarDelete": "Удалить аватар",
     "errors": {
         "invalid2FACredentials": "Неверный код авторизации"
     },

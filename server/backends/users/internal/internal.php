@@ -536,8 +536,7 @@
              * @inheritDoc
              */
 
-            public function putSettings($settings)
-            {
+            public function putSettings($settings) {
                 try {
                     $settings = $this->db->modify("update core_users set settings = :settings where login = :login", [
                         "login" => $this->login,
@@ -548,12 +547,11 @@
                 }
             }
 
-            /**
-             * @inheritDoc
-             */
+             /**
+              * @inheritDoc
+              */
 
-            public function getSettings()
-            {
+            public function getSettings() {
                 try {
                     $settings = $this->db->get("select settings from core_users where login = :login", [
                         "login" => $this->login,
@@ -577,6 +575,35 @@
             }
 
             /**
+             * @inheritDoc
+             */
+
+             public function putAvatar($avatar) {
+                try {
+                    $settings = $this->db->modify("update core_users set avatar = :avatar where login = :login", [
+                        "login" => $this->login,
+                        "avatar" => $avatar,
+                    ]);
+                } catch (\Exception $e) {
+                    return false;
+                }
+            }
+
+             /**
+              * @inheritDoc
+              */
+
+             public function getAvatar() {
+                return $this->db->get("select avatar from core_users where login = :login", [
+                    "login" => $this->login,
+                ], [
+                    "avatar" => "avatar",
+                ], [
+                    "fieldlify"
+                ]);
+            }
+
+              /**
              * @inheritDoc
              */
 

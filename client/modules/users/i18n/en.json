@@ -50,6 +50,11 @@
     "userGroups": "Groups",
     "testNotify": "Test notification",
     "notificationSent": "Notification was sent",
+    "avatar": "Avatar",
+    "avatarLoad": "Load avatar",
+    "avatarClear": "Clear avatar",
+    "avatarApply": "Crop",
+    "avatarDelete": "Delete avatar",
     "errors": {
         "invalid2FACredentials": "Invalid authentication code"
     },
