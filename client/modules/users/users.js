@@ -225,7 +225,7 @@
                             id: "uid",
                             type: "text",
                             readonly: true,
-                            value: response.user.uid.toString(),
+                            value: uid.toString(),
                             title: i18n("users.uid"),
                             tab: i18n("users.primary"),
                         },
@@ -483,40 +483,40 @@
                         });
 
                         $("#" + prefix + "avatar").html(`
-                            <div id="${prefix}-avatar-span" class="paste-target">
-                                <img id="${prefix}-avatar-image" width="100%" />
+                            <div id="${prefix}avatar-span" class="paste-target">
+                                <img id="${prefix}avatar-image" width="100%" />
                             </div>
                             <div class="mt-2">
-                                <button id="${prefix}-avatar-load" type="button" class="btn btn-secondary mr-2" title="${i18n("users.avatarLoad")}"><i class="fas fa-fw fa-user-circle"></i></button>
-                                <button id="${prefix}-avatar-apply" type="button" class="btn btn-success mr-2" title="${i18n("users.avatarApply")}"><i class="fas fa-fw fa-crop-alt"></i></button>
-                                <button id="${prefix}-avatar-clear" type="button" class="btn btn-primary mr-2" title="${i18n("users.avatarClear")}"><i class="fas fa-fw fa-undo-alt"></i></button>
-                                <button id="${prefix}-avatar-delete" type="button" class="btn btn-danger mr-2" title="${i18n("users.avatarDelete")}"><i class="fas fa-fw fa-recycle"></i></button>
+                                <button id="${prefix}avatar-load" type="button" class="btn btn-secondary mr-2" title="${i18n("users.avatarLoad")}"><i class="fas fa-fw fa-user-circle"></i></button>
+                                <button id="${prefix}avatar-apply" type="button" class="btn btn-success mr-2" title="${i18n("users.avatarApply")}"><i class="fas fa-fw fa-crop-alt"></i></button>
+                                <button id="${prefix}avatar-clear" type="button" class="btn btn-primary mr-2" title="${i18n("users.avatarClear")}"><i class="fas fa-fw fa-undo-alt"></i></button>
+                                <button id="${prefix}avatar-delete" type="button" class="btn btn-danger mr-2" title="${i18n("users.avatarDelete")}"><i class="fas fa-fw fa-recycle"></i></button>
                             </div>
                         `);
 
                         function checkABtn() {
-                            $("#" + prefix + "-avatar-load").removeClass("disabled");
+                            $("#" + prefix + "avatar-load").removeClass("disabled");
                             if (croppable) {
-                                $("#" + prefix + "-avatar-apply").removeClass("disabled");
+                                $("#" + prefix + "avatar-apply").removeClass("disabled");
                             } else {
-                                $("#" + prefix + "-avatar-apply").addClass("disabled");
+                                $("#" + prefix + "avatar-apply").addClass("disabled");
                             }
                             if ((avatar && avatar != originalAvatar ) || cropper) {
-                                $("#" + prefix + "-avatar-clear").removeClass("disabled");
+                                $("#" + prefix + "avatar-clear").removeClass("disabled");
                             } else {
-                                $("#" + prefix + "-avatar-clear").addClass("disabled");
+                                $("#" + prefix + "avatar-clear").addClass("disabled");
                             }
-                            $("#" + prefix + "-avatar-delete").removeClass("disabled");
+                            $("#" + prefix + "avatar-delete").removeClass("disabled");
                             if (avatar && avatar == "img/noavatar.png") {
-                                $("#" + prefix + "-avatar-delete").addClass("disabled");
+                                $("#" + prefix + "avatar-delete").addClass("disabled");
                             } else {
                                 if (originalAvatar && originalAvatar == "img/noavatar.png") {
-                                    $("#" + prefix + "-avatar-delete").addClass("disabled");
+                                    $("#" + prefix + "avatar-delete").addClass("disabled");
                                 }
                             }
                         }
 
-                        $("#" + prefix + "-avatar-load").on("click", () => {
+                        $("#" + prefix + "avatar-load").on("click", () => {
                             avatar = false;
 
                             xblur();
@@ -554,9 +554,9 @@
                                                 cropper = false;
                                             }
 
-                                            $("#" + prefix + "-avatar-image").attr("src", reader.result);
+                                            $("#" + prefix + "avatar-image").attr("src", reader.result);
 
-                                            cropper = new Cropper(document.getElementById(prefix + "-avatar-image"), {
+                                            cropper = new Cropper(document.getElementById(prefix + "avatar-image"), {
                                                 aspectRatio: 1,
                                                 viewMode: 1,
                                                 ready: function () {
@@ -571,13 +571,13 @@
                             });
                         });
 
-                        $("#" + prefix + "-avatar-apply").on("click", () => {
+                        $("#" + prefix + "avatar-apply").on("click", () => {
                             xblur();
 
                             if (croppable) {
                                 crop();
 
-                                $("#" + prefix + "-avatar-image").attr("src", avatar);
+                                $("#" + prefix + "avatar-image").attr("src", avatar);
 
                                 croppable = false;
                             }
@@ -585,7 +585,7 @@
                             checkABtn();
                         });
 
-                        $("#" + prefix + "-avatar-clear").on("click", () => {
+                        $("#" + prefix + "avatar-clear").on("click", () => {
                             xblur();
 
                             avatar = false;
@@ -598,24 +598,25 @@
 
                             checkABtn();
 
-                            GET("user", "avatar", false, true).
+                            QUERYID("user", "avatar", uid, false, true).
                             always(a => {
                                 if (a && a.avatar) {
-                                    $("#" + prefix + "-avatar-image").attr("src", a.avatar);
+                                    $("#" + prefix + "avatar-image").attr("src", a.avatar);
                                     originalAvatar = a.avatar;
                                     checkABtn();
                                 } else {
-                                    if (myself.eMail) {
-                                        let gravUrl = "https://www.gravatar.com/avatar/" + md5($.trim($("#" + prefix + "-eMail").val()).toLowerCase()) + "?s=256&d=404";
+                                    if ($.trim($("#" + prefix + "eMail").val())) {
+                                        let gravUrl = "https://www.gravatar.com/avatar/" + md5($.trim($("#" + prefix + "eMail").val()).toLowerCase()) + "?s=256&d=404";
+                                        console.log(gravUrl);
                                         originalAvatar = gravUrl;
                                         checkABtn();
-                                        $("#" + prefix + "-avatar-image").on("error", function () {
-                                            $(this).attr("src", "img/noimage.png");
+                                        $("#" + prefix + "avatar-image").on("error", function () {
+                                            $("#" + prefix + "avatar-image").attr("src", "img/noimage.png");
                                             originalAvatar = false;
                                             checkABtn();
                                         }).attr("src", gravUrl);
                                     } else {
-                                        $(this).attr("src", "img/noimage.png");
+                                        $("#" + prefix + "avatar-image").attr("src", "img/noimage.png");
                                         originalAvatar = false;
                                         checkABtn();
                                     }
@@ -623,7 +624,7 @@
                             });
                         }).click();
 
-                        $("#" + prefix + "-avatar-delete").on("click", () => {
+                        $("#" + prefix + "avatar-delete").on("click", () => {
                             xblur();
 
                             avatar = "img/noavatar.png";
@@ -634,16 +635,16 @@
                                 cropper = false;
                             }
 
-                            $("#" + prefix + "-avatar-image").attr("src", avatar);
+                            $("#" + prefix + "avatar-image").attr("src", avatar);
 
                             checkABtn();
                         });
 
-                        $("#" + prefix + "-avatar-image").on("click", () => {
-                            $("#" + prefix + "-avatar-load").click();
+                        $("#" + prefix + "avatar-image").on("click", () => {
+                            $("#" + prefix + "avatar-load").click();
                         });
 
-                        $("#" + prefix + "-avatar-span").on("proxy-paste", (e, f) => {
+                        $("#" + prefix + "avatar-span").on("proxy-paste", (e, f) => {
                             if (f && f[0]) {
                                 if (f[0].type.startsWith('image/')) {
                                     let blob = URL.createObjectURL(f[0]);
@@ -653,11 +654,11 @@
                                             cropper = false;
                                         }
 
-                                        $("#" + prefix + "-avatar-image").attr("src", blob);
+                                        $("#" + prefix + "avatar-image").attr("src", blob);
 
                                         croppable = false;
 
-                                        cropper = new Cropper(document.getElementById(prefix + "-avatar-image"), {
+                                        cropper = new Cropper(document.getElementById(prefix + "avatar-image"), {
                                             aspectRatio: 1,
                                             viewMode: 1,
                                             ready: function () {
@@ -678,8 +679,10 @@
                         }
 
                         if (avatar) {
-                            $(".userAvatar").attr("src", avatar);
-                            PUT("user", "avatar", false, { avatar });
+                            if (myself.uid.toString() == uid.toString()) {
+                                $(".userAvatar").attr("src", avatar);
+                            }
+                            PUT("user", "avatar", uid.toString(), { avatar });
                         }
 
                         if (!gu.length) {

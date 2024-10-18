@@ -272,16 +272,19 @@
             abstract public function putSettings($settings);
 
             /**
+             * @param integer $id
+             *
              * @return mixed
              */
 
-            abstract public function getAvatar();
+            abstract public function getAvatar($uid);
 
             /**
-              * @param string $settings
-              */
+             * @param integer $id
+             * @param string $settings
+             */
 
-            abstract public function putAvatar($settings);
+            abstract public function putAvatar($uid, $avatar);
 
             /**
              * @param string $from

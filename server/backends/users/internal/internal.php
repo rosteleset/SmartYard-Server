@@ -578,10 +578,18 @@
              * @inheritDoc
              */
 
-             public function putAvatar($avatar) {
+             public function putAvatar($uid, $avatar) {
+                if (!checkInt($uid)) {
+                    return false;
+                }
+
+                if ($uid !== 0) {
+                    $uid = $this->uid;
+                }
+
                 try {
-                    $settings = $this->db->modify("update core_users set avatar = :avatar where login = :login", [
-                        "login" => $this->login,
+                    $settings = $this->db->modify("update core_users set avatar = :avatar where uid = :uid", [
+                        "uid" => $uid,
                         "avatar" => $avatar,
                     ]);
                 } catch (\Exception $e) {
@@ -593,9 +601,17 @@
               * @inheritDoc
               */
 
-             public function getAvatar() {
-                return $this->db->get("select avatar from core_users where login = :login", [
-                    "login" => $this->login,
+             public function getAvatar($uid) {
+                if (!checkInt($uid)) {
+                    return false;
+                }
+
+                if ($uid !== 0) {
+                    $uid = $this->uid;
+                }
+
+                return $this->db->get("select avatar from core_users where uid = :uid", [
+                    "uid" => $uid,
                 ], [
                     "avatar" => "avatar",
                 ], [
@@ -603,7 +619,7 @@
                 ]);
             }
 
-              /**
+            /**
              * @inheritDoc
              */
 
