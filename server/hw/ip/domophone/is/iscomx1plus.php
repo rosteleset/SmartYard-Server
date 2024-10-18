@@ -14,24 +14,34 @@ class iscomx1plus extends is
     /**
      * Mapping of CMS models to their corresponding type ID and capacity.
      *
-     * @var array<string, array{id: int, capacity: int}>
+     * @var array<string, array{id: int, capacity: int, columns: int, rows: int}>
      */
     protected const CMS_MODEL_DATA = [
-        'BK-4' => ['type' => 50, 'capacity' => 4],
-        'BK-10' => ['type' => 51, 'capacity' => 10],
-        'BK-100' => ['type' => 52, 'capacity' => 100],
-        'COM-80U' => ['type' => 61, 'capacity' => 80],
-        'COM-100U' => ['type' => 3, 'capacity' => 100], // other
-        'COM-160U' => ['type' => 63, 'capacity' => 160],
-        'COM-220U' => ['type' => 65, 'capacity' => 220],
-        'FACTORIAL 8x8' => ['type' => 0, 'capacity' => 64], // other
-        'KKM-100S2' => ['type' => 13, 'capacity' => 100],
-        'KKM-105' => ['type' => 11, 'capacity' => 100],
-        'KKM-108' => ['type' => 12, 'capacity' => 100],
-        'KM100-7.2' => ['type' => 30, 'capacity' => 100],
-        'KMG-100' => ['type' => 20, 'capacity' => 100],
-        'QAD-100' => ['type' => 40, 'capacity' => 260],
+        'BK-4' => ['type' => 50, 'capacity' => 4, 'columns' => 1, 'rows' => 4],
+        'BK-10' => ['type' => 51, 'capacity' => 10, 'columns' => 1, 'rows' => 10],
+        'BK-100' => ['type' => 52, 'capacity' => 100, 'columns' => 10, 'rows' => 10],
+        'COM-80U' => ['type' => 61, 'capacity' => 80, 'columns' => 8, 'rows' => 10],
+        'COM-100U' => ['type' => 3, 'capacity' => 100, 'columns' => 10, 'rows' => 10], // other
+        'COM-160U' => ['type' => 63, 'capacity' => 160, 'columns' => 16, 'rows' => 10],
+        'COM-220U' => ['type' => 65, 'capacity' => 220, 'columns' => 22, 'rows' => 10],
+        'FACTORIAL 8x8' => ['type' => 0, 'capacity' => 64, 'columns' => 8, 'rows' => 8], // other
+        'KKM-100S2' => ['type' => 13, 'capacity' => 100, 'columns' => 10, 'rows' => 10],
+        'KKM-105' => ['type' => 11, 'capacity' => 100, 'columns' => 10, 'rows' => 10],
+        'KKM-108' => ['type' => 12, 'capacity' => 100, 'columns' => 10, 'rows' => 10],
+        'KM100-7.2' => ['type' => 30, 'capacity' => 100, 'columns' => 10, 'rows' => 10],
+        'KMG-100' => ['type' => 20, 'capacity' => 100, 'columns' => 10, 'rows' => 10],
+        'QAD-100' => ['type' => 40, 'capacity' => 260, 'columns' => 10, 'rows' => 26], // wrong, col <=> row
     ];
+
+    /**
+     * First matrix number.
+     */
+    protected const MATRIX_FIRST_NUMBER = 1;
+
+    /**
+     * Last matrix number.
+     */
+    protected const MATRIX_LAST_NUMBER = 4;
 
     /**
      * An array that holds either null (for uninitialized matrices) or CmsMatrix objects.
@@ -39,6 +49,18 @@ class iscomx1plus extends is
      * @var array<int, CmsMatrix|null> An indexed array of CmsMatrix objects or null values.
      */
     protected array $cmsMatrices = [1 => null, 2 => null, 3 => null, 4 => null];
+
+    /**
+     * Generates a matrix of specified dimensions filled with `null` values.
+     *
+     * @param int $columns The number of columns in the matrix.
+     * @param int $rows The number of rows in each column.
+     * @return array A 2D array (matrix) filled with `null` values.
+     */
+    protected static function getNullMatrix(int $columns, int $rows): array
+    {
+        return array_fill(0, $columns, array_fill(0, $rows, null));
+    }
 
     public function prepare(): void
     {
@@ -65,11 +87,17 @@ class iscomx1plus extends is
             return;
         }
 
-        for ($number = 1; $number <= 4; $number++) {
+        for ($number = self::MATRIX_FIRST_NUMBER; $number <= self::MATRIX_LAST_NUMBER; $number++) {
             $cmsMatrixObject = $this->getCmsMatrixObject($number);
+
             $cmsMatrixObject->type = self::CMS_MODEL_DATA[$model]['type'];
             $cmsMatrixObject->capacity = self::CMS_MODEL_DATA[$model]['capacity'];
-            // TODO: set full matrix
+
+            // TODO: merge with current matrix
+            $cmsMatrixObject->matrix = $this->getNullMatrix(
+                self::CMS_MODEL_DATA[$model]['columns'],
+                self::CMS_MODEL_DATA[$model]['rows']
+            );
         }
     }
 
@@ -117,17 +145,13 @@ class iscomx1plus extends is
      */
     protected function getCmsMatrixObject(int $number = 1): CmsMatrix
     {
-        if ($number < 1 || $number > 4) {
-            throw new InvalidArgumentException('Number must be between 1 and 4.');
+        if ($number < self::MATRIX_FIRST_NUMBER || $number > self::MATRIX_LAST_NUMBER) {
+            throw new InvalidArgumentException('Matrix number must be between 1 and 4.');
         }
 
         if ($this->cmsMatrices[$number] === null) {
             $response = $this->apiCall("/v1/switch/$number");
-            $this->cmsMatrices[$number] = new CmsMatrix(
-                $response['type'] ?? null,
-                $response['matrices'][0]['matrix'] ?? null,
-                $response['matrices'][0]['capacity'] ?? null
-            );
+            $this->cmsMatrices[$number] = (new CmsMatrix())->fromArray($response);
         }
 
         return $this->cmsMatrices[$number];
@@ -139,6 +163,7 @@ class iscomx1plus extends is
             return $this->getCmsModelLegacy();
         }
 
+        // We assume that all matrices have the same CMS model, so we take the first one
         $cmsTypeId = $this->getCmsMatrixObject()->type;
 
         foreach (self::CMS_MODEL_DATA as $cmsModel => $cmsData) {
