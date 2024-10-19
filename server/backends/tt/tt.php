@@ -2341,12 +2341,19 @@
              * @inheritDoc
              */
 
-            public function capabilities()
-            {
+            public function capabilities() {
                 return [
                     "cli" => true,
                 ];
             }
+
+            /**
+             * @param object $issue
+             *
+             * @return mixed
+             */
+
+            abstract public function store($issue);
 
             /**
              * @inheritDoc

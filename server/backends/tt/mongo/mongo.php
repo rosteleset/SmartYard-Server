@@ -4,8 +4,7 @@
      * backends tt namespace
      */
 
-    namespace backends\tt
-    {
+    namespace backends\tt {
 
         /**
          * internal.db + mongoDB tt class
@@ -13,11 +12,9 @@
 
         require_once __DIR__ . "/../.traits/db.php";
 
-        class mongo extends tt
-        {
+        class mongo extends tt {
 
-            use db
-            {
+            use db {
                 cleanup as private dbCleanup;
                 modifyCustomField as private dbModifyCustomField;
                 deleteCustomField as private dbDeleteCustomField;
@@ -28,8 +25,8 @@
             /**
              * @inheritDoc
              */
-            public function __construct($config, $db, $redis, $login = false)
-            {
+
+            public function __construct($config, $db, $redis, $login = false) {
                 parent::__construct($config, $db, $redis, $login);
 
                 require_once __DIR__ . "/../../../mzfc/mongodb/vendor/autoload.php";
@@ -55,8 +52,8 @@
             /**
              * @inheritDoc
              */
-            protected function createIssue($issue)
-            {
+
+            protected function createIssue($issue) {
                 $acr = $issue["project"];
 
                 $issue["issueId"] = $acr;
@@ -119,8 +116,8 @@
             /**
              * @inheritDoc
              */
-            protected function modifyIssue($issue, $workflowAction = false, $apUpdated = true)
-            {
+
+            protected function modifyIssue($issue, $workflowAction = false, $apUpdated = true) {
                 $db = $this->dbName;
                 $project = explode("-", $issue["issueId"])[0];
 
@@ -201,8 +198,8 @@
             /**
              * @inheritDoc
              */
-            public function deleteIssue($issueId)
-            {
+
+            public function deleteIssue($issueId) {
                 $db = $this->dbName;
 
                 $acr = explode("-", $issueId)[0];
@@ -1124,8 +1121,8 @@
             /**
              * @inheritDoc
              */
-            public function getSuggestions($project, $field, $query)
-            {
+
+            public function getSuggestions($project, $field, $query) {
                 $me = $this->myRoles();
 
                 $suggestions = [];
@@ -1181,8 +1178,8 @@
              * @param $part
              * @return bool
              */
-            public function cron($part)
-            {
+
+            public function cron($part) {
                 $success = true;
                 if ($part == "5min") {
                     $success = $this->reCreateIndexes();
@@ -1194,24 +1191,24 @@
             /**
              * @inheritDoc
              */
-            public function deleteCustomField($customFieldId)
-            {
+
+            public function deleteCustomField($customFieldId) {
                 $this->dbDeleteCustomField($customFieldId);
             }
 
             /**
              * @inheritDoc
              */
-            public function modifyCustomField($customFieldId, $catalog, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indx, $search, $required, $editor)
-            {
+
+            public function modifyCustomField($customFieldId, $catalog, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indx, $search, $required, $editor) {
                 $this->dbModifyCustomField($customFieldId, $catalog, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indx, $search, $required, $editor);
             }
 
             /**
              * @inheritDoc
              */
-            public function journal($issueId, $action, $old, $new, $workflowAction)
-            {
+
+            public function journal($issueId, $action, $old, $new, $workflowAction) {
                 if ($old && $new) {
                     $keys = [];
                     foreach ($old as $key => $field) {
@@ -1284,8 +1281,8 @@
             /**
              * @inheritDoc
              */
-            public function journalGet($issueId, $limit = false)
-            {
+
+            public function journalGet($issueId, $limit = false) {
                 if ($limit) {
                     $journal = $this->clickhouse->select("select * from default.ttlog where issue='$issueId' order by date limit $limit");
                 } else {
@@ -1308,6 +1305,21 @@
                 $limit = (int)$limit;
 
                 return $this->clickhouse->select("select issue from ttlog where login='$login' group by issue order by max(date) desc limit $limit");
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+            public function store($issue) {
+                $db = $this->dbName;
+                $project = explode("-", $issue["issueId"])[0];
+
+                if ($db && $project) {
+                    return $this->mongo->$db->$project->replaceOne([ "issueId" => $issue["issueId"] ], $issue);
+                }
+
+                return false;
             }
 
             /**
