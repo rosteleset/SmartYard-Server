@@ -80,7 +80,7 @@
         "404": "The object was not found",
         "redis": "Redis connection error",
         "notFound": "Nothing found",
-        "noGravatar": "Gravatar was not found <br/> <a href='https://ru.gravatar.com/' Target='_blank' Class='Text-board hover'> [Install] </a>",
+        "noGravatar": "[gr]Avatar was not found <br/> <a href='https://ru.gravatar.com/' Target='_blank' Class='Text-board hover'> [Install] </a>",
         "unknown": "Unknown error",
         "cantReadNfcTag": "It is impossible to read the label",
         "serverUnavailable": "Server is not available",
