@@ -8,13 +8,54 @@ namespace hw\ip\domophone\is;
 class iscomx1 extends is
 {
 
-    public function prepare()
+    public function configureMatrix(array $matrix): void
+    {
+        if ($this->isLegacyVersion()) {
+            $this->configureMatrixLegacy($matrix);
+            return;
+        }
+
+        $this->refreshApartmentList();
+        $params = [0 => [], 1 => [], 2 => [], 3 => []];
+        [, $capacity, $columns, $rows] = self::CMS_MODEL_TO_PARAMS[$this->getCmsModel()];
+
+        $cmsModelId = $this->getCmsModelId();
+        $zeroMatrix = array_fill(0, $columns, array_fill(0, $rows, 0));
+
+        foreach ($matrix as $matrixCell) {
+            [
+                'hundreds' => $hundreds,
+                'tens' => $tens,
+                'units' => $units,
+                'apartment' => $apartment
+            ] = $matrixCell;
+
+            if ($cmsModelId === 'METAKOM') {
+                $units--;
+            }
+
+            $params[$hundreds][$tens][$units] = $apartment;
+        }
+
+        foreach ($params as $hundreds => $param) {
+            $fullMatrix = array_replace_recursive($zeroMatrix, $param);
+
+            $this->apiCall('/switch/matrix/' . ($hundreds + 1), 'PUT', [
+                'capacity' => $capacity,
+                'matrix' => $fullMatrix,
+            ]);
+        }
+
+        $this->removeUnwantedApartments(); // FIXME: too slow, do something!
+    }
+
+    public function prepare(): void
     {
         parent::prepare();
         $this->enableEchoCancellation(false);
     }
 
-    public function setCmsLevels(array $levels)
+    public function setCmsLevels(array $levels): void
     {
         if (count($levels) === 4) {
             $this->apiCall('/levels', 'PUT', [
@@ -28,7 +69,7 @@ class iscomx1 extends is
         }
     }
 
-    public function setCmsModel(string $model = '')
+    public function setCmsModel(string $model = ''): void
     {
         if ($this->isLegacyVersion()) {
             $this->setCmsModelLegacy($model);
@@ -38,7 +79,7 @@ class iscomx1 extends is
         $this->apiCall('/switch/settings', 'PUT', ['modelId' => self::CMS_MODEL_TO_PARAMS[$model][0]]);
     }
 
-    public function setTickerText(string $text = '')
+    public function setTickerText(string $text = ''): void
     {
         // Empty implementation
     }
@@ -47,6 +88,11 @@ class iscomx1 extends is
     {
         $parentDbConfig = parent::transformDbConfig($dbConfig);
         $parentDbConfig['tickerText'] = '';
+
+        if (!$this->isLegacyVersion()) {
+            $parentDbConfig['cmsModel'] = self::CMS_MODEL_TO_PARAMS[$dbConfig['cmsModel']][0];
+        }
+
         return $parentDbConfig;
     }
 
@@ -83,5 +129,39 @@ class iscomx1 extends is
         }
 
         return $this->apiCall('/switch/settings')['modelId'] ?? '';
+    }
+
+    protected function getMatrix(): array
+    {
+        if ($this->isLegacyVersion()) {
+            return $this->getMatrixLegacy();
+        }
+
+        $matrix = [];
+
+        for ($hundreds = 0; $hundreds <= 3; $hundreds++) {
+            $columns = $this->apiCall('/switch/matrix/' . ($hundreds + 1))['matrix'] ?? [];
+
+            foreach ($columns as $tens => $column) {
+                foreach ($column as $units => $apartment) {
+                    if ($apartment === null) {
+                        continue;
+                    }
+
+                    if ($this->getCmsModelId() === 'METAKOM') {
+                        $units++;
+                    }
+
+                    $matrix[$hundreds . $tens . $units] = [
+                        'hundreds' => $hundreds,
+                        'tens' => $tens,
+                        'units' => $units,
+                        'apartment' => $apartment,
+                    ];
+                }
+            }
+        }
+
+        return $matrix;
     }
 }

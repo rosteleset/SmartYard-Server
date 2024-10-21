@@ -3,7 +3,6 @@
 namespace hw\ip\domophone\is;
 
 use hw\ip\domophone\is\entities\CmsMatrix;
-use InvalidArgumentException;
 
 /**
  * Class representing a Sokol ISCom X1 Plus (rev.5) intercom.
@@ -34,6 +33,11 @@ class iscomx1plus extends is
     ];
 
     /**
+     * Array of CMS types that needs to increment/decrement units.
+     */
+    protected const CMS_TYPES_WRONG_UNITS = [61, 3, 63, 65];
+
+    /**
      * First matrix number.
      */
     protected const MATRIX_FIRST_NUMBER = 1;
@@ -60,6 +64,37 @@ class iscomx1plus extends is
     protected static function getNullMatrix(int $columns, int $rows): array
     {
         return array_fill(0, $columns, array_fill(0, $rows, null));
+    }
+
+    public function configureMatrix(array $matrix)
+    {
+        if ($this->isLegacyVersion()) {
+            $this->configureMatrixLegacy($matrix);
+            return;
+        }
+
+        foreach ($matrix as $matrixCell) {
+            [
+                'hundreds' => $hundreds,
+                'tens' => $tens,
+                'units' => $units,
+                'apartment' => $apartment
+            ] = $matrixCell;
+
+            $number = $hundreds + 1;
+            $cmsMatrixObject = $this->getCmsMatrixObject($number);
+
+            if ($cmsMatrixObject === null) {
+                continue;
+            }
+
+            if (in_array($this->getCmsMatrixObject($number)->type, self::CMS_TYPES_WRONG_UNITS)) {
+                $units--;
+            }
+
+            $cmsMatrixObject->matrix[$tens][$units] = $apartment;
+            // TODO: merge with null matrix
+        }
     }
 
     public function prepare(): void
@@ -140,13 +175,13 @@ class iscomx1plus extends is
      * to fetch the matrix data if it has not been initialized yet.
      *
      * @param int $number The index of the CmsMatrix to retrieve. Must be between 1 and 4.
-     * @return CmsMatrix The CmsMatrix object corresponding to the given number.
-     * @throws InvalidArgumentException If the provided number is less than 1 or greater than 4.
+     * @return CmsMatrix|null The CmsMatrix object corresponding to the given number
+     * or null if the number is out of range.
      */
-    protected function getCmsMatrixObject(int $number = 1): CmsMatrix
+    protected function getCmsMatrixObject(int $number = 1): ?CmsMatrix
     {
         if ($number < self::MATRIX_FIRST_NUMBER || $number > self::MATRIX_LAST_NUMBER) {
-            throw new InvalidArgumentException('Matrix number must be between 1 and 4.');
+            return null;
         }
 
         if ($this->cmsMatrices[$number] === null) {
@@ -167,12 +202,50 @@ class iscomx1plus extends is
         $cmsTypeId = $this->getCmsMatrixObject()->type;
 
         foreach (self::CMS_MODEL_DATA as $cmsModel => $cmsData) {
-            if ($cmsData['id'] === $cmsTypeId) {
+            if ($cmsData['type'] === $cmsTypeId) {
                 return $cmsModel;
             }
         }
 
         return '';
+    }
+
+    protected function getMatrix(): array
+    {
+        if ($this->isLegacyVersion()) {
+            return $this->getMatrixLegacy();
+        }
+
+        $matrix = [];
+
+        for ($number = self::MATRIX_FIRST_NUMBER; $number <= self::MATRIX_LAST_NUMBER; $number++) {
+            $cmsMatrixObject = $this->getCmsMatrixObject($number);
+
+            if ($cmsMatrixObject->matrix === null) {
+                continue;
+            }
+
+            foreach ($cmsMatrixObject->matrix as $tens => $column) {
+                foreach ($column as $units => $apartment) {
+                    if ($apartment === null) {
+                        continue;
+                    }
+
+                    if (in_array($this->getCmsMatrixObject($number)->type, self::CMS_TYPES_WRONG_UNITS)) {
+                        $units++;
+                    }
+
+                    $matrix[$number . $tens . $units] = [
+                        'hundreds' => $number,
+                        'tens' => $tens,
+                        'units' => $units,
+                        'apartment' => $apartment,
+                    ];
+                }
+            }
+        }
+
+        return $matrix;
     }
 
     /**
