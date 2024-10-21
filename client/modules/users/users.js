@@ -479,7 +479,7 @@
                                 width: 256,
                                 height: 256,
                             })).makeCode(result.two_fa);
-                            $($("#" + prefix + "2faCode").children()[1]).css("width", "100%");
+                            $($("#" + prefix + "2faCode").children()[1]).css("width", "50%");
                         });
 
                         $("#" + prefix + "avatar").html(`
@@ -492,7 +492,7 @@
                                 <button id="${prefix}avatar-clear" type="button" class="btn btn-primary mr-2" title="${i18n("users.avatarClear")}"><i class="fas fa-fw fa-undo-alt"></i></button>
                                 <button id="${prefix}avatar-delete" type="button" class="btn btn-danger mr-2" title="${i18n("users.avatarDelete")}"><i class="fas fa-fw fa-recycle"></i></button>
                             </div>
-                        `);
+                        `).css("width", "50%");
 
                         function checkABtn() {
                             $("#" + prefix + "avatar-load").removeClass("disabled");
