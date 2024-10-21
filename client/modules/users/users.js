@@ -607,7 +607,6 @@
                                 } else {
                                     if ($.trim($("#" + prefix + "eMail").val())) {
                                         let gravUrl = "https://www.gravatar.com/avatar/" + md5($.trim($("#" + prefix + "eMail").val()).toLowerCase()) + "?s=256&d=404";
-                                        console.log(gravUrl);
                                         originalAvatar = gravUrl;
                                         checkABtn();
                                         $("#" + prefix + "avatar-image").on("error", function () {
