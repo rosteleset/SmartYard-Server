@@ -484,7 +484,7 @@
 
                         $("#" + prefix + "avatar").html(`
                             <div id="${prefix}avatar-span" class="paste-target">
-                                <img id="${prefix}avatar-image" width="100%" />
+                                <img id="${prefix}avatar-image" width="100%" class="cropper-view-box" />
                             </div>
                             <div class="mt-2">
                                 <button id="${prefix}avatar-load" type="button" class="btn btn-secondary mr-2" title="${i18n("users.avatarLoad")}"><i class="fas fa-fw fa-user-circle"></i></button>

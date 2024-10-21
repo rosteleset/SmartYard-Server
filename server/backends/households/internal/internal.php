@@ -103,8 +103,7 @@
             /**
              * @inheritDoc
              */
-            function getFlats($by, $params)
-            {
+            function getFlats($by, $params) {
                 $q = "";
                 $p = [];
 
@@ -2651,8 +2650,8 @@
             /**
              * @inheritDoc
              */
-            public function searchFlat($search)
-            {
+
+            public function searchFlat($search) {
                 $byLogin = $this->getFlats("login", [ "login" => $search ]);
                 $byContract = $this->getFlats("contract", [ "contract" => $search ]);
 
