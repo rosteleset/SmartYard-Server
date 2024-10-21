@@ -97,7 +97,7 @@ CREATE TABLE houses_entrances_flats
     apartment integer,                                                                                                  -- flat number
     cms_levels text                                                                                                     -- cms levels
 );
-CREATE UNIQUE INDEX houses_entrances_flats_uniq on houses_entrances_flats (house_entrance_id, house_flat_id);
+CREATE UNIQUE INDEX houses_entrances_flats_uniq on houses_entrances_flats(house_entrance_id, house_flat_id);
 CREATE INDEX houses_entrances_flats_house_entrance_id on houses_entrances_flats(house_entrance_id);
 CREATE INDEX houses_entrances_flats_house_flat_id on houses_entrances_flats(house_flat_id);
 
