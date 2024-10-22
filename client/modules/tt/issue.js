@@ -1065,7 +1065,6 @@
                 loadingDone();
             }).
             done(result => {
-                $(".ttCalls").hide();
                 if (result.cdr && result.cdr.length) {
                     if ($("#issueComments").text()) {
                         for (let i in result.cdr) {
