@@ -1251,7 +1251,7 @@
 
                     if (array_search("withoutHouses", $options) === false) {
                         foreach ($flats as &$flat) {
-                            $flat["house"] = $addresses->getHouse($flat["addressHouseId"]);
+//                            $flat["house"] = $addresses->getHouse($flat["addressHouseId"]);
                         }
                     }
 
