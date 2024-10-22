@@ -45,7 +45,7 @@
     $plog = loadBackend("plog");
     $flats = [];
 
-    foreach($subscriber['flats'] as $flat) {
+    foreach ($subscriber['flats'] as $flat) {
         $f = [];
 
         $f['address'] = $flat['house']['houseFull'].', кв. '.strval($flat['flat']);
@@ -76,7 +76,7 @@
 
         $subscribers = $households->getSubscribers('flatId', $f['flatId']);
         $rms = [];
-        foreach($subscribers as $s) {
+        foreach ($subscribers as $s) {
             if ($subscriber['subscriberId'] == $s['subscriberId']) {
                 continue;
             }

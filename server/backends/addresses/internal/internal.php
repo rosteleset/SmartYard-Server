@@ -4,20 +4,20 @@
      * backends addresses namespace
      */
 
-    namespace backends\addresses
-    {
+    namespace backends\addresses {
 
         /**
          * internal.db addresses class
          */
-        class internal extends addresses
-        {
+
+        class internal extends addresses {
+            private $houses = [];
 
             /**
              * @inheritDoc
              */
-            function getRegions()
-            {
+
+            function getRegions() {
                 return $this->db->get("select address_region_id, region_uuid, region_iso_code, region_with_type, region_type, region_type_full, region, timezone from addresses_regions order by region", false, [
                     "address_region_id" => "regionId",
                     "region_uuid" => "regionUuid",
@@ -33,8 +33,8 @@
             /**
              * @inheritDoc
              */
-            function getRegion($regionId)
-            {
+
+            function getRegion($regionId) {
                 if (!checkInt($regionId)) {
                     return false;
                 }
@@ -713,8 +713,7 @@
             /**
              * @inheritDoc
              */
-            function deleteStreet($streetId)
-            {
+            function deleteStreet($streetId) {
                 if (!checkInt($streetId)) {
                     return false;
                 }
@@ -727,8 +726,7 @@
             /**
              * @inheritDoc
              */
-            function getHouses($settlementId = false, $streetId = false)
-            {
+            function getHouses($settlementId = false, $streetId = false) {
                 if ($settlementId && $streetId) {
                     return false;
                 }
@@ -772,7 +770,11 @@
                     return false;
                 }
 
-                return $this->db->get("select address_house_id, address_settlement_id, address_street_id, house_uuid, house_type, house_type_full, house_full, house, company_id from addresses_houses where address_house_id = $houseId", false,
+                if ($this->houses[$houseId]) {
+                    return $this->houses[$houseId];
+                }
+
+                $house = $this->db->get("select address_house_id, address_settlement_id, address_street_id, house_uuid, house_type, house_type_full, house_full, house, company_id from addresses_houses where address_house_id = $houseId", false,
                     [
                         "address_house_id" => "houseId",
                         "address_settlement_id" => "settlementId",
@@ -788,13 +790,17 @@
                         "singlify"
                     ]
                 );
+
+                $this->houses[$houseId] = $house;
+
+                return $house;
             }
 
             /**
              * @inheritDoc
              */
-            function modifyHouse($houseId, $settlementId, $streetId, $houseUuid, $houseType, $houseTypeFull, $houseFull, $house, $companyId = 0)
-            {
+
+            function modifyHouse($houseId, $settlementId, $streetId, $houseUuid, $houseType, $houseTypeFull, $houseFull, $house, $companyId = 0) {
                 if (!checkInt($houseId)) {
                     return false;
                 }
@@ -820,6 +826,8 @@
                 }
 
                 if (trim($houseFull) && trim($house)) {
+                    $this->houses = [];
+
                     return $this->db->modify("update addresses_houses set address_settlement_id = :address_settlement_id, address_street_id = :address_street_id, house_uuid = :house_uuid, house_type = :house_type, house_type_full = :house_type_full, house_full = :house_full, house = :house, company_id = :company_id where address_house_id = $houseId", [
                         ":address_settlement_id" => $settlementId ? : null,
                         ":address_street_id" => $streetId ? : null,
@@ -861,6 +869,8 @@
                 }
 
                 if (trim($houseFull) && trim($house)) {
+                    $this->houses = [];
+
                     return $this->db->insert("insert into addresses_houses (address_settlement_id, address_street_id, house_uuid, house_type, house_type_full, house_full, house, company_id) values (:address_settlement_id, :address_street_id, :house_uuid, :house_type, :house_type_full, :house_full, :house, :company_id)", [
                         ":address_settlement_id" => $settlementId ? : null,
                         ":address_street_id" => $streetId ? : null,
@@ -879,11 +889,13 @@
             /**
              * @inheritDoc
              */
-            function deleteHouse($houseId)
-            {
+
+            function deleteHouse($houseId) {
                 if (!checkInt($houseId)) {
                     return false;
                 }
+
+                $this->houses = [];
 
                 return $this->db->modify("delete from addresses_houses where address_house_id = $houseId") && $this->cleanup();
             }
@@ -891,8 +903,8 @@
             /**
              * @inheritDoc
              */
-            function addHouseByMagic($houseUuid)
-            {
+
+            function addHouseByMagic($houseUuid) {
                 $house = $this->redis->get("house_" . $houseUuid);
 
                 if ($house) {
@@ -1049,6 +1061,8 @@
                             $houseId = $this->addHouse($settlementId, $streetId, $house["data"]["house_fias_id"], $house["data"]["house_type"], $house["data"]["house_type_full"], $house["value"], $house["data"]["house"]);
                         }
                     }
+
+                    $this->houses = [];
 
                     if ($houseId) {
                         return $houseId;
