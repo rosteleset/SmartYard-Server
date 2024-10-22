@@ -46,7 +46,7 @@
 
     $houses = [];
 
-    foreach($subscriber['flats'] as $flat) {
+    foreach ($subscriber['flats'] as $flat) {
         $houseId = $flat['addressHouseId'];
 
         if (array_key_exists($houseId, $houses)) {
@@ -97,7 +97,7 @@
     }
 
     // конвертируем ассоциативные массивы в простые и удаляем лишние ключи
-    foreach($houses as $house_key => $h) {
+    foreach ($houses as $house_key => $h) {
         // count unique cameras
         $tempArr = array_unique(array_column($h['cameras'], 'cameraId'));
         $houses[$house_key]['cctv'] = count($tempArr);
