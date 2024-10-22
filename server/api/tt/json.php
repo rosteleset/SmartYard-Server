@@ -27,7 +27,7 @@
          * issue method
          */
 
-        class issue extends api {
+        class json extends api {
 
             public static function PUT($params) {
                 $tt = loadBackend("tt");
