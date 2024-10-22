@@ -231,9 +231,12 @@
             /**
              * @param $by - "id", "mobile", "flat", "...?"
              * @param $query
+             * @param $options
+             *
              * @return false|array
              */
-            abstract public function getSubscribers($by, $query);
+
+            abstract public function getSubscribers($by, $query, $options = []);
 
             /**
              * @param $mobile
@@ -244,6 +247,7 @@
              * @param null $message
              * @return boolean|integer
              */
+
             abstract public function addSubscriber($mobile, $name = '', $patronymic = '', $last = '', $flatId = false, $message = false);
 
             /**

@@ -74,7 +74,7 @@
         // $f['contractName'] = '-';
         // $f['clientId'] = '0';
 
-        $subscribers = $households->getSubscribers('flatId', $f['flatId']);
+        $subscribers = $households->getSubscribers('flatId', $f['flatId'], [ "withoutHouses" ]);
         $rms = [];
         foreach ($subscribers as $s) {
             if ($subscriber['subscriberId'] == $s['subscriberId']) {

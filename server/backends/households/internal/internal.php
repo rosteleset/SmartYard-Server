@@ -1197,7 +1197,7 @@
              * @inheritDoc
              */
 
-            public function getSubscribers($by, $query) {
+            public function getSubscribers($by, $query, $options = []) {
                 $q = "";
                 $p = false;
 
@@ -1248,9 +1248,13 @@
                             "address_house_id" => "addressHouseId",
                         ]
                     );
-                    foreach ($flats as &$flat) {
-                        $flat["house"] = $addresses->getHouse($flat["addressHouseId"]);
+
+                    if (array_search("withoutHouses", $options) === false) {
+                        foreach ($flats as &$flat) {
+                            $flat["house"] = $addresses->getHouse($flat["addressHouseId"]);
+                        }
                     }
+
                     $subscriber["flats"] = $flats;
                 }
 
