@@ -221,6 +221,20 @@
                         ];
                         break;
 
+                    case "subscriberRfId":
+                        $q = "
+                            select
+                                house_flat_id
+                            from
+                                houses_flats
+                            where
+                                house_flat_id in (select house_flat_id from houses_flats_subscribers where house_subscriber_id in (select access_to from houses_rfids where access_type = 1 and rfid = :code))
+                        ";
+                        $p = [
+                            "code" => $params["rfId"]
+                        ];
+                        break;
+
                     case "subscriberId":
                         $q = "
                             select

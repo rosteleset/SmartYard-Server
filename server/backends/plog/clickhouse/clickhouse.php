@@ -405,8 +405,9 @@
             {
                 $households = loadBackend('households');
                 $flats1 = array_map('self::getFlatId', $households->getFlats('rfId', ['rfId' => $rfid]));
-                $flats2 = array_map('self::getFlatId', $households->getFlats('domophoneId', $domophone_id));
-                return array_intersect($flats1, $flats2);
+                $flats2 = array_map('self::getFlatId', $households->getFlats('subscriberRfId', ['rfId' => $rfid]));
+                $flats3 = array_map('self::getFlatId', $households->getFlats('domophoneId', $domophone_id));
+                return array_intersect(array_merge($flats1, $flats2), $flats3);
             }
 
             //получение списка flat_id по коду открытия на устройстве
