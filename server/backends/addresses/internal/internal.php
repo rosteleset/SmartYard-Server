@@ -770,7 +770,7 @@
                     return false;
                 }
 
-                if ($this->houses[$houseId]) {
+                if (@$this->houses[$houseId]) {
                     return $this->houses[$houseId];
                 }
 
