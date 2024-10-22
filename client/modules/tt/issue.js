@@ -4,8 +4,6 @@
         moduleLoaded("tt.issue", this);
     },
 
-    callsLoaded: false,
-
     createIssue: function (current_project, parent) {
         loadingStart();
         GET("tt", "tt", false, true).
@@ -494,8 +492,6 @@
     },
 
     renderIssue: function (issue, filter, search) {
-        modules.tt.issue.callsLoaded = false;
-
         let count = false;
         let index = false;
         let next = false;
@@ -693,7 +689,7 @@
             h += '</span>';
         }
 
-        if (AVAIL("cdr", "cdr", "POST") && modules.tt.cdr && modules.tt.cdr.hasCdr(issue.issue) && !modules.tt.issue.callsLoaded) {
+        if (AVAIL("cdr", "cdr", "POST") && modules.tt.cdr && modules.tt.cdr.hasCdr(issue.issue)) {
             h += `<span class="hoverable text-primary mr-3 ttCalls">${i18n("tt.calls")}</span>`;
         }
 
@@ -1055,7 +1051,7 @@
                 $(".ttJournal").text(i18n("tt.journal"));
                 $("#issueJournal").hide();
                 $("#issueComments").show();
-                if (AVAIL("cdr", "cdr", "POST") && modules.tt.cdr && modules.tt.cdr.hasCdr(issue.issue) && !modules.tt.issue.callsLoaded) {
+                if (AVAIL("cdr", "cdr", "POST") && modules.tt.cdr && modules.tt.cdr.hasCdr(issue.issue)) {
                     $(".ttCalls").show();
                 }
             }
@@ -1070,7 +1066,6 @@
             }).
             done(result => {
                 $(".ttCalls").hide();
-                modules.tt.issue.callsLoaded = true;
                 if (result.cdr && result.cdr.length) {
                     if ($("#issueComments").text()) {
                         for (let i in result.cdr) {
