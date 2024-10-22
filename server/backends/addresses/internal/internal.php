@@ -766,8 +766,8 @@
             /**
              * @inheritDoc
              */
-            function getHouse($houseId)
-            {
+
+            function getHouse($houseId) {
                 if (!checkInt($houseId)) {
                     return false;
                 }
@@ -838,8 +838,8 @@
             /**
              * @inheritDoc
              */
-            function addHouse($settlementId, $streetId, $houseUuid, $houseType, $houseTypeFull, $houseFull, $house, $companyId = 0)
-            {
+
+            function addHouse($settlementId, $streetId, $houseUuid, $houseType, $houseTypeFull, $houseFull, $house, $companyId = 0) {
                 if ($settlementId && $streetId) {
                     return false;
                 }

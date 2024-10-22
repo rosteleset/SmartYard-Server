@@ -15,8 +15,8 @@
             /**
              * @inheritDoc
              */
-                function getFlat($flatId)
-            {
+
+            function getFlat($flatId) {
                 if (!checkInt($flatId)) {
                     return false;
                 }
@@ -346,8 +346,8 @@
             /**
              * @inheritDoc
              */
-            function addEntrance($houseId, $entranceId, $prefix)
-            {
+
+            function addEntrance($houseId, $entranceId, $prefix) {
                 if (!checkInt($houseId) || !checkInt($entranceId) || !checkInt($prefix)) {
                     return false;
                 }
@@ -374,6 +374,7 @@
             /**
              * @inheritDoc
              */
+
             function modifyEntrance($entranceId, $houseId, $entranceType, $entrance, $lat, $lon, $shared, $plog, $prefix, $callerId, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $cmsLevels, $video, $path) {
                 if (!checkInt($entranceId) || !trim($entranceType) || !trim($entrance) || !checkInt($cmsType) || !checkInt($plog)) {
                     return false;
@@ -442,8 +443,8 @@
             /**
              * @inheritDoc
              */
-            function deleteEntrance($entranceId, $houseId)
-            {
+
+            function deleteEntrance($entranceId, $houseId) {
                 if (!checkInt($houseId) || !checkInt($entranceId)) {
                     return false;
                 }
@@ -468,8 +469,8 @@
             /**
              * @inheritDoc
              */
-            function addFlat($houseId, $floor, $flat, $code, $entrances, $apartmentsAndLevels, $manualBlock, $adminBlock, $openCode, $plog, $autoOpen, $whiteRabbit, $sipEnabled, $sipPassword)
-            {
+
+            function addFlat($houseId, $floor, $flat, $code, $entrances, $apartmentsAndLevels, $manualBlock, $adminBlock, $openCode, $plog, $autoOpen, $whiteRabbit, $sipEnabled, $sipPassword) {
                 $autoOpen = (int)$autoOpen;
 
                 if (checkInt($houseId) && trim($flat) && checkInt($manualBlock) && checkInt($adminBlock) && checkInt($whiteRabbit) && checkInt($sipEnabled) && checkInt($plog) && checkInt($autoOpen)) {
@@ -1181,8 +1182,8 @@
             /**
              * @inheritDoc
              */
-            public function getSubscribers($by, $query)
-            {
+
+            public function getSubscribers($by, $query) {
                 $q = "";
                 $p = false;
 
