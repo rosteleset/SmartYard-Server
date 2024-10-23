@@ -1204,8 +1204,7 @@
              * @return mixed
              */
 
-            public function checkIssue(&$issue)
-            {
+            public function checkIssue(&$issue) {
                 $acr = explode("-", $issue["issueId"])[0];
 
                 $customFields = $this->getCustomFields();
