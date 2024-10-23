@@ -328,9 +328,9 @@
     "new": "now",
     "methods": {
         "tt": {
-            "_title": "Task Manager",
+            "_title": "Task manager",
             "tt": {
-                "_title": "Task Manager",
+                "_title": "Task manager",
                 "GET": "Access"
             },
             "issue": {
@@ -341,15 +341,19 @@
                 "DELETE": "Deletion"
             },
             "project": {
-                "_title": "Project Management",
+                "_title": "Project management",
                 "GET": "Access",
                 "POST": "Creation",
                 "PUT": "Modification",
                 "DELETE": "Deletion"
             },
             "customFilter": {
-                "_title": "Custom Filters",
-                "GET": "Custom Filters"
+                "_title": "Custom filters",
+                "GET": "Custom filters"
+            },
+            "json": {
+                "_title": "Direct access to issue",
+                "PUT": "Direct access to issue"
             }
         }
     },
