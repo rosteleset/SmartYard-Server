@@ -36,6 +36,7 @@
             "issue",
             "settings",
             "workspaces",
+            "json",
         ], this);
     },
 

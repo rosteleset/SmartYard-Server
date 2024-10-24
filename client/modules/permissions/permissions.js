@@ -93,7 +93,7 @@
                 {
                     id: group?"gid":"uid",
                     type: "select2",
-                    title: group?i18n("groups.group"):i18n("users.login"),
+                    title: group ? i18n("groups.group") : i18n("users.login"),
                     options: group?g:u,
                 },
                 {

@@ -5,6 +5,7 @@ const moduleLoadQueue = [];
 let mainFormTop = 74;
 
 var lastHash = false;
+var prevHash = false;
 var currentPage = false;
 var mainSidebarFirst = true;
 var mainSidebarGroup = false;
@@ -182,15 +183,19 @@ function hashChange() {
     let [ route, params, hash ] = hashParse();
 
     if (hash !== lastHash) {
-
         if (typeof window.onbeforeunload == "function") {
             if (!confirm(i18n("unsavedChanges"))) {
-                window.history.back();
+                if (hash == prevHash) {
+                    window.history.forward();
+                } else {
+                    window.history.back();
+                }
                 return;
             }
             window.onbeforeunload = null;
         }
 
+        prevHash = lastHash;
         lastHash = hash;
 
         if (params["_skipRouting"] == "1") {
@@ -706,11 +711,11 @@ function initAll() {
                             } else {
                                 $("#app").show();
                                 if (config.defaultRoute) {
-                                    onhashchange = hashChange;
-                                    location.href = (config.defaultRoute.charAt(0) == "?")?config.defaultRoute:("?" + config.defaultRoute);
+                                    window.onhashchange = hashChange;
+                                    window.location.href = (config.defaultRoute.charAt(0) == "?")?config.defaultRoute:("?" + config.defaultRoute);
                                 } else {
                                     hashChange();
-                                    onhashchange = hashChange;
+                                    window.onhashchange = hashChange;
                                 }
                             }
                         }).fail(response => {
@@ -777,7 +782,7 @@ function loadModule() {
             }
         }
         hashChange();
-        onhashchange = hashChange;
+        window.onhashchange = hashChange;
         $("#app").show();
     } else {
         let l = lStore("_lang");

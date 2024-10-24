@@ -1305,8 +1305,7 @@
              * @return void
              */
 
-            public function getIssue($issueId)
-            {
+            public function getIssue($issueId) {
                 $acr = explode("-", $issueId)[0];
 
                 $projects = $this->getProjects($acr);
@@ -2345,6 +2344,14 @@
                     "cli" => true,
                 ];
             }
+
+            /**
+             * @param string $issueId
+             *
+             * @return mixed
+             */
+
+            abstract public function get($issueId);
 
             /**
              * @param object $issue

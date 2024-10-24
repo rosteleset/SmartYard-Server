@@ -1,6 +1,21 @@
 <?php
 
     /**
+     * @api {put} /api/tt/json/:id get issue
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName getIssueJSON
+     * @apiGroup tt
+     *
+     * @apiHeader {String} authorization authentication token
+     *
+     * @apiParam {String} issueId
+     *
+     * @apiSuccess {Mixed} issue
+     */
+
+    /**
      * @api {put} /api/tt/json modify issue
      *
      * @apiVersion 1.0.0
@@ -29,6 +44,18 @@
 
         class json extends api {
 
+            public static function GET($params) {
+                $tt = loadBackend("tt");
+
+                if (!$tt) {
+                    return API::ERROR(500);
+                }
+
+                $success = $tt->get(@$params["_id"]);
+
+                return api::ANSWER($success, ($success !== false) ? "issue" : "notAcceptable");
+            }
+
             public static function PUT($params) {
                 $tt = loadBackend("tt");
 
@@ -44,6 +71,7 @@
             public static function index() {
                 if (loadBackend("tt")) {
                     return [
+                        "GET",
                         "PUT",
                     ];
                 } else {

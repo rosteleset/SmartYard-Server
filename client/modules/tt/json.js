@@ -1,0 +1,98 @@
+({
+    init: function () {
+        // submodule - module<dot>submodule
+        moduleLoaded("tt.json", this);
+    },
+
+    route: function (params) {
+        loadingStart();
+
+        subTop();
+
+        if ($("#altForm:visible").length > 0) {
+            $("#mainForm").html("");
+            $("#altForm").hide();
+        }
+
+        GET("tt", "json", params["issue"], true).
+        done(r => {
+            if (r && r.issue) {
+                let height = $(window).height() - mainFormTop;
+                let h = '';
+                h += `<div id='editorContainer' style='width: 100%; height: ${height}px;'>`;
+                h += `<pre class="ace-editor mt-2" id="issueEditor" style="position: relative; border: 1px solid #ced4da; border-radius: 0.25rem; width: 100%; height: 100%;"></pre>`;
+                h += "</div>";
+                if (AVAIL("tt", "json", "PUT")) {
+                    h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="issueSave" class="hoverable saveButton"><i class="fas fa-save pr-2"></i>${i18n("tt.issueSave")}</span></span>`;
+                }
+                $("#mainForm").html(h);
+                let editor = ace.edit("issueEditor");
+                editor.setTheme("ace/theme/chrome");
+                editor.setOptions({
+                    enableBasicAutocompletion: true,
+                    enableSnippets: true,
+                    enableLiveAutocompletion: true,
+                });
+                editor.session.setMode("ace/mode/json");
+                editor.setValue(JSON.stringify(r.issue, null, 4), -1);
+                currentAceEditor = editor;
+                currentAceEditorOriginalValue = currentAceEditor.getValue();
+                editor.getSession().getUndoManager().reset();
+                editor.clearSelection();
+                editor.focus();
+                editor.setFontSize(14);
+                editor.commands.removeCommand("removeline");
+                editor.commands.removeCommand("redo");
+                editor.commands.addCommand({
+                    name: "removeline",
+                    description: "Remove line",
+                    bindKey: {
+                        win: "Ctrl-Y",
+                        mac: "Cmd-Y"
+                    },
+                    exec: function (editor) { editor.removeLines(); },
+                    scrollIntoView: "cursor",
+                    multiSelectAction: "forEachLine"
+                });
+                editor.commands.addCommand({
+                    name: "redo",
+                    description: "Redo",
+                    bindKey: {
+                        win: "Ctrl-Shift-Z",
+                        mac: "Command-Shift-Z"
+                    },
+                    exec: function (editor) { editor.redo(); }
+                });
+                editor.commands.addCommand({
+                    name: 'save',
+                    bindKey: {
+                        win: "Ctrl-S",
+                        mac: "Cmd-S"
+                    },
+                    exec: (() => {
+                        $("#issueSave").click();
+                    }),
+                });
+                $("#issueSave").off("click").on("click", () => {
+                    loadingStart();
+                    let i = JSON.parse(editor.getValue());
+                    delete i._id;
+                    PUT("tt", "json", false, { issue: i  }).
+                    fail(FAIL).
+                    done(() => {
+                        message(i18n("tt.issueWasSaved"));
+                        currentAceEditorOriginalValue = currentAceEditor.getValue();
+                    }).
+                    always(() => {
+                        loadingDone();
+                    });
+                });
+            } else {
+                FAILPAGE();
+            }
+            loadingDone();
+        }).
+        fail(FAILPAGE);
+    },
+
+}).init();

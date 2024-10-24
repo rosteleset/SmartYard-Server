@@ -793,8 +793,8 @@
             /**
              * @inheritDoc
              */
-            public function addAttachments($issueId, $attachments)
-            {
+
+            public function addAttachments($issueId, $attachments) {
                 $db = $this->dbName;
 
                 $acr = explode("-", $issueId)[0];
@@ -1305,6 +1305,25 @@
                 $limit = (int)$limit;
 
                 return $this->clickhouse->select("select issue from ttlog where login='$login' group by issue order by max(date) desc limit $limit");
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+            public function get($issueId) {
+                $db = $this->dbName;
+                $project = explode("-", $issueId)[0];
+
+                if ($db && $project) {
+                    $issues = $this->mongo->$db->$project->find([ "issueId" => $issueId ]);
+
+                    foreach ($issues as $issue) {
+                        return $issue;
+                    }
+                }
+
+                return false;
             }
 
             /**

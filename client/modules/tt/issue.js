@@ -701,6 +701,10 @@
             h += `<span class="hoverable text-primary mr-3 ttJournal">${i18n("tt.journal")}</span>`;
         }
 
+        if (AVAIL("tt", "json", "GET")) {
+            h += `<span class="hoverable text-primary mr-3 ttJSON">JSON</span>`;
+        }
+
         h += "</div>";
         h += "</td>";
         h += "<td style='text-align: right;' class='pr-2' nowrap>";
@@ -1132,6 +1136,10 @@
                 }
                 loadingDone();
             });
+        });
+
+        $(".ttJSON").off("click").on("click", () => {
+            window.location.href = "?#tt.json&issue=" + issue.issue.issueId;
         });
 
         $(".ttIssueAction").off("click").on("click", function () {

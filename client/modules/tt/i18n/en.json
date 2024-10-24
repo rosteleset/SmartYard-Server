@@ -326,6 +326,8 @@
     "favoriteFilters": "Favorite filters",
     "old": "was",
     "new": "now",
+    "issueSave": "Save",
+    "issueWasSaved": "Task was saved",
     "methods": {
         "tt": {
             "_title": "Task manager",
@@ -353,7 +355,8 @@
             },
             "json": {
                 "_title": "Direct access to issue",
-                "PUT": "Direct access to issue"
+                "GET": "View",
+                "PUT": "Modify"
             }
         }
     },
