@@ -75,7 +75,14 @@
                 });
                 $("#issueSave").off("click").on("click", () => {
                     loadingStart();
-                    let i = JSON.parse(editor.getValue());
+                    let i;
+                    try {
+                        i = JSON.parse(editor.getValue());
+                    } catch (e) {
+                        loadingDone();
+                        error(e.message);
+                        return;
+                    }
                     delete i._id;
                     PUT("tt", "json", false, { issue: i  }).
                     fail(FAIL).
