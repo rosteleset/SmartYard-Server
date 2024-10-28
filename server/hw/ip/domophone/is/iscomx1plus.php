@@ -13,7 +13,7 @@ class iscomx1plus extends is
     /**
      * Mapping of CMS models to their corresponding type ID and capacity.
      *
-     * @var array<string, array{id: int, capacity: int, columns: int, rows: int}>
+     * @var array<string, array{type: int, capacity: int, columns: int, rows: int}>
      */
     protected const CMS_MODEL_DATA = [
         'BK-4' => ['type' => 50, 'capacity' => 4, 'columns' => 1, 'rows' => 4],
@@ -66,11 +66,35 @@ class iscomx1plus extends is
         return array_fill(0, $columns, array_fill(0, $rows, null));
     }
 
+    /**
+     * Retrieves CMS model data by type.
+     *
+     * @param int $type The type identifier of the CMS model.
+     * @return array{name: string, capacity: int, columns: int, rows: int}|null
+     *         The CMS model data array with the 'name' key if a match is found, or null if no match.
+     */
+    protected static function getCmsDataByType(int $type): ?array
+    {
+        foreach (self::CMS_MODEL_DATA as $key => $data) {
+            if ($data['type'] === $type) {
+                return array_merge(['name' => $key], $data);
+            }
+        }
+
+        return null;
+    }
+
     public function configureMatrix(array $matrix)
     {
         if ($this->isLegacyVersion()) {
             $this->configureMatrixLegacy($matrix);
             return;
+        }
+
+        // Set matrices cells to null
+        foreach ($this->cmsMatrices as $cmsMatrixObject) {
+            $cmsData = self::getCmsDataByType($cmsMatrixObject->type);
+            $cmsMatrixObject->matrix = self::getNullMatrix($cmsData['columns'], $cmsData['rows']);
         }
 
         foreach ($matrix as $matrixCell) {
@@ -88,12 +112,11 @@ class iscomx1plus extends is
                 continue;
             }
 
-            if (in_array($this->getCmsMatrixObject($number)->type, self::CMS_TYPES_WRONG_UNITS)) {
+            if (in_array($cmsMatrixObject->type, self::CMS_TYPES_WRONG_UNITS)) {
                 $units--;
             }
 
             $cmsMatrixObject->matrix[$tens][$units] = $apartment;
-            // TODO: merge with null matrix
         }
     }
 
@@ -200,14 +223,7 @@ class iscomx1plus extends is
 
         // We assume that all matrices have the same CMS model, so we take the first one
         $cmsTypeId = $this->getCmsMatrixObject()->type;
-
-        foreach (self::CMS_MODEL_DATA as $cmsModel => $cmsData) {
-            if ($cmsData['type'] === $cmsTypeId) {
-                return $cmsModel;
-            }
-        }
-
-        return '';
+        return self::getCmsDataByType($cmsTypeId)['name'] ?? '';
     }
 
     protected function getMatrix(): array
@@ -225,6 +241,8 @@ class iscomx1plus extends is
                 continue;
             }
 
+            $hundreds = $number - 1;
+
             foreach ($cmsMatrixObject->matrix as $tens => $column) {
                 foreach ($column as $units => $apartment) {
                     if ($apartment === null) {
@@ -235,8 +253,8 @@ class iscomx1plus extends is
                         $units++;
                     }
 
-                    $matrix[$number . $tens . $units] = [
-                        'hundreds' => $number,
+                    $matrix[$hundreds . $tens . $units] = [
+                        'hundreds' => $hundreds,
                         'tens' => $tens,
                         'units' => $units,
                         'apartment' => $apartment,
