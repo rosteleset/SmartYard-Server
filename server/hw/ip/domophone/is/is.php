@@ -38,7 +38,6 @@ abstract class is extends domophone
     ];
 
     protected array $apartments = [];
-    protected array $matrix = [];
 
     protected ?string $sosNumber = null;
     protected ?string $conciergeNumber = null;

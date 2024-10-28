@@ -151,11 +151,7 @@ class iscomx1plus extends is
             $cmsMatrixObject->type = self::CMS_MODEL_DATA[$model]['type'];
             $cmsMatrixObject->capacity = self::CMS_MODEL_DATA[$model]['capacity'];
 
-            // TODO: merge with current matrix
-            $cmsMatrixObject->matrix = $this->getNullMatrix(
-                self::CMS_MODEL_DATA[$model]['columns'],
-                self::CMS_MODEL_DATA[$model]['rows']
-            );
+            $this->configureMatrix($this->getMatrix());
         }
     }
 
