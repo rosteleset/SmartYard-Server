@@ -1,7 +1,11 @@
 {
     "name": "Все задачи",
     "comment": "Все заявки",
-    "filter": {},
+    "filter": {
+        "issueId": {
+            "$exists": true
+        }
+    },
     "fields": [
         "subject",
         "catalog",
