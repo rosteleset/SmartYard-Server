@@ -438,8 +438,46 @@
                     ":path" => (int)$path ? : null,
                 ]) !== false;
 
-                if (!$cms) {
+                if (!$cms) { // Set CMS matrix to empty...
                     $this->setCms($entranceId, []);
+                } else { // ...or adjust the current matrix to the new CMS model
+                    $currentCmsMatrix = $this->getCms($entranceId);
+
+                    if ($currentCmsMatrix !== false) {
+                        $configsBackend = loadBackend('configs');
+                        $cmsSettings = $configsBackend->getCMSes()[$cms];
+                        $cmsMatrixSettings = array_values($cmsSettings['cms']);
+
+                        $minTens = $cmsSettings['dozen_start'];
+                        $maxHundreds = array_key_last($cmsMatrixSettings);
+                        $newCmsMatrix = [];
+
+                        foreach ($currentCmsMatrix as $cmsMatrixItem) {
+                            ['cms' => $hundreds, 'dozen' => $tens, 'unit' => $units] = $cmsMatrixItem;
+
+                            if ($hundreds > $maxHundreds) {
+                                continue;
+                            }
+
+                            $unitSettings = $cmsMatrixSettings[$hundreds];
+                            $minUnits = array_key_first($unitSettings);
+                            $maxUnits = array_key_last($unitSettings);
+
+                            if ($units < $minUnits || $units > $maxUnits) {
+                                continue;
+                            }
+
+                            $maxTens = $minTens + $unitSettings[$units] - 1;
+
+                            if ($tens < $minTens || $tens > $maxTens) {
+                                continue;
+                            }
+
+                            $newCmsMatrix[] = $cmsMatrixItem;
+                        }
+
+                        $this->setCms($entranceId, $newCmsMatrix);
+                    }
                 }
 
                 $queue = loadBackend("queue");
