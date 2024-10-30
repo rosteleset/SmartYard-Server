@@ -34,6 +34,7 @@
                     enableLiveAutocompletion: true,
                 });
                 editor.session.setMode("ace/mode/json");
+                delete r.issue._id;
                 editor.setValue(JSON.stringify(r.issue, null, 4), -1);
                 currentAceEditor = editor;
                 currentAceEditorOriginalValue = currentAceEditor.getValue();
@@ -63,38 +64,44 @@
                     },
                     exec: function (editor) { editor.redo(); }
                 });
-                editor.commands.addCommand({
-                    name: 'save',
-                    bindKey: {
-                        win: "Ctrl-S",
-                        mac: "Cmd-S"
-                    },
-                    exec: (() => {
-                        $("#issueSave").click();
-                    }),
-                });
-                $("#issueSave").off("click").on("click", () => {
-                    loadingStart();
-                    let i;
-                    try {
-                        i = JSON.parse(editor.getValue());
-                    } catch (e) {
-                        loadingDone();
-                        error(e.message);
-                        return;
-                    }
-                    delete i._id;
-                    PUT("tt", "json", false, { issue: i  }).
-                    fail(FAIL).
-                    done(() => {
-                        message(i18n("tt.issueWasSaved"));
-                        currentAceEditorOriginalValue = currentAceEditor.getValue();
-                        window.onbeforeunload = null;
-                    }).
-                    always(() => {
-                        loadingDone();
+                if (AVAIL("tt", "json", "PUT")) {
+                    editor.commands.addCommand({
+                        name: 'save',
+                        bindKey: {
+                            win: "Ctrl-S",
+                            mac: "Cmd-S"
+                        },
+                        exec: (() => {
+                            $("#issueSave").click();
+                        }),
                     });
-                });
+                }
+                if (AVAIL("tt", "json", "PUT")) {
+                    $("#issueSave").off("click").on("click", () => {
+                        loadingStart();
+                        let i;
+                        try {
+                            i = JSON.parse(editor.getValue());
+                            i.issueId = r.issue.issueId;
+                        } catch (e) {
+                            loadingDone();
+                            error(e.message);
+                            return;
+                        }
+                        delete i._id;
+                        PUT("tt", "json", false, { issue: i  }).
+                        fail(FAIL).
+                        done(() => {
+                            message(i18n("tt.issueWasSaved"));
+                            currentAceEditorOriginalValue = JSON.stringify(i, null, 4);
+                            editor.setValue(currentAceEditorOriginalValue, -1);
+                            window.onbeforeunload = null;
+                        }).
+                        always(() => {
+                            loadingDone();
+                        });
+                    });
+                }
             } else {
                 FAILPAGE();
             }
