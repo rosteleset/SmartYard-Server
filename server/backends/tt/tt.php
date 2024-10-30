@@ -1495,8 +1495,7 @@
              * @return void
              */
 
-            public function addJournalRecord($issueId, $action, $old, $new, $workflowAction = false, $silent = false)
-            {
+            public function addJournalRecord($issueId, $action, $old, $new, $workflowAction = false, $silent = false) {
                 if (!$silent) {
                     try {
                         $issue = $this->getIssue($issueId);
@@ -1517,8 +1516,7 @@
              * @return mixed
              */
 
-            public function getJournal($issueId, $limit = false)
-            {
+            public function getJournal($issueId, $limit = false) {
                 if (!$this->myRoles()[explode("-", $issueId)[0]]) {
                     return false;
                 }
@@ -1531,8 +1529,7 @@
              * @return mixed
              */
 
-            public function assignToMe($issue)
-            {
+            public function assignToMe($issue) {
                 $acr = explode("-", $issue)[0];
 
                 $myRoles = $this->myRoles();
@@ -1562,8 +1559,7 @@
              * @return mixed
              */
 
-            public function watch($issue)
-            {
+            public function watch($issue) {
                 $acr = explode("-", $issue)[0];
 
                 $myRoles = $this->myRoles();
@@ -1600,8 +1596,7 @@
              * @return mixed
              */
 
-            public function preprocessFilter($query, $params, $types)
-            {
+            public function preprocessFilter($query, $params, $types) {
                 if ($query) {
                     array_walk_recursive($query, function (&$item, $key, $params) use ($types) {
                         if (array_key_exists($item, $params)) {
@@ -1631,8 +1626,7 @@
              * @return mixed
              */
 
-            public function linkIssues($issue1, $issue2)
-            {
+            public function linkIssues($issue1, $issue2) {
                 $issue1 = $this->getIssue($issue1);
                 if (!$issue1) {
                     setLastError("issue1NotFound");
@@ -1715,8 +1709,7 @@
              * @return mixed
              */
 
-            public function unLinkIssues($issue1, $issue2)
-            {
+            public function unLinkIssues($issue1, $issue2) {
                 $issue1 = $this->getIssue($issue1);
                 if (!$issue1) {
                     setLastError("issue1NotFound");
