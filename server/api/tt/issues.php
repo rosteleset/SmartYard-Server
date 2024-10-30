@@ -71,11 +71,11 @@
                                 $preprocess["%%parent"] = trim($params["parent"]);
                             }
 
-                            if (@$filter["pipeline"]) {
+                            if (isset($filter["pipeline"])) {
                                 $issues = $tt->getIssues(@$params["project"] ? : "TT", @$filter["pipeline"], @$filter["fields"], [], @$params["skip"] ? : 0, @$params["limit"] ? : 5, $preprocess, [], true);
                             }
 
-                            if (@$filter["filter"]) {
+                            if (isset($filter["filter"])) {
                                 $issues = $tt->getIssues(@$params["project"] ? : "TT", @$filter["filter"], @$filter["fields"], @$params["sort"] ? : (array_key_exists("sort", $filter) ? $filter["sort"] : [ "created" => 1 ]), @$params["skip"] ? : 0, @$params["limit"] ? : 5, $preprocess);
                             }
                         } else {

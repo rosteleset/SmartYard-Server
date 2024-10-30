@@ -322,8 +322,8 @@
             /**
              * @inheritDoc
              */
-            public function getIssues($collection, $query, $fields = [], $sort = [ "created" => 1 ], $skip = 0, $limit = 100, $preprocess = [], $types = [], $byPipeline = false)
-            {
+
+            public function getIssues($collection, $query, $fields = [], $sort = [ "created" => 1 ], $skip = 0, $limit = 100, $preprocess = [], $types = [], $byPipeline = false) {
                 $db = $this->dbName;
 
                 $me = $this->myRoles();

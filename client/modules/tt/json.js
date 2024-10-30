@@ -89,6 +89,7 @@
                     done(() => {
                         message(i18n("tt.issueWasSaved"));
                         currentAceEditorOriginalValue = currentAceEditor.getValue();
+                        window.onbeforeunload = null;
                     }).
                     always(() => {
                         loadingDone();
