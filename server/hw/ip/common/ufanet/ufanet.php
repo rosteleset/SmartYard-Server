@@ -74,10 +74,17 @@ trait ufanet
      * @param string $method (Optional) HTTP method. Default is "GET".
      * @param array|null $payload (Optional) Query params or request body. Empty array by default.
      * @param int $timeout (Optional) The maximum number of seconds to allow cURL functions to execute.
-     *
+     * @param bool $useFormUrlencoded (Optional) If true, the payload will be encoded with
+     * `x-www-form-urlencoded` instead of `application/json`. False by default.
      * @return array|string|null API response or null if an error occurred.
      */
-    protected function apiCall(string $resource, string $method = 'GET', ?array $payload = null, int $timeout = 0)
+    protected function apiCall(
+        string $resource,
+        string $method = 'GET',
+        ?array $payload = null,
+        int    $timeout = 0,
+        bool   $useFormUrlencoded = false,
+    )
     {
         if ($payload !== null && $method === 'GET') {
             $payload = array_map(fn($value) => str_replace(' ', '%20', $value), $payload); // Replace spaces with %20
@@ -96,12 +103,16 @@ trait ufanet
         curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
 
         if ($payload !== null && $method !== 'GET') {
-            $jsonPayload = empty($payload)
-                ? json_encode($payload, JSON_FORCE_OBJECT)
-                : json_encode($payload, JSON_UNESCAPED_UNICODE);
+            if ($useFormUrlencoded) {
+                curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($payload));
+            } else {
+                $jsonPayload = empty($payload)
+                    ? json_encode($payload, JSON_FORCE_OBJECT)
+                    : json_encode($payload, JSON_UNESCAPED_UNICODE);
 
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonPayload);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonPayload);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+            }
         }
 
         $res = curl_exec($ch);
