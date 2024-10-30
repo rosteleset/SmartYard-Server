@@ -598,7 +598,7 @@
                         if (isset($image_data[self::COLUMN_IMAGE_UUID])) {
                             $event_data[self::COLUMN_IMAGE_UUID] = $image_data[self::COLUMN_IMAGE_UUID];
                         }
-                        $event_data[self::COLUMN_PREVIEW] = $image_data[self::COLUMN_PREVIEW];
+                        $event_data[self::COLUMN_PREVIEW] = ($image_data[self::COLUMN_PREVIEW] ?? self::PREVIEW_NONE);
                         if (isset($image_data[self::COLUMN_FACE])) {
                             $event_data[self::COLUMN_FACE] = $image_data[self::COLUMN_FACE];
                             if (isset($face_id)) {
@@ -1320,7 +1320,7 @@
                         if (isset($image_data[self::COLUMN_IMAGE_UUID])) {
                             $event_data[self::COLUMN_IMAGE_UUID] = $image_data[self::COLUMN_IMAGE_UUID];
                         }
-                        $event_data[self::COLUMN_PREVIEW] = $image_data[self::COLUMN_PREVIEW];
+                        $event_data[self::COLUMN_PREVIEW] = ($image_data[self::COLUMN_PREVIEW] ?? self::PREVIEW_NONE);
                         if (isset($image_data[self::COLUMN_FACE])) {
                             $event_data[self::COLUMN_FACE] = $image_data[self::COLUMN_FACE];
                             if (isset($face_id)) {
