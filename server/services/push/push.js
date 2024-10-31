@@ -17,7 +17,7 @@ const {
     RUSTORE_TOKEN
 } = require('./constants.js');
 
-let huaweiToken = '' ;
+let huaweiToken = '';
 
 const pushOk = (token, result, res) => {
     console.log(`${(new Date()).toLocaleString()} | pushOk | result: ${JSON.stringify(result)}`)
@@ -40,6 +40,7 @@ const pushOk = (token, result, res) => {
 
     pushFail(token, result, res);
 }
+
 const pushFail = (token, error, res) => {
     console.log((new Date()).toLocaleString() + " err: " + token);
 
@@ -73,6 +74,7 @@ const pushFail = (token, error, res) => {
         res.send('ERR:send');
     }
 }
+
 const realPush = (msg, data, options, token, type, res) => {
     let message;
     let badge = 0;
@@ -162,10 +164,12 @@ const realPush = (msg, data, options, token, type, res) => {
                     pushFail(token, { errorCode: code, errorData: data, errorHeaders: headers }, res);
                 }
                 curl.close();
+                delete curl;
             });
 
             curl.on('error', () => {
                 curl.close();
+                delete curl;
             });
 
             curl.perform();
@@ -225,10 +229,12 @@ const realPush = (msg, data, options, token, type, res) => {
                     pushFail(token, { errorCode: code, huaweiErrorData: data, errorHeaders: headers }, res);
                 }
                 curl.close();
+                delete curl;
             });
 
             curl.on('error', () => {
                 curl.close();
+                delete curl;
             });
 
             curl.perform();
@@ -276,10 +282,12 @@ const realPush = (msg, data, options, token, type, res) => {
                     pushFail(token, { errorCode: code, rustoreErrorData: data.toString(), errorHeaders: headers }, res);
                 }
                 curl.close();
+                delete curl;
             });
 
             curl.on('error', () => {
                 curl.close();
+                delete curl;
             });
 
             curl.perform();
@@ -290,8 +298,10 @@ const realPush = (msg, data, options, token, type, res) => {
             break;
     }
 }
+
 const refreshHuaweiToken = () => {
     let curl = new Curl();
+
     curl.setOpt(Curl.option.URL, `https://oauth-login.cloud.huawei.com/oauth2/v3/token?grant_type=client_credentials&client_id=${HUAWEI_CLIENT_ID}&client_secret=${HUAWEI_CLIENT_SECRET}`);
     curl.setOpt(Curl.option.TIMEOUT, 30);
     curl.setOpt(Curl.option.SSL_VERIFYPEER, false);
@@ -315,16 +325,19 @@ const refreshHuaweiToken = () => {
             setTimeout(refreshHuaweiToken, 1000);
         }
         curl.close();
+        delete curl;
     });
 
     curl.on('error', e => {
         console.log(e);
         curl.close();
+        delete curl;
         setTimeout(refreshHuaweiToken, 1000);
     });
 
     curl.perform();
 }
+
 const initFirebase = async () => {
     try {
         admin.initializeApp({
@@ -336,7 +349,8 @@ const initFirebase = async () => {
         console.error(`${new Date().toLocaleString()} | Error init Firebase:`, error);
         throw error;
     }
-};
+}
+
 const startServer = async () => {
     try {
         await initFirebase();
@@ -351,7 +365,7 @@ const startServer = async () => {
     } catch (error) {
         console.error('Error starting server:', error);
     }
-};
+}
 
 app.get('/push', function (req, res) {
     console.log((new Date()).toLocaleString(), req.query);
@@ -460,6 +474,7 @@ app.get('/push', function (req, res) {
         res.send('UNK');
     }
 });
+
 app.use(require('body-parser').urlencoded({ extended: true }));
 
 startServer();
