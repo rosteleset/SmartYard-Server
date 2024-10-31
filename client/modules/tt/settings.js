@@ -2875,7 +2875,7 @@
             done(f => {
                 let readOnly = false;
                 try {
-                    readOnly = modules.tt.meta.filtersExt[filter].owner?true:false;
+                    readOnly = modules.tt.meta.filtersExt[filter].owner ? true : false;
                 } catch (_) {
                     //
                 }
