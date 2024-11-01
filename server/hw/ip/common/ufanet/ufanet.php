@@ -96,7 +96,11 @@ trait ufanet
         curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
 
         if ($payload !== null && $method !== 'GET') {
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload, JSON_UNESCAPED_UNICODE));
+            $jsonPayload = empty($payload)
+                ? json_encode($payload, JSON_FORCE_OBJECT)
+                : json_encode($payload, JSON_UNESCAPED_UNICODE);
+
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonPayload);
             curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
         }
 
@@ -104,11 +108,7 @@ trait ufanet
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
-        if ($httpCode >= 400) {
-            return null;
-        }
-
-        return json_decode($res, true) ?? trim($res);
+        return $httpCode >= 400 ? null : (json_decode($res, true) ?? trim($res));
     }
 
     /**
