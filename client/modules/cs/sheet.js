@@ -97,7 +97,6 @@
                 fail(FAIL).
                 done(() => {
                     message(i18n("cs.sheetWasSaved"));
-                    currentAceEditorOriginalValue = currentAceEditor.getValue();
                     window.onbeforeunload = null;
                     window.location.href = "?#cs.sheet&sheet=" + encodeURIComponent(sheet) + "&date=" + encodeURIComponent(date) + "&_skipRouting=1";
                 }).

@@ -2254,7 +2254,6 @@
                 done(() => {
                     message(i18n("tt.workflowWasSaved"));
                     currentAceEditorOriginalValue = currentAceEditor.getValue();
-                    window.onbeforeunload = null;
                 }).
                 always(() => {
                     loadingDone();
@@ -2438,7 +2437,6 @@
                 done(() => {
                     message(i18n("tt.workflowLibWasSaved"));
                     currentAceEditorOriginalValue = currentAceEditor.getValue();
-                    window.onbeforeunload = null;
                 }).
                 always(() => {
                     loadingDone();
@@ -2974,7 +2972,6 @@
                         PUT("tt", "filter", filter, { "body": JSON.stringify(f, true, 4) }).
                         done(() => {
                             message(i18n("tt.filterWasSaved"));
-                            currentAceEditorOriginalValue = currentAceEditor.getValue();
                             window.onbeforeunload = null;
                             window.location.href = '?#tt.settings&section=filter&filter=' + encodeURIComponent(filter) + '&_=' + Math.random();
                         }).
@@ -3552,7 +3549,6 @@
                 done(() => {
                     message(i18n("tt.viewerWasSaved"));
                     currentAceEditorOriginalValue = currentAceEditor.getValue();
-                    window.onbeforeunload = null;
                 }).
                 always(() => {
                     loadingDone();
@@ -3924,7 +3920,6 @@
                 done(() => {
                     message(i18n("tt.printDataWasSaved"));
                     currentAceEditorOriginalValue = currentAceEditor.getValue();
-                    window.onbeforeunload = null;
                 }).
                 always(() => {
                     loadingDone();
@@ -4009,7 +4004,6 @@
                 done(() => {
                     message(i18n("tt.printFormatterWasSaved"));
                     currentAceEditorOriginalValue = currentAceEditor.getValue();
-                    window.onbeforeunload = null;
                 }).
                 always(() => {
                     loadingDone();
