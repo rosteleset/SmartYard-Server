@@ -12,6 +12,26 @@ abstract class ufanet extends domophone
 
     use \hw\ip\common\ufanet\ufanet;
 
+    /**
+     * Apartment name for the SOS button.
+     */
+    protected const BUTTON_SOS = 'SOS';
+
+    /**
+     * Apartment name for the concierge button.
+     */
+    protected const BUTTON_CONCIERGE = 'CONS';
+
+    /**
+     * Apartment name for the gate button.
+     */
+    protected const BUTTON_GATE = 'KALITKA';
+
+    /**
+     * Apartment name for the face recognition button.
+     */
+    protected const BUTTON_FACE = 'FRSI';
+
     /** @var array Set of parameters sent to the intercom for different CMS models. */
     protected const CMS_PARAMS = [
         'BK-100' => ['type' => 'VIZIT', 'mode' => 2], // TODO: check mode 1 and mode 2
@@ -291,7 +311,14 @@ abstract class ufanet extends domophone
         $apartments = [];
 
         foreach ($this->dialplans as $apartmentNumber => $dialplan) {
-            if ($dialplan['sip'] === false || in_array($apartmentNumber, ['SOS', 'CONS', 'KALITKA', 'FRSI'])) {
+            $isServiceNumber = in_array($apartmentNumber, [
+                self::BUTTON_SOS,
+                self::BUTTON_CONCIERGE,
+                self::BUTTON_GATE,
+                self::BUTTON_FACE,
+            ]);
+
+            if ($isServiceNumber || $dialplan['sip'] === false) {
                 continue;
             }
 

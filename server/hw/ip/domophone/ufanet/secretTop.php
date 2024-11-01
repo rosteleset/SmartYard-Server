@@ -37,7 +37,7 @@ class secretTop extends ufanet
     {
         $this->loadDialplans();
 
-        $this->dialplans['CONS'] = [
+        $this->dialplans[self::BUTTON_CONCIERGE] = [
             'sip_number' => "$sipNumber",
             'analog' => false,
             'sip' => true,
@@ -49,7 +49,7 @@ class secretTop extends ufanet
     {
         $this->loadDialplans();
 
-        $this->dialplans['SOS'] = [
+        $this->dialplans[self::BUTTON_SOS] = [
             'sip_number' => "$sipNumber",
             'analog' => false,
             'sip' => true,
