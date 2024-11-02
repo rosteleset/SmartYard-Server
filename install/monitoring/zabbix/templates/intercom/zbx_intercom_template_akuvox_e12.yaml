@@ -1,7 +1,7 @@
 zabbix_export:
   version: '6.4'
   template_groups:
-    - uuid: 6b2da836ac5d4728b89105eb2ed04250
+    - uuid: e858e071fe054cdabec002d7d99891e9
       name: Templates/Intercoms
   templates:
     - uuid: 38e9595b758a48c2a9b64a19485ec156
@@ -84,8 +84,8 @@ zabbix_export:
           trends: '0'
           value_type: CHAR
           authtype: DIGEST
-          username: '{$INTERCOM_USERNAME}'
-          password: '{$INTERCOM_PASSWORD}'
+          username: '{$HOST_USERNAME}'
+          password: '{$HOST_PASSWORD}'
           description: 'Get system information from Akuvox SIP intercom'
           url: 'http://{HOST.CONN}/api/system/info'
         - uuid: 5c3dca9642e34e50b5751b7d11876936
