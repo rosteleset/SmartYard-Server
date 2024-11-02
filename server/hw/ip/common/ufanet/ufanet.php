@@ -8,7 +8,7 @@ namespace hw\ip\common\ufanet;
 trait ufanet
 {
 
-    public function configureEventServer(string $url)
+    public function configureEventServer(string $url): void
     {
         ['host' => $server, 'port' => $port] = parse_url_ext($url);
 
@@ -19,7 +19,7 @@ trait ufanet
         ]);
     }
 
-    public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow')
+    public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow'): void
     {
         $this->apiCall('/cgi-bin/configManager.cgi', 'GET', [
             'action' => 'setConfig',
@@ -45,17 +45,17 @@ trait ufanet
         return [];
     }
 
-    public function reboot()
+    public function reboot(): void
     {
         $this->apiCall('/cgi-bin/magicBox.cgi', 'GET', ['action' => 'reboot']);
     }
 
-    public function reset()
+    public function reset(): void
     {
         $this->apiCall('/cgi-bin/magicBox.cgi', 'GET', ['action' => 'resetSystemEx']);
     }
 
-    public function setAdminPassword(string $password)
+    public function setAdminPassword(string $password): void
     {
         $this->apiCall('/cgi-bin/userManager.cgi', 'GET', [
             'action' => 'modifyPassword',
@@ -84,7 +84,7 @@ trait ufanet
         ?array $payload = null,
         int    $timeout = 0,
         bool   $useFormUrlencoded = false,
-    )
+    ): array|string|null
     {
         if ($payload !== null && $method === 'GET') {
             $payload = array_map(fn($value) => str_replace(' ', '%20', $value), $payload); // Replace spaces with %20
@@ -166,7 +166,7 @@ trait ufanet
         ];
     }
 
-    protected function initializeProperties()
+    protected function initializeProperties(): void
     {
         $this->login = 'admin';
         $this->defaultPassword = '123456';

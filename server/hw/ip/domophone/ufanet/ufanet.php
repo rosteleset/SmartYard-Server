@@ -55,7 +55,7 @@ abstract class ufanet extends domophone
     /** @var array|null $rfids An array that holds RFID codes information, which may be null if not loaded. */
     protected ?array $rfids = null;
 
-    public function addRfid(string $code, int $apartment = 0)
+    public function addRfid(string $code, int $apartment = 0): void
     {
         $this->loadRfids();
 
@@ -67,32 +67,14 @@ abstract class ufanet extends domophone
         $this->rfids[$externalRfid] = $apartment ?: '';
     }
 
-    public function addRfids(array $rfids)
+    public function addRfids(array $rfids): void
     {
         foreach ($rfids as $rfid) {
             $this->addRfid($rfid);
         }
     }
 
-    public function configureApartment(
-        int   $apartment,
-        int   $code = 0,
-        array $sipNumbers = [],
-        bool  $cmsEnabled = true,
-        array $cmsLevels = []
-    )
-    {
-        $this->loadDialplans();
-
-        $this->dialplans[$apartment] = [
-            'sip_number' => "$sipNumbers[0]" ?? '',
-            'sip' => true,
-            'analog' => $cmsEnabled,
-            'map' => $this->dialplans[$apartment]['map'] ?? 0,
-        ];
-    }
-
-    public function configureEncoding()
+    public function configureEncoding(): void
     {
         $this->apiCall('/cgi-bin/configManager.cgi', 'GET', [
             'action' => 'setConfig',
@@ -137,7 +119,7 @@ abstract class ufanet extends domophone
         bool   $stunEnabled = false,
         string $stunServer = '',
         int    $stunPort = 3478
-    )
+    ): void
     {
         $this->apiCall('/api/v1/configuration', 'PATCH', [
             'sip' => [
@@ -153,25 +135,7 @@ abstract class ufanet extends domophone
         // Empty implementation
     }
 
-    public function deleteApartment(int $apartment = 0)
-    {
-        $this->loadDialplans();
-
-        ['map' => $analogReplace, 'analog' => $cmsEnabled] = $this->dialplans[$apartment];
-
-        if ($analogReplace !== 0) {
-            $this->dialplans[$apartment] = [
-                'sip_number' => '',
-                'sip' => false,
-                'analog' => $cmsEnabled,
-                'map' => $analogReplace,
-            ];
-        } else {
-            unset($this->dialplans[$apartment]);
-        }
-    }
-
-    public function deleteRfid(string $code = '')
+    public function deleteRfid(string $code = ''): void
     {
         $this->loadRfids();
 
@@ -190,20 +154,20 @@ abstract class ufanet extends domophone
         return 0;
     }
 
-    public function openLock(int $lockNumber = 0)
+    public function openLock(int $lockNumber = 0): void
     {
         $lockNumber++;
         $this->apiCall("/api/v1/doors/$lockNumber/open", 'POST', null, 3);
     }
 
-    public function prepare()
+    public function prepare(): void
     {
         parent::prepare();
         $this->setNetwork();
         $this->setRfidMode();
     }
 
-    public function setAudioLevels(array $levels)
+    public function setAudioLevels(array $levels): void
     {
         if (count($levels) === 2) {
             $this->apiCall('/api/v1/configuration', 'PATCH', [
@@ -230,7 +194,7 @@ abstract class ufanet extends domophone
         string $code2 = '2',
         string $code3 = '3',
         string $codeCms = '1'
-    )
+    ): void
     {
         $this->apiCall('/api/v1/configuration', 'PATCH', [
             'door' => [
@@ -255,12 +219,12 @@ abstract class ufanet extends domophone
         // Empty implementation
     }
 
-    public function setUnlockTime(int $time = 3)
+    public function setUnlockTime(int $time = 3): void
     {
         $this->apiCall('/api/v1/configuration', 'PATCH', ['door' => ['open_time' => $time]]);
     }
 
-    public function setUnlocked(bool $unlocked = true)
+    public function setUnlocked(bool $unlocked = true): void
     {
         $this->apiCall('/api/v1/configuration', 'PATCH', [
             'door' => [
@@ -269,7 +233,7 @@ abstract class ufanet extends domophone
         ]);
     }
 
-    public function syncData()
+    public function syncData(): void
     {
         $this->uploadDialplans();
         $this->uploadRfids();
@@ -302,36 +266,6 @@ abstract class ufanet extends domophone
         }
 
         return $dbConfig;
-    }
-
-    protected function getApartments(): array
-    {
-        $this->loadDialplans();
-
-        $apartments = [];
-
-        foreach ($this->dialplans as $apartmentNumber => $dialplan) {
-            $isServiceNumber = in_array($apartmentNumber, [
-                self::BUTTON_SOS,
-                self::BUTTON_CONCIERGE,
-                self::BUTTON_GATE,
-                self::BUTTON_FACE,
-            ]);
-
-            if ($isServiceNumber || $dialplan['sip'] === false) {
-                continue;
-            }
-
-            $apartments[$apartmentNumber] = [
-                'apartment' => $apartmentNumber,
-                'code' => 0,
-                'sipNumbers' => [$dialplan['sip_number']],
-                'cmsEnabled' => $dialplan['analog'],
-                'cmsLevels' => [],
-            ];
-        }
-
-        return $apartments;
     }
 
     protected function getAudioLevels(): array
@@ -441,7 +375,7 @@ abstract class ufanet extends domophone
      *
      * @return void
      */
-    protected function loadDialplans()
+    protected function loadDialplans(): void
     {
         if ($this->dialplans === null) {
             $this->dialplans = $this->apiCall('/api/v1/apartments') ?? [];
@@ -453,7 +387,7 @@ abstract class ufanet extends domophone
      *
      * @return void
      */
-    protected function loadRfids()
+    protected function loadRfids(): void
     {
         if ($this->rfids === null) {
             $this->rfids = $this->apiCall('/api/v1/rfids') ?? [];
@@ -465,7 +399,7 @@ abstract class ufanet extends domophone
      *
      * @return void
      */
-    protected function setCmsRange()
+    protected function setCmsRange(): void
     {
         $apartmentNumbers = array_keys($this->getApartments());
 
@@ -493,7 +427,7 @@ abstract class ufanet extends domophone
      *
      * @return void
      */
-    protected function setNetwork()
+    protected function setNetwork(): void
     {
         $this->apiCall('/cgi-bin/configManager.cgi', 'GET', [
             'action' => 'setConfig',
@@ -507,7 +441,7 @@ abstract class ufanet extends domophone
      *
      * @return void
      */
-    protected function setRfidMode()
+    protected function setRfidMode(): void
     {
         $this->apiCall('/api/v1/configuration', 'PATCH', ['door' => ['rfid_pass_en' => false]]);
     }
@@ -517,7 +451,7 @@ abstract class ufanet extends domophone
      *
      * @return void
      */
-    protected function uploadDialplans()
+    protected function uploadDialplans(): void
     {
         if ($this->dialplans !== null) {
             $this->apiCall('/api/v1/apartments', 'PUT', $this->dialplans);
@@ -529,7 +463,7 @@ abstract class ufanet extends domophone
      *
      * @return void
      */
-    protected function uploadRfids()
+    protected function uploadRfids(): void
     {
         if ($this->rfids !== null) {
             $this->apiCall('/api/v1/rfids', 'PUT', $this->rfids);
