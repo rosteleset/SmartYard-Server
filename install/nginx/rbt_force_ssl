@@ -4,7 +4,10 @@ map $http_upgrade $connection_upgrade {
 }
 
 server {
+# IPv4
         listen 80 default_server;
+# IPv6
+#        listen [::]:80 default_server;
 
         location /.well-known {
                 root /var/www/html;
@@ -53,7 +56,9 @@ server {
 }
 
 server {
+# IPv4
         listen 443 ssl http2 default_server;
+# IPv6
 #        listen [::]:443 ssl http2 default_server;
 
         ssl_certificate /etc/ssl/cert.pem;
@@ -75,6 +80,16 @@ server {
         }
 
         location = /frontend.php {
+                root /opt/rbt/server;
+                include snippets/fastcgi-php.conf;
+                fastcgi_pass unix:/var/run/php/php-fpm.sock;
+        }
+
+        location /md {
+                rewrite ^.*$ /md.php last;
+        }
+
+        location = /md.php {
                 root /opt/rbt/server;
                 include snippets/fastcgi-php.conf;
                 fastcgi_pass unix:/var/run/php/php-fpm.sock;
@@ -192,8 +207,12 @@ server {
 }
 
 ## Event webhook for sputnik
+
 server {
+# IPv4
         listen 55457 ssl http2 default_server;
+# IPv6
+#        listen [::]:55457 ssl http2 default_server;
 
         ssl_certificate /etc/ssl/cert.pem;
         ssl_certificate_key /etc/ssl/key.pem;
@@ -207,8 +226,13 @@ server {
 
 ## Asterisk AMI interface for external access (zabbix, etc ...)
 ## edit allow IP address for access
+
 server {
+# IPv4
         listen 55458 ssl http2 default_server;
+#
+        listen [::]:55458 ssl http2 default_server;
+
         ssl_certificate /etc/ssl/cert.pem;
         ssl_certificate_key /etc/ssl/key.pem;
         allow 127.0.0.1;
