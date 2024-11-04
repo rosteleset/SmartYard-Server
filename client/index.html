@@ -113,7 +113,11 @@
                 done(r => {
                     if (r) {
                         let href = new URL(window.location.href);
-                        window.location.href = c.mdRedirect + "/#?from=" + encodeURIComponent(href.hash);
+                        let hash = "";
+                        if (href.hash) {
+                            hash = href.hash.substring(1);
+                        }
+                        window.location.href = c.mdRedirect + "/#?from=" + encodeURIComponent(hash);
                     } else {
                         ver(c);
                     }
