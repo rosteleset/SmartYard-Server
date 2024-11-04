@@ -4,7 +4,7 @@ server {
 # IPv6
 #        listen [::]:80;
 
-        server_name m.tt.lanta.me;
+        server_name m.example.com;
 
         location /.well-known {
                 root /var/www/html;
@@ -24,7 +24,7 @@ server {
         ssl_certificate /etc/ssl/cert.pem;
         ssl_certificate_key /etc/ssl/key.pem;
 
-        server_name m.tt.lanta.me;
+        server_name m.example.com;
 
         client_max_body_size 100M;
 
