@@ -1,5 +1,22 @@
 server {
 # IPv4
+        listen 80;
+# IPv6
+#        listen [::]:80;
+
+        server_name m.tt.lanta.me;
+
+        location /.well-known {
+                root /var/www/html;
+        }
+
+        location / {
+                return 302 https://$host$request_uri;
+        }
+}
+
+server {
+# IPv4
         listen 443 ssl http2;
 # IPv6
 #        listen [::]:443 ssl http2;
@@ -7,9 +24,13 @@ server {
         ssl_certificate /etc/ssl/cert.pem;
         ssl_certificate_key /etc/ssl/key.pem;
 
-        server_name m.example.com;
+        server_name m.tt.lanta.me;
 
         client_max_body_size 100M;
+
+        index index.html;
+
+        error_page 404 = /index.html;
 
         location / {
                 root /opt/m/dist;
