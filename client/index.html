@@ -112,7 +112,8 @@
                 $.get(c.mdCheck + "/#?_=" + Math.random()).
                 done(r => {
                     if (r) {
-                        window.location.href = c.mdRedirect + "/#?from=" + encodeURIComponent(window.location.href);
+                        let href = new URL(window.location.href);
+                        window.location.href = c.mdRedirect + "/#?from=" + encodeURIComponent(href.hash);
                     } else {
                         ver(c);
                     }
