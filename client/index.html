@@ -117,7 +117,7 @@
                         if (href.hash) {
                             hash = href.hash.substring(1);
                         }
-                        window.location.href = c.mdRedirect + (hash ? ("/#?from=" + encodeURIComponent(hash)) : "");
+                        window.location.href = c.mdRedirect + (hash ? ("/#?_from=" + encodeURIComponent(hash)) : "");
                     } else {
                         ver(c);
                     }
