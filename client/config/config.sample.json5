@@ -51,5 +51,9 @@
     // phone pattern for inputs
     "phonePattern": "7 (###) ###-##-##",
     // print server url
-    "printServer": "https://example.com/print"
+    "printServer": "https://example.com/print",
+    // mobile device check
+    "mdCheck": "https://example.com/md",
+    // redirect to...
+    "mdRedirect": "https://m.example.com",
 }

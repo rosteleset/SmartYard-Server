@@ -107,6 +107,22 @@
             });
         }
 
+        function md(c) {
+            if (c.mdCheck && c.mdRedirect) {
+                $.get(c.mdCheck + "/#?_=" + Math.random()).
+                done(r => {
+                    if (r) {
+                        window.location.href = c.mdRedirect + "/#?from=" + encodeURIComponent(window.location.href);
+                    } else {
+                        ver(c);
+                    }
+                }).
+                fail(() => {
+                    ver(c);
+                });
+            }
+        }
+
         document.addEventListener("DOMContentLoaded", () => {
             $.ajaxSetup({
                 cache: true
@@ -119,7 +135,7 @@
                     dataType: "json5",
                     cache: false,
                     success: c => {
-                        ver(c);
+                        md(c);
                     },
                     error: e => {
                         error("Woops can't get config");
