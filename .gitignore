@@ -55,6 +55,7 @@ server/storage/
 server/services/nodejs
 server/mzfc/json5/
 server/mzfc/mongodb/
+server/mzfc/mobiledetect/
 server/backends/**/custom
 server/backends/**/custom/
 server/backends/**/custom/**
