@@ -328,7 +328,7 @@
                     id: "issueId",
                     type: "text",
                     title: i18n("tt.issueId"),
-                    value: lStore("_coordinate_issue")?lStore("_coordinate_issue"):"",
+                    value: lStore("_coordinate_issue") ? lStore("_coordinate_issue") : "",
                     button: {
                         class: "fas fa-recycle",
                         click: p => {
@@ -342,6 +342,7 @@
                 },
             ],
             callback: result => {
+                result.issueId = $.trim(result.issueId);
                 modules.cs.preCoordinate = result;
                 cell.addClass("spinner-small");
                 PUT("cs", "cell", false, {

@@ -1,6 +1,6 @@
 ({
     startPage: 1,
-    meta: [],
+    meta: false,
 
     init: function () {
         if (AVAIL("accounts", "group", "POST") || AVAIL("accounts", "group", "PUT") || AVAIL("accounts", "group", "DELETE") || AVAIL("accounts", "groupUsers", "PUT")) {
@@ -10,18 +10,41 @@
     },
 
     loadGroups: function (callback) {
-        if (AVAIL("accounts", "groups")) {
-            return GET("accounts", "groups").
-            done(groups => {
-                modules.groups.meta = groups.groups;
-                if (typeof callback == "function") callback(groups);
-            }).
-            fail(FAIL).
-            fail(() => {
-                if (typeof callback == "function") callback(false);
-            });
+        let f = {
+            meta: false,
+
+            done: function (callback) {
+                if (typeof callback == "function") callback(this.meta);
+                return this;
+            },
+
+            fail: function () {
+                return this;
+            },
+
+            always: function () {
+                return this;
+            },
+        }
+
+        if (modules.groups.meta) {
+            f.meta = modules.groups.meta;
+            if (typeof callback == "function") callback(modules.groups.meta);
+            return f;
         } else {
-            if (typeof callback == "function") callback(false);
+            if (AVAIL("accounts", "groups")) {
+                return GET("accounts", "groups").
+                done(groups => {
+                    modules.groups.meta = groups.groups;
+                    if (typeof callback == "function") callback(groups);
+                }).
+                fail(FAIL).
+                fail(() => {
+                    if (typeof callback == "function") callback(false);
+                });
+            } else {
+                if (typeof callback == "function") callback(false);
+            }
         }
     },
 

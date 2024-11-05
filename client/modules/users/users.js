@@ -1,6 +1,6 @@
 ({
     startPage: 1,
-    meta: [],
+    meta: false,
 
     init: function () {
         if (AVAIL("accounts", "user", "POST") || AVAIL("accounts", "user", "DELETE")) {
@@ -10,13 +10,36 @@
     },
 
     loadUsers: function (callback, withSessions) {
-        return QUERY("accounts", "users", withSessions?{ withSessions: true }:false).
-        done(users => {
-            modules.users.meta = users.users;
-        }).
-        always(() => {
+        let f = {
+            meta: false,
+
+            done: function (callback) {
+                if (typeof callback == "function") callback(this.meta);
+                return this;
+            },
+
+            fail: function () {
+                return this;
+            },
+
+            always: function () {
+                return this;
+            },
+        }
+
+        if (!withSessions && modules.users.meta) {
+            f.meta = modules.users.meta;
             if (typeof callback == "function") callback(modules.users.meta);
-        });
+            return f;
+        } else {
+            return QUERY("accounts", "users", withSessions ? { withSessions: true } : false).
+            done(users => {
+                modules.users.meta = users.users;
+            }).
+            always(() => {
+                if (typeof callback == "function") callback(modules.users.meta);
+            });
+        }
     },
 
     login2name: function (login) {

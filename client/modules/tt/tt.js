@@ -19,6 +19,9 @@
     ],
 
     init: function () {
+        // dirty hack, don't do that!
+        modules.tt = this;
+        //
         if (AVAIL("tt", "tt")) {
             if (parseInt(myself.uid) == 0) {
                 leftSide("fas fa-fw fa-tasks", i18n("tt.tt"), "?#tt.settings", "tt");
@@ -31,54 +34,89 @@
                 }
                 this.menuItem = leftSide("fas fa-fw fa-tasks", i18n("tt.tt"), "?#tt", "tt");
             }
+            GET("tt", "tt", false, true).
+            done(modules.tt.tt).
+            done(() => {
+                loadSubModules("tt", [
+                    "issue",
+                    "settings",
+                    "workspaces",
+                    "json",
+                ], this);
+            }).
+            fail(FAIL);
+        } else {
+            loadSubModules("tt", [
+                "issue",
+                "settings",
+                "workspaces",
+                "json",
+            ], this);
         }
-        loadSubModules("tt", [
-            "issue",
-            "settings",
-            "workspaces",
-            "json",
-        ], this);
     },
 
     allLoaded: function () {
         if (modules.tt.menuItem && parseInt(myself.uid) && AVAIL("tt", "favoriteFilter")) {
-            GET("tt", "tt", false, true).
-            done(modules.tt.tt).
-            done(() => {
-                let h = "";
-                for (let i in modules.tt.meta.favoriteFilters) {
-                    if (parseInt(modules.tt.meta.favoriteFilters[i].rightSide)) {
-                        let title = modules.tt.meta.filtersExt[modules.tt.meta.favoriteFilters[i].filter].shortName ? modules.tt.meta.filtersExt[modules.tt.meta.favoriteFilters[i].filter].shortName : modules.tt.meta.filtersExt[modules.tt.meta.favoriteFilters[i].filter].name;
-                        h += `
-                            <li class="nav-item" title="${escapeHTML(title)}" style="margin-top: 3px;">
-                                <a href="?#tt&filter=${modules.tt.meta.favoriteFilters[i].filter}" class="nav-link" onclick="xblur(); return true;">
-                                    <i class="nav-icon fa-fw ${modules.tt.meta.favoriteFilters[i].icon} ${modules.tt.meta.favoriteFilters[i].color}"></i>
-                                    <p class="text-nowrap">${title}</p>
-                                </a>
-                            </li>
-                        `;
-                    }
+            let h = "";
+            for (let i in modules.tt.meta.favoriteFilters) {
+                if (parseInt(modules.tt.meta.favoriteFilters[i].rightSide)) {
+                    let title = modules.tt.meta.filtersExt[modules.tt.meta.favoriteFilters[i].filter].shortName ? modules.tt.meta.filtersExt[modules.tt.meta.favoriteFilters[i].filter].shortName : modules.tt.meta.filtersExt[modules.tt.meta.favoriteFilters[i].filter].name;
+                    h += `
+                        <li class="nav-item" title="${escapeHTML(title)}" style="margin-top: 3px;">
+                            <a href="?#tt&filter=${modules.tt.meta.favoriteFilters[i].filter}" class="nav-link" onclick="xblur(); return true;">
+                                <i class="nav-icon fa-fw ${modules.tt.meta.favoriteFilters[i].icon} ${modules.tt.meta.favoriteFilters[i].color}"></i>
+                                <p class="text-nowrap">${title}</p>
+                            </a>
+                        </li>
+                    `;
                 }
-                    let i = $('#' + modules.tt.menuItem);
-                    let f = false;
-                    while (i.next().length) {
-                        i = i.next();
-                        if ($.trim(i.text()) == "") {
-                            $(h).insertBefore(i);
-                            f = true;
-                            break;
-                        }
-                    }
-                    if (!f && i.length) {
-                        $(h).insertAfter(i);
-                    }
-            }).
-            fail(FAIL);
+            }
+            let i = $('#' + modules.tt.menuItem);
+            let f = false;
+            while (i.next().length) {
+                i = i.next();
+                if ($.trim(i.text()) == "") {
+                    $(h).insertBefore(i);
+                    f = true;
+                    break;
+                }
+            }
+            if (!f && i.length) {
+                $(h).insertAfter(i);
+            }
         }
     },
 
     moduleLoaded: function () {
         //
+    },
+
+    tt: function (tt) {
+        modules.tt.meta = tt["meta"];
+
+        modules.tt.meta.finalStatus = {};
+
+        if (!modules.tt.viewers) {
+            modules.tt.viewers = {};
+        }
+
+        for (let i in modules.tt.meta.viewers) {
+            if (!modules.tt.viewers[modules.tt.meta.viewers[i].field]) {
+                modules.tt.viewers[modules.tt.meta.viewers[i].field] = {};
+            }
+            try {
+                modules.tt.viewers[modules.tt.meta.viewers[i].field][modules.tt.meta.viewers[i].name] = new Function('value', 'issue', 'field', 'target', 'filter', modules.tt.meta.viewers[i].code);
+            } catch (e) {
+                console.error(e);
+                modules.tt.viewers[modules.tt.meta.viewers[i].field][modules.tt.meta.viewers[i].name] = new Function('value', 'issue', 'field', 'target', 'filter', "//function $name (value, field, issue, terget, filter) {\n\treturn value;\n//}\n");
+            }
+        }
+
+        for (let i in modules.tt.meta.statuses) {
+            if (parseInt(modules.tt.meta.statuses[i].final)) {
+                modules.tt.meta.finalStatus[modules.tt.meta.statuses[i].status] = true;
+            }
+        }
     },
 
     issueFieldTitle: function (field) {
@@ -576,6 +614,7 @@
 
                             let ro = cf.editor == "text-ro";
                             let val;
+                            let editor = cf.editor;
 
                             if (ro && typeof prefferredValue !== "undefined") {
                                 val = prefferredValue;
@@ -598,12 +637,12 @@
                             }
 
                             if ([ "text", "number", "area", "email", "tel", "date", "time", "datetime-local", "yesno", "noyes", "json" ].indexOf(cf.editor) < 0) {
-                                cf.editor = "text";
+                                editor = "text";
                             }
 
                             return {
                                 id: "_cf_" + fieldId,
-                                type: cf.editor,
+                                type: editor,
                                 title: modules.tt.issueFieldTitle(field),
                                 placeholder: modules.tt.issueFieldTitle(field),
                                 hint: cf.fieldDescription ? cf.fieldDescription : false,
@@ -1229,34 +1268,6 @@
             return i18n("tt." + action);
         } else {
             return action
-        }
-    },
-
-    tt: function (tt) {
-        modules.tt.meta = tt["meta"];
-
-        modules.tt.meta.finalStatus = {};
-
-        if (!modules.tt.viewers) {
-            modules.tt.viewers = {};
-        }
-
-        for (let i in modules.tt.meta.viewers) {
-            if (!modules.tt.viewers[modules.tt.meta.viewers[i].field]) {
-                modules.tt.viewers[modules.tt.meta.viewers[i].field] = {};
-            }
-            try {
-                modules.tt.viewers[modules.tt.meta.viewers[i].field][modules.tt.meta.viewers[i].name] = new Function('value', 'issue', 'field', 'target', 'filter', modules.tt.meta.viewers[i].code);
-            } catch (e) {
-                console.error(e);
-                modules.tt.viewers[modules.tt.meta.viewers[i].field][modules.tt.meta.viewers[i].name] = new Function('value', 'issue', 'field', 'target', 'filter', "//function $name (value, field, issue, terget, filter) {\n\treturn value;\n//}\n");
-            }
-        }
-
-        for (let i in modules.tt.meta.statuses) {
-            if (parseInt(modules.tt.meta.statuses[i].final)) {
-                modules.tt.meta.finalStatus[modules.tt.meta.statuses[i].status] = true;
-            }
         }
     },
 
@@ -2145,63 +2156,57 @@
             $("#altForm").hide();
         }
 
-        GET("tt", "tt", false, true).
-        done(modules.tt.tt).
-        done(() => {
-            if (params["issue"]) {
-                GET("tt", "issue", params["issue"], true).
-                done(r => {
-                    if (modules.groups) {
-                        modules.users.loadUsers(() => {
-                            modules.groups.loadGroups(() => {
-                                modules.tt.issue.renderIssue(r.issue, params["filter"], params["search"]);
-                            });
-                        });
-                    } else {
-                        modules.users.loadUsers(() => {
+        if (params["issue"]) {
+            GET("tt", "issue", params["issue"], true).
+            done(r => {
+                if (modules.groups) {
+                    modules.users.loadUsers(() => {
+                        modules.groups.loadGroups(() => {
                             modules.tt.issue.renderIssue(r.issue, params["filter"], params["search"]);
                         });
-                    }
-                }).
-                fail(FAILPAGE);
-            } else {
-                if (modules.tt.menuItem) {
-                    if (params  && params.filter && params.filter[0] == "#") {
-                        $("#" + modules.tt.menuItem).children().first().attr("href", navigateUrl("tt", false, {
-                            exclude: [
-                                "customSearch"
-                            ]
-                        }));
-                    } else {
-                        $("#" + modules.tt.menuItem).children().first().attr("href", refreshUrl({
-                            exclude: [
-                                "customSearch"
-                            ]
-                        }));
-                    }
-                }
-
-                document.title = i18n("windowTitle") + " :: " + i18n("tt.filters");
-
-                if (parseInt(myself.uid)) {
-                    if (modules.groups) {
-                        modules.users.loadUsers(() => {
-                            modules.groups.loadGroups(() => {
-                                modules.tt.renderIssues(params);
-                            });
-                        });
-                    } else {
-                        modules.users.loadUsers(() => {
-                            modules.tt.renderIssues(params);
-                        });
-                    }
+                    });
                 } else {
-                    window.location.href = "?#tt.settings";
+                    modules.users.loadUsers(() => {
+                        modules.tt.issue.renderIssue(r.issue, params["filter"], params["search"]);
+                    });
+                }
+            }).
+            fail(FAILPAGE);
+        } else {
+            if (modules.tt.menuItem) {
+                if (params  && params.filter && params.filter[0] == "#") {
+                    $("#" + modules.tt.menuItem).children().first().attr("href", navigateUrl("tt", false, {
+                        exclude: [
+                            "customSearch"
+                        ]
+                    }));
+                } else {
+                    $("#" + modules.tt.menuItem).children().first().attr("href", refreshUrl({
+                        exclude: [
+                            "customSearch"
+                        ]
+                    }));
                 }
             }
-        }).
-        fail(FAIL).
-        fail(loadingDone);
+
+            document.title = i18n("windowTitle") + " :: " + i18n("tt.filters");
+
+            if (parseInt(myself.uid)) {
+                if (modules.groups) {
+                    modules.users.loadUsers(() => {
+                        modules.groups.loadGroups(() => {
+                            modules.tt.renderIssues(params);
+                        });
+                    });
+                } else {
+                    modules.users.loadUsers(() => {
+                        modules.tt.renderIssues(params);
+                    });
+                }
+            } else {
+                window.location.href = "?#tt.settings";
+            }
+        }
     },
 
     search: function (s) {

@@ -214,26 +214,20 @@
 
         subTop();
 
-        GET("tt", "tt", false, true).
-        done(modules.tt.tt).
-        done(() => {
-            if (parseInt(myself.uid)) {
-                if (modules.groups) {
-                    modules.users.loadUsers(() => {
-                        modules.groups.loadGroups(() => {
-                            modules.tt.workspaces.renderWorkspaces(params);
-                        });
-                    });
-                } else {
-                    modules.users.loadUsers(() => {
+        if (parseInt(myself.uid)) {
+            if (modules.groups) {
+                modules.users.loadUsers(() => {
+                    modules.groups.loadGroups(() => {
                         modules.tt.workspaces.renderWorkspaces(params);
                     });
-                }
+                });
             } else {
-                window.location.href = "?#tt.settings";
+                modules.users.loadUsers(() => {
+                    modules.tt.workspaces.renderWorkspaces(params);
+                });
             }
-        }).
-        fail(FAIL).
-        fail(loadingDone);
+        } else {
+            window.location.href = "?#tt.settings";
+        }
     },
 }).init();

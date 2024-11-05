@@ -7,341 +7,325 @@
     callsLoaded: false,
 
     createIssue: function (current_project, parent) {
-        loadingStart();
-        GET("tt", "tt", false, true).
-        done(modules.tt.tt).
-        done(() => {
-            let projects = [];
+        let projects = [];
 
+        projects.push({
+            id: "-",
+            text: "-",
+        });
+
+        for (let i in modules.tt.meta.projects) {
             projects.push({
-                id: "-",
-                text: "-",
+                id: modules.tt.meta.projects[i].acronym,
+                text: $.trim(modules.tt.meta.projects[i].project ? modules.tt.meta.projects[i].project : modules.tt.meta.projects[i].acronym),
+                selected: current_project == modules.tt.meta.projects[i].acronym || lStore("ttProject") == modules.tt.meta.projects[i].acronym,
             });
+        }
 
-            for (let i in modules.tt.meta.projects) {
-                projects.push({
-                    id: modules.tt.meta.projects[i].acronym,
-                    text: $.trim(modules.tt.meta.projects[i].project ? modules.tt.meta.projects[i].project : modules.tt.meta.projects[i].acronym),
-                    selected: current_project == modules.tt.meta.projects[i].acronym || lStore("ttProject") == modules.tt.meta.projects[i].acronym,
-                });
+        for (let i in projects) {
+            if (projects[i].selected) {
+                current_project = projects[i].id;
             }
+        }
 
-            for (let i in projects) {
-                if (projects[i].selected) {
-                    current_project = projects[i].id;
-                }
-            }
+        let workflows = [];
 
-            let workflows = [];
+        for (let i in modules.tt.meta.workflows) {
+            workflows[i] = modules.tt.meta.workflows[i].name ? modules.tt.meta.workflows[i].name : i;
+        }
 
-            for (let i in modules.tt.meta.workflows) {
-                workflows[i] = modules.tt.meta.workflows[i].name ? modules.tt.meta.workflows[i].name : i;
-            }
-
-            function workflowsByProject(project) {
-                let w = [
-                    {
-                        id: "-",
-                        text: "-",
-                    }
-                ];
-
-                if (project) {
-                    for (let i in modules.tt.meta.projects) {
-                        if (modules.tt.meta.projects[i].acronym == project) {
-                            for (let j in modules.tt.meta.projects[i].workflows) {
-                                let wn = $.trim(workflows[modules.tt.meta.projects[i].workflows[j]] ? workflows[modules.tt.meta.projects[i].workflows[j]] : modules.tt.meta.projects[i].workflows[j]);
-                                if (wn.charAt(0) != "#") {
-                                    w.push({
-                                        id: modules.tt.meta.projects[i].workflows[j],
-                                        text: wn,
-                                        selected: lStore("ttWorkflow") == modules.tt.meta.projects[i].workflows[j],
-                                    });
-                                }
-                            }
-                            break;
-                        }
-                    }
-                }
-
-                return w;
-            }
-
-            function catalogByWorkflow(workflow, prefix) {
-                let catalog = [{
+        function workflowsByProject(project) {
+            let w = [
+                {
                     id: "-",
                     text: "-",
-                }];
+                }
+            ];
 
-                let x = false;
-
-                for (let i in modules.tt.meta.workflows) {
-                    if (i == workflow) {
-                        if (modules.tt.meta.workflows[i].catalog) {
-                            x = modules.tt.meta.workflows[i].catalog;
+            if (project) {
+                for (let i in modules.tt.meta.projects) {
+                    if (modules.tt.meta.projects[i].acronym == project) {
+                        for (let j in modules.tt.meta.projects[i].workflows) {
+                            let wn = $.trim(workflows[modules.tt.meta.projects[i].workflows[j]] ? workflows[modules.tt.meta.projects[i].workflows[j]] : modules.tt.meta.projects[i].workflows[j]);
+                            if (wn.charAt(0) != "#") {
+                                w.push({
+                                    id: modules.tt.meta.projects[i].workflows[j],
+                                    text: wn,
+                                    selected: lStore("ttWorkflow") == modules.tt.meta.projects[i].workflows[j],
+                                });
+                            }
                         }
                         break;
                     }
                 }
-
-                if (x) {
-                    let k = Object.keys(x);
-                    k.sort();
-                    for (let i in k) {
-                        let u1 = x[k[i]];
-                        let u2 = [];
-                        let l2 = [];
-                        for (let j in u1) {
-                            u2.push(u1[j]);
-                        }
-                        u2.sort();
-                        for (let j in u2) {
-                            l2.push({
-                                id: u2[j],
-                                text: u2[j],
-                            });
-                        }
-                        catalog.push({
-                            text: k[i],
-                            children: l2,
-                        });
-                    }
-                }
-
-                $(`#${prefix}catalog`).html("").select2({
-                    data: catalog,
-                    minimumResultsForSearch: 0,
-                    language: lang["_code"],
-                });
-
-                return x;
             }
 
-            cardForm({
-                title: i18n("tt.createIssue"),
-                footer: true,
-                borderless: true,
-                noHover: true,
-                topApply: true,
-                apply: "create",
-                fields: [
-                    {
-                        id: "project",
-                        type: "select2",
-                        title: i18n("tt.project"),
-                        options: projects,
-                        minimumResultsForSearch: Infinity,
-                        select: (el, id, prefix) => {
-                            $(`#${prefix}workflow`).html("").select2({
-                                data: workflowsByProject(el.val()),
-                                minimumResultsForSearch: Infinity,
-                                language: lang["_code"],
-                            });
-                            if (catalogByWorkflow($(`#${prefix}workflow`).val(), prefix)) {
-                                $(`#${prefix}catalog`).attr("disabled", false);
-                            } else {
-                                $(`#${prefix}catalog`).attr("disabled", true);
-                            }
-                        },
-                        validate: v => {
-                            return v && v !== '-' && v !== 'undefined';
-                        },
-                        readonly: !!parent,
-                    },
-                    {
-                        id: "workflow",
-                        type: "select2",
-                        title: i18n("tt.workflowName"),
-                        minimumResultsForSearch: Infinity,
-                        options: workflowsByProject(current_project),
-                        select: (el, id, prefix) => {
-                            if (catalogByWorkflow(el.val(), prefix)) {
-                                $(`#${prefix}catalog`).attr("disabled", false);
-                            } else {
-                                $(`#${prefix}catalog`).attr("disabled", true);
-                            }
-                        },
-                        validate: v => {
-                            return v && v !== '-' && v !== 'undefined';
-                        },
-                    },
-                    {
-                        id: "catalog",
-                        type: "select2",
-                        title: i18n("tt.catalog"),
-                        minimumResultsForSearch: Infinity,
-                        validate: (v, prefix) => {
-                            return $(`#${prefix}catalog`).attr("disabled") || (v && v !== '-' && v !== 'undefined');
-                        },
-                    },
-                ],
-                done: function (prefix) {
-                    if (catalogByWorkflow($(`#${prefix}workflow`).val(), prefix)) {
-                        $(`#${prefix}catalog`).attr("disabled", false);
-                    } else {
-                        $(`#${prefix}catalog`).attr("disabled", true);
+            return w;
+        }
+
+        function catalogByWorkflow(workflow, prefix) {
+            let catalog = [{
+                id: "-",
+                text: "-",
+            }];
+
+            let x = false;
+
+            for (let i in modules.tt.meta.workflows) {
+                if (i == workflow) {
+                    if (modules.tt.meta.workflows[i].catalog) {
+                        x = modules.tt.meta.workflows[i].catalog;
                     }
-                },
-                callback: function (result) {
-                    if (result.project && result.workflow) {
-                        lStore("ttProject", result.project);
-                        lStore("ttWorkflow", result.workflow);
+                    break;
+                }
+            }
+
+            if (x) {
+                let k = Object.keys(x);
+                k.sort();
+                for (let i in k) {
+                    let u1 = x[k[i]];
+                    let u2 = [];
+                    let l2 = [];
+                    for (let j in u1) {
+                        u2.push(u1[j]);
                     }
-                    modules.tt.issue.createIssueForm(result.project, result.workflow, result.catalog, (!!parent)?encodeURIComponent(parent):"");
+                    u2.sort();
+                    for (let j in u2) {
+                        l2.push({
+                            id: u2[j],
+                            text: u2[j],
+                        });
+                    }
+                    catalog.push({
+                        text: k[i],
+                        children: l2,
+                    });
+                }
+            }
+
+            $(`#${prefix}catalog`).html("").select2({
+                data: catalog,
+                minimumResultsForSearch: 0,
+                language: lang["_code"],
+            });
+
+            return x;
+        }
+
+        cardForm({
+            title: i18n("tt.createIssue"),
+            footer: true,
+            borderless: true,
+            noHover: true,
+            topApply: true,
+            apply: "create",
+            fields: [
+                {
+                    id: "project",
+                    type: "select2",
+                    title: i18n("tt.project"),
+                    options: projects,
+                    minimumResultsForSearch: Infinity,
+                    select: (el, id, prefix) => {
+                        $(`#${prefix}workflow`).html("").select2({
+                            data: workflowsByProject(el.val()),
+                            minimumResultsForSearch: Infinity,
+                            language: lang["_code"],
+                        });
+                        if (catalogByWorkflow($(`#${prefix}workflow`).val(), prefix)) {
+                            $(`#${prefix}catalog`).attr("disabled", false);
+                        } else {
+                            $(`#${prefix}catalog`).attr("disabled", true);
+                        }
+                    },
+                    validate: v => {
+                        return v && v !== '-' && v !== 'undefined';
+                    },
+                    readonly: !!parent,
                 },
-            }).show();
-        }).
-        fail(FAIL).
-        always(loadingDone)
+                {
+                    id: "workflow",
+                    type: "select2",
+                    title: i18n("tt.workflowName"),
+                    minimumResultsForSearch: Infinity,
+                    options: workflowsByProject(current_project),
+                    select: (el, id, prefix) => {
+                        if (catalogByWorkflow(el.val(), prefix)) {
+                            $(`#${prefix}catalog`).attr("disabled", false);
+                        } else {
+                            $(`#${prefix}catalog`).attr("disabled", true);
+                        }
+                    },
+                    validate: v => {
+                        return v && v !== '-' && v !== 'undefined';
+                    },
+                },
+                {
+                    id: "catalog",
+                    type: "select2",
+                    title: i18n("tt.catalog"),
+                    minimumResultsForSearch: Infinity,
+                    validate: (v, prefix) => {
+                        return $(`#${prefix}catalog`).attr("disabled") || (v && v !== '-' && v !== 'undefined');
+                    },
+                },
+            ],
+            done: function (prefix) {
+                if (catalogByWorkflow($(`#${prefix}workflow`).val(), prefix)) {
+                    $(`#${prefix}catalog`).attr("disabled", false);
+                } else {
+                    $(`#${prefix}catalog`).attr("disabled", true);
+                }
+            },
+            callback: function (result) {
+                if (result.project && result.workflow) {
+                    lStore("ttProject", result.project);
+                    lStore("ttWorkflow", result.workflow);
+                }
+                modules.tt.issue.createIssueForm(result.project, result.workflow, result.catalog, (!!parent) ? encodeURIComponent(parent) : "");
+            },
+        }).show();
     },
 
     createIssueForm: function (current_project, workflow, catalog, parent) {
         subTop();
 
+        $("#leftTopDynamic").html("");
+        $("#rightTopDynamic").html("");
+
         loadingStart();
-        GET("tt", "tt").
-        fail(FAIL).
-        fail(loadingDone).
-        done(modules.tt.tt).
-        done(() => {
-            loadingDone();
 
-            $("#leftTopDynamic").html("");
-            $("#rightTopDynamic").html("");
+        function ciForm(current_project, workflow, catalog, parent) {
+            QUERY("tt", "issueTemplate", {
+                _id: workflow,
+                catalog: catalog,
+            }, true).
+            done(response => {
+                document.title = i18n("windowTitle") + " :: " + i18n("tt.createIssue");
 
-            loadingStart();
+                let workflows = [];
 
-            function ciForm(current_project, workflow, catalog, parent) {
-                QUERY("tt", "issueTemplate", {
-                    _id: workflow,
-                    catalog: catalog,
-                }, true).
-                done(response => {
-                    document.title = i18n("windowTitle") + " :: " + i18n("tt.createIssue");
-
-                    let workflows = [];
-
-                    for (let i in modules.tt.meta.workflows) {
-                        workflows[i] = (modules.tt.meta.workflows[i].name?modules.tt.meta.workflows[i].name:i);
-                    }
-
-                    let projectName = "";
-                    let project = false;
-                    let projectId = -1;
-
-                    for (let i in modules.tt.meta.projects) {
-                        if (modules.tt.meta.projects[i].acronym == current_project) {
-                            project = modules.tt.meta.projects[i];
-                            projectName = modules.tt.meta.projects[i].project?modules.tt.meta.projects[i].project:modules.tt.meta.projects[i].acronym;
-                            projectId = modules.tt.meta.projects[i].projectId;
-                        }
-                    }
-
-                    let fields = [
-                        {
-                            id: "projectName",
-                            type: "text",
-                            readonly: true,
-                            title: i18n("tt.project"),
-                            value: projectName,
-                        },
-                        {
-                            id: "projectAcronym",
-                            type: "text",
-                            readonly: true,
-                            title: i18n("tt.projectAcronym"),
-                            value: project.acronym,
-                            hidden: true,
-                        },
-                        {
-                            id: "workflowName",
-                            type: "text",
-                            readonly: true,
-                            title: i18n("tt.workflowName"),
-                            value: workflows[workflow],
-                        },
-                        {
-                            id: "workflow",
-                            type: "text",
-                            readonly: true,
-                            title: i18n("tt.workflow"),
-                            value: workflow,
-                            hidden: true,
-                        },
-                    ];
-
-                    if (catalog && catalog !== "-" && catalog !== true) {
-                        fields.push({
-                            id: "catalog",
-                            type: "text",
-                            readonly: true,
-                            title: i18n("tt.catalog"),
-                            value: catalog,
-                        });
-                    }
-
-                    if (parent && parent !== "-" && parent !== true) {
-                        fields.push({
-                            id: "parent",
-                            type: "text",
-                            readonly: true,
-                            title: i18n("tt.parent"),
-                            value: parent,
-                        });
-                    }
-
-                    let kx = [];
-                    let ky = {};
-
-                    for (let i in response.template.fields) {
-                        let fx = ((typeof response.template.fields[i] == "string")?response.template.fields[i]:i).toString();
-                        if (fx.charAt(0) == '%') {
-                            fx = fx.split('%');
-                            kx[fx[1]] = fx[2];
-                            ky[fx[2]] = (typeof response.template.fields[i] == "string")?false:response.template.fields[i];
-                        } else {
-                            kx.push(fx);
-                            ky[fx] = (typeof response.template.fields[i] == "string")?false:response.template.fields[i];
-                        }
-                    }
-
-                    for (let i in kx) {
-                        let fi = modules.tt.issueField2FormFieldEditor(false, kx[i], projectId, ky[kx[i]]);
-                        if (fi && kx[i] !== "comment" && kx[i] !== "optionalComment") {
-                            fields.push(fi);
-                        }
-                    }
-
-                    cardForm({
-                        title: i18n("tt.createIssueTitle"),
-                        footer: true,
-                        borderless: true,
-                        target: "#mainForm",
-                        apply: "create",
-                        fields: fields,
-                        callback: modules.tt.issue.doCreateIssue,
-                        cancel: () => {
-                            window.location.href = "?#tt&_=" + Math.random();
-                        },
-                    });
-
-                    loadingDone();
-                }).
-                fail(FAIL).
-                fail(() => {
-                    window.location.href = "?#tt&_=" + Math.random();
-                });
-            }
-
-            modules.users.loadUsers(() => {
-                if (modules.groups) {
-                    modules.groups.loadGroups(() => {
-                        ciForm(current_project, workflow, catalog, parent);
-                    });
-                } else {
-                    ciForm(current_project, workflow, catalog, parent);
+                for (let i in modules.tt.meta.workflows) {
+                    workflows[i] = (modules.tt.meta.workflows[i].name?modules.tt.meta.workflows[i].name:i);
                 }
+
+                let projectName = "";
+                let project = false;
+                let projectId = -1;
+
+                for (let i in modules.tt.meta.projects) {
+                    if (modules.tt.meta.projects[i].acronym == current_project) {
+                        project = modules.tt.meta.projects[i];
+                        projectName = modules.tt.meta.projects[i].project?modules.tt.meta.projects[i].project:modules.tt.meta.projects[i].acronym;
+                        projectId = modules.tt.meta.projects[i].projectId;
+                    }
+                }
+
+                let fields = [
+                    {
+                        id: "projectName",
+                        type: "text",
+                        readonly: true,
+                        title: i18n("tt.project"),
+                        value: projectName,
+                    },
+                    {
+                        id: "projectAcronym",
+                        type: "text",
+                        readonly: true,
+                        title: i18n("tt.projectAcronym"),
+                        value: project.acronym,
+                        hidden: true,
+                    },
+                    {
+                        id: "workflowName",
+                        type: "text",
+                        readonly: true,
+                        title: i18n("tt.workflowName"),
+                        value: workflows[workflow],
+                    },
+                    {
+                        id: "workflow",
+                        type: "text",
+                        readonly: true,
+                        title: i18n("tt.workflow"),
+                        value: workflow,
+                        hidden: true,
+                    },
+                ];
+
+                if (catalog && catalog !== "-" && catalog !== true) {
+                    fields.push({
+                        id: "catalog",
+                        type: "text",
+                        readonly: true,
+                        title: i18n("tt.catalog"),
+                        value: catalog,
+                    });
+                }
+
+                if (parent && parent !== "-" && parent !== true) {
+                    fields.push({
+                        id: "parent",
+                        type: "text",
+                        readonly: true,
+                        title: i18n("tt.parent"),
+                        value: parent,
+                    });
+                }
+
+                let kx = [];
+                let ky = {};
+
+                for (let i in response.template.fields) {
+                    let fx = ((typeof response.template.fields[i] == "string")?response.template.fields[i]:i).toString();
+                    if (fx.charAt(0) == '%') {
+                        fx = fx.split('%');
+                        kx[fx[1]] = fx[2];
+                        ky[fx[2]] = (typeof response.template.fields[i] == "string")?false:response.template.fields[i];
+                    } else {
+                        kx.push(fx);
+                        ky[fx] = (typeof response.template.fields[i] == "string")?false:response.template.fields[i];
+                    }
+                }
+
+                for (let i in kx) {
+                    let fi = modules.tt.issueField2FormFieldEditor(false, kx[i], projectId, ky[kx[i]]);
+                    if (fi && kx[i] !== "comment" && kx[i] !== "optionalComment") {
+                        fields.push(fi);
+                    }
+                }
+
+                cardForm({
+                    title: i18n("tt.createIssueTitle"),
+                    footer: true,
+                    borderless: true,
+                    target: "#mainForm",
+                    apply: "create",
+                    fields: fields,
+                    callback: modules.tt.issue.doCreateIssue,
+                    cancel: () => {
+                        window.location.href = "?#tt&_=" + Math.random();
+                    },
+                });
+
+                loadingDone();
+            }).
+            fail(FAIL).
+            fail(() => {
+                window.location.href = "?#tt&_=" + Math.random();
             });
+        }
+
+        modules.users.loadUsers(() => {
+            if (modules.groups) {
+                modules.groups.loadGroups(() => {
+                    ciForm(current_project, workflow, catalog, parent);
+                });
+            } else {
+                ciForm(current_project, workflow, catalog, parent);
+            }
         });
     },
 
@@ -362,25 +346,108 @@
     },
 
     issueAction: function (issueId, action, callback, prefferredValues, timeout) {
-        loadingStart();
-        GET("tt", "tt", false, true).
-        done(modules.tt.tt).
+        GET("tt", "issue", issueId, true).
         fail(FAIL).
         fail(loadingDone).
-        done(() => {
-            GET("tt", "issue", issueId, true).
-            fail(FAIL).
-            fail(loadingDone).
-            done(response => {
-                let issue = response.issue;
-                QUERY("tt", "action", {
-                    _id: issue.issue.issueId,
-                    action: action,
-                }, true).done(r => {
-                    if (r && r.template) {
-                        if (typeof r.template == "string") {
-                            if (r.template == "!") {
-                                // action without accept
+        done(response => {
+            let issue = response.issue;
+            QUERY("tt", "action", {
+                _id: issue.issue.issueId,
+                action: action,
+            }, true).done(r => {
+                if (r && r.template) {
+                    if (typeof r.template == "string") {
+                        if (r.template == "!") {
+                            // action without accept
+                            PUT("tt", "action", issue.issue.issueId, {
+                                action: action,
+                            }).
+                            fail(FAIL).
+                            always(() => {
+                                if (typeof callback === "function") {
+                                    callback();
+                                }
+                            });
+                        } else {
+                            if (modules.custom && typeof modules.custom[r.template] == "function") {
+                                modules.custom[r.template](issue.issue, action, callback, prefferredValues, timeout);
+                            } else {
+                                loadingDone();
+                                error(i18n("errors.functionNotFound", r.template), i18n("error"), 30);
+                            }
+                        }
+                    } else {
+                        let fields = [];
+
+                        let project;
+
+                        for (let i in modules.tt.meta.projects) {
+                            if (modules.tt.meta.projects[i].acronym == issue.issue.project) {
+                                project = modules.tt.meta.projects[i];
+                            }
+                        }
+
+                        let n = 0;
+
+                        let kx = [];
+                        let ky = {};
+
+                        for (let i in r.template) {
+                            let fx = ((typeof r.template[i] == "string") ? r.template[i] : i).toString();
+                            if (fx.charAt(0) == '%') {
+                                fx = fx.split('%');
+                                kx[fx[1]] = fx[2];
+                                ky[fx[2]] = (typeof r.template[i] == "string") ? false : r.template[i];
+                            } else {
+                                kx.push(fx);
+                                ky[fx] = (typeof r.template[i] == "string") ? false : r.template[i];
+                            }
+                        }
+
+                        for (let i in kx) {
+                            let fi = modules.tt.issueField2FormFieldEditor(issue.issue, kx[i], project.projectId, ky[kx[i]], prefferredValues ? prefferredValues[kx[i]] : prefferredValues);
+                            if (fi) {
+                                fields.push(fi);
+                                if (kx[i] == "comment" || kx[i] == "optionalComment") {
+                                    fields.push({
+                                        id: "commentPrivate",
+                                        type: "yesno",
+                                        title: i18n("tt.commentPrivate"),
+                                        value: "1",
+                                    });
+                                }
+                                n++;
+                            }
+                        }
+
+                        loadingDone();
+
+                        if (n) {
+                            cardForm({
+                                title: modules.tt.displayAction(action),
+                                apply: modules.tt.displayAction(action),
+                                fields: fields,
+                                footer: true,
+                                borderless: true,
+                                size: "lg",
+                                timeout: timeout,
+                                callback: r => {
+                                    loadingStart();
+                                    PUT("tt", "action", issue.issue.issueId, {
+                                        set: r,
+                                        action: action,
+                                    }).
+                                    fail(FAIL).
+                                    always(() => {
+                                        if (typeof callback === "function") {
+                                            callback();
+                                        }
+                                    });
+                                },
+                            });
+                        } else {
+                            mConfirm(action + " \"" + issue.issue.issueId + "\"?", i18n("confirm"), modules.tt.displayAction(action), () => {
+                                loadingStart();
                                 PUT("tt", "action", issue.issue.issueId, {
                                     action: action,
                                 }).
@@ -390,106 +457,16 @@
                                         callback();
                                     }
                                 });
-                            } else {
-                                if (modules.custom && typeof modules.custom[r.template] == "function") {
-                                    modules.custom[r.template](issue.issue, action, callback, prefferredValues, timeout);
-                                } else {
-                                    loadingDone();
-                                    error(i18n("errors.functionNotFound", r.template), i18n("error"), 30);
-                                }
-                            }
-                        } else {
-                            let fields = [];
-
-                            let project;
-
-                            for (let i in modules.tt.meta.projects) {
-                                if (modules.tt.meta.projects[i].acronym == issue.issue.project) {
-                                    project = modules.tt.meta.projects[i];
-                                }
-                            }
-
-                            let n = 0;
-
-                            let kx = [];
-                            let ky = {};
-
-                            for (let i in r.template) {
-                                let fx = ((typeof r.template[i] == "string")?r.template[i]:i).toString();
-                                if (fx.charAt(0) == '%') {
-                                    fx = fx.split('%');
-                                    kx[fx[1]] = fx[2];
-                                    ky[fx[2]] = (typeof r.template[i] == "string")?false:r.template[i];
-                                } else {
-                                    kx.push(fx);
-                                    ky[fx] = (typeof r.template[i] == "string")?false:r.template[i];
-                                }
-                            }
-
-                            for (let i in kx) {
-                                let fi = modules.tt.issueField2FormFieldEditor(issue.issue, kx[i], project.projectId, ky[kx[i]], prefferredValues ? prefferredValues[kx[i]] : prefferredValues);
-                                if (fi) {
-                                    fields.push(fi);
-                                    if (kx[i] == "comment" || kx[i] == "optionalComment") {
-                                        fields.push({
-                                            id: "commentPrivate",
-                                            type: "yesno",
-                                            title: i18n("tt.commentPrivate"),
-                                            value: "1",
-                                        });
-                                    }
-                                    n++;
-                                }
-                            }
-
-                            loadingDone();
-
-                            if (n) {
-                                cardForm({
-                                    title: modules.tt.displayAction(action),
-                                    apply: modules.tt.displayAction(action),
-                                    fields: fields,
-                                    footer: true,
-                                    borderless: true,
-                                    size: "lg",
-                                    timeout: timeout,
-                                    callback: r => {
-                                        loadingStart();
-                                        PUT("tt", "action", issue.issue.issueId, {
-                                            set: r,
-                                            action: action,
-                                        }).
-                                        fail(FAIL).
-                                        always(() => {
-                                            if (typeof callback === "function") {
-                                                callback();
-                                            }
-                                        });
-                                    },
-                                });
-                            } else {
-                                mConfirm(action + " \"" + issue.issue.issueId + "\"?", i18n("confirm"), modules.tt.displayAction(action), () => {
-                                    loadingStart();
-                                    PUT("tt", "action", issue.issue.issueId, {
-                                        action: action,
-                                    }).
-                                    fail(FAIL).
-                                    always(() => {
-                                        if (typeof callback === "function") {
-                                            callback();
-                                        }
-                                    });
-                                });
-                            }
+                            });
                         }
-                    } else {
-                        loadingDone();
-                        error(i18n("tt.actionNotAvailable"), 30);
                     }
-                }).
-                fail(FAIL).
-                fail(loadingDone);
-            });
+                } else {
+                    loadingDone();
+                    error(i18n("tt.actionNotAvailable"), 30);
+                }
+            }).
+            fail(FAIL).
+            fail(loadingDone);
         });
     },
 
