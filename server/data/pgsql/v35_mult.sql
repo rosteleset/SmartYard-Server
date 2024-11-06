@@ -9,10 +9,10 @@ ALTER TABLE houses_subscribers_mobile
     DROP COLUMN voip_enabled;
 
 -- flats <-> devices
-CREATE TABLE houses_flats_devices
+CREATE TABLE IF NOT EXISTS houses_flats_devices
 (
     house_flat_id integer not null,
     subscriber_device_id integer not null,
-    voip_enabled integer                                                                                                        -- ?
+    voip_enabled integer                                                                                                -- ?
 );
-CREATE UNIQUE INDEX houses_flats_devices_uniq on houses_flats_devices(house_flat_id, subscriber_device_id);
+CREATE UNIQUE INDEX IF NOT EXISTS houses_flats_devices_uniq on houses_flats_devices(house_flat_id, subscriber_device_id);
