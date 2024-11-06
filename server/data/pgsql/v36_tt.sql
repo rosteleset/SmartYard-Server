@@ -1,4 +1,4 @@
-CREATE TABLE tt_favorite_filters
+CREATE TABLE IF NOT EXISTS tt_favorite_filters
 (
     login CHARACTER VARYING,
     filter CHARACTER VARYING,
