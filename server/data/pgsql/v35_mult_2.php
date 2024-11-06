@@ -38,19 +38,23 @@ function v35_mult_2($db)
             ", [':house_subscriber_id' => $flatSubscriber['house_subscriber_id']]);
 
             foreach ($devices as $device) {
-                $stmt->execute([
-                    ':house_flat_id' => $flatSubscriber['house_flat_id'],
-                    ':subscriber_device_id' => $device['subscriber_device_id'],
-                    ':voip_enabled' => $flatSubscriber['voip_enabled']
-                ]);
+                try {
+                    $stmt->execute([
+                        ':house_flat_id' => $flatSubscriber['house_flat_id'],
+                        ':subscriber_device_id' => $device['subscriber_device_id'],
+                        ':voip_enabled' => $flatSubscriber['voip_enabled']
+                    ]);
+                    $createdRows += $stmt->rowCount();
+                } catch (\PDOException $e) {
+                    //
+                }
 
-                $createdRows += $stmt->rowCount();
             }
         }
 
         echo "created $createdRows rows";
         return true;
-    } catch (PDOException $e) {
+    } catch (\PDOException $e) {
         echo "Error executing query: " . $e->getMessage();
         return false;
     }
