@@ -48,7 +48,6 @@ function v35_mult_2($db)
                 } catch (\PDOException $e) {
                     //
                 }
-
             }
         }
 
