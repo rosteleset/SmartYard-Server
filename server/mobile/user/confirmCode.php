@@ -63,7 +63,7 @@
                     $redis->del("userpin.attempts_" . $user_phone);
                     response(403, false, i18n("mobile.maxAttempts"), i18n("mobile.maxAttempts"));
                 } else {
-                    response(403, false, i18n("pinError"), i18n("pinError"));
+                    response(403, false, i18n("mobile.pinError"), i18n("mobile.pinError"));
                 }
             } else {
                 $redis->del("userpin_" . $user_phone);
