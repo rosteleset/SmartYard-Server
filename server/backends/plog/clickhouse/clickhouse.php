@@ -51,7 +51,6 @@
             public function cron($part)
             {
                 if ($part === $this->cron_process_events_scheduler) {
-                    echo("__process events\n");
                     $this->processEvents();
                     $this->db->modify("delete from plog_door_open where expire < " . time());
                     $this->db->modify("delete from plog_call_done where expire < " . time());
