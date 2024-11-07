@@ -579,6 +579,7 @@
                             echo "$backend_name [$part] fail\n\n";
                         }
                     } catch (\Exception $e) {
+                        print_r($e);
                         echo "$backend_name [$part] exception\n\n";
                     }
                 }
