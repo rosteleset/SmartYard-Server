@@ -419,7 +419,7 @@
             ],
             callback: function (result) {
                 if (parseInt(result.delete) == 2) {
-                    modules.addresses.subscribers.completeDeleteSubscriber(subscriberId);
+                    modules.addresses.subscribers.completeDeleteSubscriber(subscriber.subscriberId);
                 } else {
                     result.forceNames = true;
                     modules.addresses.subscribers.doModifySubscriber(result);
