@@ -173,5 +173,8 @@
     ],
     "53": [
         "v53_avatar.sql"
+    ],
+    "54": [
+        "v54_households.sql"
     ]
 }

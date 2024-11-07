@@ -2144,6 +2144,8 @@
                 $n += $this->db->modify("delete from houses_flats_devices where house_flat_id not in (select house_flat_id from houses_flats)");
                 $n += $this->db->modify("delete from houses_flats_devices where subscriber_device_id not in (select subscriber_device_id from houses_subscribers_devices)");
 
+                $n += $this->db->modify("delete from houses_flats_devices where houses_flat_device_id in (select houses_flat_device_id from houses_flats_devices left join houses_subscribers_devices using (subscriber_device_id) left join houses_flats_subscribers using (house_subscriber_id) where houses_flats_subscribers.house_flat_id is null)");
+
                 // autoclean ?
                 // $n += $this->db->modify("delete from houses_subscribers_devices where last_seen < 1724208851 - 7 * 24 * 60 * 60");
 
