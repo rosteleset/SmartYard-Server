@@ -88,7 +88,8 @@
             message(i18n("addresses.subscriberWasDeleted"));
         }).
         always(() => {
-            modules.addresses.subscribers.route(hashParse("params"));
+            window.location.href = refreshUrl();
+//            modules.addresses.subscribers.route(hashParse("params"));
         });
     },
 
