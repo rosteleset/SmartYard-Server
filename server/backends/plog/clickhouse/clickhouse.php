@@ -502,7 +502,7 @@
 
             private function processEvents()
             {
-                $end_date = time() - $this->time_shift;  //крайняя дата обработки
+                $end_date = time() - (int)$this->time_shift;  //крайняя дата обработки
 
                 //обработка данных из таблицы plog_door_open
                 $query = "
