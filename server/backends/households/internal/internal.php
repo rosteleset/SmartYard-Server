@@ -1409,6 +1409,7 @@
             /**
              * @inheritDoc
              */
+
             public function removeSubscriberFromFlat($flatId, $subscriberId) {
                 if (!checkInt($flatId)) {
                     return false;
@@ -1425,7 +1426,6 @@
                 }
 
                 $devices = $this->getDevices("subscriber", $subscriberId);
-
 
                 foreach ($devices as $device) {
                     $this->db->modify("delete from houses_flats_devices where subscriber_device_id = :subscriber_device_id and house_flat_id = :house_flat_id", [
@@ -1527,8 +1527,8 @@
             /**
              * @inheritDoc
              */
-            public function setSubscriberFlats($subscriberId, $flats)
-            {
+
+            public function setSubscriberFlats($subscriberId, $flats) {
                 if (!checkInt($subscriberId)) {
                     setLastError("invalidParams");
                     return false;

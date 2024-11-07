@@ -11,6 +11,7 @@ ALTER TABLE houses_subscribers_mobile
 -- flats <-> devices
 CREATE TABLE IF NOT EXISTS houses_flats_devices
 (
+    houses_flat_device_id SERIAL NOT NULL PRIMARY KEY,
     house_flat_id integer not null,
     subscriber_device_id integer not null,
     voip_enabled integer                                                                                                -- ?

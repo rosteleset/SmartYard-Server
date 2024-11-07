@@ -79,6 +79,7 @@
                 ];
             }
         }
+
         $households->setSubscriberFlats((int)$guest['subscriberId'], $f_list);
     } else {
         //добавление
