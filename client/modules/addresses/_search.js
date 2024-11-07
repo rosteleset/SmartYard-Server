@@ -87,7 +87,7 @@
                                         h += "<i class='fas fa-fw fa-user mr-2 ml-3'></i>";
                                     }
 
-                                    h += `<a href="javascript:void(0)" class="ss" data-subscriber-id="${i}">${ss.subscribers[i].subscriberFull ? ss.subscribers[i].subscriberFull : i18n("addresses.undefined")}</a><br />`;
+                                    h += `<a href="javascript:void(0)" class="ss" data-subscriber-id="${i}">#${i} ${ss.subscribers[i].subscriberFull ? ss.subscribers[i].subscriberFull : i18n("addresses.undefined")}</a><br />`;
 
                                     h += '<div class="mt-1">';
                                     h += '<i class="fas fa-fw fa-mobile mr-2 ml-4"></i>';
