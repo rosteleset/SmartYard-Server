@@ -153,8 +153,8 @@
             /**
              * @inheritDoc
              */
-            public function deleteFiles($query)
-            {
+
+            public function deleteFiles($query) {
                 $files = $this->searchFiles($query);
 
                 foreach ($files as $f) {
@@ -169,8 +169,8 @@
             /**
              * @inheritDoc
              */
-            public function cron($part)
-            {
+
+            public function cron($part) {
                 $collection = "fs.files";
                 $db = $this->dbName;
 
@@ -191,7 +191,7 @@
              * @return mixed
              */
 
-             public function capabilities() {
+            public function capabilities() {
                 return [
                     "cli" => true,
                 ];
@@ -201,7 +201,7 @@
              * @inheritDoc
              */
 
-             public function cli($args) {
+            public function cli($args) {
                 function cliUsage() {
                     global $argv;
 
