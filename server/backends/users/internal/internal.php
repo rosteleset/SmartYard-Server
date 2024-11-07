@@ -107,23 +107,24 @@
              */
 
             public function getUser($uid, $withGroups = true) {
-                $key = "USER:$uid";
-
-                $cache = $this->cacheGet($key);
-                if ($cache) {
-                    return $cache;
-                }
-
                 if (!checkInt($uid)) {
                     return false;
                 }
 
+                $key = "USER:$uid:" . (int)$withGroups;
+
+                if (@$this->users[$key]) {
+                    return $this->users[$key];
+                }
+
+                $cache = $this->cacheGet($key);
+                if ($cache) {
+                    $this->users[$key] = $cache;
+                    return $cache;
+                }
+
                 if ($uid >= 0) {
-
-                    if (@$this->users[$uid]) {
-                        return $this->users[$uid];
-                    }
-
+                    // ordinary user
                     try {
                         $user = $this->db->queryEx("select uid, login, real_name, e_mail, phone, tg, notification, enabled, default_route, primary_group, acronym primary_group_acronym, secret from core_users left join core_groups on core_users.primary_group = core_groups.gid where uid = $uid");
 
@@ -163,7 +164,7 @@
                             }
 
                             $this->cacheSet($key, $_user);
-                            $this->users[$uid] = $_user;
+                            $this->users[$key] = $_user;
 
                             return $_user;
                         } else {
@@ -176,6 +177,7 @@
                         return false;
                     }
                 } else {
+                    // force fill memory cache
                     try {
                         $users = $this->db->queryEx("select uid, login, real_name, e_mail, phone, tg, notification, enabled, default_route, primary_group, acronym primary_group_acronym, secret from core_users left join core_groups on core_users.primary_group = core_groups.gid");
 
@@ -214,7 +216,7 @@
                                 $_user["persistentToken"] = $persistent;
                             }
 
-                            $this->users[$users[$i]["uid"]] = $_user;
+                            $this->users["USER:" . (int)$users[$i]["uid"] . ":" . (int)$withGroups] = $_user;
                         }
 
                         return true;

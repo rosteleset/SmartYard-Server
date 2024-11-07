@@ -36,7 +36,7 @@
                 $this->db = $db;
                 $this->redis = $redis;
                 $this->login = $login ? : ((is_array($params) && array_key_exists("_login", $params)) ? $params["_login"] : "-");
-                
+
                 switch ($this->login) {
                     case "-":
                         $this->uid = -1;
@@ -133,8 +133,8 @@
              * @param $value
              * @return mixed
              */
-            public function cacheGet($key)
-            {
+
+            public function cacheGet($key) {
                 $key = "CACHE:" . strtoupper($this->backend) . ":" . $key . ":" . $this->uid;
 
                 $value = @$this->cache[$key];
@@ -158,12 +158,12 @@
              * @param $value
              * @return void
              */
-            public function cacheSet($key, $value)
-            {
+
+            public function cacheSet($key, $value) {
                 $key = "CACHE:" . strtoupper($this->backend) . ":" . $key . ":" . $this->uid;
 
                 $value = json_encode($value);
-                
+
                 if ($value != @$this->cache[$key]) {
                     $this->cache[$key] = $value;
                     if ((int)$this->uid > 0) {
@@ -196,7 +196,7 @@
                 $_keys = $this->redis->keys("CACHE:" . strtoupper($this->backend) . ":*");
 
                 $n = 0;
-                
+
                 foreach ($_keys as $_key) {
                     $this->redis->del($_key);
                     $n++;
