@@ -197,6 +197,8 @@
                                 }
 
                                 modules.tt.issue.issueAction(modules.cs.preCoordinate.issueId, modules.cs.currentSheet.sheet.action, () => {
+                                    message(i18n("cs.wasCoordinated"));
+/*
                                     PUT("cs", "cell", false, {
                                         action: "release",
                                         sheet: md5($("#csSheet").val()),
@@ -214,6 +216,7 @@
                                         modules.cs.idle = true;
                                         cell.removeClass("spinner-small");
                                     });
+*/
                                 }, prefferredValues, 58 * 1000);
                             break;
                         }

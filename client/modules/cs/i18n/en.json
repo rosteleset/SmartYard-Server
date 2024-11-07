@@ -35,6 +35,7 @@
     "colHidden": "Hidden",
     "partCols": "Show columns",
     "cols": "Columns",
+    "wasCoordinated": "Coordinated",
     "methods": {
         "cs": {
             "_title": "Coordination sheet",
