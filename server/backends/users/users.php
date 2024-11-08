@@ -279,7 +279,7 @@
                     }
 
                     $this->db->modify("delete from core_users_notifications_queue where notification_id = :notification_id", [
-                        "notification_id" => $notification["notification_id"],
+                        "notification_id" => $notification["id"],
                     ]);
                 }
             }
