@@ -198,6 +198,10 @@
                 ]);
             }
 
+            /**
+             * none
+             */
+
             private function realNotify() {
                 $notifications = $this->db->get("select * from core_users_notifications_queue", false, [
                     "notification_id" => "id",
