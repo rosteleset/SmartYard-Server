@@ -190,7 +190,7 @@
                     return false;
                 }
 
-                return $this->db->insert("insert into core_users_notifications (uid, subject, message) values (:uid, :subject, :message)", [
+                return $this->db->insert("insert into core_users_notifications_queue (uid, subject, message) values (:uid, :subject, :message)", [
                     "uid" => $uid,
                     "subject" => $subject,
                     "message" => $message,
@@ -198,7 +198,7 @@
             }
 
             private function realNotify() {
-                $notifications = $this->db->get("select * from core_users_notifications", false, [
+                $notifications = $this->db->get("select * from core_users_notifications_queue", false, [
                     "notification_id" => "id",
                     "uid" => "uid",
                     "subject" => "subject",
@@ -275,7 +275,7 @@
                         $this->clickhouse->insert("nlog", [ [ "date" => time(), "login" => $this->login, "to" => $user["login"], "uid" => $uid, "id" => "none", "subject" => $subject, "message" => $message, "target" => $user["notification"] ] ]);
                     }
 
-                    $this->db->modify("delete from core_users_notifications where notification_id = :notification_id", [
+                    $this->db->modify("delete from core_users_notifications_queue where notification_id = :notification_id", [
                         "notification_id" => $notification["notification_id"],
                     ]);
                 }

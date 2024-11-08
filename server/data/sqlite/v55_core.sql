@@ -1,4 +1,4 @@
-CREATE TABLE core_users_notifications
+CREATE TABLE core_users_notifications_queue
 (
     notification_id INTEGER PRIMARY KEY AUTOINCREMENT,
     uid INTEGER,
