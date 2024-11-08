@@ -4,8 +4,7 @@
 
         private $dsn;
 
-        public function __construct($_dsn, $username = null, $password = null, $options = null)
-        {
+        public function __construct($_dsn, $username = null, $password = null, $options = null) {
             $this->dsn = $_dsn;
 
             parent::__construct($_dsn, $username, $password, $options);
@@ -20,8 +19,7 @@
             }
         }
 
-        function parseDsn()
-        {
+        function parseDsn() {
             $dsn = trim($this->dsn);
 
             if (strpos($dsn, ':') === false) {
@@ -56,8 +54,7 @@
             ];
         }
 
-        function trimParams($map)
-        {
+        function trimParams($map) {
             $remap = [];
 
             if ($map) {
@@ -73,8 +70,7 @@
             return $remap;
         }
 
-        function insert($query, $params = [], $options = [])
-        {
+        function insert($query, $params = [], $options = []) {
             global $cli, $cliError;
 
             try {
@@ -105,8 +101,7 @@
             }
         }
 
-        function modify($query, $params = [], $options = [])
-        {
+        function modify($query, $params = [], $options = []) {
             try {
                 $sth = $this->prepare($query);
                 if ($sth->execute($this->trimParams($params))) {
@@ -127,8 +122,7 @@
             }
         }
 
-        function modifyEx($query, $map, $params, $options = [])
-        {
+        function modifyEx($query, $map, $params, $options = []) {
             $mod = false;
             try {
                 foreach ($map as $db => $param) {
@@ -157,8 +151,7 @@
             }
         }
 
-        function queryEx($query)
-        {
+        function queryEx($query) {
             $sth = $this->prepare($query);
             if ($sth->execute()) {
                 return $sth->fetchAll(\PDO::FETCH_ASSOC);
@@ -167,8 +160,7 @@
             }
         }
 
-        function get($query, $params = [], $map = [], $options = [])
-        {
+        function get($query, $params = [], $map = [], $options = []) {
             try {
                 if ($params) {
                     $sth = $this->prepare($query);

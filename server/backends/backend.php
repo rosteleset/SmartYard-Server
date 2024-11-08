@@ -104,6 +104,7 @@
             /**
              * @return bool
              */
+
             public function check() {
                 return true;
             }
@@ -113,6 +114,7 @@
              * @param $login string
              * @return void
              */
+
             public function setCreds($uid, $login) {
                 $this->uid = $uid;
                 $this->login = $login;
@@ -121,8 +123,8 @@
             /**
              * @param $login
              */
-            public function setLogin($login)
-            {
+
+            public function setLogin($login) {
                 if ($login != $this->login) {
                     $this->setCreds(loadBackend("users")->getUidByLogin($login), $login);
                 }

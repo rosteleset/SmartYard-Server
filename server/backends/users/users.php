@@ -142,8 +142,7 @@
              * @return mixed
              */
 
-            private function sendTg($tg, $subject, $message, $token)
-            {
+            private function sendTg($tg, $subject, $message, $token) {
                 if ($tg && $token) {
                     try {
                         $tg = @json_decode(file_get_contents("https://api.telegram.org/bot{$token}/sendMessage?chat_id=" . urlencode($tg) . "&text=" . urlencode($subject . "\n\n" . $message)), true);
@@ -191,72 +190,95 @@
                     return false;
                 }
 
-                $user = $this->getUser($uid);
+                return $this->db->insert("insert into core_users_notifications (uid, subject, message) values (:uid, :subject, :message)", [
+                    "uid" => $uid,
+                    "subject" => $subject,
+                    "message" => $message,
+                ]);
+            }
 
-                if (!$user) {
-                    return false;
-                }
+            private function realNotify() {
+                $notifications = $this->db->get("select * from core_users_notifications", false, [
+                    "notification_id" => "id",
+                    "uid" => "uid",
+                    "subject" => "subject",
+                    "message" => "message",
+                ]);
 
-                if (!in_array($user["notification"], [ "tgEmail", "emailTg", "tg", "email" ])) {
-                    return false;
-                }
+                foreach ($notifications as $notification) {
+                    $uid = $notification["uid"];
+                    $subject = $notification["subject"];
+                    $message = $notification["message"];
 
-                if ($user["notification"] == "tg" && (!$user["tg"] || !@$this->config["telegram"]["bot"])) {
-                    return false;
-                }
+                    $user = $this->getUser($uid);
 
-                if ($user["notification"] == "email" && (!$user["eMail"] || !$this->config["email"])) {
-                    return false;
-                }
-
-                $message = trim($message);
-                $subject = trim($subject);
-
-                if (!$message) {
-                    return false;
-                }
-
-                $id = false;
-
-                if ($user["notification"] == "tg") {
-                    if ($this->sendTg(@$user["tg"], $subject, $message, @$this->config["telegram"]["bot"])) {
-                        $id = $user["tg"];
+                    if (!$user) {
+                        return false;
                     }
-                } else
 
-                if ($user["notification"] == "tgEmail") {
-                    if ($this->sendTg(@$user["tg"], $subject, $message, @$this->config["telegram"]["bot"])) {
-                        $id = $user["tg"];
-                    } else {
-                        if ($this->sendEmail(@$user["login"], @$user["eMail"], $subject, $message, $this->config)) {
-                            $id = $user["eMail"];
-                        }
+                    if (!in_array($user["notification"], [ "tgEmail", "emailTg", "tg", "email" ])) {
+                        return false;
                     }
-                } else
 
-                if ($user["notification"] == "email") {
-                    if ($this->sendEmail(@$user["login"], @$user["eMail"], $subject, $message, $this->config)) {
-                        $id = $user["eMail"];
+                    if ($user["notification"] == "tg" && (!$user["tg"] || !@$this->config["telegram"]["bot"])) {
+                        return false;
                     }
-                } else
 
-                if ($user["notification"] == "emailTg") {
-                    if ($this->sendEmail(@$user["login"], @$user["eMail"], $subject, $message, $this->config)) {
-                        $id = $user["eMail"];
-                    } else {
+                    if ($user["notification"] == "email" && (!$user["eMail"] || !$this->config["email"])) {
+                        return false;
+                    }
+
+                    $message = trim($message);
+                    $subject = trim($subject);
+
+                    if (!$message) {
+                        return false;
+                    }
+
+                    $id = false;
+
+                    if ($user["notification"] == "tg") {
                         if ($this->sendTg(@$user["tg"], $subject, $message, @$this->config["telegram"]["bot"])) {
                             $id = $user["tg"];
                         }
+                    } else
+
+                    if ($user["notification"] == "tgEmail") {
+                        if ($this->sendTg(@$user["tg"], $subject, $message, @$this->config["telegram"]["bot"])) {
+                            $id = $user["tg"];
+                        } else {
+                            if ($this->sendEmail(@$user["login"], @$user["eMail"], $subject, $message, $this->config)) {
+                                $id = $user["eMail"];
+                            }
+                        }
+                    } else
+
+                    if ($user["notification"] == "email") {
+                        if ($this->sendEmail(@$user["login"], @$user["eMail"], $subject, $message, $this->config)) {
+                            $id = $user["eMail"];
+                        }
+                    } else
+
+                    if ($user["notification"] == "emailTg") {
+                        if ($this->sendEmail(@$user["login"], @$user["eMail"], $subject, $message, $this->config)) {
+                            $id = $user["eMail"];
+                        } else {
+                            if ($this->sendTg(@$user["tg"], $subject, $message, @$this->config["telegram"]["bot"])) {
+                                $id = $user["tg"];
+                            }
+                        }
                     }
-                }
 
-                if ($id) {
-                    $this->clickhouse->insert("nlog", [ [ "date" => time(), "login" => $this->login, "to" => $user["login"], "uid" => $uid, "id" => $id, "subject" => $subject, "message" => $message, "target" => $user["notification"] ] ]);
-                } else {
-                    $this->clickhouse->insert("nlog", [ [ "date" => time(), "login" => $this->login, "to" => $user["login"], "uid" => $uid, "id" => "none", "subject" => $subject, "message" => $message, "target" => $user["notification"] ] ]);
-                }
+                    if ($id) {
+                        $this->clickhouse->insert("nlog", [ [ "date" => time(), "login" => $this->login, "to" => $user["login"], "uid" => $uid, "id" => $id, "subject" => $subject, "message" => $message, "target" => $user["notification"] ] ]);
+                    } else {
+                        $this->clickhouse->insert("nlog", [ [ "date" => time(), "login" => $this->login, "to" => $user["login"], "uid" => $uid, "id" => "none", "subject" => $subject, "message" => $message, "target" => $user["notification"] ] ]);
+                    }
 
-                return $id;
+                    $this->db->modify("delete from core_users_notifications where notification_id = :notification_id", [
+                        "notification_id" => $notification["notification_id"],
+                    ]);
+                }
             }
 
             /**
@@ -339,5 +361,16 @@
              */
 
             abstract public function two_fa($uid, $secret = "");
+
+            /**
+             * @inheritDoc
+             */
+
+             public function cron($part) {
+                if ($part == "minutely") {
+                    $this->realNotify();
+                }
+                return true;
+            }
         }
     }

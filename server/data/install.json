@@ -176,5 +176,8 @@
     ],
     "54": [
         "v54_households.sql"
+    ],
+    "55": [
+        "v55_core.sql"
     ]
 }
