@@ -190,7 +190,8 @@
                     return false;
                 }
 
-                return $this->db->insert("insert into core_users_notifications_queue (uid, subject, message) values (:uid, :subject, :message)", [
+                return $this->db->insert("insert into core_users_notifications_queue (login, uid, subject, message) values (:login, :uid, :subject, :message)", [
+                    "login" => $this->login,
                     "uid" => $uid,
                     "subject" => $subject,
                     "message" => $message,
@@ -200,12 +201,14 @@
             private function realNotify() {
                 $notifications = $this->db->get("select * from core_users_notifications_queue", false, [
                     "notification_id" => "id",
+                    "login" => "login",
                     "uid" => "uid",
                     "subject" => "subject",
                     "message" => "message",
                 ]);
 
                 foreach ($notifications as $notification) {
+                    $login = $notification["login"];
                     $uid = $notification["uid"];
                     $subject = $notification["subject"];
                     $message = $notification["message"];
@@ -270,9 +273,9 @@
                     }
 
                     if ($id) {
-                        $this->clickhouse->insert("nlog", [ [ "date" => time(), "login" => $this->login, "to" => $user["login"], "uid" => $uid, "id" => $id, "subject" => $subject, "message" => $message, "target" => $user["notification"] ] ]);
+                        $this->clickhouse->insert("nlog", [ [ "date" => time(), "login" => $login, "to" => $user["login"], "uid" => $uid, "id" => $id, "subject" => $subject, "message" => $message, "target" => $user["notification"] ] ]);
                     } else {
-                        $this->clickhouse->insert("nlog", [ [ "date" => time(), "login" => $this->login, "to" => $user["login"], "uid" => $uid, "id" => "none", "subject" => $subject, "message" => $message, "target" => $user["notification"] ] ]);
+                        $this->clickhouse->insert("nlog", [ [ "date" => time(), "login" => $login, "to" => $user["login"], "uid" => $uid, "id" => "none", "subject" => $subject, "message" => $message, "target" => $user["notification"] ] ]);
                     }
 
                     $this->db->modify("delete from core_users_notifications_queue where notification_id = :notification_id", [
