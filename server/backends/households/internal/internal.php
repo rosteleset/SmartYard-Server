@@ -2145,7 +2145,7 @@
                 $n += $this->db->modify("delete from houses_flats_devices where subscriber_device_id not in (select subscriber_device_id from houses_subscribers_devices)");
 
                 // autoclean
-                if ($this->config["backends"]["households"]["autoclean_devices_interval"]) {
+                if (@$this->config["backends"]["households"]["autoclean_devices_interval"]) {
                     $n += $this->db->modify("delete from houses_subscribers_devices where last_seen < " . strtotime("-" . $this->config["backends"]["households"]["autoclean_devices_interval"], time()));
                 }
                 // $n += $this->db->modify("delete from houses_subscribers_devices where last_seen < 1724208851 - 7 * 24 * 60 * 60");
