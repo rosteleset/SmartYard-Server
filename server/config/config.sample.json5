@@ -93,7 +93,10 @@
         },
 
         "households": {
-            "backend": "internal"
+            "backend": "internal",
+            // "n month", "n day" or "n year"
+            // autoremove subscriber devices by inactivity
+            "autoclean_devices_interval": "6 month"
         },
 
         "cameras": {
