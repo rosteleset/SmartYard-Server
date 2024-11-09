@@ -4,8 +4,7 @@
      * backends plog namespace
      */
 
-    namespace backends\plog
-    {
+    namespace backends\plog {
 
         use backends\frs\frs;
         use PDO;
@@ -13,8 +12,8 @@
         /**
          * clickhouse archive class
          */
-        class clickhouse extends plog
-        {
+        class clickhouse extends plog {
+
             private \clickhouse $clickhouse;
             private $time_shift;  // сдвиг по времени в секундах от текущего для обработки событий
             private $max_call_length;  // максимальная длительность звонка в секундах
@@ -23,8 +22,7 @@
             private $back_time_shift_video_shot;  // сдвиг назад в секундах от времени события для получения кадра от медиа сервера
             private $cron_process_events_scheduler;
 
-            public function __construct($config, $db, $redis, $login = false)
-            {
+            public function __construct($config, $db, $redis, $login = false) {
                 parent::__construct($config, $db, $redis, $login);
 
                 require_once __DIR__ . '/../../../utils/clickhouse.php';
@@ -48,8 +46,8 @@
             /**
              * @inheritDoc
              */
-            public function cron($part)
-            {
+
+            public function cron($part) {
                 if ($part === $this->cron_process_events_scheduler) {
                     $this->processEvents();
                     $this->db->modify("delete from plog_door_open where expire < " . time());
@@ -64,8 +62,8 @@
             /**
              * @inheritDoc
              */
-            public function getCamshot($domophone_id, $output, $date, $event_id = false)
-            {
+
+            public function getCamshot($domophone_id, $output, $date, $event_id = false) {
                 $files = loadBackend('files');
                 $camshot_data = [];
 
@@ -172,8 +170,8 @@
             /**
              * @inheritDoc
              */
-            public function writeEventData($event_data, $flat_list = [])
-            {
+
+            public function writeEventData($event_data, $flat_list = []) {
                 echo("__call writeEventData\n");
                 try {
                     if (count($flat_list)) {
