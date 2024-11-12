@@ -24,7 +24,6 @@
     "logoutQuestion": "Завершить все сессии?",
     "logoutSingle": "Завершить эту сессию",
     "logoutAll": "Завершить все сессии",
-    "cookieWarning": "Данный сайт использует cookie",
     "forgotMessage": "Ссылка для восстановления пароля отправлена на указанный почтовый адрес",
     "filter": "Фильтр",
     "pager": "Показано %d записей из %d",
@@ -90,13 +89,13 @@
         "unknown": "Неизвестная ошибка",
         "cantReadNfcTag": "Невозможно прочитать метку",
         "serverUnavailable": "Сервер недоступен",
-        "cantStoreCookie": "Невозможно сохранить cookie",
         "noCredentials": "Нет учетных данных",
         "accessDenied": "В доступе отказано",
         "tokenNotFound": "Срок действия токена истек",
         "noToken": "Token не указан",
         "userNotFound": "Пользователь не найден",
         "permissionDenied": "В доступе отказано",
-        "notAcceptable": "Действие невозможно"
+        "notAcceptable": "Действие невозможно",
+        "cantStoreData": "Нет доступа к хранилищу"
     }
 }

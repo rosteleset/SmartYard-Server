@@ -66,69 +66,37 @@ function lStore(key, val) {
         if (wdb) {
             lStoreEngine = wdb;
         } else {
-            jQuery.cookie("test", t, { insecure: config.insecureCookie });
-
-            if (jQuery.cookie("test") != t) {
-                if (typeof error == "function") {
-                    error(i18n("errors.cantStoreCookie"), i18n("error"), 30);
-                } else {
-                    console.log("cantStoreCookie");
-
-                }
-                return false;
+            if (typeof error == "function") {
+                error(i18n("errors.cantStoreData"), i18n("error"), 30);
+            } else {
+                console.log(i18n("errors.cantStoreData"));
             }
-
-            jQuery.cookie("test", null);
-
-            lStoreEngine = "cookie";
+            return false;
         }
     }
 
     if (key && typeof key !== "function") {
         if (typeof val != "undefined") {
-            if (lStoreEngine === "cookie") {
-                if (val === null) {
-                    jQuery.cookie(key, val);
-                } else {
-                    jQuery.cookie(key, JSON.stringify(val), { expires: 3650, insecure: config.insecureCookie });
-                }
+            if (val === null) {
+                delete lStoreData[key];
+                lStoreEngine.remove(key);
             } else {
-                if (val === null) {
-                    delete lStoreData[key];
-                    lStoreEngine.remove(key);
-                } else {
-                    lStoreData[key] = val;
-                    lStoreEngine.set(key, val);
-                }
+                lStoreData[key] = val;
+                lStoreEngine.set(key, val);
             }
             return true;
         } else {
-            if (lStoreEngine === "cookie") {
-                try {
-                    return JSON.parse(jQuery.cookie(key));
-                } catch (e) {
-                    jQuery.cookie(key, null);
-                    return null;
-                }
-            } else {
-                return lStoreData[key];
-            }
+            return lStoreData[key];
         }
     } else {
-        if (lStoreEngine === "cookie") {
+        lStoreEngine.json((err, kv) => {
+            if (!err && kv) {
+                lStoreData = kv;
+            }
             if (typeof key === "function") {
                 key();
             }
-        } else {
-            lStoreEngine.json((err, kv) => {
-                if (!err && kv) {
-                    lStoreData = kv;
-                }
-                if (typeof key === "function") {
-                    key();
-                }
-            });
-        }
+        });
         return true;
     }
 }
@@ -671,17 +639,8 @@ function initAll() {
         }
     });
 
-    if (lStoreEngine && lStoreEngine !== "cookie") {
-        lStore("_cookie", "1");
-    }
-
     if (window.location.hostname !== "127.0.0.1" || window.location.hostname !== "localhost") {
         lStore("_https", "1");
-    }
-
-    if (!lStore("_cookie")) {
-        warning(i18n("cookieWarning"), false, 3600);
-        lStore("_cookie", "1");
     }
 
     if (!lStore("_https") && window.location.protocol === 'http:') {

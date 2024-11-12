@@ -1347,7 +1347,7 @@
              * @return mixed
              */
 
-             public function capabilities() {
+            public function capabilities() {
                 return [
                     "cli" => true,
                 ];
@@ -1357,7 +1357,7 @@
              * @inheritDoc
              */
 
-             public function cli($args) {
+            public function cli($args) {
                 function cliUsage() {
                     global $argv;
 
