@@ -178,8 +178,8 @@
              * @param $key
              * @return void
              */
-            public function unCache($key)
-            {
+
+            public function unCache($key) {
                 $key = "CACHE:" . strtoupper($this->backend) . ":" . $key . ":" . $this->uid;
                 unset($this->cache[$key]);
 
@@ -191,8 +191,8 @@
             /**
              * @return mixed
              */
-            public function clearCache()
-            {
+
+            public function clearCache() {
                 $this->cache = [];
 
                 $_keys = $this->redis->keys("CACHE:" . strtoupper($this->backend) . ":*");
@@ -211,9 +211,17 @@
              * @param $args
              * @return mixed
              */
-            public function cli($args)
-            {
+
+            public function cli($args) {
                 return false;
+            }
+
+            /**
+             * @return mixed
+             */
+
+            public function cliUsage() {
+                return [];
             }
         }
     }

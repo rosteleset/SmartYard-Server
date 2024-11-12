@@ -2220,6 +2220,36 @@
              * @inheritDoc
              */
 
+            public function cliUsage() {
+                $usage = parent::cliUsage();
+
+                if (!@$usage["rfid"]) {
+                    $usage["rfid"] = [];
+                }
+
+                $usage["rfid"]["rf-import"] = [
+                    "value" => "string",
+                    "placeholder" => "filename.csv",
+                    "params" => [
+                        [
+                            "house-id" => [
+                                "value" => "integer",
+                                "placeholder" => "id",
+                            ],
+                            "rf-first" => [
+                                "optional" => true,
+                            ],
+                        ]
+                    ],
+                ];
+
+                return $usage;
+            }
+
+            /**
+             * @inheritDoc
+             */
+
             public function cli($args) {
 
                 function cliUsage() {
