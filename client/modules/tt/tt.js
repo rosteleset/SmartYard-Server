@@ -278,8 +278,8 @@
             if (filter) {
                 let o = [];
 
-                for (let i in options) {
-                    for (let j in filter) {
+                for (let j in filter) {
+                    for (let i in options) {
                         if (options[i].id == filter[j] || options[i].text == filter[j]) {
                             o.push(options[i]);
                             break;
