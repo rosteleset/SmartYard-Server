@@ -68,9 +68,9 @@
                 [--reindex]
                 [--clear-cache]
                 [--cleanup]
-                [--init-mobile-issues-project]
                 [--update]
                 [--exit-maintenance-mode]
+                [--init-mobile-issues-project]
                 [--init-tt-mobile-template]
                 [--init-monitoring-config]
 
@@ -94,7 +94,7 @@
                 [--backup-db]
                 [--list-db-backups]
                 [--restore-db=<backup_file_without_path_and_extension>]
-                [--shema=<schema>]
+                [--schema=<schema>]
                 [--mongodb-set-fcv=<FeatureCompatibilityVersion>]
 
             config:
@@ -159,7 +159,7 @@
             putenv("SPX_AUTO_START=1");
             passthru(PHP_BINARY . " -S 0.0.0.0:$port");
         } else {
-            echo "no php interpreter found in path\n\n";
+            die("no php interpreter found in path\n\n");
         }
         exit(0);
     }
@@ -261,8 +261,7 @@
                 $db->modify("delete from core_vars where var_name = 'maintenance'");
             }
         } else {
-            echo "database is not awailable\n\n";
-            exit(1);
+            die("database is not awailable\n\n");
         }
     }
 
@@ -306,12 +305,10 @@
 
     try {
         if (PHP_VERSION_ID < 50600) {
-            echo "minimal supported php version is 5.6\n\n";
-            exit(1);
+            die("minimal supported php version is 5.6\n\n");
         }
     } catch (Exception $e) {
-        echo "can't determine php version\n\n";
-        exit(1);
+        die("can't determine php version\n\n");
     }
 
     if (function_exists("json5_decode")) {
@@ -331,27 +328,25 @@
     }
 
     if (!$config) {
-        echo "config is empty\n\n";
-        exit(1);
+        die("config is empty\n\n");
     }
 
     if (@!$config["backends"]) {
-        echo "no backends defined\n\n";
-        exit(1);
+        die("no backends defined\n\n");
     }
 
     try {
         $db = new PDO_EXT(@$config["db"]["dsn"], @$config["db"]["username"], @$config["db"]["password"], @$config["db"]["options"]);
     } catch (Exception $e) {
         echo "can't open database " . $config["db"]["dsn"] . "\n\n";
-        echo $e->getMessage() . "\n\n";
-        exit(1);
+        die($e->getMessage() . "\n\n");
     }
 
     if (@$config["db"]["schema"]) {
         $db->exec("SET search_path TO " . $config["db"]["schema"]);
     }
 
+    //TODO: rewrite to get method
     try {
         $query = $db->query("select var_value from core_vars where var_name = 'dbVersion'", PDO::FETCH_ASSOC);
         if ($query) {
@@ -371,7 +366,7 @@
         }
         $redis->setex("iAmOk", 1, "1");
     } catch (Exception $e) {
-        echo "can't connect to redis server\n\n";
+        die("can't connect to redis server\n\n");
         exit(1);
     }
 
@@ -422,27 +417,6 @@
     if (count($args) == 1 && array_key_exists("--exit-maintenance-mode", $args) && !isset($args["--exit-maintenance-mode"])) {
         maintenance(false);
         exit(0);
-    }
-
-    if (count($args) == 1 && array_key_exists("--init-tt-mobile-template", $args) && !isset($args["--init-tt-mobile-template"])) {
-        try {
-            installTTMobileTemplate();
-        } catch (Exception $e) {
-            echo $e->getMessage() . "\n\n";
-            exit(1);
-        }
-        exit(0);
-    }
-
-    if (count($args) == 1 && array_key_exists("--init-monitoring-config", $args) && !isset($args["--init-monitoring-config"])) {
-    try {
-        $monitoring = loadBackend('monitoring');
-        $monitoring->configureMonitoring();
-    } catch (Exception $e) {
-        echo $e->getMessage() . "\n\n";
-        exit(1);
-    }
-    exit(0);
     }
 
     startup();
@@ -531,18 +505,20 @@
     }
 
     if (count($args) == 1 && array_key_exists("--admin-password", $args) && isset($args["--admin-password"])) {
+        //TODO: rewrite to insert method
         try {
             $db->exec("insert into core_users (uid, login, password) values (0, 'admin', 'admin')");
         } catch (Exception $e) {
             //
         }
 
+        //TODO: rewrite to modify method
         try {
             $sth = $db->prepare("update core_users set password = :password, login = 'admin', enabled = 1 where uid = 0");
             $sth->execute([ ":password" => password_hash($args["--admin-password"], PASSWORD_DEFAULT) ]);
             echo "admin account updated\n\n";
         } catch (Exception $e) {
-            echo "admin account update failed\n\n";
+            die("admin account update failed\n\n");
         }
         exit(0);
     }
@@ -637,8 +613,7 @@
                 exit(0);
             } catch (Exception $e) {
                 $script_result = 'fail';
-                echo "!!! FAILED: " . $e->getMessage() . " !!!\n\n";
-                exit(1);
+                die("!!! FAILED: " . $e->getMessage() . " !!!\n\n");
             }
         }
     }
@@ -747,8 +722,7 @@
         try {
             $cursor = $manager->executeCommand('admin', $command);
         } catch(\Exception $e) {
-            echo $e->getMessage(), "\n";
-            exit;
+            die($e->getMessage() . "\n");
         }
 
         $response = $cursor->toArray()[0];
@@ -800,6 +774,26 @@
 
         maintenance(false);
 
+        exit(0);
+    }
+
+    if (count($args) == 1 && array_key_exists("--init-tt-mobile-template", $args) && !isset($args["--init-tt-mobile-template"])) {
+        try {
+            installTTMobileTemplate();
+        } catch (Exception $e) {
+            die($e->getMessage() . "\n\n");
+        }
+        exit(0);
+    }
+
+    //TODO: move to backend's cli
+    if (count($args) == 1 && array_key_exists("--init-monitoring-config", $args) && !isset($args["--init-monitoring-config"])) {
+        try {
+            $monitoring = loadBackend('monitoring');
+            $monitoring->configureMonitoring();
+        } catch (Exception $e) {
+            die($e->getMessage() . "\n\n");
+        }
         exit(0);
     }
 
