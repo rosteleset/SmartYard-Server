@@ -314,7 +314,7 @@
              * @return string
              */
 
-             public function getWorkflow($workflow) {
+            public function getWorkflow($workflow) {
                 $files = loadBackend("files");
 
                 if (!$files) {
@@ -415,7 +415,7 @@
              * @return array
              */
 
-             public function getWorkflowLibs() {
+            public function getWorkflowLibs() {
 
                 $files = loadBackend("files");
 
@@ -469,8 +469,7 @@
              * @return string
              */
 
-             public function getWorkflowLib($lib)
-             {
+            public function getWorkflowLib($lib) {
                 $files = loadBackend("files");
 
                 if (!$files) {
@@ -501,8 +500,7 @@
              * @return boolean
              */
 
-            public function putWorkflowLib($lib, $body)
-            {
+            public function putWorkflowLib($lib, $body) {
                 $files = loadBackend("files");
 
                 if (!$files) {
@@ -608,16 +606,16 @@
              * @return boolean
              */
 
-             abstract public function addProjectFilter($projectId, $filter, $personal);
+            abstract public function addProjectFilter($projectId, $filter, $personal);
 
             /**
              * @param $projectFilterId
              * @return boolean
              */
 
-             abstract public function deleteProjectFilter($projectFilterId);
+            abstract public function deleteProjectFilter($projectFilterId);
 
-             /**
+            /**
              * @return false|array
              */
 
@@ -628,22 +626,22 @@
              * @return false|integer
              */
 
-             abstract public function addStatus($status, $fianl);
+            abstract public function addStatus($status, $fianl);
 
-             /**
+            /**
              * @param $statusId
              * @param $status
              * @return boolean
              */
 
-             abstract public function modifyStatus($statusId, $status, $fianl);
+            abstract public function modifyStatus($statusId, $status, $fianl);
 
-             /**
+            /**
               * @param $statusId
               * @return boolean
               */
 
-             abstract public function deleteStatus($statusId);
+            abstract public function deleteStatus($statusId);
 
             /**
              * @return false|array
@@ -702,7 +700,7 @@
              * @return boolean
              */
 
-             abstract public function setProjectCustomFields($projectId, $customFields);
+            abstract public function setProjectCustomFields($projectId, $customFields);
 
             /**
              * @param $projectId
@@ -710,9 +708,9 @@
              * @return boolean
              */
 
-             abstract public function setProjectCustomFieldsNoJournal($projectId, $customFields);
+            abstract public function setProjectCustomFieldsNoJournal($projectId, $customFields);
 
-             /**
+            /**
              * @param $projectId
              * @param $uid
              * @param $roleId

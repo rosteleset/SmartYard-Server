@@ -17,6 +17,7 @@
                     "exec" => "server",
                     // pre db init
                     "stage" => 0,
+                    "description" => "Run demo server for local development",
                 ],
             ],
 
@@ -46,26 +47,31 @@
                         ],
                     ],
                     "exec" => "db",
+                    "description" => "Initialize (update) main database",
                 ],
 
                 "init-clickhouse-db" => [
                     "exec" => "clickhouse",
+                    "description" => "Initialize (update) clickhouse database",
                 ],
 
                 "admin-password" => [
                     "value" => "string",
                     "placeholder" => "password",
                     "exec" => "admin",
+                    "description" => "Set (update) admin password",
                 ],
 
                 "reindex" => [
                     "exec" => "reindex",
+                    "description" => "Reindex access to API",
                 ],
 
                 "exit-maintenance-mode" => [
                     "exec" => "maintenance",
                     // post db init, but pre starup
                     "stage" => 1,
+                    "description" => "Exit from maintenance mode",
                 ],
             ],
 
@@ -79,12 +85,15 @@
                         "monthly",
                     ],
                     "exec" => "cron",
+                    "description" => "Run cronpart",
                 ],
                 "install-crontabs" => [
                     "exec" => "cron",
+                    "description" => "Install cronparts",
                 ],
                 "uninstall-crontabs" => [
                     "exec" => "cron",
+                    "description" => "Uninstall cronparts",
                 ],
             ],
         ],
@@ -94,7 +103,7 @@
 
     }
 
-    function usage() {
+    function cliUsage() {
         global $globalCli, $argv, $config;
 
         foreach ($config["backends"] as $b => $p) {
@@ -115,16 +124,22 @@
 
         foreach ($globalCli as $backend => $cli) {
             if ($backend == "#") {
-                echo "  usage: {$argv[0]}\n\n";
+                echo "usage: {$argv[0]}\n\n";
             } else {
-                echo "  usage: {$argv[0]} $backend\n\n";
+                echo "usage: {$argv[0]} $backend\n\n";
             }
 
+            echo "  common parts:\n\n";
+            echo "    --parent-pid=<pid>\n";
+            echo "      Set parent pid\n\n";
+            echo "    --debug\n";
+            echo "      Run with debug\n\n";
+
             foreach ($cli as $title => $part) {
-                echo "    $title:\n\n";
+                echo "  $title:\n\n";
 
                 foreach ($part as $name => $command) {
-                    echo "      --$name";
+                    echo "    --$name";
                     if (@$command["value"]) {
                         echo "=<";
                         if (is_array($command["value"])) {
@@ -165,8 +180,12 @@
                         echo " " . $g;
                     }
                     echo "\n";
+                    if (@$command["description"]) {
+                        echo "      " . $command["description"] . "\n";
+                    }
+                    echo "\n";
                 }
-                echo "\n";
             }
         }
+        exit(0);
     }
