@@ -201,6 +201,44 @@
              * @inheritDoc
              */
 
+            public function cliUsage() {
+                $usage = parent::cliUsage();
+
+                if (!@$usage["indexes"]) {
+                    $usage["indexes"] = [];
+                }
+
+                $usage["indexes"]["list-indexes"] = [
+                    "description" => "List indexes for GridFS",
+                ];
+
+                $usage["indexes"]["create-indexes"] = [
+                    "description" => "(Re)Create default GridFS indexes",
+                ];
+
+                $usage["indexes"]["drop-indexes"] = [
+                    "description" => "Drop default GridFS indexes",
+                ];
+
+                $usage["indexes"]["create-index"] = [
+                    "value" => "string",
+                    "placeholder" => "field1[,field2...]",
+                    "description" => "Manually create GridFS index",
+                ];
+
+                $usage["indexes"]["drop-index"] = [
+                    "value" => "string",
+                    "placeholder" => "index",
+                    "description" => "Drop single GridFS index",
+                ];
+
+                return $usage;
+            }
+
+            /**
+             * @inheritDoc
+             */
+
             public function cli($args) {
                 function cliUsage() {
                     global $argv;
