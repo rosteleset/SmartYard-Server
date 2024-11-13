@@ -99,7 +99,7 @@
         ],
     ];
 
-    function cli($stage, $args) {
+    function cli($stage, $backend, $args) {
 
     }
 
@@ -124,9 +124,9 @@
 
         foreach ($globalCli as $backend => $cli) {
             if ($backend == "#") {
-                echo "usage: {$argv[0]}\n\n";
+                echo "usage: {$argv[0]} <params>\n\n";
             } else {
-                echo "usage: {$argv[0]} $backend\n\n";
+                echo "usage: {$argv[0]} $backend <params>\n\n";
             }
 
             echo "  common parts:\n\n";

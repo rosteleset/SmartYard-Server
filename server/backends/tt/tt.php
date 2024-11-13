@@ -2356,10 +2356,36 @@
              * @inheritDoc
              */
 
+            public function cliUsage() {
+                $usage = parent::cliUsage();
+
+                if (!@$usage["files"]) {
+                    $usage["files"] = [];
+                }
+
+                $usage["files"]["export-filters"] = [
+                    "description" => "Export all TT filters to JSON files"
+                ];
+
+                $usage["files"]["export-viewers"] = [
+                    "description" => "Export all TT viewers to JS files"
+                ];
+
+                $usage["files"]["export-workflows"] = [
+                    "description" => "Export all TT workflows to LUA files"
+                ];
+
+                return $usage;
+            }
+
+            /**
+             * @inheritDoc
+             */
+
             public function cli($args) {
 
-                if (!function_exists("\\backends\\tt\\cliUsage")) {
-                    function cliUsage() {
+                if (!function_exists("\\backends\\tt\\_cliUsage")) {
+                    function _cliUsage() {
                         global $argv;
 
                         echo formatUsage("usage: {$argv[0]} tt
@@ -2449,7 +2475,7 @@
                     exit(0);
                 }
 
-                cliUsage();
+                _cliUsage();
 
                 return true;
             }

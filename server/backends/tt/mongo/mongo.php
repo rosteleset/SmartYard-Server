@@ -1357,8 +1357,70 @@
              * @inheritDoc
              */
 
+            public function cliUsage() {
+                $usage = parent::cliUsage();
+
+                if (!@$usage["indexes"]) {
+                    $usage["indexes"] = [];
+                }
+
+                $usage["indexes"]["list-indexes"] = [
+                    "params" => [
+                        [
+                            "project" => [
+                                "value" => "string",
+                                "placeholder" => "projectAcronym",
+                            ],
+                        ],
+                    ],
+                    "description" => "List indexes for TT project",
+                ];
+
+                $usage["indexes"]["create-indexes"] = [
+                    "description" => "(Re)Create default TT indexes",
+                ];
+
+                $usage["indexes"]["drop-indexes"] = [
+                    "description" => "Drop default TT indexes",
+                ];
+
+                $usage["indexes"]["create-index"] = [
+                    "params" => [
+                        [
+                            "project" => [
+                                "value" => "string",
+                                "placeholder" => "projectAcronym",
+                            ],
+                        ],
+                    ],
+                    "value" => "string",
+                    "placeholder" => "field1[,field2...]",
+                    "description" => "Manually create index (for searching and filters)",
+                ];
+
+                $usage["indexes"]["drop-index"] = [
+                    "params" => [
+                        [
+                            "project" => [
+                                "value" => "string",
+                                "placeholder" => "projectAcronym",
+                            ],
+                        ],
+                    ],
+                    "value" => "string",
+                    "placeholder" => "index",
+                    "description" => "Drop single index",
+                ];
+
+                return $usage;
+            }
+
+            /**
+             * @inheritDoc
+             */
+
             public function cli($args) {
-                function cliUsage() {
+                function _cliUsage() {
                     global $argv;
 
                     echo formatUsage("usage: {$argv[0]} tt
@@ -1508,7 +1570,7 @@
                     parent::cli($args);
                 }
 
-                cliUsage();
+                _cliUsage();
 
                 return true;
             }
