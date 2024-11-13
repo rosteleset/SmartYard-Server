@@ -1113,7 +1113,10 @@ function cardForm(params) {
 
         if (params.fields[i].type == "code") {
             let editor = ace.edit(`${_prefix}${params.fields[i].id}`);
-            editor.setTheme("ace/theme/chrome");
+            if (modules.darkmode && modules.darkmode.isDark())
+                editor.setTheme("ace/theme/one_dark");
+            else
+                editor.setTheme("ace/theme/chrome");
             editor.setOptions({
                 enableBasicAutocompletion: true,
                 enableSnippets: true,
@@ -1154,7 +1157,10 @@ function cardForm(params) {
 
         if (params.fields[i].type == "json") {
             let editor = ace.edit(`${_prefix}${params.fields[i].id}`);
-            editor.setTheme("ace/theme/chrome");
+            if (modules.darkmode && modules.darkmode.isDark())
+                editor.setTheme("ace/theme/one_dark");
+            else
+                editor.setTheme("ace/theme/chrome");
             editor.setOptions({
                 enableBasicAutocompletion: true,
                 enableSnippets: true,

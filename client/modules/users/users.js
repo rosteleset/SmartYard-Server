@@ -940,10 +940,12 @@
                     rows: () => {
                         let rows = [];
 
+                        const defaultClass = modules.darkmode && modules.darkmode.isDark() ? 'bg-dark' : 'bg-white';
+
                         for (let i = 0; i < response.users.length; i++) {
                             if (!parseInt(response.users[i].uid)) continue;
 
-                            let cl = (response.users[i].enabled == 1) ? "bg-white" : "bg-light text-decoration-line-through";
+                            let cl = (response.users[i].enabled == 1) ? defaultClass : "bg-light text-decoration-line-through";
 
                             if ((response.users[i].notification == "emailTg" || response.users[i].notification == "tgEmail" || response.users[i].notification == "email") && !(response.users[i].eMail && response.users[i].eMail != response.users[i].login)) {
                                 cl = "bg-warning";

@@ -124,5 +124,10 @@
         }
 
         this.applyTheme(theme);
+    },
+    isDark() {
+        if (this.currentTheme === 'auto')
+            return this.mediaQuery
+        return this.currentTheme === 'dark'
     }
 }).init();

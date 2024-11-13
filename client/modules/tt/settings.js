@@ -2201,7 +2201,10 @@
             h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="workflowSave" class="hoverable saveButton"><i class="fas fa-save pr-2"></i>${i18n("tt.workflowSave")}</span></span>`;
             $("#mainForm").html(h);
             let editor = ace.edit("workflowEditor");
-            editor.setTheme("ace/theme/chrome");
+            if (modules.darkmode && modules.darkmode.isDark())
+                editor.setTheme("ace/theme/one_dark");
+            else
+                editor.setTheme("ace/theme/chrome");
             editor.setOptions({
                 enableBasicAutocompletion: true,
                 enableSnippets: true,
@@ -2384,7 +2387,10 @@
             h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="libSave" class="hoverable saveButton"><i class="fas fa-save pr-2"></i>${i18n("tt.workflowLibSave")}</span></span>`;
             $("#mainForm").html(h);
             let editor = ace.edit("libEditor");
-            editor.setTheme("ace/theme/chrome");
+            if (modules.darkmode && modules.darkmode.isDark())
+                editor.setTheme("ace/theme/one_dark");
+            else
+                editor.setTheme("ace/theme/chrome");
             editor.setOptions({
                 enableBasicAutocompletion: true,
                 enableSnippets: true,
@@ -2887,7 +2893,10 @@
                 }
                 $("#mainForm").html(h);
                 let editor = ace.edit("filterEditor");
-                editor.setTheme("ace/theme/chrome");
+                if (modules.darkmode && modules.darkmode.isDark())
+                    editor.setTheme("ace/theme/one_dark");
+                else
+                    editor.setTheme("ace/theme/chrome");
                 editor.setOptions({
                     enableBasicAutocompletion: true,
                     enableSnippets: true,
@@ -3496,7 +3505,10 @@
             h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="viewerSave" class="hoverable saveButton"><i class="fas fa-save pr-2"></i>${i18n("tt.viewerSave")}</span></span>`;
             $("#mainForm").html(h);
             let editor = ace.edit("viewerEditor");
-            editor.setTheme("ace/theme/chrome");
+            if (modules.darkmode && modules.darkmode.isDark())
+                editor.setTheme("ace/theme/one_dark");
+            else
+                editor.setTheme("ace/theme/chrome");
             editor.setOptions({
                 enableBasicAutocompletion: true,
                 enableSnippets: true,
@@ -3864,7 +3876,10 @@
             h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="printDataSave" class="hoverable saveButton"><i class="fas fa-save pr-2"></i>${i18n("tt.printDataSave")}</span></span>`;
             $("#mainForm").html(h);
             let editor = ace.edit("printDataEditor");
-            editor.setTheme("ace/theme/chrome");
+            if (modules.darkmode && modules.darkmode.isDark())
+                editor.setTheme("ace/theme/one_dark");
+            else
+                editor.setTheme("ace/theme/chrome");
             editor.setOptions({
                 enableBasicAutocompletion: true,
                 enableSnippets: true,
@@ -3948,7 +3963,10 @@
             h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="printFormatterSave" class="hoverable saveButton"><i class="fas fa-save pr-2"></i>${i18n("tt.printFormatterSave")}</span></span>`;
             $("#mainForm").html(h);
             let editor = ace.edit("printFormatterEditor");
-            editor.setTheme("ace/theme/chrome");
+            if (modules.darkmode && modules.darkmode.isDark())
+                editor.setTheme("ace/theme/one_dark");
+            else
+                editor.setTheme("ace/theme/chrome");
             editor.setOptions({
                 enableBasicAutocompletion: true,
                 enableSnippets: true,

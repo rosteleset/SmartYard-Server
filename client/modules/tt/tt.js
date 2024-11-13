@@ -1799,7 +1799,10 @@
 
             if (params.customSearch && params.customSearch !== true) {
                 let editor = ace.edit("filterEditor");
-                editor.setTheme("ace/theme/chrome");
+                if (modules.darkmode && modules.darkmode.isDark())
+                    editor.setTheme("ace/theme/one_dark");
+                else
+                    editor.setTheme("ace/theme/chrome");
                 editor.setOptions({
                     enableBasicAutocompletion: true,
                     enableSnippets: true,

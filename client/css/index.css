@@ -249,6 +249,10 @@ select {
   opacity: 1 !important;
 }
 
+body.dark-mode .hr-text::after {
+  background-color: #454d55;
+}
+
 .hr-text-white {
   line-height: 1em;
   position: relative;

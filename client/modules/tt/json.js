@@ -27,7 +27,10 @@
                 }
                 $("#mainForm").html(h);
                 let editor = ace.edit("issueEditor");
-                editor.setTheme("ace/theme/chrome");
+                if (modules.darkmode && modules.darkmode.isDark())
+                    editor.setTheme("ace/theme/one_dark");
+                else
+                    editor.setTheme("ace/theme/chrome");
                 editor.setOptions({
                     enableBasicAutocompletion: true,
                     enableSnippets: true,
