@@ -36,7 +36,7 @@
 
     $result = [];
     foreach ($domophones as $device) {
-        if ($device['enabled'] == 1  && $device['model'] !== 'sputnik.json') {
+        if ($device['enabled'] == 1  && $device['model'] !== 'sputnik.json' && $device['model'] !== 'rodos.json') {
             $model_map = [
                 'dks.json' => 'BEWARD DKS',
                 'ds.json' => 'BEWARD DS',
