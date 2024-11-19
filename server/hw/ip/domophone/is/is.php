@@ -49,7 +49,7 @@ abstract class is extends domophone
         // TODO
     }
 
-    public function addRfids(array $rfids)
+    public function addRfids(array $rfids): void
     {
         $keys = array_map(fn($rfid) => ['uuid' => $rfid], $rfids);
         $this->apiCall('/key/store/merge', 'PUT', $keys);
@@ -61,7 +61,7 @@ abstract class is extends domophone
         array $sipNumbers = [],
         bool  $cmsEnabled = true,
         array $cmsLevels = []
-    )
+    ): void
     {
         $this->refreshApartmentList();
 
@@ -98,7 +98,7 @@ abstract class is extends domophone
         }
     }
 
-    public function configureEncoding()
+    public function configureEncoding(): void
     {
         $this->apiCall('/camera/audio', 'PUT', [
             'aac_enable' => false,
@@ -137,7 +137,7 @@ abstract class is extends domophone
         ]);
     }
 
-    public function configureGate(array $links = [])
+    public function configureGate(array $links = []): void
     {
         $this->apiCall('/gate/settings', 'PUT', [
             'gateMode' => (bool)$links,
@@ -153,7 +153,7 @@ abstract class is extends domophone
         bool   $stunEnabled = false,
         string $stunServer = '',
         int    $stunPort = 3478
-    )
+    ): void
     {
         $this->apiCall('/sip/settings', 'PUT', [
             'videoEnable' => true,
@@ -174,7 +174,7 @@ abstract class is extends domophone
         // Empty implementation
     }
 
-    public function deleteApartment(int $apartment = 0)
+    public function deleteApartment(int $apartment = 0): void
     {
         if ($apartment === 0) {
             $this->apiCall('/panelCode/clear', 'DELETE');
@@ -187,7 +187,7 @@ abstract class is extends domophone
         }
     }
 
-    public function deleteRfid(string $code = '')
+    public function deleteRfid(string $code = ''): void
     {
         if ($code) {
             $this->apiCall("/key/store/$code", 'DELETE');
@@ -207,12 +207,12 @@ abstract class is extends domophone
         return $res['resist'];
     }
 
-    public function openLock(int $lockNumber = 0)
+    public function openLock(int $lockNumber = 0): void
     {
         $this->apiCall('/relay/' . ($lockNumber + 1) . '/open', 'PUT', [], 3);
     }
 
-    public function prepare()
+    public function prepare(): void
     {
         parent::prepare();
         $this->configureRfidMode();
@@ -220,7 +220,7 @@ abstract class is extends domophone
         $this->enableDdns(false);
     }
 
-    public function setAudioLevels(array $levels)
+    public function setAudioLevels(array $levels): void
     {
         if (count($levels) === 6) {
             $this->apiCall('/levels', 'PUT', [
@@ -236,17 +236,17 @@ abstract class is extends domophone
         }
     }
 
-    public function setCallTimeout(int $timeout)
+    public function setCallTimeout(int $timeout): void
     {
         $this->apiCall('/sip/options', 'PUT', ['ringDuration' => $timeout]);
     }
 
-    public function setConciergeNumber(int $sipNumber)
+    public function setConciergeNumber(int $sipNumber): void
     {
         $this->conciergeNumber = $sipNumber;
     }
 
-    public function setDtmfCodes(string $code1 = '1', string $code2 = '2', string $code3 = '3', string $codeCms = '1')
+    public function setDtmfCodes(string $code1 = '1', string $code2 = '2', string $code3 = '3', string $codeCms = '1'): void
     {
         $this->apiCall('/sip/options', 'PUT', [
             'dtmf' => [
@@ -262,7 +262,7 @@ abstract class is extends domophone
         // Empty implementation
     }
 
-    public function setPublicCode(int $code = 0)
+    public function setPublicCode(int $code = 0): void
     {
         if ($code) {
             $this->addOpenCode($code, 0);
@@ -271,17 +271,17 @@ abstract class is extends domophone
         }
     }
 
-    public function setSosNumber(int $sipNumber)
+    public function setSosNumber(int $sipNumber): void
     {
         $this->sosNumber = $sipNumber;
     }
 
-    public function setTalkTimeout(int $timeout)
+    public function setTalkTimeout(int $timeout): void
     {
         $this->apiCall('/sip/options', 'PUT', ['talkDuration' => $timeout]);
     }
 
-    public function setUnlockTime(int $time = 3)
+    public function setUnlockTime(int $time = 3): void
     {
         $relays = $this->apiCall('/relay/info');
 
@@ -290,7 +290,7 @@ abstract class is extends domophone
         }
     }
 
-    public function setUnlocked(bool $unlocked = true)
+    public function setUnlocked(bool $unlocked = true): void
     {
         $relays = $this->apiCall('/relay/info');
 
@@ -299,7 +299,7 @@ abstract class is extends domophone
         }
     }
 
-    public function syncData()
+    public function syncData(): void
     {
         $this->uploadServiceSipNumbers();
     }
@@ -340,7 +340,7 @@ abstract class is extends domophone
      *
      * @return void
      */
-    protected function addOpenCode(int $code, int $apartment)
+    protected function addOpenCode(int $code, int $apartment): void
     {
         $this->apiCall('/openCode', 'POST', [
             'code' => $code,
@@ -356,7 +356,7 @@ abstract class is extends domophone
      * @deprecated
      * @see configureMatrix()
      */
-    protected function configureMatrixLegacy(array $matrix)
+    protected function configureMatrixLegacy(array $matrix): void
     {
         $params = [];
         $this->refreshApartmentList();
@@ -391,7 +391,7 @@ abstract class is extends domophone
      *
      * @return void
      */
-    protected function configureRfidMode()
+    protected function configureRfidMode(): void
     {
         $this->apiCall('/key/settings', 'PUT', [
             'mode' => 2, // UID 7 bytes (16835 keys max)
@@ -405,7 +405,7 @@ abstract class is extends domophone
      *
      * @return void
      */
-    protected function deleteOpenCode(int $apartment)
+    protected function deleteOpenCode(int $apartment): void
     {
         $this->apiCall("/openCode/$apartment", 'DELETE');
     }
@@ -456,7 +456,7 @@ abstract class is extends domophone
      *
      * @return void
      */
-    protected function enableDdns(bool $enabled = true)
+    protected function enableDdns(bool $enabled = true): void
     {
         $this->apiCall('/v1/ddns', 'PUT', ['enabled' => $enabled]);
     }
@@ -468,7 +468,7 @@ abstract class is extends domophone
      *
      * @return void
      */
-    protected function enableEchoCancellation(bool $enabled = true)
+    protected function enableEchoCancellation(bool $enabled = true): void
     {
         $this->apiCall('/sip/options', 'PUT', ['echoD' => $enabled]);
     }
@@ -703,7 +703,7 @@ abstract class is extends domophone
      *
      * @return void
      */
-    protected function refreshApartmentList()
+    protected function refreshApartmentList(): void
     {
         if (!$this->apartments) {
             $this->apartments = $this->getApartmentNumbers();
@@ -716,7 +716,7 @@ abstract class is extends domophone
      *
      * @return void
      */
-    protected function removeUnwantedApartments()
+    protected function removeUnwantedApartments(): void
     {
         $unwantedApartments = array_diff($this->getApartmentNumbers(), $this->apartments);
 
@@ -764,7 +764,7 @@ abstract class is extends domophone
      * @deprecated
      * @see setCmsModel()
      */
-    protected function setCmsModelLegacy(string $model = '')
+    protected function setCmsModelLegacy(string $model = ''): void
     {
         $id = self::CMS_MODEL_TO_PARAMS[$model][0];
         $nowMatrix = $this->getMatrix();
@@ -779,7 +779,7 @@ abstract class is extends domophone
      *
      * @return void
      */
-    protected function uploadServiceSipNumbers()
+    protected function uploadServiceSipNumbers(): void
     {
         if (
             $this->sipServer === null &&

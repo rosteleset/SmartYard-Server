@@ -18,7 +18,7 @@ class is extends camera
         int $width = 0,
         int $height = 0,
         int $sensitivity = 0
-    )
+    ): void
     {
         $this->apiCall('/camera/md', 'PUT', [
             'md_enable' => $left || $top || $width || $height,
@@ -39,7 +39,7 @@ class is extends camera
         return $this->apiCall('/camera/snapshot', 'GET', [], 3);
     }
 
-    public function setOsdText(string $text = '')
+    public function setOsdText(string $text = ''): void
     {
         $hwVer = $this->getHardwareVersion();
 

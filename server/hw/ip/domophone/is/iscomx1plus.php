@@ -84,7 +84,7 @@ class iscomx1plus extends is
         return null;
     }
 
-    public function configureMatrix(array $matrix)
+    public function configureMatrix(array $matrix): void
     {
         if ($this->isLegacyVersion()) {
             $this->configureMatrixLegacy($matrix);
@@ -93,6 +93,11 @@ class iscomx1plus extends is
 
         // Set matrices cells to null
         foreach ($this->cmsMatrices as $cmsMatrixObject) {
+            // Skip if matrix is disabled
+            if ($cmsMatrixObject->type === null) {
+                continue;
+            }
+
             $cmsData = self::getCmsDataByType($cmsMatrixObject->type);
             $cmsMatrixObject->matrix = self::getNullMatrix($cmsData['columns'], $cmsData['rows']);
         }

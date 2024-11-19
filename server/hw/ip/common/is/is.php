@@ -18,7 +18,7 @@ trait is
      */
     protected ?string $softwareVersion = null;
 
-    public function configureEventServer(string $url)
+    public function configureEventServer(string $url): void
     {
         if ($this->isLegacyVersion()) {
             $this->configureEventServerLegacy($url);
@@ -33,7 +33,7 @@ trait is
         ]);
     }
 
-    public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow')
+    public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow'): void
     {
         $this->apiCall('/system/settings', 'PUT', [
             'tz' => $timezone,
@@ -57,17 +57,17 @@ trait is
         return $sysinfo;
     }
 
-    public function reboot()
+    public function reboot(): void
     {
         $this->apiCall('/system/reboot', 'PUT');
     }
 
-    public function reset()
+    public function reset(): void
     {
         $this->apiCall('/system/factory-reset', 'PUT');
     }
 
-    public function setAdminPassword(string $password)
+    public function setAdminPassword(string $password): void
     {
         $this->apiCall('/user/change_password', 'PUT', ['newPassword' => $password]);
     }
@@ -82,7 +82,12 @@ trait is
      *
      * @return array|bool|string API response.
      */
-    protected function apiCall(string $resource, string $method = 'GET', array $payload = [], int $timeout = 0)
+    protected function apiCall(
+        string $resource,
+        string $method = 'GET',
+        array  $payload = [],
+        int    $timeout = 0,
+    ): bool|array|string
     {
         $req = $this->url . $resource;
 
@@ -120,7 +125,7 @@ trait is
      * @deprecated
      * @see configureEventSever()
      */
-    protected function configureEventServerLegacy(string $url)
+    protected function configureEventServerLegacy(string $url): void
     {
         ['host' => $server, 'port' => $port] = parse_url_ext($url);
 
@@ -194,7 +199,7 @@ trait is
         return $this->softwareVersion;
     }
 
-    protected function initializeProperties()
+    protected function initializeProperties(): void
     {
         $this->login = 'root';
         $this->defaultPassword = '123456';
