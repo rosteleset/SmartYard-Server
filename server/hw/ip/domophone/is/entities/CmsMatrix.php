@@ -5,7 +5,7 @@ namespace hw\ip\domophone\is\entities;
 /**
  * Represents a CMS matrix entity, providing structure for type, matrix data, and capacity.
  */
-class CmsMatrix
+class CmsMatrix implements ArrayInterface
 {
 
     /**
@@ -42,34 +42,15 @@ class CmsMatrix
         $this->capacity = $capacity;
     }
 
-    /**
-     * Populates the object's properties from the given associative array.
-     *
-     * The array must contain a `type` key, and optionally a `matrices` array,
-     * which includes a `matrix` key (an array) and `capacity` key (a numeric value).
-     *
-     * If these keys are not provided, the corresponding properties will be set to null.
-     *
-     * @param array $data The input array containing `type`, and optionally `matrices` with `matrix` and `capacity`.
-     * @return $this The current instance of the object with updated properties.
-     */
-    public function fromArray(array $data): self
+    public static function fromArray(array $data): self
     {
-        $this->type = $data['type'] ?? null;
-        $this->matrix = $data['matrices'][0]['matrix'] ?? null;
-        $this->capacity = $data['matrices'][0]['capacity'] ?? null;
-
-        return $this;
+        return new self(
+            $data['type'] ?? null,
+            $data['matrices'][0]['matrix'] ?? null,
+            $data['matrices'][0]['capacity'] ?? null,
+        );
     }
 
-    /**
-     * Converts the CmsMatrix object to an associative array.
-     *
-     * If the type is null, it returns an array with an empty 'matrices' key.
-     * Otherwise, it includes the 'id', 'matrix', and 'capacity' in the 'matrices' array.
-     *
-     * @return array The associative array representation of the CmsMatrix object.
-     */
     public function toArray(): array
     {
         if ($this->type === null) {

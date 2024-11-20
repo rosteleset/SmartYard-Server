@@ -210,7 +210,7 @@ class iscomx1plus extends is
 
         if ($this->cmsMatrices[$number] === null) {
             $response = $this->apiCall("/v1/switch/$number");
-            $this->cmsMatrices[$number] = (new CmsMatrix())->fromArray($response);
+            $this->cmsMatrices[$number] = CmsMatrix::fromArray($response);
         }
 
         return $this->cmsMatrices[$number];
