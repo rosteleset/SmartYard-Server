@@ -16,7 +16,7 @@
      */
 
     /**
-     * @api {put} /api/tt/json:id modify issue
+     * @api {put} /api/tt/json modify issue
      *
      * @apiVersion 1.0.0
      *
@@ -24,8 +24,6 @@
      * @apiGroup tt
      *
      * @apiHeader {String} authorization authentication token
-     *
-     * @apiParam {String} id issueId
      *
      * @apiBody {Object} issue
      *
