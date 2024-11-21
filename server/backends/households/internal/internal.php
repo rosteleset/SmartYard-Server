@@ -136,7 +136,7 @@
                                                     where
                                                         house_domophone_id = :house_domophone_id
                                                 )
-                                              and
+                                            and
                                             prefix = :prefix
                                         )
                                 )

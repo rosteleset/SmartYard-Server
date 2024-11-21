@@ -10,8 +10,8 @@
      *
      * @apiHeader {String} authorization authentication token
      *
-     * @apiBody {String="flatIdByPrefix,apartment,code,openCode,rfId,subscriberId,houseId,domophoneId,credentials,login,contract"} by
-     * @apiBody {Mixed} params
+     * @apiQuery {String="flatIdByPrefix,apartment,code,openCode,rfId,subscriberId,houseId,domophoneId,credentials,login,contract"} by
+     * @apiQuery {Mixed} params
      *
      * @apiSuccess {Object[]} flats
      */
