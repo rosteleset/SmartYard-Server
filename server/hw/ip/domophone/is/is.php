@@ -328,6 +328,17 @@ abstract class is extends domophone
         ]);
     }
 
+    /**
+     * @param int $apartment
+     * @param int $code
+     * @param array $sipNumbers
+     * @param bool $cmsEnabled
+     * @param array $cmsLevels
+     * @return void
+     *
+     * @deprecated
+     * @see configureApartment()
+     */
     protected function configureApartmentLegacy(
         int   $apartment,
         int   $code = 0,
@@ -421,6 +432,13 @@ abstract class is extends domophone
         ]);
     }
 
+    /**
+     * @param int $apartment
+     * @return void
+     *
+     * @deprecated
+     * @see deleteApartment()
+     */
     protected function deleteApartmentLegacy(int $apartment = 0): void
     {
         if ($apartment === 0) {
@@ -526,16 +544,65 @@ abstract class is extends domophone
         return $apartments;
     }
 
+    /**
+     * Gets an Apartment object by its apartment number.
+     *
+     * @param int $number The panel code of the apartment to retrieve.
+     * @return Apartment|null The Apartment object corresponding to the panel code, or null if not found.
+     */
+    protected function getApartmentObject(int $number): ?Apartment
+    {
+        return $this->getApartmentObjects()[$number] ?? null;
+    }
+
+    /**
+     * Gets an array of Apartment objects.
+     *
+     * This method fetches and caches the list of apartments from the API
+     * and indexes them by their `panelCode` for efficient lookup.
+     *
+     * @return array Array of Apartment objects.
+     */
+    protected function getApartmentObjects(): array
+    {
+        // Fetch and cache
+        if ($this->apartments === null) {
+            $response = $this->apiCall('/v1/panelCode');
+
+            foreach ($response as $apartmentData) {
+                $panelCode = $apartmentData['panelCode'];
+                $this->apartments[$panelCode] = Apartment::fromArray($apartmentData);
+            }
+        }
+
+        return $this->apartments;
+    }
+
     protected function getApartments(): array
     {
         if ($this->isLegacyVersion()) {
             return $this->getApartmentsLegacy();
         }
 
-        // TODO
-        return [];
+        return array_map(fn($apartmentObject) => [
+            'apartment' => $apartmentObject->panelCode,
+            'code' => 0, // TODO: fetch codes
+            'sipNumbers' => $apartmentObject->sipAccounts,
+            'cmsEnabled' => $apartmentObject->handsetEnabled,
+            'cmsLevels' => [
+                // TODO: getApartmentCmsParams()???
+                $apartmentObject->answerResistance,
+                $apartmentObject->quiescentResistance
+            ],
+        ], $this->getApartmentObjects());
     }
 
+    /**
+     * @return array
+     *
+     * @deprecated
+     * @see getApartments()
+     */
     protected function getApartmentsLegacy(): array
     {
         $rawApartments = $this->getRawApartments();
