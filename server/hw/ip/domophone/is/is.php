@@ -3,6 +3,7 @@
 namespace hw\ip\domophone\is;
 
 use hw\ip\domophone\domophone;
+use hw\ip\domophone\is\entities\Apartment;
 
 /**
  * Abstract class representing an Intersvyaz (IS) domophone.
@@ -37,12 +38,21 @@ abstract class is extends domophone
         'KMG-100' => ['CYFRAL', 100, 10, 10],
     ];
 
-    protected array $apartments = [];
+    /**
+     * @deprecated
+     */
+    protected array $apartmentsLegacy = [];
 
     protected ?string $sosNumber = null;
     protected ?string $conciergeNumber = null;
     protected ?string $sipServer = null;
     protected ?int $sipPort = null;
+
+    /**
+     * @var Array<int, Apartment>|null An array of ``Apartment`` objects whose keys are apartment numbers
+     * or null if not fetched.
+     */
+    protected ?array $apartments = null;
 
     public function addRfid(string $code, int $apartment = 0)
     {
@@ -60,42 +70,15 @@ abstract class is extends domophone
         int   $code = 0,
         array $sipNumbers = [],
         bool  $cmsEnabled = true,
-        array $cmsLevels = []
+        array $cmsLevels = [],
     ): void
     {
-        $this->refreshApartmentList();
-
-        if (in_array($apartment, $this->apartments)) {
-            $method = 'PUT';
-            $endpoint = "/$apartment";
-            $this->deleteOpenCode($apartment);
-        } else {
-            $method = 'POST';
-            $endpoint = '';
+        if ($this->isLegacyVersion()) {
+            $this->configureApartmentLegacy($apartment, $code, $sipNumbers, $cmsEnabled, $cmsLevels);
+            return;
         }
 
-        $payload = [
-            'panelCode' => $apartment,
-            'callsEnabled' => [
-                'handset' => $cmsEnabled,
-                'sip' => (bool)$sipNumbers,
-            ],
-            'soundOpenTh' => null, // inheritance from general settings
-            'typeSound' => 3, // inheritance from general settings
-            // 'sipAccounts' => array_map('strval', $sipNumbers), FIXME: doesn't work well
-        ];
-
-        $resistanceParams = $this->getApartmentResistanceParams($cmsLevels);
-        if ($resistanceParams !== null) {
-            $payload['resistances'] = $resistanceParams;
-        }
-
-        $this->apiCall('/panelCode' . $endpoint, $method, $payload);
-        $this->apartments[] = $apartment;
-
-        if ($code) {
-            $this->addOpenCode($code, $apartment);
-        }
+        // TODO
     }
 
     public function configureEncoding(): void
@@ -176,15 +159,12 @@ abstract class is extends domophone
 
     public function deleteApartment(int $apartment = 0): void
     {
-        if ($apartment === 0) {
-            $this->apiCall('/panelCode/clear', 'DELETE');
-            $this->apiCall('/openCode/clear', 'DELETE');
-            $this->apartments = [];
-        } else {
-            $this->apiCall("/panelCode/$apartment", 'DELETE');
-            $this->deleteOpenCode($apartment);
-            $this->apartments = array_diff($this->apartments, [$apartment]);
+        if ($this->isLegacyVersion()) {
+            $this->deleteApartmentLegacy($apartment);
+            return;
         }
+
+        // TODO
     }
 
     public function deleteRfid(string $code = ''): void
@@ -348,6 +328,49 @@ abstract class is extends domophone
         ]);
     }
 
+    protected function configureApartmentLegacy(
+        int   $apartment,
+        int   $code = 0,
+        array $sipNumbers = [],
+        bool  $cmsEnabled = true,
+        array $cmsLevels = []
+    ): void
+    {
+        $this->refreshApartmentList();
+
+        if (in_array($apartment, $this->apartmentsLegacy)) {
+            $method = 'PUT';
+            $endpoint = "/$apartment";
+            $this->deleteOpenCode($apartment);
+        } else {
+            $method = 'POST';
+            $endpoint = '';
+        }
+
+        $payload = [
+            'panelCode' => $apartment,
+            'callsEnabled' => [
+                'handset' => $cmsEnabled,
+                'sip' => (bool)$sipNumbers,
+            ],
+            'soundOpenTh' => null, // inheritance from general settings
+            'typeSound' => 3, // inheritance from general settings
+            // 'sipAccounts' => array_map('strval', $sipNumbers), FIXME: doesn't work well
+        ];
+
+        $resistanceParams = $this->getApartmentResistanceParams($cmsLevels);
+        if ($resistanceParams !== null) {
+            $payload['resistances'] = $resistanceParams;
+        }
+
+        $this->apiCall('/panelCode' . $endpoint, $method, $payload);
+        $this->apartmentsLegacy[] = $apartment;
+
+        if ($code) {
+            $this->addOpenCode($code, $apartment);
+        }
+    }
+
     /**
      * @param array $matrix
      *
@@ -396,6 +419,19 @@ abstract class is extends domophone
         $this->apiCall('/key/settings', 'PUT', [
             'mode' => 2, // UID 7 bytes (16835 keys max)
         ]);
+    }
+
+    protected function deleteApartmentLegacy(int $apartment = 0): void
+    {
+        if ($apartment === 0) {
+            $this->apiCall('/panelCode/clear', 'DELETE');
+            $this->apiCall('/openCode/clear', 'DELETE');
+            $this->apartmentsLegacy = [];
+        } else {
+            $this->apiCall("/panelCode/$apartment", 'DELETE');
+            $this->deleteOpenCode($apartment);
+            $this->apartmentsLegacy = array_diff($this->apartmentsLegacy, [$apartment]);
+        }
     }
 
     /**
@@ -491,6 +527,16 @@ abstract class is extends domophone
     }
 
     protected function getApartments(): array
+    {
+        if ($this->isLegacyVersion()) {
+            return $this->getApartmentsLegacy();
+        }
+
+        // TODO
+        return [];
+    }
+
+    protected function getApartmentsLegacy(): array
     {
         $rawApartments = $this->getRawApartments();
 
@@ -705,8 +751,8 @@ abstract class is extends domophone
      */
     protected function refreshApartmentList(): void
     {
-        if (!$this->apartments) {
-            $this->apartments = $this->getApartmentNumbers();
+        if (!$this->apartmentsLegacy) {
+            $this->apartmentsLegacy = $this->getApartmentNumbers();
         }
     }
 
@@ -718,7 +764,7 @@ abstract class is extends domophone
      */
     protected function removeUnwantedApartments(): void
     {
-        $unwantedApartments = array_diff($this->getApartmentNumbers(), $this->apartments);
+        $unwantedApartments = array_diff($this->getApartmentNumbers(), $this->apartmentsLegacy);
 
         foreach ($unwantedApartments as $unwantedApartment) {
             $this->deleteApartment($unwantedApartment);

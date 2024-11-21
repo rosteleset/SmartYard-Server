@@ -3,7 +3,7 @@
 namespace hw\ip\domophone\is\entities;
 
 /**
- * Represents an apartment entity, providing structure for type, matrix data, and capacity.
+ * Represents an apartment entity, providing structure for apartment's parameters.
  */
 class Apartment implements ArrayInterface
 {

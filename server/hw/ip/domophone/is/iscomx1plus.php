@@ -48,8 +48,6 @@ class iscomx1plus extends is
     protected const MATRIX_LAST_NUMBER = 4;
 
     /**
-     * An array that holds either null (for uninitialized matrices) or CmsMatrix objects.
-     *
      * @var array<int, CmsMatrix|null> An indexed array of CmsMatrix objects or null values.
      */
     protected array $cmsMatrices = [1 => null, 2 => null, 3 => null, 4 => null];
