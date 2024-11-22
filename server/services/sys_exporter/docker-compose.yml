@@ -1,0 +1,33 @@
+version: '3.9'
+
+services:
+  sys_exporter:
+    container_name: sys_exporter
+    hostname: rbt_sys_exporter
+    build:
+      context: .
+      dockerfile: docker/node/Dockerfile
+      target: main
+    volumes:
+      - .env:/home/node/app/.env
+    ports:
+#      - "${APP_PORT}:${APP_PORT}/tcp"
+      - "${APP_PORT}/tcp"
+    command: npm start
+    networks:
+      default:
+        ipv4_address: 172.30.0.2
+      shared-network-dev:
+
+networks:
+  default:
+    name: sys_exporter_network
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.30.0.0/24
+          gateway: 172.30.0.1
+
+  shared-network-dev:
+    external: true
