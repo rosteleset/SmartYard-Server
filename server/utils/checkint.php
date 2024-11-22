@@ -8,6 +8,14 @@
      */
 
     function checkInt(&$int) {
+        if ($int === true) {
+            $int = 1;
+            return true;
+        }
+        if ($int === false) {
+            $int = 0;
+            return true;
+        }
         $int_ = trim($int);
         $_int = strval((int)$int);
         if ($int_ != $_int) {
