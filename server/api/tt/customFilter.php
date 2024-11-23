@@ -20,7 +20,7 @@
      *
      * @apiVersion 1.0.0
      *
-     * @apiName getCustomFilter
+     * @apiName putCustomFilter
      * @apiGroup tt
      *
      * @apiHeader {String} authorization authentication token
@@ -37,7 +37,7 @@
      *
      * @apiVersion 1.0.0
      *
-     * @apiName getCustomFilter
+     * @apiName deleteCustomFilter
      * @apiGroup tt
      *
      * @apiHeader {String} authorization authentication token
