@@ -484,4 +484,5 @@ setInterval(() => {
 
     $(".blink-icon.blinking").toggleClass("text-warning");
     $(".blink-icon:not(.blinking)").removeClass("text-warning");
+    $("body").removeClass("sidebar-collapse");
 }, 1000);
