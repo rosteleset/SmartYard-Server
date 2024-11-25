@@ -2982,7 +2982,8 @@
                         done(() => {
                             message(i18n("tt.filterWasSaved"));
                             window.onbeforeunload = null;
-                            window.location.href = '?#tt.settings&section=filter&filter=' + encodeURIComponent(filter) + '&_=' + Math.random();
+//                            window.location.href = '?#tt.settings&section=filter&filter=' + encodeURIComponent(filter) + '&_=' + Math.random();
+                            modules.tt.settings.renderFilter(filter);
                         }).
                         fail(FAIL).
                         fail(loadingDone);
