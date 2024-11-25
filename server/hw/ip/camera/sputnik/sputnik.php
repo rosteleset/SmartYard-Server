@@ -12,6 +12,16 @@ class sputnik extends camera
 
     use \hw\ip\common\sputnik\sputnik;
 
+    /**
+     * OSD field name for custom text.
+     */
+    protected const OSD_FIELD_NAME = 'osdUpLeft';
+
+    /**
+     * @var string|null Cached camera UUID or null if unset.
+     */
+    protected ?string $cameraUUID = null;
+
     public function configureMotionDetection(
         int $left = 0,
         int $top = 0,
@@ -29,9 +39,12 @@ class sputnik extends camera
         return '';
     }
 
-    public function setOsdText(string $text = '')
+    public function setOsdText(string $text = ''): void
     {
-        // TODO: wait for implementation
+        $this->apiCall('mutation', 'updateCameraOsdConfig', [
+            'camera' => ['uuid' => $this->getCameraUUID()],
+            self::OSD_FIELD_NAME => $text,
+        ]);
     }
 
     public function syncData()
@@ -41,8 +54,6 @@ class sputnik extends camera
 
     public function transformDbConfig(array $dbConfig): array
     {
-        $dbConfig['osdText'] = ''; // TODO: wait for implementation
-
         $dbConfig['ntp']['server'] = '';
         $dbConfig['ntp']['port'] = 123;
         $dbConfig['ntp']['timezone'] = $this->getOffsetByTimezone($dbConfig['ntp']['timezone']);
@@ -57,6 +68,23 @@ class sputnik extends camera
         return $dbConfig;
     }
 
+    /**
+     * Gets the UUID of the camera.
+     *
+     * Fetches and caches the camera UUID via an API if not already set.
+     *
+     * @return string|null The camera UUID, or null if unavailable.
+     */
+    protected function getCameraUUID(): ?string
+    {
+        if ($this->cameraUUID == null) {
+            $intercom = $this->apiCall('query', 'intercom', ['uuid' => $this->uuid], ['camera' => ['uuid']]);
+            $this->cameraUUID = $intercom['data']['intercom']['camera']['uuid'] ?? null;
+        }
+
+        return $this->cameraUUID;
+    }
+
     protected function getMotionDetectionConfig(): array
     {
         return [
@@ -69,7 +97,10 @@ class sputnik extends camera
 
     protected function getOsdText(): string
     {
-        // TODO: Implement getOsdText() method.
-        return '';
+        $intercom = $this->apiCall('query', 'camera', ['uuid' => $this->getCameraUUID()], [
+            'configShadow' => ['osd' => [self::OSD_FIELD_NAME]],
+        ]);
+
+        return $intercom['data']['camera']['configShadow']['osd'][self::OSD_FIELD_NAME] ?? '';
     }
 }
