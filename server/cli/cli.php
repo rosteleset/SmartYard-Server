@@ -1,77 +1,45 @@
 <?php
 
+    //TODO: move this code to ../cli.php after all modifications
+
     $globalCli = [
         // global part
         "#" => [
-            "demo server" => [
-                "run-demo-server" => [
-                    "params" => [
-                        [
-                            "port" => [
-                                "value" => "integer",
-                                "placeholder" => "8000",
-                                "optional" => true,
-                            ],
-                        ],
-                    ],
-                    "exec" => "server",
-                    // pre db init
-                    "stage" => 0,
-                    "description" => "Run demo server for local development",
-                ],
-            ],
-
             "initialization and update" => [
-                "init-db" => [
-                    "params" => [
-                        [
-                            "skip" => [
-                                "value" => "integer",
-                                "placeholder" => "version",
-                                "optional" => true,
-                            ],
-                        ],
-                        [
-                            "force" => [
-                                "value" => "integer",
-                                "placeholder" => "version",
-                                "optional" => true,
-                            ],
-                        ],
-                        [
-                            "set-version" => [
-                                "value" => "integer",
-                                "placeholder" => "version",
-                                "optional" => true,
-                            ],
-                        ],
-                    ],
-                    "exec" => "db",
-                    "description" => "Initialize (update) main database",
-                ],
-
-                "init-clickhouse-db" => [
-                    "exec" => "clickhouse",
-                    "description" => "Initialize (update) clickhouse database",
-                ],
-
                 "admin-password" => [
                     "value" => "string",
                     "placeholder" => "password",
-                    "exec" => "admin",
                     "description" => "Set (update) admin password",
                 ],
 
                 "reindex" => [
-                    "exec" => "reindex",
                     "description" => "Reindex access to API",
                 ],
 
                 "exit-maintenance-mode" => [
-                    "exec" => "maintenance",
-                    // post db init, but pre starup
-                    "stage" => 1,
+                    "stage" => "pre",
                     "description" => "Exit from maintenance mode",
+                ],
+
+                "clear-cache" => [
+                    "description" => "Clear redis cache items",
+                ],
+
+                "cleanup" => [
+                    "description" => "Clear redis cache items",
+                ],
+
+                "update" => [
+                    "description" => "Update client and server from git",
+                ],
+
+                "init-mobile-issues-project" => [
+                ],
+
+                "init-tt-mobile-template" => [
+                ],
+
+                "init-monitoring-config" => [
                 ],
             ],
 
@@ -84,23 +52,105 @@
                         "daily",
                         "monthly",
                     ],
-                    "exec" => "cron",
                     "description" => "Run cronpart",
                 ],
                 "install-crontabs" => [
-                    "exec" => "cron",
                     "description" => "Install cronparts",
                 ],
                 "uninstall-crontabs" => [
-                    "exec" => "cron",
                     "description" => "Uninstall cronparts",
+                ],
+            ],
+
+            "tests" => [
+                "check-mail" => [
+                    "value" => "string",
+                    "placeholder" => "your email address",
+                    "description" => "Check email server",
+                ],
+                "get-db-version" => [
+
+                ],
+                "check-backends" => [
+
+                ],
+            ],
+
+            "autoconfigure" => [
+                "autoconfigure-device" => [
+                    "params" => [
+                        [
+                            "id" => [
+                                "value" => "integer",
+                                "placeholder" => "device id",
+                            ],
+                            "first-time" => [
+                                "optional" => true,
+                            ],
+                        ],
+                    ],
+                    "value" => "string",
+                    "placeholder" => "device type",
+                    "description" => "Autoconfigure device",
+                ],
+            ],
+
+            "db" => [
+                "backup-db" => [
+                    "description" => "Backup database",
+                ],
+                "list-db-backups" => [
+                    "description" => "List existing database backups",
+                ],
+                "restore-db" => [
+                    "description" => "Restore database from backup",
+                    "value" => "string",
+                    "placeholder" => "backup filename without path and extension"
+                ],
+                "schema" => [
+                    "value" => "string",
+                    "placeholder" => "schema",
+                    "description" => "Move RBT tables to specified database schema",
+                ],
+                "mongodb-set-fcv" => [
+                    "exec" => "db",
+                    "description" => "Set MongoDB feature compatibility version",
+                ],
+            ],
+
+            "config" => [
+                "print-config" => [
+                    "description" => "Parse and print server config",
+                ],
+                "strip-config" => [
+                    "description" => "Parse and strip server config (json5->json)",
                 ],
             ],
         ],
     ];
 
-    function cli($stage, $backend, $args) {
+    function cli($stage, $backend = "#", $args) {
+        global $globalCli;
 
+        $f = false;
+
+        foreach (@$globalCli[$backend] as $title => $part) {
+            foreach ($part as $name => $command) {
+                if (array_key_exists("--" . $name, $args)) {
+                    if (!@$command["stage"]) {
+                        $command["stage"] = "run";
+                    }
+                    if ($command["stage"] == $stage) {
+                        $command["exec"]($args);
+                        $f = true;
+                    }
+                }
+            }
+        }
+
+        if ($f) {
+            exit(0);
+        }
     }
 
     function cliUsage() {
@@ -187,5 +237,6 @@
                 }
             }
         }
+
         exit(0);
     }

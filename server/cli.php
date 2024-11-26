@@ -45,64 +45,18 @@
     require_once "backends/backend.php";
 
     require_once "api/api.php";
+    require_once "cli/cli.php";
 
-    function usage() {
-        global $argv;
+    foreach (scandir(__DIR__ . "/cli") as $file) {
+        $c = explode(".php", $file);
 
-        echo formatUsage("usage: {$argv[0]}
+        if (count($c) == 2 && $c[0] && !$c[1]) {
+            require_once __DIR__ . "/cli/" . $file;
 
-            backend:
-                [<backend name> [params]]
-
-            common parts:
-                [--parent-pid=<pid>]
-                [--debug]
-
-            demo server:
-                [--run-demo-server [--port=<port>]]
-
-            initialization and update:
-                [--init-db [--skip=<versions>|--force=<version>|--set-version=<version>]]
-                [--init-clickhouse-db]
-                [--admin-password=<password>]
-                [--reindex]
-                [--clear-cache]
-                [--cleanup]
-                [--update]
-                [--exit-maintenance-mode]
-                [--init-mobile-issues-project]
-                [--init-tt-mobile-template]
-                [--init-monitoring-config]
-
-            tests:
-                [--check-mail=<your email address>]
-                [--get-db-version]
-
-            backends:
-                [--backends-with-cli]
-                [--check-backends]
-
-            autoconfigure:
-                [--autoconfigure-device=<device_type> --id=<device_id> [--first-time]]
-
-            cron:
-                [--cron=<minutely|5min|hourly|daily|monthly>]
-                [--install-crontabs]
-                [--uninstall-crontabs]
-
-            db:
-                [--backup-db]
-                [--list-db-backups]
-                [--restore-db=<backup_file_without_path_and_extension>]
-                [--schema=<schema>]
-                [--mongodb-set-fcv=<FeatureCompatibilityVersion>]
-
-            config:
-                [--print-config]
-                [--strip-config]
-        ");
-
-        exit(1);
+            if (class_exists('\cli\\' . $c[0])) {
+                new ('\cli\\' . $c[0])($globalCli);
+            }
+        }
     }
 
     $script_result = null;
@@ -138,31 +92,7 @@
         }
     }
 
-    if ((count($args) == 1 || count($args) == 2) && array_key_exists("--run-demo-server", $args) && !isset($args["--run-demo-server"])) {
-        $db = null;
-        if (is_executable_pathenv(PHP_BINARY)) {
-            $port = 8000;
-
-            if (count($args) == 2) {
-                if (array_key_exists("--port", $args) && !empty($args["--port"])) {
-                    $port = $args["--port"];
-                } else {
-                    usage();
-                }
-            }
-
-            echo "open in your browser:\n\n";
-            echo "http://localhost:$port/client/index.html\n\n";
-            chdir(__DIR__ . "/..");
-            putenv("SPX_ENABLED=1");
-            putenv("SPX_REPORT=full");
-            putenv("SPX_AUTO_START=1");
-            passthru(PHP_BINARY . " -S 0.0.0.0:$port");
-        } else {
-            die("no php interpreter found in path\n\n");
-        }
-        exit(0);
-    }
+    cli("init", "#", $args);
 
     function shutdown() {
         global $script_process_id, $db, $script_result;
@@ -377,6 +307,24 @@
         }
     }
 
+    cli("pre", "#", $args);
+
+    startup();
+
+    check_if_pid_exists();
+
+    if (count($args) && (strpos($argv[1], "--") === false || strpos($argv[1], "--") > 0)) {
+        $backend = $argv[1];
+        unset($args[$argv[1]]);
+
+        cli("run", $backend, $args);
+
+        exit(0);
+    }
+
+    cli("run", "#", $args);
+
+    //TODO: remove this!
     if (count($args) && (strpos($argv[1], "--") === false || strpos($argv[1], "--") > 0)) {
         $backend = loadBackend($argv[1]);
 
@@ -395,6 +343,7 @@
         exit(0);
     }
 
+    //TODO: remove this!
     if (count($args) == 1 && array_key_exists("--backends-with-cli", $args) && !isset($args["--backends-with-cli"])) {
         $cli = [];
 
@@ -416,67 +365,6 @@
 
     if (count($args) == 1 && array_key_exists("--exit-maintenance-mode", $args) && !isset($args["--exit-maintenance-mode"])) {
         maintenance(false);
-        exit(0);
-    }
-
-    startup();
-
-    check_if_pid_exists();
-
-    if (
-        (count($args) == 1 && array_key_exists("--init-db", $args) && !isset($args["--init-db"]))
-        ||
-        (count($args) == 2 && array_key_exists("--init-db", $args) && !isset($args["--init-db"]) && array_key_exists("--skip", $args) && isset($args["--skip"]))
-        ||
-        (count($args) == 2 && array_key_exists("--init-db", $args) && !isset($args["--init-db"]) && array_key_exists("--force", $args) && isset($args["--force"]))
-        ||
-        (count($args) == 2 && array_key_exists("--init-db", $args) && !isset($args["--init-db"]) && array_key_exists("--set-version", $args) && isset($args["--set-version"]) && (int)$args["--set-version"])
-    ) {
-        maintenance(true);
-        wait_all();
-
-        backup_db(false);
-        echo "\n";
-
-        if (@$args["--set-version"]) {
-            $sth = $db->prepare("update core_vars set var_value = :version where var_name = 'dbVersion'");
-            $sth->bindParam('version', $args["--set-version"]);
-            $sth->execute();
-        } else {
-            initDB(@$args["--skip"], @$args["--force"]);
-        }
-
-        startup(true);
-        echo "\n";
-
-        $n = clearCache(true);
-        echo "$n cache entries cleared\n\n";
-
-        reindex();
-        echo "\n";
-
-        maintenance(false);
-
-        try {
-            $db->exec("commit");
-        } catch (\Exception $e) {
-            //
-        }
-
-        exit(0);
-    }
-
-    if (count($args) == 1 && array_key_exists("--init-clickhouse-db", $args) && !isset($args["--init-clickhouse-db"])) {
-        $clickhouse_config = @$config['clickhouse'];
-
-        $clickhouse = new clickhouse(
-            @$clickhouse_config['host'] ?? '127.0.0.1',
-            @$clickhouse_config['port'] ?? 8123,
-            @$clickhouse_config['username'] ?? 'default',
-            @$clickhouse_config['password'] ?? 'qqq',
-        );
-
-        initClickhouseDB($clickhouse);
         exit(0);
     }
 
@@ -797,4 +685,4 @@
         exit(0);
     }
 
-    usage();
+    cliUsage();
