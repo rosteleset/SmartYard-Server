@@ -141,8 +141,20 @@
                         $command["stage"] = "run";
                     }
                     if ($command["stage"] == $stage) {
-                        $command["exec"]($args);
-                        $f = true;
+                        $m = false;
+                        if (@$command["params"]) {
+                            foreach ($command["params"] as $variants) {
+                                //TODO: add params set check
+                                $m = true;
+                            }
+                        } else {
+                            $m = true;
+                        }
+                        if ($m) {
+                            //TODO: add param value check
+                            $command["exec"]($args);
+                            $f = true;
+                        }
                     }
                 }
             }
@@ -201,9 +213,9 @@
                     }
                     if (@$command["params"]) {
                         $g = "";
-                        foreach ($command["params"] as $paramGroup) {
+                        foreach ($command["params"] as $variants) {
                             $p = "";
-                            foreach ($paramGroup as $prefix => $param) {
+                            foreach ($variants as $prefix => $param) {
                                 if (@$param["optional"]) {
                                     $p .= "[";
                                 }
