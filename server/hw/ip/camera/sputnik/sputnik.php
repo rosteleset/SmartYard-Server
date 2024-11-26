@@ -15,7 +15,7 @@ class sputnik extends camera
     /**
      * OSD field name for custom text.
      */
-    protected const OSD_FIELD_NAME = 'osdUpLeft';
+    protected const OSD_FIELD_NAME = 'osdUpRight';
 
     /**
      * @var string|null Cached camera UUID or null if unset.
