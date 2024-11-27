@@ -5,7 +5,7 @@
     // mobile client API support
 
     $cli = false;
-    $cliError = false;
+    $cli_error = false;
     $mobile = true;
 
     header("Access-Control-Allow-Origin: *");

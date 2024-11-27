@@ -4,8 +4,8 @@
 
         class clickhouse {
 
-            function __construct(&$globalCli) {
-                $globalCli["#"]["db"]["init-clickhouse-db"] = [
+            function __construct(&$global_cli) {
+                $global_cli["#"]["db"]["init-clickhouse-db"] = [
                     "exec" => [ $this, "init" ],
                     "description" => "Initialize (update) clickhouse database",
                 ];

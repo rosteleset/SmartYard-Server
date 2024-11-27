@@ -4,8 +4,8 @@
 
         class cron {
 
-            function __construct(&$globalCli) {
-                $globalCli["#"]["cron"]["cron"] = [
+            function __construct(&$global_cli) {
+                $global_cli["#"]["cron"]["cron"] = [
                     "value" => [
                         "minutely",
                         "5min",
@@ -17,12 +17,12 @@
                     "exec" => [ $this, "run" ],
                 ];
 
-                $globalCli["#"]["cron"]["install-crontabs"] = [
+                $global_cli["#"]["cron"]["install-crontabs"] = [
                     "description" => "Install cronparts",
                     "exec" => [ $this, "install" ],
                 ];
 
-                $globalCli["#"]["cron"]["uninstall-crontabs"] = [
+                $global_cli["#"]["cron"]["uninstall-crontabs"] = [
                     "description" => "Uninstall cronparts",
                     "exec" => [ $this, "uninstall" ],
                 ];
@@ -53,12 +53,14 @@
             function install($args) {
                 $n = installCrontabs();
                 echo "$n crontabs lines added\n\n";
+
                 exit(0);
             }
 
             function uninstall($args) {
                 $n = unInstallCrontabs();
                 echo "$n crontabs lines removed\n\n";
+
                 exit(0);
             }
         }

@@ -4,16 +4,16 @@
 
         class templates {
 
-            function __construct(&$globalCli) {
-                $globalCli["#"]["initialization and update"]["init-mobile-issues-project"] = [
+            function __construct(&$global_cli) {
+                $global_cli["#"]["initialization and update"]["init-mobile-issues-project"] = [
                     "exec" => [ $this, "mobile1" ],
                 ];
 
-                $globalCli["#"]["initialization and update"]["init-tt-mobile-template"] = [
+                $global_cli["#"]["initialization and update"]["init-tt-mobile-template"] = [
                     "exec" => [ $this, "mobile2" ],
                 ];
 
-                $globalCli["#"]["initialization and update"]["init-monitoring-config"] = [
+                $global_cli["#"]["initialization and update"]["init-monitoring-config"] = [
                     "exec" => [ $this, "monitoring" ],
                 ];
             }

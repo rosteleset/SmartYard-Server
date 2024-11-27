@@ -4,8 +4,8 @@
 
         class db {
 
-            function __construct(&$globalCli) {
-                $globalCli["#"]["db"]["init-db"] = [
+            function __construct(&$global_cli) {
+                $global_cli["#"]["db"]["init-db"] = [
                     "params" => [
                         [
                             "skip" => [
@@ -33,31 +33,31 @@
                     "description" => "Initialize (update) main database",
                 ];
 
-                $globalCli["#"]["db"]["backup-db"] = [
+                $global_cli["#"]["db"]["backup-db"] = [
                     "exec" => [ $this, "backup" ],
                     "description" => "Backup database",
                 ];
 
-                $globalCli["#"]["db"]["list-db-backups"] = [
+                $global_cli["#"]["db"]["list-db-backups"] = [
                     "exec" => [ $this, "list" ],
                     "description" => "List existing database backups",
                 ];
 
-                $globalCli["#"]["db"]["restore-db"] = [
+                $global_cli["#"]["db"]["restore-db"] = [
                     "exec" => [ $this, "restore" ],
                     "description" => "Restore database from backup",
                     "value" => "string",
                     "placeholder" => "backup filename without path and extension"
                 ];
 
-                $globalCli["#"]["db"]["schema"] = [
+                $global_cli["#"]["db"]["schema"] = [
                     "exec" => [ $this, "schema" ],
                     "value" => "string",
                     "placeholder" => "schema",
                     "description" => "Move RBT tables to specified database schema",
                 ];
 
-                $globalCli["#"]["db"]["mongodb-set-fcv"] = [
+                $global_cli["#"]["db"]["mongodb-set-fcv"] = [
                     "exec" => [ $this, "fcv" ],
                     "value" => "string",
                     "placeholder" => "version",
@@ -109,11 +109,13 @@
                 backup_db();
 
                 maintenance(false);
+
                 exit(0);
             }
 
             function list() {
                 list_db_backups();
+
                 exit(0);
             }
 
@@ -124,6 +126,7 @@
                 restore_db($args["--restore-db"]);
 
                 maintenance(false);
+
                 exit(0);
             }
 
@@ -134,6 +137,7 @@
                 schema($args["--schema"]);
 
                 maintenance(false);
+
                 exit(0);
             }
 
@@ -160,6 +164,7 @@
                 echo "ok\n";
 
                 maintenance(false);
+
                 exit(0);
             }
         }

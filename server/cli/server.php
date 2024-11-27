@@ -4,8 +4,8 @@
 
         class server {
 
-            function __construct(&$globalCli) {
-                $globalCli["#"]["demo server"]["run-demo-server"] = [
+            function __construct(&$global_cli) {
+                $global_cli["#"]["demo server"]["run-demo-server"] = [
                     "params" => [
                         [
                             "port" => [
@@ -47,6 +47,7 @@
                 } else {
                     die("no php interpreter found in path\n\n");
                 }
+
                 exit(0);
             }
         }

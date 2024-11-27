@@ -2,38 +2,38 @@
 
     namespace cli {
 
-        class maintenance {
+        class init {
 
-            function __construct(&$globalCli) {
-                $globalCli["#"]["initialization and update"]["admin-password"] = [
+            function __construct(&$global_cli) {
+                $global_cli["#"]["initialization and update"]["admin-password"] = [
                     "value" => "string",
                     "placeholder" => "password",
                     "description" => "Set (update) admin password",
                     "exec" => [ $this, "password" ],
                 ];
 
-                $globalCli["#"]["initialization and update"]["reindex"] = [
+                $global_cli["#"]["initialization and update"]["reindex"] = [
                     "description" => "Reindex access to API",
                     "exec" => [ $this, "reindex" ],
                 ];
 
-                $globalCli["#"]["initialization and update"]["exit-maintenance-mode"] = [
+                $global_cli["#"]["initialization and update"]["exit-maintenance-mode"] = [
                     "stage" => "pre",
                     "description" => "Exit from maintenance mode",
                     "exec" => [ $this, "maintenance" ],
                 ];
 
-                $globalCli["#"]["initialization and update"]["clear-cache"] = [
+                $global_cli["#"]["initialization and update"]["clear-cache"] = [
                     "description" => "Clear redis cache items",
                     "exec" => [ $this, "cache" ],
                 ];
 
-                $globalCli["#"]["initialization and update"]["cleanup"] = [
+                $global_cli["#"]["initialization and update"]["cleanup"] = [
                     "description" => "Run DB cleanup",
                     "exec" => [ $this, "cleanup" ],
                 ];
 
-                $globalCli["#"]["initialization and update"]["update"] = [
+                $global_cli["#"]["initialization and update"]["update"] = [
                     "description" => "Update client and server from git",
                     "exec" => [ $this, "update" ],
                 ];

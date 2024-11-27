@@ -1,12 +1,5 @@
 <?php
 
-// command line client
-
-    chdir(__DIR__);
-
-    $cli = true;
-    $cliError = false;
-
     require_once "data/backup_db.php";
     require_once "data/install_clickhouse.php";
     require_once "data/install.php";
@@ -45,19 +38,11 @@
     require_once "backends/backend.php";
 
     require_once "api/api.php";
-    require_once "cli/cli.php";
 
-    foreach (scandir(__DIR__ . "/cli") as $file) {
-        $c = explode(".php", $file);
+    $cli = true;
+    $cli_error = false;
 
-        if (count($c) == 2 && $c[0] && !$c[1]) {
-            require_once __DIR__ . "/cli/" . $file;
-
-            if (class_exists('\cli\\' . $c[0])) {
-                new ('\cli\\' . $c[0])($globalCli);
-            }
-        }
-    }
+    $global_cli = [];
 
     $script_result = null;
     $script_process_id = -1;
@@ -66,33 +51,150 @@
 
     $args = [];
 
-    for ($i = 1; $i < count($argv); $i++) {
-        $a = explode('=', $argv[$i]);
-        if ($a[0] == '--parent-pid') {
-            if (!checkInt($a[1])) {
-                usage();
-            } else {
-                $script_parent_pid = $a[1];
+    $required_backends = [
+        "authentication",
+        "authorization",
+        "accounting",
+        "users",
+    ];
+
+    function cli($stage, $backend = "#", $args) {
+        global $global_cli, $config;
+
+        if ($config && $config["backends"]) {
+            foreach ($config["backends"] as $b => $p) {
+                $i = loadBackend($b);
+
+                if ($i) {
+                    $c = $i->cliUsage();
+
+                    if ($c && is_array($c) && count($c)) {
+                        if (!@$global_cli[$b]) {
+                            $global_cli[$b] = [];
+                        }
+                        $global_cli[$b] = array_merge($global_cli[$b], $c);
+                    }
+                }
             }
-        } else
-        if ($a[0] == '--debug' && !isset($a[1])) {
-            debugOn();
         }
-        else {
-            $args[$a[0]] = @$a[1];
+
+        foreach (@$global_cli[$backend] as $title => $part) {
+            foreach ($part as $name => $command) {
+                if (array_key_exists("--" . $name, $args)) {
+                    if (!@$command["stage"]) {
+                        $command["stage"] = "run";
+                    }
+                    if ($command["stage"] == $stage) {
+                        $m = false;
+                        if (@$command["params"]) {
+                            foreach ($command["params"] as $variants) {
+                                //TODO: add params set check
+                                $m = true;
+                            }
+                        } else {
+                            $m = true;
+                        }
+                        if ($m) {
+                            //TODO: add param value check
+                            if ($backend == "#") {
+                                $command["exec"]($args);
+                            } else {
+                                $i = loadBackend($backend);
+                                $i->cli($args);
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
-    $params = '';
-    foreach ($args as $key => $value) {
-        if ($value) {
-            $params .= " {$key}={$value}";
-        } else {
-            $params .= " {$key}";
-        }
-    }
+    function cliUsage() {
+        global $global_cli, $argv, $config;
 
-    cli("init", "#", $args);
+        foreach ($config["backends"] as $b => $p) {
+            $i = loadBackend($b);
+
+            if ($i) {
+                $c = $i->cliUsage();
+
+                if ($c && is_array($c) && count($c)) {
+                    if (!@$global_cli[$b]) {
+                        $global_cli[$b] = [];
+                    }
+                    $global_cli[$b] = array_merge($global_cli[$b], $c);
+                }
+            }
+        }
+
+        foreach ($global_cli as $backend => $cli) {
+            if ($backend == "#") {
+                echo "usage: {$argv[0]} <params>\n\n";
+            } else {
+                echo "usage: {$argv[0]} $backend <params>\n\n";
+            }
+
+            echo "  common parts:\n\n";
+            echo "    --parent-pid=<pid>\n";
+            echo "      Set parent pid\n\n";
+            echo "    --debug\n";
+            echo "      Run with debug\n\n";
+
+            foreach ($cli as $title => $part) {
+                echo "  $title:\n\n";
+
+                foreach ($part as $name => $command) {
+                    echo "    --$name";
+                    if (@$command["value"]) {
+                        echo "=<";
+                        if (is_array($command["value"])) {
+                            echo implode("|", $command["value"]);
+                        } else {
+                            echo (@$command["placeholder"]) ? $command["placeholder"] : "value";
+                        }
+                        echo ">";
+                    }
+                    if (@$command["params"]) {
+                        $g = "";
+                        foreach ($command["params"] as $variants) {
+                            $p = "";
+                            foreach ($variants as $prefix => $param) {
+                                if (@$param["optional"]) {
+                                    $p .= "[";
+                                }
+                                $p .= "--$prefix";
+                                if (@$param["value"]) {
+                                    $p .= "=<";
+                                    if (is_array($param["value"])) {
+                                        $p .= implode("|", $param["value"]);
+                                    } else {
+                                        $p .= (@$param["placeholder"]) ? $param["placeholder"] : "value";
+                                    }
+                                    $p .= ">";
+                                }
+                                if (@$param["optional"]) {
+                                    $p .= "]";
+                                }
+                                $p .= " ";
+                            }
+                            $g .= trim($p) . " | ";
+                        }
+                        if ($g) {
+                            $g = substr($g, 0, -3);
+                        }
+                        echo " " . $g;
+                    }
+                    echo "\n";
+                    if (@$command["description"]) {
+                        echo "      " . $command["description"] . "\n";
+                    }
+                    echo "\n";
+                }
+            }
+        }
+
+        exit(0);
+    }
 
     function shutdown() {
         global $script_process_id, $db, $script_result;
@@ -216,9 +318,51 @@
         echo " - done\n\n";
     }
 
+    chdir(__DIR__);
+
+    foreach (scandir(__DIR__ . "/cli") as $file) {
+        $c = explode(".php", $file);
+
+        if (count($c) == 2 && $c[0] && !$c[1]) {
+            require_once __DIR__ . "/cli/" . $file;
+
+            if (class_exists('\cli\\' . $c[0])) {
+                new ('\cli\\' . $c[0])($global_cli);
+            }
+        }
+    }
+
+    for ($i = 1; $i < count($argv); $i++) {
+        $a = explode('=', $argv[$i]);
+        if ($a[0] == '--parent-pid') {
+            if (!checkInt($a[1])) {
+                usage();
+            } else {
+                $script_parent_pid = $a[1];
+            }
+        } else
+        if ($a[0] == '--debug' && !isset($a[1])) {
+            debugOn();
+        }
+        else {
+            $args[$a[0]] = @$a[1];
+        }
+    }
+
+    $params = '';
+    foreach ($args as $key => $value) {
+        if ($value) {
+            $params .= " {$key}={$value}";
+        } else {
+            $params .= " {$key}";
+        }
+    }
+
+    cli("init", "#", $args);
+
     try {
         mb_internal_encoding("UTF-8");
-    } catch (Exception $e) {
+    } catch (\Exception $e) {
         die("mbstring extension is not available\n\n");
     }
 
@@ -226,32 +370,25 @@
         die("curl extension is not installed\n\n");
     }
 
-    $required_backends = [
-        "authentication",
-        "authorization",
-        "accounting",
-        "users",
-    ];
-
     try {
         if (PHP_VERSION_ID < 50600) {
             die("minimal supported php version is 5.6\n\n");
         }
-    } catch (Exception $e) {
+    } catch (\Exception $e) {
         die("can't determine php version\n\n");
     }
 
     if (function_exists("json5_decode")) {
         try {
             $config = @json5_decode(file_get_contents("config/config.json"), true);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             echo $e->getMessage() . "\n";
             $config = false;
         }
     } else {
         try {
             $config = @json_decode(file_get_contents("config/config.json"), true, 512, JSON_THROW_ON_ERROR);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             echo $e->getMessage() . "\n";
             $config = false;
         }
@@ -325,60 +462,5 @@
     }
 
     cli("run", "#", $args);
-
-    if (count($args) == 1 && array_key_exists("--check-mail", $args) && isset($args["--check-mail"])) {
-        $r = email($config, $args["--check-mail"], "test email", "test email");
-        if ($r === true) {
-            echo "email sended\n\n";
-        } else
-        if ($r === false) {
-            echo "no email config found\n\n";
-        } else {
-            print_r($r);
-        }
-        exit(0);
-    }
-
-    if (count($args) == 1 && array_key_exists("--get-db-version", $args) && !isset($args["--get-db-version"])) {
-        echo "dbVersion: $version\n\n";
-        exit(0);
-    }
-
-    if (count($args) == 1 && array_key_exists("--check-backends", $args) && !isset($args["--check-backends"])) {
-        $all_ok = true;
-
-        foreach ($config["backends"] as $backend => $null) {
-            $t = loadBackend($backend);
-            if (!$t) {
-                echo "loading $backend failed\n\n";
-                $all_ok = false;
-            } else {
-                try {
-                    if (!$t->check()) {
-                        echo "error checking backend $backend\n\n";
-                        $all_ok = false;
-                    }
-                } catch (\Exception $e) {
-                    print_r($e);
-                    $all_ok = false;
-                }
-            }
-        }
-
-        if ($all_ok) {
-            echo "everything is all right\n\n";
-        }
-        exit(0);
-    }
-
-    if (count($args) == 1 && array_key_exists("--strip-config", $args) && !isset($args["--strip-config"])) {
-        file_put_contents("config/config.json", json_encode($config, JSON_PRETTY_PRINT));
-        exit(0);
-    }
-
-    if (count($args) == 1 && array_key_exists("--print-config", $args) && !isset($args["--print-config"])) {
-        print_r($config);
-        exit(0);
-    }
 
     cliUsage();

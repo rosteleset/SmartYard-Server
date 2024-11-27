@@ -4,8 +4,8 @@
 
         class autoconfig {
 
-            function __construct(&$globalCli) {
-                $globalCli["#"]["autoconfigure"]["autoconfigure-device"] = [
+            function __construct(&$global_cli) {
+                $global_cli["#"]["autoconfigure"]["autoconfigure-device"] = [
                     "params" => [
                         [
                             "id" => [

@@ -5,7 +5,7 @@
     // frontend client API support
 
     $cli = false;
-    $cliError = false;
+    $cli_error = false;
 
     header("Access-Control-Allow-Origin: *");
     header("Access-Control-Allow-Headers: *");
