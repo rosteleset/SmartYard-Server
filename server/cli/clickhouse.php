@@ -12,6 +12,8 @@
             }
 
             function init($args) {
+                global $config;
+
                 $clickhouse_config = @$config['clickhouse'];
 
                 initClickhouseDB(new \clickhouse(
