@@ -5,63 +5,6 @@
     $globalCli = [
         // global part
         "#" => [
-            "initialization and update" => [
-                "admin-password" => [
-                    "value" => "string",
-                    "placeholder" => "password",
-                    "description" => "Set (update) admin password",
-                ],
-
-                "reindex" => [
-                    "description" => "Reindex access to API",
-                ],
-
-                "exit-maintenance-mode" => [
-                    "stage" => "pre",
-                    "description" => "Exit from maintenance mode",
-                ],
-
-                "clear-cache" => [
-                    "description" => "Clear redis cache items",
-                ],
-
-                "cleanup" => [
-                    "description" => "Clear redis cache items",
-                ],
-
-                "update" => [
-                    "description" => "Update client and server from git",
-                ],
-
-                "init-mobile-issues-project" => [
-                ],
-
-                "init-tt-mobile-template" => [
-                ],
-
-                "init-monitoring-config" => [
-                ],
-            ],
-
-            "cron" => [
-                "cron" => [
-                    "value" => [
-                        "minutely",
-                        "5min",
-                        "hourly",
-                        "daily",
-                        "monthly",
-                    ],
-                    "description" => "Run cronpart",
-                ],
-                "install-crontabs" => [
-                    "description" => "Install cronparts",
-                ],
-                "uninstall-crontabs" => [
-                    "description" => "Uninstall cronparts",
-                ],
-            ],
-
             "tests" => [
                 "check-mail" => [
                     "value" => "string",
@@ -73,48 +16,6 @@
                 ],
                 "check-backends" => [
 
-                ],
-            ],
-
-            "autoconfigure" => [
-                "autoconfigure-device" => [
-                    "params" => [
-                        [
-                            "id" => [
-                                "value" => "integer",
-                                "placeholder" => "device id",
-                            ],
-                            "first-time" => [
-                                "optional" => true,
-                            ],
-                        ],
-                    ],
-                    "value" => "string",
-                    "placeholder" => "device type",
-                    "description" => "Autoconfigure device",
-                ],
-            ],
-
-            "db" => [
-                "backup-db" => [
-                    "description" => "Backup database",
-                ],
-                "list-db-backups" => [
-                    "description" => "List existing database backups",
-                ],
-                "restore-db" => [
-                    "description" => "Restore database from backup",
-                    "value" => "string",
-                    "placeholder" => "backup filename without path and extension"
-                ],
-                "schema" => [
-                    "value" => "string",
-                    "placeholder" => "schema",
-                    "description" => "Move RBT tables to specified database schema",
-                ],
-                "mongodb-set-fcv" => [
-                    "exec" => "db",
-                    "description" => "Set MongoDB feature compatibility version",
                 ],
             ],
 
@@ -130,9 +31,24 @@
     ];
 
     function cli($stage, $backend = "#", $args) {
-        global $globalCli;
+        global $globalCli, $config;
 
-        $f = false;
+        if ($config && $config["backends"]) {
+            foreach ($config["backends"] as $b => $p) {
+                $i = loadBackend($b);
+
+                if ($i) {
+                    $c = $i->cliUsage();
+
+                    if ($c && is_array($c) && count($c)) {
+                        if (!@$globalCli[$b]) {
+                            $globalCli[$b] = [];
+                        }
+                        $globalCli[$b] = array_merge($globalCli[$b], $c);
+                    }
+                }
+            }
+        }
 
         foreach (@$globalCli[$backend] as $title => $part) {
             foreach ($part as $name => $command) {
@@ -152,16 +68,16 @@
                         }
                         if ($m) {
                             //TODO: add param value check
-                            $command["exec"]($args);
-                            $f = true;
+                            if ($backend == "#") {
+                                $command["exec"]($args);
+                            } else {
+                                $i = loadBackend($backend);
+                                $i->cli($args);
+                            }
                         }
                     }
                 }
             }
-        }
-
-        if ($f) {
-            exit(0);
         }
     }
 
@@ -182,7 +98,6 @@
                 }
             }
         }
-
 
         foreach ($globalCli as $backend => $cli) {
             if ($backend == "#") {

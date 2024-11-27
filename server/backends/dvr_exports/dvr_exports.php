@@ -42,48 +42,43 @@
             /**
              * @inheritDoc
              */
-            public function capabilities()
-            {
-                return [
-                    "cli" => true,
+
+            public function cliUsage() {
+                $usage = parent::cliUsage();
+
+                if (!@$usage["dvr"]) {
+                    $usage["dvr"] = [];
+                }
+
+                $usage["dvr"]["run-record-download"] = [
+                    "value" => "string",
+                    "placeholder" => "record_id",
+                    "description" => "Download record from media server",
                 ];
+
+                return $usage;
             }
 
             /**
              * @inheritDoc
              */
-            public function cli($args)
-            {
-                function cliUsage()
-                {
-                    global $argv;
-            
-                    echo formatUsage("usage: {$argv[0]} dvr_exports
-                    
-                        dvr:
-                            [--run-record-download=<record_id>]
-                    ");
-            
-                    exit(1);
-                }
 
-                if (count($args) == 1 && array_key_exists("--run-record-download", $args) && isset($args["--run-record-download"])) {
+            public function cli($args) {
+                if (array_key_exists("--run-record-download", $args)) {
                     $recordId = (int)$args["--run-record-download"];
                     $dvr_exports = $this;
                     if ($dvr_exports && ($uuid = $dvr_exports->runDownloadRecordTask($recordId))) {
                         $inbox = loadBackend("inbox");
                         $files = loadBackend("files");
-            
+
                         $metadata = $files->getFileMetadata($uuid);
-            
+
                         $msgId = $inbox->sendMessage($metadata['subscriberId'], i18n("dvr.videoReady"), i18n("dvr.threeDays", $this->config['api']['mobile'], $uuid));
                     }
                     exit(0);
                 }
 
-                cliUsage();
-
-                return true;
+                parent::cli($args);
             }
 
         }

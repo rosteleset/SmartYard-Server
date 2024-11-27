@@ -1,4 +1,4 @@
-CREATE TABLE core_users_notifications_queue
+CREATE TABLE IF NOT EXISTS core_users_notifications_queue
 (
     notification_id SERIAL PRIMARY KEY,
     login CHARACTER VARYING,

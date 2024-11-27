@@ -32,6 +32,37 @@
                     "exec" => [ $this, "init" ],
                     "description" => "Initialize (update) main database",
                 ];
+
+                $globalCli["#"]["db"]["backup-db"] = [
+                    "exec" => [ $this, "backup" ],
+                    "description" => "Backup database",
+                ];
+
+                $globalCli["#"]["db"]["list-db-backups"] = [
+                    "exec" => [ $this, "list" ],
+                    "description" => "List existing database backups",
+                ];
+
+                $globalCli["#"]["db"]["restore-db"] = [
+                    "exec" => [ $this, "restore" ],
+                    "description" => "Restore database from backup",
+                    "value" => "string",
+                    "placeholder" => "backup filename without path and extension"
+                ];
+
+                $globalCli["#"]["db"]["schema"] = [
+                    "exec" => [ $this, "schema" ],
+                    "value" => "string",
+                    "placeholder" => "schema",
+                    "description" => "Move RBT tables to specified database schema",
+                ];
+
+                $globalCli["#"]["db"]["mongodb-set-fcv"] = [
+                    "exec" => [ $this, "fcv" ],
+                    "value" => "string",
+                    "placeholder" => "version",
+                    "description" => "Set MongoDB feature compatibility version",
+                ];
             }
 
             function init($args) {
@@ -68,6 +99,67 @@
                     //
                 }
 
+                exit(0);
+            }
+
+            function backup() {
+                maintenance(true);
+                wait_all();
+
+                backup_db();
+
+                maintenance(false);
+                exit(0);
+            }
+
+            function list() {
+                list_db_backups();
+                exit(0);
+            }
+
+            function restore($args) {
+                maintenance(true);
+                wait_all();
+
+                restore_db($args["--restore-db"]);
+
+                maintenance(false);
+                exit(0);
+            }
+
+            function schema($args) {
+                maintenance(true);
+                wait_all();
+
+                schema($args["--schema"]);
+
+                maintenance(false);
+                exit(0);
+            }
+
+            function fcv($args) {
+                maintenance(true);
+                wait_all();
+
+                if (@$config["mongo"]["uri"]) {
+                    $manager = new \MongoDB\Driver\Manager($config["mongo"]["uri"]);
+                } else {
+                    $manager = new \MongoDB\Driver\Manager();
+                }
+
+                $command = new \MongoDB\Driver\Command([ "setFeatureCompatibilityVersion" => $args["--mongodb-set-fcv"], "confirm" => true ]);
+
+                try {
+                    $cursor = $manager->executeCommand('admin', $command);
+                } catch(\Exception $e) {
+                    die($e->getMessage() . "\n");
+                }
+
+                $response = $cursor->toArray()[0];
+
+                echo "ok\n";
+
+                maintenance(false);
                 exit(0);
             }
         }

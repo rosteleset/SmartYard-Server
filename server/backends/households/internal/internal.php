@@ -2210,16 +2210,6 @@
              * @inheritDoc
              */
 
-            public function capabilities() {
-                return [
-                    "cli" => true,
-                ];
-            }
-
-            /**
-             * @inheritDoc
-             */
-
             public function cliUsage() {
                 $usage = parent::cliUsage();
 
@@ -2251,24 +2241,7 @@
              */
 
             public function cli($args) {
-
-                function cliUsage() {
-                    global $argv;
-
-                    echo formatUsage("usage: {$argv[0]} households
-
-                        rfid:
-                            [--rf-import=<filename.csv> --house-id=<id> [--rf-first]]
-                    ");
-
-                    exit(1);
-                }
-
-                if (
-                    (count($args) == 2 && isset($args["--rf-import"]) && isset($args["--house-id"]))
-                    ||
-                    (count($args) == 3 && isset($args["--rf-import"]) && isset($args["--house-id"]) && array_key_exists("--rf-first", $args) && !isset($args["--rf-first"]))
-                ) {
+                if (array_key_exists($args["--rf-import"])) {
                     $f1 = $this->getFlats("houseId", (int)$args["--house-id"]);
                     $f2 = [];
                     foreach ($f1 as $f) {
@@ -2324,9 +2297,7 @@
                     exit(0);
                 }
 
-                cliUsage();
-
-                return true;
+                parent::cli($args);
             }
 
             /**

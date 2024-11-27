@@ -1342,18 +1342,6 @@
             }
 
             /**
-             * returns class capabilities
-             *
-             * @return mixed
-             */
-
-            public function capabilities() {
-                return [
-                    "cli" => true,
-                ];
-            }
-
-            /**
              * @inheritDoc
              */
 
@@ -1420,28 +1408,7 @@
              */
 
             public function cli($args) {
-                function _cliUsage() {
-                    global $argv;
-
-                    echo formatUsage("usage: {$argv[0]} tt
-
-                        files:
-                            [--export-filters]
-                            [--export-viewers]
-                            [--export-workflows]
-
-                        indexes:
-                            [--list-indexes --project=<projectAcronym>]
-                            [--create-indexes]
-                            [--drop-indexes]
-                            [--create-index=<field1[,field2...]> --project=<projectAcronym>]
-                            [--drop-index=<indexName> --project=<projectAcronym>]
-                    ");
-
-                    exit(1);
-                }
-
-                if (count($args) == 2 && array_key_exists("--list-indexes", $args) && isset($args["--project"])) {
+                if (array_key_exists("--list-indexes", $args)) {
                     $db = $this->dbName;
 
                     $c = 0;
@@ -1462,7 +1429,7 @@
                     exit(0);
                 }
 
-                if (count($args) == 1 && array_key_exists("--create-indexes", $args)) {
+                if (array_key_exists("--create-indexes", $args)) {
                     $c = $this->reCreateIndexes();
 
                     if ($c === true) {
@@ -1474,7 +1441,7 @@
                     exit(0);
                 }
 
-                if (count($args) == 1 && array_key_exists("--drop-indexes", $args)) {
+                if (array_key_exists("--drop-indexes", $args)) {
                     $db = $this->dbName;
 
                     $c = 0;
@@ -1505,7 +1472,7 @@
                     exit(0);
                 }
 
-                if (count($args) == 2 && isset($args["--create-index"]) && isset($args["--project"])) {
+                if (array_key_exists($args["--create-index"])) {
                     $db = $this->dbName;
 
                     $c = 0;
@@ -1535,7 +1502,7 @@
                     exit(0);
                 }
 
-                if (count($args) == 2 && isset($args["--drop-index"]) && isset($args["--project"])) {
+                if (array_key_exists($args["--drop-index"])) {
                     $db = $this->dbName;
 
                     $c = 0;
@@ -1562,17 +1529,7 @@
                     exit(0);
                 }
 
-                if (
-                    (count($args) == 1 && array_key_exists("--export-filters", $args) && !isset($args["--export-filters"])) ||
-                    (count($args) == 1 && array_key_exists("--export-viewers", $args) && !isset($args["--export-viewers"])) ||
-                    (count($args) == 1 && array_key_exists("--export-workflows", $args) && !isset($args["--export-workflows"]))
-                ) {
-                    parent::cli($args);
-                }
-
-                _cliUsage();
-
-                return true;
+                parent::cli($args);
             }
         }
     }

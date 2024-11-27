@@ -186,18 +186,6 @@
             }
 
             /**
-             * returns class capabilities
-             *
-             * @return mixed
-             */
-
-            public function capabilities() {
-                return [
-                    "cli" => true,
-                ];
-            }
-
-            /**
              * @inheritDoc
              */
 
@@ -240,23 +228,7 @@
              */
 
             public function cli($args) {
-                function cliUsage() {
-                    global $argv;
-
-                    echo formatUsage("usage: {$argv[0]} files
-
-                        indexes:
-                            [--list-indexes]
-                            [--create-indexes]
-                            [--drop-indexes]
-                            [--create-index=<field1[,field2...]>]
-                            [--drop-index=<indexName>]
-                    ");
-
-                    exit(1);
-                }
-
-                if (count($args) == 1 && array_key_exists("--list-indexes", $args)) {
+                if (array_key_exists("--list-indexes", $args)) {
                     $collection = "fs.files";
                     $db = $this->dbName;
 
@@ -276,7 +248,7 @@
                     exit(0);
                 }
 
-                if (count($args) == 1 && array_key_exists("--create-indexes", $args)) {
+                if (array_key_exists("--create-indexes", $args)) {
                     $indexes = [
                         "filename",
                         "uploadDate",
@@ -313,7 +285,7 @@
                     exit(0);
                 }
 
-                if (count($args) == 1 && array_key_exists("--drop-indexes", $args)) {
+                if (array_key_exists("--drop-indexes", $args)) {
                     $collection = "fs.files";
                     $db = $this->dbName;
 
@@ -339,7 +311,7 @@
                     exit(0);
                 }
 
-                if (count($args) == 1 && isset($args["--create-index"])) {
+                if (array_key_exists($args["--create-index"])) {
                     $collection = "fs.files";
                     $db = $this->dbName;
 
@@ -368,7 +340,7 @@
                     exit(0);
                 }
 
-                if (count($args) == 1 && isset($args["--drop-index"])) {
+                if (array_key_exists($args["--drop-index"])) {
                     $collection = "fs.files";
                     $db = $this->dbName;
 
@@ -394,9 +366,7 @@
                     exit(0);
                 }
 
-                cliUsage();
-
-                return true;
+                parent::cli($args);
             }
         }
     }

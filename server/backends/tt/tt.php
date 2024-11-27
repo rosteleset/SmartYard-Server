@@ -2327,16 +2327,6 @@
             }
 
             /**
-             * @inheritDoc
-             */
-
-            public function capabilities() {
-                return [
-                    "cli" => true,
-                ];
-            }
-
-            /**
              * @param string $issueId
              *
              * @return mixed
@@ -2383,24 +2373,7 @@
              */
 
             public function cli($args) {
-
-                if (!function_exists("\\backends\\tt\\_cliUsage")) {
-                    function _cliUsage() {
-                        global $argv;
-
-                        echo formatUsage("usage: {$argv[0]} tt
-
-                            files:
-                                [--export-filters]
-                                [--export-viewers]
-                                [--export-workflows]
-                        ");
-
-                        exit(1);
-                    }
-                }
-
-                if (count($args) == 1 && array_key_exists("--export-workflows", $args) && !isset($args["--export-workflows"])) {
+                if (array_key_exists("--export-workflows", $args)) {
                     $workflows = $this->getWorkflows();
 
                     foreach ($workflows as $w => $m) {
@@ -2425,7 +2398,7 @@
                     exit(0);
                 }
 
-                if (count($args) == 1 && array_key_exists("--export-filters", $args) && !isset($args["--export-filters"])) {
+                if (array_key_exists("--export-filters", $args)) {
                     $filters = $this->getFilters();
 
                     foreach ($filters as $f => $m) {
@@ -2451,7 +2424,7 @@
                     exit(0);
                 }
 
-                if (count($args) == 1 && array_key_exists("--export-viewers", $args) && !isset($args["--export-viewers"])) {
+                if (array_key_exists("--export-viewers", $args)) {
                     $viewers = $this->getViewers();
 
                     foreach ($viewers as $v) {
@@ -2475,9 +2448,7 @@
                     exit(0);
                 }
 
-                _cliUsage();
-
-                return true;
+                parent::cli($args);
             }
         }
     }
