@@ -4,6 +4,7 @@ namespace hw\ip\domophone\is;
 
 use hw\ip\domophone\domophone;
 use hw\ip\domophone\is\entities\Apartment;
+use hw\ip\domophone\is\entities\OpenCode;
 
 /**
  * Abstract class representing an Intersvyaz (IS) domophone.
@@ -45,10 +46,16 @@ abstract class is extends domophone
     protected ?int $sipPort = null;
 
     /**
-     * @var Array<int, Apartment>|null An array of ``Apartment`` objects whose keys are apartment numbers
+     * @var Array<int, Apartment>|null Array of ``Apartment`` objects whose keys are apartment numbers
      * or null if not fetched.
      */
     protected ?array $apartments = null;
+
+    /**
+     * @var Array<int, OpenCode>|null Array of ``OpenCode`` objects whose keys are apartment numbers
+     * or null if not fetched.
+     */
+    protected ?array $openCodes = null;
 
     public function addRfid(string $code, int $apartment = 0)
     {
@@ -470,7 +477,7 @@ abstract class is extends domophone
 
         return array_map(fn($apartmentObject) => [
             'apartment' => $apartmentObject->panelCode,
-            'code' => 0, // TODO: fetch codes
+            'code' => $this->getOpenCodeObject($apartmentObject->panelCode)->code ?? 0,
             'sipNumbers' => $apartmentObject->sipAccounts,
             'cmsEnabled' => $apartmentObject->handsetEnabled,
             'cmsLevels' => [
@@ -526,6 +533,40 @@ abstract class is extends domophone
             'firstFlat' => 1,
             'lastFlat' => 1,
         ]];
+    }
+
+    /**
+     * Gets an OpenCode object by its apartment number.
+     *
+     * @param int $number The panel code (apartment number) of the open code to retrieve.
+     * @return OpenCode|null The OpenCode object corresponding to the panel code, or null if not found.
+     */
+    protected function getOpenCodeObject(int $number): ?OpenCode
+    {
+        return $this->getOpenCodeObjects()[$number] ?? null;
+    }
+
+    /**
+     * Gets an array of OpenCode objects.
+     *
+     * This method fetches and caches the list of open codes from the API
+     * and indexes them by their `panelCode` for efficient lookup.
+     *
+     * @return array Array of Apartment objects.
+     */
+    protected function getOpenCodeObjects(): array
+    {
+        // Fetch and cache
+        if ($this->openCodes === null) {
+            $response = $this->apiCall('/v1/openCode');
+
+            foreach ($response as $openCodeData) {
+                $openCode = $openCodeData['panelCode'];
+                $this->openCodes[$openCode] = OpenCode::fromArray($openCodeData);
+            }
+        }
+
+        return $this->openCodes;
     }
 
     /**
