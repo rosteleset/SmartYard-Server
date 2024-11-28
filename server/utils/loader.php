@@ -102,18 +102,13 @@
             $config = false;
 
             $jsonConfigPath = __DIR__ . "/../config/config.json";
-            $yamlConfigPath = __DIR__ . "/../config/config.yml";
 
             if (file_exists($jsonConfigPath)) {
                 $config = json_decode(file_get_contents($jsonConfigPath), true);
             }
 
-            if (!$config && file_exists($yamlConfigPath)) {
-                $config = yaml_parse_file($yamlConfigPath);
-            }
-
             if (!$config) {
-                throw new Exception('Configuration files not found or invalid.');
+                throw new Exception('Configuration files not found or invalid');
             }
 
             return $config;

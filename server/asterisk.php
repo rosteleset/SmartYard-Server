@@ -26,14 +26,6 @@
     }
 
     if (!$config) {
-        try {
-            $config = @json_decode(json_encode(yaml_parse_file(__DIR__ . "/config/config.yml")), true);
-        } catch (Exception $e) {
-            $config = false;
-        }
-    }
-
-    if (!$config) {
         echo "config is empty\n";
         exit(1);
     }

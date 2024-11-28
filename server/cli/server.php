@@ -29,17 +29,13 @@
                 if (is_executable_pathenv(PHP_BINARY)) {
                     $port = 8000;
 
-                    if (count($args) == 2) {
-                        if (array_key_exists("--port", $args) && !empty($args["--port"])) {
-                            $port = $args["--port"];
-                        } else {
-                            \cliUsage();
-                        }
+                    if (array_key_exists("--port", $args)) {
+                        $port = $args["--port"];
                     }
 
                     echo "open in your browser:\n\n";
                     echo "http://localhost:$port/client/index.html\n\n";
-                    chdir(__DIR__ . "/..");
+                    chdir(__DIR__ . "/../..");
                     putenv("SPX_ENABLED=1");
                     putenv("SPX_REPORT=full");
                     putenv("SPX_AUTO_START=1");

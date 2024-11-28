@@ -71,14 +71,6 @@
     }
 
     if (!$config) {
-        try {
-            $config = @json_decode(json_encode(yaml_parse_file(__DIR__ . "/config/config.yml")), true);
-        } catch (Exception $e) {
-            $config = false;
-        }
-    }
-
-    if (!$config) {
         error_log("noConfig");
         response(555, [
             "error" => "noConfig",

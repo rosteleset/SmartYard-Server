@@ -97,14 +97,8 @@
     }
 
     if (!$config) {
-        try {
-            $config = @json_decode(json_encode(yaml_parse_file(__DIR__ . "/config/config.yml")), true);
-        } catch (Exception $e) {
-            $config = false;
-        }
-    }
+        error_log("noConfig");
 
-    if (!$config) {
         response(555, [
             "error" => "noConfig",
         ]);
@@ -220,7 +214,9 @@
         if ($data) {
             $ret['data'] = $data;
         }
+
         echo json_encode($ret, JSON_UNESCAPED_UNICODE);
+
         exit;
     }
 
