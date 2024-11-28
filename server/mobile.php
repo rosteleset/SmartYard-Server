@@ -115,6 +115,7 @@
         $redis->setex("iAmOk", 1, "1");
     } catch (Exception $e) {
         error_log(print_r($e, true));
+
         response(555, [
             "error" => "redis",
         ]);
@@ -124,6 +125,7 @@
         $db = new PDO_EXT(@$config["db"]["dsn"], @$config["db"]["username"], @$config["db"]["password"], @$config["db"]["options"]);
     } catch (Exception $e) {
         error_log(print_r($e, true));
+
         response(555, [
             "error" => "PDO",
         ]);
