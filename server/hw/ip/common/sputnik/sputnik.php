@@ -2,10 +2,6 @@
 
 namespace hw\ip\common\sputnik;
 
-use DateTime;
-use DateTimeZone;
-use Exception;
-
 /**
  * Trait providing common functionality related to Sputnik devices.
  */
@@ -15,7 +11,7 @@ trait sputnik
     public string $motherboardID;
     public string $uuid;
 
-    public function configureEventServer(string $url)
+    public function configureEventServer(string $url): void
     {
         foreach ($this->getWebhookUUIDs() as $webhookUUID) { // removing existing webhooks
             $this->apiCall('mutation', 'deleteWebhook', ['uuid' => $webhookUUID]);
@@ -28,30 +24,11 @@ trait sputnik
         ]);
     }
 
-    public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow')
-    {
-        // TODO: doesn't change time in OSD, wait for fix
-        $this->apiCall('mutation', 'updateIntercomTimeZone', [
-            'intercomID' => $this->uuid,
-            'timeZone' => $this->getOffsetByTimezone($timezone),
-        ]);
-    }
-
     public function getSysinfo(): array
     {
         $intercom = $this->apiCall('query', 'intercom', ['motherboardID' => $this->motherboardID], ['uuid']);
         $this->uuid = $uuid = $intercom['data']['intercom']['uuid'] ?? '';
         return ['DeviceID' => $uuid];
-    }
-
-    public function reboot()
-    {
-        $this->apiCall('mutation', 'rebootIntercom', ['intercomID' => $this->uuid]);
-    }
-
-    public function reset()
-    {
-        $this->apiCall('mutation', 'restoreDefaultIntercomConfig', ['intercomID' => $this->uuid]);
     }
 
     public function setAdminPassword(string $password)
@@ -114,46 +91,13 @@ trait sputnik
         return $webhooks[0]['url'] ?? 'http://127.0.0.1';
     }
 
-    protected function getNtpConfig(): array
-    {
-        $intercom = $this->apiCall('query', 'intercom', ['uuid' => $this->uuid], [
-            'configShadow' => ['timeZone'],
-        ]);
-
-        $timezone = $intercom['data']['intercom']['configShadow']['timeZone'];
-
-        return [
-            'server' => '',
-            'port' => 123,
-            'timezone' => $timezone,
-        ];
-    }
-
-    /**
-     * Get timezone representation for Sputnik.
-     *
-     * @param string $timezone Timezone identifier.
-     *
-     * @return string Offset without zeros (+3 for example).
-     */
-    protected function getOffsetByTimezone(string $timezone): string
-    {
-        try {
-            $time = new DateTime('now', new DateTimeZone($timezone));
-            $offset = $time->format('P');
-            return preg_replace('/(?<=\+|)(0)(?=\d:\d{2})|:00/', '', $offset);
-        } catch (Exception $e) {
-            return '+3';
-        }
-    }
-
     protected function getWebhookUUIDs(): array
     {
         $webhooks = $this->apiCall('query', 'webhooks', [], ['uuid']);
         return array_column($webhooks['data']['webhooks'], 'uuid');
     }
 
-    protected function initializeProperties()
+    protected function initializeProperties(): void
     {
         $urlParts = explode('/', $this->url);
         $this->motherboardID = array_pop($urlParts);

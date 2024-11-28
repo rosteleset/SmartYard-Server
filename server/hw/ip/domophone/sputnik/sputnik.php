@@ -2,6 +2,9 @@
 
 namespace hw\ip\domophone\sputnik;
 
+use DateTime;
+use DateTimeZone;
+use Exception;
 use hw\ip\domophone\domophone;
 
 /**
@@ -39,7 +42,7 @@ class sputnik extends domophone
         'QAD-100' => 'DAXIS',
     ];
 
-    public function addRfid(string $code, int $apartment = 0)
+    public function addRfid(string $code, int $apartment = 0): void
     {
         $this->apiCall('mutation', 'addIntercomKey', [
             'intercomID' => $this->uuid,
@@ -48,7 +51,7 @@ class sputnik extends domophone
         ]);
     }
 
-    public function addRfids(array $rfids)
+    public function addRfids(array $rfids): void
     {
         $keys = array_map(function ($rfid) {
             return [
@@ -69,7 +72,7 @@ class sputnik extends domophone
         array $sipNumbers = [],
         bool  $cmsEnabled = true,
         array $cmsLevels = []
-    )
+    ): void
     {
         $this->loadFlats();
         $this->loadPersonalCodes();
@@ -113,7 +116,7 @@ class sputnik extends domophone
 //        ]);
     }
 
-    public function configureMatrix(array $matrix)
+    public function configureMatrix(array $matrix): void
     {
         $this->loadFlats();
         $flatTemplate = $this->getFlatTemplate();
@@ -144,6 +147,14 @@ class sputnik extends domophone
         }
     }
 
+    public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow'): void
+    {
+        $this->apiCall('mutation', 'updateIntercomTimeZone', [
+            'intercomID' => $this->uuid,
+            'timeZone' => $this->getOffsetByTimezone($timezone),
+        ]);
+    }
+
     public function configureSip(
         string $login,
         string $password,
@@ -152,7 +163,7 @@ class sputnik extends domophone
         bool   $stunEnabled = false,
         string $stunServer = '',
         int    $stunPort = 3478
-    )
+    ): void
     {
         $this->apiCall('mutation', 'updateIntercomSipParameters', [
             'intercomID' => $this->uuid,
@@ -172,7 +183,7 @@ class sputnik extends domophone
         // Empty implementation
     }
 
-    public function deleteApartment(int $apartment = 0)
+    public function deleteApartment(int $apartment = 0): void
     {
         $this->loadFlats();
         $this->loadPersonalCodes();
@@ -183,7 +194,7 @@ class sputnik extends domophone
         }
     }
 
-    public function deleteRfid(string $code = '')
+    public function deleteRfid(string $code = ''): void
     {
         $this->rfidKeysToBeDeleted[] = $this->flipRfid($code);
     }
@@ -198,12 +209,22 @@ class sputnik extends domophone
         return $lineData['data']['lineTest']['data']['com_line_voltage'];
     }
 
-    public function openLock(int $lockNumber = 0)
+    public function openLock(int $lockNumber = 0): void
     {
         $this->apiCall('mutation', $lockNumber ? 'openSecondDoor' : 'openDoor', ['intercomID' => $this->uuid]);
     }
 
-    public function setAudioLevels(array $levels)
+    public function reboot(): void
+    {
+        $this->apiCall('mutation', 'rebootIntercom', ['intercomID' => $this->uuid]);
+    }
+
+    public function reset(): void
+    {
+        $this->apiCall('mutation', 'restoreDefaultIntercomConfig', ['intercomID' => $this->uuid]);
+    }
+
+    public function setAudioLevels(array $levels): void
     {
         if (count($levels) === 4) {
             $this->apiCall('mutation', 'updateIntercomSoundConfig', [
@@ -216,7 +237,7 @@ class sputnik extends domophone
         }
     }
 
-    public function setCallTimeout(int $timeout)
+    public function setCallTimeout(int $timeout): void
     {
         $this->apiCall('mutation', 'updateIntercomCallConfig', [
             'intercomID' => $this->uuid,
@@ -224,7 +245,7 @@ class sputnik extends domophone
         ]);
     }
 
-    public function setCmsLevels(array $levels)
+    public function setCmsLevels(array $levels): void
     {
         $this->apiCall('mutation', 'updateIntercomFlatConfig', [
             'intercomID' => $this->uuid,
@@ -233,7 +254,7 @@ class sputnik extends domophone
         ]);
     }
 
-    public function setCmsModel(string $model = '')
+    public function setCmsModel(string $model = ''): void
     {
         $this->apiCall('mutation', 'updateIntercomCommutatorConfig', [
             'intercomID' => $this->uuid,
@@ -247,7 +268,12 @@ class sputnik extends domophone
         // $this->configureApartment($sipNumber, 0, [$sipNumber], false);
     }
 
-    public function setDtmfCodes(string $code1 = '1', string $code2 = '2', string $code3 = '3', string $codeCms = '1')
+    public function setDtmfCodes(
+        string $code1 = '1',
+        string $code2 = '2',
+        string $code3 = '3',
+        string $codeCms = '1'
+    ): void
     {
         $this->apiCall('mutation', 'updateIntercomSipParameters', [
             'intercomID' => $this->uuid,
@@ -265,7 +291,7 @@ class sputnik extends domophone
         // Empty implementation
     }
 
-    public function setSosNumber(int $sipNumber)
+    public function setSosNumber(int $sipNumber): void
     {
         $this->apiCall('mutation', 'updateIntercomOptionalButtonParameters', [
             'intercomID' => $this->uuid,
@@ -276,7 +302,7 @@ class sputnik extends domophone
         ]);
     }
 
-    public function setTalkTimeout(int $timeout)
+    public function setTalkTimeout(int $timeout): void
     {
         $this->apiCall('mutation', 'updateIntercomCallConfig', [
             'intercomID' => $this->uuid,
@@ -289,7 +315,7 @@ class sputnik extends domophone
         // Empty implementation
     }
 
-    public function setUnlockTime(int $time = 3)
+    public function setUnlockTime(int $time = 3): void
     {
         $this->apiCall('mutation', 'updateIntercomOpenDoorConfig', [
             'intercomID' => $this->uuid,
@@ -304,7 +330,7 @@ class sputnik extends domophone
         // Empty implementation
     }
 
-    public function syncData()
+    public function syncData(): void
     {
         $this->uploadFlats();
         $this->uploadPersonalCodes();
@@ -330,7 +356,7 @@ class sputnik extends domophone
         return $dbConfig;
     }
 
-    protected function deleteIntercomKeys($keys)
+    protected function deleteIntercomKeys($keys): void
     {
         $this->apiCall('mutation', 'deleteIntercomKeys', [
             'intercomID' => $this->uuid,
@@ -341,7 +367,7 @@ class sputnik extends domophone
     protected function flipRfid(string $code): string
     {
         $reversedKey = implode(array_reverse(str_split($code, 2)));
-        $isSevenByteKey = substr($reversedKey, -6) !== '000000';
+        $isSevenByteKey = !str_ends_with($reversedKey, '000000');
         return $isSevenByteKey ? $reversedKey : substr($reversedKey, 0, 8);
     }
 
@@ -475,7 +501,7 @@ class sputnik extends domophone
         ];
     }
 
-    protected function getFlatTemplate()
+    protected function getFlatTemplate(): array
     {
         return [
             'num' => 0,
@@ -541,6 +567,39 @@ class sputnik extends domophone
         return $matrix;
     }
 
+    protected function getNtpConfig(): array
+    {
+        $intercom = $this->apiCall('query', 'intercom', ['uuid' => $this->uuid], [
+            'configShadow' => ['timeZone'],
+        ]);
+
+        $timezone = $intercom['data']['intercom']['configShadow']['timeZone'];
+
+        return [
+            'server' => '',
+            'port' => 123,
+            'timezone' => $timezone,
+        ];
+    }
+
+    /**
+     * Get timezone representation for Sputnik.
+     *
+     * @param string $timezone Timezone identifier.
+     *
+     * @return string Offset without zeros (+3 for example).
+     */
+    protected function getOffsetByTimezone(string $timezone): string
+    {
+        try {
+            $time = new DateTime('now', new DateTimeZone($timezone));
+            $offset = $time->format('P');
+            return preg_replace('/(?<=\+|)(0)(?=\d:\d{2})|:00/', '', $offset);
+        } catch (Exception) {
+            return '+3';
+        }
+    }
+
     protected function getRfids(): array
     {
         $intercom = $this->apiCall('query', 'intercom', ['uuid' => $this->uuid], [
@@ -596,7 +655,7 @@ class sputnik extends domophone
      *
      * @return void
      */
-    protected function loadFlats()
+    protected function loadFlats(): void
     {
         if ($this->flats !== null) {
             return;
@@ -639,7 +698,7 @@ class sputnik extends domophone
      *
      * @return void
      */
-    protected function loadPersonalCodes()
+    protected function loadPersonalCodes(): void
     {
         if ($this->personalCodes !== null) {
             return;
@@ -675,7 +734,7 @@ class sputnik extends domophone
         }, []);
     }
 
-    protected function uploadFlats()
+    protected function uploadFlats(): void
     {
         if ($this->flats === null) {
             return;
@@ -740,7 +799,7 @@ class sputnik extends domophone
         ]);
     }
 
-    protected function uploadPersonalCodes()
+    protected function uploadPersonalCodes(): void
     {
         if ($this->personalCodes === null) {
             return;

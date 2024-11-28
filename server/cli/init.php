@@ -90,6 +90,8 @@
             }
 
             function update() {
+                global $config;
+
                 maintenance(true);
                 wait_all();
 
