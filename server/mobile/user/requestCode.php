@@ -30,6 +30,34 @@
 
         $confirmMethod = @$postdata['method'] ?: @$config["backends"]["isdn"]["confirm_method"] ?: "outgoingCall";
 
+        // fake accounts - always confirmation by pin
+        if ($user_phone == '79123456781') { // fake account №1
+            $pin = '1001';
+            $redis->setex("userpin_".$user_phone, 60, $pin);
+            response(200, [ "method" => "sms"]);
+        } else
+        if ($user_phone == '79123456782') { // fake account №2
+            $pin = '1002';
+            $redis->setex("userpin_".$user_phone, 60, $pin);
+            response(200, [ "method" => "sms"]);
+        } else
+        if ($user_phone == '79123456783') { // fake account №3
+            $pin = '1003';
+            $redis->setex("userpin_".$user_phone, 60, $pin);
+            response(200, [ "method" => "sms"]);
+        } else
+        if ($user_phone == '79123456784') { // fake account №4
+            $pin = '1004';
+            $redis->setex("userpin_".$user_phone, 60, $pin);
+            response(200, [ "method" => "sms"]);
+        } else
+        if ($user_phone == '79123456785') { // fake account №5
+            $pin = '1005';
+            $redis->setex("userpin_".$user_phone, 60, $pin);
+            response(200, [ "method" => "sms"]);
+        } 
+
+        // real accounts
         switch ($confirmMethod) {
             case 'outgoingCall':
                 response(200, [ "method" => "outgoingCall", "confirmationNumbers" => $isdn->confirmNumbers()]);
@@ -41,23 +69,7 @@
                 if ($already){
                     response(429);
                 } else {
-                    if ($user_phone == '79123456781') { // fake account №1
-                        $pin = '1001';
-                    } else
-                    if ($user_phone == '79123456782') { // fake account №2
-                        $pin = '1002';
-                    } else
-                    if ($user_phone == '79123456783') { // fake account №3
-                        $pin = '1003';
-                    } else
-                    if ($user_phone == '79123456784') { // fake account №4
-                        $pin = '1004';
-                    } else
-                    if ($user_phone == '79123456785') { // fake account №5
-                        $pin = '1005';
-                    } else {
-                        $pin = explode(":", $isdn->sendCode($user_phone))[0];
-                    }
+                    $pin = explode(":", $isdn->sendCode($user_phone))[0];
                     $redis->setex("userpin_".$user_phone, 60, $pin);
                     response(200, [ "method" => $confirmMethod]);
                 }
