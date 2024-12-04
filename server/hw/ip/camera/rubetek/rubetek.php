@@ -18,7 +18,7 @@ class rubetek extends camera
         int $width = 0,
         int $height = 0,
         int $sensitivity = 0
-    )
+    ): void
     {
         $detectionSettings = $this->getConfig()['face_detection'];
 
@@ -52,7 +52,7 @@ class rubetek extends camera
         return $this->apiCall('/image', 'GET', [], 5);
     }
 
-    public function setOsdText(string $text = '')
+    public function setOsdText(string $text = ''): void
     {
         $this->apiCall('/settings/osd', 'PATCH', [
             'show_name' => true,
