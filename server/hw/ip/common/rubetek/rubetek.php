@@ -14,7 +14,7 @@ trait rubetek
 
     protected string $defaultWebPassword = 'Rubetek34';
 
-    public function configureEventServer(string $url)
+    public function configureEventServer(string $url): void
     {
         ['host' => $server, 'port' => $port] = parse_url_ext($url);
 
@@ -24,7 +24,7 @@ trait rubetek
         ]);
     }
 
-    public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow')
+    public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow'): void
     {
         $timeSettings = $this->getConfig()['time'];
         $timeSettings['ntp_pool'] = "$server:$port";
@@ -44,17 +44,17 @@ trait rubetek
         return $sysinfo;
     }
 
-    public function reboot()
+    public function reboot(): void
     {
         $this->apiCall('/reboot', 'POST');
     }
 
-    public function reset()
+    public function reset(): void
     {
         $this->apiCall('/reset', 'POST');
     }
 
-    public function setAdminPassword(string $password)
+    public function setAdminPassword(string $password): void
     {
         // Without sleep() the following calls can respond "access is forbidden" or "account not found"
         $this->apiCall('/settings/account/password', 'PATCH', [
@@ -87,7 +87,7 @@ trait rubetek
      *
      * @return array|string API response.
      */
-    protected function apiCall(string $resource, string $method = 'GET', array $payload = [], int $timeout = 0)
+    protected function apiCall(string $resource, string $method = 'GET', array $payload = [], int $timeout = 0): array|string
     {
         $req = $this->url . $this->apiPrefix . $resource;
 
@@ -161,12 +161,12 @@ trait rubetek
             $time = new DateTime('now', new DateTimeZone($timezone));
             $offset = $time->format('P');
             return 'GMT' . preg_replace('/(?<=\+|)(0)(?=\d:\d{2})|:00/', '', $offset);
-        } catch (Exception $e) {
+        } catch (Exception) {
             return 'GMT+3';
         }
     }
 
-    protected function initializeProperties()
+    protected function initializeProperties(): void
     {
         $this->login = 'api_user';
         $this->defaultPassword = 'api_password';

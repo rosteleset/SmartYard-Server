@@ -18,7 +18,7 @@ abstract class rubetek extends domophone
      */
     protected ?array $dialplans = null;
 
-    public function addRfid(string $code, int $apartment = 0)
+    public function addRfid(string $code, int $apartment = 0): void
     {
         $this->apiCall('/rfids', 'POST', [
             'rfid' => $code,
@@ -29,7 +29,7 @@ abstract class rubetek extends domophone
         ]);
     }
 
-    public function addRfids(array $rfids)
+    public function addRfids(array $rfids): void
     {
         $rfidChunks = array_chunk($rfids, 400); // Cannot add more than 400 records in one request
 
@@ -50,7 +50,7 @@ abstract class rubetek extends domophone
         array $sipNumbers = [],
         bool  $cmsEnabled = true,
         array $cmsLevels = []
-    )
+    ): void
     {
         $this->loadDialplans();
 
@@ -66,7 +66,7 @@ abstract class rubetek extends domophone
         );
     }
 
-    public function configureEncoding()
+    public function configureEncoding(): void
     {
         // Multiple calls to work correctly
         $videoSettings = $this->apiCall('/settings/video');
@@ -92,7 +92,7 @@ abstract class rubetek extends domophone
         $this->apiCall('/settings/video', 'PATCH', $videoSettings);
     }
 
-    public function configureGate(array $links = [])
+    public function configureGate(array $links = []): void
     {
         $this->apiCall('/apart_ranges', 'DELETE');
 
@@ -109,7 +109,7 @@ abstract class rubetek extends domophone
         }
     }
 
-    public function configureMatrix(array $matrix)
+    public function configureMatrix(array $matrix): void
     {
         $this->clearMatrix();
 
@@ -166,7 +166,7 @@ abstract class rubetek extends domophone
         bool   $stunEnabled = false,
         string $stunServer = '',
         int    $stunPort = 3478
-    )
+    ): void
     {
         $params = [
             'Acc1Login' => $login,
@@ -192,7 +192,7 @@ abstract class rubetek extends domophone
         ]);
     }
 
-    public function configureUserAccount(string $password)
+    public function configureUserAccount(string $password): void
     {
         $this->apiCall('/settings/account', 'POST', [
             'account' => 'user',
@@ -201,7 +201,7 @@ abstract class rubetek extends domophone
         ]);
     }
 
-    public function deleteApartment(int $apartment = 0)
+    public function deleteApartment(int $apartment = 0): void
     {
         $this->loadDialplans();
 
@@ -231,7 +231,7 @@ abstract class rubetek extends domophone
         }
     }
 
-    public function deleteRfid(string $code = '')
+    public function deleteRfid(string $code = ''): void
     {
         if ($code) {
             $this->apiCall("/rfids/$code", 'DELETE');
@@ -310,22 +310,23 @@ abstract class rubetek extends domophone
         return array_column($this->apiCall('/rfids'), 'rfid', 'rfid');
     }
 
-    public function openLock(int $lockNumber = 0)
+    public function openLock(int $lockNumber = 0): void
     {
         $lockNumber += 1;
         $this->apiCall("/doors/$lockNumber/open", 'POST', [], 3);
     }
 
-    public function prepare()
+    public function prepare(): void
     {
         parent::prepare();
         $this->configureBasicSettings();
         $this->setAdminPin(false);
         $this->configureInternalReader();
         $this->configureExternalReader();
+        $this->setCustomSituationLogic();
     }
 
-    public function setAudioLevels(array $levels)
+    public function setAudioLevels(array $levels): void
     {
         if (count($levels) === 5) {
             $audioSettings = $this->getConfig()['audio'];
@@ -340,14 +341,14 @@ abstract class rubetek extends domophone
         }
     }
 
-    public function setCallTimeout(int $timeout)
+    public function setCallTimeout(int $timeout): void
     {
         $callSettings = $this->getConfig()['call'];
         $callSettings['dial_out_time'] = $timeout;
         $this->apiCall('/settings/call', 'PATCH', $callSettings);
     }
 
-    public function setCmsLevels(array $levels)
+    public function setCmsLevels(array $levels): void
     {
         if (count($levels) === 4) {
             $analogSettings = $this->apiCall('/settings/analog');
@@ -361,7 +362,7 @@ abstract class rubetek extends domophone
         }
     }
 
-    public function setCmsModel(string $model = '')
+    public function setCmsModel(string $model = ''): void
     {
         if ($model === 'DIGITAL') {
             $mode = 'digital';
@@ -377,7 +378,7 @@ abstract class rubetek extends domophone
         $this->apiCall('/configuration', 'PATCH', ['analog' => $analogSettings]);
     }
 
-    public function setConciergeNumber(int $sipNumber)
+    public function setConciergeNumber(int $sipNumber): void
     {
         $this->apiCall('/settings/concierge', 'PATCH', [
             'enabled' => true,
@@ -388,7 +389,7 @@ abstract class rubetek extends domophone
         ]);
     }
 
-    public function setDtmfCodes(string $code1 = '1', string $code2 = '2', string $code3 = '3', string $codeCms = '1')
+    public function setDtmfCodes(string $code1 = '1', string $code2 = '2', string $code3 = '3', string $codeCms = '1'): void
     {
         $this->apiCall('/settings/dtmf', 'PATCH', [
             'code_length' => 1,
@@ -411,7 +412,7 @@ abstract class rubetek extends domophone
         // Empty implementation
     }
 
-    public function setSosNumber(int $sipNumber)
+    public function setSosNumber(int $sipNumber): void
     {
         $this->apiCall('/settings/sos', 'PATCH', [
             'enabled' => true,
@@ -422,14 +423,14 @@ abstract class rubetek extends domophone
         ]);
     }
 
-    public function setTalkTimeout(int $timeout)
+    public function setTalkTimeout(int $timeout): void
     {
         $callSettings = $this->getConfig()['call'];
         $callSettings['max_call_time'] = $timeout;
         $this->apiCall('/settings/call', 'PATCH', $callSettings);
     }
 
-    public function setTickerText(string $text = '')
+    public function setTickerText(string $text = ''): void
     {
         $displaySettings = $this->getConfig()['display'];
         $displaySettings['welcome_display'] = 1;
@@ -439,7 +440,7 @@ abstract class rubetek extends domophone
         $this->apiCall('/settings/display', 'PATCH', $displaySettings);
     }
 
-    public function setUnlockTime(int $time = 3)
+    public function setUnlockTime(int $time = 3): void
     {
         // TODO: closes the relay if the door is currently open by API, RFID, personal access code, etc.
         $doors = $this->getDoors();
@@ -456,9 +457,8 @@ abstract class rubetek extends domophone
         }
     }
 
-    public function setUnlocked(bool $unlocked = true)
+    public function setUnlocked(bool $unlocked = true): void
     {
-        // TODO: requires manual configuration of discrete output logic (custom situation command -> Switch OFF)
         $this->apiCall('/custom/' . ($unlocked ? 'start' : 'stop'), 'POST');
     }
 
@@ -481,7 +481,7 @@ abstract class rubetek extends domophone
      *
      * @return void
      */
-    protected function clearMatrix()
+    protected function clearMatrix(): void
     {
         $this->loadDialplans();
 
@@ -507,7 +507,7 @@ abstract class rubetek extends domophone
      *
      * @return void
      */
-    protected function configureBasicSettings()
+    protected function configureBasicSettings(): void
     {
         $this->apiCall('/configuration', 'PATCH', [
             'log_buffer_size' => 1024,
@@ -530,7 +530,7 @@ abstract class rubetek extends domophone
      *
      * @return void
      */
-    protected function configureExternalReader()
+    protected function configureExternalReader(): void
     {
         $this->apiCall('/settings/wiegand', 'PATCH', [
             'type' => 26,
@@ -544,7 +544,7 @@ abstract class rubetek extends domophone
      *
      * @return void
      */
-    protected function configureInternalReader()
+    protected function configureInternalReader(): void
     {
         $this->apiCall('/settings/nfc_reader', 'PATCH', [
             'period_reading_ms' => 2000,
@@ -563,7 +563,7 @@ abstract class rubetek extends domophone
      *
      * @return void
      */
-    protected function deleteDialplan(int $id = 0)
+    protected function deleteDialplan(int $id = 0): void
     {
         $this->loadDialplans();
 
@@ -706,7 +706,7 @@ abstract class rubetek extends domophone
      *
      * @return void
      */
-    protected function loadDialplans()
+    protected function loadDialplans(): void
     {
         if ($this->dialplans === null) {
             $rawDialplans = $this->apiCall('/apartments');
@@ -749,7 +749,7 @@ abstract class rubetek extends domophone
      *
      * @return void
      */
-    protected function setAdminPin(bool $enabled = true)
+    protected function setAdminPin(bool $enabled = true): void
     {
         if ($enabled) {
             $pin = str_pad(mt_rand(0, 9999), 4, '0', STR_PAD_LEFT);
@@ -760,6 +760,22 @@ abstract class rubetek extends domophone
         $displaySettings = $this->getConfig()['display'];
         $displaySettings['admin_password'] = $pin;
         $this->apiCall('/configuration', 'PATCH', ['display' => $displaySettings]);
+    }
+
+    /**
+     * Sets discrete outputs logic for custom situation (unlock mode).
+     *
+     * @return void
+     */
+    protected function setCustomSituationLogic(): void
+    {
+        $discreteOutputLogic = $this->apiCall('/settings/discrete_output_logic');
+
+        $discreteOutputLogic['relay1']['custom situation command'] = 'relay_off();';
+        $discreteOutputLogic['relay2']['custom situation command'] = 'relay_off();';
+        $discreteOutputLogic['display']['custom situation command'] = 'print("Дверь открыта!");';
+
+        $this->apiCall('/settings/discrete_output_logic', 'PATCH', $discreteOutputLogic);
     }
 
     /**
@@ -783,7 +799,7 @@ abstract class rubetek extends domophone
         string $callType,
         array  $doorAccess,
         array  $accessCodes
-    )
+    ): void
     {
         $this->loadDialplans();
 
