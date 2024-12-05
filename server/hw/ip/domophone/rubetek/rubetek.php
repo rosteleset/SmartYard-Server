@@ -379,7 +379,15 @@ abstract class rubetek extends domophone
         $analogSettings = $this->apiCall('/settings/analog');
         $analogSettings['mode'] = $mode;
         $analogSettings['kkmtype'] = $type;
-        $this->apiCall('/configuration', 'PATCH', ['analog' => $analogSettings]);
+
+        if ($this->isLegacyVersion()) {
+            $this->apiCall('/configuration', 'PATCH', ['analog' => $analogSettings]);
+        } else {
+            // The analog settings payload requires analog and digital matrices.
+            $analogSettings['kkm_addressing'] = $this->getAnalogAddressingTemplate();
+            $analogSettings['digital_addressing'] = $this->getDigitalAddressingTemplate();
+            $this->apiCall('/settings/analog', 'PATCH', $analogSettings);
+        }
     }
 
     public function setConciergeNumber(int $sipNumber): void
@@ -606,6 +614,36 @@ abstract class rubetek extends domophone
         }
     }
 
+    /**
+     * Generates a default analog addressing template.
+     *
+     * @return array Analog addressing template.
+     */
+    protected function getAnalogAddressingTemplate(): array
+    {
+        $analogAddressing = [];
+
+        for ($kkm = 1; $kkm <= 8; $kkm++) {
+            $analogAddressing["kkm_$kkm"] = [];
+
+            for ($e = 0; $e <= 9; $e++) {
+                $analogAddressing["kkm_$kkm"]["e$e"] = [];
+
+                for ($i = 0; $i < 10; $i++) {
+                    $value = ($kkm - 1) * 100 + $i * 10 + $e;
+
+                    if ($value % 100 === 0) {
+                        $value += 100;
+                    }
+
+                    $analogAddressing["kkm_$kkm"]["e$e"][] = $value;
+                }
+            }
+        }
+
+        return $analogAddressing;
+    }
+
     protected function getCmsModel(): string
     {
         $cmsModelRaw = $this->apiCall('/settings/analog');
@@ -615,6 +653,26 @@ abstract class rubetek extends domophone
         }
 
         return array_search($cmsModelRaw['kkmtype'], RubetekConst::CMS_MODEL_MAP) ?? '';
+    }
+
+    /**
+     * Generates a default digital addressing template.
+     *
+     * @return array Digital addressing template.
+     */
+    protected function getDigitalAddressingTemplate(): array
+    {
+        $digitAddressing = [];
+
+        for ($i = 1; $i <= 15; $i++) {
+            $digitAddressing["$i"] = [];
+
+            for ($j = 0; $j < 17; $j++) {
+                $digitAddressing["$i"][] = $i + ($j * 15);
+            }
+        }
+
+        return $digitAddressing;
     }
 
     /**
