@@ -13,12 +13,12 @@ trait rubetek
     public function setUnlocked(bool $unlocked = true): void
     {
         $this->apiCall('/custom/' . ($unlocked ? 'start' : 'stop'), 'POST');
+        sleep(3); // Wait for the relay to switch
     }
 
     protected function getUnlocked(): bool
     {
         // Returns true if the door is currently open by API, RFID, personal access code, etc.
-        // TODO: check with /operating_mode
         return $this->getDoors()[0]['open'];
     }
 }
