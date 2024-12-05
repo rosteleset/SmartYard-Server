@@ -2361,6 +2361,16 @@
                     "description" => "Export all TT viewers to JS files"
                 ];
 
+                $usage["files"]["replace-viewer"] = [
+                    "value" => "string",
+                    "placeholder" => "filename",
+                    "description" => "Replace existing viewer"
+                ];
+
+                $usage["files"]["replace-all-viewers"] = [
+                    "description" => "Replace existing viewer"
+                ];
+
                 $usage["files"]["export-workflows"] = [
                     "description" => "Export all TT workflows to LUA files"
                 ];
@@ -2444,6 +2454,72 @@
                             echo "fail\n";
                         }
                     }
+
+                    exit(0);
+                }
+
+                if (array_key_exists("--replace-viewer", $args)) {
+                    $viewers = $this->getViewers();
+
+                    $f = false;
+
+                    foreach ($viewers as $v) {
+                        try {
+                            $dir = __DIR__ . "/../../data/files/viewers/";
+
+                            if ($args["--replace-viewer"] == "{$v['filename']}" . ".js" && file_exists($dir . "{$v['filename']}" . ".js")) {
+                                $c = @file_get_contents($dir . "{$v['filename']}" . ".js");
+
+                                if ($c) {
+                                    $f = true;
+
+                                    $this->putViewer($v["field"], $v["name"], $c);
+                                }
+                            }
+                        } catch (\Exception $e) {
+                            echo "fail\n";
+                            exit(0);
+                        }
+                    }
+
+                    if ($f) {
+                        echo "success\n";
+                    } else {
+                        echo "file not found \"" . $dir . $args["--replace-viewer"] . ".js\"\n";
+                    }
+
+                    exit(0);
+                }
+
+                if (array_key_exists("--replace-all-viewers", $args)) {
+                    $viewers = $this->getViewers();
+
+                    $dir = __DIR__ . "/../../data/files/viewers/";
+
+                    $l = scandir($dir);
+
+                    $r = 0;
+
+                    foreach ($l as $f) {
+                        foreach ($viewers as $v) {
+                            try {
+                                if ($f == "{$v['filename']}" . ".js") {
+                                    $c = @file_get_contents($dir . "{$v['filename']}" . ".js");
+
+                                    if ($c) {
+                                        $r++;
+
+                                        $this->putViewer($v["field"], $v["name"], $c);
+                                    }
+                                }
+                            } catch (\Exception $e) {
+                                echo "fail\n";
+                                exit(0);
+                            }
+                        }
+                    }
+
+                    echo "$r viewers replaced\n";
 
                     exit(0);
                 }

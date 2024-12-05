@@ -1472,7 +1472,7 @@
                     exit(0);
                 }
 
-                if (array_key_exists($args["--create-index"])) {
+                if (array_key_exists("--create-index", $args)) {
                     $db = $this->dbName;
 
                     $c = 0;
@@ -1502,7 +1502,7 @@
                     exit(0);
                 }
 
-                if (array_key_exists($args["--drop-index"])) {
+                if (array_key_exists("--drop-index", $args)) {
                     $db = $this->dbName;
 
                     $c = 0;
