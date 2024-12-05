@@ -328,7 +328,6 @@ abstract class rubetek extends domophone
         $this->setAdminPin(false);
         $this->configureInternalReader();
         $this->configureExternalReader();
-        $this->setCustomSituationLogic();
     }
 
     public function setAudioLevels(array $levels): void
@@ -794,22 +793,6 @@ abstract class rubetek extends domophone
         $displaySettings = $this->getConfig()['display'];
         $displaySettings['admin_password'] = $pin;
         $this->apiCall('/configuration', 'PATCH', ['display' => $displaySettings]);
-    }
-
-    /**
-     * Sets discrete outputs logic for custom situation (unlock mode).
-     *
-     * @return void
-     */
-    protected function setCustomSituationLogic(): void
-    {
-        $discreteOutputLogic = $this->apiCall('/settings/discrete_output_logic');
-
-        $discreteOutputLogic['relay1']['custom situation command'] = 'relay_off();';
-        $discreteOutputLogic['relay2']['custom situation command'] = 'relay_off();';
-        $discreteOutputLogic['display']['custom situation command'] = 'print("Дверь открыта!");';
-
-        $this->apiCall('/settings/discrete_output_logic', 'PATCH', $discreteOutputLogic);
     }
 
     /**
