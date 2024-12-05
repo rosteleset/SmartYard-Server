@@ -12,6 +12,11 @@ abstract class rubetek extends domophone
 
     use \hw\ip\common\rubetek\rubetek;
 
+    use legacy\rubetek {
+        getUnlocked as getUnlockedLegacy;
+        setUnlocked as setUnlockedLegacy;
+    }
+
     /**
      * @var array|null $dialplans An array that holds dialplan information,
      * which may be null if not loaded.
@@ -442,7 +447,7 @@ abstract class rubetek extends domophone
 
     public function setUnlockTime(int $time = 3): void
     {
-        // TODO: closes the relay if the door is currently open by API, RFID, personal access code, etc.
+        // Closes the relay if the door is currently open by API, RFID, personal access code, etc.
         $doors = $this->getDoors();
 
         foreach ($doors as $door) {
@@ -459,7 +464,33 @@ abstract class rubetek extends domophone
 
     public function setUnlocked(bool $unlocked = true): void
     {
-        $this->apiCall('/custom/' . ($unlocked ? 'start' : 'stop'), 'POST');
+        if ($this->isLegacyVersion()) {
+            $this->setUnlockedLegacy($unlocked);
+            return;
+        }
+
+        if ($unlocked) {
+            $this->apiCall('/free_passage/start', 'POST', [
+                'door_access' => [1, 2],
+                'mon' => true,
+                'tue' => true,
+                'wed' => true,
+                'thu' => true,
+                'fri' => true,
+                'sat' => true,
+                'sun' => true,
+                'selectDate' => false,
+                'selectTime' => false,
+                'startDate' => '04.10.2024',
+                'endDate' => '04.10.2025',
+                'startTime' => '00:00',
+                'endTime' => '23:59',
+            ]);
+        } else {
+            $this->apiCall('/free_passage/stop', 'POST');
+        }
+
+        sleep(3); // Wait for the relay to switch
     }
 
     public function transformDbConfig(array $dbConfig): array
@@ -697,8 +728,11 @@ abstract class rubetek extends domophone
 
     protected function getUnlocked(): bool
     {
-        // TODO: returns true if the door is currently open by API, RFID, personal access code, etc.
-        return $this->getDoors()[0]['open'];
+        if ($this->isLegacyVersion()) {
+            return $this->getUnlockedLegacy();
+        }
+
+        return $this->apiCall('/operating_mode')['free_passage_mode'] ?? true;
     }
 
     /**

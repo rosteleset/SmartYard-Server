@@ -12,6 +12,9 @@ use Exception;
 trait rubetek
 {
 
+    /**
+     * @var string Default WEB interface password.
+     */
     protected string $defaultWebPassword = 'Rubetek34';
 
     public function configureEventServer(string $url): void
@@ -171,5 +174,15 @@ trait rubetek
         $this->login = 'api_user';
         $this->defaultPassword = 'api_password';
         $this->apiPrefix = '/api/v1';
+    }
+
+    /**
+     * Determines if the software version is considered legacy.
+     *
+     * @return bool True if the software version is legacy, false otherwise.
+     */
+    protected function isLegacyVersion(): bool
+    {
+        return $this->getSoftwareVersion() !== null && $this->getSoftwareVersion() < '2024.08.150111497';
     }
 }
