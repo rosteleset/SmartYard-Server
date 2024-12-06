@@ -63,13 +63,6 @@ class rubetek extends camera
         ]);
     }
 
-    public function transformDbConfig(array $dbConfig): array
-    {
-        $timezone = $dbConfig['ntp']['timezone'];
-        $dbConfig['ntp']['timezone'] = $this->getOffsetByTimezone($timezone);
-        return $dbConfig;
-    }
-
     protected function getMotionDetectionConfig(): array
     {
         [

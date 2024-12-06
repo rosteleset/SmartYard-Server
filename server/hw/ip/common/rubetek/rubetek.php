@@ -80,6 +80,13 @@ trait rubetek
         // Empty implementation
     }
 
+    public function transformDbConfig(array $dbConfig): array
+    {
+        $timezone = $dbConfig['ntp']['timezone'];
+        $dbConfig['ntp']['timezone'] = $this->getOffsetByTimezone($timezone);
+        return $dbConfig;
+    }
+
     /**
      * Make an API call.
      *

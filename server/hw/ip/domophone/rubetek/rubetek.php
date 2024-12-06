@@ -10,11 +10,13 @@ use hw\ip\domophone\domophone;
 abstract class rubetek extends domophone
 {
 
-    use \hw\ip\common\rubetek\rubetek;
+    use \hw\ip\common\rubetek\rubetek {
+        transformDbConfig as protected commonTransformDbConfig;
+    }
 
     use legacy\rubetek {
-        getUnlocked as getUnlockedLegacy;
-        setUnlocked as setUnlockedLegacy;
+        getUnlocked as protected getUnlockedLegacy;
+        setUnlocked as protected setUnlockedLegacy;
     }
 
     /**
@@ -502,8 +504,7 @@ abstract class rubetek extends domophone
 
     public function transformDbConfig(array $dbConfig): array
     {
-        $timezone = $dbConfig['ntp']['timezone'];
-        $dbConfig['ntp']['timezone'] = $this->getOffsetByTimezone($timezone);
+        $dbConfig = $this->commonTransformDbConfig($dbConfig);
 
         $stunEnabled = $dbConfig['sip']['stunEnabled'];
         if (!$stunEnabled) {
