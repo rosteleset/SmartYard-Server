@@ -1271,6 +1271,44 @@
                             }
                         }
 
+                        if ($unit == 'ufanet') {
+                            $patterns_call = [
+                                // pattern         start  talk  open   call_from_panel
+                                // TODO: check the incoming call and check the call_from_panel flag
+                                ["/call number: (\d+)/", true, false, false, 0],
+                                ["/STAT/CALLGATE: (\d+)/", true, false, false, 0],
+                                ["/SIP UA event: CALL_OUTGOING ( sip:(\d+)@.*)/", true, false, false, 0],
+                                ["/TELE/NUMBER: (\d+)/", true, false, false, 0],
+                                ["/SIP UA event: CALL_RINGING ( sip:(\d+)@.*)/", true, false, false, 0],
+                                ["/SIP UA event: CALL_ANSWERED ( sip:(\d+)@.*)/", false, true, false, 0],
+                                ["/SIP UA event: CALL_ESTABLISHED ( sip:(\d+)@.*)/", false, true, false, 0],
+                                ["/pickup 1/", false, true, false, 0],
+                                ["/DTMF/", false, false, true, 0],
+                                ["/STAT/DOOR1: 1/" , false, false, true, 0], // Not sure about it
+                            ];
+
+                            foreach ($patterns_call as [$pattern, $flag_start, $flag_talk_started, $flag_door_opened, $now_call_from_panel]) {
+                                unset($now_flat_id);
+                                unset($now_flat_number);
+                                unset($now_call_id);
+                                unset($now_sip_call_id);
+
+                                if (preg_match($pattern, $msg) !== 1) {
+                                    continue;
+                                }
+
+                                // Check if call started from this panel
+                                if ($now_call_from_panel > 0) {
+                                    $call_from_panel = 1;
+                                }
+
+                                // Search for SIP number
+                                if (preg_match('/sip:(\d+)@/', $msg, $matches)) {
+                                    $number = $matches[1];
+                                }
+                            }
+                        }
+
                         if ($call_start_found) {
                             break;
                         }
