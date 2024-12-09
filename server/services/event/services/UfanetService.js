@@ -52,8 +52,8 @@ class UfanetService extends SyslogService {
         }
 
         // All calls are done
-        if (false) {
-            // TODO
+        if (message.includes('pickup 0')) {
+            await API.callFinished({ date: date, ip: host });
         }
     }
 }
