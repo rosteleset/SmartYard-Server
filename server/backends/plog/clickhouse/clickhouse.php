@@ -704,6 +704,7 @@
                         $msg = $item['msg'];
                         $unit = $item['unit'];
 
+                        // TODO: I think we need to refactor call processing, maybe split it into different classes
                         // Call processing for Beward panel
                         if ($unit == 'beward' || $unit == 'beward_ds') {
                             $patterns_call = [
@@ -1274,17 +1275,17 @@
                         if ($unit == 'ufanet') {
                             $patterns_call = [
                                 // pattern         start  talk  open   call_from_panel
-                                // TODO: check the incoming call and check the call_from_panel flag
-                                ["/call number: (\d+)/", true, false, false, 0],
-                                ["/STAT/CALLGATE: (\d+)/", true, false, false, 0],
-                                ["/SIP UA event: CALL_OUTGOING ( sip:(\d+)@.*)/", true, false, false, 0],
-                                ["/TELE/NUMBER: (\d+)/", true, false, false, 0],
-                                ["/SIP UA event: CALL_RINGING ( sip:(\d+)@.*)/", true, false, false, 0],
-                                ["/SIP UA event: CALL_ANSWERED ( sip:(\d+)@.*)/", false, true, false, 0],
-                                ["/SIP UA event: CALL_ESTABLISHED ( sip:(\d+)@.*)/", false, true, false, 0],
+                                ["/SIP UA event: CALL_INCOMING/", false, false, false, -1], // Incoming call message
+                                ["/call number: (\d+)/", true, false, false, 1],
+                                ["/STAT\/CALLGATE: (\d+)/", true, false, false, 1],
+                                ["/SIP UA event: CALL_OUTGOING \( sip:(\d+)@.*\)/", true, false, false, 1],
+                                ["/SIP UA event: CALL_RINGING \( sip:(\d+)@.*\)/", true, false, false, 1],
+                                // ["/TELE\/NUMBER: (\d+)/", true, false, false, 0],
+                                ["/SIP UA event: CALL_ANSWERED \( sip:(\d+)@.*\)/", false, true, false, 1],
+                                ["/SIP UA event: CALL_ESTABLISHED \( sip:(\d+)@.*\)/", false, true, false, 0],
                                 ["/pickup 1/", false, true, false, 0],
-                                ["/DTMF/", false, false, true, 0],
-                                ["/STAT/DOOR1: 1/" , false, false, true, 0], // Not sure about it
+                                ["/DTMF/", false, false, true, 1],
+                                ["/STAT\/DOOR1: 1/" , false, false, true, 0], // Not sure about it
                             ];
 
                             foreach ($patterns_call as [$pattern, $flag_start, $flag_talk_started, $flag_door_opened, $now_call_from_panel]) {
@@ -1303,8 +1304,56 @@
                                 }
 
                                 // Search for SIP number
-                                if (preg_match('/sip:(\d+)@/', $msg, $matches)) {
-                                    $number = $matches[1];
+                                if (preg_match('/sip:(\d+)@/', $msg, $match)) {
+                                    $sipNumber = $match[1];
+                                    $numberLen = strlen($sipNumber);
+
+                                    // Ordinary panel - apartment ID
+                                    if ($numberLen === 10) {
+                                        $now_flat_id = substr($sipNumber, 1);
+                                    }
+
+                                    // Gate panel - prefix and apartment
+                                    if ($numberLen > 4 && $numberLen < 9) {
+                                        $prefix = substr($sipNumber, 0, 4);
+                                        $now_flat_number = substr($sipNumber, 4);
+                                    }
+                                }
+
+                                // Search for apartment number
+                                if (stripos($msg, 'number') !== false || stripos($msg, 'callgate') !== false) {
+                                    $apartmentNumber = filter_var($msg, FILTER_SANITIZE_NUMBER_INT);
+
+                                    if (strlen($apartmentNumber) < 5) {
+                                        $now_flat_number = $apartmentNumber;
+                                    }
+                                }
+
+                                $call_start_lost =
+                                    isset($now_flat_id) && isset($flat_id) && $now_flat_id != $flat_id ||
+                                    isset($now_flat_number) && isset($flat_number) && $now_flat_number != $flat_number;
+
+                                if ($call_start_lost) {
+                                    break;
+                                }
+
+                                $event_data[self::COLUMN_DATE] = $item['date'];
+
+                                if (isset($now_flat_number) && !isset($flat_number)) {
+                                    $flat_number = $now_flat_number;
+                                }
+                                if (isset($now_flat_id) && !isset($flat_id)) {
+                                    $flat_id = $now_flat_id;
+                                }
+                                if ($flag_talk_started) {
+                                    $event_data[self::COLUMN_EVENT] = self::EVENT_ANSWERED_CALL;
+                                }
+                                if ($flag_door_opened) {
+                                    $event_data[self::COLUMN_OPENED] = 1;
+                                }
+                                if ($flag_start) {
+                                    $call_start_found = true;
+                                    break;
                                 }
                             }
                         }
