@@ -1,0 +1,19 @@
+{
+    "contact": "Conact",
+    "contacts": "Contacts",
+    "methods": {
+        "companies": {
+            "_title": "Contacts",
+            "companies": {
+                "_title": "Contacts",
+                "GET": "View"
+            },
+            "company": {
+                "_title": "Conact",
+                "PUT": "Edit",
+                "POST": "Create",
+                "DELETE": "Delete"
+            }
+        }
+    }
+}
