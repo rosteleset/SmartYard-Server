@@ -217,6 +217,11 @@
         "queue": {
             "backend": "internal"
         },
+
+        "contacts": {
+            "backend": "internal",
+            "collection": "CNT"
+        },
     },
 
     "email": {
