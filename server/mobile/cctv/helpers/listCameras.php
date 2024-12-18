@@ -9,7 +9,7 @@
      * service_url - stub if camera  disabled
      * fallback_url - stub if set not valid DVR url
      */
-    $stub = $config['backends']['dvr']['stub'];
+    $stub = @$config['backends']['dvr']['stub'];
 
     /**
      * Replace DVR url handler.
@@ -78,7 +78,7 @@
             $house['doors'][$entrance['entranceId']] = $door;
         }
 
-        if ($stub && $stub['payment_require_url'] && $stub['service_url'] && $stub['fallback_url']) {
+        if (isset($stub) && $stub['payment_require_url'] && $stub['service_url'] && $stub['fallback_url']) {
             $house['cameras'] = replace_url(
                 $house['cameras'],
                 $flatIsBlock,
