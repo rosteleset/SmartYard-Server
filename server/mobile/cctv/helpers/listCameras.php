@@ -47,7 +47,7 @@
             continue;
 
         $flatDetail = $households->getFlat($flat['flatId']);
-        $flatIsBlock = $flatDetail['adminBlock'] || $flatDetail['manualBlock'] || $flatDetail['autoBlock'];
+        $flatIsBlock = ($flatDetail['adminBlock'] || $flatDetail['manualBlock'] || $flatDetail['autoBlock']) && !isset($ignoreFlatBlock);
 
         if (array_key_exists($houseId, $houses)) {
             $house = &$houses[$houseId];
