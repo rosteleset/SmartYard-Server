@@ -1,7 +1,7 @@
 zabbix_export:
   version: '6.4'
   template_groups:
-    - uuid: 6b2da836ac5d4728b89105eb2ed04250
+    - uuid: e858e071fe054cdabec002d7d99891e9
       name: Templates/Intercoms
   templates:
     - uuid: 46bbe9b8518d49e9b6f5dc7ad15b2926
@@ -86,10 +86,6 @@ zabbix_export:
               event_name: 'INTERCOM: {HOST.NAME} | SIP registration failure'
               priority: WARNING
               description: 'Check SIP registration on device more 10 minutes'
-              dependencies:
-                - name: 'Device has been restarted'
-                  expression: last(/Intercom_BEWARD_DS/intercom.uptime)<10m
-                  recovery_expression: last(/Intercom_BEWARD_DS/intercom.uptime)>15m
         - uuid: 4cd0ca8ed3244fd2a80568c25f060109
           name: 'BEWARD Intercom: system info'
           type: HTTP_AGENT
@@ -123,47 +119,6 @@ zabbix_export:
           query_fields:
             - name: action
               value: get
-        - uuid: e297c651a2ec4f38a2205a9dfda06c9a
-          name: 'BEWARD Intercom: uptime'
-          type: DEPENDENT
-          key: intercom.uptime
-          delay: '0'
-          history: 7d
-          trends: 90d
-          value_type: FLOAT
-          units: uptime
-          preprocessing:
-            - type: JSONPATH
-              parameters:
-                - $.UpTime
-            - type: JAVASCRIPT
-              parameters:
-                - |
-                  var timeParts = value.split(":")
-                  return parseInt(timeParts[0]) * 3600 + parseInt(timeParts[1]) * 60 + parseInt(timeParts[2]);
-          master_item:
-            key: intercom.systeminfo
-          triggers:
-            - uuid: ea74626ad9c8478083a3ad8c765b2186
-              expression: last(/Intercom_BEWARD_DS/intercom.uptime)<10m
-              recovery_mode: RECOVERY_EXPRESSION
-              recovery_expression: last(/Intercom_BEWARD_DS/intercom.uptime)>15m
-              name: 'Device has been restarted'
-              event_name: 'INTERCOM: {HOST.NAME} | has been restarted (uptime < 10m)'
-              priority: INFO
-              description: 'Device has been restarted'
-              manual_close: 'YES'
-            - uuid: 68c1b71d2d3f411684e8a2ead93d9389
-              expression: 'count(/Intercom_BEWARD_DS/intercom.uptime,1800,,"5")<=200'
-              recovery_mode: RECOVERY_EXPRESSION
-              recovery_expression: last(/Intercom_BEWARD_DS/intercom.uptime)>=3600
-              name: 'Intercom: power fail'
-              status: DISABLED
-              priority: HIGH
-              description: |
-                The device was rebooted more than 5 times in an hour.
-                Need to check power supply.
-              manual_close: 'YES'
       tags:
         - tag: class
           value: hardware
