@@ -5,9 +5,9 @@ zabbix_export:
       name: Templates/Intercoms
   templates:
     - uuid: e2f60ec54f644a9fa0866045f6b79adb
-      template: relay_SILINES_RODOS
-      name: 'Relay | SILINES_RODOS by ICMP'
-      description: 'Relay  SILINES RODOS by ICMP panel monitoring'
+      template: Intercom_SILINES_RODOS
+      name: 'Intercom | SILINES_RODOS by ICMP'
+      description: 'Relay SILINES RODOS by ICMP panel monitoring'
       vendor:
         name: SmartYard
         version: 6.4-0
