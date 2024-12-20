@@ -8,7 +8,7 @@
      */
 
     function loadBackend($backend, $login = false) {
-        global $config, $db, $redis, $backends, $cli;
+        global $config, $db, $redis, $backends, $cli, $cli_errors;
 
         if (@$backends[$backend]) {
             if ($login) {
@@ -29,7 +29,11 @@
                         return $backends[$backend];
                     } else {
                         if (@$cli) {
-                            echo "file doesn't exists: " . __DIR__ . "/../backends/$backend/" . $config["backends"][$backend]["backend"] . "/" . $config["backends"][$backend]["backend"] . ".php" . "\n";
+                            $error = "file doesn't exists: " . __DIR__ . "/../backends/$backend/" . $config["backends"][$backend]["backend"] . "/" . $config["backends"][$backend]["backend"] . ".php" . "\n";
+                            if (!@$cli_errors[$error]) {
+                                echo $error;
+                                $cli_errors[$error] = true;
+                            }
                         }
                         return false;
                     }

@@ -41,6 +41,7 @@
 
     $cli = true;
     $cli_error = false;
+    $cli_errors = [];
 
     $global_cli = [];
 
