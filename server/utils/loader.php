@@ -8,7 +8,7 @@
      */
 
     function loadBackend($backend, $login = false) {
-        global $config, $db, $redis, $backends;
+        global $config, $db, $redis, $backends, $cli;
 
         if (@$backends[$backend]) {
             if ($login) {
@@ -28,9 +28,15 @@
                         $backends[$backend]->backend = $backend;
                         return $backends[$backend];
                     } else {
+                        if (@$cli) {
+                            echo "file doesn't exists: " . __DIR__ . "/../backends/$backend/" . $config["backends"][$backend]["backend"] . "/" . $config["backends"][$backend]["backend"] . ".php" . "\n";
+                        }
                         return false;
                     }
                 } catch (Exception $e) {
+                    if (@$cli) {
+                        print_r($e);
+                    }
                     setLastError(i18n("cantLoadBackend", $backend));
                     return false;
                 }
