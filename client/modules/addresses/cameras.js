@@ -391,7 +391,7 @@
         }
 
         if (camera) {
-            let mdArea, rcArea;
+            let mdArea, rcArea, image;
 
             cardForm({
                 title: i18n("addresses.modifyCamera"),
@@ -720,16 +720,23 @@
                     $(`#${prefix}mdClear`).off("click").on("click", () => {
                         mdArea = [];
                         rectangles(`${prefix}md`, callback => {
-                            GET("cameras", "camshot", cameraId, true).
-                            done(r => {
-                                if (r && r.shot) {
-                                    if (typeof callback == "function") {
-                                        callback("data:image/jpg;base64," + r.shot);
-                                    }
+                            if (image) {
+                                if (typeof callback == "function") {
+                                    callback(image);
                                 }
-                            }).
-                            fail(FAIL);
-                        }, "img/cctv.png", [], r => {
+                            } else {
+                                GET("cameras", "camshot", cameraId, true).
+                                done(r => {
+                                    if (r && r.shot) {
+                                        image = "data:image/jpg;base64," + r.shot;
+                                        if (typeof callback == "function") {
+                                            callback("data:image/jpg;base64," + r.shot);
+                                        }
+                                    }
+                                }).
+                                fail(FAIL);
+                            }
+                        }, image ? image: "img/cctv.png", [], r => {
                             mdArea = r;
                         });
                         xblur();
@@ -737,16 +744,23 @@
 
                     $(`#${prefix}mdRevert`).off("click").on("click", () => {
                         rectangles(`${prefix}md`, callback => {
-                            GET("cameras", "camshot", cameraId, true).
-                            done(r => {
-                                if (r && r.shot) {
-                                    if (typeof callback == "function") {
-                                        callback("data:image/jpg;base64," + r.shot);
-                                    }
+                            if (image) {
+                                if (typeof callback == "function") {
+                                    callback(image);
                                 }
-                            }).
-                            fail(FAIL);
-                        }, "img/cctv.png", camera.mdArea, r => {
+                            } else {
+                                GET("cameras", "camshot", cameraId, true).
+                                done(r => {
+                                    if (r && r.shot) {
+                                        image = "data:image/jpg;base64," + r.shot;
+                                        if (typeof callback == "function") {
+                                            callback("data:image/jpg;base64," + r.shot);
+                                        }
+                                    }
+                                }).
+                                fail(FAIL);
+                            }
+                        }, image ? image: "img/cctv.png", camera.mdArea, r => {
                             mdArea = r;
                         });
                         xblur();
@@ -755,16 +769,23 @@
                     $(`#${prefix}rcClear`).off("click").on("click", () => {
                         rcArea = [];
                         polygon(`${prefix}rc`, callback => {
-                            GET("cameras", "camshot", cameraId, true).
-                            done(r => {
-                                if (r && r.shot) {
-                                    if (typeof callback == "function") {
-                                        callback("data:image/jpg;base64," + r.shot);
-                                    }
+                            if (image) {
+                                if (typeof callback == "function") {
+                                    callback(image);
                                 }
-                            }).
-                            fail(FAIL);
-                        }, "img/cctv.png", [], r => {
+                            } else {
+                                GET("cameras", "camshot", cameraId, true).
+                                done(r => {
+                                    if (r && r.shot) {
+                                        image = "data:image/jpg;base64," + r.shot;
+                                        if (typeof callback == "function") {
+                                            callback("data:image/jpg;base64," + r.shot);
+                                        }
+                                    }
+                                }).
+                                fail(FAIL);
+                            }
+                        }, image ? image: "img/cctv.png", [], r => {
                             rcArea = r;
                         });
                         xblur();
@@ -772,16 +793,23 @@
 
                     $(`#${prefix}rcRevert`).off("click").on("click", () => {
                         polygon(`${prefix}rc`, callback => {
-                            GET("cameras", "camshot", cameraId, true).
-                            done(r => {
-                                if (r && r.shot) {
-                                    if (typeof callback == "function") {
-                                        callback("data:image/jpg;base64," + r.shot);
-                                    }
+                            if (image) {
+                                if (typeof callback == "function") {
+                                    callback(image);
                                 }
-                            }).
-                            fail(FAIL);
-                        }, "img/cctv.png", camera.rcArea, r => {
+                            } else {
+                                GET("cameras", "camshot", cameraId, true).
+                                done(r => {
+                                    if (r && r.shot) {
+                                        image = "data:image/jpg;base64," + r.shot;
+                                        if (typeof callback == "function") {
+                                            callback("data:image/jpg;base64," + r.shot);
+                                        }
+                                    }
+                                }).
+                                fail(FAIL);
+                            }
+                        }, image ? image: "img/cctv.png", camera.rcArea, r => {
                             rcArea = r;
                         });
                         xblur();
@@ -790,32 +818,46 @@
                 tabActivate: function (prefix, tab) {
                     if (tab == i18n("addresses.md")) {
                         rectangles(`${prefix}md`, callback => {
-                            GET("cameras", "camshot", cameraId, true).
-                            done(r => {
-                                if (r && r.shot) {
-                                    if (typeof callback == "function") {
-                                        callback("data:image/jpg;base64," + r.shot);
-                                    }
+                            if (image) {
+                                if (typeof callback == "function") {
+                                    callback(image);
                                 }
-                            }).
-                            fail(FAIL);
-                        }, "img/cctv.png", camera.mdArea, r => {
+                            } else {
+                                GET("cameras", "camshot", cameraId, true).
+                                done(r => {
+                                    if (r && r.shot) {
+                                        image = "data:image/jpg;base64," + r.shot;
+                                        if (typeof callback == "function") {
+                                            callback("data:image/jpg;base64," + r.shot);
+                                        }
+                                    }
+                                }).
+                                fail(FAIL);
+                            }
+                        }, image ? image: "img/cctv.png", camera.mdArea, r => {
                             mdArea = r;
                         });
                     }
 
                     if (tab == i18n("addresses.rc")) {
                         polygon(`${prefix}rc`, callback => {
-                            GET("cameras", "camshot", cameraId, true).
-                            done(r => {
-                                if (r && r.shot) {
-                                    if (typeof callback == "function") {
-                                        callback("data:image/jpg;base64," + r.shot);
-                                    }
+                            if (image) {
+                                if (typeof callback == "function") {
+                                    callback(image);
                                 }
-                            }).
-                            fail(FAIL);
-                        }, "img/cctv.png", camera.rcArea, r => {
+                            } else {
+                                GET("cameras", "camshot", cameraId, true).
+                                done(r => {
+                                    if (r && r.shot) {
+                                        image = "data:image/jpg;base64," + r.shot;
+                                        if (typeof callback == "function") {
+                                            callback("data:image/jpg;base64," + r.shot);
+                                        }
+                                    }
+                                }).
+                                fail(FAIL);
+                            }
+                        }, image ? image: "img/cctv.png", camera.rcArea, r => {
                             rcArea = r;
                         });
                     }

@@ -190,6 +190,7 @@ function polygon(id, image, fallback, polygon, callback) {
                 canvas.height = img.height / img.width * canvas.width;
                 ctx = canvas.getContext("2d");
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                $("#" + id).css("width", canvas.width + "px").css("height", canvas.height + "px");
 
                 if (polygon && polygon.length) {
                     perimeter = [];
