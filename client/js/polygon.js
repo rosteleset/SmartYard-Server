@@ -9,6 +9,8 @@ function polygon(id, image, fallback, polygon, callback) {
 
     let perimeter = [];
 
+    let old_url = false;
+
     let complete = false;
 
     $("#" + id).html("").append(`<canvas id="${id}-canvas" style="cursor: crosshair" oncontextmenu="return false;">Your browser does not support the HTML5 canvas tag</canvas>`);
@@ -183,25 +185,29 @@ function polygon(id, image, fallback, polygon, callback) {
 
     function start() {
         function load(url) {
-            let img = new Image();
-            img.src = url;
+            if (old_url != url) {
+                old_url = url;
 
-            img.onload = function() {
-                canvas.height = img.height / img.width * canvas.width;
-                ctx = canvas.getContext("2d");
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                $("#" + id).css("width", canvas.width + "px").css("height", canvas.height + "px");
+                let img = new Image();
+                img.src = url;
 
-                if (polygon && polygon.length) {
-                    perimeter = [];
+                img.onload = function() {
+                    canvas.height = img.height / img.width * canvas.width;
+                    ctx = canvas.getContext("2d");
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    $("#" + id).css("width", canvas.width + "px").css("height", canvas.height + "px");
 
-                    for (let i in polygon) {
-                        perimeter.push({
-                            x: fromPercentX(polygon[i].x),
-                            y: fromPercentY(polygon[i].y),
-                        });
+                    if (polygon && polygon.length) {
+                        perimeter = [];
+
+                        for (let i in polygon) {
+                            perimeter.push({
+                                x: fromPercentX(polygon[i].x),
+                                y: fromPercentY(polygon[i].y),
+                            });
+                        }
+                        draw(true);
                     }
-                    draw(true);
                 }
             }
         }

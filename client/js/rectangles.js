@@ -4,6 +4,8 @@ function rectangles(id, image, fallback, rectangles, callback) {
     append(`<canvas id="${id}-canvas" style="cursor: crosshair; position: absolute; left: 0; top: 0" oncontextmenu="return false;">Your browser does not support the HTML5 canvas tag</canvas>`).
     append(`<canvas id="${id}-drawer" style="cursor: crosshair; position: absolute; left: 0; top: 0" oncontextmenu="return false;">Your browser does not support the HTML5 canvas tag</canvas>`);
 
+    let old_url = false;
+
     let canvas = document.getElementById(id + "-canvas");
     let ctx = canvas.getContext("2d");
 
@@ -144,35 +146,39 @@ function rectangles(id, image, fallback, rectangles, callback) {
 
     function start() {
         function load(url) {
-            let img = new Image();
-            img.src = url;
+            if (old_url != url) {
+                old_url = url;
 
-            img.onload = function() {
-                canvas.height = img.height / img.width * canvas.width;
-                drawer.height = img.height / img.width * canvas.width;
-                ctx = canvas.getContext("2d");
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                $("#" + id).css("width", canvas.width + "px").css("height", canvas.height + "px");
+                let img = new Image();
+                img.src = url;
 
-                if (rectangles && rectangles.length) {
-                    rectangless = [];
+                img.onload = function() {
+                    canvas.height = img.height / img.width * canvas.width;
+                    drawer.height = img.height / img.width * canvas.width;
+                    ctx = canvas.getContext("2d");
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    $("#" + id).css("width", canvas.width + "px").css("height", canvas.height + "px");
 
-                    for (let i in rectangles) {
-                        rectangless.push({
-                            x: fromPercentX(rectangles[i].x),
-                            w: fromPercentX(rectangles[i].w),
-                            y: fromPercentY(rectangles[i].y),
-                            h: fromPercentY(rectangles[i].h),
-                        });
-                    }
+                    if (rectangles && rectangles.length) {
+                        rectangless = [];
 
-                    for (let i in rectangless) {
-                        ctx.lineWidth = 3;
-                        ctx.strokeStyle = "green";
-                        ctx.lineCap = "square";
-                        ctx.fillStyle = 'rgba(0, 255, 0, 0.5)';
-                        ctx.fillRect(rectangless[i].x, rectangless[i].y, rectangless[i].w, rectangless[i].h);
-                        ctx.strokeRect(rectangless[i].x, rectangless[i].y, rectangless[i].w, rectangless[i].h);
+                        for (let i in rectangles) {
+                            rectangless.push({
+                                x: fromPercentX(rectangles[i].x),
+                                w: fromPercentX(rectangles[i].w),
+                                y: fromPercentY(rectangles[i].y),
+                                h: fromPercentY(rectangles[i].h),
+                            });
+                        }
+
+                        for (let i in rectangless) {
+                            ctx.lineWidth = 3;
+                            ctx.strokeStyle = "green";
+                            ctx.lineCap = "square";
+                            ctx.fillStyle = 'rgba(0, 255, 0, 0.5)';
+                            ctx.fillRect(rectangless[i].x, rectangless[i].y, rectangless[i].w, rectangless[i].h);
+                            ctx.strokeRect(rectangless[i].x, rectangless[i].y, rectangless[i].w, rectangless[i].h);
+                        }
                     }
                 }
             }
