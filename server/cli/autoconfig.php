@@ -33,7 +33,7 @@
                 if (checkInt($device_id)) {
                     try {
                         autoconfigure_device($device_type, $device_id, $first_time);
-                    } catch (Exception $e) {
+                    } catch (\Exception $e) {
                         $script_result = 'fail';
                         die("!!! FAILED: " . $e->getMessage() . " !!!\n\n");
                     }
