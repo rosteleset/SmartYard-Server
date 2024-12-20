@@ -45,7 +45,7 @@
                 //TODO: rewrite to insert method
                 try {
                     $db->exec("insert into core_users (uid, login, password) values (0, 'admin', 'admin')");
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     //
                 }
 
@@ -54,7 +54,7 @@
                     $sth = $db->prepare("update core_users set password = :password, login = 'admin', enabled = 1 where uid = 0");
                     $sth->execute([ ":password" => password_hash($args["--admin-password"], PASSWORD_DEFAULT) ]);
                     echo "admin account updated\n\n";
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     die("admin account update failed\n\n");
                 }
 
