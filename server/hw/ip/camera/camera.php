@@ -17,7 +17,8 @@ abstract class camera extends ip
 
         $builder
             ->addEventServer($this->getEventServer())
-            ->addMotionDetection(...$this->getMotionDetectionConfig())
+            // FIXME: temporarily ignore motion detection settings
+            // ->addMotionDetection(...$this->getMotionDetectionConfig())
             ->addNtp(...$this->getNtpConfig())
             ->addOsdText($this->getOsdText())
         ;
