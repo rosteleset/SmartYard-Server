@@ -32,19 +32,19 @@
             public static function GET($params) {
                 $cameras = loadBackend("cameras");
 
-                $cameras = $cameras->getCamera("id", $params["_id"]);
+                $cameras = $cameras->getCameras("id", $params["_id"]);
 
-                $show = false;
+                $shot = false;
 
                 if ($cameras && $cameras[0]) {
-                    $camera = $camera[0];
+                    $camera = $cameras[0];
 
                     try {
                         $device = loadDevice('camera', $camera["model"], $camera["url"], $camera["credentials"]);
                         $shot = $device->getCamshot();
-                        $show = base64_encode($shot);
+                        $shot = base64_encode($shot);
                     } catch (\Exception $e) {
-                        //
+                        error_log(print_r($e, true));
                     }
                 }
 

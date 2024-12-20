@@ -4,19 +4,16 @@
  * backends cameras namespace
  */
 
-namespace backends\cameras
-{
+namespace backends\cameras {
 
     /**
      * internal.db cameras class
      */
-    class internal extends cameras
-    {
+    class internal extends cameras {
         /**
          * @inheritDoc
          */
-        public function getCameras($by = false, $params = false, $withStatus = false)
-        {
+        public function getCameras($by = false, $params = false, $withStatus = false) {
             $q = "select * from cameras order by camera_id";
             $p = false;
 
@@ -52,15 +49,18 @@ namespace backends\cameras
                 "angle" => "angle",
                 "distance" => "distance",
                 "frs" => "frs",
-                "md_left" => "mdLeft",
-                "md_top" => "mdTop",
-                "md_width" => "mdWidth",
-                "md_height" => "mdHeight",
+                "md_area" => "mdArea",
+                "rc_area" => "rcArea",
                 "common" => "common",
                 "comments" => "comments",
                 "sound" => "sound",
                 "ip" => "ip"
             ]);
+
+            foreach($cameras as &$camera) {
+                $camera["mdArea"] = json_decode($camera["mdArea"]);
+                $camera["rcArea"] = json_decode($camera["rcArea"]);
+            }
 
             if ($monitoring && $withStatus) {
                 $targetHosts = [];
@@ -90,8 +90,7 @@ namespace backends\cameras
         /**
          * @inheritDoc
          */
-        public function getCamera($cameraId)
-        {
+        public function getCamera($cameraId) {
             if (!checkInt($cameraId)) {
                 return false;
             }
@@ -112,8 +111,7 @@ namespace backends\cameras
         /**
          * @inheritDoc
          */
-        public function addCamera($enabled, $model, $url,  $stream, $credentials, $name, $dvrStream, $timezone, $lat, $lon, $direction, $angle, $distance, $frs, $mdLeft, $mdTop, $mdWidth, $mdHeight, $common, $comments, $sound)
-        {
+        public function addCamera($enabled, $model, $url,  $stream, $credentials, $name, $dvrStream, $timezone, $lat, $lon, $direction, $angle, $distance, $frs, $mdArea, $rcArea, $common, $comments, $sound) {
             if (!$model) {
                 return false;
             }
@@ -129,11 +127,7 @@ namespace backends\cameras
                 return false;
             }
 
-            if (!checkInt($mdLeft) || !checkInt($mdTop) || !checkInt($mdWidth) || !checkInt($mdHeight)) {
-                return false;
-            }
-
-            $cameraId = $this->db->insert("insert into cameras (enabled, model, url, stream, credentials, name, dvr_stream, timezone, lat, lon, direction, angle, distance, frs, md_left, md_top, md_width, md_height, common, comments, sound) values (:enabled, :model, :url, :stream, :credentials, :name, :dvr_stream, :timezone, :lat, :lon, :direction, :angle, :distance, :frs, :md_left, :md_top, :md_width, :md_height, :common, :comments, :sound)", [
+            $cameraId = $this->db->insert("insert into cameras (enabled, model, url, stream, credentials, name, dvr_stream, timezone, lat, lon, direction, angle, distance, frs, md_area, rc_area, common, comments, sound) values (:enabled, :model, :url, :stream, :credentials, :name, :dvr_stream, :timezone, :lat, :lon, :direction, :angle, :distance, :frs, :md_area, :rc_area, :common, :comments, :sound)", [
                 "enabled" => (int)$enabled,
                 "model" => $model,
                 "url" => $url,
@@ -148,10 +142,8 @@ namespace backends\cameras
                 "angle" => $angle,
                 "distance" => $distance,
                 "frs" => $frs,
-                "md_left" => $mdLeft,
-                "md_top" => $mdTop,
-                "md_width" => $mdWidth,
-                "md_height" => $mdHeight,
+                "md_area" => json_encode($mdArea),
+                "rc_area" => json_encode($rcArea),
                 "common" => $common,
                 "comments" => $comments,
                 "sound" => $sound,
@@ -170,8 +162,7 @@ namespace backends\cameras
         /**
          * @inheritDoc
          */
-        public function modifyCamera($cameraId, $enabled, $model, $url, $stream, $credentials, $name, $dvrStream, $timezone, $lat, $lon, $direction, $angle, $distance, $frs, $mdLeft, $mdTop, $mdWidth, $mdHeight, $common, $comments, $sound)
-        {
+        public function modifyCamera($cameraId, $enabled, $model, $url, $stream, $credentials, $name, $dvrStream, $timezone, $lat, $lon, $direction, $angle, $distance, $frs, $mdArea, $rcArea, $common, $comments, $sound) {
             if (!checkInt($cameraId)) {
                 setLastError("noId");
                 return false;
@@ -194,7 +185,7 @@ namespace backends\cameras
                 return false;
             }
 
-            $r = $this->db->modify("update cameras set enabled = :enabled, model = :model, url = :url, stream = :stream, credentials = :credentials, name = :name, dvr_stream = :dvr_stream, timezone = :timezone, lat = :lat, lon = :lon, direction = :direction, angle = :angle, distance = :distance, frs = :frs, md_left = :md_left, md_top = :md_top, md_width = :md_width, md_height = :md_height, common = :common, comments = :comments, sound = :sound where camera_id = $cameraId", [
+            $r = $this->db->modify("update cameras set enabled = :enabled, model = :model, url = :url, stream = :stream, credentials = :credentials, name = :name, dvr_stream = :dvr_stream, timezone = :timezone, lat = :lat, lon = :lon, direction = :direction, angle = :angle, distance = :distance, frs = :frs, md_area = :md_area, rc_area = :rc_area, common = :common, comments = :comments, sound = :sound where camera_id = $cameraId", [
                 "enabled" => (int)$enabled,
                 "model" => $model,
                 "url" => $url,
@@ -209,10 +200,8 @@ namespace backends\cameras
                 "angle" => $angle,
                 "distance" => $distance,
                 "frs" => $frs,
-                "md_left" => $mdLeft,
-                "md_top" => $mdTop,
-                "md_width" => $mdWidth,
-                "md_height" => $mdHeight,
+                "md_area" => json_encode($mdArea),
+                "rc_area" => json_encode($rcArea),
                 "common" => $common,
                 "comments" => $comments,
                 "sound" => (int)$sound,
@@ -233,8 +222,7 @@ namespace backends\cameras
         /**
          * @inheritDoc
          */
-        public function deleteCamera($cameraId)
-        {
+        public function deleteCamera($cameraId) {
             if (!checkInt($cameraId)) {
                 setLastError("noId");
                 return false;
@@ -281,8 +269,8 @@ namespace backends\cameras
 
                 if ($device) {
                     $query = "update cameras
-                              set sub_id = :sub_id
-                              where camera_id = " . $deviceId;
+                                set sub_id = :sub_id
+                                where camera_id = " . $deviceId;
                     $this->db->modify($query, ["sub_id" => $device->uuid]);
                 }
             } else {

@@ -31,8 +31,8 @@
     require_once "utils/apache_request_headers.php";
     require_once "utils/mb_levenshtein.php";
 
-    if (file_exists("mzfc/json5/vendor/autoload.php")) {
-        require_once "mzfc/json5/vendor/autoload.php";
+    if (file_exists(__DIR__ . "/mzfc/json5/vendor/autoload.php")) {
+        require_once __DIR__ . "/mzfc/json5/vendor/autoload.php";
     }
 
     require_once "backends/backend.php";

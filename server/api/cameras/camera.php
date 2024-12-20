@@ -26,8 +26,8 @@
      * @apiBody {String} frs
      * @apiBody {Number} mdLeft
      * @apiBody {Number} mdTop
-     * @apiBody {Number} mdWidth
-     * @apiBody {Number} mdHeight
+     * @apiBody {Object} mdArea
+     * @apiBody {Object} rcArea
      * @apiBody {Boolean} common
      * @apiBody {String} comments
      * @apiBody {Boolean} sound
@@ -60,10 +60,8 @@
      * @apiBody {Number} angle
      * @apiBody {Number} distance
      * @apiBody {String} frs
-     * @apiBody {Number} mdLeft
-     * @apiBody {Number} mdTop
-     * @apiBody {Number} mdWidth
-     * @apiBody {Number} mdHeight
+     * @apiBody {Number} mdArea
+     * @apiBody {Number} rcArea
      * @apiBody {Boolean} common
      * @apiBody {String} comments
      * @apiBody {Boolean} sound
@@ -103,7 +101,7 @@
             public static function POST($params) {
                 $cameras = loadBackend("cameras");
 
-                $cameraId = $cameras->addCamera($params["enabled"], $params["model"], $params["url"], $params["stream"], $params["credentials"], $params["name"], $params["dvrStream"], $params["timezone"], $params["lat"], $params["lon"], $params["direction"], $params["angle"], $params["distance"], $params["frs"], $params["mdLeft"], $params["mdTop"], $params["mdWidth"], $params["mdHeight"], $params["common"], $params["comments"], $params["sound"]);
+                $cameraId = $cameras->addCamera($params["enabled"], $params["model"], $params["url"], $params["stream"], $params["credentials"], $params["name"], $params["dvrStream"], $params["timezone"], $params["lat"], $params["lon"], $params["direction"], $params["angle"], $params["distance"], $params["frs"], $params["mdArea"], $params["rcArea"], $params["common"], $params["comments"], $params["sound"]);
 
                 return api::ANSWER($cameraId, ($cameraId !== false)?"cameraId":false);
             }
@@ -111,7 +109,7 @@
             public static function PUT($params) {
                 $cameras = loadBackend("cameras");
 
-                $success = $cameras->modifyCamera($params["_id"], $params["enabled"], $params["model"], $params["url"], $params["stream"], $params["credentials"], $params["name"], $params["dvrStream"], $params["timezone"], $params["lat"], $params["lon"], $params["direction"], $params["angle"], $params["distance"], $params["frs"], $params["mdLeft"], $params["mdTop"], $params["mdWidth"], $params["mdHeight"], $params["common"], $params["comments"], $params['sound']);
+                $success = $cameras->modifyCamera($params["_id"], $params["enabled"], $params["model"], $params["url"], $params["stream"], $params["credentials"], $params["name"], $params["dvrStream"], $params["timezone"], $params["lat"], $params["lon"], $params["direction"], $params["angle"], $params["distance"], $params["frs"], $params["mdArea"], $params["rcArea"], $params["common"], $params["comments"], $params['sound']);
 
                 return api::ANSWER($success?:$params["_id"], $success?"cameraId":false);
             }

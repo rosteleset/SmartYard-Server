@@ -228,20 +228,6 @@
                     tab: i18n("addresses.secondary"),
                 },
                 {
-                    id: "md",
-                    type: "text",
-                    title: i18n("addresses.md"),
-                    hint: i18n("addresses.left") + "," + i18n("addresses.right").toLowerCase() + "," + i18n("addresses.width").toLowerCase() + "," + i18n("addresses.height").toLowerCase(),
-                    placeholder: "0,0,0,0",
-                    value: "0,0,0,0",
-                    validate: v => {
-                        const regex = new RegExp('^\\d+,\\d+,\\d+,\\d+$', 'gm');
-
-                        return regex.exec(v) !== null;
-                    },
-                    tab: i18n("addresses.secondary"),
-                },
-                {
                     id: "common",
                     type: "noyes",
                     title: i18n("addresses.common"),
@@ -362,11 +348,6 @@
                 result.direction = $.trim(p[0]);
                 result.angle = $.trim(p[1]);
                 result.distance = $.trim(p[2]);
-                let m = result.md.split(",");
-                result.mdLeft = $.trim(m[0]);
-                result.mdTop = $.trim(m[1]);
-                result.mdWidth = $.trim(m[2]);
-                result.mdHeight = $.trim(m[3]);
                 modules.addresses.cameras.doAddCamera(result);
             },
         });
@@ -410,6 +391,8 @@
         }
 
         if (camera) {
+            let mdArea, rcArea;
+
             cardForm({
                 title: i18n("addresses.modifyCamera"),
                 footer: true,
@@ -536,6 +519,28 @@
                         tab: i18n("addresses.primary"),
                     },
                     {
+                        id: "frs",
+                        type: "select2",
+                        title: i18n("addresses.frs"),
+                        value: camera.frs,
+                        options: frss,
+                        tab: i18n("addresses.primary"),
+                    },
+                    {
+                        id: "mdArea",
+                        type: "empty",
+                        title: false,
+                        tab: i18n("addresses.md"),
+                        noHover: true,
+                    },
+                    {
+                        id: "rcArea",
+                        type: "empty",
+                        title: false,
+                        tab: i18n("addresses.rc"),
+                        noHover: true,
+                    },
+                    {
                         id: "timezone",
                         type: "select2",
                         title: i18n("addresses.timezone"),
@@ -546,14 +551,6 @@
                         },
                         value: camera.timezone,
                         tab: i18n("addresses.secondary"),
-                    },
-                    {
-                        id: "frs",
-                        type: "select2",
-                        title: i18n("addresses.frs"),
-                        value: camera.frs,
-                        options: frss,
-                        tab: i18n("addresses.primary"),
                     },
                     {
                         id: "geo",
@@ -578,20 +575,6 @@
                         hint: i18n("addresses.direction") + "," + i18n("addresses.angle").toLowerCase() + "," + i18n("addresses.distance").toLowerCase(),
                         validate: v => {
                             const regex = new RegExp('^\\d+,\\d+,\\d+$', 'gm');
-
-                            return regex.exec(v) !== null;
-                        },
-                        tab: i18n("addresses.secondary"),
-                    },
-                    {
-                        id: "md",
-                        type: "text",
-                        title: i18n("addresses.md"),
-                        placeholder: "0,0,0,0",
-                        hint: i18n("addresses.left") + "," + i18n("addresses.right").toLowerCase() + "," + i18n("addresses.width").toLowerCase() + "," + i18n("addresses.height").toLowerCase(),
-                        value: camera.mdLeft + "," + camera.mdTop + "," + camera.mdWidth + "," + camera.mdHeight,
-                        validate: v => {
-                            const regex = new RegExp('^\\d+,\\d+,\\d+,\\d+$', 'gm');
                             return regex.exec(v) !== null;
                         },
                         tab: i18n("addresses.secondary"),
@@ -663,7 +646,6 @@
                         id: "geoMap",
                         type: "empty",
                         title: false,
-                        placeholder: i18n("search"),
                         tab: i18n("addresses.map"),
                         noHover: true,
                     },
@@ -716,6 +698,127 @@
                     modules.addresses.cameras.marker.on('dragend', () => {
                         $("#" + prefix + "geo").val(modules.addresses.cameras.marker.getLatLng().lat + "," + modules.addresses.cameras.marker.getLatLng().lng);
                     });
+
+                    let h = '';
+                    h += `<div id="${prefix}md"></div>`;
+                    h += `<div class="mt-2">`;
+                    h += `<button id="${prefix}mdClear" type="button" class="btn btn-danger mr-2" title="${i18n("addresses.areaClear")}"><i class="fas fa-fw fa-eraser"></i></button>`;
+                    h += `<button id="${prefix}mdRevert" type="button" class="btn btn-warning mr-2" title="${i18n("addresses.areaRevert")}"><i class="fas fa-fw fa-undo"></i></button>`;
+                    h += `</div>`;
+
+                    $("#" + prefix + "mdArea").html(h);
+
+                    h = '';
+                    h += `<div id="${prefix}rc"></div>`;
+                    h += `<div class="mt-2">`;
+                    h += `<button id="${prefix}rcClear" type="button" class="btn btn-danger mr-2" title="${i18n("addresses.areaClear")}"><i class="fas fa-fw fa-eraser"></i></button>`;
+                    h += `<button id="${prefix}rcRevert" type="button" class="btn btn-warning mr-2" title="${i18n("addresses.areaRevert")}"><i class="fas fa-fw fa-undo"></i></button>`;
+                    h += `</div>`;
+
+                    $("#" + prefix + "rcArea").html(h);
+
+                    $(`#${prefix}mdClear`).off("click").on("click", () => {
+                        mdArea = [];
+                        rectangles(`${prefix}md`, callback => {
+                            GET("cameras", "camshot", cameraId, true).
+                            done(r => {
+                                if (r && r.shot) {
+                                    if (typeof callback == "function") {
+                                        callback("data:image/jpg;base64," + r.shot);
+                                    }
+                                }
+                            }).
+                            fail(FAIL);
+                        }, "img/cctv.png", [], r => {
+                            mdArea = r;
+                        });
+                        xblur();
+                    });
+
+                    $(`#${prefix}mdRevert`).off("click").on("click", () => {
+                        rectangles(`${prefix}md`, callback => {
+                            GET("cameras", "camshot", cameraId, true).
+                            done(r => {
+                                if (r && r.shot) {
+                                    if (typeof callback == "function") {
+                                        callback("data:image/jpg;base64," + r.shot);
+                                    }
+                                }
+                            }).
+                            fail(FAIL);
+                        }, "img/cctv.png", camera.mdArea, r => {
+                            mdArea = r;
+                        });
+                        xblur();
+                    });
+
+                    $(`#${prefix}rcClear`).off("click").on("click", () => {
+                        rcArea = [];
+                        polygon(`${prefix}rc`, callback => {
+                            GET("cameras", "camshot", cameraId, true).
+                            done(r => {
+                                if (r && r.shot) {
+                                    if (typeof callback == "function") {
+                                        callback("data:image/jpg;base64," + r.shot);
+                                    }
+                                }
+                            }).
+                            fail(FAIL);
+                        }, "img/cctv.png", [], r => {
+                            rcArea = r;
+                        });
+                        xblur();
+                    });
+
+                    $(`#${prefix}rcRevert`).off("click").on("click", () => {
+                        polygon(`${prefix}rc`, callback => {
+                            GET("cameras", "camshot", cameraId, true).
+                            done(r => {
+                                if (r && r.shot) {
+                                    if (typeof callback == "function") {
+                                        callback("data:image/jpg;base64," + r.shot);
+                                    }
+                                }
+                            }).
+                            fail(FAIL);
+                        }, "img/cctv.png", camera.rcArea, r => {
+                            rcArea = r;
+                        });
+                        xblur();
+                    });
+                },
+                tabActivate: function (prefix, tab) {
+                    if (tab == i18n("addresses.md")) {
+                        rectangles(`${prefix}md`, callback => {
+                            GET("cameras", "camshot", cameraId, true).
+                            done(r => {
+                                if (r && r.shot) {
+                                    if (typeof callback == "function") {
+                                        callback("data:image/jpg;base64," + r.shot);
+                                    }
+                                }
+                            }).
+                            fail(FAIL);
+                        }, "img/cctv.png", camera.mdArea, r => {
+                            mdArea = r;
+                        });
+                    }
+
+                    if (tab == i18n("addresses.rc")) {
+                        polygon(`${prefix}rc`, callback => {
+                            GET("cameras", "camshot", cameraId, true).
+                            done(r => {
+                                if (r && r.shot) {
+                                    if (typeof callback == "function") {
+                                        callback("data:image/jpg;base64," + r.shot);
+                                    }
+                                }
+                            }).
+                            fail(FAIL);
+                        }, "img/cctv.png", camera.rcArea, r => {
+                            rcArea = r;
+                        });
+                    }
                 },
                 callback: result => {
                     let g = result.geo.split(",");
@@ -725,11 +828,16 @@
                     result.direction = $.trim(p[0]);
                     result.angle = $.trim(p[1]);
                     result.distance = $.trim(p[2]);
-                    let m = result.md.split(",");
-                    result.mdLeft = $.trim(m[0]);
-                    result.mdTop = $.trim(m[1]);
-                    result.mdWidth = $.trim(m[2]);
-                    result.mdHeight = $.trim(m[3]);
+                    if (mdArea) {
+                        result.mdArea = mdArea;
+                    } else {
+                        result.mdArea = camera.mdArea;
+                    }
+                    if (rcArea) {
+                        result.rcArea = rcArea;
+                    } else {
+                        result.rcArea = camera.rcArea;
+                    }
                     if (result.delete === "yes") {
                         modules.addresses.cameras.deleteCamera(cameraId);
                     } else {
