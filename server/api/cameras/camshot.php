@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {get} /api/cameras/camera/:cameraId get camshot
+     * @api {get} /api/cameras/camera/:cameraId camshot
      *
      * @apiVersion 1.0.0
      *
