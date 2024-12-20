@@ -42,7 +42,8 @@ class CameraDbConfigCollector implements IDbConfigCollector
     {
         $this
             ->addEventServer()
-            ->addMotionDetection()
+            // FIXME: temporarily ignore motion detection settings
+            // ->addMotionDetection()
             ->addNtp()
             ->addOsdText()
         ;
