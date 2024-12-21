@@ -92,10 +92,10 @@ function rectangles(id, image, fallback, rectangles, callback) {
                 let p = [];
                 for (let i in rectangless) {
                     p.push({
-                        x: toPercentX(rectangless[i].x),
-                        w: toPercentX(rectangless[i].w),
-                        y: toPercentY(rectangless[i].y),
-                        h: toPercentY(rectangless[i].h),
+                        x: toPercentX((rectangless[i].w > 0) ? rectangless[i].x : (rectangless[i].x + rectangless[i].w)),
+                        w: toPercentX((rectangless[i].w > 0) ? rectangless[i].w : -rectangless[i].w),
+                        y: toPercentY((rectangless[i].h > 0) ? rectangless[i].y : (rectangless[i].y + rectangless[i].h)),
+                        h: toPercentY((rectangless[i].h > 0) ? rectangless[i].h : -rectangless[i].h),
                     });
                 }
                 callback(p);
