@@ -12,18 +12,17 @@ class ufanet extends camera
 
     use \hw\ip\common\ufanet\ufanet;
 
-    public function configureMotionDetection(
-        int $left = 0,
-        int $top = 0,
-        int $width = 0,
-        int $height = 0,
-        int $sensitivity = 0
-    )
+    public function configureMotionDetection(array $detectionZones): void
     {
+        $x = $detectionZones[0]->x ?? 0;
+        $y = $detectionZones[0]->y ?? 0;
+        $width = $detectionZones[0]->width ?? 0;
+        $height = $detectionZones[0]->height ?? 0;
+
         $this->apiCall('/cgi-bin/configManager.cgi', 'GET', [
             'action' => 'setConfig',
-            'MotionDetect[0].Enable' => $left || $top || $width || $height ? 'true' : 'false',
-            'MotionDetect[0].MotionDetectWindow[0].ROI' => "{$left}x{$top}x{$width}x$height",
+            'MotionDetect[0].Enable' => $detectionZones ? 'true' : 'false',
+            'MotionDetect[0].MotionDetectWindow[0].ROI' => "{$x}x{$y}x{$width}x$height",
             'MotionDetect[0].MotionDetectWindow[0].Sensitive' => 50, // Max sensitive
             'MotionDetect[0].EventHandler.Dejitter' => 1,
         ]);
@@ -34,7 +33,7 @@ class ufanet extends camera
         return $this->apiCall('/image.jpg', 'GET', null, 3);
     }
 
-    public function setOsdText(string $text = '')
+    public function setOsdText(string $text = ''): void
     {
         // Datetime OSD
         $this->apiCall('/cgi-bin/configManager.cgi', 'GET', [

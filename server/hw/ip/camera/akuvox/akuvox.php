@@ -3,6 +3,7 @@
 namespace hw\ip\camera\akuvox;
 
 use hw\ip\camera\camera;
+use hw\ip\camera\entities\DetectionZone;
 
 /**
  * Class representing an Akuvox camera.
@@ -12,27 +13,26 @@ class akuvox extends camera
 
     use \hw\ip\common\akuvox\akuvox;
 
-    public function configureMotionDetection(
-        int $left = 0,
-        int $top = 0,
-        int $width = 100,
-        int $height = 100,
-        int $sensitivity = 3
-    )
+    public function configureMotionDetection(array $detectionZones): void
     {
-        $motionDetectionEnabled = $left || $top || $width || $height;
+        $firstZone = $detectionZones[0] ?? null;
+
+        $areaStartWidth = $firstZone->x ?? 0;
+        $areaEndWidth = $areaStartWidth + ($firstZone->width ?? 0);
+        $areaStartHeight = $firstZone->y ?? 0;
+        $areaEndHeight = $areaStartHeight + ($firstZone->height ?? 0);
 
         $this->setConfigParams([
-            'Config.DoorSetting.MOTION_DETECT.Enable' => $motionDetectionEnabled ? '2' : '0', // 2 - video detection
+            'Config.DoorSetting.MOTION_DETECT.Enable' => $firstZone !== null ? '2' : '0', // 2 - video detection
             'Config.DoorSetting.MOTION_DETECT.Interval' => '1', // Motion duration
             'Config.DoorSetting.MOTION_DETECT.TFTPEnable' => '0',
             'Config.DoorSetting.MOTION_DETECT.FTPEnable' => '1',
             'Config.DoorSetting.MOTION_DETECT.SendType' => '0',
-            'Config.DoorSetting.MOTION_DETECT.DetectAccuracy' => "$sensitivity",
-            'Config.DoorSetting.MOTION_DETECT.AreaStartWidth' => "$left",
-            'Config.DoorSetting.MOTION_DETECT.AreaEndWidth' => "$width",
-            'Config.DoorSetting.MOTION_DETECT.AreaStartHeight' => "$top",
-            'Config.DoorSetting.MOTION_DETECT.AreaEndHeight' => "$height",
+            'Config.DoorSetting.MOTION_DETECT.DetectAccuracy' => "3",
+            'Config.DoorSetting.MOTION_DETECT.AreaStartWidth' => "$areaStartWidth",
+            'Config.DoorSetting.MOTION_DETECT.AreaEndWidth' => "$areaEndWidth",
+            'Config.DoorSetting.MOTION_DETECT.AreaStartHeight' => "$areaStartHeight",
+            'Config.DoorSetting.MOTION_DETECT.AreaEndHeight' => "$areaEndHeight",
         ]);
     }
 
@@ -51,7 +51,7 @@ class akuvox extends camera
         return file_get_contents("http://$this->login:$this->password@$host:$port/picture.jpg", false, $context);
     }
 
-    public function setOsdText(string $text = '') // Latin only
+    public function setOsdText(string $text = ''): void // Latin only
     {
         $this->setConfigParams([
             'Config.DoorSetting.RTSP.OSDEnable' => $text ? '1' : '0',
@@ -67,21 +67,24 @@ class akuvox extends camera
 
     protected function getMotionDetectionConfig(): array
     {
-        [$left, $width, $top, $height] = $this->getConfigParams([
-            'Config.DoorSetting.MOTION_DETECT.AreaStartWidth',
-            'Config.DoorSetting.MOTION_DETECT.AreaEndWidth',
-            'Config.DoorSetting.MOTION_DETECT.AreaStartHeight',
-            'Config.DoorSetting.MOTION_DETECT.AreaEndHeight',
-            // 'Config.DoorSetting.MOTION_DETECT.DetectAccuracy',
-        ]);
+        [$areaStartWidth, $areaEndWidth, $areaStartHeight, $areaEndHeight] = array_map(
+            'floatval',
+            $this->getConfigParams([
+                'Config.DoorSetting.MOTION_DETECT.AreaStartWidth',
+                'Config.DoorSetting.MOTION_DETECT.AreaEndWidth',
+                'Config.DoorSetting.MOTION_DETECT.AreaStartHeight',
+                'Config.DoorSetting.MOTION_DETECT.AreaEndHeight',
+            ])
+        );
 
-        return [
-            'left' => $left,
-            'top' => $top,
-            'width' => $width,
-            'height' => $height,
-            // 'sensitivity' => $sensitivity,
-        ];
+        if ($areaStartWidth === 0 && $areaEndWidth === 0 && $areaStartHeight === 0 && $areaEndHeight === 0) {
+            return [];
+        }
+
+        $width = round($areaEndWidth - $areaStartWidth, 2);
+        $height = round($areaEndHeight - $areaStartHeight, 2);
+
+        return [new DetectionZone($areaStartWidth, $areaStartHeight, $width, $height)];
     }
 
     protected function getOsdText(): string

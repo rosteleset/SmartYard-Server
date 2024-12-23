@@ -15,13 +15,7 @@ class fake extends camera
         // Empty implementation
     }
 
-    public function configureMotionDetection(
-        int $left = 0,
-        int $top = 0,
-        int $width = 0,
-        int $height = 0,
-        int $sensitivity = 0
-    )
+    public function configureMotionDetection(array $detectionZones): void
     {
         // Empty implementation
     }

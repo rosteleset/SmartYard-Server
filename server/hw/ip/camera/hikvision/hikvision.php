@@ -12,13 +12,7 @@ class hikvision extends camera
 
     use \hw\ip\common\hikvision\hikvision;
 
-    public function configureMotionDetection(
-        int $left = 0,
-        int $top = 0,
-        int $width = 0,
-        int $height = 0,
-        int $sensitivity = 0
-    )
+    public function configureMotionDetection(array $detectionZones): void
     {
         // TODO: Implement configureMotionDetection() method.
     }
@@ -28,7 +22,7 @@ class hikvision extends camera
         return $this->apiCall('/Streaming/channels/101/picture', 'GET', ['snapShotImageType' => 'JPEG']);
     }
 
-    public function setOsdText(string $text = '')
+    public function setOsdText(string $text = ''): void
     {
         $this->apiCall(
             '/System/Video/inputs/channels/1',

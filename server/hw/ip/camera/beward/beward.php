@@ -12,18 +12,12 @@ class beward extends camera
 
     use \hw\ip\common\beward\beward;
 
-    public function configureMotionDetection(
-        int $left = 0,
-        int $top = 0,
-        int $width = 704,
-        int $height = 576,
-        int $sensitivity = 4
-    )
+    public function configureMotionDetection(array $detectionZones): void
     {
         $params = [
-            'sens' => $sensitivity ? ($sensitivity - 1) : 0,
-            'ckdetect' => $sensitivity ? '1' : '0',
-            'ckevery' => $sensitivity ? '1' : '0',
+            'sens' => 3,
+            'ckdetect' => $detectionZones ? '1' : '0',
+            'ckevery' => $detectionZones ? '1' : '0',
             'ckevery2' => '0',
             'begh1' => '0',
             'begm1' => '0',
@@ -33,19 +27,12 @@ class beward extends camera
             'alarmoutemail' => '0',
             'ckcap' => '0',
             'ckalarmrecdev' => '0',
+            'nLeft1' => $detectionZones[0]->x ?? 0,
+            'nTop1' => $detectionZones[0]->y ?? 0,
+            'nWidth1' => $detectionZones[0]->width ?? 0,
+            'nHeight1' => $detectionZones[0]->height ?? 0,
         ];
-        if ($left) {
-            $params['nLeft1'] = $left;
-        }
-        if ($top) {
-            $params['nTop1'] = $top;
-        }
-        if ($width) {
-            $params['nWidth1'] = $width;
-        }
-        if ($height) {
-            $params['nHeight1'] = $height;
-        }
+
         $this->apiCall('webs/motionCfgEx', $params);
     }
 
@@ -54,7 +41,7 @@ class beward extends camera
         return $this->apiCall('cgi-bin/images_cgi', ['channel' => 0], false, 3);
     }
 
-    public function setOsdText(string $text = '')
+    public function setOsdText(string $text = ''): void
     {
         $this->apiCall('cgi-bin/textoverlay_cgi', [
             'action' => 'set',

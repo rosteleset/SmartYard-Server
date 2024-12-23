@@ -12,13 +12,7 @@ class rubetek extends camera
 
     use \hw\ip\common\rubetek\rubetek;
 
-    public function configureMotionDetection(
-        int $left = 0,
-        int $top = 0,
-        int $width = 0,
-        int $height = 0,
-        int $sensitivity = 0
-    )
+    public function configureMotionDetection(array $detectionZones): void
     {
         $detectionSettings = $this->getConfig()['face_detection'];
 
@@ -28,7 +22,7 @@ class rubetek extends camera
         $detectionSettings['token'] = '1'; // Not used
 
         // Detection settings
-        $detectionSettings['detection_mode'] = (int)($left || $top || $width || $height); // Detection on/off
+        $detectionSettings['detection_mode'] = (int)$detectionZones; // Detection on/off
         $detectionSettings['threshold'] = 90; // Confidence threshold
         $detectionSettings['liveness_frame_num'] = 0; // Not used
         $detectionSettings['frame_interval'] = 500; // Doesn't work
@@ -38,10 +32,10 @@ class rubetek extends camera
         $detectionSettings['rect_image_format'] = 1; // Not used
 
         // Detection area
-        $detectionSettings['rec_area_top'] = $top;
-        $detectionSettings['rec_area_bottom'] = $height;
-        $detectionSettings['rec_area_left'] = $left;
-        $detectionSettings['rec_area_right'] = $width;
+        $detectionSettings['rec_area_top'] = $detectionZones[0]->y;
+        $detectionSettings['rec_area_bottom'] = $detectionZones[0]->height;
+        $detectionSettings['rec_area_left'] = $detectionZones[0]->x;
+        $detectionSettings['rec_area_right'] = $detectionZones[0]->width;
         $detectionSettings['outMargin'] = 50; // Detection indent
 
         $this->apiCall('/configuration', 'PATCH', ['face_detection' => $detectionSettings]);
@@ -52,7 +46,7 @@ class rubetek extends camera
         return $this->apiCall('/image', 'GET', [], 5);
     }
 
-    public function setOsdText(string $text = '')
+    public function setOsdText(string $text = ''): void
     {
         $this->apiCall('/settings/osd', 'PATCH', [
             'show_name' => true,

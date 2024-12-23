@@ -12,16 +12,10 @@ class is extends camera
 
     use \hw\ip\common\is\is;
 
-    public function configureMotionDetection(
-        int $left = 0,
-        int $top = 0,
-        int $width = 0,
-        int $height = 0,
-        int $sensitivity = 0
-    )
+    public function configureMotionDetection(array $detectionZones): void
     {
         $this->apiCall('/camera/md', 'PUT', [
-            'md_enable' => $left || $top || $width || $height,
+            'md_enable' => !empty($detectionZone),
             'md_frame_shift' => 1,
             'md_area_thr' => 100000, // For people at close range
             'md_rect_color' => '0xFF0000',
