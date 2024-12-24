@@ -3,6 +3,7 @@
 namespace hw\ip\camera\rubetek;
 
 use hw\ip\camera\camera;
+use hw\ip\camera\entities\DetectionZone;
 
 /**
  * Class representing a Rubetek camera.
@@ -32,10 +33,10 @@ class rubetek extends camera
         $detectionSettings['rect_image_format'] = 1; // Not used
 
         // Detection area
-        $detectionSettings['rec_area_top'] = $detectionZones[0]->y;
-        $detectionSettings['rec_area_bottom'] = $detectionZones[0]->height;
-        $detectionSettings['rec_area_left'] = $detectionZones[0]->x;
-        $detectionSettings['rec_area_right'] = $detectionZones[0]->width;
+        $detectionSettings['rec_area_top'] = 10;
+        $detectionSettings['rec_area_bottom'] = 10;
+        $detectionSettings['rec_area_left'] = 10;
+        $detectionSettings['rec_area_right'] = 10;
         $detectionSettings['outMargin'] = 50; // Detection indent
 
         $this->apiCall('/configuration', 'PATCH', ['face_detection' => $detectionSettings]);
@@ -63,26 +64,23 @@ class rubetek extends camera
     {
         $timezone = $dbConfig['ntp']['timezone'];
         $dbConfig['ntp']['timezone'] = $this->getOffsetByTimezone($timezone);
+
+        if ($dbConfig['motionDetection']) {
+            $dbConfig['motionDetection'] = [new DetectionZone(0, 0, 100, 100)];
+        }
+
         return $dbConfig;
     }
 
     protected function getMotionDetectionConfig(): array
     {
-        [
-            // 'threshold' => $sensitivity,
-            'rec_area_top' => $top,
-            'rec_area_bottom' => $height,
-            'rec_area_left' => $left,
-            'rec_area_right' => $width,
-        ] = $this->getConfig()['face_detection'];
+        ['detection_mode' => $detectionMode] = $this->getConfig()['face_detection'];
 
-        return [
-            'left' => $left,
-            'top' => $top,
-            'width' => $width,
-            'height' => $height,
-            // 'sensitivity' => $sensitivity,
-        ];
+        if ($detectionMode === 1) {
+            return [new DetectionZone(0, 0, 100, 100)];
+        }
+
+        return [];
     }
 
     protected function getOsdText(): string
