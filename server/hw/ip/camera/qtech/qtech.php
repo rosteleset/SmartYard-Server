@@ -3,6 +3,7 @@
 namespace hw\ip\camera\qtech;
 
 use hw\ip\camera\camera;
+use hw\ip\camera\entities\DetectionZone;
 
 /**
  * Class representing a Qtech camera.
@@ -64,15 +65,9 @@ class qtech extends camera
 
     public function transformDbConfig(array $dbConfig): array
     {
-        $md = $dbConfig['motionDetection'];
-        $md_enable = ($md['left'] || $md['top'] || $md['width'] || $md['height']) ? 1 : 0;
-
-        $dbConfig['motionDetection'] = [
-            'left' => $md_enable,
-            'top' => $md_enable,
-            'width' => $md_enable,
-            'height' => $md_enable,
-        ];
+        if ($dbConfig['motionDetection']) {
+            $dbConfig['motionDetection'] = [new DetectionZone(0, 0, 100, 100)];
+        }
 
         $dbConfig['ntp']['timezone'] = $this->getOffsetByTimezone($dbConfig['ntp']['timezone']);
 
@@ -99,12 +94,11 @@ class qtech extends camera
     {
         $mdEnabled = (bool)$this->getParam('Config.DoorSetting.MOTION_DETECT.MotionDectect');
 
-        return [
-            'left' => ($mdEnabled) ? 1 : 0,
-            'top' => ($mdEnabled) ? 1 : 0,
-            'width' => ($mdEnabled) ? 1 : 0,
-            'height' => ($mdEnabled) ? 1 : 0,
-        ];
+        if ($mdEnabled) {
+            return [new DetectionZone(0, 0, 100, 100)];
+        }
+
+        return [];
     }
 
     protected function getOsdText(): string
