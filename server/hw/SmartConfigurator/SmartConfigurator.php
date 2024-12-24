@@ -25,15 +25,15 @@ class SmartConfigurator
         $transformedDbConfig = $this->device->transformDbConfig($this->dbConfig);
 
         $difference = array_replace_recursive(
-            array_diff_assoc_recursive($transformedDbConfig, $this->deviceConfig),
-            array_diff_assoc_recursive($this->deviceConfig, $transformedDbConfig),
+            array_diff_assoc_recursive($transformedDbConfig, $this->deviceConfig, strict: false),
+            array_diff_assoc_recursive($this->deviceConfig, $transformedDbConfig, strict: false),
         );
 
         $this->removeEmptySections($difference);
         return $difference;
     }
 
-    public function makeConfiguration($retryCount = 0)
+    public function makeConfiguration($retryCount = 0): void
     {
         $maxRetries = 0;
         $difference = $this->getDifference();
@@ -89,7 +89,7 @@ class SmartConfigurator
         }
     }
 
-    private function configureApartments($apartments)
+    private function configureApartments($apartments): void
     {
         foreach ($apartments as $apartmentNumber => $apartmentSettings) {
             echo "$apartmentNumber... ";
@@ -104,12 +104,12 @@ class SmartConfigurator
         }
     }
 
-    private function configureMatrix()
+    private function configureMatrix(): void
     {
         $this->device->configureMatrix($this->dbConfig['matrix']);
     }
 
-    private function configureRfids($rfids)
+    private function configureRfids($rfids): void
     {
         $rfidsToBeAdded = [];
 
@@ -126,7 +126,7 @@ class SmartConfigurator
         $this->device->addRfids($rfidsToBeAdded);
     }
 
-    private function configureSection($sectionName, $method)
+    private function configureSection($sectionName, $method): void
     {
         if (is_callable([$this->device, $method])) {
             $args = $this->dbConfig[$sectionName];
@@ -154,7 +154,7 @@ class SmartConfigurator
         $this->deviceConfig = $this->device->getCurrentConfig();
     }
 
-    private function removeEmptySections(&$difference)
+    private function removeEmptySections(&$difference): void
     {
         // Remove CMS levels from diff if empty in database
         if (empty($this->dbConfig['cmsLevels'])) {
