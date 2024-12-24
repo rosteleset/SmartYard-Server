@@ -72,7 +72,7 @@ class CameraDbConfigCollector implements IDbConfigCollector
     {
         $zones = array_map(
             fn($area) => new DetectionZone($area->x, $area->y, $area->w, $area->h),
-            $this->cameraData['mdArea']
+            $this->cameraData['mdArea'] ?? [],
         );
 
         $this->builder->addMotionDetection($zones);
