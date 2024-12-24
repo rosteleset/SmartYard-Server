@@ -62,6 +62,7 @@ class akuvox extends camera
 
     public function transformDbConfig(array $dbConfig): array
     {
+        $dbConfig['motionDetection'] = array_slice($dbConfig['motionDetection'], 0, 1);
         return $dbConfig;
     }
 
@@ -77,7 +78,7 @@ class akuvox extends camera
             ])
         );
 
-        if ($areaStartWidth === 0 && $areaEndWidth === 0 && $areaStartHeight === 0 && $areaEndHeight === 0) {
+        if ($areaStartWidth == 0 && $areaEndWidth == 0 && $areaStartHeight == 0 && $areaEndHeight == 0) {
             return [];
         }
 
