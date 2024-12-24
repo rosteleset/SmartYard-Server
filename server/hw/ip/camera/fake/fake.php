@@ -55,7 +55,7 @@ class fake extends camera
         // Empty implementation
     }
 
-    public function setOsdText(string $text = '')
+    public function setOsdText(string $text = ''): void
     {
         // Empty implementation
     }
