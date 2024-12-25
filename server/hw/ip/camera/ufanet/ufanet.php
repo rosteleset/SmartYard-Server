@@ -82,6 +82,19 @@ class ufanet extends camera
 
     public function transformDbConfig(array $dbConfig): array
     {
+        // Convert detection zone from database to pixel
+        if ($dbConfig['motionDetection']) {
+            [$maxX, $maxY] = explode('x', $this->getResolution());
+
+            $dbConfig['motionDetection'] = [
+                DetectionZoneUtils::convertCoordinates(
+                    zone: $dbConfig['motionDetection'][0],
+                    maxX: $maxX,
+                    maxY: $maxY,
+                    direction: 'toPixel')
+            ];
+        }
+
         return $dbConfig;
     }
 
@@ -99,18 +112,7 @@ class ufanet extends camera
         }
 
         $coordinates = explode('x', $params['ROI'] ?? '0x0x0x0');
-
-        // Values in coordinates of the real current resolution
-        $pixelZone = new DetectionZone(
-            x: $coordinates[0],
-            y: $coordinates[1],
-            width: $coordinates[2],
-            height: $coordinates[3],
-        );
-
-        // Get max X and max Y for current resolution
-        [$maxX, $maxY] = explode('x', $this->getResolution());
-        return [DetectionZoneUtils::convertCoordinates($pixelZone, $maxX, $maxY, 'toPercent')];
+        return [new DetectionZone(...$coordinates)];
     }
 
     protected function getOsdText(): string
