@@ -3443,6 +3443,14 @@
                     id: "description",
                     text: i18n("tt.description"),
                 },
+                {
+                    id: "status",
+                    text: i18n("tt.status"),
+                },
+                {
+                    id: "resolution",
+                    text: i18n("tt.resolution"),
+                },
             ];
 
             for (let i in modules.tt.meta.customFields) {
