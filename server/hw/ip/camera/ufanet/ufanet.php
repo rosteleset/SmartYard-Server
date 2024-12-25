@@ -3,6 +3,8 @@
 namespace hw\ip\camera\ufanet;
 
 use hw\ip\camera\camera;
+use hw\ip\camera\entities\DetectionZone;
+use hw\ip\camera\utils\DetectionZoneUtils;
 
 /**
  * Class representing an Ufanet camera.
@@ -14,14 +16,26 @@ class ufanet extends camera
 
     public function configureMotionDetection(array $detectionZones): void
     {
-        $x = $detectionZones[0]->x ?? 0;
-        $y = $detectionZones[0]->y ?? 0;
-        $width = $detectionZones[0]->width ?? 0;
-        $height = $detectionZones[0]->height ?? 0;
+        // Get max X and max Y for current resolution
+        [$maxX, $maxY] = explode('x', $this->getResolution());
+
+        $pixelZone = isset($detectionZones[0])
+            ? DetectionZoneUtils::convertCoordinates(
+                zone: $detectionZones[0],
+                maxX: $maxX,
+                maxY: $maxY,
+                direction: 'toPixel'
+            )
+            : null;
+
+        $x = $pixelZone->x ?? 0;
+        $y = $pixelZone->y ?? 0;
+        $width = $pixelZone->width ?? 0;
+        $height = $pixelZone->height ?? 0;
 
         $this->apiCall('/cgi-bin/configManager.cgi', 'GET', [
             'action' => 'setConfig',
-            'MotionDetect[0].Enable' => $detectionZones ? 'true' : 'false',
+            'MotionDetect[0].Enable' => $pixelZone ? 'true' : 'false',
             'MotionDetect[0].MotionDetectWindow[0].ROI' => "{$x}x{$y}x{$width}x$height",
             'MotionDetect[0].MotionDetectWindow[0].Sensitive' => 50, // Max sensitive
             'MotionDetect[0].EventHandler.Dejitter' => 1,
@@ -79,14 +93,24 @@ class ufanet extends camera
         ]);
 
         $params = $this->convertResponseToArray($rawParams);
+
+        if (($params['Enable'] ?? 'false') === 'false') {
+            return [];
+        }
+
         $coordinates = explode('x', $params['ROI'] ?? '0x0x0x0');
 
-        return [
-            'left' => $coordinates[0],
-            'top' => $coordinates[1],
-            'width' => $coordinates[2],
-            'height' => $coordinates[3],
-        ];
+        // Values in coordinates of the real current resolution
+        $pixelZone = new DetectionZone(
+            x: $coordinates[0],
+            y: $coordinates[1],
+            width: $coordinates[2],
+            height: $coordinates[3],
+        );
+
+        // Get max X and max Y for current resolution
+        [$maxX, $maxY] = explode('x', $this->getResolution());
+        return [DetectionZoneUtils::convertCoordinates($pixelZone, $maxX, $maxY, 'toPercent')];
     }
 
     protected function getOsdText(): string
@@ -98,5 +122,22 @@ class ufanet extends camera
 
         $params = $this->convertResponseToArray($rawParams);
         return $params['Text'] ?? '';
+    }
+
+    /**
+     * Retrieves the current camera resolution.
+     *
+     * @return string The resolution as a string in the format "{width}x{height}".
+     * Defaults to "1280x720" if the parameter is not found.
+     */
+    protected function getResolution(): string
+    {
+        $rawParams = $this->apiCall('/cgi-bin/configManager.cgi', 'GET', [
+            'action' => 'getConfig',
+            'name' => 'Encode',
+        ]);
+
+        $params = $this->convertResponseToArray($rawParams);
+        return $params['Resolution'] ?? '1280x720';
     }
 }

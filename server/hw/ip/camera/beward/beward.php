@@ -41,10 +41,10 @@ class beward extends camera
             'alarmoutemail' => '0',
             'ckcap' => '0',
             'ckalarmrecdev' => '0',
-            'nLeft1' => $pixelZone?->x ?? 0,
-            'nTop1' => $pixelZone?->y ?? 0,
-            'nWidth1' => $pixelZone?->width ?? 0,
-            'nHeight1' => $pixelZone?->height ?? 0,
+            'nLeft1' => $pixelZone->x ?? 0,
+            'nTop1' => $pixelZone->y ?? 0,
+            'nWidth1' => $pixelZone->width ?? 0,
+            'nHeight1' => $pixelZone->height ?? 0,
         ];
 
         $this->apiCall('webs/motionCfgEx', $params);
