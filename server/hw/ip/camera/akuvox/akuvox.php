@@ -17,10 +17,10 @@ class akuvox extends camera
     {
         $firstZone = $detectionZones[0] ?? null;
 
-        $areaStartWidth = $firstZone->x ?? 0;
-        $areaEndWidth = $areaStartWidth + ($firstZone->width ?? 0);
-        $areaStartHeight = $firstZone->y ?? 0;
-        $areaEndHeight = $areaStartHeight + ($firstZone->height ?? 0);
+        $areaStartWidth = round($firstZone->x ?? 0);
+        $areaEndWidth = $areaStartWidth + round($firstZone->width ?? 0);
+        $areaStartHeight = round($firstZone->y ?? 0);
+        $areaEndHeight = $areaStartHeight + round($firstZone->height ?? 0);
 
         $this->setConfigParams([
             'Config.DoorSetting.MOTION_DETECT.Enable' => $firstZone !== null ? '2' : '0', // 2 - video detection
@@ -62,7 +62,13 @@ class akuvox extends camera
 
     public function transformDbConfig(array $dbConfig): array
     {
-        $dbConfig['motionDetection'] = array_slice($dbConfig['motionDetection'], 0, 1);
+        // Round off detection zone coordinates
+        if ($dbConfig['motionDetection']) {
+            $dbConfig['motionDetection'] = [
+                new DetectionZone(...array_map('round', (array)$dbConfig['motionDetection'][0]))
+            ];
+        }
+
         return $dbConfig;
     }
 
