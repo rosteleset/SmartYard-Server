@@ -469,7 +469,7 @@
                     return false;
                 }
 
-                return $this->db->insert("insert into tt_issue_statuses (status, final) values (:status)", [ "status" => $status, "final" => $final ]);
+                return $this->db->insert("insert into tt_issue_statuses (status, final) values (:status, :final)", [ "status" => $status, "final" => $final ]);
             }
 
             /**
