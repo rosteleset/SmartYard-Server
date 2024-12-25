@@ -85,9 +85,6 @@ const realPush = (msg, data, options, token, type, res) => {
         case 3:
             if (msg) {
                 delete msg.tag;
-                if (msg.badge) {
-                    badge = parseInt(msg.badge);
-                }
                 delete msg.badge;
                 delete msg.sound;
             }
@@ -109,6 +106,7 @@ const realPush = (msg, data, options, token, type, res) => {
                         aps: {
                             'mutable-content': 1,
                             'badge': badge,
+                            'sound': 'default',
                         },
                     },
                 },
