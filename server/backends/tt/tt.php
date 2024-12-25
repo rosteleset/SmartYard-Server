@@ -1280,18 +1280,30 @@
                 }
 
                 if (@$issue["assigned"]) {
+                    if (!is_array($issue["assigned"])) {
+                        $issue["assigned"] = [ $issue["assigned"] ];
+                    }
                     $issue["assigned"] = array_values($issue["assigned"]);
                 }
 
                 if (@$issue["watchers"]) {
+                    if (!is_array($issue["watchers"])) {
+                        $issue["watchers"] = [ $issue["watchers"] ];
+                    }
                     $issue["watchers"] = array_values($issue["watchers"]);
                 }
 
                 if (@$issue["tags"]) {
+                    if (!is_array($issue["tags"])) {
+                        $issue["tags"] = [ $issue["tags"] ];
+                    }
                     $issue["tags"] = array_values($issue["tags"]);
                 }
 
                 if (@$issue["links"]) {
+                    if (!is_array($issue["links"])) {
+                        $issue["links"] = [ $issue["links"] ];
+                    }
                     $issue["links"] = array_values($issue["links"]);
                 }
 
