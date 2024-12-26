@@ -11,7 +11,9 @@ use hw\ip\camera\entities\DetectionZone;
 class rubetek extends camera
 {
 
-    use \hw\ip\common\rubetek\rubetek;
+    use \hw\ip\common\rubetek\rubetek {
+        transformDbConfig as protected commonTransformDbConfig;
+    }
 
     public function configureMotionDetection(array $detectionZones): void
     {
@@ -60,8 +62,7 @@ class rubetek extends camera
 
     public function transformDbConfig(array $dbConfig): array
     {
-        $timezone = $dbConfig['ntp']['timezone'];
-        $dbConfig['ntp']['timezone'] = $this->getOffsetByTimezone($timezone);
+        $dbConfig = $this->commonTransformDbConfig($dbConfig);
 
         if ($dbConfig['motionDetection']) {
             $dbConfig['motionDetection'] = [new DetectionZone(0, 0, 100, 100)];
