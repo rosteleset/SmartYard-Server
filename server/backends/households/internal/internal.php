@@ -1490,7 +1490,7 @@
                     }
                 }
 
-              if (@$params["subscriberLast"] || @$params["forceNames"]) {
+                if (@$params["subscriberLast"] || @$params["forceNames"]) {
                     if (!checkStr($params["subscriberLast"], [ "maxLength" => 32 ])) {
                         setLastError("invalidParams");
                         return false;
@@ -2241,7 +2241,7 @@
              */
 
             public function cli($args) {
-                if (array_key_exists($args["--rf-import"])) {
+                if (array_key_exists("--rf-import", $args)) {
                     $f1 = $this->getFlats("houseId", (int)$args["--house-id"]);
                     $f2 = [];
                     foreach ($f1 as $f) {
