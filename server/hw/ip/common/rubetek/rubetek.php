@@ -24,6 +24,18 @@ trait rubetek
         $this->apiCall('/settings/syslog', 'PATCH', [
             'address' => "$server:$port",
             'protocol' => 'udp',
+
+            /*
+             * 0 - Emergency
+             * 1 - Alert
+             * 2 - Critical
+             * 3 - Error
+             * 4 - Warning
+             * 5 - Notice
+             * 6 - Informational
+             * 7 - Debug
+             */
+            'level' => 6, // Only for fw >= 2024.10
         ]);
     }
 
