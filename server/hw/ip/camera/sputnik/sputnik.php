@@ -6,6 +6,7 @@ use DateTime;
 use DateTimeZone;
 use Exception;
 use hw\ip\camera\camera;
+use hw\ip\camera\entities\DetectionZone;
 
 /**
  * Class representing a Sputnik camera.
@@ -25,13 +26,7 @@ class sputnik extends camera
      */
     protected ?string $cameraUUID = null;
 
-    public function configureMotionDetection(
-        int $left = 0,
-        int $top = 0,
-        int $width = 0,
-        int $height = 0,
-        int $sensitivity = 0
-    )
+    public function configureMotionDetection(array $detectionZones): void
     {
         // Empty implementation
     }
@@ -78,13 +73,7 @@ class sputnik extends camera
     public function transformDbConfig(array $dbConfig): array
     {
         $dbConfig['ntp']['timezone'] = $this->getOffsetByTimezone($dbConfig['ntp']['timezone']);
-
-        $dbConfig['motionDetection'] = [
-            'left' => 0,
-            'top' => 0,
-            'width' => 0,
-            'height' => 0,
-        ];
+        $dbConfig['motionDetection'] = [new DetectionZone(0, 0, 100, 100)];
 
         return $dbConfig;
     }
@@ -108,12 +97,7 @@ class sputnik extends camera
 
     protected function getMotionDetectionConfig(): array
     {
-        return [
-            'left' => 0,
-            'top' => 0,
-            'width' => 0,
-            'height' => 0,
-        ];
+        return [new DetectionZone(0, 0, 100, 100)];
     }
 
     protected function getNtpConfig(): array

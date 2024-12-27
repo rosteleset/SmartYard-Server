@@ -57,21 +57,21 @@ namespace backends\cameras {
                 "ip" => "ip"
             ]);
 
-            foreach($cameras as &$camera) {
-                $camera["mdArea"] = json_decode($camera["mdArea"]);
-                $camera["rcArea"] = json_decode($camera["rcArea"]);
+            foreach($cameras as $key => $camera) {
+                $cameras[$key]["mdArea"] = json_decode($camera["mdArea"]);
+                $cameras[$key]["rcArea"] = json_decode($camera["rcArea"]);
             }
 
             if ($monitoring && $withStatus) {
                 $targetHosts = [];
 
                 foreach ($cameras as $camera) {
-                        $targetHosts[] = [
-                            'hostId' => $camera['cameraId'],
-                            'ip' => $camera['ip'],
-                            'url' => $camera['url'],
-                            'dvrStream' => $camera['dvrStream']
-                        ];
+                    $targetHosts[] = [
+                        'hostId' => $camera['cameraId'],
+                        'ip' => $camera['ip'],
+                        'url' => $camera['url'],
+                        'dvrStream' => $camera['dvrStream']
+                    ];
                 }
 
                 //get status

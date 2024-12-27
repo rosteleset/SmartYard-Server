@@ -3,6 +3,7 @@
 namespace hw\ip\camera\qtech;
 
 use hw\ip\camera\camera;
+use hw\ip\camera\entities\DetectionZone;
 
 /**
  * Class representing a Qtech camera.
@@ -12,15 +13,9 @@ class qtech extends camera
 
     use \hw\ip\common\qtech\qtech;
 
-    public function configureMotionDetection(
-        int $left = 0,
-        int $top = 0,
-        int $width = 0,
-        int $height = 0,
-        int $sensitivity = 4
-    )
+    public function configureMotionDetection(array $detectionZones): void
     {
-        $isEnabled = (int)($left || $top || $width || $height);
+        $isEnabled = (int)$detectionZones;
 
         // Motion detection params
         $this->setParams([
@@ -29,7 +24,7 @@ class qtech extends camera
             'Config.DoorSetting.MOTION_DETECT.MDTimeWeekDay' => '0123456',
             'Config.DoorSetting.MOTION_DETECT.MDTimeStart' => '00:00',
             'Config.DoorSetting.MOTION_DETECT.MDTimeEnd' => '23:59',
-            'Config.DoorSetting.MOTION_DETECT.DetectAccuracy' => $sensitivity, // feels like it doesn't affect anything
+            'Config.DoorSetting.MOTION_DETECT.DetectAccuracy' => 4, // feels like it doesn't affect anything
             'Config.DoorSetting.MOTION_DETECT.FTPEnable' => 1, // for syslog event
         ]);
 
@@ -57,28 +52,22 @@ class qtech extends camera
         return file_get_contents("http://$this->login:$this->password@$host:8080/picture.jpg", false, $context);
     }
 
-    public function prepare()
+    public function prepare(): void
     {
         parent::prepare();
         $this->configureImage();
     }
 
-    public function setOsdText(string $text = '')
+    public function setOsdText(string $text = ''): void
     {
         $this->setParams(['Config.DoorSetting.GENERAL.VideoWaterMark2' => $text]);
     }
 
     public function transformDbConfig(array $dbConfig): array
     {
-        $md = $dbConfig['motionDetection'];
-        $md_enable = ($md['left'] || $md['top'] || $md['width'] || $md['height']) ? 1 : 0;
-
-        $dbConfig['motionDetection'] = [
-            'left' => $md_enable,
-            'top' => $md_enable,
-            'width' => $md_enable,
-            'height' => $md_enable,
-        ];
+        if ($dbConfig['motionDetection']) {
+            $dbConfig['motionDetection'] = [new DetectionZone(0, 0, 100, 100)];
+        }
 
         $dbConfig['ntp']['timezone'] = $this->getOffsetByTimezone($dbConfig['ntp']['timezone']);
 
@@ -90,7 +79,7 @@ class qtech extends camera
      *
      * @return void
      */
-    protected function configureImage()
+    protected function configureImage(): void
     {
         $this->setParams([
             'Config.DoorSetting.GENERAL.IRSetting' => 1, // IR brightness (1 - 99)
@@ -105,12 +94,11 @@ class qtech extends camera
     {
         $mdEnabled = (bool)$this->getParam('Config.DoorSetting.MOTION_DETECT.MotionDectect');
 
-        return [
-            'left' => ($mdEnabled) ? 1 : 0,
-            'top' => ($mdEnabled) ? 1 : 0,
-            'width' => ($mdEnabled) ? 1 : 0,
-            'height' => ($mdEnabled) ? 1 : 0,
-        ];
+        if ($mdEnabled) {
+            return [new DetectionZone(0, 0, 100, 100)];
+        }
+
+        return [];
     }
 
     protected function getOsdText(): string

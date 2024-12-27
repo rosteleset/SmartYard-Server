@@ -2,6 +2,7 @@
 
 namespace hw\ip\camera;
 
+use hw\ip\camera\entities\DetectionZone;
 use hw\ip\ip;
 use hw\SmartConfigurator\ConfigurationBuilder\CameraConfigurationBuilder;
 
@@ -17,8 +18,7 @@ abstract class camera extends ip
 
         $builder
             ->addEventServer($this->getEventServer())
-            // FIXME: temporarily ignore motion detection settings
-            // ->addMotionDetection(...$this->getMotionDetectionConfig())
+            ->addMotionDetection($this->getMotionDetectionConfig())
             ->addNtp(...$this->getNtpConfig())
             ->addOsdText($this->getOsdText())
         ;
@@ -34,7 +34,7 @@ abstract class camera extends ip
     /**
      * Get motion detection configuration.
      *
-     * @return array An array containing motion detection params configured on the device.
+     * @return DetectionZone[] An array containing motion detection objects configured on the device.
      */
     abstract protected function getMotionDetectionConfig(): array;
 
@@ -47,24 +47,12 @@ abstract class camera extends ip
 
     /**
      * Configure motion detection parameters.
-     * Calling this function without parameters will enable motion detection
-     * with a full-frame zone and optimal sensitivity.
      *
-     * @param int $left (Optional) Left coordinate of the detection area.
-     * @param int $top (Optional) Top coordinate of the detection area.
-     * @param int $width (Optional) Width of the detection area.
-     * @param int $height (Optional) Height of the detection area.
-     * @param int $sensitivity (Optional) Sensitivity level for motion detection.
+     * @param DetectionZone[] $detectionZones Array of DetectionZone objects.
      *
      * @return void
      */
-    abstract public function configureMotionDetection(
-        int $left = 0,
-        int $top = 0,
-        int $width = 0,
-        int $height = 0,
-        int $sensitivity = 0
-    );
+    abstract public function configureMotionDetection(array $detectionZones): void;
 
     /**
      * Retrieves a snapshot from the camera.
@@ -81,5 +69,5 @@ abstract class camera extends ip
      *
      * @return void
      */
-    abstract public function setOsdText(string $text = '');
+    abstract public function setOsdText(string $text = ''): void;
 }

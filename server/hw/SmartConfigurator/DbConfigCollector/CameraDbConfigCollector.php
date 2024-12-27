@@ -2,6 +2,7 @@
 
 namespace hw\SmartConfigurator\DbConfigCollector;
 
+use hw\ip\camera\entities\DetectionZone;
 use hw\SmartConfigurator\ConfigurationBuilder\CameraConfigurationBuilder;
 
 /**
@@ -42,8 +43,7 @@ class CameraDbConfigCollector implements IDbConfigCollector
     {
         $this
             ->addEventServer()
-            // FIXME: temporarily ignore motion detection settings
-            // ->addMotionDetection()
+            ->addMotionDetection()
             ->addNtp()
             ->addOsdText()
         ;
@@ -70,14 +70,13 @@ class CameraDbConfigCollector implements IDbConfigCollector
      */
     private function addMotionDetection(): self
     {
-        [
-            'mdLeft' => $left,
-            'mdTop' => $top,
-            'mdWidth' => $width,
-            'mdHeight' => $height,
-        ] = $this->cameraData;
+        $zones = array_map(
+            fn($area) => new DetectionZone($area->x, $area->y, $area->w, $area->h),
+            $this->cameraData['mdArea'] ?? [],
+        );
 
-        $this->builder->addMotionDetection($left, $top, $width, $height);
+        $this->builder->addMotionDetection($zones);
+
         return $this;
     }
 
