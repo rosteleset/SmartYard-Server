@@ -24,11 +24,42 @@
         $user_phone[0] = '7';
     }
 
+    $headers = apache_request_headers();
+
+    if (@$postdata['deviceToken']) {
+        $device_token = $postdata['deviceToken'];
+    } else if (@$headers['Accept-Language'] && @$headers['X-System-Info']) {
+        $device_token = md5($headers['Accept-Language'] . $headers['X-System-Info']);
+    } else {
+        $device_token = 'default';
+    }
+
     $isdn = loadBackend("isdn");
+    $households = loadBackend("households");
 
     if (ctype_digit($user_phone)) {
 
         $confirmMethod = @$postdata['method'] ?: @$config["backends"]["isdn"]["confirm_method"] ?: "outgoingCall";
+
+        // check device count per mobile number
+        if (@$config['mobile']['device_count']){
+            $subscribers = $households->getSubscribers("mobile", $user_phone);
+            $devices = false;
+            $subscriber_id = false;
+            if ($subscribers) {
+                $subscriber = $subscribers[0];
+                $subscriber_id = $subscriber["subscriberId"];
+                $devices = $households->getDevices("subscriber", $subscriber_id);
+            }
+
+            if ($devices) {
+                $filteredDevices = array_filter($devices, fn($device) => $device['deviceToken'] === $device_token);
+                $device = reset($filteredDevices);
+                if (!$device && count($devices) >= $config['mobile']['device_count']){
+                    response(403, false, false, i18n("mobile.deviceCountError"));
+                }
+            }
+        }
 
         // fake accounts - always confirmation by pin
         if ($user_phone == '79123456781') { // fake account №1
@@ -55,7 +86,7 @@
             $pin = '1005';
             $redis->setex("userpin_".$user_phone, 60, $pin);
             response(200, [ "method" => "sms"]);
-        } 
+        }
 
         // real accounts
         switch ($confirmMethod) {
