@@ -17,7 +17,7 @@
                     title: i18n("tt.projectAcronym"),
                     placeholder: i18n("tt.projectAcronym"),
                     validate: v => {
-                        return !!v.match(/^[a-zA-Z_][a-zA-Z0-9_]*$/gm);
+                        return !!v.match(/^[a-zA-Z_][a-zA-Z0-9_]*$/g);
                     }
                 },
                 {
@@ -139,7 +139,7 @@
                     title: i18n("tt.customFieldField"),
                     placeholder: i18n("tt.customFieldField"),
                     validate: v => {
-                        return !!v.match(/^[a-zA-Z_][a-zA-Z0-9_]*$/gm);
+                        return !!v.match(/^[a-z_A-Z]\w*$/g);
                     },
                 },
                 {
@@ -334,7 +334,7 @@
                     title: i18n("tt.printFormName"),
                     placeholder: i18n("tt.printFormName"),
                     validate: v => {
-                        return !!v.match(/^[a-zA-Z_][a-zA-Z0-9_]*$/gm);
+                        return !!v.match(/^[a-z_A-Z]\w*$/g);
                     }
                 },
                 {
@@ -1013,7 +1013,7 @@
                     readonly: true,
                     value: print.formName,
                     validate: v => {
-                        return !!v.match(/^[a-zA-Z_][a-zA-Z0-9_]*$/gm);
+                        return !!v.match(/^[a-z_A-Z]\w*$/g);
                     },
                 },
                 {
@@ -2296,7 +2296,7 @@
                     title: i18n("tt.workflow"),
                     placeholder: i18n("tt.workflow"),
                     validate: (v) => {
-                        return $.trim(v) !== "";
+                        return !!v.match(/^[a-z_A-Z]\w*$/g);
                     }
                 },
             ],
@@ -3028,7 +3028,7 @@
                     title: i18n("tt.filter"),
                     placeholder: i18n("tt.filter"),
                     validate: (v) => {
-                        return $.trim(v) !== "";
+                        return !!v.match(/^[a-z_A-Z]\w*$/g);
                     }
                 },
             ],
