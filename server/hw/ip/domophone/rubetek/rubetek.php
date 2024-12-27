@@ -249,39 +249,6 @@ abstract class rubetek extends domophone
         }
     }
 
-    public function getApartments(): array
-    {
-        $apartments = [];
-        $this->loadDialplans();
-
-        foreach ($this->dialplans as $dialplan) {
-            [
-                'id' => $apartmentNumber,
-                'sip_number' => $sipNumbers,
-                'call_type' => $callType,
-                'access_codes' => $codes,
-            ] = $dialplan;
-
-            if (
-                $apartmentNumber === RubetekConst::CONCIERGE_ID ||
-                $apartmentNumber === RubetekConst::SOS_ID ||
-                !$sipNumbers
-            ) {
-                continue;
-            }
-
-            $apartments[$apartmentNumber] = [
-                'apartment' => $apartmentNumber,
-                'code' => $codes[0] ?? 0,
-                'sipNumbers' => [$sipNumbers],
-                'cmsEnabled' => $callType === RubetekConst::SIP_ANALOG,
-                'cmsLevels' => [],
-            ];
-        }
-
-        return $apartments;
-    }
-
     public function getAudioLevels(): array
     {
         $audioSettings = $this->getConfig()['audio'];
@@ -643,6 +610,41 @@ abstract class rubetek extends domophone
         }
 
         return $analogAddressing;
+    }
+
+    protected function getApartments(): array
+    {
+        $apartments = [];
+        $this->loadDialplans();
+
+        foreach ($this->dialplans as $dialplan) {
+            [
+                'id' => $apartmentNumber,
+                'sip_number' => $sipNumbers,
+                'call_type' => $callType,
+                'access_codes' => $codes,
+            ] = $dialplan;
+
+            if (
+                $apartmentNumber === RubetekConst::CONCIERGE_ID ||
+                $apartmentNumber === RubetekConst::SOS_ID ||
+                !$sipNumbers
+            ) {
+                continue;
+            }
+
+            $apartments[$apartmentNumber] = [
+                'apartment' => $apartmentNumber,
+                // The $codes variable contains a list of codes for old fw
+                // and a list of codes and their validity time for fw >= 2024.10
+                'code' => $codes[0]['code'] ?? $codes[0] ?? 0,
+                'sipNumbers' => [$sipNumbers],
+                'cmsEnabled' => $callType === RubetekConst::SIP_ANALOG,
+                'cmsLevels' => [],
+            ];
+        }
+
+        return $apartments;
     }
 
     protected function getCmsModel(): string
