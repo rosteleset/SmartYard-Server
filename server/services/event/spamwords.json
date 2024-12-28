@@ -81,7 +81,13 @@
         "IP CHANGED"
     ],
     "rubetek": [
-        "Successfully registered at SIP server"
+        "Successfully registered at SIP server",
+        "PeriphBoard",
+        "Data send fail",
+        "Invalid address",
+        "Reconnect",
+        "OnConnect",
+        "MqttOverHttpService"
     ],
     "ufanet": [
         "goke-i2c"
