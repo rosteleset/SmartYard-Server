@@ -31,7 +31,7 @@ trait sputnik
         return ['DeviceID' => $uuid];
     }
 
-    public function setAdminPassword(string $password)
+    public function setAdminPassword(string $password): void
     {
         // Empty implementation
     }

@@ -92,12 +92,12 @@ class sputnik extends domophone
         ];
     }
 
-    public function configureEncoding()
+    public function configureEncoding(): void
     {
         // Empty implementation
     }
 
-    public function configureGate(array $links = [])
+    public function configureGate(array $links = []): void
     {
 //        $this->apiCall('mutation', 'removeAllClusterPrefix', ['uuid' => $this->uuid]);
 //
@@ -178,7 +178,7 @@ class sputnik extends domophone
         ]);
     }
 
-    public function configureUserAccount(string $password)
+    public function configureUserAccount(string $password): void
     {
         // Empty implementation
     }
@@ -262,7 +262,7 @@ class sputnik extends domophone
         ]);
     }
 
-    public function setConciergeNumber(int $sipNumber)
+    public function setConciergeNumber(int $sipNumber): void
     {
         // Empty implementation
         // $this->configureApartment($sipNumber, 0, [$sipNumber], false);
@@ -281,12 +281,12 @@ class sputnik extends domophone
         ]);
     }
 
-    public function setLanguage(string $language = 'ru')
+    public function setLanguage(string $language = 'ru'): void
     {
         // Empty implementation
     }
 
-    public function setPublicCode(int $code = 0)
+    public function setPublicCode(int $code = 0): void
     {
         // Empty implementation
     }
@@ -310,7 +310,7 @@ class sputnik extends domophone
         ]);
     }
 
-    public function setTickerText(string $text = '')
+    public function setTickerText(string $text = ''): void
     {
         // Empty implementation
     }
@@ -325,7 +325,7 @@ class sputnik extends domophone
         ]);
     }
 
-    public function setUnlocked(bool $unlocked = true)
+    public function setUnlocked(bool $unlocked = true): void
     {
         // Empty implementation
     }

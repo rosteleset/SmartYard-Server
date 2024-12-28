@@ -6,7 +6,6 @@
     require_once "data/install_tt_mobile_template.php";
     require_once "data/schema.php";
     require_once "hw/autoconfigure_device.php";
-    require_once "hw/autoconfigure_domophone.php";
     require_once "utils/checkint.php";
     require_once "utils/checkstr.php";
     require_once "utils/cleanup.php";

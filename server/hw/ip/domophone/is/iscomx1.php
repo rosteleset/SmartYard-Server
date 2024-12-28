@@ -8,13 +8,13 @@ namespace hw\ip\domophone\is;
 class iscomx1 extends is
 {
 
-    public function prepare()
+    public function prepare(): void
     {
         parent::prepare();
         $this->enableEchoCancellation(false);
     }
 
-    public function setCmsLevels(array $levels)
+    public function setCmsLevels(array $levels): void
     {
         if (count($levels) === 4) {
             $this->apiCall('/levels', 'PUT', [
@@ -28,7 +28,7 @@ class iscomx1 extends is
         }
     }
 
-    public function setTickerText(string $text = '')
+    public function setTickerText(string $text = ''): void
     {
         // Empty implementation
     }

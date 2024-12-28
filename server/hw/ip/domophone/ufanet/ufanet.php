@@ -121,7 +121,7 @@ abstract class ufanet extends domophone
         ]);
     }
 
-    public function configureMatrix(array $matrix)
+    public function configureMatrix(array $matrix): void
     {
         // Empty implementation
     }
@@ -145,7 +145,7 @@ abstract class ufanet extends domophone
         ]);
     }
 
-    public function configureUserAccount(string $password)
+    public function configureUserAccount(string $password): void
     {
         // Empty implementation
     }
@@ -213,12 +213,12 @@ abstract class ufanet extends domophone
         }
     }
 
-    public function setCallTimeout(int $timeout)
+    public function setCallTimeout(int $timeout): void
     {
         // Empty implementation
     }
 
-    public function setCmsLevels(array $levels)
+    public function setCmsLevels(array $levels): void
     {
         // Empty implementation
     }
@@ -255,12 +255,12 @@ abstract class ufanet extends domophone
         ]);
     }
 
-    public function setLanguage(string $language = 'ru')
+    public function setLanguage(string $language = 'ru'): void
     {
         // Empty implementation
     }
 
-    public function setPublicCode(int $code = 0)
+    public function setPublicCode(int $code = 0): void
     {
         // Empty implementation
     }
@@ -277,7 +277,7 @@ abstract class ufanet extends domophone
         ];
     }
 
-    public function setTalkTimeout(int $timeout)
+    public function setTalkTimeout(int $timeout): void
     {
         // Empty implementation
     }

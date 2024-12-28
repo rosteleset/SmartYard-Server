@@ -29,7 +29,7 @@ abstract class hw
      *
      * @return void
      */
-    public function wait()
+    public function wait(): void
     {
         for ($i = 0; $i < 20; $i++) {
             sleep(10);
@@ -59,21 +59,21 @@ abstract class hw
      *
      * @return void
      */
-    abstract public function prepare();
+    abstract public function prepare(): void;
 
     /**
      * Reboot the device.
      *
      * @return void
      */
-    abstract public function reboot();
+    abstract public function reboot(): void;
 
     /**
      * Reset the device to factory settings.
      *
      * @return void
      */
-    abstract public function reset();
+    abstract public function reset(): void;
 
     /**
      * Synchronize data with device.
@@ -83,7 +83,7 @@ abstract class hw
      *
      * @return void
      */
-    abstract public function syncData();
+    abstract public function syncData(): void;
 
     /**
      * Transforms a configuration from a database for use with a specific device.

@@ -14,7 +14,7 @@ abstract class hikvision extends domophone
 
     use \hw\ip\common\hikvision\hikvision;
 
-    public function addRfid(string $code, int $apartment = 0)
+    public function addRfid(string $code, int $apartment = 0): void
     {
         $this->apiCall(
             '/AccessControl/CardInfo/Record',
@@ -30,7 +30,7 @@ abstract class hikvision extends domophone
         );
     }
 
-    public function addRfids(array $rfids)
+    public function addRfids(array $rfids): void
     {
         foreach ($rfids as $rfid) {
             $this->addRfid($rfid);
@@ -42,8 +42,8 @@ abstract class hikvision extends domophone
         int   $code = 0,
         array $sipNumbers = [],
         bool  $cmsEnabled = true,
-        array $cmsLevels = []
-    )
+        array $cmsLevels = [],
+    ): void
     {
         $now = new DateTime();
         $beginTime = $now->format('Y-m-dTH:i:s');
@@ -107,7 +107,7 @@ abstract class hikvision extends domophone
         );
     }
 
-    public function configureEncoding()
+    public function configureEncoding(): void
     {
         $this->apiCall(
             '/Streaming/channels/101',
@@ -202,12 +202,12 @@ abstract class hikvision extends domophone
         );
     }
 
-    public function configureGate(array $links = [])
+    public function configureGate(array $links = []): void
     {
         // Empty implementation
     }
 
-    public function configureMatrix(array $matrix)
+    public function configureMatrix(array $matrix): void
     {
         // Empty implementation
     }
@@ -219,8 +219,8 @@ abstract class hikvision extends domophone
         int    $port = 5060,
         bool   $stunEnabled = false,
         string $stunServer = '',
-        int    $stunPort = 3478
-    )
+        int    $stunPort = 3478,
+    ): void
     {
         $this->apiCall(
             '/System/Network/SIP',
@@ -244,12 +244,12 @@ abstract class hikvision extends domophone
         );
     }
 
-    public function configureUserAccount(string $password)
+    public function configureUserAccount(string $password): void
     {
         // Empty implementation
     }
 
-    public function deleteApartment(int $apartment = 0)
+    public function deleteApartment(int $apartment = 0): void
     {
         if ($apartment === 0) {
             foreach ($this->getApartmentsNumbers() as $value) {
@@ -275,7 +275,7 @@ abstract class hikvision extends domophone
         }
     }
 
-    public function deleteRfid(string $code = '')
+    public function deleteRfid(string $code = ''): void
     {
         // TODO: Implement deleteRfid() method.
     }
@@ -329,7 +329,7 @@ abstract class hikvision extends domophone
         return $rfids;
     }
 
-    public function openLock(int $lockNumber = 0)
+    public function openLock(int $lockNumber = 0): void
     {
         $this->apiCall(
             '/AccessControl/RemoteControl/door/' . ($lockNumber + 1),
@@ -339,13 +339,13 @@ abstract class hikvision extends domophone
         );
     }
 
-    public function prepare()
+    public function prepare(): void
     {
         parent::prepare();
         $this->enableDhcp();
     }
 
-    public function setAudioLevels(array $levels)
+    public function setAudioLevels(array $levels): void
     {
         $levels[0] = @$levels[0] ?: 7;
         $levels[1] = @$levels[1] ?: 7;
@@ -381,7 +381,7 @@ abstract class hikvision extends domophone
         );
     }
 
-    public function setCallTimeout(int $timeout)
+    public function setCallTimeout(int $timeout): void
     {
         $this->apiCall(
             '/VideoIntercom/operationTime',
@@ -393,27 +393,32 @@ abstract class hikvision extends domophone
         );
     }
 
-    public function setCmsLevels(array $levels)
+    public function setCmsLevels(array $levels): void
     {
         // Empty implementation
     }
 
-    public function setCmsModel(string $model = '')
+    public function setCmsModel(string $model = ''): void
     {
         // Empty implementation
     }
 
-    public function setConciergeNumber(int $sipNumber)
+    public function setConciergeNumber(int $sipNumber): void
     {
         // Empty implementation
     }
 
-    public function setDtmfCodes(string $code1 = '1', string $code2 = '2', string $code3 = '3', string $codeCms = '1')
+    public function setDtmfCodes(
+        string $code1 = '1',
+        string $code2 = '2',
+        string $code3 = '3',
+        string $codeCms = '1',
+    ): void
     {
         // Empty implementation
     }
 
-    public function setLanguage(string $language = 'ru')
+    public function setLanguage(string $language = 'ru'): void
     {
         switch ($language) {
             case 'ru':
@@ -431,17 +436,17 @@ abstract class hikvision extends domophone
         );
     }
 
-    public function setPublicCode(int $code = 0)
+    public function setPublicCode(int $code = 0): void
     {
         // Empty implementation
     }
 
-    public function setSosNumber(int $sipNumber)
+    public function setSosNumber(int $sipNumber): void
     {
         // Empty implementation
     }
 
-    public function setTalkTimeout(int $timeout)
+    public function setTalkTimeout(int $timeout): void
     {
         $this->apiCall(
             '/VideoIntercom/operationTime',
@@ -453,12 +458,12 @@ abstract class hikvision extends domophone
         );
     }
 
-    public function setTickerText(string $text = '')
+    public function setTickerText(string $text = ''): void
     {
         // Empty implementation
     }
 
-    public function setUnlockTime(int $time = 3)
+    public function setUnlockTime(int $time = 3): void
     {
         $this->apiCall(
             '/AccessControl/Door/param/1',
@@ -471,7 +476,7 @@ abstract class hikvision extends domophone
         );
     }
 
-    public function setUnlocked(bool $unlocked = true)
+    public function setUnlocked(bool $unlocked = true): void
     {
         $this->apiCall(
             '/AccessControl/RemoteControl/door/1',
@@ -511,7 +516,7 @@ abstract class hikvision extends domophone
         return false;
     }
 
-    protected function enableDhcp()
+    protected function enableDhcp(): void
     {
         $this->apiCall(
             '/System/Network/interfaces/1',

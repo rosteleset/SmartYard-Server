@@ -8,13 +8,13 @@ namespace hw\ip\domophone\is;
 class iscomx1plus extends is
 {
 
-    public function prepare()
+    public function prepare(): void
     {
         parent::prepare();
         $this->setServiceCode();
     }
 
-    public function setCmsLevels(array $levels)
+    public function setCmsLevels(array $levels): void
     {
         if (count($levels) === 2) {
             $this->apiCall('/levels', 'PUT', [
@@ -26,7 +26,7 @@ class iscomx1plus extends is
         }
     }
 
-    public function setTickerText(string $text = '')
+    public function setTickerText(string $text = ''): void
     {
         $this->apiCall('/panelDisplay/settings', 'PUT', [
             'strDisplay' => $text !== '',
@@ -61,7 +61,7 @@ class iscomx1plus extends is
      *
      * @return void
      */
-    protected function setServiceCode(int $code = 0)
+    protected function setServiceCode(int $code = 0): void
     {
         $enabled = $code !== 0;
         $pass = $enabled ? $code : 123456;

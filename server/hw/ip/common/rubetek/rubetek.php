@@ -87,7 +87,7 @@ trait rubetek
         sleep(10);
     }
 
-    public function syncData()
+    public function syncData(): void
     {
         // Empty implementation
     }
@@ -109,7 +109,12 @@ trait rubetek
      *
      * @return array|string API response.
      */
-    protected function apiCall(string $resource, string $method = 'GET', array $payload = [], int $timeout = 0): array|string
+    protected function apiCall(
+        string $resource,
+        string $method = 'GET',
+        array  $payload = [],
+        int    $timeout = 0,
+    ): array|string
     {
         $req = $this->url . $this->apiPrefix . $resource;
 

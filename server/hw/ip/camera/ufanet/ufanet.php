@@ -75,7 +75,7 @@ class ufanet extends camera
         $this->wait();
     }
 
-    public function syncData()
+    public function syncData(): void
     {
         // Empty implementation
     }

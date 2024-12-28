@@ -65,7 +65,7 @@ class sputnik extends camera
         ]);
     }
 
-    public function syncData()
+    public function syncData(): void
     {
         // Empty implementation
     }

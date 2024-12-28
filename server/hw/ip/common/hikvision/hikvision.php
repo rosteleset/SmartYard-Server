@@ -8,7 +8,7 @@ namespace hw\ip\common\hikvision;
 trait hikvision
 {
 
-    public function configureEventServer(string $url)
+    public function configureEventServer(string $url): void
     {
         ['host' => $server, 'port' => $port] = parse_url_ext($url);
 
@@ -31,7 +31,7 @@ trait hikvision
         );
     }
 
-    public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow')
+    public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow'): void
     {
         $this->apiCall(
             '/System/time',
@@ -68,17 +68,17 @@ trait hikvision
         return $sysinfo;
     }
 
-    public function reboot()
+    public function reboot(): void
     {
         $this->apiCall('/System/reboot', 'PUT');
     }
 
-    public function reset()
+    public function reset(): void
     {
         $this->apiCall('/System/factoryReset', 'PUT', ['mode' => 'basic']);
     }
 
-    public function setAdminPassword(string $password)
+    public function setAdminPassword(string $password): void
     {
         $this->apiCall(
             '/Security/users/1',
@@ -94,7 +94,7 @@ trait hikvision
         );
     }
 
-    public function syncData()
+    public function syncData(): void
     {
         // Empty implementation
     }
@@ -131,7 +131,7 @@ trait hikvision
         curl_close($ch);
 
         if (str_starts_with(curl_getinfo($ch, CURLINFO_CONTENT_TYPE), 'image')) {
-            return (string) $res;
+            return (string)$res;
         }
 
         if (curl_getinfo($ch, CURLINFO_CONTENT_TYPE) == 'application/xml') {
@@ -153,7 +153,7 @@ trait hikvision
         return [];
     }
 
-    protected function initializeProperties()
+    protected function initializeProperties(): void
     {
         $this->login = 'admin';
         $this->defaultPassword = 'password123';

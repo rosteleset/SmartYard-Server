@@ -370,7 +370,12 @@ abstract class rubetek extends domophone
         ]);
     }
 
-    public function setDtmfCodes(string $code1 = '1', string $code2 = '2', string $code3 = '3', string $codeCms = '1'): void
+    public function setDtmfCodes(
+        string $code1 = '1',
+        string $code2 = '2',
+        string $code3 = '3',
+        string $codeCms = '1',
+    ): void
     {
         $this->apiCall('/settings/dtmf', 'PATCH', [
             'code_length' => 1,
@@ -383,12 +388,12 @@ abstract class rubetek extends domophone
         ]);
     }
 
-    public function setLanguage(string $language = 'ru')
+    public function setLanguage(string $language = 'ru'): void
     {
         // Empty implementation
     }
 
-    public function setPublicCode(int $code = 0)
+    public function setPublicCode(int $code = 0): void
     {
         // Empty implementation
     }
