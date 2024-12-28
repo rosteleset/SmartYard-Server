@@ -25,7 +25,7 @@ class rubetek extends camera
 
             // Detection settings
             'detection_mode' => (int)$detectionZones, // Detection on/off
-            'threshold' => 90, // Confidence threshold
+            'threshold' => 80, // Confidence threshold
             'liveness_frame_num' => 0, // Not used
             'frame_interval' => 500, // Doesn't work
             'face_presence_time' => 0, // Not used
