@@ -65,7 +65,7 @@ abstract class rubetek extends domophone
 
         $this->updateDialplan(
             id: $dialplan['id'],
-            sipNumber: $sipNumbers[0],
+            sipNumber: $sipNumbers[0] ?? '',
             analogNumber: $dialplan['analog_number'],
             callType: $cmsEnabled ? RubetekConst::SIP_ANALOG : RubetekConst::SIP,
             doorAccess: [],
@@ -627,25 +627,17 @@ abstract class rubetek extends domophone
         foreach ($this->dialplans as $dialplan) {
             [
                 'id' => $apartmentNumber,
-                'sip_number' => $sipNumbers,
+                'sip_number' => $sipNumber,
                 'call_type' => $callType,
                 'access_codes' => $codes,
             ] = $dialplan;
-
-            if (
-                $apartmentNumber === RubetekConst::CONCIERGE_ID ||
-                $apartmentNumber === RubetekConst::SOS_ID ||
-                !$sipNumbers
-            ) {
-                continue;
-            }
 
             $apartments[$apartmentNumber] = [
                 'apartment' => $apartmentNumber,
                 // The $codes variable contains a list of codes for old fw
                 // and a list of codes and their validity time for fw >= 2024.10
                 'code' => $codes[0]['code'] ?? $codes[0] ?? 0,
-                'sipNumbers' => [$sipNumbers],
+                'sipNumbers' => [$sipNumber],
                 'cmsEnabled' => $callType === RubetekConst::SIP_ANALOG,
                 'cmsLevels' => [],
             ];
@@ -815,9 +807,10 @@ abstract class rubetek extends domophone
 
         $rawDialplans = $this->apiCall('/apartments');
 
+        // Filter out service apartments
         $filteredDialplans = array_filter(
             $rawDialplans,
-            static fn($value) => $value['id'] !== RubetekConst::CONCIERGE_ID && $value['id'] !== RubetekConst::SOS_ID,
+            static fn($item) => !in_array($item['id'], [RubetekConst::CONCIERGE_ID, RubetekConst::SOS_ID]),
         );
 
         $this->dialplans = array_column($filteredDialplans, null, 'id');
