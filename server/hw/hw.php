@@ -86,9 +86,10 @@ abstract class hw
     abstract public function syncData(): void;
 
     /**
-     * Transforms a configuration from a database for use with a specific device.
+     * Modify configurations from the database for a specific device.
+     * Used only when comparing the database configuration and the device configuration.
      *
-     * @param array $dbConfig Database configuration
+     * @param array $dbConfig Database configuration.
      *
      * @return array An array representing the transformed database configuration.
      */

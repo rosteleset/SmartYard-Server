@@ -2,12 +2,13 @@
 
 namespace hw\ip\domophone\rubetek;
 
+use hw\Interfaces\DbConfigUpdaterInterface;
 use hw\ip\domophone\domophone;
 
 /**
  * Abstract class representing a Rubetek domophone.
  */
-abstract class rubetek extends domophone
+abstract class rubetek extends domophone implements DbConfigUpdaterInterface
 {
 
     use \hw\ip\common\rubetek\rubetek {
@@ -68,7 +69,7 @@ abstract class rubetek extends domophone
             sipNumber: $sipNumbers[0] ?? '',
             analogNumber: $dialplan['analog_number'],
             callType: $cmsEnabled ? RubetekConst::SIP_ANALOG : RubetekConst::SIP,
-            doorAccess: [],
+            doorAccess: [RubetekConst::RELAY_1_INTERNAL],
             accessCodes: $code !== 0 ? ["$code"] : [],
         );
     }
@@ -111,7 +112,7 @@ abstract class rubetek extends domophone
                 'end_number' => $link['lastFlat'],
                 'call_number' => 'XXXXYYYY',
                 'call_type' => RubetekConst::SIP,
-                'door_access' => [],
+                'door_access' => [RubetekConst::RELAY_1_INTERNAL],
             ]);
         }
     }
@@ -230,7 +231,7 @@ abstract class rubetek extends domophone
                         sipNumber: '',
                         analogNumber: $analogNumber,
                         callType: RubetekConst::SIP_ANALOG,
-                        doorAccess: [],
+                        doorAccess: [RubetekConst::RELAY_1_INTERNAL],
                         accessCodes: [],
                     );
                 }
@@ -366,7 +367,7 @@ abstract class rubetek extends domophone
             'dial_number' => "$sipNumber",
             'analog_dial_number' => '',
             'call_type' => RubetekConst::SIP,
-            'door_access' => [],
+            'door_access' => [RubetekConst::RELAY_1_INTERNAL],
         ]);
     }
 
@@ -405,7 +406,7 @@ abstract class rubetek extends domophone
             'dial_number' => "$sipNumber",
             'analog_dial_number' => '',
             'call_type' => RubetekConst::SIP,
-            'door_access' => [],
+            'door_access' => [RubetekConst::RELAY_1_INTERNAL],
             'backlight_period' => 3,
         ]);
     }
@@ -483,6 +484,24 @@ abstract class rubetek extends domophone
         if (!$stunEnabled) {
             $dbConfig['sip']['stunServer'] = '';
             $dbConfig['sip']['stunPort'] = 3478;
+        }
+
+        return $dbConfig;
+    }
+
+    public function updateDbConfig(array $dbConfig): array
+    {
+        /*
+         * If the intercom is configured in the gate mode with prefixes,
+         * then it is necessary to reset the SIP numbers for apartments.
+         * Otherwise, entering the prefix will result in a call to the apartment
+         * if the prefixes and apartment numbers intersect (for example, 1, 2, 3).
+         * TODO: need to check if we can use an empty array of SIP numbers in gate mode for all devices
+         */
+        if (!empty($dbConfig['gateLinks'])) {
+            foreach ($dbConfig['apartments'] as &$apartment) {
+                $apartment['sipNumbers'] = [];
+            }
         }
 
         return $dbConfig;
