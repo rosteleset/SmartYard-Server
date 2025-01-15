@@ -87,7 +87,8 @@
         "Invalid address",
         "Reconnect",
         "OnConnect",
-        "MqttOverHttpService"
+        "MqttOverHttpService",
+        "Free mem"
     ],
     "ufanet": [
         "goke-i2c"
