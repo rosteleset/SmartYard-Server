@@ -111,3 +111,4 @@ asterisk/trunks/*.conf
 asterisk/config.lua
 asterisk/extconfig.conf
 asterisk/http.conf
+asterisk/pjsip.conf
