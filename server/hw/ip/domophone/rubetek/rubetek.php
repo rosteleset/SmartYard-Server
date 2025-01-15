@@ -144,7 +144,7 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface
             $dialplan = $this->dialplans[$apartment] ?? [
                 'id' => "$apartment",
                 'sip_number' => '',
-                'call_type' => RubetekConst::SIP_ANALOG,
+                'call_type' => RubetekConst::ANALOG,
                 'door_access' => [],
                 'access_codes' => [],
             ];
@@ -224,13 +224,15 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface
                 $analogNumber = $dialplan['analog_number'];
 
                 if ($analogNumber === '') {
+                    // Delete apartment-only dialplan
                     $this->deleteDialplan($apartment);
                 } else {
+                    // Otherwise, delete apartment params
                     $this->updateDialplan(
                         id: $dialplan['id'],
                         sipNumber: '',
                         analogNumber: $analogNumber,
-                        callType: RubetekConst::SIP_ANALOG,
+                        callType: RubetekConst::ANALOG,
                         doorAccess: [RubetekConst::RELAY_1_INTERNAL],
                         accessCodes: [],
                     );
@@ -517,11 +519,11 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface
         $this->loadDialplans();
 
         foreach ($this->dialplans as $dialplan) {
-            if (empty($dialplan['sip_number'])) {
-                // Delete dialplan without SIP number
+            if ($dialplan['call_type'] === RubetekConst::ANALOG) {
+                // Delete matrix-only dialplan
                 $this->deleteDialplan($dialplan['id']);
             } else {
-                // Otherwise, remove the analog number from the dialplan
+                // Otherwise, remove the analog number from the full dialplan
                 $this->updateDialplan(
                     id: $dialplan['id'],
                     sipNumber: $dialplan['sip_number'],
@@ -650,6 +652,11 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface
                 'call_type' => $callType,
                 'access_codes' => $codes,
             ] = $dialplan;
+
+            // Skip matrix-only dialplan, this is not an apartment
+            if ($callType === RubetekConst::ANALOG) {
+                continue;
+            }
 
             $apartments[$apartmentNumber] = [
                 'apartment' => $apartmentNumber,
