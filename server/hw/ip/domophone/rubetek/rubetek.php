@@ -145,7 +145,7 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface
                 'id' => "$apartment",
                 'sip_number' => '',
                 'call_type' => RubetekConst::ANALOG,
-                'door_access' => [],
+                'door_access' => [RubetekConst::RELAY_1_INTERNAL],
                 'access_codes' => [],
             ];
 
