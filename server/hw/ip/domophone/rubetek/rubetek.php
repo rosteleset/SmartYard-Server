@@ -2,12 +2,13 @@
 
 namespace hw\ip\domophone\rubetek;
 
+use hw\Interfaces\DbConfigUpdaterInterface;
 use hw\ip\domophone\domophone;
 
 /**
  * Abstract class representing a Rubetek domophone.
  */
-abstract class rubetek extends domophone
+abstract class rubetek extends domophone implements DbConfigUpdaterInterface
 {
 
     use \hw\ip\common\rubetek\rubetek {
@@ -64,12 +65,12 @@ abstract class rubetek extends domophone
         $dialplan = $this->dialplans[$apartment] ?? ['id' => "$apartment", 'analog_number' => ''];
 
         $this->updateDialplan(
-            $dialplan['id'],
-            $sipNumbers[0],
-            $dialplan['analog_number'],
-            $cmsEnabled ? RubetekConst::SIP_ANALOG : RubetekConst::SIP,
-            [RubetekConst::RELAY_1_INTERNAL],
-            $code !== 0 ? ["$code"] : [],
+            id: $dialplan['id'],
+            sipNumber: $sipNumbers[0] ?? '',
+            analogNumber: $dialplan['analog_number'],
+            callType: $cmsEnabled ? RubetekConst::SIP_ANALOG : RubetekConst::SIP,
+            doorAccess: [RubetekConst::RELAY_1_INTERNAL],
+            accessCodes: $code !== 0 ? ["$code"] : [],
         );
     }
 
@@ -143,18 +144,18 @@ abstract class rubetek extends domophone
             $dialplan = $this->dialplans[$apartment] ?? [
                 'id' => "$apartment",
                 'sip_number' => '',
-                'call_type' => RubetekConst::SIP_ANALOG,
+                'call_type' => RubetekConst::ANALOG,
                 'door_access' => [RubetekConst::RELAY_1_INTERNAL],
                 'access_codes' => [],
             ];
 
             $this->updateDialplan(
-                $dialplan['id'],
-                $dialplan['sip_number'],
-                $analogNumber,
-                $dialplan['call_type'],
-                $dialplan['door_access'],
-                $dialplan['access_codes'],
+                id: $dialplan['id'],
+                sipNumber: $dialplan['sip_number'],
+                analogNumber: $analogNumber,
+                callType: $dialplan['call_type'],
+                doorAccess: $dialplan['door_access'],
+                accessCodes: $dialplan['access_codes'],
             );
         }
 
@@ -223,15 +224,17 @@ abstract class rubetek extends domophone
                 $analogNumber = $dialplan['analog_number'];
 
                 if ($analogNumber === '') {
+                    // Delete apartment-only dialplan
                     $this->deleteDialplan($apartment);
                 } else {
+                    // Otherwise, delete apartment params
                     $this->updateDialplan(
-                        $dialplan['id'],
-                        '',
-                        $analogNumber,
-                        RubetekConst::SIP_ANALOG,
-                        [RubetekConst::RELAY_1_INTERNAL],
-                        [],
+                        id: $dialplan['id'],
+                        sipNumber: '',
+                        analogNumber: $analogNumber,
+                        callType: RubetekConst::ANALOG,
+                        doorAccess: [RubetekConst::RELAY_1_INTERNAL],
+                        accessCodes: [],
                     );
                 }
             }
@@ -366,7 +369,7 @@ abstract class rubetek extends domophone
             'dial_number' => "$sipNumber",
             'analog_dial_number' => '',
             'call_type' => RubetekConst::SIP,
-            'door_access' => [],
+            'door_access' => [RubetekConst::RELAY_1_INTERNAL],
         ]);
     }
 
@@ -405,6 +408,7 @@ abstract class rubetek extends domophone
             'dial_number' => "$sipNumber",
             'analog_dial_number' => '',
             'call_type' => RubetekConst::SIP,
+            'door_access' => [RubetekConst::RELAY_1_INTERNAL],
             'backlight_period' => 3,
         ]);
     }
@@ -487,6 +491,24 @@ abstract class rubetek extends domophone
         return $dbConfig;
     }
 
+    public function updateDbConfig(array $dbConfig): array
+    {
+        /*
+         * If the intercom is configured in the gate mode with prefixes,
+         * then it is necessary to reset the SIP numbers for apartments.
+         * Otherwise, entering the prefix will result in a call to the apartment
+         * if the prefixes and apartment numbers intersect (for example, 1, 2, 3).
+         * TODO: need to check if we can use an empty array of SIP numbers in gate mode for all devices
+         */
+        if (!empty($dbConfig['gateLinks'])) {
+            foreach ($dbConfig['apartments'] as &$apartment) {
+                $apartment['sipNumbers'] = [];
+            }
+        }
+
+        return $dbConfig;
+    }
+
     /**
      * Clears the matrix by removing analog numbers from dialplans or deleting dialplans without SIP numbers.
      *
@@ -497,18 +519,19 @@ abstract class rubetek extends domophone
         $this->loadDialplans();
 
         foreach ($this->dialplans as $dialplan) {
-            [
-                'id' => $id,
-                'sip_number' => $sipNumber,
-                'call_type' => $callType,
-                'door_access' => $doorAccess,
-                'access_codes' => $accessCodes,
-            ] = $dialplan;
-
-            if (!$sipNumber) { // Delete the dialplan if it doesn't have a SIP number
-                $this->deleteDialplan($id);
-            } else { // Otherwise, remove the analog number from the dialplan
-                $this->updateDialplan($id, $sipNumber, '', $callType, $doorAccess, $accessCodes);
+            if ($dialplan['call_type'] === RubetekConst::ANALOG) {
+                // Delete matrix-only dialplan
+                $this->deleteDialplan($dialplan['id']);
+            } else {
+                // Otherwise, remove the analog number from the full dialplan
+                $this->updateDialplan(
+                    id: $dialplan['id'],
+                    sipNumber: $dialplan['sip_number'],
+                    analogNumber: '',
+                    callType: $dialplan['call_type'],
+                    doorAccess: $dialplan['door_access'],
+                    accessCodes: $dialplan['access_codes'],
+                );
             }
         }
     }
@@ -625,16 +648,13 @@ abstract class rubetek extends domophone
         foreach ($this->dialplans as $dialplan) {
             [
                 'id' => $apartmentNumber,
-                'sip_number' => $sipNumbers,
+                'sip_number' => $sipNumber,
                 'call_type' => $callType,
                 'access_codes' => $codes,
             ] = $dialplan;
 
-            if (
-                $apartmentNumber === RubetekConst::CONCIERGE_ID ||
-                $apartmentNumber === RubetekConst::SOS_ID ||
-                !$sipNumbers
-            ) {
+            // Skip matrix-only dialplan, this is not an apartment
+            if ($callType === RubetekConst::ANALOG) {
                 continue;
             }
 
@@ -643,7 +663,7 @@ abstract class rubetek extends domophone
                 // The $codes variable contains a list of codes for old fw
                 // and a list of codes and their validity time for fw >= 2024.10
                 'code' => $codes[0]['code'] ?? $codes[0] ?? 0,
-                'sipNumbers' => [$sipNumbers],
+                'sipNumbers' => [$sipNumber],
                 'cmsEnabled' => $callType === RubetekConst::SIP_ANALOG,
                 'cmsLevels' => [],
             ];
@@ -807,18 +827,19 @@ abstract class rubetek extends domophone
      */
     protected function loadDialplans(): void
     {
-        if ($this->dialplans === null) {
-            $rawDialplans = $this->apiCall('/apartments');
-
-            $this->dialplans = array_column(
-                array_filter(
-                    $rawDialplans,
-                    fn($value) => $value['id'] !== RubetekConst::CONCIERGE_ID && $value['id'] !== RubetekConst::SOS_ID,
-                ),
-                null,
-                'id',
-            );
+        if ($this->dialplans !== null) {
+            return;
         }
+
+        $rawDialplans = $this->apiCall('/apartments');
+
+        // Filter out service apartments
+        $filteredDialplans = array_filter(
+            $rawDialplans,
+            static fn($item) => !in_array($item['id'], [RubetekConst::CONCIERGE_ID, RubetekConst::SOS_ID]),
+        );
+
+        $this->dialplans = array_column($filteredDialplans, null, 'id');
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace hw\SmartConfigurator;
 
+use hw\Interfaces\DbConfigUpdaterInterface;
 use hw\SmartConfigurator\DbConfigCollector\IDbConfigCollector;
 
 class SmartConfigurator
@@ -147,6 +148,10 @@ class SmartConfigurator
     private function loadDbConfig(): void
     {
         $this->dbConfig = $this->dbConfigCollector->collectConfig();
+
+        if ($this->device instanceof DbConfigUpdaterInterface) {
+            $this->dbConfig = $this->device->updateDbConfig($this->dbConfig);
+        }
     }
 
     private function loadDeviceConfig(): void
