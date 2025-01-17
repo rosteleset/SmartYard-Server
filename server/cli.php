@@ -224,7 +224,7 @@
                     "ppid" => $script_parent_pid,
                     "start" => time(),
                     "process" => "cli.php",
-                    "params" => $params,
+                    "params" => trim($params),
                     "expire" => time() + 24 * 60 * 60,
                 ], [ "silent" ]);
             } catch (\Exception $e) {
@@ -232,7 +232,7 @@
             }
 
             $already = (int)$db->get("select count(*) as already from core_running_processes where done is null and params = :params and pid <> " . getmypid(), [
-                    'params' => $params,
+                'params' => trim($params),
             ], false, [ 'fieldlify', 'silent' ]);
 
             if ($already) {
