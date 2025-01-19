@@ -308,6 +308,7 @@
                         type: "area",
                         title: i18n("addresses.display"),
                         placeholder: i18n("addresses.display"),
+                        value: domophone.display,
                     },
                 ],
                 callback: result => {
