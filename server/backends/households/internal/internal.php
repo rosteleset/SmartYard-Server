@@ -1077,7 +1077,7 @@
             /**
              * @inheritDoc
              */
-            public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $dtmf, $firstTime, $nat, $locksAreOpen, $comments, $name)
+            public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $dtmf, $firstTime, $nat, $locksAreOpen, $comments, $name, $display)
             {
                 if (!checkInt($domophoneId)) {
                     setLastError("noId");
