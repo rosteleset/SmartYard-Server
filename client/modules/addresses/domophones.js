@@ -149,6 +149,12 @@
                         return $.trim(v).length <= 64;
                     },
                 },
+                {
+                    id: "display",
+                    type: "text",
+                    title: i18n("addresses.display"),
+                    placeholder: i18n("addresses.display"),
+                },
             ],
             callback: modules.addresses.domophones.doAddDomophone,
         });
@@ -296,6 +302,12 @@
                         validate: v => {
                             return $.trim(v).length <= 64;
                         },
+                    },
+                    {
+                        id: "display",
+                        type: "text",
+                        title: i18n("addresses.display"),
+                        placeholder: i18n("addresses.display"),
                     },
                 ],
                 callback: result => {
