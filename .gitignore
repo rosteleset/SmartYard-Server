@@ -96,6 +96,7 @@ server/mobile/issues/custom/*.php
 server/mobile/pay/custom/*.php
 server/mobile/sip/custom/*.php
 server/mobile/user/custom/*.php
+server/hw/**/custom
 
 install/kamailio/kamailio-local.cfg
 install/kamailio/kamctlrc

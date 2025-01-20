@@ -64,6 +64,7 @@
     *
     * @return false|object Returns an object instance of the device class if found and loaded successfully,
     * or false if there was an error loading the class.
+    * @throws Exception
     */
     function loadDevice(string $type, string $model, string $url, string $password, bool $firstTime = false) {
         require_once __DIR__ . '/parse_url_ext.php';
@@ -73,32 +74,26 @@
 
         if (!in_array($type, $availableTypes)) {
             $availableTypesString = implode(', ', array_map(fn($type) => "'$type'", $availableTypes));
-            throw new ValueError("Invalid device type: '$type'. Available types: $availableTypesString");
+            throw new Exception("Invalid device type: '$type'. Available types: $availableTypesString");
         }
 
         $pathToModel = __DIR__ . "/../hw/ip/$type/models/$model";
 
         if (!file_exists($pathToModel)) {
-            throw new Error("Model '$model' not found for type '$type'");
+            throw new Exception("Model '$model' not found for type '$type'");
         }
 
         $data = json_decode(file_get_contents($pathToModel), true);
         $class = $data['class'];
         $vendor = strtolower($data['vendor']);
 
-        $directory = new RecursiveDirectoryIterator(__DIR__ . "/../hw/ip/$type/");
-        $iterator = new RecursiveIteratorIterator($directory);
-
-        foreach ($iterator as $file) {
-            if ($file->getFilename() == "$class.php") {
-                $pathToClass = $file->getPath() . '/' . $class . '.php';
-                require_once $pathToClass;
-                $className = "hw\\ip\\$type\\$vendor\\$class";
-                return new $className($url, $password, $firstTime);
-            }
+        $className = "hw\\ip\\$type\\$vendor\\custom\\$class";
+        if (!class_exists($className)) {
+            // If custom class is not found, use standard class
+            $className = "hw\\ip\\$type\\$vendor\\$class";
         }
 
-        return false;
+        return new $className($url, $password, $firstTime);
     }
 
     /**
