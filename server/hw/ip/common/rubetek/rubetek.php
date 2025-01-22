@@ -12,19 +12,34 @@ use Exception;
 trait rubetek
 {
 
+    /**
+     * @var string Default WEB interface password.
+     */
     protected string $defaultWebPassword = 'Rubetek34';
 
-    public function configureEventServer(string $url)
+    public function configureEventServer(string $url): void
     {
         ['host' => $server, 'port' => $port] = parse_url_ext($url);
 
         $this->apiCall('/settings/syslog', 'PATCH', [
             'address' => "$server:$port",
             'protocol' => 'udp',
+
+            /*
+             * 0 - Emergency
+             * 1 - Alert
+             * 2 - Critical
+             * 3 - Error
+             * 4 - Warning
+             * 5 - Notice
+             * 6 - Informational
+             * 7 - Debug
+             */
+            'level' => 6, // Only for fw >= 2024.10
         ]);
     }
 
-    public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow')
+    public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow'): void
     {
         $timeSettings = $this->getConfig()['time'];
         $timeSettings['ntp_pool'] = "$server:$port";
@@ -44,17 +59,17 @@ trait rubetek
         return $sysinfo;
     }
 
-    public function reboot()
+    public function reboot(): void
     {
         $this->apiCall('/reboot', 'POST');
     }
 
-    public function reset()
+    public function reset(): void
     {
         $this->apiCall('/reset', 'POST');
     }
 
-    public function setAdminPassword(string $password)
+    public function setAdminPassword(string $password): void
     {
         // Without sleep() the following calls can respond "access is forbidden" or "account not found"
         $this->apiCall('/settings/account/password', 'PATCH', [
@@ -72,9 +87,16 @@ trait rubetek
         sleep(10);
     }
 
-    public function syncData()
+    public function syncData(): void
     {
         // Empty implementation
+    }
+
+    public function transformDbConfig(array $dbConfig): array
+    {
+        $timezone = $dbConfig['ntp']['timezone'];
+        $dbConfig['ntp']['timezone'] = $this->getOffsetByTimezone($timezone);
+        return $dbConfig;
     }
 
     /**
@@ -87,7 +109,12 @@ trait rubetek
      *
      * @return array|string API response.
      */
-    protected function apiCall(string $resource, string $method = 'GET', array $payload = [], int $timeout = 0)
+    protected function apiCall(
+        string $resource,
+        string $method = 'GET',
+        array  $payload = [],
+        int    $timeout = 0,
+    ): array|string
     {
         $req = $this->url . $this->apiPrefix . $resource;
 
@@ -161,15 +188,25 @@ trait rubetek
             $time = new DateTime('now', new DateTimeZone($timezone));
             $offset = $time->format('P');
             return 'GMT' . preg_replace('/(?<=\+|)(0)(?=\d:\d{2})|:00/', '', $offset);
-        } catch (Exception $e) {
+        } catch (Exception) {
             return 'GMT+3';
         }
     }
 
-    protected function initializeProperties()
+    protected function initializeProperties(): void
     {
         $this->login = 'api_user';
         $this->defaultPassword = 'api_password';
         $this->apiPrefix = '/api/v1';
+    }
+
+    /**
+     * Determines if the software version is considered legacy.
+     *
+     * @return bool True if the software version is legacy, false otherwise.
+     */
+    protected function isLegacyVersion(): bool
+    {
+        return $this->getSoftwareVersion() !== null && $this->getSoftwareVersion() < '2024.08.150111497';
     }
 }

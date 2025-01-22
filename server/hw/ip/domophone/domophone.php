@@ -17,46 +17,6 @@ abstract class domophone extends ip
      */
     public const DEFAULT_PUBLIC_ACCESS_CODE = 10000;
 
-    /**
-     * @return void
-     * @deprecated Left for compatibility with the old configurator.
-     */
-    public function clean(
-        $sipServer,
-        $ntpServer,
-        $syslogServerUrl,
-        $sipUsername,
-        $sipPort,
-        $ntpPort,
-        $mainDoorDtmf,
-        $audioLevels,
-        $cmsLevels,
-        $cmsModel,
-        $nat,
-        $stunServer,
-        $stunPort
-    )
-    {
-        $this->setUnlocked();
-        $this->configureEventServer($syslogServerUrl);
-        $this->setUnlockTime(5);
-        $this->setPublicCode();
-        $this->setCallTimeout(45);
-        $this->setTalkTimeout(90);
-        $this->setLanguage();
-        $this->setAudioLevels($audioLevels);
-        $this->setCmsLevels($cmsLevels);
-        $this->configureNtp($ntpServer, $ntpPort);
-        $this->configureSip($sipUsername, $this->password, $sipServer, $sipPort, $nat, $stunServer, $stunPort);
-        $this->setDtmfCodes($mainDoorDtmf);
-        $this->deleteRfid();
-        $this->deleteApartment();
-        $this->setConciergeNumber(9999);
-        $this->setSosNumber(112);
-        $this->setCmsModel($cmsModel);
-        $this->configureGate();
-    }
-
     final public function getCurrentConfig(): array
     {
         $builder = new DomophoneConfigurationBuilder();
@@ -91,7 +51,7 @@ abstract class domophone extends ip
         return $builder->getConfig();
     }
 
-    public function prepare()
+    public function prepare(): void
     {
         $this->configureEncoding();
         $this->setConciergeNumber(9999);
@@ -191,7 +151,7 @@ abstract class domophone extends ip
      *
      * @return void
      */
-    abstract public function addRfid(string $code, int $apartment = 0);
+    abstract public function addRfid(string $code, int $apartment = 0): void;
 
     /**
      * Add RFID keys.
@@ -200,7 +160,7 @@ abstract class domophone extends ip
      *
      * @return void
      */
-    abstract public function addRfids(array $rfids);
+    abstract public function addRfids(array $rfids): void;
 
     /**
      * Configure an apartment.
@@ -223,8 +183,8 @@ abstract class domophone extends ip
         int   $code = 0,
         array $sipNumbers = [],
         bool  $cmsEnabled = true,
-        array $cmsLevels = []
-    );
+        array $cmsLevels = [],
+    ): void;
 
     /**
      * Configure audio and video streams encoding.
@@ -232,7 +192,7 @@ abstract class domophone extends ip
      * @return void
      * @todo It should be in the camera class, but the camera doesn't have a "first time" field
      */
-    abstract public function configureEncoding();
+    abstract public function configureEncoding(): void;
 
     /**
      * Configure gate mode.
@@ -242,7 +202,7 @@ abstract class domophone extends ip
      *
      * @return void
      */
-    abstract public function configureGate(array $links = []);
+    abstract public function configureGate(array $links = []): void;
 
     /**
      * Configure CMS matrix.
@@ -251,7 +211,7 @@ abstract class domophone extends ip
      *
      * @return void
      */
-    abstract public function configureMatrix(array $matrix);
+    abstract public function configureMatrix(array $matrix): void;
 
     /**
      * Configure SIP account.
@@ -274,8 +234,8 @@ abstract class domophone extends ip
         int    $port = 5060,
         bool   $stunEnabled = false,
         string $stunServer = '',
-        int    $stunPort = 3478
-    );
+        int    $stunPort = 3478,
+    ): void;
 
     /**
      * Configure user account.
@@ -284,7 +244,7 @@ abstract class domophone extends ip
      *
      * @return void
      */
-    abstract public function configureUserAccount(string $password);
+    abstract public function configureUserAccount(string $password): void;
 
     /**
      * Delete apartment.
@@ -295,7 +255,7 @@ abstract class domophone extends ip
      *
      * @return void
      */
-    abstract public function deleteApartment(int $apartment = 0);
+    abstract public function deleteApartment(int $apartment = 0): void;
 
     /**
      * Delete RFID key.
@@ -306,7 +266,7 @@ abstract class domophone extends ip
      *
      * @return void
      */
-    abstract public function deleteRfid(string $code = '');
+    abstract public function deleteRfid(string $code = ''): void;
 
     /**
      * Get line diagnostics for the specified apartment.
@@ -325,7 +285,7 @@ abstract class domophone extends ip
      *
      * @return void
      */
-    abstract public function openLock(int $lockNumber = 0);
+    abstract public function openLock(int $lockNumber = 0): void;
 
     /**
      * Set audio levels.
@@ -338,7 +298,7 @@ abstract class domophone extends ip
      *
      * @see getAudioLevels()
      */
-    abstract public function setAudioLevels(array $levels);
+    abstract public function setAudioLevels(array $levels): void;
 
     /**
      * Set call timeout.
@@ -348,7 +308,7 @@ abstract class domophone extends ip
      *
      * @return void
      */
-    abstract public function setCallTimeout(int $timeout);
+    abstract public function setCallTimeout(int $timeout): void;
 
     /**
      * Set global CMS levels.
@@ -360,7 +320,7 @@ abstract class domophone extends ip
      *
      * @see getCmsLevels()
      */
-    abstract public function setCmsLevels(array $levels);
+    abstract public function setCmsLevels(array $levels): void;
 
     /**
      * Set CMS model.
@@ -372,7 +332,7 @@ abstract class domophone extends ip
      *
      * @return void
      */
-    abstract public function setCmsModel(string $model = '');
+    abstract public function setCmsModel(string $model = ''): void;
 
     /**
      * Set SIP number for concierge button.
@@ -381,7 +341,7 @@ abstract class domophone extends ip
      *
      * @return void
      */
-    abstract public function setConciergeNumber(int $sipNumber);
+    abstract public function setConciergeNumber(int $sipNumber): void;
 
     /**
      * Set DTMF codes to open locks.
@@ -400,8 +360,8 @@ abstract class domophone extends ip
         string $code1 = '1',
         string $code2 = '2',
         string $code3 = '3',
-        string $codeCms = '1'
-    );
+        string $codeCms = '1',
+    ): void;
 
     /**
      * Set the language used on the device.
@@ -412,7 +372,7 @@ abstract class domophone extends ip
      *
      * @return void
      */
-    abstract public function setLanguage(string $language = 'ru');
+    abstract public function setLanguage(string $language = 'ru'): void;
 
     /**
      * Set a public access code.
@@ -422,7 +382,7 @@ abstract class domophone extends ip
      *
      * @return void
      */
-    abstract public function setPublicCode(int $code = 0);
+    abstract public function setPublicCode(int $code = 0): void;
 
     /**
      * Set SIP number for SOS button.
@@ -431,7 +391,7 @@ abstract class domophone extends ip
      *
      * @return void
      */
-    abstract public function setSosNumber(int $sipNumber);
+    abstract public function setSosNumber(int $sipNumber): void;
 
     /**
      * Set talk timeout.
@@ -441,7 +401,7 @@ abstract class domophone extends ip
      *
      * @return void
      */
-    abstract public function setTalkTimeout(int $timeout);
+    abstract public function setTalkTimeout(int $timeout): void;
 
     /**
      * Set ticker text.
@@ -451,7 +411,7 @@ abstract class domophone extends ip
      *
      * @return void
      */
-    abstract public function setTickerText(string $text = '');
+    abstract public function setTickerText(string $text = ''): void;
 
     /**
      * Set opening times for locks.
@@ -462,7 +422,7 @@ abstract class domophone extends ip
      * @return void
      * @see openLock()
      */
-    abstract public function setUnlockTime(int $time = 3);
+    abstract public function setUnlockTime(int $time = 3): void;
 
     /**
      * Set the lock state to always locked/unlocked.
@@ -471,5 +431,5 @@ abstract class domophone extends ip
      *
      * @return void
      */
-    abstract public function setUnlocked(bool $unlocked = true);
+    abstract public function setUnlocked(bool $unlocked = true): void;
 }

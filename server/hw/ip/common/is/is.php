@@ -8,7 +8,7 @@ namespace hw\ip\common\is;
 trait is
 {
 
-    public function configureEventServer(string $url)
+    public function configureEventServer(string $url): void
     {
         // Until better times...
 //        ['host' => $server, 'port' => $port] = parse_url_ext($url);
@@ -26,7 +26,7 @@ trait is
         exec(__DIR__ . "/scripts/upload_syslog_conf $host $this->login $this->password '$template'");
     }
 
-    public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow')
+    public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow'): void
     {
         $this->apiCall('/system/settings', 'PUT', [
             'tz' => $timezone,
@@ -50,22 +50,22 @@ trait is
         return $sysinfo;
     }
 
-    public function reboot()
+    public function reboot(): void
     {
         $this->apiCall('/system/reboot', 'PUT');
     }
 
-    public function reset()
+    public function reset(): void
     {
         $this->apiCall('/system/factory-reset', 'PUT');
     }
 
-    public function setAdminPassword(string $password)
+    public function setAdminPassword(string $password): void
     {
         $this->apiCall('/user/change_password', 'PUT', ['newPassword' => $password]);
     }
 
-    public function syncData()
+    public function syncData(): void
     {
         // Empty implementation
     }
@@ -80,7 +80,12 @@ trait is
      *
      * @return array|bool|string API response.
      */
-    protected function apiCall(string $resource, string $method = 'GET', array $payload = [], int $timeout = 0)
+    protected function apiCall(
+        string $resource,
+        string $method = 'GET',
+        array  $payload = [],
+        int    $timeout = 0,
+    ): bool|array|string
     {
         $req = $this->url . $resource;
 
@@ -134,7 +139,7 @@ trait is
         ];
     }
 
-    protected function initializeProperties()
+    protected function initializeProperties(): void
     {
         $this->login = 'root';
         $this->defaultPassword = '123456';

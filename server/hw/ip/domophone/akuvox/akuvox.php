@@ -12,12 +12,12 @@ abstract class akuvox extends domophone
 
     use \hw\ip\common\akuvox\akuvox;
 
-    public function addRfid(string $code, int $apartment = 0)
+    public function addRfid(string $code, int $apartment = 0): void
     {
         // TODO
     }
 
-    public function addRfids(array $rfids)
+    public function addRfids(array $rfids): void
     {
         $keys = [];
 
@@ -48,8 +48,8 @@ abstract class akuvox extends domophone
         int   $code = 0,
         array $sipNumbers = [],
         bool  $cmsEnabled = true,
-        array $cmsLevels = []
-    )
+        array $cmsLevels = [],
+    ): void
     {
         $this->setConfigParams([
             'Config.Programable.SOFTKEY01.LocalParam1' => implode(';', array_pad($sipNumbers, 8, null)),
@@ -57,7 +57,7 @@ abstract class akuvox extends domophone
         ]);
     }
 
-    public function configureEncoding()
+    public function configureEncoding(): void
     {
         $this->setConfigParams([
             'Config.DoorSetting.RTSP.Enable' => '1',
@@ -83,12 +83,12 @@ abstract class akuvox extends domophone
         ]);
     }
 
-    public function configureGate(array $links = [])
+    public function configureGate(array $links = []): void
     {
         // Empty implementation
     }
 
-    public function configureMatrix(array $matrix)
+    public function configureMatrix(array $matrix): void
     {
         // Empty implementation
     }
@@ -100,8 +100,8 @@ abstract class akuvox extends domophone
         int    $port = 5060,
         bool   $stunEnabled = false,
         string $stunServer = '',
-        int    $stunPort = 3478
-    )
+        int    $stunPort = 3478,
+    ): void
     {
         $this->apiCall('', 'POST', [
             'target' => 'sip',
@@ -132,7 +132,7 @@ abstract class akuvox extends domophone
         ]);
     }
 
-    public function configureUserAccount(string $password)
+    public function configureUserAccount(string $password): void
     {
         $this->setConfigParams([
             'Config.Settings.SECURITY.UserAccountEnabled' => '1',
@@ -140,7 +140,7 @@ abstract class akuvox extends domophone
         ]);
     }
 
-    public function deleteApartment(int $apartment = 0)
+    public function deleteApartment(int $apartment = 0): void
     {
         $currentApartment = (int)$this->getConfigParams(['Config.DoorSetting.DEVICENODE.Location'])[0];
         if ($currentApartment === $apartment) {
@@ -151,7 +151,7 @@ abstract class akuvox extends domophone
         }
     }
 
-    public function deleteRfid(string $code = '')
+    public function deleteRfid(string $code = ''): void
     {
         if ($code) {
             $this->apiCall('', 'POST', [
@@ -202,7 +202,7 @@ abstract class akuvox extends domophone
         }, []);
     }
 
-    public function openLock(int $lockNumber = 0)
+    public function openLock(int $lockNumber = 0): void
     {
         $relayDelay = (int)$this->apiCall('/relay/get', 'GET', [], 3)['data']['Config.DoorSetting.RELAY.RelayADelay'];
 
@@ -220,7 +220,7 @@ abstract class akuvox extends domophone
         $this->apiCall('', 'POST', $payload, 3);
     }
 
-    public function prepare()
+    public function prepare(): void
     {
         parent::prepare();
         $this->configureAudio();
@@ -233,7 +233,7 @@ abstract class akuvox extends domophone
         $this->enablePnp(false);
     }
 
-    public function setAudioLevels(array $levels)
+    public function setAudioLevels(array $levels): void
     {
         if (count($levels) === 4) {
             $this->setConfigParams([
@@ -245,7 +245,7 @@ abstract class akuvox extends domophone
         }
     }
 
-    public function setCallTimeout(int $timeout)
+    public function setCallTimeout(int $timeout): void
     {
         $this->setConfigParams([
             'Config.Settings.CALLTIMEOUT.DialOut' => "$timeout",
@@ -253,22 +253,27 @@ abstract class akuvox extends domophone
         ]);
     }
 
-    public function setCmsLevels(array $levels)
+    public function setCmsLevels(array $levels): void
     {
         // Empty implementation
     }
 
-    public function setCmsModel(string $model = '')
+    public function setCmsModel(string $model = ''): void
     {
         // Empty implementation
     }
 
-    public function setConciergeNumber(int $sipNumber)
+    public function setConciergeNumber(int $sipNumber): void
     {
         // Empty implementation
     }
 
-    public function setDtmfCodes(string $code1 = '1', string $code2 = '2', string $code3 = '3', string $codeCms = '1')
+    public function setDtmfCodes(
+        string $code1 = '1',
+        string $code2 = '2',
+        string $code3 = '3',
+        string $codeCms = '1',
+    ): void
     {
         $this->apiCall('', 'POST', [
             'target' => 'relay',
@@ -277,33 +282,33 @@ abstract class akuvox extends domophone
         ]);
     }
 
-    public function setLanguage(string $language = 'ru')
+    public function setLanguage(string $language = 'ru'): void
     {
         // Empty implementation
     }
 
-    public function setPublicCode(int $code = 0)
+    public function setPublicCode(int $code = 0): void
     {
         // Empty implementation
     }
 
-    public function setSosNumber(int $sipNumber)
+    public function setSosNumber(int $sipNumber): void
     {
         // Empty implementation
     }
 
-    public function setTalkTimeout(int $timeout)
+    public function setTalkTimeout(int $timeout): void
     {
         $timeout = round($timeout / 60);
         $this->setConfigParams(['Config.Features.DOORPHONE.MaxCallTime' => "$timeout"]);
     }
 
-    public function setTickerText(string $text = '')
+    public function setTickerText(string $text = ''): void
     {
         // Empty implementation
     }
 
-    public function setUnlockTime(int $time = 3)
+    public function setUnlockTime(int $time = 3): void
     {
         $this->apiCall('', 'POST', [
             'target' => 'relay',
@@ -312,7 +317,7 @@ abstract class akuvox extends domophone
         ]);
     }
 
-    public function setUnlocked(bool $unlocked = true)
+    public function setUnlocked(bool $unlocked = true): void
     {
         // Empty implementation
     }
@@ -336,7 +341,7 @@ abstract class akuvox extends domophone
      *
      * @return void
      */
-    protected function configureAudio()
+    protected function configureAudio(): void
     {
         $this->setConfigParams([
             'Config.Settings.HANDFREE.VolumeLevel' => '2', // Increase volume level
@@ -352,7 +357,7 @@ abstract class akuvox extends domophone
      *
      * @return void
      */
-    protected function configureBle(bool $enabled = true, int $threshold = -72, int $openDoorInterval = 5)
+    protected function configureBle(bool $enabled = true, int $threshold = -72, int $openDoorInterval = 5): void
     {
         $this->setConfigParams([
             'Config.DoorSetting.BLE.Enable' => "$enabled",
@@ -370,7 +375,7 @@ abstract class akuvox extends domophone
      *
      * @return void
      */
-    protected function configureHangUpAfterOpen(bool $enabled = true, int $timeout = 5)
+    protected function configureHangUpAfterOpen(bool $enabled = true, int $timeout = 5): void
     {
         $this->setConfigParams([
             'Config.Settings.CALLTIMEOUT.OpenRelayType' => $enabled ? '2' : '1',
@@ -383,7 +388,7 @@ abstract class akuvox extends domophone
      *
      * @return void
      */
-    protected function configureInputsBinding()
+    protected function configureInputsBinding(): void
     {
         $this->apiCall('', 'POST', [
             'target' => 'input',
@@ -406,7 +411,7 @@ abstract class akuvox extends domophone
      *
      * @return void
      */
-    protected function configureLed(bool $enabled = true, int $minThreshold = 1500, int $maxThreshold = 1600)
+    protected function configureLed(bool $enabled = true, int $minThreshold = 1500, int $maxThreshold = 1600): void
     {
         $this->setConfigParams([
             'Config.DoorSetting.GENERAL.LedType' => $enabled ? '0' : '2',
@@ -420,7 +425,7 @@ abstract class akuvox extends domophone
      *
      * @return void
      */
-    protected function configureRfidReaders()
+    protected function configureRfidReaders(): void
     {
         $this->setConfigParams([
             'Config.DoorSetting.RFCARDDISPLAY.RfidDisplayMode' => '4'
@@ -435,7 +440,7 @@ abstract class akuvox extends domophone
      *
      * @return void
      */
-    protected function configureRps(bool $enabled = true, string $server = '')
+    protected function configureRps(bool $enabled = true, string $server = ''): void
     {
         $this->setConfigParams([
             'Config.DoorSetting.CLOUDSERVER.RpsEnable' => $enabled ? '1' : '0',
@@ -450,7 +455,7 @@ abstract class akuvox extends domophone
      *
      * @return void
      */
-    protected function enablePnp(bool $enabled = true)
+    protected function enablePnp(bool $enabled = true): void
     {
         $this->setConfigParams(['Config.Autoprovision.PNP.Enable' => $enabled ? '1' : '0']);
     }

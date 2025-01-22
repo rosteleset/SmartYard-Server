@@ -26,7 +26,7 @@ abstract class camera extends ip
         return $builder->getConfig();
     }
 
-    public function prepare()
+    public function prepare(): void
     {
         // $this->configureEncoding();
     }

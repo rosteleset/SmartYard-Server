@@ -11,35 +11,35 @@ use hw\ip\camera\entities\DetectionZone;
 class rubetek extends camera
 {
 
-    use \hw\ip\common\rubetek\rubetek;
+    use \hw\ip\common\rubetek\rubetek {
+        transformDbConfig as protected commonTransformDbConfig;
+    }
 
     public function configureMotionDetection(array $detectionZones): void
     {
-        $detectionSettings = $this->getConfig()['face_detection'];
+        $this->apiCall('/settings/face_detection', 'PATCH', [
+            // Server
+            'address' => '1', // Not used
+            'reserved_address' => '1', // Not used
+            'token' => '1', // Not used
 
-        // Server
-        $detectionSettings['address'] = '1'; // Not used
-        $detectionSettings['reserved_address'] = '1'; // Not used
-        $detectionSettings['token'] = '1'; // Not used
+            // Detection settings
+            'detection_mode' => (int)$detectionZones, // Detection on/off
+            'threshold' => 80, // Confidence threshold
+            'liveness_frame_num' => 0, // Not used
+            'frame_interval' => 500, // Doesn't work
+            'face_presence_time' => 0, // Not used
+            'min_dimension' => 50, // Minimum face size px
+            'max_dimension' => 500, // Maximum face size px
+            'rect_image_format' => 1, // Not used
 
-        // Detection settings
-        $detectionSettings['detection_mode'] = (int)$detectionZones; // Detection on/off
-        $detectionSettings['threshold'] = 90; // Confidence threshold
-        $detectionSettings['liveness_frame_num'] = 0; // Not used
-        $detectionSettings['frame_interval'] = 500; // Doesn't work
-        $detectionSettings['face_presence_time'] = 0; // Not used
-        $detectionSettings['min_dimension'] = 50; // Minimum face size px
-        $detectionSettings['max_dimension'] = 500; // Maximum face size px
-        $detectionSettings['rect_image_format'] = 1; // Not used
-
-        // Detection area
-        $detectionSettings['rec_area_top'] = 10;
-        $detectionSettings['rec_area_bottom'] = 10;
-        $detectionSettings['rec_area_left'] = 10;
-        $detectionSettings['rec_area_right'] = 10;
-        $detectionSettings['outMargin'] = 50; // Detection indent
-
-        $this->apiCall('/configuration', 'PATCH', ['face_detection' => $detectionSettings]);
+            // Detection area
+            'rec_area_top' => 10,
+            'rec_area_bottom' => 10,
+            'rec_area_left' => 10,
+            'rec_area_right' => 10,
+            'outMargin' => 50, // Detection indent
+        ]);
     }
 
     public function getCamshot(): string
@@ -62,8 +62,7 @@ class rubetek extends camera
 
     public function transformDbConfig(array $dbConfig): array
     {
-        $timezone = $dbConfig['ntp']['timezone'];
-        $dbConfig['ntp']['timezone'] = $this->getOffsetByTimezone($timezone);
+        $dbConfig = $this->commonTransformDbConfig($dbConfig);
 
         if ($dbConfig['motionDetection']) {
             $dbConfig['motionDetection'] = [new DetectionZone(0, 0, 100, 100)];

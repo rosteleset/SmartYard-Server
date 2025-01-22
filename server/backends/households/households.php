@@ -169,8 +169,10 @@
             /**
              * @param $by
              * @param $query
+             *
              * @return mixed
              */
+
             abstract public function getDomophones($by = "all", $query = -1);
 
             /**
@@ -183,9 +185,12 @@
              * @param $nat
              * @param $comments
              * @param $name
+             * @param $display
+             *
              * @return false|integer
              */
-            abstract public function addDomophone($enabled, $model, $server, $url, $credentials, $dtmf, $nat, $comments, $name);
+
+            abstract public function addDomophone($enabled, $model, $server, $url, $credentials, $dtmf, $nat, $comments, $name, $display);
 
             /**
              * @param $domophoneId
@@ -200,9 +205,12 @@
              * @param $locksAreOpen
              * @param $comments
              * @param $name
+             * @param $display
+             *
              * @return boolean
              */
-            abstract public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $dtmf, $firstTime, $nat, $locksAreOpen, $comments, $name);
+
+            abstract public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $dtmf, $firstTime, $nat, $locksAreOpen, $comments, $name, $display);
 
             /**
              * @param $domophoneId
