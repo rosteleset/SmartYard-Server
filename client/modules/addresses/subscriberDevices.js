@@ -223,6 +223,9 @@
                         title: i18n("addresses.version"),
                     },
                     {
+                        title: i18n("addresses.device"),
+                    },
+                    {
                         title: i18n("addresses.tokenType"),
                     },
                     {
@@ -258,6 +261,10 @@
                                 },
                                 {
                                     data: devices[i].version ? devices[i].version : i18n("addresses.unknown"),
+                                    nowrap: true,
+                                },
+                                {
+                                    data:devices[i].ua ?? i18n("addresses.unknown"),
                                     nowrap: true,
                                 },
                                 {
