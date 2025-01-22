@@ -1388,7 +1388,7 @@ class zabbix extends monitoring
          *  -   Not found  triggers with problem - return the status 'OK'
          */
         foreach ($triggers[0]['triggers'] as $trigger) {
-            if ($trigger['status'] != '1' && $trigger['value'] === '1'){
+            if ($trigger['status'] !== '1' && $trigger['value'] === '1'){
                 switch ($trigger['description']) {
                     case Triggers::ICMP->value:
                         return [
@@ -1470,21 +1470,21 @@ class zabbix extends monitoring
                             case Triggers::ICMP->value:
                                 $host['status'] = [
                                     'status' => 'Offline',
-                                    'message' => 'Недоступен, проверьте подключение устройства',
+                                    'message' => i18n('monitoring.offline'),
                                 ];
                                 break;
 
                             case Triggers::SIP->value:
                                 $host['status'] = [
                                     'status' => 'SIP error',
-                                    'message' => 'Ошибка регистрации SIP',
+                                    'message' => i18n('monitoring.sipRegistrationFail'),
                                 ];
                                 break;
 
                             default:
                                 $host['status'] = [
                                     'status' => 'Other',
-                                    'message' => 'Другие ошибки',
+                                    'message' => i18n('monitoring.someError'),
                                 ];
                         }
                         // Skip
