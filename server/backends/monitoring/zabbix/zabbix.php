@@ -1484,7 +1484,7 @@ class zabbix extends monitoring
                             default:
                                 $host['status'] = [
                                     'status' => 'Other',
-                                    'message' => i18n('monitoring.someError'),
+                                    'message' => i18n('monitoring.otherErr'),
                                 ];
                         }
                         // Skip
