@@ -1,7 +1,7 @@
 zabbix_export:
   version: '6.4'
   template_groups:
-    - uuid: 6b2da836ac5d4728b89105eb2ed04250
+    - uuid: e858e071fe054cdabec002d7d99891e9
       name: Templates/Intercoms
   templates:
     - uuid: 1def59ffd59d4d3e88fcdfc7c3fe0377
@@ -53,6 +53,7 @@ zabbix_export:
               expression: 'last(/Intercom_BEWARD_DKS/intercom.fwversion,#1)<>last(/Intercom_BEWARD_DKS/intercom.fwversion,#2) and length(last(/Intercom_BEWARD_DKS/intercom.fwversion))>0'
               name: 'Firmware version has changed'
               event_name: 'INTERCOM: {HOST.NAME} | Firmware version has changed (new version: {ITEM.VALUE})'
+              status: DISABLED
               priority: INFO
         - uuid: e80beda3e9904dcdb7aba7a5abc20f53
           name: 'BEWARD Intercom: SIP registration status'
@@ -94,7 +95,8 @@ zabbix_export:
           name: 'BEWARD Intercom: system info'
           type: HTTP_AGENT
           key: intercom.systeminfo
-          history: '0'
+          delay: 1h
+          history: 1h
           trends: '0'
           value_type: TEXT
           authtype: BASIC
@@ -107,6 +109,9 @@ zabbix_export:
                 - ''
               error_handler: CUSTOM_VALUE
               error_handler_params: '{"html":{"head":{"title":"Connection error"}}}'
+            - type: DISCARD_UNCHANGED
+              parameters:
+                - ''
             - type: JAVASCRIPT
               parameters:
                 - |
@@ -123,6 +128,14 @@ zabbix_export:
           query_fields:
             - name: action
               value: get
+          triggers:
+            - uuid: e65f7c65fbdb46f3ad95df7b8ed1792b
+              expression: 'nodata(/Intercom_BEWARD_DKS/intercom.systeminfo,600)=1'
+              name: 'HTTP Check unavailable but ICMP available'
+              priority: AVERAGE
+              dependencies:
+                - name: 'ICMP: High ICMP ping loss'
+                  expression: 'min(/Intercom_BEWARD_DKS/icmppingloss,5m)>{$ICMP_LOSS_WARN} and min(/Intercom_BEWARD_DKS/icmppingloss,5m)<100'
         - uuid: 08c81ea3a8fb4540a626cea86d095531
           name: 'BEWARD Intercom: uptime'
           type: DEPENDENT

@@ -1,7 +1,7 @@
 zabbix_export:
   version: '6.4'
   template_groups:
-    - uuid: 31a284c9b73f49729ae0a88caff2063d
+    - uuid: e858e071fe054cdabec002d7d99891e9
       name: Templates/Intercoms
   templates:
     - uuid: 1d5ed10a31bc471ea4f93bd8ab980c18
@@ -80,7 +80,7 @@ zabbix_export:
           name: 'Sokol Intercom: system info'
           type: HTTP_AGENT
           key: intercom.systeminfo
-          history: '0'
+          history: 1h
           trends: '0'
           value_type: TEXT
           authtype: BASIC
@@ -96,6 +96,14 @@ zabbix_export:
           tags:
             - tag: component
               value: raw
+          triggers:
+            - uuid: 55ded787d79b44cdb5461992318fe620
+              expression: 'nodata(/Intercom_IS_ISCOM_X1_REV.5/intercom.systeminfo,600)=1'
+              name: 'HTTP Check unavailable but ICMP available'
+              priority: AVERAGE
+              dependencies:
+                - name: 'ICMP: Unavailable by ICMP ping'
+                  expression: 'max(/Intercom_IS_ISCOM_X1_REV.5/icmpping,#3)=0'
         - uuid: 01a513ec0b1142fb98604f56b42ba2fa
           name: 'Sokol Intercom: system versions'
           type: HTTP_AGENT
