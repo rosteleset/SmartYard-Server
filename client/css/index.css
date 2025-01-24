@@ -519,8 +519,13 @@ body.dark-mode .hr-text::after {
 .status-unknown {
   background-color: darkgrey;
 }
+
 .status-dvr-err {
   background-color: deeppink;
+}
+
+.status-other-error {
+  background-color: sandybrown;
 }
 
 .common-search:focus {
