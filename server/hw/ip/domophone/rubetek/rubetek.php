@@ -276,10 +276,10 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface
         $analogSettings = $this->apiCall('/settings/analog');
 
         return [
-            $analogSettings['analog_line_voltage_idle'],
-            $analogSettings['analog_line_voltage_lifted'],
-            $analogSettings['analog_line_voltage_button_pressed'],
-            $analogSettings['digi_line_voltage_lifted'],
+            $analogSettings['analog_line_voltage_idle'] ?? 3.6,
+            $analogSettings['analog_line_voltage_lifted'] ?? 7.8,
+            $analogSettings['analog_line_voltage_button_pressed'] ?? 9.6,
+            $analogSettings['digi_line_voltage_lifted'] ?? 6.6,
         ];
     }
 
@@ -336,18 +336,16 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface
         $this->apiCall('/settings/call', 'PATCH', $callSettings);
     }
 
-    public function setCmsLevels(array $levels): void
+    public function setCmsLevels(array $levels = []): void
     {
-        if (count($levels) === 4) {
-            $analogSettings = $this->apiCall('/settings/analog');
+        $analogSettings = $this->apiCall('/settings/analog');
 
-            $analogSettings['analog_line_voltage_idle'] = $levels[0];
-            $analogSettings['analog_line_voltage_lifted'] = $levels[1];
-            $analogSettings['analog_line_voltage_button_pressed'] = $levels[2];
-            $analogSettings['digi_line_voltage_lifted'] = $levels[3];
+        $analogSettings['analog_line_voltage_idle'] = $levels[0] ?? 3.6;
+        $analogSettings['analog_line_voltage_lifted'] = $levels[1] ?? 7.8;
+        $analogSettings['analog_line_voltage_button_pressed'] = $levels[2] ?? 9.6;
+        $analogSettings['digi_line_voltage_lifted'] = $levels[3] ?? 6.6;
 
-            $this->apiCall('/configuration', 'PATCH', ['analog' => $analogSettings]);
-        }
+        $this->apiCall('/configuration', 'PATCH', ['analog' => $analogSettings]);
     }
 
     public function setCmsModel(string $model = ''): void
