@@ -2394,6 +2394,7 @@
                     "push_disable" => "pushDisable",
                     "money_disable" => "moneyDisable",
                     "version" => "version",
+                    "ua" => "ua",
                 ]);
 
                 foreach ($devices as &$device) {

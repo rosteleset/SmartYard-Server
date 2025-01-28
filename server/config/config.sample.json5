@@ -28,6 +28,8 @@
         "cctv_view": "list",
         // Active app's tab at start. One of: addresses, notifications, chat, pay, menu. The default value is addresses
         "active_tab": "addresses",
+        // Device count per mobile number
+        "device_count": 10
     },
 
     "db": {
