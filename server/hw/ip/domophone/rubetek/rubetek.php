@@ -255,18 +255,26 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface
     public function getAudioLevels(): array
     {
         $audioSettings = $this->getConfig()['audio'];
+
         return [
-            $audioSettings['sip']['volume'],
-            $audioSettings['sip']['mic_sensitivity'],
-            $audioSettings['analog']['volume'],
-            $audioSettings['analog']['mic_sensitivity'],
-            $audioSettings['notify_speaker_volume'],
+            $audioSettings['system']['volume'] ?? 15,
+            $audioSettings['system']['mic_sensitivity'] ?? 10,
+            $audioSettings['sip']['sip_volume'] ?? 13,
+            $audioSettings['sip']['sip_mic_sensitivity'] ?? 15,
+            $audioSettings['sip']['sip_incoming_volume'] ?? 13,
+            $audioSettings['analog']['analog_volume'] ?? 14,
+            $audioSettings['analog']['analog_mic_sensitivity'] ?? 12,
+            $audioSettings['analog']['proxy_handset_speaker_volume'] ?? 15,
+            $audioSettings['webrtc']['webrtc_mic_sensitivity'] ?? 15,
+            $audioSettings['notify_speaker_volume'] ?? 10,
+            $audioSettings['rtsp']['mic_sensitivity'] ?? 15,
         ];
     }
 
     public function getCmsLevels(): array
     {
         $analogSettings = $this->apiCall('/settings/analog');
+
         return [
             $analogSettings['analog_line_voltage_idle'],
             $analogSettings['analog_line_voltage_lifted'],
@@ -302,19 +310,23 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface
         $this->configureExternalReader();
     }
 
-    public function setAudioLevels(array $levels): void
+    public function setAudioLevels(array $levels = []): void
     {
-        if (count($levels) === 5) {
-            $audioSettings = $this->getConfig()['audio'];
+        $audioSettings = $this->getConfig()['audio'];
 
-            $audioSettings['sip']['volume'] = $levels[0];
-            $audioSettings['sip']['mic_sensitivity'] = $levels[1];
-            $audioSettings['analog']['volume'] = $levels[2];
-            $audioSettings['analog']['mic_sensitivity'] = $levels[3];
-            $audioSettings['notify_speaker_volume'] = $levels[4];
+        $audioSettings['system']['volume'] = $levels[0] ?? 15;
+        $audioSettings['system']['mic_sensitivity'] = $levels[1] ?? 10;
+        $audioSettings['sip']['sip_volume'] = $levels[2] ?? 13;
+        $audioSettings['sip']['sip_mic_sensitivity'] = $levels[3] ?? 15;
+        $audioSettings['sip']['sip_incoming_volume'] = $levels[4] ?? 13;
+        $audioSettings['analog']['analog_volume'] = $levels[5] ?? 14;
+        $audioSettings['analog']['analog_mic_sensitivity'] = $levels[6] ?? 12;
+        $audioSettings['analog']['proxy_handset_speaker_volume'] = $levels[7] ?? 15;
+        $audioSettings['webrtc']['webrtc_mic_sensitivity'] = $levels[8] ?? 15;
+        $audioSettings['notify_speaker_volume'] = $levels[9] ?? 10;
+        $audioSettings['rtsp']['mic_sensitivity'] = $levels[10] ?? 15;
 
-            $this->apiCall('/configuration', 'PATCH', ['audio' => $audioSettings]);
-        }
+        $this->apiCall('/configuration', 'PATCH', ['audio' => $audioSettings]);
     }
 
     public function setCallTimeout(int $timeout): void

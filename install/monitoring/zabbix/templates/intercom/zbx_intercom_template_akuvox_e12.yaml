@@ -88,11 +88,19 @@ zabbix_export:
           password: '{$HOST_PASSWORD}'
           description: 'Get system information from Akuvox SIP intercom'
           url: 'http://{HOST.CONN}/api/system/info'
+          triggers:
+            - uuid: 8dc94ca4d548416e9ff2d68ebb9fe2d8
+              expression: 'nodata(/Intercom_AKUVOX_E12/intercom.systeminfo,600)=1'
+              name: 'HTTP Check unavailable but ICMP available'
+              priority: AVERAGE
+              dependencies:
+                - name: 'ICMP: Unavailable by ICMP ping'
+                  expression: 'max(/Intercom_AKUVOX_E12/icmpping,#3)=0'
         - uuid: 5c3dca9642e34e50b5751b7d11876936
           name: 'AKUVOX Intercom: system status'
           type: HTTP_AGENT
           key: intercom.systemstatus
-          history: '0'
+          history: 1h
           trends: '0'
           authtype: DIGEST
           username: '{$HOST_USERNAME}'

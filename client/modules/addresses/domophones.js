@@ -345,6 +345,9 @@
             case 'Disabled':
                 statusClass = 'status-disabled';
                 break;
+            case 'Other':
+                statusClass = 'status-other-error';
+                break;
             default:
                 statusClass = 'status-unknown';
                 status = 'unknown'

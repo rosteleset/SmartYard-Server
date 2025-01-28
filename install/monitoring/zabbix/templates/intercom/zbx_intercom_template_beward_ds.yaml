@@ -90,7 +90,7 @@ zabbix_export:
           name: 'BEWARD Intercom: system info'
           type: HTTP_AGENT
           key: intercom.systeminfo
-          history: '0'
+          history: 1h
           trends: '0'
           value_type: TEXT
           authtype: BASIC
@@ -119,6 +119,14 @@ zabbix_export:
           query_fields:
             - name: action
               value: get
+          triggers:
+            - uuid: 8928462967984a4cad26768802895037
+              expression: 'nodata(/Intercom_BEWARD_DS/intercom.systeminfo,600)=1'
+              name: 'HTTP Check unavailable but ICMP available'
+              priority: AVERAGE
+              dependencies:
+                - name: 'ICMP: Unavailable by ICMP ping'
+                  expression: 'max(/Intercom_BEWARD_DS/icmpping,#3)=0'
       tags:
         - tag: class
           value: hardware

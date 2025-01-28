@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {get} /api/subscribers/search search subscribers
+     * @api {get} /api/subscribers/search search flats
      *
      * @apiVersion 1.0.0
      *
