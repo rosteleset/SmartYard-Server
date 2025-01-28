@@ -913,6 +913,9 @@
             case 'DVRerr':
                 statusClass = 'status-dvr-err';
                 break;
+            case 'Other':
+                statusClass = 'status-other-error';
+                break;
             default:
                 statusClass = 'status-unknown';
                 status = 'unknown'
