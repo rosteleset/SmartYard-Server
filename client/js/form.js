@@ -728,7 +728,7 @@ function cardForm(params) {
             case "text":
             case "color":
             case "area":
-                if (params.fields[i].type == number) {
+                if (params.fields[i].type == "number") {
                     return parseFloatEx($(`#${_prefix}${params.fields[i].id}`).val());
                 } else {
                     return $(`#${_prefix}${params.fields[i].id}`).val();
