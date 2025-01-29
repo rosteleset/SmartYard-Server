@@ -512,7 +512,11 @@ function cardForm(params) {
                 if (params.fields[i].button) {
                     h += `<div class="input-group">`;
                 }
-                h += `<input name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" type="${params.fields[i].type}" class="form-control modalFormField" style="cursor: text;" autocomplete="off" placeholder="${escapeHTML(params.fields[i].placeholder ? params.fields[i].placeholder : "")}"`;
+                if (params.fields[i].type == "number") {
+                    h += `<input name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" type="${params.fields[i].type}" class="form-control modalFormField" style="cursor: text;" autocomplete="off" placeholder="${escapeHTML(params.fields[i].placeholder ? params.fields[i].placeholder : "")}" step="any"`;
+                } else {
+                    h += `<input name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" type="${params.fields[i].type}" class="form-control modalFormField" style="cursor: text;" autocomplete="off" placeholder="${escapeHTML(params.fields[i].placeholder ? params.fields[i].placeholder : "")}"`;
+                }
                 if (params.fields[i].readonly) {
                     h += ` readonly="readonly"`;
                     h += ` disabled="disabled"`;
@@ -724,7 +728,11 @@ function cardForm(params) {
             case "text":
             case "color":
             case "area":
-                return $(`#${_prefix}${params.fields[i].id}`).val();
+                if (params.fields[i].type == number) {
+                    return parseFloatEx($(`#${_prefix}${params.fields[i].id}`).val());
+                } else {
+                    return $(`#${_prefix}${params.fields[i].id}`).val();
+                }
 
             case "date":
                 if (params.fields[i].return === "asis") {
