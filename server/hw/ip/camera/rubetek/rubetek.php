@@ -3,6 +3,7 @@
 namespace hw\ip\camera\rubetek;
 
 use hw\ip\camera\camera;
+use hw\ip\camera\entities\DetectionZone;
 
 /**
  * Class representing a Rubetek camera.
@@ -10,41 +11,35 @@ use hw\ip\camera\camera;
 class rubetek extends camera
 {
 
-    use \hw\ip\common\rubetek\rubetek;
+    use \hw\ip\common\rubetek\rubetek {
+        transformDbConfig as protected commonTransformDbConfig;
+    }
 
-    public function configureMotionDetection(
-        int $left = 0,
-        int $top = 0,
-        int $width = 0,
-        int $height = 0,
-        int $sensitivity = 0
-    )
+    public function configureMotionDetection(array $detectionZones): void
     {
-        $detectionSettings = $this->getConfig()['face_detection'];
+        $this->apiCall('/settings/face_detection', 'PATCH', [
+            // Server
+            'address' => '1', // Not used
+            'reserved_address' => '1', // Not used
+            'token' => '1', // Not used
 
-        // Server
-        $detectionSettings['address'] = '1'; // Not used
-        $detectionSettings['reserved_address'] = '1'; // Not used
-        $detectionSettings['token'] = '1'; // Not used
+            // Detection settings
+            'detection_mode' => (int)$detectionZones, // Detection on/off
+            'threshold' => 80, // Confidence threshold
+            'liveness_frame_num' => 0, // Not used
+            'frame_interval' => 500, // Doesn't work
+            'face_presence_time' => 0, // Not used
+            'min_dimension' => 50, // Minimum face size px
+            'max_dimension' => 500, // Maximum face size px
+            'rect_image_format' => 1, // Not used
 
-        // Detection settings
-        $detectionSettings['detection_mode'] = (int)($left || $top || $width || $height); // Detection on/off
-        $detectionSettings['threshold'] = 90; // Confidence threshold
-        $detectionSettings['liveness_frame_num'] = 0; // Not used
-        $detectionSettings['frame_interval'] = 500; // Doesn't work
-        $detectionSettings['face_presence_time'] = 0; // Not used
-        $detectionSettings['min_dimension'] = 50; // Minimum face size px
-        $detectionSettings['max_dimension'] = 500; // Maximum face size px
-        $detectionSettings['rect_image_format'] = 1; // Not used
-
-        // Detection area
-        $detectionSettings['rec_area_top'] = $top;
-        $detectionSettings['rec_area_bottom'] = $height;
-        $detectionSettings['rec_area_left'] = $left;
-        $detectionSettings['rec_area_right'] = $width;
-        $detectionSettings['outMargin'] = 50; // Detection indent
-
-        $this->apiCall('/configuration', 'PATCH', ['face_detection' => $detectionSettings]);
+            // Detection area
+            'rec_area_top' => 10,
+            'rec_area_bottom' => 10,
+            'rec_area_left' => 10,
+            'rec_area_right' => 10,
+            'outMargin' => 50, // Detection indent
+        ]);
     }
 
     public function getCamshot(): string
@@ -52,7 +47,7 @@ class rubetek extends camera
         return $this->apiCall('/image', 'GET', [], 5);
     }
 
-    public function setOsdText(string $text = '')
+    public function setOsdText(string $text = ''): void
     {
         $this->apiCall('/settings/osd', 'PATCH', [
             'show_name' => true,
@@ -67,28 +62,24 @@ class rubetek extends camera
 
     public function transformDbConfig(array $dbConfig): array
     {
-        $timezone = $dbConfig['ntp']['timezone'];
-        $dbConfig['ntp']['timezone'] = $this->getOffsetByTimezone($timezone);
+        $dbConfig = $this->commonTransformDbConfig($dbConfig);
+
+        if ($dbConfig['motionDetection']) {
+            $dbConfig['motionDetection'] = [new DetectionZone(0, 0, 100, 100)];
+        }
+
         return $dbConfig;
     }
 
     protected function getMotionDetectionConfig(): array
     {
-        [
-            // 'threshold' => $sensitivity,
-            'rec_area_top' => $top,
-            'rec_area_bottom' => $height,
-            'rec_area_left' => $left,
-            'rec_area_right' => $width,
-        ] = $this->getConfig()['face_detection'];
+        ['detection_mode' => $detectionMode] = $this->getConfig()['face_detection'];
 
-        return [
-            'left' => $left,
-            'top' => $top,
-            'width' => $width,
-            'height' => $height,
-            // 'sensitivity' => $sensitivity,
-        ];
+        if ($detectionMode === 1) {
+            return [new DetectionZone(0, 0, 100, 100)];
+        }
+
+        return [];
     }
 
     protected function getOsdText(): string

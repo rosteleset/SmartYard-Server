@@ -479,7 +479,6 @@
             public function capabilities() {
                 return [
                     "mode" => "rw",
-                    "cli" => true,
                 ];
             }
 
@@ -707,21 +706,28 @@
              * @inheritDoc
              */
 
-            public function cli($args) {
-                function cliUsage()
-                {
-                    global $argv;
+            public function cliUsage() {
+                $usage = parent::cliUsage();
 
-                    echo formatUsage("usage: {$argv[0]} users
-
-                        2fa:
-                            [--disable-2fa=<login>]
-                    ");
-
-                    exit(1);
+                if (!@$usage["2fa"]) {
+                    $usage["2fa"] = [];
                 }
 
-                if (count($args) == 1 && isset($args["--disable-2fa"])) {
+                $usage["2fa"]["disable-2fa"] = [
+                    "description" => "Disable 2fa for specifyed user",
+                    "value" => "string",
+                    "placeholder" => "login",
+                ];
+
+                return $usage;
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+            public function cli($args) {
+                if (array_key_exists($args["--disable-2fa"])) {
                     $uid = $this->getUidByLogin($args["--disable-2fa"]);
 
                     if ($uid === false) {
@@ -737,9 +743,7 @@
                     exit(0);
                 }
 
-                cliUsage();
-
-                return true;
+                parent::cli($args);
             }
         }
     }

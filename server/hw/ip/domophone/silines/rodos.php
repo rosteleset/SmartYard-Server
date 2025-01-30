@@ -11,12 +11,12 @@ use hw\ip\domophone\domophone;
 class rodos extends domophone
 {
 
-    public function addRfid(string $code, int $apartment = 0)
+    public function addRfid(string $code, int $apartment = 0): void
     {
         // Empty implementation
     }
 
-    public function addRfids(array $rfids)
+    public function addRfids(array $rfids): void
     {
         // Empty implementation
     }
@@ -27,32 +27,32 @@ class rodos extends domophone
         array $sipNumbers = [],
         bool  $cmsEnabled = true,
         array $cmsLevels = []
-    )
+    ): void
     {
         // Empty implementation
     }
 
-    public function configureEncoding()
+    public function configureEncoding(): void
     {
         // Empty implementation
     }
 
-    public function configureEventServer(string $url)
+    public function configureEventServer(string $url): void
     {
         // Empty implementation
     }
 
-    public function configureGate(array $links = [])
+    public function configureGate(array $links = []): void
     {
         // Empty implementation
     }
 
-    public function configureMatrix(array $matrix)
+    public function configureMatrix(array $matrix): void
     {
         // Empty implementation
     }
 
-    public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow')
+    public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow'): void
     {
         // Empty implementation
     }
@@ -65,22 +65,22 @@ class rodos extends domophone
         bool   $stunEnabled = false,
         string $stunServer = '',
         int    $stunPort = 3478
-    )
+    ): void
     {
         // Empty implementation
     }
 
-    public function configureUserAccount(string $password)
+    public function configureUserAccount(string $password): void
     {
         // Empty implementation
     }
 
-    public function deleteApartment(int $apartment = 0)
+    public function deleteApartment(int $apartment = 0): void
     {
         // Empty implementation
     }
 
-    public function deleteRfid(string $code = '')
+    public function deleteRfid(string $code = ''): void
     {
         // Empty implementation
     }
@@ -109,7 +109,7 @@ class rodos extends domophone
         return ['DeviceID' => $mac, 'SoftwareVersion' => $softwareVersion];
     }
 
-    public function openLock(int $lockNumber = 0)
+    public function openLock(int $lockNumber = 0): void
     {
         $address = parse_url($this->url, PHP_URL_HOST);
         $socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
@@ -117,87 +117,87 @@ class rodos extends domophone
         socket_sendto($socket, $msg, strlen($msg), 0, $address, 8283);
     }
 
-    public function reboot()
+    public function reboot(): void
     {
         // Empty implementation
     }
 
-    public function reset()
+    public function reset(): void
     {
         // Empty implementation
     }
 
-    public function setAdminPassword(string $password)
+    public function setAdminPassword(string $password): void
     {
         $this->apiCall('protect/config.htm', "dhcp=1&logn=admin&pass=$password&hpr=80&upr=8283&b0=Save+%26+reboot");
     }
 
-    public function setAudioLevels(array $levels)
+    public function setAudioLevels(array $levels): void
     {
         // Empty implementation
     }
 
-    public function setCallTimeout(int $timeout)
+    public function setCallTimeout(int $timeout): void
     {
         // Empty implementation
     }
 
-    public function setCmsLevels(array $levels)
+    public function setCmsLevels(array $levels): void
     {
         // Empty implementation
     }
 
-    public function setCmsModel(string $model = '')
+    public function setCmsModel(string $model = ''): void
     {
         // Empty implementation
     }
 
-    public function setConciergeNumber(int $sipNumber)
+    public function setConciergeNumber(int $sipNumber): void
     {
         // Empty implementation
     }
 
-    public function setDtmfCodes(string $code1 = '1', string $code2 = '2', string $code3 = '3', string $codeCms = '1')
+    public function setDtmfCodes(string $code1 = '1', string $code2 = '2', string $code3 = '3', string $codeCms = '1'): void
     {
         // Empty implementation
     }
 
-    public function setLanguage(string $language = 'ru')
+    public function setLanguage(string $language = 'ru'): void
     {
         // Empty implementation
     }
 
-    public function setPublicCode(int $code = 0)
+    public function setPublicCode(int $code = 0): void
     {
         // Empty implementation
     }
 
-    public function setSosNumber(int $sipNumber)
+    public function setSosNumber(int $sipNumber): void
     {
         // Empty implementation
     }
 
-    public function setTalkTimeout(int $timeout)
+    public function setTalkTimeout(int $timeout): void
     {
         // Empty implementation
     }
 
-    public function setTickerText(string $text = '')
+    public function setTickerText(string $text = ''): void
     {
         // Empty implementation
     }
 
-    public function setUnlockTime(int $time = 3)
+    public function setUnlockTime(int $time = 3): void
     {
         // Empty implementation
     }
 
-    public function setUnlocked(bool $unlocked = true)
+    public function setUnlocked(bool $unlocked = true): void
     {
         // Empty implementation
     }
 
-    public function syncData()
+    public function syncData(): void
     {
         // Empty implementation
     }
@@ -360,7 +360,7 @@ class rodos extends domophone
         return false;
     }
 
-    protected function initializeProperties()
+    protected function initializeProperties(): void
     {
         $this->login = 'admin';
         $this->defaultPassword = 'admin';

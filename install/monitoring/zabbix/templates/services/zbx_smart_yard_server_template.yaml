@@ -205,7 +205,7 @@ zabbix_export:
               url: 'https://{HOST.CONN}/frontend/server/ping'
               follow_redirects: 'NO'
               retrieve_mode: HEADERS
-              status_codes: '200'
+              status_codes: '204'
           tags:
             - tag: Web
               value: 'Health check'
@@ -219,6 +219,6 @@ zabbix_export:
               newvalue: Stopped
   triggers:
     - uuid: 2c05a091c62b47319fc043d6be27e08e
-      expression: 'last(/SmartYard-Server/web.test.rspcode[Health check,Check health ping])<>200'
+      expression: 'last(/SmartYard-Server/web.test.rspcode[Health check,Check health ping])<>204'
       name: 'SmartYard-Server: server failure'
       priority: AVERAGE

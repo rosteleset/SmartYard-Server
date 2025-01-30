@@ -918,6 +918,10 @@ function cardForm(params) {
         if (focus) {
             $("#" + focus).focus();
         }
+
+        if (tabs.length && typeof params.tabActivate == "function") {
+            params.tabActivate(_prefix, tabs[0], 0);
+        }
     }, 150);
 
     $("#" + _prefix + "form").submit(function(e) { e.preventDefault(); });
@@ -1427,6 +1431,9 @@ function cardForm(params) {
                 let s2 = $(this);
                 s2.css("width", s2.css("width"));
             });
+            if (typeof params.tabActivate == "function") {
+                params.tabActivate(_prefix, tabs[i], i);
+            }
         }, 100);
     });
 

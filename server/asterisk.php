@@ -3,7 +3,7 @@
     // asterisk support
 
     $cli = false;
-    $cliError = false;
+    $cli_error = false;
 
     require_once "utils/error.php";
     require_once "utils/guidv4.php";
@@ -23,14 +23,6 @@
         $config = @json_decode(file_get_contents(__DIR__ . "/config/config.json"), true);
     } catch (Exception $e) {
         $config = false;
-    }
-
-    if (!$config) {
-        try {
-            $config = @json_decode(json_encode(yaml_parse_file(__DIR__ . "/config/config.yml")), true);
-        } catch (Exception $e) {
-            $config = false;
-        }
     }
 
     if (!$config) {

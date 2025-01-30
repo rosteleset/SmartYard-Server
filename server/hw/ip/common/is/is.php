@@ -10,16 +10,6 @@ trait is
 
     use legacy\is;
 
-    /**
-     * @var int|null Caches the hardware version once fetched.
-     */
-    protected ?int $hardwareVersion = null;
-
-    /**
-     * @var string|null Caches the software version once fetched.
-     */
-    protected ?string $softwareVersion = null;
-
     public function configureEventServer(string $url): void
     {
         if ($this->isLegacyVersion()) {
@@ -72,6 +62,11 @@ trait is
     public function setAdminPassword(string $password): void
     {
         $this->apiCall('/user/change_password', 'PUT', ['newPassword' => $password]);
+    }
+
+    public function syncData(): void
+    {
+        // Empty implementation
     }
 
     /**
@@ -152,20 +147,6 @@ trait is
             'port' => 123,
             'timezone' => $settings['tz'],
         ];
-    }
-
-    /**
-     * Retrieves the software version from system information, with caching.
-     *
-     * @return string|null The software version or null if not available.
-     */
-    protected function getSoftwareVersion(): ?string
-    {
-        if ($this->softwareVersion === null) {
-            $this->softwareVersion = $this->getSysinfo()['SoftwareVersion'] ?? null;
-        }
-
-        return $this->softwareVersion;
     }
 
     protected function initializeProperties(): void

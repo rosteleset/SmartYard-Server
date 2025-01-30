@@ -1,19 +1,11 @@
 <?php
 
-// command line client
-
-    chdir(__DIR__);
-
-    $cli = true;
-    $cliError = false;
-
     require_once "data/backup_db.php";
     require_once "data/install_clickhouse.php";
     require_once "data/install.php";
     require_once "data/install_tt_mobile_template.php";
     require_once "data/schema.php";
     require_once "hw/autoconfigure_device.php";
-    require_once "hw/autoconfigure_domophone.php";
     require_once "utils/checkint.php";
     require_once "utils/checkstr.php";
     require_once "utils/cleanup.php";
@@ -38,72 +30,19 @@
     require_once "utils/apache_request_headers.php";
     require_once "utils/mb_levenshtein.php";
 
-    if (file_exists("mzfc/json5/vendor/autoload.php")) {
-        require_once "mzfc/json5/vendor/autoload.php";
+    if (file_exists(__DIR__ . "/mzfc/json5/vendor/autoload.php")) {
+        require_once __DIR__ . "/mzfc/json5/vendor/autoload.php";
     }
 
     require_once "backends/backend.php";
 
     require_once "api/api.php";
 
-    function usage() {
-        global $argv;
+    $cli = true;
+    $cli_error = false;
+    $cli_errors = [];
 
-        echo formatUsage("usage: {$argv[0]}
-
-            backend:
-                [<backend name> [params]]
-
-            common parts:
-                [--parent-pid=<pid>]
-                [--debug]
-
-            demo server:
-                [--run-demo-server [--port=<port>]]
-
-            initialization and update:
-                [--init-db [--skip=<versions>|--force=<version>|--set-version=<version>]]
-                [--init-clickhouse-db]
-                [--admin-password=<password>]
-                [--reindex]
-                [--clear-cache]
-                [--cleanup]
-                [--update]
-                [--exit-maintenance-mode]
-                [--init-mobile-issues-project]
-                [--init-tt-mobile-template]
-                [--init-monitoring-config]
-
-            tests:
-                [--check-mail=<your email address>]
-                [--get-db-version]
-
-            backends:
-                [--backends-with-cli]
-                [--check-backends]
-
-            autoconfigure:
-                [--autoconfigure-device=<device_type> --id=<device_id> [--first-time]]
-
-            cron:
-                [--cron=<minutely|5min|hourly|daily|monthly>]
-                [--install-crontabs]
-                [--uninstall-crontabs]
-
-            db:
-                [--backup-db]
-                [--list-db-backups]
-                [--restore-db=<backup_file_without_path_and_extension>]
-                [--schema=<schema>]
-                [--mongodb-set-fcv=<FeatureCompatibilityVersion>]
-
-            config:
-                [--print-config]
-                [--strip-config]
-        ");
-
-        exit(1);
-    }
+    $global_cli = [];
 
     $script_result = null;
     $script_process_id = -1;
@@ -112,55 +51,148 @@
 
     $args = [];
 
-    for ($i = 1; $i < count($argv); $i++) {
-        $a = explode('=', $argv[$i]);
-        if ($a[0] == '--parent-pid') {
-            if (!checkInt($a[1])) {
-                usage();
-            } else {
-                $script_parent_pid = $a[1];
-            }
-        } else
-        if ($a[0] == '--debug' && !isset($a[1])) {
-            debugOn();
-        }
-        else {
-            $args[$a[0]] = @$a[1];
-        }
-    }
+    $required_backends = [
+        "authentication",
+        "authorization",
+        "accounting",
+        "users",
+    ];
 
-    $params = '';
-    foreach ($args as $key => $value) {
-        if ($value) {
-            $params .= " {$key}={$value}";
-        } else {
-            $params .= " {$key}";
-        }
-    }
+    function cli($stage, $backend = "#", $args) {
+        global $global_cli, $config;
 
-    if ((count($args) == 1 || count($args) == 2) && array_key_exists("--run-demo-server", $args) && !isset($args["--run-demo-server"])) {
-        $db = null;
-        if (is_executable_pathenv(PHP_BINARY)) {
-            $port = 8000;
+        if ($config && $config["backends"]) {
+            foreach ($config["backends"] as $b => $p) {
+                $i = loadBackend($b);
 
-            if (count($args) == 2) {
-                if (array_key_exists("--port", $args) && !empty($args["--port"])) {
-                    $port = $args["--port"];
-                } else {
-                    usage();
+                if ($i) {
+                    $c = $i->cliUsage();
+
+                    if ($c && is_array($c) && count($c)) {
+                        if (!@$global_cli[$b]) {
+                            $global_cli[$b] = [];
+                        }
+                        $global_cli[$b] = array_merge($global_cli[$b], $c);
+                    }
                 }
             }
-
-            echo "open in your browser:\n\n";
-            echo "http://localhost:$port/client/index.html\n\n";
-            chdir(__DIR__ . "/..");
-            putenv("SPX_ENABLED=1");
-            putenv("SPX_REPORT=full");
-            putenv("SPX_AUTO_START=1");
-            passthru(PHP_BINARY . " -S 0.0.0.0:$port");
-        } else {
-            die("no php interpreter found in path\n\n");
         }
+
+        foreach (@$global_cli[$backend] as $title => $part) {
+            foreach ($part as $name => $command) {
+                if (array_key_exists("--" . $name, $args)) {
+                    if (!@$command["stage"]) {
+                        $command["stage"] = "run";
+                    }
+                    if ($command["stage"] == $stage) {
+                        $m = false;
+                        if (@$command["params"]) {
+                            foreach ($command["params"] as $variants) {
+                                //TODO: add params set check
+                                $m = true;
+                            }
+                        } else {
+                            $m = true;
+                        }
+                        if ($m) {
+                            //TODO: add param value check
+                            if ($backend == "#") {
+                                $command["exec"]($args);
+                            } else {
+                                $i = loadBackend($backend);
+                                $i->cli($args);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    function cliUsage() {
+        global $global_cli, $argv, $config;
+
+        foreach ($config["backends"] as $b => $p) {
+            $i = loadBackend($b);
+
+            if ($i) {
+                $c = $i->cliUsage();
+
+                if ($c && is_array($c) && count($c)) {
+                    if (!@$global_cli[$b]) {
+                        $global_cli[$b] = [];
+                    }
+                    $global_cli[$b] = array_merge($global_cli[$b], $c);
+                }
+            }
+        }
+
+        foreach ($global_cli as $backend => $cli) {
+            if ($backend == "#") {
+                echo "usage: {$argv[0]} <params>\n\n";
+            } else {
+                echo "usage: {$argv[0]} $backend <params>\n\n";
+            }
+
+            echo "  common parts:\n\n";
+            echo "    --parent-pid=<pid>\n";
+            echo "      Set parent pid\n\n";
+            echo "    --debug\n";
+            echo "      Run with debug\n\n";
+
+            foreach ($cli as $title => $part) {
+                echo "  $title:\n\n";
+
+                foreach ($part as $name => $command) {
+                    echo "    --$name";
+                    if (@$command["value"]) {
+                        echo "=<";
+                        if (is_array($command["value"])) {
+                            echo implode("|", $command["value"]);
+                        } else {
+                            echo (@$command["placeholder"]) ? $command["placeholder"] : "value";
+                        }
+                        echo ">";
+                    }
+                    if (@$command["params"]) {
+                        $g = "";
+                        foreach ($command["params"] as $variants) {
+                            $p = "";
+                            foreach ($variants as $prefix => $param) {
+                                if (@$param["optional"]) {
+                                    $p .= "[";
+                                }
+                                $p .= "--$prefix";
+                                if (@$param["value"]) {
+                                    $p .= "=<";
+                                    if (is_array($param["value"])) {
+                                        $p .= implode("|", $param["value"]);
+                                    } else {
+                                        $p .= (@$param["placeholder"]) ? $param["placeholder"] : "value";
+                                    }
+                                    $p .= ">";
+                                }
+                                if (@$param["optional"]) {
+                                    $p .= "]";
+                                }
+                                $p .= " ";
+                            }
+                            $g .= trim($p) . " | ";
+                        }
+                        if ($g) {
+                            $g = substr($g, 0, -3);
+                        }
+                        echo " " . $g;
+                    }
+                    echo "\n";
+                    if (@$command["description"]) {
+                        echo "      " . $command["description"] . "\n";
+                    }
+                    echo "\n";
+                }
+            }
+        }
+
         exit(0);
     }
 
@@ -192,7 +224,7 @@
                     "ppid" => $script_parent_pid,
                     "start" => time(),
                     "process" => "cli.php",
-                    "params" => $params,
+                    "params" => trim($params),
                     "expire" => time() + 24 * 60 * 60,
                 ], [ "silent" ]);
             } catch (\Exception $e) {
@@ -200,7 +232,7 @@
             }
 
             $already = (int)$db->get("select count(*) as already from core_running_processes where done is null and params = :params and pid <> " . getmypid(), [
-                    'params' => $params,
+                'params' => trim($params),
             ], false, [ 'fieldlify', 'silent' ]);
 
             if ($already) {
@@ -286,9 +318,51 @@
         echo " - done\n\n";
     }
 
+    chdir(__DIR__);
+
+    foreach (scandir(__DIR__ . "/cli") as $file) {
+        $c = explode(".php", $file);
+
+        if (count($c) == 2 && $c[0] && !$c[1]) {
+            require_once __DIR__ . "/cli/" . $file;
+
+            if (class_exists('\cli\\' . $c[0])) {
+                new ('\cli\\' . $c[0])($global_cli);
+            }
+        }
+    }
+
+    for ($i = 1; $i < count($argv); $i++) {
+        $a = explode('=', $argv[$i]);
+        if ($a[0] == '--parent-pid') {
+            if (!checkInt($a[1])) {
+                usage();
+            } else {
+                $script_parent_pid = $a[1];
+            }
+        } else
+        if ($a[0] == '--debug' && !isset($a[1])) {
+            debugOn();
+        }
+        else {
+            $args[$a[0]] = @$a[1];
+        }
+    }
+
+    $params = '';
+    foreach ($args as $key => $value) {
+        if ($value) {
+            $params .= " {$key}={$value}";
+        } else {
+            $params .= " {$key}";
+        }
+    }
+
+    cli("init", "#", $args);
+
     try {
         mb_internal_encoding("UTF-8");
-    } catch (Exception $e) {
+    } catch (\Exception $e) {
         die("mbstring extension is not available\n\n");
     }
 
@@ -296,32 +370,25 @@
         die("curl extension is not installed\n\n");
     }
 
-    $required_backends = [
-        "authentication",
-        "authorization",
-        "accounting",
-        "users",
-    ];
-
     try {
         if (PHP_VERSION_ID < 50600) {
             die("minimal supported php version is 5.6\n\n");
         }
-    } catch (Exception $e) {
+    } catch (\Exception $e) {
         die("can't determine php version\n\n");
     }
 
     if (function_exists("json5_decode")) {
         try {
             $config = @json5_decode(file_get_contents("config/config.json"), true);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             echo $e->getMessage() . "\n";
             $config = false;
         }
     } else {
         try {
             $config = @json_decode(file_get_contents("config/config.json"), true, 512, JSON_THROW_ON_ERROR);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             echo $e->getMessage() . "\n";
             $config = false;
         }
@@ -377,424 +444,23 @@
         }
     }
 
-    if (count($args) && (strpos($argv[1], "--") === false || strpos($argv[1], "--") > 0)) {
-        $backend = loadBackend($argv[1]);
-
-        if (!$backend) {
-            die("backend \"{$argv[1]}\" not found\n\n");
-        }
-
-        unset($args[$argv[1]]);
-
-        if (!$backend->capabilities() || !array_key_exists("cli", $backend->capabilities())) {
-            die("command line is not available for backend \"{$argv[1]}\"\n\n");
-        }
-
-        $backend->cli($args);
-
-        exit(0);
-    }
-
-    if (count($args) == 1 && array_key_exists("--backends-with-cli", $args) && !isset($args["--backends-with-cli"])) {
-        $cli = [];
-
-        foreach ($config["backends"] as $b => $p) {
-            $e = loadBackend($b);
-            if ($e && $e->capabilities() && array_key_exists("cli", $e->capabilities())) {
-                $cli[] = $b;
-            }
-        }
-
-        if (count($cli)) {
-            echo "backends with cli support: " . implode(" ", $cli) . "\n\n";
-        } else {
-            echo "no backends with cli support found\n\n";
-        }
-
-        exit(0);
-    }
-
-    if (count($args) == 1 && array_key_exists("--exit-maintenance-mode", $args) && !isset($args["--exit-maintenance-mode"])) {
-        maintenance(false);
-        exit(0);
-    }
+    cli("pre", "#", $args);
 
     startup();
 
     check_if_pid_exists();
 
-    if (
-        (count($args) == 1 && array_key_exists("--init-db", $args) && !isset($args["--init-db"]))
-        ||
-        (count($args) == 2 && array_key_exists("--init-db", $args) && !isset($args["--init-db"]) && array_key_exists("--skip", $args) && isset($args["--skip"]))
-        ||
-        (count($args) == 2 && array_key_exists("--init-db", $args) && !isset($args["--init-db"]) && array_key_exists("--force", $args) && isset($args["--force"]))
-        ||
-        (count($args) == 2 && array_key_exists("--init-db", $args) && !isset($args["--init-db"]) && array_key_exists("--set-version", $args) && isset($args["--set-version"]) && (int)$args["--set-version"])
-    ) {
-        maintenance(true);
-        wait_all();
+    if (count($args) && (strpos($argv[1], "--") === false || strpos($argv[1], "--") > 0)) {
+        $backend = $argv[1];
+        unset($args[$argv[1]]);
 
-        backup_db(false);
-        echo "\n";
+        cli("run", $backend, $args);
 
-        if (@$args["--set-version"]) {
-            $sth = $db->prepare("update core_vars set var_value = :version where var_name = 'dbVersion'");
-            $sth->bindParam('version', $args["--set-version"]);
-            $sth->execute();
-        } else {
-            initDB(@$args["--skip"], @$args["--force"]);
-        }
-
-        startup(true);
-        echo "\n";
-
-        $n = clearCache(true);
-        echo "$n cache entries cleared\n\n";
-
-        reindex();
-        echo "\n";
-
-        maintenance(false);
-
-        try {
-            $db->exec("commit");
-        } catch (\Exception $e) {
-            //
-        }
+        cliUsage();
 
         exit(0);
     }
 
-    if (count($args) == 1 && array_key_exists("--init-clickhouse-db", $args) && !isset($args["--init-clickhouse-db"])) {
-        $clickhouse_config = @$config['clickhouse'];
+    cli("run", "#", $args);
 
-        $clickhouse = new clickhouse(
-            @$clickhouse_config['host'] ?? '127.0.0.1',
-            @$clickhouse_config['port'] ?? 8123,
-            @$clickhouse_config['username'] ?? 'default',
-            @$clickhouse_config['password'] ?? 'qqq',
-        );
-
-        initClickhouseDB($clickhouse);
-        exit(0);
-    }
-
-    if (count($args) == 1 && array_key_exists("--cleanup", $args) && !isset($args["--cleanup"])) {
-        cleanup();
-        exit(0);
-    }
-
-    if (count($args) == 1 && array_key_exists("--init-mobile-issues-project", $args) && !isset($args["--init-mobile-issues-project"])) {
-        init_mp();
-        exit(0);
-    }
-
-    if (count($args) == 1 && array_key_exists("--reindex", $args) && !isset($args["--reindex"])) {
-        $n = clearCache(true);
-        echo "$n cache entries cleared\n\n";
-        reindex();
-        echo "\n";
-        exit(0);
-    }
-
-    if (count($args) == 1 && array_key_exists("--clear-cache", $args) && !isset($args["--clear-cache"])) {
-        $n = clearCache(true);
-        echo "$n cache entries cleared\n\n";
-        exit(0);
-    }
-
-    if (count($args) == 1 && array_key_exists("--admin-password", $args) && isset($args["--admin-password"])) {
-        //TODO: rewrite to insert method
-        try {
-            $db->exec("insert into core_users (uid, login, password) values (0, 'admin', 'admin')");
-        } catch (Exception $e) {
-            //
-        }
-
-        //TODO: rewrite to modify method
-        try {
-            $sth = $db->prepare("update core_users set password = :password, login = 'admin', enabled = 1 where uid = 0");
-            $sth->execute([ ":password" => password_hash($args["--admin-password"], PASSWORD_DEFAULT) ]);
-            echo "admin account updated\n\n";
-        } catch (Exception $e) {
-            die("admin account update failed\n\n");
-        }
-        exit(0);
-    }
-
-    if (count($args) == 1 && array_key_exists("--check-mail", $args) && isset($args["--check-mail"])) {
-        $r = email($config, $args["--check-mail"], "test email", "test email");
-        if ($r === true) {
-            echo "email sended\n\n";
-        } else
-        if ($r === false) {
-            echo "no email config found\n\n";
-        } else {
-            print_r($r);
-        }
-        exit(0);
-    }
-
-    if (count($args) == 1 && array_key_exists("--cron", $args)) {
-        $parts = [ "minutely", "5min", "hourly", "daily", "monthly" ];
-        $part = false;
-
-        foreach ($parts as $p) {
-            if (in_array($p, $args)) {
-                $part = $p;
-            }
-        }
-
-        if ($part) {
-            foreach ($config["backends"] as $backend_name => $cfg) {
-                $backend = loadBackend($backend_name);
-                if ($backend) {
-                    try {
-                        if (!$backend->cron($part)) {
-                            echo "$backend_name [$part] fail\n\n";
-                        }
-                    } catch (\Exception $e) {
-                        print_r($e);
-                        echo "$backend_name [$part] exception\n\n";
-                    }
-                }
-            }
-        } else {
-            usage();
-        }
-
-        exit(0);
-    }
-
-    // TODO: deprecated, dont forget to delete
-    if ((count($args) == 1 || count($args) == 2) && array_key_exists("--autoconfigure-domophone", $args) && isset($args["--autoconfigure-domophone"])) {
-        $domophone_id = $args["--autoconfigure-domophone"];
-
-        $first_time = false;
-
-        if (count($args) == 2) {
-            if (array_key_exists("--first-time", $args)) {
-                $first_time = true;
-            } else {
-                usage();
-            }
-        }
-
-        if (checkInt($domophone_id)) {
-            $idPart = "--id=$domophone_id";
-            $firstTimePart = $first_time ? " --first-time'" : "'";
-            echo "!!! Deprecated. Use '--autoconfigure-device=domophone $idPart$firstTimePart next time !!!\n\n";
-
-            autoconfigure_domophone($domophone_id, $first_time);
-            exit(0);
-        } else {
-            usage();
-        }
-    }
-
-    if ((count($args) === 2 || count($args) === 3) && isset($args["--autoconfigure-device"], $args["--id"])) {
-        $device_type = $args["--autoconfigure-device"];
-        $device_id = $args["--id"];
-
-        $first_time = false;
-
-        if (count($args) === 3) {
-            if (array_key_exists("--first-time", $args)) {
-                $first_time = true;
-            } else {
-                usage();
-            }
-        }
-
-        if (checkInt($device_id)) {
-            try {
-                autoconfigure_device($device_type, $device_id, $first_time);
-                exit(0);
-            } catch (Exception $e) {
-                $script_result = 'fail';
-                die("!!! FAILED: " . $e->getMessage() . " !!!\n\n");
-            }
-        }
-    }
-
-    if (count($args) == 1 && array_key_exists("--install-crontabs", $args) && !isset($args["--install-crontabs"])) {
-        $n = installCrontabs();
-        echo "$n crontabs lines added\n\n";
-        exit(0);
-    }
-
-    if (count($args) == 1 && array_key_exists("--uninstall-crontabs", $args) && !isset($args["--uninstall-crontabs"])) {
-        $n = unInstallCrontabs();
-        echo "$n crontabs lines removed\n\n";
-        exit(0);
-    }
-
-    if (count($args) == 1 && array_key_exists("--get-db-version", $args) && !isset($args["--get-db-version"])) {
-        echo "dbVersion: $version\n\n";
-        exit(0);
-    }
-
-    if (count($args) == 1 && array_key_exists("--check-backends", $args) && !isset($args["--check-backends"])) {
-        $all_ok = true;
-
-        foreach ($config["backends"] as $backend => $null) {
-            $t = loadBackend($backend);
-            if (!$t) {
-                echo "loading $backend failed\n\n";
-                $all_ok = false;
-            } else {
-                try {
-                    if (!$t->check()) {
-                        echo "error checking backend $backend\n\n";
-                        $all_ok = false;
-                    }
-                } catch (\Exception $e) {
-                    print_r($e);
-                    $all_ok = false;
-                }
-            }
-        }
-
-        if ($all_ok) {
-            echo "everything is all right\n\n";
-        }
-        exit(0);
-    }
-
-    if (count($args) == 1 && array_key_exists("--strip-config", $args) && !isset($args["--strip-config"])) {
-        file_put_contents("config/config.json", json_encode($config, JSON_PRETTY_PRINT));
-        exit(0);
-    }
-
-    if (count($args) == 1 && array_key_exists("--print-config", $args) && !isset($args["--print-config"])) {
-        print_r($config);
-        exit(0);
-    }
-
-    if (count($args) == 1 && array_key_exists("--backup-db", $args) && !isset($args["--backup-db"])) {
-        maintenance(true);
-        wait_all();
-
-        backup_db();
-
-        maintenance(false);
-        exit(0);
-    }
-
-    if (count($args) == 1 && array_key_exists("--list-db-backups", $args) && !isset($args["--list-db-backups"])) {
-        list_db_backups();
-        exit(0);
-    }
-
-    if (count($args) == 1 && array_key_exists("--restore-db", $args) && isset($args["--restore-db"])) {
-        maintenance(true);
-        wait_all();
-
-        restore_db($args["--restore-db"]);
-
-        maintenance(false);
-        exit(0);
-    }
-
-    if (count($args) == 1 && array_key_exists("--schema", $args) && isset($args["--schema"])) {
-        maintenance(true);
-        wait_all();
-
-        schema($args["--schema"]);
-
-        maintenance(false);
-        exit(0);
-    }
-
-    if (count($args) == 1 && array_key_exists("--mongodb-set-fcv", $args) && isset($args["--mongodb-set-fcv"])) {
-        maintenance(true);
-        wait_all();
-
-        if (@$config["mongo"]["uri"]) {
-            $manager = new \MongoDB\Driver\Manager($config["mongo"]["uri"]);
-        } else {
-            $manager = new \MongoDB\Driver\Manager();
-        }
-
-        $command = new \MongoDB\Driver\Command([ "setFeatureCompatibilityVersion" => $args["--mongodb-set-fcv"], "confirm" => true ]);
-
-        try {
-            $cursor = $manager->executeCommand('admin', $command);
-        } catch(\Exception $e) {
-            die($e->getMessage() . "\n");
-        }
-
-        $response = $cursor->toArray()[0];
-
-        echo "ok\n";
-
-        maintenance(false);
-        exit(0);
-    }
-
-    if (count($args) == 1 && array_key_exists("--update", $args) && !isset($args["--update"])) {
-        maintenance(true);
-        wait_all();
-
-        backup_db();
-        echo "\n";
-
-        chdir(__DIR__);
-
-        $code = false;
-
-        system("git pull", $code);
-        echo "\n";
-
-        if ($code !== 0) {
-            exit($code);
-        }
-
-        initDB();
-        echo "\n";
-
-        $clickhouse_config = @$config['clickhouse'];
-
-        $clickhouse = new clickhouse(
-            @$clickhouse_config['host'] ?? '127.0.0.1',
-            @$clickhouse_config['port'] ?? 8123,
-            @$clickhouse_config['username'] ?? 'default',
-            @$clickhouse_config['password'] ?? 'qqq',
-        );
-
-        initClickhouseDB($clickhouse);
-        echo "\n";
-
-        $n = clearCache(true);
-        echo "$n cache entries cleared\n\n";
-
-        reindex();
-        echo "\n";
-
-        maintenance(false);
-
-        exit(0);
-    }
-
-    if (count($args) == 1 && array_key_exists("--init-tt-mobile-template", $args) && !isset($args["--init-tt-mobile-template"])) {
-        try {
-            installTTMobileTemplate();
-        } catch (Exception $e) {
-            die($e->getMessage() . "\n\n");
-        }
-        exit(0);
-    }
-
-    //TODO: move to backend's cli
-    if (count($args) == 1 && array_key_exists("--init-monitoring-config", $args) && !isset($args["--init-monitoring-config"])) {
-        try {
-            $monitoring = loadBackend('monitoring');
-            $monitoring->configureMonitoring();
-        } catch (Exception $e) {
-            die($e->getMessage() . "\n\n");
-        }
-        exit(0);
-    }
-
-    usage();
+    cliUsage();

@@ -6,11 +6,10 @@
      * @return void
      */
 
-    function initDB($_skip = "", $_force = -1)
-    {
+    function initDB($_skip = "", $_force = -1) {
         global $config, $db, $version;
 
-        $install = @json_decode(file_get_contents("data/install.json"), true);
+        $install = @json_decode(file_get_contents(__DIR__ . "/install.json"), true);
 
         $driver = explode(":", $config["db"]["dsn"])[0];
 
@@ -48,12 +47,12 @@
                         echo "\n================= $step\n\n";
                         $path = pathinfo($step);
                         if ($path['extension'] == "sql") {
-                            $sql = trim(file_get_contents("data/$driver/$step"));
+                            $sql = trim(file_get_contents(__DIR__ . "/$driver/$step"));
                             echo "$sql\n";
                             $db->exec($sql);
                         }
                         if ($path['extension'] == "php") {
-                            require_once "data/$driver/$step";
+                            require_once __DIR__ . "/$driver/$step";
                             if ($path['filename']($db) !== true) {
                                 throw new \Exception("error calling function {$path['filename']}");
                             }

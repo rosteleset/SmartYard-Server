@@ -149,6 +149,12 @@
                         return $.trim(v).length <= 64;
                     },
                 },
+                {
+                    id: "display",
+                    type: "area",
+                    title: i18n("addresses.display"),
+                    placeholder: i18n("addresses.display"),
+                },
             ],
             callback: modules.addresses.domophones.doAddDomophone,
         });
@@ -297,6 +303,13 @@
                             return $.trim(v).length <= 64;
                         },
                     },
+                    {
+                        id: "display",
+                        type: "area",
+                        title: i18n("addresses.display"),
+                        placeholder: i18n("addresses.display"),
+                        value: domophone.display,
+                    },
                 ],
                 callback: result => {
                     if (result.delete === "yes") {
@@ -331,6 +344,9 @@
                 break;
             case 'Disabled':
                 statusClass = 'status-disabled';
+                break;
+            case 'Other':
+                statusClass = 'status-other-error';
                 break;
             default:
                 statusClass = 'status-unknown';

@@ -79,7 +79,7 @@ abstract class beward extends domophone
         $this->forceSave();
     }
 
-    public function addRfid(string $code, int $apartment = 0)
+    public function addRfid(string $code, int $apartment = 0): void
     {
         $this->loadExternalRfidTableExists();
 
@@ -91,7 +91,7 @@ abstract class beward extends domophone
         }
     }
 
-    public function addRfids(array $rfids)
+    public function addRfids(array $rfids): void
     {
         foreach ($rfids as $rfid) {
             $this->addRfid($rfid);
@@ -103,8 +103,8 @@ abstract class beward extends domophone
         int   $code = 0,
         array $sipNumbers = [],
         bool  $cmsEnabled = true,
-        array $cmsLevels = []
-    )
+        array $cmsLevels = [],
+    ): void
     {
         $params = [
             'action' => 'set',
@@ -134,7 +134,7 @@ abstract class beward extends domophone
         $this->apiCall('cgi-bin/apartment_cgi', $params);
     }
 
-    public function configureEncoding()
+    public function configureEncoding(): void
     {
         $this->apiCall('webs/videoEncodingCfgEx', [
             'vlevel' => '0',
@@ -181,7 +181,7 @@ abstract class beward extends domophone
         $this->wait();
     }
 
-    public function configureGate(array $links = [])
+    public function configureGate(array $links = []): void
     {
         $params = [
             'action' => 'set',
@@ -208,7 +208,7 @@ abstract class beward extends domophone
         $this->apiCall('cgi-bin/gate_cgi', $params);
     }
 
-    public function configureMatrix(array $matrix)
+    public function configureMatrix(array $matrix): void
     {
         $params = [];
         $unitsOffset = $this->getCmsUnitsOffset();
@@ -229,8 +229,8 @@ abstract class beward extends domophone
         int    $port = 5060,
         bool   $stunEnabled = false,
         string $stunServer = '',
-        int    $stunPort = 3478
-    )
+        int    $stunPort = 3478,
+    ): void
     {
         $model = $this->getSysinfo()['DeviceModel'] ?? null;
 
@@ -260,7 +260,7 @@ abstract class beward extends domophone
         $this->apiCall('webs/SIP1CfgEx', $params);
     }
 
-    public function configureUserAccount(string $password)
+    public function configureUserAccount(string $password): void
     {
         $this->apiCall('webs/umanageCfgEx', [
             'uflag' => '1',
@@ -287,7 +287,7 @@ abstract class beward extends domophone
         ]);
     }
 
-    public function deleteApartment(int $apartment = 0)
+    public function deleteApartment(int $apartment = 0): void
     {
         if ($apartment === 0) {
             $this->apiCall('cgi-bin/apartment_cgi', [
@@ -303,7 +303,7 @@ abstract class beward extends domophone
         }
     }
 
-    public function deleteRfid(string $code = '')
+    public function deleteRfid(string $code = ''): void
     {
         $this->loadExternalRfidTableExists();
 
@@ -400,7 +400,7 @@ abstract class beward extends domophone
         return $rfids;
     }
 
-    public function openLock(int $lockNumber = 0)
+    public function openLock(int $lockNumber = 0): void
     {
         if ($lockNumber === 2) {
             $this->apiCall('cgi-bin/intercom_cgi', ['action' => 'light', 'Enable' => 'on'], false, 3);
@@ -412,7 +412,7 @@ abstract class beward extends domophone
         }
     }
 
-    public function prepare()
+    public function prepare(): void
     {
         parent::prepare();
         $this->enableUpnp(false);
@@ -425,7 +425,7 @@ abstract class beward extends domophone
         $this->configureGate(); // Set "Mode 2" for incoming calls to work correctly
     }
 
-    public function setAudioLevels(array $levels)
+    public function setAudioLevels(array $levels): void
     {
         if ($levels) {
             $this->apiCall('cgi-bin/audio_cgi', [
@@ -451,12 +451,12 @@ abstract class beward extends domophone
         }
     }
 
-    public function setCallTimeout(int $timeout)
+    public function setCallTimeout(int $timeout): void
     {
         $this->setIntercom('CallTimeout', $timeout);
     }
 
-    public function setCmsLevels(array $levels)
+    public function setCmsLevels(array $levels): void
     {
         if (count($levels) == 2) {
             $this->setIntercom('HandsetUpLevel', $levels[0]);
@@ -469,7 +469,7 @@ abstract class beward extends domophone
         }
     }
 
-    public function setCmsModel(string $model = '')
+    public function setCmsModel(string $model = ''): void
     {
         if (!array_key_exists($model, self::CMS_MODEL_MAP)) {
             return;
@@ -491,13 +491,18 @@ abstract class beward extends domophone
         $this->configureMatrix($nowMatrix); // Restore saved matrix
     }
 
-    public function setConciergeNumber(int $sipNumber)
+    public function setConciergeNumber(int $sipNumber): void
     {
         $this->setIntercom('ConciergeApartment', $sipNumber);
         $this->configureApartment($sipNumber, 0, [$sipNumber], false);
     }
 
-    public function setDtmfCodes(string $code1 = '1', string $code2 = '2', string $code3 = '3', string $codeCms = '1')
+    public function setDtmfCodes(
+        string $code1 = '1',
+        string $code2 = '2',
+        string $code3 = '3',
+        string $codeCms = '1',
+    ): void
     {
         $this->apiCall('webs/SIPExtCfgEx', [
             'dtmfout1' => $code1,
@@ -506,7 +511,7 @@ abstract class beward extends domophone
         ]);
     }
 
-    public function setLanguage(string $language = 'ru')
+    public function setLanguage(string $language = 'ru'): void
     {
         switch ($language) {
             case 'ru':
@@ -520,7 +525,7 @@ abstract class beward extends domophone
         $this->apiCall('webs/sysInfoCfgEx', ['sys_pal' => 0, 'sys_language' => $webLang]);
     }
 
-    public function setPublicCode(int $code = 0)
+    public function setPublicCode(int $code = 0): void
     {
         if ($code) {
             $this->setIntercom('DoorCode', $code);
@@ -531,17 +536,17 @@ abstract class beward extends domophone
         }
     }
 
-    public function setSosNumber(int $sipNumber)
+    public function setSosNumber(int $sipNumber): void
     {
         $this->setAlarm('SOSCallNumber', $sipNumber);
     }
 
-    public function setTalkTimeout(int $timeout)
+    public function setTalkTimeout(int $timeout): void
     {
         $this->setIntercom('TalkTimeout', $timeout);
     }
 
-    public function setTickerText(string $text = '')
+    public function setTickerText(string $text = ''): void
     {
         $this->apiCall('cgi-bin/display_cgi', [
             'action' => 'set',
@@ -556,12 +561,12 @@ abstract class beward extends domophone
         ]);
     }
 
-    public function setUnlockTime(int $time = 3)
+    public function setUnlockTime(int $time = 3): void
     {
         $this->setIntercom('DoorOpenTime', $time);
     }
 
-    public function setUnlocked(bool $unlocked = true)
+    public function setUnlocked(bool $unlocked = true): void
     {
         $this->apiCall('webs/btnSettingEx', [
             'flag' => '4600',
@@ -585,7 +590,7 @@ abstract class beward extends domophone
      *
      * @return void
      */
-    protected function enableServiceCodes(bool $enabled = true)
+    protected function enableServiceCodes(bool $enabled = true): void
     {
         $state = $enabled ? 'open' : 'close';
 
@@ -610,7 +615,7 @@ abstract class beward extends domophone
      *
      * @return void
      */
-    protected function enableUpnp(bool $enabled = true)
+    protected function enableUpnp(bool $enabled = true): void
     {
         $this->apiCall('webs/netUPNPCfgEx', ['cksearch' => $enabled ? 1 : 0]);
     }
@@ -811,7 +816,7 @@ abstract class beward extends domophone
      *
      * @return void
      */
-    protected function loadExternalRfidTableExists()
+    protected function loadExternalRfidTableExists(): void
     {
         if ($this->hasExternalRfidTable === null) {
             $res = $this->apiCall('cgi-bin/extrfid_cgi');
@@ -824,7 +829,7 @@ abstract class beward extends domophone
      *
      * @return void
      */
-    protected function loadSupportedCmsList()
+    protected function loadSupportedCmsList(): void
     {
         if ($this->supportedCmsList === null) {
             $res = $this->apiCall('/xml/kmnducfg.xml');

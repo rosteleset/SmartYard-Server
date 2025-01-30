@@ -12,7 +12,7 @@ use Exception;
 trait akuvox
 {
 
-    public function configureEventServer(string $url) // Need to reboot after that
+    public function configureEventServer(string $url): void // Need to reboot after that
     {
         ['host' => $server, 'port' => $port] = parse_url_ext($url);
 
@@ -26,7 +26,7 @@ trait akuvox
         $this->wait();
     }
 
-    public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow')
+    public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow'): void
     {
         ['offset' => $offset, 'name' => $name] = $this->getTzOffsetAndName($timezone);
 
@@ -50,17 +50,17 @@ trait akuvox
         return $sysinfo;
     }
 
-    public function reboot()
+    public function reboot(): void
     {
         $this->apiCall('/system/reboot');
     }
 
-    public function reset()
+    public function reset(): void
     {
         $this->apiCall('/config/reset_factory');
     }
 
-    public function setAdminPassword(string $password)
+    public function setAdminPassword(string $password): void
     {
         $this->setConfigParams([
             'Config.Settings.WEB_LOGIN.Password' => $password, // WEB
@@ -71,7 +71,7 @@ trait akuvox
         sleep(1);
     }
 
-    public function syncData()
+    public function syncData(): void
     {
         // Empty implementation
     }
@@ -175,12 +175,12 @@ trait akuvox
                 'offset' => 'GMT' . preg_replace('/(?<=[+-])0(\d)/', '$1', $offset),
                 'name' => basename($timezone),
             ];
-        } catch (Exception $e) {
+        } catch (Exception) {
             return ['GMT+3:00', 'Moscow'];
         }
     }
 
-    protected function initializeProperties()
+    protected function initializeProperties(): void
     {
         $this->login = 'admin';
         $this->defaultPassword = 'httpapi';
@@ -194,7 +194,7 @@ trait akuvox
      *
      * @return void
      */
-    protected function setConfigParams(array $data)
+    protected function setConfigParams(array $data): void
     {
         $this->apiCall('', 'POST', [
             'target' => 'config',

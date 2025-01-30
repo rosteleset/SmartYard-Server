@@ -12,7 +12,7 @@ use Exception;
 trait beward
 {
 
-    public function configureEventServer(string $url)
+    public function configureEventServer(string $url): void
     {
         ['host' => $server, 'port' => $port] = parse_url_ext($url);
 
@@ -26,7 +26,7 @@ trait beward
         ]);
     }
 
-    public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow')
+    public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow'): void
     {
         // Depending on the device model, the auto mode can be 'on'/'off' or '1'/'0'.
         // This must be determined before calling the NTP configuration, otherwise the call will fail.
@@ -48,7 +48,7 @@ trait beward
      *
      * @return void
      */
-    public function forceSave()
+    public function forceSave(): void
     {
         $this->apiCall('cgi-bin/config_cgi', ['action' => 'forcesave']);
     }
@@ -58,17 +58,17 @@ trait beward
         return $this->parseParamValue($this->apiCall('cgi-bin/systeminfo_cgi', ['action' => 'get'], false, 3));
     }
 
-    public function reboot()
+    public function reboot(): void
     {
         $this->apiCall('webs/btnHitEx', ['flag' => 21]);
     }
 
-    public function reset()
+    public function reset(): void
     {
         $this->apiCall('cgi-bin/hardfactorydefault_cgi');
     }
 
-    public function setAdminPassword(string $password)
+    public function setAdminPassword(string $password): void
     {
         $this->apiCall('webs/umanageCfgEx', [
             'uflag' => 0,
@@ -86,7 +86,7 @@ trait beward
         ]);
     }
 
-    public function syncData()
+    public function syncData(): void
     {
         // Empty implementation
     }
@@ -218,7 +218,7 @@ trait beward
             $now = new DateTimeImmutable('now', new DateTimeZone($timezone));
             $gmtOffset = strval($now->getOffset() / 3600);
             return $tzIdMap[$gmtOffset] ?? 21;
-        } catch (Exception $e) {
+        } catch (Exception) {
             return 21; // ID for Europe/Moscow timezone
         }
     }
@@ -246,7 +246,7 @@ trait beward
         return $this->parseParamValue($this->apiCall("cgi-bin/$resource", ['action' => 'get']));
     }
 
-    protected function initializeProperties()
+    protected function initializeProperties(): void
     {
         $this->login = 'admin';
         $this->defaultPassword = 'admin';
@@ -280,7 +280,7 @@ trait beward
      *
      * @return void
      */
-    protected function setAlarm(string $name, string $value)
+    protected function setAlarm(string $name, string $value): void
     {
         $this->apiCall('cgi-bin/intercom_alarm_cgi', ['action' => 'set', $name => $value]);
     }
@@ -293,7 +293,7 @@ trait beward
      *
      * @return void
      */
-    protected function setIntercom(string $name, string $value)
+    protected function setIntercom(string $name, string $value): void
     {
         $this->apiCall('cgi-bin/intercom_cgi', ['action' => 'set', $name => $value]);
     }

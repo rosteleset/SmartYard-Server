@@ -5,7 +5,7 @@
     // mobile client API support
 
     $cli = false;
-    $cliError = false;
+    $cli_error = false;
     $mobile = true;
 
     header("Access-Control-Allow-Origin: *");
@@ -97,14 +97,8 @@
     }
 
     if (!$config) {
-        try {
-            $config = @json_decode(json_encode(yaml_parse_file(__DIR__ . "/config/config.yml")), true);
-        } catch (Exception $e) {
-            $config = false;
-        }
-    }
+        error_log("noConfig");
 
-    if (!$config) {
         response(555, [
             "error" => "noConfig",
         ]);
@@ -121,6 +115,7 @@
         $redis->setex("iAmOk", 1, "1");
     } catch (Exception $e) {
         error_log(print_r($e, true));
+
         response(555, [
             "error" => "redis",
         ]);
@@ -130,6 +125,7 @@
         $db = new PDO_EXT(@$config["db"]["dsn"], @$config["db"]["username"], @$config["db"]["password"], @$config["db"]["options"]);
     } catch (Exception $e) {
         error_log(print_r($e, true));
+
         response(555, [
             "error" => "PDO",
         ]);
@@ -220,7 +216,9 @@
         if ($data) {
             $ret['data'] = $data;
         }
+
         echo json_encode($ret, JSON_UNESCAPED_UNICODE);
+
         exit;
     }
 

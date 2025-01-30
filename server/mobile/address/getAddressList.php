@@ -102,7 +102,23 @@
         $tempArr = array_unique(array_column($h['cameras'], 'cameraId'));
         $houses[$house_key]['cctv'] = count($tempArr);
 
-        $houses[$house_key]['doors'] = array_values($h['doors']);
+        $doors = array_values($h['doors']);
+        usort($doors, function ($a, $b) {
+            $entrance_type_order = [
+                "entrance" => 0,
+                "wicket" => 1,
+                "gate" => 2,
+                "barrier" => 3,
+            ];
+            if ($entrance_type_order[$a['icon']] > $entrance_type_order[$b['icon']]) {
+                return 1;
+            }
+            if ($entrance_type_order[$a['icon']] < $entrance_type_order[$b['icon']]) {
+                return -1;
+            }
+            return $a['name'] > $b['name'];
+        });
+        $houses[$house_key]['doors'] = $doors;
         unset( $houses[$house_key]['cameras']);
     }
     $result = array_values($houses);

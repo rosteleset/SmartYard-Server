@@ -1280,18 +1280,30 @@
                 }
 
                 if (@$issue["assigned"]) {
+                    if (!is_array($issue["assigned"])) {
+                        $issue["assigned"] = [ $issue["assigned"] ];
+                    }
                     $issue["assigned"] = array_values($issue["assigned"]);
                 }
 
                 if (@$issue["watchers"]) {
+                    if (!is_array($issue["watchers"])) {
+                        $issue["watchers"] = [ $issue["watchers"] ];
+                    }
                     $issue["watchers"] = array_values($issue["watchers"]);
                 }
 
                 if (@$issue["tags"]) {
+                    if (!is_array($issue["tags"])) {
+                        $issue["tags"] = [ $issue["tags"] ];
+                    }
                     $issue["tags"] = array_values($issue["tags"]);
                 }
 
                 if (@$issue["links"]) {
+                    if (!is_array($issue["links"])) {
+                        $issue["links"] = [ $issue["links"] ];
+                    }
                     $issue["links"] = array_values($issue["links"]);
                 }
 
@@ -2327,16 +2339,6 @@
             }
 
             /**
-             * @inheritDoc
-             */
-
-            public function capabilities() {
-                return [
-                    "cli" => true,
-                ];
-            }
-
-            /**
              * @param string $issueId
              *
              * @return mixed
@@ -2371,6 +2373,16 @@
                     "description" => "Export all TT viewers to JS files"
                 ];
 
+                $usage["files"]["replace-viewer"] = [
+                    "value" => "string",
+                    "placeholder" => "filename",
+                    "description" => "Replace existing viewer"
+                ];
+
+                $usage["files"]["replace-all-viewers"] = [
+                    "description" => "Replace existing viewer"
+                ];
+
                 $usage["files"]["export-workflows"] = [
                     "description" => "Export all TT workflows to LUA files"
                 ];
@@ -2383,24 +2395,7 @@
              */
 
             public function cli($args) {
-
-                if (!function_exists("\\backends\\tt\\_cliUsage")) {
-                    function _cliUsage() {
-                        global $argv;
-
-                        echo formatUsage("usage: {$argv[0]} tt
-
-                            files:
-                                [--export-filters]
-                                [--export-viewers]
-                                [--export-workflows]
-                        ");
-
-                        exit(1);
-                    }
-                }
-
-                if (count($args) == 1 && array_key_exists("--export-workflows", $args) && !isset($args["--export-workflows"])) {
+                if (array_key_exists("--export-workflows", $args)) {
                     $workflows = $this->getWorkflows();
 
                     foreach ($workflows as $w => $m) {
@@ -2425,7 +2420,7 @@
                     exit(0);
                 }
 
-                if (count($args) == 1 && array_key_exists("--export-filters", $args) && !isset($args["--export-filters"])) {
+                if (array_key_exists("--export-filters", $args)) {
                     $filters = $this->getFilters();
 
                     foreach ($filters as $f => $m) {
@@ -2451,7 +2446,7 @@
                     exit(0);
                 }
 
-                if (count($args) == 1 && array_key_exists("--export-viewers", $args) && !isset($args["--export-viewers"])) {
+                if (array_key_exists("--export-viewers", $args)) {
                     $viewers = $this->getViewers();
 
                     foreach ($viewers as $v) {
@@ -2475,9 +2470,73 @@
                     exit(0);
                 }
 
-                _cliUsage();
+                if (array_key_exists("--replace-viewer", $args)) {
+                    $viewers = $this->getViewers();
 
-                return true;
+                    $f = false;
+
+                    foreach ($viewers as $v) {
+                        try {
+                            $dir = __DIR__ . "/../../data/files/viewers/";
+
+                            if ($args["--replace-viewer"] == "{$v['filename']}" . ".js" && file_exists($dir . "{$v['filename']}" . ".js")) {
+                                $c = @file_get_contents($dir . "{$v['filename']}" . ".js");
+
+                                if ($c) {
+                                    $f = true;
+
+                                    $this->putViewer($v["field"], $v["name"], $c);
+                                }
+                            }
+                        } catch (\Exception $e) {
+                            echo "fail\n";
+                            exit(0);
+                        }
+                    }
+
+                    if ($f) {
+                        echo "success\n";
+                    } else {
+                        echo "file not found \"" . $dir . $args["--replace-viewer"] . ".js\"\n";
+                    }
+
+                    exit(0);
+                }
+
+                if (array_key_exists("--replace-all-viewers", $args)) {
+                    $viewers = $this->getViewers();
+
+                    $dir = __DIR__ . "/../../data/files/viewers/";
+
+                    $l = scandir($dir);
+
+                    $r = 0;
+
+                    foreach ($l as $f) {
+                        foreach ($viewers as $v) {
+                            try {
+                                if ($f == "{$v['filename']}" . ".js") {
+                                    $c = @file_get_contents($dir . "{$v['filename']}" . ".js");
+
+                                    if ($c) {
+                                        $r++;
+
+                                        $this->putViewer($v["field"], $v["name"], $c);
+                                    }
+                                }
+                            } catch (\Exception $e) {
+                                echo "fail\n";
+                                exit(0);
+                            }
+                        }
+                    }
+
+                    echo "$r viewers replaced\n";
+
+                    exit(0);
+                }
+
+                parent::cli($args);
             }
         }
     }

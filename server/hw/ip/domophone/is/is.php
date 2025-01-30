@@ -57,7 +57,7 @@ abstract class is extends domophone
      */
     protected ?array $openCodes = null;
 
-    public function addRfid(string $code, int $apartment = 0)
+    public function addRfid(string $code, int $apartment = 0): void
     {
         // TODO
     }
@@ -138,7 +138,7 @@ abstract class is extends domophone
         int    $port = 5060,
         bool   $stunEnabled = false,
         string $stunServer = '',
-        int    $stunPort = 3478
+        int    $stunPort = 3478,
     ): void
     {
         $this->apiCall('/sip/settings', 'PUT', [
@@ -155,7 +155,7 @@ abstract class is extends domophone
         $this->sipPort = $port;
     }
 
-    public function configureUserAccount(string $password)
+    public function configureUserAccount(string $password): void
     {
         // Empty implementation
     }
@@ -229,7 +229,12 @@ abstract class is extends domophone
         $this->conciergeNumber = $sipNumber;
     }
 
-    public function setDtmfCodes(string $code1 = '1', string $code2 = '2', string $code3 = '3', string $codeCms = '1'): void
+    public function setDtmfCodes(
+        string $code1 = '1',
+        string $code2 = '2',
+        string $code3 = '3',
+        string $codeCms = '1',
+    ): void
     {
         $this->apiCall('/sip/options', 'PUT', [
             'dtmf' => [
@@ -240,7 +245,7 @@ abstract class is extends domophone
         ]);
     }
 
-    public function setLanguage(string $language = 'ru')
+    public function setLanguage(string $language = 'ru'): void
     {
         // Empty implementation
     }

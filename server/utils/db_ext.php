@@ -71,7 +71,7 @@
         }
 
         function insert($query, $params = [], $options = []) {
-            global $cli, $cliError;
+            global $cli, $cli_error;
 
             try {
                 $sth = $this->prepare($query);
@@ -87,14 +87,14 @@
             } catch (\PDOException $e) {
                 if (!in_array("silent", $options)) {
                     setLastError($e->errorInfo[2] ?: $e->getMessage());
-                    if ($cli && $cliError) {
+                    if ($cli && $cli_error) {
                         error_log(print_r($e, true));
                     }
                 }
                 return false;
             } catch (\Exception $e) {
                 setLastError($e->getMessage());
-                if ($cli && $cliError) {
+                if ($cli && $cli_error) {
                     error_log(print_r($e, true));
                 }
                 return false;

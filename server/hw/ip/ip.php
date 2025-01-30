@@ -23,15 +23,23 @@ abstract class ip extends hw
 
     /**
      * @var string Default password for the device.
-     * @access protected
      */
     protected string $defaultPassword;
 
     /**
      * @var string Prefix for API routes.
-     * @access protected
      */
     protected string $apiPrefix;
+
+    /**
+     * @var string|null Caches the hardware version once fetched.
+     */
+    protected ?string $hardwareVersion = null;
+
+    /**
+     * @var string|null Caches the software version once fetched.
+     */
+    protected ?string $softwareVersion = null;
 
     /**
      * Construct a new instance of the IP device.
@@ -98,6 +106,34 @@ abstract class ip extends hw
     }
 
     /**
+     * Retrieves the hardware version from system information, with caching.
+     *
+     * @return string|null The hardware version or null if not available.
+     */
+    protected function getHardwareVersion(): ?string
+    {
+        if ($this->hardwareVersion === null) {
+            $this->hardwareVersion = $this->getSysinfo()['HardwareVersion'] ?? null;
+        }
+
+        return $this->hardwareVersion;
+    }
+
+    /**
+     * Retrieves the software version from system information, with caching.
+     *
+     * @return string|null The software version or null if not available.
+     */
+    protected function getSoftwareVersion(): ?string
+    {
+        if ($this->softwareVersion === null) {
+            $this->softwareVersion = $this->getSysinfo()['SoftwareVersion'] ?? null;
+        }
+
+        return $this->softwareVersion;
+    }
+
+    /**
      * Get event server configuration.
      *
      * @return string A string containing the URL of the syslog server configured on the device.
@@ -116,7 +152,7 @@ abstract class ip extends hw
      *
      * @return void
      */
-    abstract protected function initializeProperties();
+    abstract protected function initializeProperties(): void;
 
     /**
      * Configure a remote event server.
@@ -125,7 +161,7 @@ abstract class ip extends hw
      *
      * @return void
      */
-    abstract public function configureEventServer(string $url);
+    abstract public function configureEventServer(string $url): void;
 
     /**
      * Configure NTP.
@@ -136,7 +172,7 @@ abstract class ip extends hw
      *
      * @return void
      */
-    abstract public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow');
+    abstract public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow'): void;
 
     /**
      * Get system information.
@@ -154,5 +190,5 @@ abstract class ip extends hw
      *
      * @return void
      */
-    abstract public function setAdminPassword(string $password);
+    abstract public function setAdminPassword(string $password): void;
 }

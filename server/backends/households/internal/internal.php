@@ -896,35 +896,42 @@
                     "name" => "name",
                     "ip" => "ip",
                     "sub_id" => "sub_id",
+                    "display" => "display",
                 ];
 
                 switch ($by) {
                     case "house":
                         $query = (int)$query;
 
-                        $q = "select * from houses_domophones where house_domophone_id in (
+                        $q = "
+                            select * from houses_domophones where house_domophone_id in (
                                 select house_domophone_id from houses_entrances where house_entrance_id in (
-                                  select house_entrance_id from houses_houses_entrances where address_house_id = $query
+                                    select house_entrance_id from houses_houses_entrances where address_house_id = $query
                                 ) group by house_domophone_id
-                              ) order by house_domophone_id";
+                            ) order by house_domophone_id
+                        ";
                         break;
 
                     case "entrance":
                         $query = (int)$query;
 
-                        $q = "select * from houses_domophones where house_domophone_id in (
+                        $q = "
+                            select * from houses_domophones where house_domophone_id in (
                                 select house_domophone_id from houses_entrances where house_entrance_id = $query group by house_domophone_id
-                              ) order by house_domophone_id";
+                            ) order by house_domophone_id
+                        ";
                         break;
 
                     case "flat":
                         $query = (int)$query;
 
-                        $q = "select * from houses_domophones where house_domophone_id in (
+                        $q = "
+                            select * from houses_domophones where house_domophone_id in (
                                 select house_domophone_id from houses_entrances where house_entrance_id in (
-                                  select house_entrance_id from houses_entrances_flats where house_flat_id = $query
+                                    select house_entrance_id from houses_entrances_flats where house_flat_id = $query
                                 ) group by house_domophone_id
-                              ) order by house_domophone_id";
+                            ) order by house_domophone_id
+                        ";
                         break;
 
                     case "ip":
@@ -940,25 +947,29 @@
                     case "subscriber":
                         $query = (int)$query;
 
-                        $q = "select * from houses_domophones where house_domophone_id in (
+                        $q = "
+                            select * from houses_domophones where house_domophone_id in (
                                 select house_domophone_id from houses_entrances where house_entrance_id in (
-                                  select house_entrance_id from houses_entrances_flats where house_flat_id in (
-                                    select house_flat_id from houses_flats_subscribers where house_subscriber_id = $query
-                                  )
+                                    select house_entrance_id from houses_entrances_flats where house_flat_id in (
+                                        select house_flat_id from houses_flats_subscribers where house_subscriber_id = $query
+                                    )
                                 ) group by house_domophone_id
-                              ) order by house_domophone_id";
+                            ) order by house_domophone_id
+                        ";
                         break;
 
                     case "company":
                         $query = (int)$query;
 
-                        $q = "select * from houses_domophones where house_domophone_id in (
-	                            select house_domophone_id from houses_entrances where house_entrance_id in (
-		                          select house_entrance_id from houses_houses_entrances where address_house_id in (
-			                        select address_house_id from addresses_houses where company_id = $query
-		                          )
-	                            ) group by house_domophone_id
-                              ) order by house_domophone_id";
+                        $q = "
+                            select * from houses_domophones where house_domophone_id in (
+                                select house_domophone_id from houses_entrances where house_entrance_id in (
+                                    select house_entrance_id from houses_houses_entrances where address_house_id in (
+                                        select address_house_id from addresses_houses where company_id = $query
+                                    )
+                                ) group by house_domophone_id
+                            ) order by house_domophone_id
+                        ";
                         break;
                 }
 
@@ -993,7 +1004,7 @@
              * @inheritDoc
              */
 
-            public function addDomophone($enabled, $model, $server, $url,  $credentials, $dtmf, $nat, $comments, $name)
+            public function addDomophone($enabled, $model, $server, $url,  $credentials, $dtmf, $nat, $comments, $name, $display)
             {
                 if (!$model) {
                     setLastError("moModel");
@@ -1027,7 +1038,17 @@
                     return false;
                 }
 
-                $domophoneId = $this->db->insert("insert into houses_domophones (enabled, model, server, url, credentials, dtmf, nat, comments, name) values (:enabled, :model, :server, :url, :credentials, :dtmf, :nat, :comments, :name)", [
+                $display = explode("\n", $display);
+                $t = [];
+                foreach ($display as $line) {
+                    $line = trim($line);
+                    if ($line) {
+                        $t[] = $line;
+                    }
+                }
+                $display = trim(implode("\n", $t));
+
+                $domophoneId = $this->db->insert("insert into houses_domophones (enabled, model, server, url, credentials, dtmf, nat, comments, name, display) values (:enabled, :model, :server, :url, :credentials, :dtmf, :nat, :comments, :name, :display)", [
                     "enabled" => (int)$enabled,
                     "model" => $model,
                     "server" => $server,
@@ -1037,6 +1058,7 @@
                     "nat" => $nat,
                     "comments" => $comments,
                     "name" => $name,
+                    "display" => $display ? : null,
                 ]);
 
                 if ($domophoneId) {
@@ -1055,7 +1077,7 @@
             /**
              * @inheritDoc
              */
-            public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $dtmf, $firstTime, $nat, $locksAreOpen, $comments, $name)
+            public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $dtmf, $firstTime, $nat, $locksAreOpen, $comments, $name, $display)
             {
                 if (!checkInt($domophoneId)) {
                     setLastError("noId");
@@ -1105,7 +1127,17 @@
                     return false;
                 }
 
-                $r = $this->db->modify("update houses_domophones set enabled = :enabled, model = :model, server = :server, url = :url, credentials = :credentials, dtmf = :dtmf, first_time = :first_time, nat = :nat, locks_are_open = :locks_are_open, comments = :comments, name = :name where house_domophone_id = $domophoneId", [
+                $display = explode("\n", $display);
+                $t = [];
+                foreach ($display as $line) {
+                    $line = trim($line);
+                    if ($line) {
+                        $t[] = $line;
+                    }
+                }
+                $display = trim(implode("\n", $t));
+
+                $r = $this->db->modify("update houses_domophones set enabled = :enabled, model = :model, server = :server, url = :url, credentials = :credentials, dtmf = :dtmf, first_time = :first_time, nat = :nat, locks_are_open = :locks_are_open, comments = :comments, name = :name, display = :display where house_domophone_id = $domophoneId", [
                     "enabled" => (int)$enabled,
                     "model" => $model,
                     "server" => $server,
@@ -1117,6 +1149,7 @@
                     "locks_are_open" => $locksAreOpen,
                     "comments" => $comments,
                     "name" => $name,
+                    "display" => $display ? : null,
                 ]);
 
                 if ($r) {
@@ -1214,6 +1247,7 @@
                     "name" => "name",
                     "ip" => "ip",
                     "sub_id" => "sub_id",
+                    "display" => "display",
                 ], [
                     "singlify"
                 ]);
@@ -1490,7 +1524,7 @@
                     }
                 }
 
-              if (@$params["subscriberLast"] || @$params["forceNames"]) {
+                if (@$params["subscriberLast"] || @$params["forceNames"]) {
                     if (!checkStr($params["subscriberLast"], [ "maxLength" => 32 ])) {
                         setLastError("invalidParams");
                         return false;
@@ -2210,16 +2244,6 @@
              * @inheritDoc
              */
 
-            public function capabilities() {
-                return [
-                    "cli" => true,
-                ];
-            }
-
-            /**
-             * @inheritDoc
-             */
-
             public function cliUsage() {
                 $usage = parent::cliUsage();
 
@@ -2251,24 +2275,7 @@
              */
 
             public function cli($args) {
-
-                function cliUsage() {
-                    global $argv;
-
-                    echo formatUsage("usage: {$argv[0]} households
-
-                        rfid:
-                            [--rf-import=<filename.csv> --house-id=<id> [--rf-first]]
-                    ");
-
-                    exit(1);
-                }
-
-                if (
-                    (count($args) == 2 && isset($args["--rf-import"]) && isset($args["--house-id"]))
-                    ||
-                    (count($args) == 3 && isset($args["--rf-import"]) && isset($args["--house-id"]) && array_key_exists("--rf-first", $args) && !isset($args["--rf-first"]))
-                ) {
+                if (array_key_exists("--rf-import", $args)) {
                     $f1 = $this->getFlats("houseId", (int)$args["--house-id"]);
                     $f2 = [];
                     foreach ($f1 as $f) {
@@ -2324,9 +2331,7 @@
                     exit(0);
                 }
 
-                cliUsage();
-
-                return true;
+                parent::cli($args);
             }
 
             /**

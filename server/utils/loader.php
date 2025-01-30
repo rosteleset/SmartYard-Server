@@ -8,7 +8,7 @@
      */
 
     function loadBackend($backend, $login = false) {
-        global $config, $db, $redis, $backends;
+        global $config, $db, $redis, $backends, $cli, $cli_errors;
 
         if (@$backends[$backend]) {
             if ($login) {
@@ -28,9 +28,19 @@
                         $backends[$backend]->backend = $backend;
                         return $backends[$backend];
                     } else {
+                        if (@$cli) {
+                            $error = "file doesn't exists: " . __DIR__ . "/../backends/$backend/" . $config["backends"][$backend]["backend"] . "/" . $config["backends"][$backend]["backend"] . ".php" . "\n";
+                            if (!@$cli_errors[$error]) {
+                                echo $error;
+                                $cli_errors[$error] = true;
+                            }
+                        }
                         return false;
                     }
                 } catch (Exception $e) {
+                    if (@$cli) {
+                        print_r($e);
+                    }
                     setLastError(i18n("cantLoadBackend", $backend));
                     return false;
                 }
@@ -54,6 +64,7 @@
     *
     * @return false|object Returns an object instance of the device class if found and loaded successfully,
     * or false if there was an error loading the class.
+    * @throws Exception
     */
     function loadDevice(string $type, string $model, string $url, string $password, bool $firstTime = false) {
         require_once __DIR__ . '/parse_url_ext.php';
@@ -63,32 +74,26 @@
 
         if (!in_array($type, $availableTypes)) {
             $availableTypesString = implode(', ', array_map(fn($type) => "'$type'", $availableTypes));
-            throw new ValueError("Invalid device type: '$type'. Available types: $availableTypesString");
+            throw new Exception("Invalid device type: '$type'. Available types: $availableTypesString");
         }
 
         $pathToModel = __DIR__ . "/../hw/ip/$type/models/$model";
 
         if (!file_exists($pathToModel)) {
-            throw new Error("Model '$model' not found for type '$type'");
+            throw new Exception("Model '$model' not found for type '$type'");
         }
 
         $data = json_decode(file_get_contents($pathToModel), true);
         $class = $data['class'];
         $vendor = strtolower($data['vendor']);
 
-        $directory = new RecursiveDirectoryIterator(__DIR__ . "/../hw/ip/$type/");
-        $iterator = new RecursiveIteratorIterator($directory);
-
-        foreach ($iterator as $file) {
-            if ($file->getFilename() == "$class.php") {
-                $pathToClass = $file->getPath() . '/' . $class . '.php';
-                require_once $pathToClass;
-                $className = "hw\\ip\\$type\\$vendor\\$class";
-                return new $className($url, $password, $firstTime);
-            }
+        $className = "hw\\ip\\$type\\$vendor\\custom\\$class";
+        if (!class_exists($className)) {
+            // If custom class is not found, use standard class
+            $className = "hw\\ip\\$type\\$vendor\\$class";
         }
 
-        return false;
+        return new $className($url, $password, $firstTime);
     }
 
     /**
@@ -102,18 +107,13 @@
             $config = false;
 
             $jsonConfigPath = __DIR__ . "/../config/config.json";
-            $yamlConfigPath = __DIR__ . "/../config/config.yml";
 
             if (file_exists($jsonConfigPath)) {
                 $config = json_decode(file_get_contents($jsonConfigPath), true);
             }
 
-            if (!$config && file_exists($yamlConfigPath)) {
-                $config = yaml_parse_file($yamlConfigPath);
-            }
-
             if (!$config) {
-                throw new Exception('Configuration files not found or invalid.');
+                throw new Exception('Configuration files not found or invalid');
             }
 
             return $config;

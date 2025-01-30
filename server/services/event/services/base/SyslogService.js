@@ -96,8 +96,8 @@ class SyslogService {
                 return;
             }
 
-            // Get host from message body if NAT is enabled
-            if (natEnabled && isIpAddress(addressFromMessageBody)) {
+            // Get host from message body if NAT is enabled and message body IP isn't localhost
+            if (natEnabled && isIpAddress(addressFromMessageBody) && addressFromMessageBody !== '127.0.0.1') {
                 host = addressFromMessageBody;
             }
 

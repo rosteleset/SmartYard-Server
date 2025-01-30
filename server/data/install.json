@@ -179,5 +179,11 @@
     ],
     "55": [
         "v55_core.sql"
+    ],
+    "56": [
+        "v56_cameras.sql"
+    ],
+    "57": [
+        "v57_domophones.sql"
     ]
 }

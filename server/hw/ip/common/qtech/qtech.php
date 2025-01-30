@@ -12,7 +12,7 @@ use Exception;
 trait qtech
 {
 
-    public function configureEventServer(string $url)
+    public function configureEventServer(string $url): void
     {
         ['host' => $server, 'port' => $port] = parse_url_ext($url);
 
@@ -26,7 +26,7 @@ trait qtech
         // $this->configureDebugServer($server, $port);
     }
 
-    public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow')
+    public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow'): void
     {
         $this->setParams([
             'Config.Settings.SNTP.TimeZone' => $this->getOffsetByTimezone($timezone),
@@ -50,17 +50,17 @@ trait qtech
         return $sysinfo;
     }
 
-    public function reboot()
+    public function reboot(): void
     {
         $this->apiCall('remote', 'reboot');
     }
 
-    public function reset()
+    public function reset(): void
     {
         $this->apiCall('remote', 'reset_factory');
     }
 
-    public function setAdminPassword(string $password)
+    public function setAdminPassword(string $password): void
     {
         $this->setParams([
             'Config.DoorSetting.APIFCGI.AuthMode' => 3,
@@ -70,7 +70,7 @@ trait qtech
         ]);
     }
 
-    public function syncData()
+    public function syncData(): void
     {
         // Empty implementation
     }
@@ -124,7 +124,7 @@ trait qtech
      *
      * @return void
      */
-    protected function configureDebugServer(string $server, int $port, bool $enabled = true)
+    protected function configureDebugServer(string $server, int $port, bool $enabled = true): void
     {
         $this->setParams([
             'Config.DoorSetting.REMOTEDEBUG.Enable' => $enabled,
@@ -162,7 +162,7 @@ trait qtech
         try {
             $time = new DateTime('now', new DateTimeZone($timezone));
             return $time->format('P');
-        } catch (Exception $e) {
+        } catch (Exception) {
             return '+03:00';
         }
     }
@@ -174,13 +174,13 @@ trait qtech
      *
      * @return mixed|null The value of the specified parameter, or null if the parameter is not found.
      */
-    protected function getParam(string $key)
+    protected function getParam(string $key): mixed
     {
         $req = $this->apiCall('config', 'get', ['config_key' => $key]);
         return $req['data'][$key] ?? null;
     }
 
-    protected function initializeProperties()
+    protected function initializeProperties(): void
     {
         $this->login = 'admin';
         $this->defaultPassword = 'admin';
@@ -194,7 +194,7 @@ trait qtech
      *
      * @return void
      */
-    protected function setParams(array $params)
+    protected function setParams(array $params): void
     {
         $strParams = '';
 

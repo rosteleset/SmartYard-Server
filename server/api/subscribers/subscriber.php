@@ -52,6 +52,8 @@
      *
      * @apiParam {Number} subscriberId
      *
+     * @apiQuery {Any} complete
+     *
      * @apiSuccess {Boolean} operationResult
      */
 

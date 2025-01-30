@@ -46,6 +46,7 @@ client/config/config.yml
 !server/services/mqtt/package.json
 !server/services/intercom_provision/package.json
 !server/services/event/package.json
+!server/services/sys_exporter/package.json
 
 server/lib/PHPMailer/
 server/lib/htmlpurifier/
@@ -82,6 +83,7 @@ server/services/push/assets/certificate-and-privatekey.pem
 server/services/push/.env
 server/services/push/.env_development
 server/services/event/config.json
+server/services/sys_exporter/.env
 server/mobile/custom/*.php
 server/mobile/address/custom/*.php
 server/mobile/call/custom/*.php
@@ -94,6 +96,7 @@ server/mobile/issues/custom/*.php
 server/mobile/pay/custom/*.php
 server/mobile/sip/custom/*.php
 server/mobile/user/custom/*.php
+server/hw/**/custom
 
 install/kamailio/kamailio-local.cfg
 install/kamailio/kamctlrc
@@ -109,3 +112,4 @@ asterisk/trunks/*.conf
 asterisk/config.lua
 asterisk/extconfig.conf
 asterisk/http.conf
+asterisk/pjsip.conf

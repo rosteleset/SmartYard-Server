@@ -2,6 +2,8 @@
 
 namespace hw\SmartConfigurator\ConfigurationBuilder;
 
+use hw\ip\camera\entities\DetectionZone;
+
 /**
  * This class is responsible for building camera configuration.
  */
@@ -24,16 +26,13 @@ class CameraConfigurationBuilder extends ConfigurationBuilder
     /**
      * Add motion detection parameters to the camera configuration.
      *
-     * @param int $left The left coordinate of the motion detection area.
-     * @param int $top The top coordinate of the motion detection area.
-     * @param int $width The width of the motion detection area.
-     * @param int $height The height of the motion detection area.
+     * @param DetectionZone[] $detectionZones Array of DetectionZone objects.
      *
      * @return self
      */
-    public function addMotionDetection(int $left, int $top, int $width, int $height): self
+    public function addMotionDetection(array $detectionZones): self
     {
-        $this->config['motionDetection'] = compact('left', 'top', 'width', 'height');
+        $this->config['motionDetection'] = $detectionZones;
 
         return $this;
     }

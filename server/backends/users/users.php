@@ -373,7 +373,7 @@
              * @inheritDoc
              */
 
-             public function cron($part) {
+            public function cron($part) {
                 if ($part == "minutely") {
                     $this->realNotify();
                 }

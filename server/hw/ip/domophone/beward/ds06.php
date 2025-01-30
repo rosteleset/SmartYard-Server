@@ -10,12 +10,12 @@ use hw\ip\domophone\domophone;
 class ds06 extends beward
 {
 
-    public function addRfid(string $code, int $apartment = 0)
+    public function addRfid(string $code, int $apartment = 0): void
     {
         // Empty implementation
     }
 
-    public function addRfids(array $rfids)
+    public function addRfids(array $rfids): void
     {
         // Empty implementation
     }
@@ -25,8 +25,8 @@ class ds06 extends beward
         int   $code = 0,
         array $sipNumbers = [],
         bool  $cmsEnabled = true,
-        array $cmsLevels = []
-    )
+        array $cmsLevels = [],
+    ): void
     {
         $this->setHostname($apartment);
 
@@ -45,12 +45,12 @@ class ds06 extends beward
         $this->apiCall('cgi-bin/sip_cgi', $params);
     }
 
-    public function configureGate(array $links = [])
+    public function configureGate(array $links = []): void
     {
         // Empty implementation
     }
 
-    public function configureMatrix(array $matrix)
+    public function configureMatrix(array $matrix): void
     {
         // Empty implementation
     }
@@ -62,8 +62,8 @@ class ds06 extends beward
         int    $port = 5060,
         bool   $stunEnabled = false,
         string $stunServer = '',
-        int    $stunPort = 3478
-    )
+        int    $stunPort = 3478,
+    ): void
     {
         $params = [
             'cksip1' => 1,
@@ -102,12 +102,12 @@ class ds06 extends beward
         $this->apiCall('webs/SIPCfgEx', $params);
     }
 
-    public function configureUserAccount(string $password)
+    public function configureUserAccount(string $password): void
     {
         // Empty implementation
     }
 
-    public function deleteApartment(int $apartment = 0)
+    public function deleteApartment(int $apartment = 0): void
     {
         $currentApartment = (int)$this->getSysinfo()['HostName'] ?? 0;
 
@@ -124,7 +124,7 @@ class ds06 extends beward
         }
     }
 
-    public function deleteRfid(string $code = '')
+    public function deleteRfid(string $code = ''): void
     {
         // Empty implementation
     }
@@ -156,7 +156,7 @@ class ds06 extends beward
         return [];
     }
 
-    public function openLock(int $lockNumber = 0)
+    public function openLock(int $lockNumber = 0): void
     {
         $this->apiCall('cgi-bin/alarmout_cgi', [
             'action' => 'set',
@@ -165,7 +165,7 @@ class ds06 extends beward
         ]);
     }
 
-    public function prepare()
+    public function prepare(): void
     {
         domophone::prepare();
         $this->enableBonjour(false);
@@ -175,23 +175,23 @@ class ds06 extends beward
         $this->configureRtsp();
     }
 
-    public function reset()
+    public function reset(): void
     {
         $this->apiCall('cgi-bin/factorydefault_cgi');
     }
 
-    public function setAdminPassword(string $password)
+    public function setAdminPassword(string $password): void
     {
         $this->apiCall('webs/umanageCfgEx', [
             'uflag' => 0,
             'uname' => $this->login,
             'passwd' => $password,
             'passwd1' => $password,
-            'newpassword' => $this->password
+            'newpassword' => $this->password,
         ]);
     }
 
-    public function setAudioLevels(array $levels)
+    public function setAudioLevels(array $levels): void
     {
         if (count($levels) === 4) {
             $this->apiCall('cgi-bin/audio_cgi', [
@@ -204,27 +204,32 @@ class ds06 extends beward
         }
     }
 
-    public function setCallTimeout(int $timeout)
+    public function setCallTimeout(int $timeout): void
     {
         // Empty implementation
     }
 
-    public function setCmsLevels(array $levels)
+    public function setCmsLevels(array $levels): void
     {
         // Empty implementation
     }
 
-    public function setCmsModel(string $model = '')
+    public function setCmsModel(string $model = ''): void
     {
         // Empty implementation
     }
 
-    public function setConciergeNumber(int $sipNumber)
+    public function setConciergeNumber(int $sipNumber): void
     {
         // Empty implementation
     }
 
-    public function setDtmfCodes(string $code1 = '1', string $code2 = '2', string $code3 = '3', string $codeCms = '1')
+    public function setDtmfCodes(
+        string $code1 = '1',
+        string $code2 = '2',
+        string $code3 = '3',
+        string $codeCms = '1',
+    ): void
     {
         $this->apiCall('cgi-bin/sip_cgi', [
             'action' => 'set',
@@ -239,38 +244,38 @@ class ds06 extends beward
         ]);
     }
 
-    public function setLanguage(string $language = 'ru')
+    public function setLanguage(string $language = 'ru'): void
     {
         // Empty implementation
     }
 
-    public function setPublicCode(int $code = 0)
+    public function setPublicCode(int $code = 0): void
     {
         // Empty implementation
     }
 
-    public function setSosNumber(int $sipNumber)
+    public function setSosNumber(int $sipNumber): void
     {
         // Empty implementation
     }
 
-    public function setTalkTimeout(int $timeout)
+    public function setTalkTimeout(int $timeout): void
     {
         // Empty implementation
     }
 
-    public function setTickerText(string $text = '')
+    public function setTickerText(string $text = ''): void
     {
         // Empty implementation
     }
 
-    public function setUnlockTime(int $time = 3)
+    public function setUnlockTime(int $time = 3): void
     {
         $this->apiCall('webs/almControllerCfgEx', ['outdelay1' => $time]);
         $this->wait();
     }
 
-    public function setUnlocked(bool $unlocked = true)
+    public function setUnlocked(bool $unlocked = true): void
     {
         // Empty implementation
     }
@@ -296,7 +301,7 @@ class ds06 extends beward
      *
      * @return void
      */
-    protected function configureAudio()
+    protected function configureAudio(): void
     {
         $this->apiCall('cgi-bin/audio_cgi', [
             'action' => 'set',
@@ -315,7 +320,7 @@ class ds06 extends beward
      *
      * @return void
      */
-    protected function configureRtsp()
+    protected function configureRtsp(): void
     {
         $this->apiCall('cgi-bin/rtsp_cgi', [
             'action' => "set",
@@ -333,7 +338,7 @@ class ds06 extends beward
      *
      * @return void
      */
-    protected function enableBonjour(bool $enabled = true)
+    protected function enableBonjour(bool $enabled = true): void
     {
         $this->apiCall('webs/netMDNSCfgEx', ['enabledMdns' => $enabled ? 1 : 0]);
     }
@@ -345,13 +350,13 @@ class ds06 extends beward
      *
      * @return void
      */
-    protected function enableCloud(bool $enabled = true)
+    protected function enableCloud(bool $enabled = true): void
     {
         $this->apiCall('webs/netCamdriveCfgEx', ['cloudtype' => $enabled ? 3 : 0]);
         $this->wait();
     }
 
-    protected function enableUpnp(bool $enabled = true)
+    protected function enableUpnp(bool $enabled = true): void
     {
         $params = $enabled ? ['cksearch' => 1] : [];
         $this->apiCall('webs/netUPNPCfgEx', $params);
@@ -410,7 +415,7 @@ class ds06 extends beward
         return false;
     }
 
-    protected function setHostname(string $hostname)
+    protected function setHostname(string $hostname): void
     {
         $this->apiCall('webs/sysInfoCfgEx', ['sys_name' => $hostname]);
     }

@@ -10,23 +10,17 @@ use hw\ip\camera\camera;
 class fake extends camera
 {
 
-    public function configureEventServer(string $url)
+    public function configureEventServer(string $url): void
     {
         // Empty implementation
     }
 
-    public function configureMotionDetection(
-        int $left = 0,
-        int $top = 0,
-        int $width = 0,
-        int $height = 0,
-        int $sensitivity = 0
-    )
+    public function configureMotionDetection(array $detectionZones): void
     {
         // Empty implementation
     }
 
-    public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow')
+    public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow'): void
     {
         // Empty implementation
     }
@@ -46,27 +40,27 @@ class fake extends camera
         return true;
     }
 
-    public function reboot()
+    public function reboot(): void
     {
         // Empty implementation
     }
 
-    public function reset()
+    public function reset(): void
     {
         // Empty implementation
     }
 
-    public function setAdminPassword(string $password)
+    public function setAdminPassword(string $password): void
     {
         // Empty implementation
     }
 
-    public function setOsdText(string $text = '')
+    public function setOsdText(string $text = ''): void
     {
         // Empty implementation
     }
 
-    public function syncData()
+    public function syncData(): void
     {
         // Empty implementation
     }
@@ -96,7 +90,7 @@ class fake extends camera
         return '';
     }
 
-    protected function initializeProperties()
+    protected function initializeProperties(): void
     {
         // Empty implementation
     }

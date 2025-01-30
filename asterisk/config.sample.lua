@@ -6,3 +6,6 @@ redis_server_auth = false
 log.outfile = false
 trunk = "first"
 lang = "ru"
+--custom = {
+--    "custom_script_name"
+--}

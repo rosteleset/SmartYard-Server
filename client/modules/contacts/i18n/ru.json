@@ -1,0 +1,19 @@
+{
+    "contact": "Контакт",
+    "contacts": "Контакты",
+    "methods": {
+        "companies": {
+            "_title": "Контакты",
+            "companies": {
+                "_title": "Контакты",
+                "GET": "Доступ"
+            },
+            "company": {
+                "_title": "Контакт",
+                "POST": "Создание",
+                "PUT": "Изменение",
+                "DELETE": "Удаление"
+            }
+        }
+    }
+}

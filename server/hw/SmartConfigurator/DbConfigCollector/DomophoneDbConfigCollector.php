@@ -333,7 +333,12 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
      */
     private function addTickerText(): void
     {
-        $this->builder->addTickerText($this->mainEntrance['callerId']);
+        // TODO: use multiline text on display for compatible devices
+        $tickerText = isset($this->domophoneData['display'])
+            ? strtok($this->domophoneData['display'], "\n")
+            : $this->mainEntrance['callerId'];
+
+        $this->builder->addTickerText($tickerText);
     }
 
     /**

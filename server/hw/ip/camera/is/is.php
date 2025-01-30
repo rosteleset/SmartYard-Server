@@ -3,6 +3,7 @@
 namespace hw\ip\camera\is;
 
 use hw\ip\camera\camera;
+use hw\ip\camera\entities\DetectionZone;
 
 /**
  * Class representing an Intersvyaz (IS) camera.
@@ -12,16 +13,10 @@ class is extends camera
 
     use \hw\ip\common\is\is;
 
-    public function configureMotionDetection(
-        int $left = 0,
-        int $top = 0,
-        int $width = 0,
-        int $height = 0,
-        int $sensitivity = 0
-    ): void
+    public function configureMotionDetection(array $detectionZones): void
     {
         $this->apiCall('/camera/md', 'PUT', [
-            'md_enable' => $left || $top || $width || $height,
+            'md_enable' => !empty($detectionZones),
             'md_frame_shift' => 1,
             'md_area_thr' => 100000, // For people at close range
             'md_rect_color' => '0xFF0000',
@@ -90,23 +85,16 @@ class is extends camera
         $this->apiCall('/v2/camera/osd', 'PUT', [$firstStringParams, $secondStringParams]);
     }
 
-    public function syncData()
+    public function syncData(): void
     {
         // Empty implementation
     }
 
     public function transformDbConfig(array $dbConfig): array
     {
-        $md = $dbConfig['motionDetection'];
-
-        $md_enable = ($md['left'] || $md['top'] || $md['width'] || $md['height']) ? 1 : 0;
-
-        $dbConfig['motionDetection'] = [
-            'left' => $md_enable,
-            'top' => $md_enable,
-            'width' => $md_enable,
-            'height' => $md_enable,
-        ];
+        if ($dbConfig['motionDetection']) {
+            $dbConfig['motionDetection'] = [new DetectionZone(0, 0, 100, 100)];
+        }
 
         return $dbConfig;
     }
@@ -115,12 +103,11 @@ class is extends camera
     {
         ['md_enable' => $mdEnabled] = $this->apiCall('/camera/md');
 
-        return [
-            'left' => ($mdEnabled) ? 1 : 0,
-            'top' => ($mdEnabled) ? 1 : 0,
-            'width' => ($mdEnabled) ? 1 : 0,
-            'height' => ($mdEnabled) ? 1 : 0,
-        ];
+        if ($mdEnabled) {
+            return [new DetectionZone(0, 0, 100, 100)];
+        }
+
+        return [];
     }
 
     protected function getOsdText(): string

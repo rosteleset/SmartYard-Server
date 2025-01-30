@@ -1,0 +1,7 @@
+docker
+drafts
+node_modules
+docker-compose.yml
+.example_env
+.env
+package-lock.json

@@ -29,7 +29,7 @@ abstract class qtech extends domophone
      */
     protected ?array $personalCodes = null;
 
-    public function addRfid(string $code, int $apartment = 0)
+    public function addRfid(string $code, int $apartment = 0): void
     {
         $this->apiCall('rfkey', 'add', [
             'name' => '',
@@ -47,7 +47,7 @@ abstract class qtech extends domophone
         ]);
     }
 
-    public function addRfids(array $rfids)
+    public function addRfids(array $rfids): void
     {
         foreach ($rfids as $rfid) {
             $this->addRfid($rfid);
@@ -59,8 +59,8 @@ abstract class qtech extends domophone
         int   $code = 0,
         array $sipNumbers = [],
         bool  $cmsEnabled = true,
-        array $cmsLevels = []
-    )
+        array $cmsLevels = [],
+    ): void
     {
         $this->loadDialplans();
         $this->loadPersonalCodes();
@@ -83,7 +83,7 @@ abstract class qtech extends domophone
         }
     }
 
-    public function configureEncoding()
+    public function configureEncoding(): void
     {
         // Works incorrectly when passing parameters in one call
         $this->setParams([
@@ -113,7 +113,7 @@ abstract class qtech extends domophone
         ]);
     }
 
-    public function configureGate(array $links = [])
+    public function configureGate(array $links = []): void
     {
         $this->clearGateDialplan();
 
@@ -134,7 +134,7 @@ abstract class qtech extends domophone
         }
     }
 
-    public function configureMatrix(array $matrix)
+    public function configureMatrix(array $matrix): void
     {
         $this->loadDialplans();
         $this->cleanMatrix();
@@ -180,8 +180,8 @@ abstract class qtech extends domophone
         int    $port = 5060,
         bool   $stunEnabled = false,
         string $stunServer = '',
-        int    $stunPort = 3478
-    )
+        int    $stunPort = 3478,
+    ): void
     {
         $sipAccount = [
             'AccountID' => '0',
@@ -219,12 +219,12 @@ abstract class qtech extends domophone
         $this->setParams(['Config.Account1.AUTO_ANSWER.Enable' => 0]);
     }
 
-    public function configureUserAccount(string $password)
+    public function configureUserAccount(string $password): void
     {
         $this->setParams(['Config.Settings.WEB_LOGIN.Password02' => $password]);
     }
 
-    public function deleteApartment(int $apartment = 0)
+    public function deleteApartment(int $apartment = 0): void
     {
         $this->loadDialplans();
 
@@ -249,7 +249,7 @@ abstract class qtech extends domophone
         }
     }
 
-    public function deleteRfid(string $code = '')
+    public function deleteRfid(string $code = ''): void
     {
         if ($code) {
             $data = ['code' => $code];
@@ -312,7 +312,7 @@ abstract class qtech extends domophone
         return $rfidKeys;
     }
 
-    public function openLock(int $lockNumber = 0)
+    public function openLock(int $lockNumber = 0): void
     {
         $data = [
             'mode' => 0,
@@ -324,7 +324,7 @@ abstract class qtech extends domophone
         $this->apiCall('relay', 'trig', $data, 3);
     }
 
-    public function prepare()
+    public function prepare(): void
     {
         parent::prepare();
         $this->bindInputs();
@@ -337,7 +337,7 @@ abstract class qtech extends domophone
         $this->generateCodes();
     }
 
-    public function setAudioLevels(array $levels)
+    public function setAudioLevels(array $levels): void
     {
         if (count($levels) === 4) {
             $this->setParams([
@@ -349,7 +349,7 @@ abstract class qtech extends domophone
         }
     }
 
-    public function setCallTimeout(int $timeout)
+    public function setCallTimeout(int $timeout): void
     {
         $this->setParams([
             'Config.Settings.CALLTIMEOUT.DialIn' => $timeout,
@@ -358,12 +358,12 @@ abstract class qtech extends domophone
         ]);
     }
 
-    public function setCmsLevels(array $levels)
+    public function setCmsLevels(array $levels): void
     {
         // Empty implementation
     }
 
-    public function setCmsModel(string $model = '')
+    public function setCmsModel(string $model = ''): void
     {
         $modelMapping = [
             'BK-100' => 1,       // VIZIT
@@ -385,12 +385,12 @@ abstract class qtech extends domophone
         ]);
     }
 
-    public function setConciergeNumber(int $sipNumber)
+    public function setConciergeNumber(int $sipNumber): void
     {
         $this->setParams(['Config.Programable.SOFTKEY01.Param1' => $sipNumber]);
     }
 
-    public function setDtmfCodes(string $code1 = '1', string $code2 = '2', string $code3 = '3', string $codeCms = '1')
+    public function setDtmfCodes(string $code1 = '1', string $code2 = '2', string $code3 = '3', string $codeCms = '1'): void
     {
         $this->setParams([
             'Config.DoorSetting.DTMF.Option' => 0,
@@ -400,12 +400,12 @@ abstract class qtech extends domophone
         ]);
     }
 
-    public function setLanguage(string $language = 'ru')
+    public function setLanguage(string $language = 'ru'): void
     {
         $this->setParams(['Config.Settings.LANGUAGE.WebLang' => ($language === 'ru') ? 3 : 0]);
     }
 
-    public function setPublicCode(int $code = 0)
+    public function setPublicCode(int $code = 0): void
     {
         $this->setParams([
             'Config.DoorSetting.PASSWORD.PublicKeyEnable' => $code ? 1 : 0,
@@ -417,12 +417,12 @@ abstract class qtech extends domophone
         ]);
     }
 
-    public function setSosNumber(int $sipNumber)
+    public function setSosNumber(int $sipNumber): void
     {
         $this->setParams(['Config.Features.SPEEDDIAL.Num01' => $sipNumber]);
     }
 
-    public function setTalkTimeout(int $timeout)
+    public function setTalkTimeout(int $timeout): void
     {
         $timeout = round($timeout / 60);
 
@@ -432,7 +432,7 @@ abstract class qtech extends domophone
         ]);
     }
 
-    public function setTickerText(string $text = '')
+    public function setTickerText(string $text = ''): void
     {
         // TODO: translation into other languages
         $this->setParams([
@@ -446,7 +446,7 @@ abstract class qtech extends domophone
         ]);
     }
 
-    public function setUnlockTime(int $time = 3)
+    public function setUnlockTime(int $time = 3): void
     {
         $this->setParams([
             'Config.DoorSetting.RELAY.RelayADelay' => $time,
@@ -455,7 +455,7 @@ abstract class qtech extends domophone
         ]);
     }
 
-    public function setUnlocked(bool $unlocked = true)
+    public function setUnlocked(bool $unlocked = true): void
     {
         // Skip if the locks are currently already in the required state
         if ($unlocked === $this->getUnlocked()) {
@@ -510,7 +510,7 @@ abstract class qtech extends domophone
      *
      * @return void
      */
-    protected function bindInputs(int $inputA = 1, int $inputB = 2, int $inputC = 1)
+    protected function bindInputs(int $inputA = 1, int $inputB = 2, int $inputC = 1): void
     {
         $this->setParams([
             'Config.DoorSetting.INPUT.InputEnable' => 1,
@@ -530,7 +530,7 @@ abstract class qtech extends domophone
      *
      * @return void
      */
-    protected function cleanMatrix()
+    protected function cleanMatrix(): void
     {
         $this->loadDialplans();
 
@@ -556,7 +556,7 @@ abstract class qtech extends domophone
      *
      * @return void
      */
-    protected function clearGateDialplan()
+    protected function clearGateDialplan(): void
     {
         $this->apiCall('dialreplacemp', 'del', ['id' => '-1']);
     }
@@ -569,7 +569,7 @@ abstract class qtech extends domophone
      *
      * @return void
      */
-    protected function configureRfidMode(int $internalMode = 3, int $externalMode = 3)
+    protected function configureRfidMode(int $internalMode = 3, int $externalMode = 3): void
     {
         $this->setParams([
             'Config.DoorSetting.GENERAL.ReverseMode' => 1,
@@ -588,7 +588,7 @@ abstract class qtech extends domophone
      *
      * @return void
      */
-    protected function deleteDialplan(int $prefix = 0)
+    protected function deleteDialplan(int $prefix = 0): void
     {
         $this->loadDialplans();
 
@@ -611,7 +611,7 @@ abstract class qtech extends domophone
      *
      * @return void
      */
-    protected function deletePersonalCode(int $name = 0)
+    protected function deletePersonalCode(int $name = 0): void
     {
         $this->loadPersonalCodes();
 
@@ -634,7 +634,7 @@ abstract class qtech extends domophone
      *
      * @return void
      */
-    protected function enableDialplanOnly(bool $enabled = true)
+    protected function enableDialplanOnly(bool $enabled = true): void
     {
         $this->setParams(['Config.DoorSetting.GENERAL.UseDialPlanOnly' => (int)$enabled]);
     }
@@ -647,7 +647,7 @@ abstract class qtech extends domophone
      *
      * @return void
      */
-    protected function enableDisplayHeat(bool $enabled = true, int $temperatureThreshold = 0)
+    protected function enableDisplayHeat(bool $enabled = true, int $temperatureThreshold = 0): void
     {
         $this->setParams([
             'Config.DoorSetting.HEAT.Enable' => (int)$enabled,
@@ -662,7 +662,7 @@ abstract class qtech extends domophone
      *
      * @return void
      */
-    protected function enableFtp(bool $enabled = true)
+    protected function enableFtp(bool $enabled = true): void
     {
         $this->setParams([
             // When opening the door
@@ -679,7 +679,7 @@ abstract class qtech extends domophone
      *
      * @return void
      */
-    protected function enablePnp(bool $enabled = true)
+    protected function enablePnp(bool $enabled = true): void
     {
         $this->setParams(['Config.Autoprovision.PNP.Enable' => (int)$enabled]);
     }
@@ -690,7 +690,7 @@ abstract class qtech extends domophone
      *
      * @return void
      */
-    protected function generateCodes()
+    protected function generateCodes(): void
     {
         $projectKey = str_pad(mt_rand(0, 9999), 4, '0', STR_PAD_LEFT);
         $userSettingKey = str_pad(mt_rand(0, 9999), 4, '0', STR_PAD_LEFT);
@@ -901,7 +901,7 @@ abstract class qtech extends domophone
      *
      * @return void
      */
-    protected function loadDialplans()
+    protected function loadDialplans(): void
     {
         if ($this->dialplans === null) {
             $rawDialplans = $this->apiCall('dialreplace', 'get')['data'] ?? [];
@@ -915,7 +915,7 @@ abstract class qtech extends domophone
      *
      * @return void
      */
-    protected function loadPersonalCodes()
+    protected function loadPersonalCodes(): void
     {
         if ($this->personalCodes === null) {
             $rawCodes = $this->apiCall('privatekey', 'get')['data'] ?? [];
@@ -950,7 +950,7 @@ abstract class qtech extends domophone
      *
      * @return void
      */
-    protected function setPanelMode(string $mode = '')
+    protected function setPanelMode(string $mode = ''): void
     {
         $this->setParams(['Config.DoorSetting.GENERAL.Basip485DeviceMode' => ($mode === 'GATE') ? 0 : 1]);
     }
@@ -962,7 +962,7 @@ abstract class qtech extends domophone
      *
      * @return void
      */
-    protected function setPersonalCodeLength(int $length = 5)
+    protected function setPersonalCodeLength(int $length = 5): void
     {
         $this->setParams(['Config.DoorSetting.PrivateKey.Length' => $length]);
     }
@@ -983,8 +983,8 @@ abstract class qtech extends domophone
         string $prefix,
         string $replace1,
         string $replace2,
-        int    $tags
-    )
+        int    $tags,
+    ): void
     {
         $this->loadDialplans();
 
@@ -1027,7 +1027,7 @@ abstract class qtech extends domophone
      *
      * @return void
      */
-    protected function updatePersonalCode(?int $id, int $name, int $code, bool $enabled = true)
+    protected function updatePersonalCode(?int $id, int $name, int $code, bool $enabled = true): void
     {
         $this->loadPersonalCodes();
 
