@@ -88,7 +88,8 @@
         "Reconnect",
         "OnConnect",
         "MqttOverHttpService",
-        "Free mem"
+        "Free mem",
+        "response to version"
     ],
     "ufanet": [
         "goke-i2c"
