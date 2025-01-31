@@ -144,7 +144,7 @@
                                 )
                                 and
                                 apartment = :apartment
-                                group by
+                            group by
                                     house_flat_id
                         ";
                         $p = [
@@ -189,6 +189,8 @@
                                 houses_flats
                             where
                                 code = :code
+                            group by
+                                house_flat_id
                         ";
                         $p = [
                             "code" => $params["code"]
@@ -203,6 +205,8 @@
                                 houses_flats
                             where
                                 open_code = :code
+                            group by
+                                house_flat_id
                         ";
                         $p = [
                             "code" => $params["openCode"]
@@ -217,6 +221,8 @@
                                 houses_flats
                             where
                                 house_flat_id in (select access_to from houses_rfids where access_type = 2 and rfid = :code)
+                            group by
+                                house_flat_id
                         ";
                         $p = [
                             "code" => $params["rfId"]
@@ -231,6 +237,8 @@
                                 houses_flats
                             where
                                 house_flat_id in (select house_flat_id from houses_flats_subscribers where house_subscriber_id in (select access_to from houses_rfids where access_type = 1 and rfid = :code))
+                            group by
+                                house_flat_id
                         ";
                         $p = [
                             "code" => $params["rfId"]
@@ -245,6 +253,8 @@
                                 houses_flats
                             where
                                 house_flat_id in (select house_flat_id from houses_flats_subscribers where house_subscriber_id in (select house_subscriber_id from houses_subscribers_mobile where id = :id))
+                            group by
+                                house_flat_id
                         ";
                         $p = [
                             "id" => $params["id"]
@@ -252,7 +262,7 @@
                         break;
 
                     case "houseId":
-                        $q = "select house_flat_id from houses_flats where address_house_id = :address_house_id order by flat";
+                        $q = "select house_flat_id from houses_flats where address_house_id = :address_house_id  group by house_flat_id";
                         $p = [
                         // TODO: must be $params["houseId"]
                             "address_house_id" => $params,
@@ -260,7 +270,7 @@
                         break;
 
                     case "domophoneId":
-                        $q = "select house_flat_id from houses_flats left join houses_entrances_flats using (house_flat_id) left join houses_entrances using (house_entrance_id) where house_domophone_id = :house_domophone_id group by house_flat_id order by flat";
+                        $q = "select house_flat_id from houses_flats left join houses_entrances_flats using (house_flat_id) left join houses_entrances using (house_entrance_id) where house_domophone_id = :house_domophone_id group by house_flat_id";
                         $p = [
                         // TODO: must be $params["domophoneId"]
                             "house_domophone_id" => $params,
@@ -268,7 +278,7 @@
                         break;
 
                     case "credentials":
-                        $q = "select house_flat_id from houses_flats where login = :login and password = :password";
+                        $q = "select house_flat_id from houses_flats where login = :login and password = :password group by house_flat_id";
                         $p = [
                             "login" => $params["login"],
                             "password" => $params["password"],
@@ -276,16 +286,23 @@
                         break;
 
                     case "login":
-                        $q = "select house_flat_id from houses_flats where login = :login";
+                        $q = "select house_flat_id from houses_flats where login = :login group by house_flat_id";
                         $p = [
                             "login" => $params["login"],
                         ];
                         break;
 
                     case "contract":
-                        $q = "select house_flat_id from houses_flats where contract = :contract";
+                        $q = "select house_flat_id from houses_flats where contract = :contract group by house_flat_id";
                         $p = [
                             "contract" => $params["contract"],
+                        ];
+                        break;
+
+                    case "car":
+                        $q = "select house_flat_id from houses_flats where cars is not null and cars like concat('%', :number, '%) group by house_flat_id";
+                        $p = [
+                            "number" => $papams["number"],
                         ];
                         break;
                 }

@@ -82,9 +82,6 @@
                     initDB(@$args["--skip"], @$args["--force"]);
                 }
 
-                startup(true);
-                echo "\n";
-
                 $n = clearCache(true);
                 echo "$n cache entries cleared\n\n";
 
