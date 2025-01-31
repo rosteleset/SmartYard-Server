@@ -41,7 +41,8 @@
                         cms_enabled,
                         contract,
                         login,
-                        password
+                        password,
+                        cars
                     from
                         houses_flats
                     where
@@ -66,6 +67,7 @@
                     "contract" => "contract",
                     "login" => "login",
                     "password" => "password",
+                    "cars" => "cars",
                 ],
                 [
                     "singlify"
@@ -593,8 +595,8 @@
             /**
              * @inheritDoc
              */
-            function modifyFlat($flatId, $params)
-            {
+
+            function modifyFlat($flatId, $params) {
                 if (checkInt($flatId)) {
                     if (array_key_exists("manualBlock", $params) && !checkInt($params["manualBlock"])) {
                         setLastError("invalidParams");
@@ -671,6 +673,23 @@
 
                     $params["floor"] = (int)@$params["floor"];
 
+                    if (array_key_exists("cars", $params)) {
+                        $cars = $params["cars"];
+                        $t = [];
+                        $cars = explode("\n", $cars);
+                        foreach ($cars as $number) {
+                            if (trim($number)) {
+                                $t[] = trim($number);
+                            }
+                        }
+                        if (count($t)) {
+                            $cars = implode("\n", $t);
+                        } else {
+                            $cars = null;
+                        }
+                        $params["cars"] = $cars;
+                    }
+
                     $mod = $this->db->modifyEx("update houses_flats set %s = :%s where house_flat_id = $flatId", [
                         "floor" => "floor",
                         "flat" => "flat",
@@ -688,6 +707,7 @@
                         "contract" => "contract",
                         "login" => "login",
                         "password" => "password",
+                        "cars" => "cars",
                     ], $params);
 
                     $queue = loadBackend("queue");

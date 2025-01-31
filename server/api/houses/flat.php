@@ -53,6 +53,7 @@
      * @apiBody {Number} [whiteRabbit]
      * @apiBody {Boolean} [sipEnabled]
      * @apiBody {String} [sipPassword]
+     * @apiBody {String} cars
      *
      * @apiSuccess {Boolean} operationResult
      */

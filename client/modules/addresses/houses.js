@@ -2465,6 +2465,15 @@
                             }
                         }
                     },
+                    {
+                        id: "cars",
+                        type: "area",
+                        title: false,
+                        noHover: true,
+                        placeholder: i18n("addresses.carsNumbers"),
+                        value: flat.cars,
+                        tab: i18n("addresses.cars"),
+                    },
                 ],
                 callback: result => {
                     delete result.autoBlock;

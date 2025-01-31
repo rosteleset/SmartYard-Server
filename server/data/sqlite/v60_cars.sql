@@ -1,0 +1,1 @@
+ALTER TABLE houses_flats ADD COLUMN cars TEXT;

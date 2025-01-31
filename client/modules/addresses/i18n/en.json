@@ -154,6 +154,8 @@
   "cameraId": "Camera",
   "cameraIdList": "#",
   "altCameraId": "Alt. camera #",
+  "cars": "Cars",
+  "carsNumbers": "Cars numbers (one per line)",
   "domophoneOutputPrimary": "Primary",
   "domophoneOutputSecondary":  "Secondary \"#%s\"",
   "cmsLevels": "Levels",
