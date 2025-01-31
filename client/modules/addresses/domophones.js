@@ -132,6 +132,22 @@
                     value: "0",
                 },
                 {
+                    id: "video",
+                    type: "select",
+                    title: i18n("addresses.video"),
+                    options: [
+                        {
+                            id: "inband",
+                            text: i18n("addresses.inband"),
+                        },
+                        {
+                            id: "webrtc",
+                            text: i18n("addresses.webrtc"),
+                        },
+                    ],
+                    value: "inband",
+                },
+                {
                     id: "name",
                     type: "text",
                     title: i18n("addresses.domophoneName"),
@@ -276,6 +292,22 @@
                         type: "yesno",
                         title: i18n("addresses.nat"),
                         value: domophone.nat,
+                    },
+                    {
+                        id: "video",
+                        type: "select",
+                        title: i18n("addresses.video"),
+                        options: [
+                            {
+                                id: "inband",
+                                text: i18n("addresses.inband"),
+                            },
+                            {
+                                id: "webrtc",
+                                text: i18n("addresses.webrtc"),
+                            },
+                        ],
+                        value: domophone.video,
                     },
                     {
                         id: "locksAreOpen",

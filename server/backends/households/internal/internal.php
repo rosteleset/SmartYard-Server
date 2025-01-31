@@ -305,7 +305,7 @@
              * @inheritDoc
              */
 
-            function createEntrance($houseId, $entranceType, $entrance, $lat, $lon, $shared, $plog, $prefix, $callerId, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $altCamerasIds, $cmsLevels, $video, $path) {
+            function createEntrance($houseId, $entranceType, $entrance, $lat, $lon, $shared, $plog, $prefix, $callerId, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $altCamerasIds, $cmsLevels, $path) {
                 if (!checkInt($houseId) || !trim($entranceType) || !trim($entrance) || !checkInt($cmsType) || !checkInt($plog)) {
                     return false;
                 }
@@ -322,11 +322,7 @@
                     return false;
                 }
 
-                if (!checkStr($video)) {
-                    return false;
-                }
-
-                $entranceId = $this->db->insert("insert into houses_entrances (entrance_type, entrance, lat, lon, shared, plog, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, alt_camera_id_1, alt_camera_id_2, alt_camera_id_3, alt_camera_id_4, alt_camera_id_5, alt_camera_id_6, alt_camera_id_7, cms_levels, video, path) values (:entrance_type, :entrance, :lat, :lon, :shared, :plog, :caller_id, :house_domophone_id, :domophone_output, :cms, :cms_type, :camera_id, :alt_camera_id_1, :alt_camera_id_2, :alt_camera_id_3, :alt_camera_id_4, :alt_camera_id_5, :alt_camera_id_6, :alt_camera_id_7, :cms_levels, :video, :path)", [
+                $entranceId = $this->db->insert("insert into houses_entrances (entrance_type, entrance, lat, lon, shared, plog, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, alt_camera_id_1, alt_camera_id_2, alt_camera_id_3, alt_camera_id_4, alt_camera_id_5, alt_camera_id_6, alt_camera_id_7, cms_levels, path) values (:entrance_type, :entrance, :lat, :lon, :shared, :plog, :caller_id, :house_domophone_id, :domophone_output, :cms, :cms_type, :camera_id, :alt_camera_id_1, :alt_camera_id_2, :alt_camera_id_3, :alt_camera_id_4, :alt_camera_id_5, :alt_camera_id_6, :alt_camera_id_7, :cms_levels, :path)", [
                     ":entrance_type" => $entranceType,
                     ":entrance" => $entrance,
                     ":lat" => (float)$lat,
@@ -347,7 +343,6 @@
                     ":alt_camera_id_6" => @(int)$altCamerasIds[6] ? : null,
                     ":alt_camera_id_7" => @(int)$altCamerasIds[7] ? : null,
                     ":cms_levels" => $cmsLevels,
-                    ":video" => $video,
                     ":path" => (int)$path ? : null,
                 ]);
 
@@ -396,7 +391,7 @@
              * @inheritDoc
              */
 
-            function modifyEntrance($entranceId, $houseId, $entranceType, $entrance, $lat, $lon, $shared, $plog, $prefix, $callerId, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $altCamerasIds, $cmsLevels, $video, $path) {
+            function modifyEntrance($entranceId, $houseId, $entranceType, $entrance, $lat, $lon, $shared, $plog, $prefix, $callerId, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $altCamerasIds, $cmsLevels, $path) {
                 if (!checkInt($entranceId) || !trim($entranceType) || !trim($entrance) || !checkInt($cmsType) || !checkInt($plog)) {
                     return false;
                 }
@@ -412,10 +407,6 @@
                     return false;
                 }
 
-                if (!checkStr($video)) {
-                    return false;
-                }
-
                 if (!$shared) {
                     if ($this->db->modify("delete from houses_houses_entrances where house_entrance_id = $entranceId and address_house_id != $houseId") === false) {
                         return false;
@@ -427,7 +418,7 @@
                     ":prefix" => $prefix,
                 ]) !== false;
 
-                $r2 = $this->db->modify("update houses_entrances set entrance_type = :entrance_type, entrance = :entrance, lat = :lat, lon = :lon, shared = :shared, plog = :plog, caller_id = :caller_id, house_domophone_id = :house_domophone_id, domophone_output = :domophone_output, cms = :cms, cms_type = :cms_type, camera_id = :camera_id, alt_camera_id_1 = :alt_camera_id_1, alt_camera_id_2 = :alt_camera_id_2, alt_camera_id_3 = :alt_camera_id_3, alt_camera_id_4 = :alt_camera_id_4, alt_camera_id_5 = :alt_camera_id_5, alt_camera_id_6 = :alt_camera_id_6, alt_camera_id_7 = :alt_camera_id_7, cms_levels = :cms_levels, video = :video, path = :path where house_entrance_id = $entranceId", [
+                $r2 = $this->db->modify("update houses_entrances set entrance_type = :entrance_type, entrance = :entrance, lat = :lat, lon = :lon, shared = :shared, plog = :plog, caller_id = :caller_id, house_domophone_id = :house_domophone_id, domophone_output = :domophone_output, cms = :cms, cms_type = :cms_type, camera_id = :camera_id, alt_camera_id_1 = :alt_camera_id_1, alt_camera_id_2 = :alt_camera_id_2, alt_camera_id_3 = :alt_camera_id_3, alt_camera_id_4 = :alt_camera_id_4, alt_camera_id_5 = :alt_camera_id_5, alt_camera_id_6 = :alt_camera_id_6, alt_camera_id_7 = :alt_camera_id_7, cms_levels = :cms_levels, path = :path where house_entrance_id = $entranceId", [
                     ":entrance_type" => $entranceType,
                     ":entrance" => $entrance,
                     ":lat" => (float)$lat,
@@ -448,7 +439,6 @@
                     ":alt_camera_id_6" => @(int)$altCamerasIds[6] ? : null,
                     ":alt_camera_id_7" => @(int)$altCamerasIds[7] ? : null,
                     ":cms_levels" => $cmsLevels,
-                    ":video" => $video,
                     ":path" => (int)$path ? : null,
                 ]) !== false;
 
@@ -911,6 +901,7 @@
                     "ip" => "ip",
                     "sub_id" => "sub_id",
                     "display" => "display",
+                    "video" => "video",
                 ];
 
                 switch ($by) {
@@ -1018,8 +1009,7 @@
              * @inheritDoc
              */
 
-            public function addDomophone($enabled, $model, $server, $url,  $credentials, $dtmf, $nat, $comments, $name, $display)
-            {
+            public function addDomophone($enabled, $model, $server, $url,  $credentials, $dtmf, $nat, $comments, $name, $display, $video) {
                 if (!$model) {
                     setLastError("moModel");
                     return false;
@@ -1052,6 +1042,10 @@
                     return false;
                 }
 
+                if (!checkStr($video)) {
+                    return false;
+                }
+
                 $display = explode("\n", $display);
                 $t = [];
                 foreach ($display as $line) {
@@ -1062,7 +1056,7 @@
                 }
                 $display = trim(implode("\n", $t));
 
-                $domophoneId = $this->db->insert("insert into houses_domophones (enabled, model, server, url, credentials, dtmf, nat, comments, name, display) values (:enabled, :model, :server, :url, :credentials, :dtmf, :nat, :comments, :name, :display)", [
+                $domophoneId = $this->db->insert("insert into houses_domophones (enabled, model, server, url, credentials, dtmf, nat, comments, name, display, video) values (:enabled, :model, :server, :url, :credentials, :dtmf, :nat, :comments, :name, :display, :video)", [
                     "enabled" => (int)$enabled,
                     "model" => $model,
                     "server" => $server,
@@ -1073,6 +1067,7 @@
                     "comments" => $comments,
                     "name" => $name,
                     "display" => $display ? : null,
+                    "video" => $video,
                 ]);
 
                 if ($domophoneId) {
@@ -1091,8 +1086,8 @@
             /**
              * @inheritDoc
              */
-            public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $dtmf, $firstTime, $nat, $locksAreOpen, $comments, $name, $display)
-            {
+
+            public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $dtmf, $firstTime, $nat, $locksAreOpen, $comments, $name, $display, $video) {
                 if (!checkInt($domophoneId)) {
                     setLastError("noId");
                     return false;
@@ -1141,6 +1136,10 @@
                     return false;
                 }
 
+                if (!checkStr($video)) {
+                    return false;
+                }
+
                 $display = explode("\n", $display);
                 $t = [];
                 foreach ($display as $line) {
@@ -1151,7 +1150,7 @@
                 }
                 $display = trim(implode("\n", $t));
 
-                $r = $this->db->modify("update houses_domophones set enabled = :enabled, model = :model, server = :server, url = :url, credentials = :credentials, dtmf = :dtmf, first_time = :first_time, nat = :nat, locks_are_open = :locks_are_open, comments = :comments, name = :name, display = :display where house_domophone_id = $domophoneId", [
+                $r = $this->db->modify("update houses_domophones set enabled = :enabled, model = :model, server = :server, url = :url, credentials = :credentials, dtmf = :dtmf, first_time = :first_time, nat = :nat, locks_are_open = :locks_are_open, comments = :comments, name = :name, display = :display, video = :video where house_domophone_id = $domophoneId", [
                     "enabled" => (int)$enabled,
                     "model" => $model,
                     "server" => $server,
@@ -1164,6 +1163,7 @@
                     "comments" => $comments,
                     "name" => $name,
                     "display" => $display ? : null,
+                    "video" => $video,
                 ]);
 
                 if ($r) {
@@ -1240,8 +1240,8 @@
             /**
              * @inheritDoc
              */
-            public function getDomophone($domophoneId)
-            {
+
+            public function getDomophone($domophoneId) {
                 if (!checkInt($domophoneId)) {
                     return false;
                 }
@@ -1262,6 +1262,7 @@
                     "ip" => "ip",
                     "sub_id" => "sub_id",
                     "display" => "display",
+                    "video" => "video",
                 ], [
                     "singlify"
                 ]);
@@ -1796,7 +1797,7 @@
                     return false;
                 }
 
-                return $this->db->get("select house_entrance_id, entrance_type, entrance, lat, lon, shared, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, coalesce(cms_levels, '') as cms_levels, plog, video, path from houses_entrances where house_entrance_id = $entranceId order by entrance_type, entrance",
+                return $this->db->get("select house_entrance_id, entrance_type, entrance, lat, lon, shared, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, coalesce(cms_levels, '') as cms_levels, plog, path from houses_entrances where house_entrance_id = $entranceId order by entrance_type, entrance",
                     false,
                     [
                         "house_entrance_id" => "entranceId",
@@ -1813,7 +1814,6 @@
                         "cms_type" => "cmsType",
                         "camera_id" => "cameraId",
                         "cms_levels" => "cmsLevels",
-                        "video" => "video",
                         "path" => "path",
                     ],
                     [ "singlify" ]
@@ -1860,19 +1860,19 @@
                         if (!checkInt($query)) {
                             return false;
                         }
-                        $q = "select address_house_id, prefix, house_entrance_id, entrance_type, entrance, lat, lon, shared, plog, prefix, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, alt_camera_id_1, alt_camera_id_2, alt_camera_id_3, alt_camera_id_4, alt_camera_id_5, alt_camera_id_6, alt_camera_id_7, coalesce(cms_levels, '') as cms_levels, video, path from houses_houses_entrances left join houses_entrances using (house_entrance_id) where address_house_id = $query order by entrance_type, entrance";
+                        $q = "select address_house_id, prefix, house_entrance_id, entrance_type, entrance, lat, lon, shared, plog, prefix, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, alt_camera_id_1, alt_camera_id_2, alt_camera_id_3, alt_camera_id_4, alt_camera_id_5, alt_camera_id_6, alt_camera_id_7, coalesce(cms_levels, '') as cms_levels, path from houses_houses_entrances left join houses_entrances using (house_entrance_id) where address_house_id = $query order by entrance_type, entrance";
                         break;
 
                     case "flatId":
                         if (!checkInt($query)) {
                             return false;
                         }
-                        $q = "select address_house_id, prefix, house_entrance_id, entrance_type, entrance, lat, lon, shared, plog, prefix, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, alt_camera_id_1, alt_camera_id_2, alt_camera_id_3, alt_camera_id_4, alt_camera_id_5, alt_camera_id_6, alt_camera_id_7, coalesce(cms_levels, '') as cms_levels, video, path from houses_houses_entrances left join houses_entrances using (house_entrance_id) where house_entrance_id in (select house_entrance_id from houses_entrances_flats where house_flat_id = $query) order by entrance_type, entrance";
+                        $q = "select address_house_id, prefix, house_entrance_id, entrance_type, entrance, lat, lon, shared, plog, prefix, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, alt_camera_id_1, alt_camera_id_2, alt_camera_id_3, alt_camera_id_4, alt_camera_id_5, alt_camera_id_6, alt_camera_id_7, coalesce(cms_levels, '') as cms_levels, path from houses_houses_entrances left join houses_entrances using (house_entrance_id) where house_entrance_id in (select house_entrance_id from houses_entrances_flats where house_flat_id = $query) order by entrance_type, entrance";
                         break;
                 }
 
                 if (!$q) {
-                    $q = "select address_house_id, prefix, house_entrance_id, entrance_type, entrance, lat, lon, shared, plog, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, alt_camera_id_1, alt_camera_id_2, alt_camera_id_3, alt_camera_id_4, alt_camera_id_5, alt_camera_id_6, alt_camera_id_7, coalesce(cms_levels, '') as cms_levels, video, path from houses_entrances left join houses_houses_entrances using (house_entrance_id) where $where order by entrance_type, entrance";
+                    $q = "select address_house_id, prefix, house_entrance_id, entrance_type, entrance, lat, lon, shared, plog, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, alt_camera_id_1, alt_camera_id_2, alt_camera_id_3, alt_camera_id_4, alt_camera_id_5, alt_camera_id_6, alt_camera_id_7, coalesce(cms_levels, '') as cms_levels, path from houses_entrances left join houses_houses_entrances using (house_entrance_id) where $where order by entrance_type, entrance";
                 }
 
                 return $this->db->get($q,
@@ -1901,7 +1901,6 @@
                         "alt_camera_id_6" => "altCameraId6",
                         "alt_camera_id_7" => "altCameraId7",
                         "cms_levels" => "cmsLevels",
-                        "video" => "video",
                         "path" => "path",
                     ]
                 );
@@ -1910,8 +1909,8 @@
             /**
              * @inheritDoc
              */
-            public function getCameras($by, $params)
-            {
+
+            public function getCameras($by, $params) {
 
                 $cameras = loadBackend("cameras");
 

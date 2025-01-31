@@ -599,22 +599,6 @@
                                 tab: i18n("addresses.primary"),
                             },
                             {
-                                id: "video",
-                                type: "select2",
-                                title: i18n("addresses.video"),
-                                options: [
-                                    {
-                                        id: "inband",
-                                        text: i18n("addresses.inband"),
-                                    },
-                                    {
-                                        id: "webrtc",
-                                        text: i18n("addresses.webrtc"),
-                                    },
-                                ],
-                                tab: i18n("addresses.primary"),
-                            },
-                            {
                                 id: "domophoneOutput",
                                 type: "select",
                                 title: i18n("addresses.domophoneOutput"),
@@ -1575,23 +1559,6 @@
                                 placeholder: i18n("addresses.domophoneOutput"),
                                 options: modules.addresses.houses.outputs(modules.addresses.houses.meta.domophoneModelsById[entrance.domophoneId], entrance.domophoneOutput),
                                 select: modules.addresses.houses.outputsSelect,
-                            },
-                            {
-                                id: "video",
-                                type: "select2",
-                                title: i18n("addresses.video"),
-                                tab: i18n("addresses.primary"),
-                                options: [
-                                    {
-                                        id: "inband",
-                                        text: i18n("addresses.inband"),
-                                    },
-                                    {
-                                        id: "webrtc",
-                                        text: i18n("addresses.webrtc"),
-                                    },
-                                ],
-                                value: entrance.video,
                             },
                             {
                                 id: "cms",

@@ -20,6 +20,7 @@
      * @apiBody {String} comments
      * @apiBody {String} name
      * @apiBody {String} display
+     * @apiBody {String} video
      *
      * @apiSuccess {Number} domophoneId
      */
@@ -47,6 +48,7 @@
      * @apiBody {String} comments
      * @apiBody {String} name
      * @apiBody {String} display
+     * @apiBody {String} video
      *
      * @apiSuccess {Boolean} operationResult
      */
@@ -84,7 +86,7 @@
             public static function POST($params) {
                 $households = loadBackend("households");
 
-                $domophoneId = $households->addDomophone($params["enabled"], $params["model"], $params["server"], $params["url"], $params["credentials"], $params["dtmf"], $params["nat"], $params["comments"], $params["name"], $params["display"]);
+                $domophoneId = $households->addDomophone($params["enabled"], $params["model"], $params["server"], $params["url"], $params["credentials"], $params["dtmf"], $params["nat"], $params["comments"], $params["name"], $params["display"], $params["video"]);
 
                 return api::ANSWER($domophoneId, ($domophoneId !== false) ? "domophoneId" : false);
             }
@@ -92,7 +94,7 @@
             public static function PUT($params) {
                 $households = loadBackend("households");
 
-                $success = $households->modifyDomophone($params["_id"], $params["enabled"], $params["model"], $params["server"], $params["url"], $params["credentials"], $params["dtmf"], $params["firstTime"], $params["nat"], $params["locksAreOpen"], $params["comments"], $params["name"], $params["display"]);
+                $success = $households->modifyDomophone($params["_id"], $params["enabled"], $params["model"], $params["server"], $params["url"], $params["credentials"], $params["dtmf"], $params["firstTime"], $params["nat"], $params["locksAreOpen"], $params["comments"], $params["name"], $params["display"], $params["video"]);
 
                 return api::ANSWER($success);
             }

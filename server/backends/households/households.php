@@ -30,19 +30,19 @@
              * @param $cameraId
              * @param $altCameraIds
              * @param $cmsLevels
-             * @param $video
              * @param $path
              *
              * @return boolean|integer
              */
 
-            abstract function createEntrance($houseId, $entranceType, $entrance, $lat, $lon, $shared, $plog, $prefix, $callerId, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $altCameraIds, $cmsLevels, $video, $path);
+            abstract function createEntrance($houseId, $entranceType, $entrance, $lat, $lon, $shared, $plog, $prefix, $callerId, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $altCameraIds, $cmsLevels, $path);
 
             /**
              * @param $entranceId
              *
              * @return false|array
              */
+
             abstract function getEntrance($entranceId);
 
             /**
@@ -51,6 +51,7 @@
              *
              * @return false|array
              */
+
             abstract function getEntrances($by, $query);
 
             /**
@@ -59,6 +60,7 @@
              * @param $prefix
              * @return boolean
              */
+
             abstract function addEntrance($houseId, $entranceId, $prefix);
 
             /**
@@ -79,12 +81,12 @@
              * @param $cameraId
              * @param $altCameraIds
              * @param $cmsLevels
-             * @param $video
              * @param $path
              *
              * @return boolean
              */
-            abstract function modifyEntrance($entranceId, $houseId, $entranceType, $entrance, $lat, $lon, $shared, $plog, $prefix, $callerId, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $altCameraIds, $cmsLevels, $video, $path);
+
+            abstract function modifyEntrance($entranceId, $houseId, $entranceType, $entrance, $lat, $lon, $shared, $plog, $prefix, $callerId, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $altCameraIds, $cmsLevels, $path);
 
             /**
              * @param $entranceId
@@ -189,11 +191,12 @@
              * @param $comments
              * @param $name
              * @param $display
+             * @param $video
              *
              * @return false|integer
              */
 
-            abstract public function addDomophone($enabled, $model, $server, $url, $credentials, $dtmf, $nat, $comments, $name, $display);
+            abstract public function addDomophone($enabled, $model, $server, $url, $credentials, $dtmf, $nat, $comments, $name, $display, $video);
 
             /**
              * @param $domophoneId
@@ -209,11 +212,12 @@
              * @param $comments
              * @param $name
              * @param $display
+             * @param $video
              *
              * @return boolean
              */
 
-            abstract public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $dtmf, $firstTime, $nat, $locksAreOpen, $comments, $name, $display);
+            abstract public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $dtmf, $firstTime, $nat, $locksAreOpen, $comments, $name, $display, $video);
 
             /**
              * @param $domophoneId

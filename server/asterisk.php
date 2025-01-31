@@ -457,7 +457,7 @@
                         "dtmf" => $params["dtmf"],
                         "timestamp" => time(),
                         "ttl" => 30,
-                        "platform" => (int)$params["platform"] == 1?"ios":"android",
+                        "platform" => ((int)$params["platform"] == 1) ? "ios" : "android",
                         "callerId" => $params["callerId"],
                         "flatId" => $params["flatId"],
                         "domophoneId" => $params["domophoneId"],
@@ -465,17 +465,21 @@
                         "title" => i18n("sip.incomingTitle"),
                     ];
 
-                    $entrance = @loadBackend("households")->getEntrances("domophoneId", [ "domophoneId" => (int)$params["domophoneId"], "output" => "0" ])[0];
-                    if ($entrance && $entrance["video"] && $entrance["video"] != "inband") {
+                    $households = loadBackend("households");
+
+                    $domophone = $households->getDomophone((int)$params["domophoneId"]);
+
+                    if ($domophone && $domophone["video"] != "inband") {
+                        $entrance = $households->getEntrances("domophoneId", [ "domophoneId" => (int)$params["domophoneId"], "output" => "0" ])[0];
                         $cameras = @loadBackend("cameras");
                         $dvrs = @loadBackend("dvr");
-                        if ($cameras && $dvrs) {
+                        if ($entrance && $cameras && $dvrs) {
                             $camera = $cameras->getCamera($entrance["cameraId"]);
                             $dvr = $dvrs->getDVRServerForCam($camera);
                             if ($camera && $dvr) {
                                 $_params["videoServer"] = $dvr["type"];
                                 $_params["videoToken"] = $dvrs->getDVRTokenForCam($camera, -1);
-                                $_params["videoType"] = $entrance["video"];
+                                $_params["videoType"] = $domophone["video"];
                                 $_params["videoStream"] = $camera["dvrStream"];
                             }
                         }

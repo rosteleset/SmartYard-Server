@@ -188,5 +188,10 @@
     ],
     "58": [
         "v58_cameras.sql"
+    ],
+    "59": [
+        "v59_video_1.sql",
+        "v59_video_2.php",
+        "v59_video_3.sql"
     ]
 }

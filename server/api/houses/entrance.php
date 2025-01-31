@@ -44,7 +44,6 @@
      * @apiBody {Number} cameraId
      * @apiBody {Number[]} altCamerasIds
      * @apiBody {String} cmsLevels
-     * @apiBody {String} video
      * @apiBody {Number} path
      *
      * @apiSuccess {Number} entranceId
@@ -77,7 +76,6 @@
      * @apiBody {Number} cameraId
      * @apiBody {Number[]} altCamerasIds
      * @apiBody {String} cmsLevels
-     * @apiBody {String} video
      * @apiBody {Number} path
      *
      * @apiSuccess {Boolean} operationResult
@@ -121,7 +119,7 @@
 
                     return api::ANSWER($success);
                 } else {
-                    $entranceId = $households->createEntrance($params["houseId"], $params["entranceType"], $params["entrance"], $params["lat"], $params["lon"], $params["shared"], $params["plog"], $params["prefix"], $params["callerId"], $params["domophoneId"], $params["domophoneOutput"], $params["cms"], $params["cmsType"], $params["cameraId"], @$params["altCamerasIds"], $params["cmsLevels"], $params["video"], $params["path"]);
+                    $entranceId = $households->createEntrance($params["houseId"], $params["entranceType"], $params["entrance"], $params["lat"], $params["lon"], $params["shared"], $params["plog"], $params["prefix"], $params["callerId"], $params["domophoneId"], $params["domophoneOutput"], $params["cms"], $params["cmsType"], $params["cameraId"], @$params["altCamerasIds"], $params["cmsLevels"], $params["path"]);
 
                     return api::ANSWER($entranceId, ($entranceId !== false) ? "entranceId" : false);
                 }
@@ -130,7 +128,7 @@
             public static function PUT($params) {
                 $households = loadBackend("households");
 
-                $success = $households->modifyEntrance($params["_id"], $params["houseId"], $params["entranceType"], $params["entrance"], $params["lat"], $params["lon"], $params["shared"], $params["plog"], $params["prefix"], $params["callerId"], $params["domophoneId"], $params["domophoneOutput"], $params["cms"], $params["cmsType"], $params["cameraId"], @$params["altCamerasIds"], $params["cmsLevels"], $params["video"], $params["path"]);
+                $success = $households->modifyEntrance($params["_id"], $params["houseId"], $params["entranceType"], $params["entrance"], $params["lat"], $params["lon"], $params["shared"], $params["plog"], $params["prefix"], $params["callerId"], $params["domophoneId"], $params["domophoneOutput"], $params["cms"], $params["cmsType"], $params["cameraId"], @$params["altCamerasIds"], $params["cmsLevels"], $params["path"]);
 
                 return api::ANSWER($success);
             }
