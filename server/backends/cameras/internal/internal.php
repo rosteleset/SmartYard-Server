@@ -49,6 +49,7 @@ namespace backends\cameras {
                 "angle" => "angle",
                 "distance" => "distance",
                 "frs" => "frs",
+                "frs_mode" => "frsMode",
                 "md_area" => "mdArea",
                 "rc_area" => "rcArea",
                 "common" => "common",
@@ -90,6 +91,7 @@ namespace backends\cameras {
         /**
          * @inheritDoc
          */
+
         public function getCamera($cameraId) {
             if (!checkInt($cameraId)) {
                 return false;
@@ -111,7 +113,8 @@ namespace backends\cameras {
         /**
          * @inheritDoc
          */
-        public function addCamera($enabled, $model, $url,  $stream, $credentials, $name, $dvrStream, $timezone, $lat, $lon, $direction, $angle, $distance, $frs, $mdArea, $rcArea, $common, $comments, $sound) {
+
+        public function addCamera($enabled, $model, $url,  $stream, $credentials, $name, $dvrStream, $timezone, $lat, $lon, $direction, $angle, $distance, $frs, $frsMode, $mdArea, $rcArea, $common, $comments, $sound) {
             if (!$model) {
                 return false;
             }
@@ -127,7 +130,11 @@ namespace backends\cameras {
                 return false;
             }
 
-            $cameraId = $this->db->insert("insert into cameras (enabled, model, url, stream, credentials, name, dvr_stream, timezone, lat, lon, direction, angle, distance, frs, md_area, rc_area, common, comments, sound) values (:enabled, :model, :url, :stream, :credentials, :name, :dvr_stream, :timezone, :lat, :lon, :direction, :angle, :distance, :frs, :md_area, :rc_area, :common, :comments, :sound)", [
+            if (!checkInt($frsMode) || $frsMode < 0 || $frsMode > 2) {
+                return false;
+            }
+
+            $cameraId = $this->db->insert("insert into cameras (enabled, model, url, stream, credentials, name, dvr_stream, timezone, lat, lon, direction, angle, distance, frs, frs_mode, md_area, rc_area, common, comments, sound) values (:enabled, :model, :url, :stream, :credentials, :name, :dvr_stream, :timezone, :lat, :lon, :direction, :angle, :distance, :frs, :frs_mode, :md_area, :rc_area, :common, :comments, :sound)", [
                 "enabled" => (int)$enabled,
                 "model" => $model,
                 "url" => $url,
@@ -142,6 +149,7 @@ namespace backends\cameras {
                 "angle" => $angle,
                 "distance" => $distance,
                 "frs" => $frs,
+                "frs_mode" => $frsMode,
                 "md_area" => json_encode($mdArea),
                 "rc_area" => json_encode($rcArea),
                 "common" => $common,
@@ -162,7 +170,8 @@ namespace backends\cameras {
         /**
          * @inheritDoc
          */
-        public function modifyCamera($cameraId, $enabled, $model, $url, $stream, $credentials, $name, $dvrStream, $timezone, $lat, $lon, $direction, $angle, $distance, $frs, $mdArea, $rcArea, $common, $comments, $sound) {
+
+        public function modifyCamera($cameraId, $enabled, $model, $url, $stream, $credentials, $name, $dvrStream, $timezone, $lat, $lon, $direction, $angle, $distance, $frs, $frsMode, $mdArea, $rcArea, $common, $comments, $sound) {
             if (!checkInt($cameraId)) {
                 setLastError("noId");
                 return false;
@@ -185,7 +194,11 @@ namespace backends\cameras {
                 return false;
             }
 
-            $r = $this->db->modify("update cameras set enabled = :enabled, model = :model, url = :url, stream = :stream, credentials = :credentials, name = :name, dvr_stream = :dvr_stream, timezone = :timezone, lat = :lat, lon = :lon, direction = :direction, angle = :angle, distance = :distance, frs = :frs, md_area = :md_area, rc_area = :rc_area, common = :common, comments = :comments, sound = :sound where camera_id = $cameraId", [
+            if (!checkInt($frsMode) || $frsMode < 0 || $frsMode > 2) {
+                return false;
+            }
+
+            $r = $this->db->modify("update cameras set enabled = :enabled, model = :model, url = :url, stream = :stream, credentials = :credentials, name = :name, dvr_stream = :dvr_stream, timezone = :timezone, lat = :lat, lon = :lon, direction = :direction, angle = :angle, distance = :distance, frs = :frs, frs_mode = :frs_mode, md_area = :md_area, rc_area = :rc_area, common = :common, comments = :comments, sound = :sound where camera_id = $cameraId", [
                 "enabled" => (int)$enabled,
                 "model" => $model,
                 "url" => $url,
@@ -200,6 +213,7 @@ namespace backends\cameras {
                 "angle" => $angle,
                 "distance" => $distance,
                 "frs" => $frs,
+                "frs_mode" => $frsMode,
                 "md_area" => json_encode($mdArea),
                 "rc_area" => json_encode($rcArea),
                 "common" => $common,

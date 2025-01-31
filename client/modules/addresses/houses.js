@@ -536,7 +536,56 @@
                                 type: "select2",
                                 title: i18n("addresses.cameraId"),
                                 options: cameras,
-                                tab: i18n("addresses.primary"),
+                                tab: i18n("addresses.cameras"),
+                            },
+                            {
+                                id: "altCameraId1",
+                                type: "select2",
+                                title: i18n("addresses.altCameraId") + "1",
+                                options: cameras,
+                                tab: i18n("addresses.cameras"),
+                            },
+                            {
+                                id: "altCameraId2",
+                                type: "select2",
+                                title: i18n("addresses.altCameraId") + "2",
+                                options: cameras,
+                                tab: i18n("addresses.cameras"),
+                            },
+                            {
+                                id: "altCameraId3",
+                                type: "select2",
+                                title: i18n("addresses.altCameraId") + "3",
+                                options: cameras,
+                                tab: i18n("addresses.cameras"),
+                            },
+                            {
+                                id: "altCameraId4",
+                                type: "select2",
+                                title: i18n("addresses.altCameraId") + "4",
+                                options: cameras,
+                                tab: i18n("addresses.cameras"),
+                            },
+                            {
+                                id: "altCameraId5",
+                                type: "select2",
+                                title: i18n("addresses.altCameraId") + "5",
+                                options: cameras,
+                                tab: i18n("addresses.cameras"),
+                            },
+                            {
+                                id: "altCameraId6",
+                                type: "select2",
+                                title: i18n("addresses.altCameraId") + "6",
+                                options: cameras,
+                                tab: i18n("addresses.cameras"),
+                            },
+                            {
+                                id: "altCameraId7",
+                                type: "select2",
+                                title: i18n("addresses.altCameraId") + "7",
+                                options: cameras,
+                                tab: i18n("addresses.cameras"),
                             },
                             {
                                 id: "domophoneId",
@@ -876,6 +925,14 @@
                                 result.cms = 0;
                             }
                             result.houseId = houseId;
+                            result.altCamerasIds = [];
+                            result.altCamerasIds[1] = result.altCameraId1;
+                            result.altCamerasIds[2] = result.altCameraId2;
+                            result.altCamerasIds[3] = result.altCameraId3;
+                            result.altCamerasIds[4] = result.altCameraId4;
+                            result.altCamerasIds[5] = result.altCameraId5;
+                            result.altCamerasIds[6] = result.altCameraId6;
+                            result.altCamerasIds[7] = result.altCameraId7;
                             modules.addresses.houses.doCreateEntrance(result);
                         },
                     });
@@ -1438,9 +1495,65 @@
                                 id: "cameraId",
                                 type: "select2",
                                 title: i18n("addresses.cameraId"),
-                                tab: i18n("addresses.primary"),
+                                tab: i18n("addresses.cameras"),
                                 value: entrance.cameraId,
                                 options: cameras,
+                            },
+                            {
+                                id: "altCameraId1",
+                                type: "select2",
+                                title: i18n("addresses.altCameraId") + "1",
+                                options: cameras,
+                                tab: i18n("addresses.cameras"),
+                                value: entrance.altCameraId1,
+                            },
+                            {
+                                id: "altCameraId2",
+                                type: "select2",
+                                title: i18n("addresses.altCameraId") + "2",
+                                options: cameras,
+                                tab: i18n("addresses.cameras"),
+                                value: entrance.altCameraId2,
+                            },
+                            {
+                                id: "altCameraId3",
+                                type: "select2",
+                                title: i18n("addresses.altCameraId") + "3",
+                                options: cameras,
+                                tab: i18n("addresses.cameras"),
+                                value: entrance.altCameraId3,
+                            },
+                            {
+                                id: "altCameraId4",
+                                type: "select2",
+                                title: i18n("addresses.altCameraId") + "4",
+                                options: cameras,
+                                tab: i18n("addresses.cameras"),
+                                value: entrance.altCameraId4,
+                            },
+                            {
+                                id: "altCameraId5",
+                                type: "select2",
+                                title: i18n("addresses.altCameraId") + "5",
+                                options: cameras,
+                                tab: i18n("addresses.cameras"),
+                                value: entrance.altCameraId5,
+                            },
+                            {
+                                id: "altCameraId6",
+                                type: "select2",
+                                title: i18n("addresses.altCameraId") + "6",
+                                options: cameras,
+                                tab: i18n("addresses.cameras"),
+                                value: entrance.altCameraId6,
+                            },
+                            {
+                                id: "altCameraId7",
+                                type: "select2",
+                                title: i18n("addresses.altCameraId") + "7",
+                                options: cameras,
+                                tab: i18n("addresses.cameras"),
+                                value: entrance.altCameraId7,
                             },
                             {
                                 id: "domophoneId",
@@ -1816,6 +1929,14 @@
                                 }
                                 result.entranceId = entranceId;
                                 result.houseId = houseId;
+                                result.altCamerasIds = [];
+                                result.altCamerasIds[1] = result.altCameraId1;
+                                result.altCamerasIds[2] = result.altCameraId2;
+                                result.altCamerasIds[3] = result.altCameraId3;
+                                result.altCamerasIds[4] = result.altCameraId4;
+                                result.altCamerasIds[5] = result.altCameraId5;
+                                result.altCamerasIds[6] = result.altCameraId6;
+                                result.altCamerasIds[7] = result.altCameraId7;
                                 modules.addresses.houses.doModifyEntrance(result);
                             }
                         },

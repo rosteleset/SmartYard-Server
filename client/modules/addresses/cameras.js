@@ -200,6 +200,30 @@
                     tab: i18n("addresses.primary"),
                 },
                 {
+                    id: "frsMode",
+                    type: "select2",
+                    title: i18n("addresses.frsMode"),
+                    value: "1",
+                    options: [
+                        {
+                            value: "0",
+                            text: i18n("addresses.frsNone"),
+
+                        },
+                        {
+                            value: "1",
+                            text: i18n("addresses.frsRecognition"),
+
+                        },
+                        {
+                            value: "2",
+                            text: i18n("addresses.frsDetection"),
+
+                        },
+                    ],
+                    tab: i18n("addresses.primary"),
+                },
+                {
                     id: "geo",
                     type: "text",
                     title: i18n("addresses.geo"),
@@ -527,6 +551,30 @@
                         tab: i18n("addresses.primary"),
                     },
                     {
+                        id: "frsMode",
+                        type: "select2",
+                        title: i18n("addresses.frsMode"),
+                        value: camera.frsMode,
+                        options: [
+                            {
+                                value: "0",
+                                text: i18n("addresses.frsNone"),
+
+                            },
+                            {
+                                value: "1",
+                                text: i18n("addresses.frsRecognition"),
+
+                            },
+                            {
+                                value: "2",
+                                text: i18n("addresses.frsDetection"),
+
+                            },
+                        ],
+                        tab: i18n("addresses.primary"),
+                    },
+                    {
                         id: "mdArea",
                         type: "empty",
                         title: false,
@@ -561,7 +609,6 @@
                         value: camera.lat + "," + camera.lon,
                         validate: v => {
                             const regex = new RegExp('^[+-]?((\\d+\\.?\\d*)|(\\.\\d+)),[+-]?((\\d+\\.?\\d*)|(\\.\\d+))$', 'gm');
-
                             return regex.exec(v) !== null;
                         },
                         tab: i18n("addresses.secondary"),

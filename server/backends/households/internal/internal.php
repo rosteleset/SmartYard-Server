@@ -305,7 +305,7 @@
              * @inheritDoc
              */
 
-            function createEntrance($houseId, $entranceType, $entrance, $lat, $lon, $shared, $plog, $prefix, $callerId, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $cmsLevels, $video, $path) {
+            function createEntrance($houseId, $entranceType, $entrance, $lat, $lon, $shared, $plog, $prefix, $callerId, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $altCamerasIds, $cmsLevels, $video, $path) {
                 if (!checkInt($houseId) || !trim($entranceType) || !trim($entrance) || !checkInt($cmsType) || !checkInt($plog)) {
                     return false;
                 }
@@ -326,7 +326,7 @@
                     return false;
                 }
 
-                $entranceId = $this->db->insert("insert into houses_entrances (entrance_type, entrance, lat, lon, shared, plog, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, cms_levels, video, path) values (:entrance_type, :entrance, :lat, :lon, :shared, :plog, :caller_id, :house_domophone_id, :domophone_output, :cms, :cms_type, :camera_id, :cms_levels, :video, :path)", [
+                $entranceId = $this->db->insert("insert into houses_entrances (entrance_type, entrance, lat, lon, shared, plog, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, alt_camera_id_1, alt_camera_id_2, alt_camera_id_3, alt_camera_id_4, alt_camera_id_5, alt_camera_id_6, alt_camera_id_7, cms_levels, video, path) values (:entrance_type, :entrance, :lat, :lon, :shared, :plog, :caller_id, :house_domophone_id, :domophone_output, :cms, :cms_type, :camera_id, :alt_camera_id_1, :alt_camera_id_2, :alt_camera_id_3, :alt_camera_id_4, :alt_camera_id_5, :alt_camera_id_6, :alt_camera_id_7, :cms_levels, :video, :path)", [
                     ":entrance_type" => $entranceType,
                     ":entrance" => $entrance,
                     ":lat" => (float)$lat,
@@ -338,7 +338,14 @@
                     ":domophone_output" => (int)$domophoneOutput,
                     ":cms" => $cms,
                     ":cms_type" => $cmsType,
-                    ":camera_id" => $cameraId ? : null,
+                    ":camera_id" => (int)$cameraId ? : null,
+                    ":alt_camera_id_1" => @(int)$altCamerasIds[1] ? : null,
+                    ":alt_camera_id_2" => @(int)$altCamerasIds[2] ? : null,
+                    ":alt_camera_id_3" => @(int)$altCamerasIds[3] ? : null,
+                    ":alt_camera_id_4" => @(int)$altCamerasIds[4] ? : null,
+                    ":alt_camera_id_5" => @(int)$altCamerasIds[5] ? : null,
+                    ":alt_camera_id_6" => @(int)$altCamerasIds[6] ? : null,
+                    ":alt_camera_id_7" => @(int)$altCamerasIds[7] ? : null,
                     ":cms_levels" => $cmsLevels,
                     ":video" => $video,
                     ":path" => (int)$path ? : null,
@@ -389,7 +396,7 @@
              * @inheritDoc
              */
 
-            function modifyEntrance($entranceId, $houseId, $entranceType, $entrance, $lat, $lon, $shared, $plog, $prefix, $callerId, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $cmsLevels, $video, $path) {
+            function modifyEntrance($entranceId, $houseId, $entranceType, $entrance, $lat, $lon, $shared, $plog, $prefix, $callerId, $domophoneId, $domophoneOutput, $cms, $cmsType, $cameraId, $altCamerasIds, $cmsLevels, $video, $path) {
                 if (!checkInt($entranceId) || !trim($entranceType) || !trim($entrance) || !checkInt($cmsType) || !checkInt($plog)) {
                     return false;
                 }
@@ -420,7 +427,7 @@
                     ":prefix" => $prefix,
                 ]) !== false;
 
-                $r2 = $this->db->modify("update houses_entrances set entrance_type = :entrance_type, entrance = :entrance, lat = :lat, lon = :lon, shared = :shared, plog = :plog, caller_id = :caller_id, house_domophone_id = :house_domophone_id, domophone_output = :domophone_output, cms = :cms, cms_type = :cms_type, camera_id = :camera_id, cms_levels = :cms_levels, video = :video, path = :path where house_entrance_id = $entranceId", [
+                $r2 = $this->db->modify("update houses_entrances set entrance_type = :entrance_type, entrance = :entrance, lat = :lat, lon = :lon, shared = :shared, plog = :plog, caller_id = :caller_id, house_domophone_id = :house_domophone_id, domophone_output = :domophone_output, cms = :cms, cms_type = :cms_type, camera_id = :camera_id, alt_camera_id_1 = :alt_camera_id_1, alt_camera_id_2 = :alt_camera_id_2, alt_camera_id_3 = :alt_camera_id_3, alt_camera_id_4 = :alt_camera_id_4, alt_camera_id_5 = :alt_camera_id_5, alt_camera_id_6 = :alt_camera_id_6, alt_camera_id_7 = :alt_camera_id_7, cms_levels = :cms_levels, video = :video, path = :path where house_entrance_id = $entranceId", [
                     ":entrance_type" => $entranceType,
                     ":entrance" => $entrance,
                     ":lat" => (float)$lat,
@@ -433,6 +440,13 @@
                     ":cms" => $cms,
                     ":cms_type" => $cmsType,
                     ":camera_id" => (int)$cameraId ? : null,
+                    ":alt_camera_id_1" => @(int)$altCamerasIds[1] ? : null,
+                    ":alt_camera_id_2" => @(int)$altCamerasIds[2] ? : null,
+                    ":alt_camera_id_3" => @(int)$altCamerasIds[3] ? : null,
+                    ":alt_camera_id_4" => @(int)$altCamerasIds[4] ? : null,
+                    ":alt_camera_id_5" => @(int)$altCamerasIds[5] ? : null,
+                    ":alt_camera_id_6" => @(int)$altCamerasIds[6] ? : null,
+                    ":alt_camera_id_7" => @(int)$altCamerasIds[7] ? : null,
                     ":cms_levels" => $cmsLevels,
                     ":video" => $video,
                     ":path" => (int)$path ? : null,
@@ -1836,7 +1850,7 @@
                         break;
 
                     case "cameraId":
-                        $where = "camera_id = :camera_id";
+                        $where = "(camera_id = :camera_id or alt_camera_id_1 = :camera_id or alt_camera_id_2 = :camera_id or alt_camera_id_3 = :camera_id or alt_camera_id_4 = :camera_id or alt_camera_id_5 = :camera_id or alt_camera_id_6 = :camera_id or alt_camera_id_7 = :camera_id)";
                         $p = [
                             "camera_id" => $query["cameraId"],
                         ];
@@ -1846,19 +1860,19 @@
                         if (!checkInt($query)) {
                             return false;
                         }
-                        $q = "select address_house_id, prefix, house_entrance_id, entrance_type, entrance, lat, lon, shared, plog, prefix, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, coalesce(cms_levels, '') as cms_levels, video, path from houses_houses_entrances left join houses_entrances using (house_entrance_id) where address_house_id = $query order by entrance_type, entrance";
+                        $q = "select address_house_id, prefix, house_entrance_id, entrance_type, entrance, lat, lon, shared, plog, prefix, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, alt_camera_id_1, alt_camera_id_2, alt_camera_id_3, alt_camera_id_4, alt_camera_id_5, alt_camera_id_6, alt_camera_id_7, coalesce(cms_levels, '') as cms_levels, video, path from houses_houses_entrances left join houses_entrances using (house_entrance_id) where address_house_id = $query order by entrance_type, entrance";
                         break;
 
                     case "flatId":
                         if (!checkInt($query)) {
                             return false;
                         }
-                        $q = "select address_house_id, prefix, house_entrance_id, entrance_type, entrance, lat, lon, shared, plog, prefix, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, coalesce(cms_levels, '') as cms_levels, video, path from houses_houses_entrances left join houses_entrances using (house_entrance_id) where house_entrance_id in (select house_entrance_id from houses_entrances_flats where house_flat_id = $query) order by entrance_type, entrance";
+                        $q = "select address_house_id, prefix, house_entrance_id, entrance_type, entrance, lat, lon, shared, plog, prefix, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, alt_camera_id_1, alt_camera_id_2, alt_camera_id_3, alt_camera_id_4, alt_camera_id_5, alt_camera_id_6, alt_camera_id_7, coalesce(cms_levels, '') as cms_levels, video, path from houses_houses_entrances left join houses_entrances using (house_entrance_id) where house_entrance_id in (select house_entrance_id from houses_entrances_flats where house_flat_id = $query) order by entrance_type, entrance";
                         break;
                 }
 
                 if (!$q) {
-                    $q = "select address_house_id, prefix, house_entrance_id, entrance_type, entrance, lat, lon, shared, plog, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, coalesce(cms_levels, '') as cms_levels, video, path from houses_entrances left join houses_houses_entrances using (house_entrance_id) where $where order by entrance_type, entrance";
+                    $q = "select address_house_id, prefix, house_entrance_id, entrance_type, entrance, lat, lon, shared, plog, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, alt_camera_id_1, alt_camera_id_2, alt_camera_id_3, alt_camera_id_4, alt_camera_id_5, alt_camera_id_6, alt_camera_id_7, coalesce(cms_levels, '') as cms_levels, video, path from houses_entrances left join houses_houses_entrances using (house_entrance_id) where $where order by entrance_type, entrance";
                 }
 
                 return $this->db->get($q,
@@ -1879,6 +1893,13 @@
                         "cms" => "cms",
                         "cms_type" => "cmsType",
                         "camera_id" => "cameraId",
+                        "alt_camera_id_1" => "altCameraId1",
+                        "alt_camera_id_2" => "altCameraId2",
+                        "alt_camera_id_3" => "altCameraId3",
+                        "alt_camera_id_4" => "altCameraId4",
+                        "alt_camera_id_5" => "altCameraId5",
+                        "alt_camera_id_6" => "altCameraId6",
+                        "alt_camera_id_7" => "altCameraId7",
                         "cms_levels" => "cmsLevels",
                         "video" => "video",
                         "path" => "path",
