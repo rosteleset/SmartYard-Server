@@ -480,6 +480,7 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface
                 'endDate' => '04.10.2025',
                 'startTime' => '00:00',
                 'endTime' => '23:59',
+                'showMessageText' => true, // Display message about free passage
             ]);
         } else {
             $this->apiCall('/free_passage/stop', 'POST');
