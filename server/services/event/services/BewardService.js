@@ -7,21 +7,21 @@ class BewardService extends SyslogService {
         this.gateRabbits = [];
     }
 
-    async handleSyslogMessage(now, host, msg) {
+    async handleSyslogMessage(date, host, msg) {
         // Motion detection start
         if (msg.includes("SS_MAINAPI_ReportAlarmHappen")) {
-            await API.motionDetection({date: now, ip: host, motionActive: true});
+            await API.motionDetection({ date: date, ip: host, motionActive: true });
         }
 
         // Motion detection: stop
         if (msg.includes("SS_MAINAPI_ReportAlarmFinish")) {
-            await API.motionDetection({date: now, ip: host, motionActive: false});
+            await API.motionDetection({ date: date, ip: host, motionActive: false });
         }
 
         // Opening door by DTMF or CMS handset
         if (msg.includes("Opening door by DTMF command") || msg.includes("Opening door by CMS handset")) {
             const apartmentNumber = parseInt(msg.split("apartment")[1]);
-            await API.setRabbitGates({date: now, ip: host, apartmentNumber});
+            await API.setRabbitGates({ date: date, ip: host, apartmentNumber });
         }
 
         // Call in gate mode with prefix: potential white rabbit
@@ -35,23 +35,27 @@ class BewardService extends SyslogService {
         // Incoming DTMF for white rabbit: sending rabbit gate update
         if (msg.includes("Incoming DTMF RFC2833 on call")) {
             if ((this.gateRabbits)[host]) {
-                const {ip, prefix, apartmentNumber} = this.gateRabbits[host];
-                await API.setRabbitGates({date: now, ip, prefix, apartmentNumber});
+                const { ip, prefix, apartmentNumber } = this.gateRabbits[host];
+                await API.setRabbitGates({ date: date, ip, prefix, apartmentNumber });
             }
         }
 
         // Opening a door by RFID key
         if (msg.includes("Opening door by RFID") || msg.includes("Opening door by external RFID")) {
-            const rfid = msg.match(/\b([0-9A-Fa-f]{14})\b/g)?.[0] || null;
-            const isExternalReader = msg.includes('external') || rfid && rfid[6] === '0' && rfid[7] === '0';
-            const door = isExternalReader ? 1 : 0;
-            await API.openDoor({date: now, ip: host, door, detail: rfid, by: "rfid"});
+            const rfid = msg.match(/\b([0-9A-Fa-f]{6,14})\b/g)?.[0];
+
+            if (rfid !== undefined) {
+                const fullRfid = rfid.padStart(14, '0');
+                const isExternalReader = msg.includes('external') || fullRfid[6] === '0' && fullRfid[7] === '0';
+                const door = isExternalReader ? 1 : 0;
+                await API.openDoor({ date: date, ip: host, door: door, detail: fullRfid, by: "rfid" });
+            }
         }
 
         // Opening a door by personal code
         if (msg.includes("Opening door by code")) {
             const code = parseInt(msg.split("code")[1].split(",")[0]);
-            await API.openDoor({date: now, ip: host, detail: code, by: "code"});
+            await API.openDoor({ date: date, ip: host, detail: code, by: "code" });
         }
 
         // Opening a door by button pressed
@@ -64,15 +68,15 @@ class BewardService extends SyslogService {
                 detail = "second";
             }
 
-            await API.openDoor({date: now, ip: host, door: door, detail: detail, by: "button"});
+            await API.openDoor({ date: date, ip: host, door: door, detail: detail, by: "button" });
         }
 
         // All calls are done
         if (msg.includes("All calls are done for apartment")) {
             const callId = parseInt(msg.split("[")[1].split("]")[0]);
-            await API.callFinished({date: now, ip: host, callId: callId});
+            await API.callFinished({ date: date, ip: host, callId: callId });
         }
     }
 }
 
-export { BewardService }
+export { BewardService };
