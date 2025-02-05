@@ -486,22 +486,7 @@ function whoAmI(force) {
                     }
                 }
             });
-/*
-            if (myself.eMail) {
-                let gravUrl = "https://www.gravatar.com/avatar/" + md5($.trim(myself.eMail).toLowerCase()) + "?s=64&d=404";
-                $(".userAvatar").off("click").on("error", function () {
-                    $(this).attr("src", "img/noavatar.png");
-                    if (!noGravatar) {
-                        noGravatar = true;
-                        error(i18n("errors.noGravatar"));
-                    }
-                }).attr("src", gravUrl);
-            } else {
-                if (parseInt(myself.uid) === 0) {
-                    $(".userAvatar").attr("src", "img/admin.png");
-                }
-            }
-*/
+
             $("#selfSettings").off("click").on("click", () => {
                 modules.users.modifyUser(myself.uid, true);
             });
