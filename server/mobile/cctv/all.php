@@ -35,6 +35,11 @@
     $tempArr = array_unique(array_column($ret, 'id'));
     $ret = array_values(array_intersect_key($ret, $tempArr));
 
+    // sort cameras by name
+    usort($ret, function ($a, $b) {
+        return $a['name'] > $b['name'];
+    });
+
     if (count($ret)) {
         response(200, $ret);
     } else {
