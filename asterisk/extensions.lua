@@ -286,7 +286,12 @@ function handleMobileIntercom(context, extension)
             end
         end
     end
-    app.Hangup()
+
+    if hangup_cause ~= nil then
+        app.Hangup(hangup_cause)
+    else
+        app.Hangup()
+    end
 end
 
 -- Call to CMS intercom
@@ -319,7 +324,11 @@ function handleCMSIntercom(context, extension)
         end
     end
 
-    app.Hangup()
+    if hangup_cause ~= nil then
+        app.Hangup(hangup_cause)
+    else
+        app.Hangup()
+    end
 end
 
 -- Call to client SIP intercom
@@ -507,7 +516,11 @@ function handleOtherCases(context, extension)
         logDebug("something wrong, going out")
     end
 
-    app.Hangup()
+    if hangup_cause ~= nil then
+        app.Hangup(hangup_cause)
+    else
+        app.Hangup()
+    end
 end
 
 -- terminate active call

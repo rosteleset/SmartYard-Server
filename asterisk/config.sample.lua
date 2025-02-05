@@ -5,6 +5,7 @@ redis_server_port = 6379
 redis_server_auth = false
 log.outfile = false
 trunk = "first"
+-- hangup_cause = 16
 lang = "ru"
 --custom = {
 --    "custom_script_name"
