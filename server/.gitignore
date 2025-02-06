@@ -1,0 +1,5 @@
+var
+vendor
+
+# Lock on very precise versions to avoid interfering with dependencies expansion. Merging the lock file is a headache
+composer.lock

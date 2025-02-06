@@ -1,5 +1,7 @@
 <?php
 
+    require_once 'vendor/autoload.php';
+
     $real_ip_header = 'HTTP_X_FORWARDED_FOR';
 
     // frontend client API support

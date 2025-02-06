@@ -16,8 +16,6 @@
 
     auth();
 
-    require_once __DIR__ . "/../../lib/parsedown/Parsedown.php";
-
     $parsedown = new Parsedown();
     $inbox = loadBackend("inbox");
     $subscriber_id = (int)$subscriber['subscriberId'];
