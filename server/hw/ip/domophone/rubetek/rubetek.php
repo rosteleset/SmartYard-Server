@@ -96,7 +96,7 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface
 
         $videoSettings['use_for_sip'] = 'channel1';
         $videoSettings['use_for_webrtc'] = 'channel1';
-        $videoSettings['snapshot_size'] = '640x360'; // Requesting a low resolution image is faster
+        $videoSettings['snapshot_size'] = '1280x720';
         $this->apiCall('/settings/video', 'PATCH', $videoSettings);
     }
 
