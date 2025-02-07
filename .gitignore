@@ -48,15 +48,9 @@ client/config/config.yml
 !server/services/event/package.json
 !server/services/sys_exporter/package.json
 
-server/lib/PHPMailer/
-server/lib/htmlpurifier/
-server/lib/parsedown/
 server/db/mongo/
 server/storage/
 server/services/nodejs
-server/mzfc/json5/
-server/mzfc/mongodb/
-server/mzfc/mobiledetect/
 server/backends/**/custom
 server/backends/**/custom/
 server/backends/**/custom/**
