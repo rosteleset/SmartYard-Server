@@ -1,3 +1,13 @@
+# 2025-02-07
+
+Use global composer as dependency manager
+
+Please install dependencies:
+```bash
+cd /opt/rbt/server
+composer install
+```
+
 # 2024-12-26
 
 New mechanism for setting up motion detection zones. **New detection zones need to be configured on all cameras after updating!**

@@ -29,7 +29,6 @@
             public function __construct($config, $db, $redis, $login = false) {
                 parent::__construct($config, $db, $redis, $login);
 
-                require_once __DIR__ . "/../../../mzfc/mongodb/vendor/autoload.php";
                 require_once __DIR__ . '/../../../utils/clickhouse.php';
 
                 $this->dbName = @$config["backends"]["tt"]["db"]?:"tt";

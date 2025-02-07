@@ -6,10 +6,6 @@
     function eMail($config, $to, $subj, $text) {
 
         if (@$config && @$config["email"]) {
-            require_once 'lib/PHPMailer/src/Exception.php';
-            require_once 'lib/PHPMailer/src/PHPMailer.php';
-            require_once 'lib/PHPMailer/src/SMTP.php';
-
             $mail = new PHPMailer(true);
 
             try {

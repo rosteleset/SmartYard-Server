@@ -1,6 +1,6 @@
 <?php
 
-    require __DIR__ . '/mzfc/mobiledetect/vendor/autoload.php';
+    require_once 'vendor/autoload.php';
 
     use Detection\MobileDetect;
     $detect = new MobileDetect();

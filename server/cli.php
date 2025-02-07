@@ -1,5 +1,7 @@
 <?php
 
+    require_once 'vendor/autoload.php';
+
     require_once "data/backup_db.php";
     require_once "data/install_clickhouse.php";
     require_once "data/install.php";
@@ -29,10 +31,6 @@
     require_once "utils/generate_password.php";
     require_once "utils/apache_request_headers.php";
     require_once "utils/mb_levenshtein.php";
-
-    if (file_exists(__DIR__ . "/mzfc/json5/vendor/autoload.php")) {
-        require_once __DIR__ . "/mzfc/json5/vendor/autoload.php";
-    }
 
     require_once "backends/backend.php";
 

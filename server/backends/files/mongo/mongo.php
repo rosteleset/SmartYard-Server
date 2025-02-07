@@ -19,8 +19,6 @@
              */
             public function __construct($config, $db, $redis, $login = false)
             {
-                require_once __DIR__ . "/../../../mzfc/mongodb/vendor/autoload.php";
-
                 parent::__construct($config, $db, $redis, $login);
 
                 $this->dbName = @$config["backends"]["files"]["db"]?:"rbt";
