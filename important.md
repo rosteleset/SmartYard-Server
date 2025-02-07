@@ -8,6 +8,13 @@ cd /opt/rbt/server
 composer install
 ```
 
+sometimes updating php mongodb required
+
+```
+find /usr/lib/php/ | grep mongodb.so | xargs rm
+pecl install -f mongodb
+```
+
 # 2024-12-26
 
 New mechanism for setting up motion detection zones. **New detection zones need to be configured on all cameras after updating!**
