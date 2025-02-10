@@ -320,6 +320,13 @@
                     tab: i18n("addresses.map"),
                     noHover: true,
                 },
+                {
+                    id: "ext",
+                    type: "json",
+                    title: false,
+                    tab: i18n("addresses.ext"),
+                    noHover: true,
+                },
             ],
             done: function (prefix) {
                 $("#" + prefix + "geoSuggestion").off("change").on("change", e => {
@@ -694,6 +701,14 @@
                         type: "empty",
                         title: false,
                         tab: i18n("addresses.map"),
+                        noHover: true,
+                    },
+                    {
+                        id: "ext",
+                        type: "json",
+                        title: false,
+                        tab: i18n("addresses.ext"),
+                        value: camera.ext,
                         noHover: true,
                     },
                 ],
