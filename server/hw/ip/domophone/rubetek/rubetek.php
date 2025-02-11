@@ -76,27 +76,40 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface
 
     public function configureEncoding(): void
     {
-        // Multiple calls to work correctly
         $videoSettings = $this->apiCall('/settings/video');
 
-        $videoSettings['channel1']['fps'] = '30fps';
-        $videoSettings['channel1']['bitrate'] = '1Mbps';
+        // 1st stream
+        $videoSettings['channel1']['fps'] = '15fps';
+        $videoSettings['channel1']['bitrate'] = '2Mbps';
         $videoSettings['channel1']['resolution'] = '1280x720';
-        $this->apiCall('/settings/video', 'PATCH', $videoSettings);
 
+        // 2nd stream
         $videoSettings['channel2']['fps'] = '15fps';
         $videoSettings['channel2']['bitrate'] = '0.5Mbps';
         $videoSettings['channel2']['resolution'] = '720x480';
-        $this->apiCall('/settings/video', 'PATCH', $videoSettings);
 
+        // 3rd stream
         $videoSettings['channel3']['fps'] = '15fps';
         $videoSettings['channel3']['bitrate'] = '0.5Mbps';
         $videoSettings['channel3']['resolution'] = '640x480';
-        $this->apiCall('/settings/video', 'PATCH', $videoSettings);
 
+        // Image (day)
+        $videoSettings['day_time']['wdr_enabled'] = true;
+        $videoSettings['day_time']['light_compensation_mode'] = 1; // BLC (Back Light Compensation)
+        $videoSettings['day_time']['contrast'] = 70;
+        $videoSettings['day_time']['saturation'] = 60;
+
+        // Image (night)
+        $videoSettings['night_time']['wdr_enabled'] = true;
+        $videoSettings['night_time']['light_compensation_mode'] = 2; // HLC (High Light Compensation)
+        $videoSettings['night_time']['contrast'] = 70;
+        $videoSettings['night_time']['saturation'] = 60;
+
+        // Other settings
         $videoSettings['use_for_sip'] = 'channel1';
         $videoSettings['use_for_webrtc'] = 'channel1';
         $videoSettings['snapshot_size'] = '1280x720';
+
         $this->apiCall('/settings/video', 'PATCH', $videoSettings);
     }
 
