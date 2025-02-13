@@ -300,9 +300,9 @@
                         break;
 
                     case "car":
-                        $q = "select house_flat_id from houses_flats where cars is not null and cars like concat('%', :number, '%') group by house_flat_id";
+                        $q = "select house_flat_id from houses_flats where cars is not null and cars like concat('%', cast(:number as varchar), '%') group by house_flat_id";
                         $p = [
-                            "number" => $papams["number"],
+                            "number" => $params["number"],
                         ];
                         break;
                 }
