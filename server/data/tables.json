@@ -20,6 +20,7 @@
     "core_users",
     "core_users_groups",
     "core_users_notifications",
+    "core_users_notifications_queue",
     "core_users_rights",
     "core_users_tokens",
     "core_vars",
