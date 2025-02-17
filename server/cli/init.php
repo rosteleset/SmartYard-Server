@@ -17,10 +17,16 @@
                     "exec" => [ $this, "reindex" ],
                 ];
 
+                $global_cli["#"]["initialization and update"]["enter-maintenance-mode"] = [
+                    "stage" => "pre",
+                    "description" => "Enter to maintenance mode",
+                    "exec" => [ $this, "maintenanceOn" ],
+                ];
+
                 $global_cli["#"]["initialization and update"]["exit-maintenance-mode"] = [
                     "stage" => "pre",
                     "description" => "Exit from maintenance mode",
-                    "exec" => [ $this, "maintenance" ],
+                    "exec" => [ $this, "maintenanceOff" ],
                 ];
 
                 $global_cli["#"]["initialization and update"]["clear-cache"] = [
@@ -70,7 +76,13 @@
                 exit(0);
             }
 
-            function maintenance() {
+            function maintenanceOn() {
+                maintenance(true);
+
+                exit(0);
+            }
+
+            function maintenanceOff() {
                 maintenance(false);
 
                 exit(0);

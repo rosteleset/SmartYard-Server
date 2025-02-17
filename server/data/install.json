@@ -202,5 +202,8 @@
     ],
     "62": [
         "v62_cameras.sql"
+    ],
+    "63": [
+        "v63_custom_fields.sql"
     ]
 }
