@@ -15,7 +15,6 @@ CREATE TABLE custom_fields
     search INTEGER,
     required INTEGER
 );
-
 CREATE UNIQUE INDEX custom_fields_name on custom_fields(field);
 
 CREATE TABLE common_custom_fileds_options
@@ -26,5 +25,4 @@ CREATE TABLE common_custom_fileds_options
     display_order INTEGER,
     option_display TEXT
 );
-
 CREATE UNIQUE INDEX custom_fields_options_uniq on common_custom_fileds_options(custom_field_option_id, option);
