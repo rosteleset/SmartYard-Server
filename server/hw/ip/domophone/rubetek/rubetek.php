@@ -220,6 +220,9 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface
             'password' => $password,
             'role' => 'operator',
         ]);
+
+        // Without sleep() the following calls can respond "access is forbidden" or "account not found"
+        sleep(5);
     }
 
     public function deleteApartment(int $apartment = 0): void
