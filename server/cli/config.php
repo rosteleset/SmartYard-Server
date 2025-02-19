@@ -7,11 +7,13 @@
             function __construct(&$global_cli) {
                 $global_cli["#"]["config"]["print-config"] = [
                     "description" => "Parse and print server config",
+                    "stage" => "init",
                     "exec" => [ $this, "print" ],
                 ];
 
                 $global_cli["#"]["config"]["strip-config"] = [
                     "description" => "Parse and strip server config (json5->json)",
+                    "stage" => "init",
                     "exec" => [ $this, "strip" ],
                 ];
             }

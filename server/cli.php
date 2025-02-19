@@ -356,8 +356,6 @@
         }
     }
 
-    cli("init", "#", $args);
-
     try {
         mb_internal_encoding("UTF-8");
     } catch (\Exception $e) {
@@ -395,6 +393,8 @@
     if (!$config) {
         die("config is empty\n\n");
     }
+
+    cli("init", "#", $args);
 
     if (@!$config["backends"]) {
         die("no backends defined\n\n");
