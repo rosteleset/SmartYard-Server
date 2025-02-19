@@ -1,0 +1,22 @@
+[Unit]
+Description=Brovotech CCTV Camera Service
+Documentation=https://github.com/rosteleset/SmartYard-Server/tree/main/install
+After=network.target
+
+[Service]
+SyslogIdentifier=event_brovotech
+Type=simple
+WorkingDirectory=/opt/rbt/server/services/event/
+ExecStart=/usr/bin/node /opt/rbt/server/services/event/index.js brovotech
+RestartSec=10
+Restart=always
+User=rbt
+Group=rbt
+LimitCORE=infinity
+KillMode=process
+StandardOutput=null
+#StandardOutput=append:/var/log/event_service/event_brovotech.log
+StandardError=append:/var/log/event_service/event_brovotech.error.log
+
+[Install]
+WantedBy=multi-user.target

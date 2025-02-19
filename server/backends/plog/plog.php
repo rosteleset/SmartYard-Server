@@ -22,6 +22,7 @@
             const EVENT_OPENED_BY_FACE = 5;
             const EVENT_OPENED_BY_CODE = 6;
             const EVENT_OPENED_GATES_BY_CALL = 7;
+            const EVENT_OPENED_BY_VEHICLE = 9;
 
             //колонки событий
             const COLUMN_DATE = 'date';
@@ -37,6 +38,7 @@
             const COLUMN_CODE = 'code';
             const COLUMN_PHONES = 'phones';
             const COLUMN_PREVIEW = 'preview';
+            const COLUMN_VEHICLE = 'vehicle';
 
             //типы доступа к журналу событий
             const ACCESS_DENIED = 0;

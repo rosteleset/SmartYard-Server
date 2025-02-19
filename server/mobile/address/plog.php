@@ -23,7 +23,7 @@
      * @apiSuccess {integer} [-.houseId] идентификатор дома
      * @apiSuccess {integer} [-.entranceId] идентификатор входа
      * @apiSuccess {integer} [-.cameraId] идентификатор камеры
-     * @apiSuccess {string="1 - не отвечен","2 - отвечен","3 - открытие ключом","4 - открытие приложением","5 - открытие по морде лица","6 - открытие кодом открытия","7 - открытие звонком (гость, калитка)"} -.event тип события
+     * @apiSuccess {string="1 - не отвечен","2 - отвечен","3 - открытие ключом","4 - открытие приложением","5 - открытие по морде лица","6 - открытие кодом открытия","7 - открытие звонком (гость, калитка)","8 - открытие по номеру машины"} -.event тип события
      * @apiSuccess {string} [-.preview] url картинки
      * @apiSuccess {integer="0","1","2"} -.previewType тип каринки (0 - нет, 1 - DVR, 2 - FRS)
      * @apiSuccess {string} [-.detail] непонятная фигня
@@ -39,11 +39,15 @@
      * @apiSuccess {void} [-.detailX.flags.canLike] можно "лайкать"
      * @apiSuccess {void} [-.detailX.flags.canDislike] можно "дизлайкать"
      * @apiSuccess {void} [-.detailX.flags.liked] уже "лайкнуто"
-     * @apiSuccess {object} [-.detailX.face] координаты распознанного лица
+     * @apiSuccess {object} [-.detailX.face] дополнительная информация по распознанному лицу
      * @apiSuccess {integer} [-.detailX.face.left] отступ по X
      * @apiSuccess {integer} [-.detailX.face.top] отступ по Y
      * @apiSuccess {integer} [-.detailX.face.width] ширина
      * @apiSuccess {integer} [-.detailX.face.height] высота
+     * @apiSuccess {object} [-.detailX.vehicle] информация по распознанному автомобильному номеру
+     * @apiSuccess {integer[]} [-.detailX.vehicle.vehicleBox] координаты левого верхнего и правого нижнего угла прямоугольной области, определяющей положение автомобиля
+     * @apiSuccess {integer[]} [-.detailX.vehicle.plateKeyPoints] координаты четырёхугольника, определяющие положение автомобильного номера
+     * @apiSuccess {string} [-.detailX.vehicle.plateNumber] автомобильный номер
      *
      * @apiErrorExample Ошибки
      * 402 требуется оплата
@@ -156,7 +160,7 @@
                             $face_id = $face->faceId;
                         }
                         $subscriber_id = (int)$subscriber['subscriberId'];
-                        if ($frs->isLikedFlag($flat_id, $subscriber_id, $face_id, $row[plog::COLUMN_EVENT_UUID], $flat_owner)) {
+                        if ($frs->isLikedFlagFrs($flat_id, $subscriber_id, $face_id, $row[plog::COLUMN_EVENT_UUID], $flat_owner)) {
                             $e_details['detailX']['flags'][] = frs::FLAG_LIKED;
                             $e_details['detailX']['flags'][] = frs::FLAG_CAN_DISLIKE;
                         }
@@ -198,6 +202,10 @@
                         if ($phones->gate_phone) {
                             $e_details['detailX']['phoneTo'] = strval($phones->gate_phone);
                         }
+                        break;
+
+                    case plog::EVENT_OPENED_BY_VEHICLE:
+                        $e_details['detailX']['vehicle'] = json_decode($row[plog::COLUMN_VEHICLE]);
                         break;
                 }
                 if ((int)$row[plog::COLUMN_PREVIEW]) {

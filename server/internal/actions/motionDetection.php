@@ -21,6 +21,8 @@
      *      HTTP/1.1 404 Not found
      */
 
+    use backends\frs\frs;
+
     //TODO: add payload validator handler.
     if (!isset($postdata["date"], $postdata["motionActive"])) {
         response(406, false, false, "Invalid payload");
@@ -44,10 +46,23 @@
     }
 
     ["camera_id" => $streamId, "frs" => $frsUrl] = $result[0];
+    $frs = loadBackend("frs");
+    if (!$frs) {
+        response(406, false, false, "FRS server cannot be loaded");
+    }
 
-    $payload = ["streamId" => $streamId, "start" => $motionActive ? "t" : "f"];
+    $frsServer = $frs->getServerByUrl($frsUrl);
+    $api_type = $frsServer[frs::API_TYPE];
+    if ($api_type === frs::API_LPRS) {
+        $method = $motionActive ? frs::M_START_WORKFLOW : frs::M_STOP_WORKFLOW;
+        $params = [frs::P_STREAM_ID => strval($streamId)];
+        $frs->apiCallLprs($frsUrl, $method, $params);
+    } else {
+        $method = frs::M_MOTION_DETECTION;
+        $params = [frs::P_STREAM_ID => strval($streamId), frs::P_START => $motionActive ? "t" : "f"];
+        $frs->apiCallFrs($frsUrl, $method, $params);
+    }
 
-    $apiResponse = apiExec("POST", $frsUrl . "/api/motionDetection", $payload);
     response(204);
 
     exit();
