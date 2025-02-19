@@ -26,7 +26,7 @@ if (!$entrances)
 // open all linked to the camera domophones but generate only one event
 $has_event = false;
 foreach ($entrances as $entrance) {
-    $flats = $frs->getFlatsByFaceId($face_id, $entrance["entranceId"]);
+    $flats = $frs->getFlatsByFaceIdFrs($face_id, $entrance["entranceId"]);
     if (!$flats)
         continue;
 

@@ -39,6 +39,18 @@
             const P_DATE_START = "dateStart";
             const P_DATE_END = "dateEnd";
             const P_MESSAGE = "message";
+            const P_CONFIG = "config";
+            const P_AUTH_TOKEN = "authToken";
+            const P_HAS_SPECIAL = "hasSpecial";
+            const P_PLATES = "plates";
+            const P_SCREENSHOT_URL = "screenshotUrl";
+            const P_VEHICLES = "vehicles";
+            const P_VEHICLE_BOX = "vehicleBox";
+            const P_PLATE_KEY_POINTS = "plateKeyPoints";
+            const P_PLATE_NUMBER = "plateNumber";
+            const P_BOX = "box";
+            const P_KPTS = "kpts";
+            const P_NUMBER = "number";
 
             //FRS method names
             const M_ADD_STREAM = "addStream";
@@ -51,6 +63,11 @@
             const M_DELETE_FACES = "deleteFaces";
             const M_REMOVE_STREAM = "removeStream";
             const M_ADD_FACES = "addFaces";
+            const M_START_WORKFLOW = "startWorkflow";
+            const M_STOP_WORKFLOW = "stopWorkflow";
+            const M_GET_EVENT_DATA = "getEventData";
+            const M_SET_STREAM_DEFAULT_CONFIG = "setStreamDefaultConfig";
+            const M_GET_STREAM_DEFAULT_CONFIG = "getStreamDefaultConfig";
 
             //response codes
             const R_CODE_OK = 200;
@@ -64,6 +81,9 @@
             const FRS_STREAMS = "streams";
             const FRS_ALL_FACES = "allFaces";
             const FRS_FACES = "faces";
+            const API_TYPE = "api";
+            const API_FRS = "frs";
+            const API_LPRS = "lprs";
 
             //other
             const PDO_SINGLIFY = "singlify";
@@ -73,12 +93,18 @@
             const FLAG_CAN_DISLIKE = "canDislike";
             const FLAG_LIKED = "liked";
 
+            const C_SCREENSHOT_URL = "screenshot-url";
+            const C_CALLBACK_URL = "callback-url";
+            const C_WORK_AREA = "work-area";
+
             //FRS API methods calls
 
             /**
              * @return mixed
              */
             abstract public function servers();
+
+            abstract public function getServerByUrl($base_url);
 
             /**
              * Call API method
@@ -87,7 +113,7 @@
              * @param array|null $params call parameters
              * @return false|object
              */
-            abstract public function apiCall($base_url, $method, $params);
+            abstract public function apiCallFrs($base_url, $method, $params);
 
             /**
              * Add video stream to FRS
@@ -96,7 +122,7 @@
              * @param array $params array of setup parameters for video stream
              * @return object
              */
-            abstract public function addStream($cam, array $faces = [], array $params = []);
+            abstract public function addStreamFrs($cam, array $faces = [], array $params = []);
 
             /**
              * Call API method bestQuality by date
@@ -105,7 +131,7 @@
              * @param string $event_uuid host event's UUID
              * @return object
              */
-            abstract public function bestQualityByDate($cam, $date, string $event_uuid = "");
+            abstract public function bestQualityByDateFrs($cam, $date, string $event_uuid = "");
 
             /**
              * Call API method bestQuality by FRS event's identifier
@@ -114,7 +140,7 @@
              * @param string $event_uuid host event's UUID
              * @return object
              */
-            abstract public function bestQualityByEventId($cam, $event_id, string $event_uuid = "");
+            abstract public function bestQualityByEventIdFrs($cam, $event_id, string $event_uuid = "");
 
             /**
              * Register face by host's event data
@@ -126,7 +152,7 @@
              * @param int $height face's region height
              * @return object
              */
-            abstract public function registerFace($cam, $event_uuid, $left = 0, $top = 0, $width = 0, $height = 0);
+            abstract public function registerFaceFrs($cam, $event_uuid, $left = 0, $top = 0, $width = 0, $height = 0);
 
             /**
              * Detach faces from video stream
@@ -134,7 +160,7 @@
              * @param array $faces array of face identifiers (face_id)
              * @return object
              */
-            abstract public function removeFaces($cam, array $faces);
+            abstract public function removeFacesFrs($cam, array $faces);
 
             /**
              * Motion Detection
@@ -142,7 +168,7 @@
              * @param bool $is_start starts or stops motion detection
              * @return object
              */
-            abstract public function motionDetection($cam, bool $is_start);
+            abstract public function motionDetectionFrs($cam, bool $is_start);
 
             //RBT methods
 
@@ -153,7 +179,7 @@
              * @param int $house_subscriber_id
              * @return bool
              */
-            abstract public function attachFaceId($face_id, $flat_id, $house_subscriber_id): bool;
+            abstract public function attachFaceIdFrs($face_id, $flat_id, $house_subscriber_id): bool;
 
             /**
              * Detach face_id from all subscriber's flats
@@ -161,7 +187,7 @@
              * @param int $house_subscriber_id
              * @return bool
              */
-            abstract public function detachFaceId($face_id, $house_subscriber_id): bool;
+            abstract public function detachFaceIdFrs($face_id, $house_subscriber_id): bool;
 
             /**
              * Detach face_id from flat (all subscribers)
@@ -169,14 +195,14 @@
              * @param int $flat_id
              * @return bool
              */
-            abstract public function detachFaceIdFromFlat($face_id, $flat_id): bool;
+            abstract public function detachFaceIdFromFlatFrs($face_id, $flat_id): bool;
 
             /**
              * @param $face_id
              * @param $entrance_id
              * @return array returns a list of flat identifiers
              */
-            abstract public function getFlatsByFaceId($face_id, $entrance_id): array;
+            abstract public function getFlatsByFaceIdFrs($face_id, $entrance_id): array;
 
             /**
              * Check liked flag
@@ -187,7 +213,7 @@
              * @param bool $is_owner
              * @return bool
              */
-            abstract public function isLikedFlag($flat_id, $subscriber_id, $face_id, $event_uuid, $is_owner): bool;
+            abstract public function isLikedFlagFrs($flat_id, $subscriber_id, $face_id, $event_uuid, $is_owner): bool;
 
             /**
              * List all liked faces in the flat by subscriber or all faces in the flat for owner
@@ -196,13 +222,53 @@
              * @param bool $is_owner
              * @return array
              */
-            abstract public function listFaces($flat_id, $subscriber_id, $is_owner = false): array;
+            abstract public function listFacesFrs($flat_id, $subscriber_id, $is_owner = false): array;
 
             /**
              * Get registered face_id by event's UUID
              * @param int $event_uuid
              * @return false|int
              */
-            abstract public function getRegisteredFaceId($event_uuid);
+            abstract public function getRegisteredFaceIdFrs($event_uuid);
+
+            //LPRS API methods calls
+
+            /**
+             * Call API method
+             * @param string $base_url base URL LPRS
+             * @param string $method API method name
+             * @param array|null $params call parameters
+             * @return false|object
+             */
+            abstract public function apiCallLprs($base_url, $method, $params);
+
+            /**
+             * Add video stream to LPRS
+             * @param object $cam camera object
+             * @param array $params array of setup parameters for video stream
+             * @return object
+             */
+            abstract public function addStreamLprs($cam, array $params = []);
+
+            /**
+             * Remove video stream from LPRS
+             * @param object $cam camera object
+             * @return object
+             */
+            abstract public function removeStreamLprs($cam);
+
+            /**
+             * Start Workflow
+             * @param object $cam camera object
+             * @return object
+             */
+            abstract public function startWorkflowLprs($cam);
+
+            /**
+             * Stop Workflow
+             * @param object $cam camera object
+             * @return object
+             */
+            abstract public function stopWorkflowLprs($cam);
         }
     }

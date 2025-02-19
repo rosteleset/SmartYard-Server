@@ -63,7 +63,7 @@
              * @inheritDoc
              */
 
-            public function getCamshot($domophone_id, $output, $date, $event_id = false) {
+            public function getCamshot($domophone_id, $output, $date, $event_id = false, $number = "") {
                 $files = loadBackend('files');
                 $camshot_data = [];
 
@@ -78,39 +78,79 @@
                             $camshot_data['camera_id'] = $entrances[0]["cameraId"];
                             $frs = loadBackend("frs");
                             if ($frs) {
-                                if ($event_id === false) {
-                                    $response = $frs->bestQualityByDate($cameras[0], $date);
-                                } else {
-                                    $response = $frs->bestQualityByEventId($cameras[0], $event_id);
-                                }
-
-                                if ($response && $response[frs::P_CODE] == frs::R_CODE_OK && $response[frs::P_DATA]) {
-                                    $image_data = false;
-                                    $urlOfScreenshot = $response[frs::P_DATA][frs::P_SCREENSHOT];
-                                    if (filter_var($urlOfScreenshot, FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED) !== false) {
-                                        $image_data = file_get_contents($urlOfScreenshot);
+                                if ($number === "") {
+                                    if ($event_id === false) {
+                                        $response = $frs->bestQualityByDateFrs($cameras[0], $date);
+                                    } else {
+                                        $response = $frs->bestQualityByEventIdFrs($cameras[0], $event_id);
                                     }
-                                    if ($image_data) {
-                                        $headers = implode("\n", $http_response_header);
-                                        $content_type = "image/jpeg";
-                                        if (preg_match_all("/^content-type\s*:\s*(.*)$/mi", $headers, $matches)) {
-                                            $content_type = end($matches[1]);
+
+                                    if ($response && $response[frs::P_CODE] == frs::R_CODE_OK && $response[frs::P_DATA]) {
+                                        $image_data = false;
+                                        $urlOfScreenshot = $response[frs::P_DATA][frs::P_SCREENSHOT] ?? $response[frs::P_DATA][frs::P_SCREENSHOT_URL] ?? "";
+                                        if (filter_var($urlOfScreenshot, FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED) !== false) {
+                                            $image_data = file_get_contents($urlOfScreenshot);
                                         }
-                                        $camshot_data[self::COLUMN_IMAGE_UUID] = $files->toGUIDv4($files->addFile(
-                                            "camshot",
-                                            $files->contentsToStream($image_data),
-                                            [
-                                                "contentType" => $content_type,
-                                                "expire" => time() + $this->ttl_camshot_days * 86400,
-                                            ]
-                                        ));
-                                        $camshot_data[self::COLUMN_PREVIEW] = self::PREVIEW_FRS;
-                                        $camshot_data[self::COLUMN_FACE] = [
-                                            frs::P_FACE_LEFT => $response[frs::P_DATA][frs::P_FACE_LEFT],
-                                            frs::P_FACE_TOP => $response[frs::P_DATA][frs::P_FACE_TOP],
-                                            frs::P_FACE_WIDTH => $response[frs::P_DATA][frs::P_FACE_WIDTH],
-                                            frs::P_FACE_HEIGHT => $response[frs::P_DATA][frs::P_FACE_HEIGHT],
-                                        ];
+                                        if ($image_data) {
+                                            $headers = implode("\n", $http_response_header);
+                                            $content_type = "image/jpeg";
+                                            if (preg_match_all("/^content-type\s*:\s*(.*)$/mi", $headers, $matches)) {
+                                                $content_type = end($matches[1]);
+                                            }
+                                            $camshot_data[self::COLUMN_IMAGE_UUID] = $files->toGUIDv4($files->addFile(
+                                                "camshot",
+                                                $files->contentsToStream($image_data),
+                                                [
+                                                    "contentType" => $content_type,
+                                                    "expire" => time() + $this->ttl_camshot_days * 86400,
+                                                ]
+                                            ));
+                                            $camshot_data[self::COLUMN_PREVIEW] = self::PREVIEW_FRS;
+                                            $camshot_data[self::COLUMN_FACE] = [
+                                                frs::P_FACE_LEFT => $response[frs::P_DATA][frs::P_FACE_LEFT],
+                                                frs::P_FACE_TOP => $response[frs::P_DATA][frs::P_FACE_TOP],
+                                                frs::P_FACE_WIDTH => $response[frs::P_DATA][frs::P_FACE_WIDTH],
+                                                frs::P_FACE_HEIGHT => $response[frs::P_DATA][frs::P_FACE_HEIGHT],
+                                            ];
+                                        }
+                                    }
+                                } else {
+                                    $response = $frs->apiCallLprs($cameras[0]['frs'], frs::M_GET_EVENT_DATA, [frs::P_EVENT_ID => $event_id]);
+                                    if ($response && $response[frs::P_CODE] == frs::R_CODE_OK && $response[frs::P_DATA]) {
+                                        $image_data = false;
+                                        $urlOfScreenshot = $response[frs::P_DATA][frs::P_SCREENSHOT_URL];
+                                        if (filter_var($urlOfScreenshot, FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED) !== false) {
+                                            $image_data = file_get_contents($urlOfScreenshot);
+                                        }
+                                        if ($image_data) {
+                                            $headers = implode("\n", $http_response_header);
+                                            $content_type = "image/jpeg";
+                                            if (preg_match_all("/^content-type\s*:\s*(.*)$/mi", $headers, $matches)) {
+                                                $content_type = end($matches[1]);
+                                            }
+                                            $camshot_data[self::COLUMN_IMAGE_UUID] = $files->toGUIDv4($files->addFile(
+                                                "camshot",
+                                                $files->contentsToStream($image_data),
+                                                [
+                                                    "contentType" => $content_type,
+                                                    "expire" => time() + $this->ttl_camshot_days * 86400,
+                                                ]
+                                            ));
+                                            $camshot_data[self::COLUMN_PREVIEW] = self::PREVIEW_FRS;
+
+                                            $vehicles = $response[frs::P_DATA][frs::P_VEHICLES];
+                                            foreach ($vehicles as $vehicle) {
+                                                foreach ($vehicle['plates'] as $plate) {
+                                                    if ($plate['number'] === $number) {
+                                                        $camshot_data[self::COLUMN_VEHICLE] =[
+                                                            frs::P_VEHICLE_BOX => $vehicle[frs::P_BOX],
+                                                            frs::P_PLATE_KEY_POINTS => $plate[frs::P_KPTS],
+                                                            frs::P_PLATE_NUMBER => $plate[frs::P_NUMBER],
+                                                        ];
+                                                    }
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -317,7 +357,8 @@
                         rfid,
                         code,
                         toJSONString(phones) phones,
-                        preview
+                        preview,
+                        vehicle
                     from
                         plog
                     where
@@ -576,14 +617,26 @@
                         ])[0];
                         $frs = loadBackend("frs");
                         if ($frs)
-                            $flat_list = $frs->getFlatsByFaceId($face_id, $entrance["entranceId"]);
+                            $flat_list = $frs->getFlatsByFaceIdFrs($face_id, $entrance["entranceId"]);
+                        if (!$flat_list) {
+                            continue;
+                        }
+                    }
+
+                    if ($event_type == self::EVENT_OPENED_BY_VEHICLE) {
+                        $event_data[self::COLUMN_OPENED] = 1;
+                        $details = explode("|", $row['detail']);
+                        $number = $details[0];
+                        $flat_list = [(int)$details[1]];
+                        $event_id = (int)$details[2];
+
                         if (!$flat_list) {
                             continue;
                         }
                     }
 
                     //получение кадра события
-                    $image_data = $this->getCamshot($domophone_id, $output, $plog_date, $event_id);
+                    $image_data = $this->getCamshot($domophone_id, $output, $plog_date, $event_id, $number ?? "");
                     if ($image_data) {
                         if (isset($image_data[self::COLUMN_IMAGE_UUID])) {
                             $event_data[self::COLUMN_IMAGE_UUID] = $image_data[self::COLUMN_IMAGE_UUID];
@@ -594,6 +647,9 @@
                             if (isset($face_id)) {
                                 $event_data[self::COLUMN_FACE][frs::P_FACE_ID] = $face_id;
                             }
+                        }
+                        if (isset($image_data[self::COLUMN_VEHICLE])) {
+                            $event_data[self::COLUMN_VEHICLE] = json_encode($image_data[self::COLUMN_VEHICLE]);
                         }
                         if (isset($image_data['house_id'])) {
                             $event_data[self::COLUMN_DOMOPHONE]['house_id'] = $image_data['house_id'];
