@@ -12,6 +12,7 @@ import {
     RubetekService,
     SputnikCloudService,
     UfanetService,
+    BrovotechService,
 } from "./services/index.js";
 
 import {
@@ -25,6 +26,7 @@ import {
     SERVICE_RUBETEK,
     SERVICE_SPUTNIK_CLOUD,
     SERVICE_UFANET,
+    SERVICE_BROVOTECH,
 } from "./constants.js";
 
 const { hw } = config;
@@ -96,6 +98,11 @@ switch (serviceParam) {
         }
         const sputnikCloudService = new SputnikCloudService(SERVICE_SPUTNIK_CLOUD, serviceConfig);
         sputnikCloudService.start();
+        break;
+
+    case SERVICE_BROVOTECH:
+        const brovotechService = new BrovotechService(SERVICE_BROVOTECH, serviceConfig, spamWords[SERVICE_BROVOTECH]);
+        brovotechService.createSyslogServer();
         break;
 
     default:

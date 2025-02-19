@@ -1,4 +1,5 @@
 import { SERVICE_UFANET } from '../constants.js';
+import { SERVICE_BROVOTECH } from '../constants.js';
 import { getTimestamp } from "./index.js";
 
 const parseSyslogMessage = (str, unit) => {
@@ -15,6 +16,13 @@ const parseSyslogMessage = (str, unit) => {
         return {
             hostname: null,
             message: message,
+        };
+    }
+
+    if (unit === SERVICE_BROVOTECH) {
+        return {
+            hostname: null,
+            message: str,
         };
     }
 

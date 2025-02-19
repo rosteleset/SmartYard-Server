@@ -24,14 +24,15 @@ final class DetectionZoneUtils
         int           $maxX,
         int           $maxY,
         string        $direction,
+        bool          $roundToEven = false
     ): DetectionZone
     {
         if ($direction === 'toPixel') {
             return new DetectionZone(
-                x: self::percentToPixel($zone->x, $maxX),
-                y: self::percentToPixel($zone->y, $maxY),
-                width: self::percentToPixel($zone->width, $maxX),
-                height: self::percentToPixel($zone->height, $maxY),
+                x: self::percentToPixel($zone->x, $maxX, $roundToEven),
+                y: self::percentToPixel($zone->y, $maxY, $roundToEven),
+                width: self::percentToPixel($zone->width, $maxX, $roundToEven),
+                height: self::percentToPixel($zone->height, $maxY, $roundToEven),
             );
         }
 
@@ -54,9 +55,16 @@ final class DetectionZoneUtils
      * @param int $max The maximum dimension (e.g., max width or height in pixels).
      * @return int The equivalent pixel value.
      */
-    private static function percentToPixel(float $percent, int $max): int
+    private static function percentToPixel(float $percent, int $max, bool $roundToEven = false): int
     {
-        return (int)round(($percent / 100) * $max);
+        $pixel = (int)round(($percent / 100) * $max);
+        if ($roundToEven && $pixel % 2 != 0) {
+            $pixel -= 1;
+            if ($pixel < 0) {
+                $pixel = 0;
+            }
+        }
+        return $pixel;
     }
 
     /**

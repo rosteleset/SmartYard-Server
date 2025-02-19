@@ -46,7 +46,7 @@
             $face_id = (int)$face->faceId;
         }
 
-        $face_id2 = $frs->getRegisteredFaceId($event_uuid);
+        $face_id2 = $frs->getRegisteredFaceIdFrs($event_uuid);
         if ($face_id2 === false) {
             $face_id2 = null;
         }
@@ -77,18 +77,18 @@
 
     if ($flat_owner) {
         if ($face_id > 0) {
-            $frs->detachFaceIdFromFlat($face_id, $flat_id);
+            $frs->detachFaceIdFromFlatFrs($face_id, $flat_id);
         }
         if ($face_id2 > 0) {
-            $frs->detachFaceIdFromFlat($face_id2, $flat_id);
+            $frs->detachFaceIdFromFlatFrs($face_id2, $flat_id);
         }
     } else {
         $subscriber_id = (int)$subscriber['subscriberId'];
         if ($face_id > 0) {
-            $frs->detachFaceId($face_id, $subscriber_id);
+            $frs->detachFaceIdFrs($face_id, $subscriber_id);
         }
         if ($face_id2 > 0) {
-            $frs->detachFaceId($face_id2, $subscriber_id);
+            $frs->detachFaceIdFrs($face_id2, $subscriber_id);
         }
     }
 

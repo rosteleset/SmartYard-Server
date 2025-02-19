@@ -47,7 +47,7 @@
     }
 
     $subscriber_id = (int)$subscriber['subscriberId'];
-    $faces = $frs->listFaces($flat_id, $subscriber_id, $flat_owner);
+    $faces = $frs->listFacesFrs($flat_id, $subscriber_id, $flat_owner);
     $result = [];
     foreach ($faces as $face) {
         $result[] = ['faceId' => strval($face[frs::P_FACE_ID]), 'image' => @$config["api"]["mobile"] . "/address/plogCamshot/" . $face[frs::P_FACE_IMAGE]];

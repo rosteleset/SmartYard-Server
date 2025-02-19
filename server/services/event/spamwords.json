@@ -93,5 +93,6 @@
     ],
     "ufanet": [
         "goke-i2c"
-    ]
+    ],
+    "brovotech": []
 }
