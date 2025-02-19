@@ -594,7 +594,7 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface
     protected function configureExternalReader(): void
     {
         $this->apiCall('/settings/wiegand', 'PATCH', [
-            'type' => 26,
+            'type' => 34,
             'mute_notifications' => true,
             'reverse_data_order' => false,
         ]);
@@ -610,6 +610,7 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface
         $this->apiCall('/settings/nfc_reader', 'PATCH', [
             'period_reading_ms' => 2000,
             'disable_sl3' => true,
+            'use_card_uid_length' => true,
             'code_length' => 4,
             'reverse_data_order' => true,
             'find_direct_and_reverse_orders' => false,
