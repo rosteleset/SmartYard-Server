@@ -1,0 +1,9 @@
+{
+    "title": "BROVOTECH CAMERA",
+    "vendor": "BROVOTECH",
+    "model": false,
+    "version": false,
+    "eventServer": "brovotech",
+    "class": "brovotech",
+    "useSmartConfigurator": false
+}
