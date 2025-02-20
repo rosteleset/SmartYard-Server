@@ -485,6 +485,7 @@
 
                 $frs_all_data = [];
                 foreach ($frs_servers as $frs_server) {
+                    $api_type = $frs_server[frs::API_TYPE] ?? null;
                     $frs_all_data[$frs_server[self::FRS_BASE_URL]] = [];
                     $streams = $this->apiCallFrs($frs_server[self::FRS_BASE_URL], self::M_LIST_STREAMS, null);
                     if ($streams[self::P_CODE] > 204)
@@ -492,10 +493,23 @@
                     if ($streams && isset($streams[self::P_DATA]) && is_array($streams[self::P_DATA]))
                         foreach ($streams[self::P_DATA] as $item)
                         {
-                            if (array_key_exists(self::P_FACE_IDS, $item))
-                                $frs_all_data[$frs_server[self::FRS_BASE_URL]][$item[self::P_STREAM_ID]] = $item[self::P_FACE_IDS];
-                            else
-                                $frs_all_data[$frs_server[self::FRS_BASE_URL]][$item[self::P_STREAM_ID]] = [];
+                            if (array_key_exists(self::P_FACE_IDS, $item)) {
+                                $frs_all_data[$frs_server[self::FRS_BASE_URL]][$item[self::P_STREAM_ID]][self::P_FACE_IDS] = $item[self::P_FACE_IDS];
+                            } else {
+                                $frs_all_data[$frs_server[self::FRS_BASE_URL]][$item[self::P_STREAM_ID]][self::P_FACE_IDS] = [];
+                            }
+
+                            if ($api_type === frs::API_FRS) {
+                                if (array_key_exists(self::P_URL, $item)) {
+                                    $frs_all_data[$frs_server[self::FRS_BASE_URL]][$item[self::P_STREAM_ID]][self::P_URL] = $item[self::P_URL];
+                                }
+                                if (array_key_exists(self::P_CALLBACK_URL, $item)) {
+                                    $frs_all_data[$frs_server[self::FRS_BASE_URL]][$item[self::P_STREAM_ID]][self::P_CALLBACK_URL] = $item[self::P_CALLBACK_URL];
+                                }
+                                if (array_key_exists(self::P_CONFIG, $item)) {
+                                    $frs_all_data[$frs_server[self::FRS_BASE_URL]][$item[self::P_STREAM_ID]][self::P_CONFIG] = $item[self::P_CONFIG];
+                                }
+                            }
                         }
                 }
 
@@ -503,7 +517,9 @@
                 $query = "
                     select
                       c.frs,
-                      c.camera_id
+                      c.camera_id,
+                      c.rc_area,
+                      c.ext
                     from
                       cameras c
                     where
@@ -522,7 +538,52 @@
                             continue;
 
                         $stream_id = $item['camera_id'];
-                        $rbt_all_data[$frs_base_url][$stream_id] = [];
+                        $rbt_all_data[$frs_base_url][$stream_id][self::P_FACE_IDS] = [];
+
+                        $frs_server = $this->getServerByUrl($frs_base_url);
+                        $api_type = $frs_server[frs::API_TYPE] ?? null;
+                        if ($api_type === frs::API_FRS) {
+                            $rbt_all_data[$frs_base_url][$stream_id][self::P_URL] = $this->config["api"]["internal"] . "/frs/camshot/" . $stream_id;
+                            $rbt_all_data[$frs_base_url][$stream_id][self::P_CALLBACK_URL] = $this->config["api"]["internal"] . "/frs/callback?stream_id=" . $stream_id;
+
+                            $config = null;
+                            if (isset($item['rc_area']) && $item['rc_area'] !== "null") {
+                                $area = json_decode($item['rc_area'], true);
+                                if (is_array($area) && count($area) > 0) {
+                                    $x_min = 100;
+                                    $y_min = 100;
+                                    $x_max = 0;
+                                    $y_max = 0;
+                                    foreach ($area as $it) {
+                                        if ($it['x'] < $x_min) {
+                                            $x_min = $it['x'];
+                                        }
+                                        if ($it['x'] > $x_max) {
+                                            $x_max = $it['x'];
+                                        }
+                                        if ($it['y'] < $y_min) {
+                                            $y_min = $it['y'];
+                                        }
+                                        if ($it['y'] > $y_max) {
+                                            $y_max = $it['y'];
+                                        }
+                                    }
+                                    $work_area = [$x_min, $y_min, $x_max - $x_min, $y_max - $y_min];
+                                    $config[self::C_WORK_AREA] = $work_area;
+                                }
+                            }
+                            if (isset($item['ext']) && $item['ext'] !== "null") {
+                                $ext = json_decode($item['ext'], true);
+                                if (is_array($ext)) {
+                                    foreach ($ext as $k => $v) {
+                                        $config[$k] = $v;
+                                    }
+                                }
+                            }
+                            if (isset($config)) {
+                                $rbt_all_data[$frs_base_url][$stream_id][self::P_CONFIG] = $config;
+                            }
+                        }
                     }
 
                 $query = "
@@ -568,28 +629,31 @@
                             $this->deleteFaceId($face_id);
                             $this->apiCallFrs($frs_base_url, self::M_DELETE_FACES, [self::P_FACE_IDS => [$face_id]]);
                         } else {
-                            $rbt_all_data[$frs_base_url][$stream_id][] = $face_id;
+                            $rbt_all_data[$frs_base_url][$stream_id][self::P_FACE_IDS][] = $face_id;
                         }
                     }
 
                 foreach ($rbt_all_data as $base_url => $data) {
-
                     //syncing video streams
-                    $diff_streams = array_diff_key($data, $frs_all_data[$base_url]);
-                    foreach ($diff_streams as $stream_id => $faces) {
-                        $cam = loadBackend("cameras")->getCamera($stream_id);
-                        if ($cam) {
+                    $diff_streams = array_replace_recursive(
+                        array_diff_assoc_recursive($data, $frs_all_data[$base_url], false),
+                        array_diff_assoc_recursive($frs_all_data[$base_url], $data, false),
+                    );
+                    foreach ($diff_streams as $stream_id => $stream_data) {
+                        if (array_key_exists($stream_id, $data)) {
                             $method_params = [
                                 self::P_STREAM_ID => $stream_id,
-                                self::P_URL => $this->camshotUrl($cam),
-                                self::P_CALLBACK_URL => $this->callbackFrs($cam)
+                                self::P_URL => $data[$stream_id][self::P_URL],
+                                self::P_CALLBACK_URL => $data[$stream_id][self::P_CALLBACK_URL],
                             ];
-                            if ($faces) {
+                            $faces = $data[$stream_id][self::P_FACE_IDS] ?? null;
+                            if (isset($faces)) {
                                 $method_params[self::P_FACE_IDS] = $faces;
                             }
+                            $method_params[self::P_CONFIG] = $data[$stream_id][self::P_CONFIG];
+
                             $this->apiCallFrs($base_url, self::M_ADD_STREAM, $method_params);
                         }
-
                     }
 
                     $diff_streams = array_diff_key($frs_all_data[$base_url], $data);
@@ -599,13 +663,14 @@
 
                     //syncing faces by video streams
                     $common_streams = array_intersect_key($data, $frs_all_data[$base_url]);
-                    foreach ($common_streams as $stream_id => $rbt_faces) {
-                        $diff_faces = array_diff($rbt_faces, $frs_all_data[$base_url][$stream_id], $this->getIgnoredSyncingFaces());
+                    foreach ($common_streams as $stream_id => $stream_data) {
+                        $rbt_faces = $stream_data[self::P_FACE_IDS];
+                        $diff_faces = array_diff($rbt_faces, $frs_all_data[$base_url][$stream_id][self::P_FACE_IDS], $this->getIgnoredSyncingFaces());
                         if ($diff_faces) {
                             $this->apiCallFrs($base_url, self::M_ADD_FACES, [self::P_STREAM_ID => $stream_id, self::P_FACE_IDS => $diff_faces]);
                         }
 
-                        $diff_faces = array_diff($frs_all_data[$base_url][$stream_id], $rbt_faces, $this->getIgnoredSyncingFaces());
+                        $diff_faces = array_diff($frs_all_data[$base_url][$stream_id][self::P_FACE_IDS], $rbt_faces, $this->getIgnoredSyncingFaces());
                         if ($diff_faces)
                             $this->apiCallFrs($base_url, self::M_REMOVE_FACES, [self::P_STREAM_ID => $stream_id, self::P_FACE_IDS => $diff_faces]);
                     }
@@ -681,11 +746,13 @@
                         ];
                         if (isset($item['rc_area']) && $item['rc_area'] !== "null") {
                             $area = json_decode($item['rc_area'], true);
-                            $work_area = [[]];
-                            foreach ($area as $it) {
-                                $work_area[0][] = [$it['x'], $it['y']];
+                            if (is_array($area) && count($area) > 0) {
+                                $work_area = [[]];
+                                foreach ($area as $it) {
+                                    $work_area[0][] = [$it['x'], $it['y']];
+                                }
+                                $config[self::C_WORK_AREA] = $work_area;
                             }
-                            $config[self::C_WORK_AREA] = $work_area;
                         }
                         if (isset($item['ext']) && $item['ext'] !== "null") {
                             $ext = json_decode($item['ext'], true);
@@ -699,17 +766,22 @@
                     }
 
                 foreach ($rbt_all_data as $k => $v) {
-                    $diff = array_diff_assoc_recursive($rbt_all_data[$k], $lprs_streams[$k]);
+                    $diff = array_replace_recursive(
+                        array_diff_assoc_recursive($rbt_all_data[$k], $lprs_streams[$k]),
+                        array_diff_assoc_recursive($lprs_streams[$k], $rbt_all_data[$k]),
+                    );
                     $keys = array_keys($diff);
                     foreach ($keys as $stream_id) {
-                        $stream_id = strval($stream_id);
-                        $params = [self::P_STREAM_ID => $stream_id, self::P_CONFIG => $rbt_all_data[$k][$stream_id]];
-                        $this->apiCallLprs($k, self::M_ADD_STREAM, $params);
+                        if (array_key_exists($stream_id, $rbt_all_data[$k])) {
+                            $stream_id = strval($stream_id);
+                            $params = [self::P_STREAM_ID => $stream_id, self::P_CONFIG => $rbt_all_data[$k][$stream_id]];
+                            $this->apiCallLprs($k, self::M_ADD_STREAM, $params);
+                        }
                     }
                 }
 
                 foreach ($lprs_streams as $k => $v) {
-                    $diff = array_diff($lprs_streams[$k], $rbt_all_data[$k]);
+                    $diff = array_diff_key($lprs_streams[$k], $rbt_all_data[$k]);
                     $keys = array_keys($diff);
                     foreach ($keys as $stream_id) {
                         $stream_id = strval($stream_id);
