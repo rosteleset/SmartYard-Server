@@ -139,7 +139,7 @@ class brovotech extends camera
             </request>
         ";
 
-        $this->apiCall("/action/set", 'POST', ['subject' => 'user', 'do' => 'modify'], $xml_request);
+        $this->apiCall("/action/set", 'POST', ['subject' => 'evtserver'], $xml_request);
     }
 
     public function configureMotionDetection(array $detectionZones): void
