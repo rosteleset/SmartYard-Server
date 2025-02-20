@@ -19,7 +19,8 @@
      * @apiBody {string="t","f"} [settings.paperBill] печатать бумажные платежки (если нет значит недоступен)
      * @apiBody {string="t","f"} [settings.disablePlog] прекратить "следить" за квартирой
      * @apiBody {string="t","f"} [settings.hiddenPlog] показывать журнал только владельцу
-     * @apiBody {string="t","f"} [settings.FRSDisabled] отключить распознование лиц для квартиры (если нет значит недоступен)
+     * @apiBody {string="t","f"} [settings.FRSDisabled] отключить распознавание лиц для квартиры (если нет значит недоступен)
+     * @apiBody {string="t","f"} [settings.LPRSDisabled] отключить распознавание атомобильных номеров для квартиры (если нет значит недоступен)
      *
      * @apiSuccess {object} - настройки квартиры
      * @apiSuccess {string="t","f"} -.allowDoorCode="t" код открытия двери разрешен
@@ -32,10 +33,12 @@
      * @apiSuccess {string="t","f"} [_.paperBill] печатать бумажные платежки
      * @apiSuccess {string="t","f"} _.disablePlog="f" прекратить "следить" за квартирой
      * @apiSuccess {string="t","f"} _.hiddenPlog="f" показывать журнал только владельцу
-     * @apiSuccess {string="t","f"} [_.FRSDisabled] отключить распознование лиц для квартиры
+     * @apiSuccess {string="t","f"} [_.FRSDisabled] отключить распознавание лиц для квартиры
+     * @apiSuccess {string="t","f"} [_.LPRSDisabled] отключить распознавание номеров для квартиры
      */
 
     use backends\plog\plog;
+    use backends\frs\frs;
 
     auth();
     $households = loadBackend("households");
@@ -150,18 +153,27 @@
     if ($frs) {
         $cameras = loadBackend("cameras");
         $frsDisabled = null;
+        $lprsDisabled = null;
         foreach ($flat['entrances'] as $entrance) {
             $e = $households->getEntrance($entrance['entranceId']);
             if ($cameras) {
                 $vstream = $cameras->getCamera($e['cameraId']);
                 if ($vstream && strlen($vstream["frs"]) > 1) {
-                    $frsDisabled = 'f';
-                    break;
+                    $frs_server = $frs->getServerByUrl($vstream["frs"]);
+                    $api_type = $frs_server[frs::API_TYPE] ?? null;
+                    if ($api_type === frs::API_LPRS) {
+                        $lprsDisabled = 'f';
+                    } else {
+                        $frsDisabled = 'f';
+                    }
                 }
             }
         }
         if ($frsDisabled != null) {
             $ret['FRSDisabled'] = $frsDisabled;
+        }
+        if ($lprsDisabled != null) {
+            $ret['LPRSDisabled'] = $lprsDisabled;
         }
     }
 
