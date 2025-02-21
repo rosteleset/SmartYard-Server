@@ -14,12 +14,12 @@
 
     init: function () {
         if (parseInt(myself.uid) > 0) {
-            if (AVAIL("cs", "sheets")) {
+            if (AVAIL("cs", "sheets") && AVAIL("tt", "tt")) {
                 this.menuItem = leftSide("fas fa-fw fa-table", i18n("cs.cs"), "?#cs", "tt");
             }
         }
 
-        if (AVAIL("cs", "sheet", "PUT")) {
+        if (AVAIL("cs", "sheet", "PUT") && AVAIL("tt", "tt")) {
             loadSubModules("cs", [
                 "sheet",
             ], this);
