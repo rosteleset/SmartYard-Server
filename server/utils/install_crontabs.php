@@ -44,7 +44,7 @@
         $clean[] = "## RBT crons end, dont touch!!!";
         $lines++;
 
-        file_put_contents(sys_get_temp_dir() . "/rbt_crontab", trim(implode("\n", $clean)));
+        file_put_contents(sys_get_temp_dir() . "/rbt_crontab", trim(implode("\n", $clean)) . "\n");
 
         system("crontab " . sys_get_temp_dir() . "/rbt_crontab");
 
@@ -76,10 +76,9 @@
 
         $clean = explode("\n", trim(implode("\n", $clean)));
 
-        file_put_contents(sys_get_temp_dir() . "/rbt_crontab", trim(implode("\n", $clean)));
+        file_put_contents(sys_get_temp_dir() . "/rbt_crontab", trim(implode("\n", $clean)) . "\n");
 
         system("crontab " . sys_get_temp_dir() . "/rbt_crontab");
 
         return $lines;
     }
-
