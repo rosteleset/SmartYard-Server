@@ -70,10 +70,9 @@
             }
 
             function unpdate($args) {
-                $n = unInstallCrontabs();
-                echo "$n crontabs lines removed\n\n";
-                $n = installCrontabs();
-                echo "$n crontabs lines added\n\n";
+                $u = unInstallCrontabs();
+                $i = installCrontabs();
+                echo "$u crontabs lines removed and $i crontabs lines added\n\n";
 
                 exit(0);
             }
