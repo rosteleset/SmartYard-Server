@@ -26,6 +26,11 @@
                     "description" => "Uninstall cronparts",
                     "exec" => [ $this, "uninstall" ],
                 ];
+
+                $global_cli["#"]["cron"]["update-crontabs"] = [
+                    "description" => "Update cronparts",
+                    "exec" => [ $this, "unpdate" ],
+                ];
             }
 
             function run($args) {
@@ -60,6 +65,15 @@
             function uninstall($args) {
                 $n = unInstallCrontabs();
                 echo "$n crontabs lines removed\n\n";
+
+                exit(0);
+            }
+
+            function unpdate($args) {
+                $n = unInstallCrontabs();
+                echo "$n crontabs lines removed\n\n";
+                $n = installCrontabs();
+                echo "$n crontabs lines added\n\n";
 
                 exit(0);
             }
