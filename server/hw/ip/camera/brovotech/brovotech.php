@@ -233,6 +233,18 @@ class brovotech extends camera
             </request>
         ";
         $this->apiCall('/action/set', 'POST', ['subject' => 'alarm', 'type' => 2], $xml_request);
+
+        // set getting snapshot from the main stream
+        $xml_request = "
+            <response>
+	          <snap ver=\"2.0\">
+		        <interval>1</interval>
+		        <stream>0</stream>
+		        <path>0</path>
+	          </snap>
+            </response>
+        ";
+        $this->apiCall('/action/set', 'POST', ['subject' => 'snap'], $xml_request);
     }
 
     public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow'): void
