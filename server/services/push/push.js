@@ -34,7 +34,7 @@ const pushOk = (token, result, res) => {
     }
 
     if (result && result.toString() && result.indexOf(`projects/${APP_PROJECT_NAME}/messages/`) === 0) {
-        console.log(`${(new Date()).toLocaleString()} | pushOk | >>> `);
+        console.log(`${(new Date()).toLocaleString()} | pushOk`);
         res.send('OK');
         return;
     }
