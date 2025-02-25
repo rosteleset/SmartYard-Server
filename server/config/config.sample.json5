@@ -106,8 +106,15 @@
         },
 
         "isdn": {
-            "push_bundles": {
-                "default"
+            "push_routes": {
+                "default": "lanta",
+                "bundle_id_1": {
+                    "host": "127.0.0.1",
+                    "port": "9081",
+                },
+                "bundle_id_2": {
+                    "port": "9082",
+                },
             },
             "backend": "lanta",
             "common_secret": "<!-- your secret here --!>",

@@ -59,7 +59,7 @@
 
                 foreach ($files as $file) {
                     if (substr($file, -5) === ".json") {
-                        $cmses[$file] = json_decode(file_get_contents(__DIR__ . "/../../../hw//ip/domophone/cmses/" . $file), true);
+                        $cmses[$file] = json_decode(file_get_contents(__DIR__ . "/../../../hw/ip/domophone/cmses/" . $file), true);
                     }
                 }
 
