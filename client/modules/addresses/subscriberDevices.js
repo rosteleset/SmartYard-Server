@@ -270,7 +270,7 @@
                                     nowrap: true,
                                 },
                                 {
-                                    data: this.platforms[devices[i].bundle],
+                                    data: devices[i].bundle,
                                     nowrap: true,
                                 },
                                 {
