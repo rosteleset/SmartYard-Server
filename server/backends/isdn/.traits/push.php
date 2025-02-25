@@ -4,20 +4,19 @@
      * backends isdn namespace
      */
 
-    namespace backends\isdn
-    {
+    namespace backends\isdn {
 
         /**
          * teledome trait (common part)
          */
 
-        trait push
-        {
+        trait push {
+
             /**
              * @inheritDoc
              */
-            function push($push)
-            {
+
+            function push($push) {
                 $query = "";
                 foreach ($push as $param => $value) {
                     if ($param != "action" && $param != "secret" && $param != "video") {
@@ -43,7 +42,6 @@
                         loadBackend("households")->dismissToken($push["token"]);
                     }
                 }
-                
 
                 return $result;
             }

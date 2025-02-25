@@ -464,6 +464,7 @@
                         "flatId" => $params["flatId"],
                         "domophoneId" => $params["domophoneId"],
                         "flatNumber" => $params["flatNumber"],
+                        "bundle" => @$params["bundle"],
                         "title" => i18n("sip.incomingTitle"),
                     ];
 

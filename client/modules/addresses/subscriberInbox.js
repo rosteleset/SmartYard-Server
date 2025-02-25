@@ -9,7 +9,7 @@
         POST("inbox", "message", subscriberId, params).
         fail(FAIL).
         always(() => {
-             modules.addresses.subscriberInbox.renderSubscriberInbox(subscriberId);
+            modules.addresses.subscriberInbox.renderSubscriberInbox(subscriberId);
         });
     },
 

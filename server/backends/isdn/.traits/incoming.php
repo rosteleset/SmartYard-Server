@@ -4,20 +4,19 @@
      * backends isdn namespace
      */
 
-    namespace backends\isdn
-    {
+    namespace backends\isdn {
 
         /**
          * teledome trait (common part)
          */
 
-        trait incoming
-        {
+        trait incoming {
+
             /**
              * @inheritDoc
              */
-            function confirmNumbers()
-            {
+
+            function confirmNumbers() {
                 return [
                     @$this->config["backends"]["isdn"]["confirm_number"] ? : "88002220374",
                 ];
@@ -26,10 +25,9 @@
             /**
              * @inheritDoc
              */
-            function checkIncoming($id)
-            {
+
+            function checkIncoming($id) {
                 return trim(file_get_contents("https://isdn.lanta.me/isdn_api.php?action=checkIncoming&mobile=$id&secret=" . $this->config["backends"]["isdn"]["common_secret"]));
             }
         }
     }
-

@@ -1,6 +1,9 @@
+const { argv } = require('node:process');
+
 require("dotenv").config({
-    path: `${process.env.NODE_ENV === "development" ? ".env_development" : ".env"}`
+    path: argv[2] ? argv[2] : `${process.env.NODE_ENV === "development" ? ".env_development" : ".env"}`,
 });
+
 const path = require('path')
 
 //  Web server host and port

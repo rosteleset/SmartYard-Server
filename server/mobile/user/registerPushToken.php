@@ -14,6 +14,7 @@
      * @apiBody {String="t","f"} [production="t"] использовать боевой сервер для voip пушей (ios only)
      * @apiBody {String="ios","android","web"} platform тип устройства: ios, android, web
      * @apiBody {String="fcm","apn","hms","rustore"} pushService поставщик услуг отправки пушей
+     * @apiBody {String} [bundle] имя пакета (бандл)
      *
      * @apiErrorExample Ошибки
      * 403 требуется авторизация
@@ -32,6 +33,7 @@
     $push = trim(@$postdata['pushToken']);
     $voip = trim(@$postdata['voipToken'] ?: "");
     $production = trim(@$postdata['production']);
+    $bundle = trim(@$postdata['bundle']);
 
     if (!array_key_exists('platform', $postdata) || ($postdata['platform'] != 'ios' && $postdata['platform'] != 'android' && $postdata['platform'] != 'web')) {
         response(422);
@@ -86,6 +88,12 @@
             break;
     }
 
-    $households->modifyDevice($device["deviceId"], [ "pushToken" => $push ?: "off" , "tokenType" => $type, "voipToken" => $voip ?: "off", "platform" => $platform ]);
+    $households->modifyDevice($device["deviceId"], [
+        "pushToken" => $push ?: "off" ,
+        "tokenType" => $type,
+        "voipToken" => $voip ?: "off",
+        "platform" => $platform,
+        "bundle" => $bundle ?: "default",
+    ]);
 
     response();

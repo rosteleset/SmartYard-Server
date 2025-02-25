@@ -106,6 +106,9 @@
         },
 
         "isdn": {
+            "push_bundles": {
+                "default"
+            },
             "backend": "lanta",
             "common_secret": "<!-- your secret here --!>",
             "confirm_method": "outgoingCall",

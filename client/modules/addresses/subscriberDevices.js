@@ -106,6 +106,13 @@
                         readonly: true,
                     },
                     {
+                        id: "bundle",
+                        type: "text",
+                        title: i18n("addresses.bundle"),
+                        value: device.bundle,
+                        readonly: true,
+                    },
+                    {
                         id: "platform",
                         type: "text",
                         title: i18n("addresses.platform"),
@@ -220,6 +227,9 @@
                         title: i18n("addresses.platform"),
                     },
                     {
+                        title: i18n("addresses.bundle"),
+                    },
+                    {
                         title: i18n("addresses.version"),
                     },
                     {
@@ -257,6 +267,10 @@
                                 },
                                 {
                                     data: this.platforms[devices[i].platform],
+                                    nowrap: true,
+                                },
+                                {
+                                    data: this.platforms[devices[i].bundle],
                                     nowrap: true,
                                 },
                                 {

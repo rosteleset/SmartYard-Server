@@ -114,7 +114,7 @@ function blacklist(flatId)
     return false
 end
 
-function push(token, tokenType, platform, extension, hash, callerId, flatId, dtmf, mobile, flatNumber, domophoneId)
+function push(token, tokenType, platform, extension, hash, callerId, flatId, dtmf, mobile, flatNumber, domophoneId, bundle)
     logDebug("sending push for: " .. extension .. " [" .. mobile .. "] (" .. tokenType .. ", " .. platform .. ", " .. domophoneId .. ")")
 
     dm("push", {
@@ -130,6 +130,7 @@ function push(token, tokenType, platform, extension, hash, callerId, flatId, dtm
         uniq = channel.CDR("uniqueid"):get(),
         flatNumber = flatNumber,
         domophoneId = domophoneId,
+        bundle = bundle,
         ttl = 60,
     })
 end
@@ -186,24 +187,34 @@ function mobileIntercom(flatId, flatNumber, domophoneId)
                 logDebug(device)
 
                 redis:incr("autoextension")
+
                 extension = tonumber(redis:get("autoextension"))
                 if extension > 999999 then
                     redis:set("autoextension", "1")
                 end
                 extension = extension + 2000000000
+
                 local token = ""
                 if tonumber(device.tokenType) == 1 or tonumber(device.tokenType) == 2 then
                     token = device.voipToken
                 else
                     token = device.pushToken
                 end
+
                 if token ~= cjson.null and token ~= nil and token ~= "" then
                     redis:setex("turn/realm/" .. realm .. "/user/" .. extension .. "/key", 3 * 60, md5.sumhexa(extension .. ":" .. realm .. ":" .. hash))
                     redis:setex("mobile_extension_" .. extension, 3 * 60, hash)
+
+                    local bundle = "default"
+                    if device.bundle ~= cjson.null and device.bundle ~= nil and device.bundle ~= "" then
+                        bundle = device.bundle
+                    end
+
                     if tonumber(device.tokenType) ~= 1 and tonumber(device.tokenType) ~= 2 then
                         -- not for apple's voips
                         redis:setex("mobile_token_" .. extension, 3 * 60, token)
                     end
+
                     if tonumber(device.platform) == 1 and (tonumber(device.tokenType) == 0 or tonumber(device.tokenType) == 4 or tonumber(device.tokenType) == 5) then
                         -- ios over fcm (with repeat)
                         redis:setex("voip_crutch_" .. extension, 1 * 60, cjson.encode({
@@ -217,9 +228,12 @@ function mobileIntercom(flatId, flatNumber, domophoneId)
                             mobile = device.subscriber.mobile,
                             flatNumber = flatNumber,
                             domophoneId = domophoneId,
+                            bundle = bundle,
                         }))
                     end
-                    push(token, device.tokenType, device.platform, extension, hash, callerId, flatId, dtmf, "device.subscriber.mobile", flatNumber, domophoneId)
+
+                    push(token, device.tokenType, device.platform, extension, hash, callerId, flatId, dtmf, "device.subscriber.mobile", flatNumber, domophoneId, bundle)
+
                     res = res .. "&Local/" .. extension
                 end
             end
@@ -280,7 +294,7 @@ function handleMobileIntercom(context, extension)
             app.Wait(0.5)
             if voip_crutch then
                 if voip_crutch['cycle'] % 10 == 0 then
-                    push(voip_crutch['token'], voip_crutch['tokenType'], voip_crutch['platform'], extension, voip_crutch['hash'], channel.CALLERID("name"):get(), voip_crutch['flatId'], voip_crutch['dtmf'], voip_crutch['mobile'] .. '*', voip_crutch['flatNumber'], voip_crutch['domophoneId'])
+                    push(voip_crutch['token'], voip_crutch['tokenType'], voip_crutch['platform'], extension, voip_crutch['hash'], channel.CALLERID("name"):get(), voip_crutch['flatId'], voip_crutch['dtmf'], voip_crutch['mobile'] .. '*', voip_crutch['flatNumber'], voip_crutch['domophoneId'], voip_crutch['bundle'])
                 end
                 voip_crutch['cycle'] = voip_crutch['cycle'] + 1
             end

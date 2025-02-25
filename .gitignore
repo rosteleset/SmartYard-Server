@@ -72,9 +72,8 @@ server/mqtt/node_modules
 server/mqtt/package.json
 server/mqtt/package-lock.json
 server/services/syslog/config.json
-server/services/push/assets/pushServiceAccountKey.json
-server/services/push/assets/certificate-and-privatekey.pem
-server/services/push/.env
+server/services/push/assets/*
+server/services/push/.env*
 server/services/push/.env_development
 server/services/event/config.json
 server/services/sys_exporter/.env

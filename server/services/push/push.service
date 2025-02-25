@@ -1,0 +1,21 @@
+[Unit]
+Description=SmartYard-Server push service
+Documentation=https://github.com/rosteleset/SmartYard-Server/tree/main/install
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/rbt/server/services/push
+ExecStart=/usr/bin/node /opt/rbt/server/services/push/push.js %i
+RestartSec=10
+Restart=always
+User=rbt
+Group=rbt
+LimitCORE=infinity
+KillMode=process
+StandardOutput=append:/var/log/rbt_push_service/push_service%i.log
+StandardError=append:/var/log/rbt_push_service/push_service%i.error.log
+SyslogIdentifier=rbt_push_service
+
+[Install]
+WantedBy=multi-user.target

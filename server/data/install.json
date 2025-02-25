@@ -205,5 +205,8 @@
     ],
     "63": [
         "v63_custom_fields.sql"
+    ],
+    "64": [
+        "v64_bundle.sql"
     ]
 }

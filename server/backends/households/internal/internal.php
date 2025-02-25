@@ -2452,6 +2452,7 @@
                     "money_disable" => "moneyDisable",
                     "version" => "version",
                     "ua" => "ua",
+                    "bundle" => "bundle",
                 ]);
 
                 foreach ($devices as &$device) {
@@ -2649,6 +2650,12 @@
 
                 if (array_key_exists("version", $params)) {
                     if ($this->db->modify("update houses_subscribers_devices set version = :version where subscriber_device_id = $deviceId", [ "version" => $params["version"] ]) !== false) {
+                        $result++;
+                    }
+                }
+
+                if (array_key_exists("bundle", $bundle)) {
+                    if ($this->db->modify("update houses_subscribers_devices set bundle = :bundle where subscriber_device_id = $deviceId", [ "bundle" => $params["bundle"] ]) !== false) {
                         $result++;
                     }
                 }
