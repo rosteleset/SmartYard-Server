@@ -16,10 +16,6 @@
         class bundle extends isdn {
             use sms, incoming;
 
-            /**
-             * @inheritDoc
-             */
-
             function pushLanta($push) {
                 $query = "";
                 foreach ($push as $param => $value) {
@@ -85,10 +81,14 @@
                 return $result;
             }
 
+            /**
+             * @inheritDoc
+             */
+
             function push($push) {
                 $bundle = @$push["bundle"] ?: "default";
 
-                foreach ($this->config["backends"]["push_routes"] as $route => $target) {
+                foreach ($this->config["backends"]["isdn"]["push_routes"] as $route => $target) {
                     if ($route == $bundle) {
                         if ($target == "lanta") {
                             return $this->pushLanta($push);
