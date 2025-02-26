@@ -5,15 +5,19 @@ const { Curl } = require('node-libcurl');
 const {
     PORT,
     HOST,
-    CERT,
-    SERVICE_ACCOUNT,
-    APP_PROJECT_NAME,
-    APP_BUNDLE_ID,
-    APP_USER_AGENT,
-    DB_NAME,
+
+    FCM_SERVICE_ACCOUNT,
+    FCM_APP_PROJECT_NAME,
+    FCM_APP_BUNDLE_ID,
+    FCM_APP_USER_AGENT,
+    FCM_DB_NAME,
+
+    APN_CERT,
+
     HUAWEI_CLIENT_ID,
     HUAWEI_CLIENT_SECRET,
     HUAWEI_PROJECT_ID,
+
     RUSTORE_PROJECT_ID,
     RUSTORE_TOKEN
 } = require('./constants.js');
@@ -33,7 +37,7 @@ const pushOk = (token, result, res) => {
         return;
     }
 
-    if (result && result.toString() && result.indexOf(`projects/${APP_PROJECT_NAME}/messages/`) === 0) {
+    if (result && result.toString() && result.indexOf(`projects/${FCM_APP_PROJECT_NAME}/messages/`) === 0) {
         console.log(`${(new Date()).toLocaleString()} | pushOk`);
         res.send('OK');
         return;
@@ -141,10 +145,10 @@ const realPush = (msg, data, options, token, type, res) => {
             curl.setOpt(Curl.option.URL, `${http2_server}/3/device/${token}`);
             curl.setOpt(Curl.option.PORT, 443);
             curl.setOpt(Curl.option.HTTPHEADER, [
-                `apns-topic: ${APP_BUNDLE_ID}.voip`,
+                `apns-topic: ${FCM_APP_BUNDLE_ID}.voip`,
                 `apns-push-type: voip`,
                 `apns-expiration: ${parseInt((new Date()).getTime() / 1000) + 60}`,
-                `User-Agent: ${APP_USER_AGENT}`,
+                `User-Agent: ${FCM_APP_USER_AGENT}`,
             ]);
             curl.setOpt(Curl.option.POST, true);
             curl.setOpt(Curl.option.POSTFIELDS, JSON.stringify({
@@ -152,7 +156,7 @@ const realPush = (msg, data, options, token, type, res) => {
             }));
             curl.setOpt(Curl.option.TIMEOUT, 30);
             curl.setOpt(Curl.option.SSL_VERIFYPEER, false);
-            curl.setOpt(Curl.option.SSLCERT, CERT);
+            curl.setOpt(Curl.option.SSLCERT, APN_CERT);
             curl.setOpt(Curl.option.HEADER, true);
             curl.setOpt(Curl.option.VERBOSE, false);
 
@@ -304,7 +308,6 @@ const refreshHuaweiToken = () => {
     curl.setOpt(Curl.option.URL, `https://oauth-login.cloud.huawei.com/oauth2/v3/token?grant_type=client_credentials&client_id=${HUAWEI_CLIENT_ID}&client_secret=${HUAWEI_CLIENT_SECRET}`);
     curl.setOpt(Curl.option.TIMEOUT, 30);
     curl.setOpt(Curl.option.SSL_VERIFYPEER, false);
-    curl.setOpt(Curl.option.SSLCERT, CERT);
     curl.setOpt(Curl.option.HEADER, false);
     curl.setOpt(Curl.option.VERBOSE, false);
 
@@ -340,8 +343,8 @@ const refreshHuaweiToken = () => {
 const initFirebase = async () => {
     try {
         admin.initializeApp({
-            credential: admin.credential.cert(SERVICE_ACCOUNT),
-            databaseURL: DB_NAME,
+            credential: admin.credential.cert(FCM_SERVICE_ACCOUNT),
+            databaseURL: FCM_DB_NAME,
         });
         console.log(`${new Date().toLocaleString()} | Firebase init success`);
     } catch (error) {
