@@ -28,7 +28,6 @@ const pushOk = (token, result, res) => {
     console.log(`${(new Date()).toLocaleString()} | pushOk | result: ${JSON.stringify(result)}`)
 
     if (result && result.successCount && parseInt(result.successCount)) {
-        console.log(`${(new Date()).toLocaleString()} | pushOk | ${token}`);
         if (result.results && result.results[0] && result.results[0].messageId) {
             res.send('OK: ' + result.results[0].messageId);
         } else {
@@ -38,7 +37,6 @@ const pushOk = (token, result, res) => {
     }
 
     if (result && result.toString() && result.indexOf(`projects/${FCM_APP_PROJECT_NAME}/messages/`) === 0) {
-        console.log(`${(new Date()).toLocaleString()} | pushOk`);
         res.send('OK');
         return;
     }
@@ -47,7 +45,7 @@ const pushOk = (token, result, res) => {
 }
 
 const pushFail = (token, error, res) => {
-    console.log((new Date()).toLocaleString() + " err: " + token);
+    console.log(`${(new Date()).toLocaleString()} |  pushErr | token: ${token}`);
 
     let broken = false;
 
@@ -323,7 +321,7 @@ const refreshHuaweiToken = () => {
                 setTimeout(refreshHuaweiToken, 1000);
             }
         } else {
-            console.log("error code: ", code);
+            console.log("error code: " + code);
             setTimeout(refreshHuaweiToken, 1000);
         }
         curl.close();
