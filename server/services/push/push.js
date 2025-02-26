@@ -30,7 +30,7 @@ const pushOk = (token, result, res) => {
     if (result && result.successCount && parseInt(result.successCount)) {
         console.log(`${(new Date()).toLocaleString()} | pushOk | ${token}`);
         if (result.results && result.results[0] && result.results[0].messageId) {
-            res.send('OK:' + result.results[0].messageId);
+            res.send('OK: ' + result.results[0].messageId);
         } else {
             res.send('OK');
         }
@@ -323,7 +323,7 @@ const refreshHuaweiToken = () => {
                 setTimeout(refreshHuaweiToken, 1000);
             }
         } else {
-            console.log("error code:", code);
+            console.log("error code: ", code);
             setTimeout(refreshHuaweiToken, 1000);
         }
         curl.close();
@@ -348,7 +348,7 @@ const initFirebase = async () => {
         });
         console.log(`${new Date().toLocaleString()} | Firebase init success`);
     } catch (error) {
-        console.error(`${new Date().toLocaleString()} | Error init Firebase:`, error);
+        console.error(`${new Date().toLocaleString()} | Error init Firebase: `, error);
         throw error;
     }
 }
@@ -365,7 +365,7 @@ const startServer = async () => {
             refreshHuaweiToken();
         }
     } catch (error) {
-        console.error('Error starting server:', error);
+        console.error('Error starting server: ', error);
     }
 }
 
