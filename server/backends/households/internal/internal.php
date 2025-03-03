@@ -696,11 +696,11 @@
                         $cars = explode("\n", $cars);
                         foreach ($cars as $number) {
                             if (trim($number)) {
-                                $t[] = trim($number);
+                                $t[] = strtoupper(trim($number));
                             }
                         }
                         if (count($t)) {
-                            $cars = implode("\n", $t);
+                            $cars = array_unique(implode("\n", $t));
                         } else {
                             $cars = null;
                         }
