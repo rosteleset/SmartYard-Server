@@ -34,11 +34,14 @@
 
     if (@$postdata['deviceToken']) {
         $device_token = $postdata['deviceToken'];
+        $real_device_token = true;
     } else
     if (@$headers['Accept-Language'] && @$headers['X-System-Info']) {
         $device_token = md5($headers['Accept-Language'] . $headers['X-System-Info']);
+        $real_device_token = false;
     } else {
         $device_token = 'default';
+        $real_device_token = false;
     }
 
     $platform = @$postdata['platform'];

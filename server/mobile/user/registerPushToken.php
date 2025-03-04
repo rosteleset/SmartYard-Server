@@ -96,4 +96,8 @@
         "bundle" => $bundle ?: "default",
     ]);
 
+    if ($real_device_token) {
+        // TODO: cleanup doubles (by pushToken [or voipToken?])
+    }
+
     response();
