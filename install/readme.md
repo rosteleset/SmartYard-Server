@@ -12,6 +12,7 @@
 10. [Asterisk](10.asterisk.md)
 11. [Event](11.event.md)
 12. [FRS](12.frs.md)
+13. [Push service](13.push.md)
 14. [Mosquitto](14.mosquitto.md)
 15. [ONLYOFFICE Document Builder](15.onlyoffice.md)
 16. [Post install](99.post_install.md)
@@ -21,7 +22,6 @@ ___
 ## Optional feature
 
 1. [Kamailio](98.kamailio.md)
-2. [Push service](96.push.md)
 
 #### Monitoring
 
