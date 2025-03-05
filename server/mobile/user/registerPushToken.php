@@ -96,8 +96,8 @@
         "bundle" => $bundle ?: "default",
     ]);
 
-    if ($real_device_token) {
-        // TODO: cleanup doubles (by pushToken [or voipToken?])
+    if ($device["deviceId"][0] == "*" && $push) {
+        $households->dedupDevices($device["deviceId"][0], $push);
     }
 
     response();
