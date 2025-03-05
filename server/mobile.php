@@ -88,6 +88,8 @@
     $offsetForCityId = 1000000;
     $emptyStreetIdOffset = 1000000;
 
+    $real_device_token = false;
+
     try {
         $config = @json_decode(file_get_contents(__DIR__ . "/config/config.json"), true);
     } catch (Exception $e) {
