@@ -429,7 +429,7 @@
              * @return mixed
              */
 
-             abstract function searchRf($search);
+            abstract function searchRf($search);
 
             /**
              * @param array $paths
@@ -474,7 +474,7 @@
              * @return mixed
              */
 
-             abstract function searchPath($tree, $search);
+            abstract function searchPath($tree, $search);
 
             /**
              * @param mixed treeOrFrom
@@ -492,7 +492,7 @@
              * @return mixed
              */
 
-             abstract function addRootPathNode($tree, $text, $icon);
+            abstract function addRootPathNode($tree, $text, $icon);
 
             /**
              * @param string parentId
@@ -512,7 +512,16 @@
              * @return mixed
              */
 
-             abstract function modifyPathNode($nodeId, $text, $icon);
+            abstract function modifyPathNode($nodeId, $text, $icon);
+
+            /**
+             * @param string deviceToken
+             * @param string pushToken
+             *
+             * @return mixed
+             */
+
+            abstract function dedupDevices($deviceToken, $pushToken);
 
             /**
              * @param string nodeId

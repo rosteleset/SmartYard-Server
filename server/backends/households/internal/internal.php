@@ -3080,7 +3080,7 @@
              * @inheritDoc
              */
 
-             function addRootPathNode($tree, $text, $icon) {
+            function addRootPathNode($tree, $text, $icon) {
                 if (!checkStr($tree) || !checkStr($text)) {
                     return false;
                 }
@@ -3097,7 +3097,7 @@
              * @inheritDoc
              */
 
-             function addPathNode($parentId, $text, $icon) {
+            function addPathNode($parentId, $text, $icon) {
                 if (!checkInt($parentId) || !checkStr($text)) {
                     return false;
                 }
@@ -3155,6 +3155,17 @@
                 } while ($r);
 
                 return $c;
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+            function dedupDevices($deviceToken, $pushToken) {
+                return $this->db->modify("delete from houses_subscribers_devices where push_token = :push_token and device_token <> :device_token", [
+                    "push_token" => $pushToken,
+                    "device_token" => $deviceToken,
+                ]);
             }
         }
     }
