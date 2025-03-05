@@ -96,6 +96,10 @@
         "bundle" => $bundle ?: "default",
     ]);
 
+    error_log(print_r([
+        $device["deviceId"],
+    ], true));
+
     if ($device["deviceId"][0] == "*" && $push) {
         $households->dedupDevices($device["deviceId"][0], $push);
     }
