@@ -96,12 +96,8 @@
         "bundle" => $bundle ?: "default",
     ]);
 
-    error_log(print_r([
-        $device,
-    ], true));
-
-    if ($device["deviceId"][0] == "*" && $push) {
-        $households->dedupDevices($device["deviceId"][0], $push);
+    if ($device["deviceToken"][0] == "*" && $push) {
+        $households->dedupDevices($device["deviceToken"][0], $push);
     }
 
     response();
