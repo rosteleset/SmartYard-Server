@@ -97,7 +97,7 @@
     ]);
 
     error_log(print_r([
-        $device["deviceId"],
+        $device,
     ], true));
 
     if ($device["deviceId"][0] == "*" && $push) {
