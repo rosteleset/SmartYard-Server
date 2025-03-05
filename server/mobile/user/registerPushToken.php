@@ -97,7 +97,7 @@
     ]);
 
     if ($device["deviceToken"][0] == "*" && $push) {
-        $households->dedupDevices($device["deviceToken"][0], $push);
+        $households->dedupDevices($device["deviceToken"], $push);
     }
 
     response();
