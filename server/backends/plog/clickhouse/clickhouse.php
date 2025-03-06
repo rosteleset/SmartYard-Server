@@ -360,23 +360,16 @@
                 return $this->clickhouse->select($query)[0];
             }
 
-            public function getDomophoneIdByIp($ip)
+            private function getDomophoneId(?string $ip, ?string $sub_id = null): ?int
             {
                 $households = loadBackend('households');
-                $result = $households->getDomophones('ip', $ip);
-                if ($result && $result[0]) {
-                    return $result[0]['domophoneId'];
+
+                if (isset($sub_id)) {
+                    return $households->getDomophones('subId', $sub_id)[0]['domophoneId'] ?? null;
                 }
 
-                return null;
-            }
-
-            public function getDomophoneIdBySubId($sub_id)
-            {
-                $households = loadBackend('households');
-                $result = $households->getDomophones('subId', $sub_id);
-                if ($result && $result[0]) {
-                    return $result[0]['domophoneId'];
+                if (isset($ip)) {
+                    return $households->getDomophones('ip', $ip)[0]['domophoneId'] ?? null;
                 }
 
                 return null;
@@ -521,7 +514,7 @@
 
                     ['date' => $plog_date, 'ip' => $ip, 'sub_id' => $sub_id, 'door' => $output] = $row;
 
-                    $domophone_id = $this->getDomophoneIdByIp($ip) ?? $this->getDomophoneIdBySubId($sub_id);
+                    $domophone_id = $this->getDomophoneId($ip, $sub_id);
 
                     // skip event with an unknown domophone
                     if ($domophone_id === null) {
@@ -641,7 +634,7 @@
                     $ip = $row['ip'];
                     $sub_id = $row['sub_id'];
 
-                    $domophone_id = $this->getDomophoneIdByIp($ip) ?? $this->getDomophoneIdBySubId($sub_id);
+                    $domophone_id = $this->getDomophoneId($ip, $sub_id);
 
                     // skip event with an unknown domophone
                     if ($domophone_id === null) {
