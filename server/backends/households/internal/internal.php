@@ -3295,7 +3295,7 @@
                             "ttl" => 90,
                             "platform" => [ "android", "ios", "web" ][(int)$paranoid["platform"]],
                             "title" => i18n("mobile.paranoidTitleRf"),
-                            "msg" => i18n("mobile.paranoidMsgRf", $house["houseFull"], $entrance["callerId"], $details, $paranoid["comments"]),
+                            "msg" => i18n("mobile.paranoidMsgRf", $house["houseFull"], $entrance["callerId"], $paranoid["comments"] ? $paranoid["comments"] : $details),
                             "houseId" => $paranoid["houseId"],
                             "sound" => "default",
                             "pushAction" => "inbox",

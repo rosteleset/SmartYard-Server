@@ -53,7 +53,7 @@
         "pinError": "Пин-код введен неверно",
         "deviceCountError": "Превышен лимит зарегистрированных устройств",
         "paranoidTitleRf": "Открытие двери по ключу",
-        "paranoidMsgRf": "%s, %s открыта ключoм %s (%s)"
+        "paranoidMsgRf": "%s, %s открыта ключoм \"%s\""
     },
 
     "services": {
