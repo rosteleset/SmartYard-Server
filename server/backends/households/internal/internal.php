@@ -1906,6 +1906,34 @@
                         }
                         $q = "select address_house_id, prefix, house_entrance_id, entrance_type, entrance, lat, lon, shared, plog, prefix, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, alt_camera_id_1, alt_camera_id_2, alt_camera_id_3, alt_camera_id_4, alt_camera_id_5, alt_camera_id_6, alt_camera_id_7, coalesce(cms_levels, '') as cms_levels, path from houses_houses_entrances left join houses_entrances using (house_entrance_id) where house_entrance_id in (select house_entrance_id from houses_entrances_flats where house_flat_id = $query) order by entrance_type, entrance";
                         break;
+
+                    case "domophone":
+                        $domophone = false;
+
+                        if ($query["subId"]) {
+                            $domophones = $this->getDomophones("subId", $query["subId"]);
+                        }
+
+                        if ($query["ip"]) {
+                            $domophones = $this->getDomophones("ip", $query["ip"]);
+                        }
+
+                        if (!$domophones) {
+                            return false;
+                        }
+
+                        $domophone = @$domophones[0];
+
+                        if (!$domophone) {
+                            return false;
+                        }
+
+                        $where = "house_domophone_id = :house_domophone_id and domophone_output = :domophone_output";
+                        $p = [
+                            "house_domophone_id" => $domophone["domophoneId"],
+                            "domophone_output" => $query["output"],
+                        ];
+                        break;
                 }
 
                 if (!$q) {
@@ -3177,11 +3205,11 @@
              * @inheritDoc
              */
 
-            function paranoidEvent($entranceId, $by, $details) {
+            function paranoidEvent() {
                 // TODO: paranoidEvent (pushes for idiots)
 
                 // [minimal (?) delay]
-                // rf (rf) from event (internal/actions/openDoor)
+                // rfId (rfId) from event (internal/actions/openDoor)
                 // app (mobile) from mobile (mobile/addresses/openDoor)
                 // face (flatId) from frs (internal/frs/callback)
                 // code (code) from event (internal/actions/openDoor)
@@ -3189,7 +3217,28 @@
                 // or (better?) [2-3 min delay]
                 // all from backends/plog/processEvents
 
-                $entrance = $this->getEntrance($entranceId);
+                if (func_num_args() == 3) {
+                    $entranceId = func_get_arg(0);
+                    $by = func_get_arg(1);
+                    $details = func_get_arg(2);
+                    $entrance = $this->getEntrance($entranceId);
+                } else
+                if (func_num_args() == 5) {
+                    $entrances = $this->getEntrances("domophone", [
+                        "ip" => func_get_arg(0),
+                        "subId" => func_get_arg(1),
+                        "output" => func_get_arg(2),
+                    ]);
+
+                    if ($entrances) {
+                        $entrance = $entrances[0];
+                    } else {
+                        return false;
+                    }
+                    $by = func_get_arg(3);
+                    $details = func_get_arg(4);
+                }
+
                 $addresses = loadBackend("addresses");
                 $isdn = loadBackend("isdn");
 
@@ -3200,7 +3249,7 @@
                 $paranoids = false;
 
                 switch ($by) {
-                    case "rf":
+                    case "rfId":
                         $paranoids = $this->db->get("
                             select
                                 access_to as house_flat_id,
@@ -3246,8 +3295,8 @@
                             "timestamp" => time(),
                             "ttl" => 90,
                             "platform" => [ "android", "ios", "web" ][(int)$paranoid["platform"]],
-                            "title" => i18n("mobile.paranoidTitle"),
-                            "msg" => i18n("mobile.paranoidMsg", $house["houseFull"], $entrance["callerId"], $details, $paranoid["comments"]),
+                            "title" => i18n("mobile.paranoidTitleRf"),
+                            "msg" => i18n("mobile.paranoidMsgRf", $house["houseFull"], $entrance["callerId"], $details, $paranoid["comments"]),
                             "flatId" => $paranoid["flatId"],
                             "sound" => "default",
                             "pushAction" => "inbox",

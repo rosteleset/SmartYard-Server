@@ -540,6 +540,14 @@
             abstract function deletePathNode($nodeId);
 
             /**
+             * @param string domophoneIp
+             * @param string subId
+             * @param string output
+             * @param string by
+             * @param mixed details
+             *
+             * or
+             *
              * @param integer entranceId
              * @param string by
              * @param mixed details
@@ -547,6 +555,6 @@
              * @return boolean
              */
 
-            abstract function paranoidEvent($entranceId, $by, $details);
+            abstract function paranoidEvent();
         }
     }

@@ -28,7 +28,7 @@
 
     // Check intercom is blocking
     $blocked = true;
-    foreach($subscriber['flats'] as $flat) {
+    foreach ($subscriber['flats'] as $flat) {
         $flatDetail = $households->getFlat($flat['flatId']);
         if ($flatDetail['autoBlock'] || $flatDetail['adminBlock']) {
             continue;
@@ -38,7 +38,7 @@
             $domophoneId = intval($entrance['domophoneId']);
             $e = $households->getEntrance($entrance['entranceId']);
             $doorId = intval($e['domophoneOutput']);
-            if($domophone_id == $domophoneId && $door_id == $doorId && !$flatDetail['manualBlock'] ) {
+            if ($domophone_id == $domophoneId && $door_id == $doorId && !$flatDetail['manualBlock'] ) {
                 $blocked = false;
                 break;
             }
@@ -50,7 +50,6 @@
     }
 
     if (!$blocked) {
-        $households = loadBackend("households");
         $domophone = $households->getDomophone($domophone_id);
 
         try {
