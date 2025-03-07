@@ -131,7 +131,7 @@
     },
 
     onRegistrationFailed: function () {
-        GET("authentication", "whoAmI", false, true).done(_me => {
+        GET("user", "whoAmI", false, true).done(_me => {
             if (_me && _me.user) {
                 myself.webRtcExtension = _me.user.webRtcExtension;
                 myself.webRtcPassword = _me.user.webRtcPassword;

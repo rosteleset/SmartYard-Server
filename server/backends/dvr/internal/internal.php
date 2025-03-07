@@ -16,22 +16,22 @@
                 $md5raw = md5($str2hash, true);
                 $base64hash = base64_encode($md5raw);
                 $request_url = "http://$host:$port/manage/dvr_status/$stream?timeline=true&salt=$salt&hash=$base64hash";
-            
+
                 $data = json_decode(file_get_contents($request_url), true);
-            
+
                 $result = [
                     [
                     "stream" => $stream,
                     "ranges" => []
                     ]
                 ];
-            
+
                 foreach( $data[0]["timeline"] as $range) {
                     $result[0]["ranges"][] = ["from" => $range["start"], "duration" => $range["duration"]];
                 }
-            
+
                 return $result;
-            } 
+            }
 
             /**
              * @inheritDoc
@@ -41,7 +41,7 @@
                 $dvr_servers = $this->getDVRServers();
 
                 $url = parse_url($cam['dvrStream']);
-                $scheme = $url["scheme"] ?: 'http';
+                $scheme = @$url["scheme"] ?: 'http';
                 $port = @((int)$url["port"]) ?: false;
 
                 if (!$port && $scheme == 'http') $port = 80;
@@ -66,7 +66,7 @@
 
                 return $result;
             }
-            
+
             /**
              * @inheritDoc
              */
@@ -87,7 +87,7 @@
                 if ($dvrServer['type'] == 'flussonic') {
 
                     $parsed_url = parse_url($cam['dvrStream']);
-                    
+
                     $scheme   = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
                     $host     = isset($parsed_url['host']) ? $parsed_url['host'] : '';
                     $port     = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
@@ -96,13 +96,13 @@
                     $pass     = ($user || $pass) ? "$pass@" : '';
                     $path     = isset($parsed_url['path']) ? $parsed_url['path'] : '';
                     $query    = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
-                    
+
                     if ($path && $path[0] == '/') {
                         $path = substr($path, 1);
                     }
-                
+
                     $path = explode("/", $path);
-                    
+
                     $stream_name = $path[0];
 
                     $token = false;
@@ -125,14 +125,14 @@
              */
             public function getDVRStreamURLForCam($cam)
             {
-                
+
                 $dvrStream = $cam['dvrStream'];
                 $dvrServer = $this->getDVRServerForCam($cam);
 
                 // для Flussonic приводим URL к виду: https://host/stream_name
                 if ($dvrServer['type'] == 'flussonic') {
                     $parsed_url = parse_url($dvrStream);
-                    
+
                     $scheme   = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
                     $host     = isset($parsed_url['host']) ? $parsed_url['host'] : '';
                     $port     = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
@@ -141,13 +141,13 @@
                     $pass     = ($user || $pass) ? "$pass@" : '';
                     $path     = isset($parsed_url['path']) ? $parsed_url['path'] : '';
                     $query    = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
-                    
+
                     if ($path && $path[0] == '/') {
                         $path = substr($path, 1);
                     }
-                
+
                     $path = explode("/", $path);
-                    
+
                     $stream_name = $path[0];
 
                     $dvrStream = "$scheme$user$pass$host$port/$stream_name";
@@ -182,19 +182,19 @@
                     $port = $dvr['management_port'];
                     $start = $start;
                     $end = $finish;
-            
+
                     $salt= rand(0, 1000000);
                     $str2hash = $salt . "/". $token;
                     $md5raw = md5($str2hash, true);
                     $base64hash = base64_encode($md5raw);
                     $request_url = "http://$host:$port/manage/dvr/export_mp4/$stream?start=$start&end=$end&salt=$salt&hash=$base64hash";
                     break;
-                case 'macroscop':    
-                    // Example: 
+                case 'macroscop':
+                    // Example:
                     // http://127.0.0.1:8080/exportarchive?login=root&password=&channelid=e6f2848c-f361-44b9-bbec-1e54eae777c0&fromtime=02.06.2022 08:47:05&totime=02.06.2022 08:49:05
 
                     $parsed_url = parse_url($cam['dvrStream']);
-                    
+
                     $scheme   = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
                     $host     = isset($parsed_url['host']) ? $parsed_url['host'] : '';
                     $port     = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
@@ -203,7 +203,7 @@
                     $pass     = ($user || $pass) ? "$pass@" : '';
                     // $path     = isset($parsed_url['path']) ? $parsed_url['path'] : '';
                     $query    = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
-                    
+
                     $token = $this->getDVRTokenForCam($cam, $subscriberId);
                     if ($token !== '') {
                         $query = $query . "&$token";
@@ -218,8 +218,8 @@
 
                     $request_url = "$scheme$user$pass$host$port/exportarchive$query&fromtime=$from_time&totime=$to_time";
                     break;
-                case 'trassir':    
-                    // Example: 
+                case 'trassir':
+                    // Example:
                     // 1. Получить sid
                     // GET https://server:port/login?username={username}&password={password}
                     // {
@@ -227,7 +227,7 @@
                     //     "sid": {sid} // Уникальный идентификатор сессии, используется для остальных запросов
                     // }
                     $parsed_url = parse_url($cam['dvrStream']);
-                    
+
                     $scheme   = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
                     $host     = isset($parsed_url['host']) ? $parsed_url['host'] : '';
                     $port     = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
@@ -236,7 +236,7 @@
                     $pass     = ($user || $pass) ? "$pass@" : '';
                     // $path     = isset($parsed_url['path']) ? $parsed_url['path'] : '';
                     $query    = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
-                    
+
                     $token = $this->getDVRTokenForCam($cam, $subscriberId);
                     if ($token !== '') {
                         $query = $query . "&$token";
@@ -262,7 +262,7 @@
                     $sid = @$sid_response["sid"] ?: false;
                     if (!$sid || !$guid) return false;
 
-                    // 2. Запустить задачу на скачивание 
+                    // 2. Запустить задачу на скачивание
                     // POST https://server:port/jit-export-create-task?sid={sid}
                     // {
                     //     "resource_guid": {guid}, // GUID Канала
@@ -285,7 +285,7 @@
                         curl_setopt($curl, CURLOPT_HTTPHEADER, array(
                             'Content-Type: appplication/json'
                         ));
-                        
+
                         curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($payload));
                     }
                     curl_setopt($curl, CURLOPT_URL, $url);
@@ -316,13 +316,13 @@
                     //     "progress" : 3, // процент завершения задачи
                     //     "sended" : 30456, // количество байт видео, отосланных сервером
                     // }
-                    
+
                     $url = "$scheme$user$pass$host$port/jit-export-task-status?sid=$sid";
-                    
+
                     $payload = [
                             "task_id" => $task_id
                     ];
-                    
+
                     $active = false;
                     $attempts_count = 30;
                     while(!$active && $attempts_count > 0) {
@@ -332,14 +332,14 @@
                             curl_setopt($curl, CURLOPT_HTTPHEADER, array(
                                 'Content-Type: appplication/json'
                             ));
-                            
+
                             curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($payload));
                         }
                         curl_setopt($curl, CURLOPT_URL, $url);
                         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
                         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
                         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-                
+
                         var_dump($url);
                         var_dump($payload);
                         $task_id_response = json_decode(curl_exec($curl), true);
@@ -355,7 +355,7 @@
 
                     // 4. получаем Url для загрузки файла
                     // GET https://server:port/jit-export-download?sid={sid}&task_id={task_id}
-                    
+
                     $request_url = "$scheme$user$pass$host$port/jit-export-download?sid=$sid&task_id=$task_id";
                     return $request_url;
                     break;
@@ -409,7 +409,7 @@
                     } else {
                         return false;
                     }
-                    
+
                     break;
                 default:
                     // Flussonic Server by default
@@ -431,14 +431,14 @@
                     $time = now();
                 $dvr = loadBackend("dvr")->getDVRServerForCam($cam);
                 $type = $dvr['type'];
-                
+
                 switch($type) {
                 case 'nimble':
                     return "$prefix/dvr_thumbnail_$time.mp4";
 
                 case 'macroscop':
                     $parsed_url = parse_url($cam['dvrStream']);
-                    
+
                     $scheme   = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
                     $host     = isset($parsed_url['host']) ? $parsed_url['host'] : '';
                     $port     = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
@@ -447,7 +447,7 @@
                     $pass     = ($user || $pass) ? "$pass@" : '';
                     // $path     = isset($parsed_url['path']) ? $parsed_url['path'] : '';
                     $query    = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
-                    
+
                     if (isset($dvr['token'])) {
                         $token = $dvr['token'];
                         $query = $query . "&$token";
@@ -456,11 +456,11 @@
                     $start_time = urlencode(gmdate("d.m.Y H:i:s", $time));
 
                     $request_url = "$scheme$user$pass$host$port/site$query&withcontenttype=true&mode=archive&starttime=$start_time&resolutionx=480&resolutiony=270&streamtype=mainvideo";
-                    
+
                     return $request_url;
 
                 case 'trassir':
-                    // Example: 
+                    // Example:
                     // 1. Получить sid
                     // GET https://server:port/login?username={username}&password={password}
                     // {
@@ -468,7 +468,7 @@
                     //     "sid": {sid} // Уникальный идентификатор сессии, используется для остальных запросов
                     // }
                     $parsed_url = parse_url($cam['dvrStream']);
-                    
+
                     $scheme   = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
                     $host     = isset($parsed_url['host']) ? $parsed_url['host'] : '';
                     $port     = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
@@ -477,7 +477,7 @@
                     $pass     = ($user || $pass) ? "$pass@" : '';
                     // $path     = isset($parsed_url['path']) ? $parsed_url['path'] : '';
                     $query    = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
-                    
+
                     $token = $this->getDVRTokenForCam($cam, $subscriberId);
                     if ($token !== '') {
                         $query = $query . "&$token";
@@ -508,7 +508,7 @@
                     // guid - GUID канала
                     // timestamp - Время формата YYYY-MM-DD HH:MM:SS / YYYY-MM-DDTHH:MM:SS / YYYYMMDD-HHMMSS / YYYYMMDDTHHMMSS
                     // sid - Идентификатор сессии
-                    
+
                     $timestamp = urlencode(date("Y-m-d H:i:s", $time));
                     $request_url = "$scheme$user$pass$host$port/screenshot/$guid?timestamp=$timestamp&sid=$sid";
                     return $request_url;
@@ -542,7 +542,7 @@
                     curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
                     $response = json_decode(curl_exec($curl), true);
                     curl_close($curl);
-                    
+
                     return @$response["URL"] ?: false;
 
                 default:
@@ -570,7 +570,7 @@
                     // Macroscop Server
                     // $date = DateTime::createFromFormat("Y-m-d\TH:i:s.uP", "2018-02-23T11:29:16.434Z");
                     $parsed_url = parse_url($cam['dvrStream']);
-                    
+
                     $scheme   = isset($parsed_url['scheme']) ? $parsed_url['scheme'] . '://' : '';
                     $host     = isset($parsed_url['host']) ? $parsed_url['host'] : '';
                     $port     = isset($parsed_url['port']) ? ':' . $parsed_url['port'] : '';
@@ -589,9 +589,9 @@
                         parse_str($parsed_url['query'], $parsed_query);
                         $channel_id = isset($parsed_query['channelid']) ? $parsed_query['channelid'] : '';
                     }
-                    
+
                     $request_url = "$scheme$user$pass$host$port/archivefragments$query&fromtime=".urlencode("01.01.2022 00:00:00")."&totime=".urlencode("01.01.2222 23:59:59")."&responsetype=json";
-                    
+
                     $fragments = json_decode(file_get_contents($request_url), true)["Fragments"];
                     $ranges = [];
 
@@ -604,7 +604,7 @@
                         if (!$to) {
                             $to = date_create_from_format("Y-m-d\TH:i:s.uP", $frag["ToTime"]);
                         }
-                        
+
                         $from = $from->getTimestamp();
                         $to = $to->getTimestamp();
                         $duration = $to - $from;
@@ -612,12 +612,12 @@
                             $ranges[] = [ "from" => $from, "duration" => $duration ];
                         }
                     }
-                    
+
                     return [ [ "stream" => $channel_id, "ranges" => $ranges] ];
                 } elseif ($dvr['type'] == 'trassir') {
                     // Trassir Server
                     // Not implemented yet.
-                    // Client uses direct request for ranges 
+                    // Client uses direct request for ranges
                     return [];
                 } elseif ($dvr['type'] == 'forpost') {
                     // Forpost
