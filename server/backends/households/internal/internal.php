@@ -3167,5 +3167,13 @@
                     "device_token" => $deviceToken,
                 ]);
             }
+
+            /**
+             * @inheritDoc
+             */
+
+            function paranoidiotEvent($domophoneId, $doorId, $by, $details) {
+
+            }
         }
     }

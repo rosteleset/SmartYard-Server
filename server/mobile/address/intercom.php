@@ -20,6 +20,7 @@
      * @apiBody {string="t","f"} [settings.disablePlog] прекратить "следить" за квартирой
      * @apiBody {string="t","f"} [settings.hiddenPlog] показывать журнал только владельцу
      * @apiBody {string="t","f"} [settings.FRSDisabled] отключить распознование лиц для квартиры (если нет значит недоступен)
+     * @apiBody {string="t","f"} [settings.paranoidiot] режим "параноика" (если нет значит недоступен)
      *
      * @apiSuccess {object} - настройки квартиры
      * @apiSuccess {string="t","f"} -.allowDoorCode="t" код открытия двери разрешен
@@ -29,10 +30,11 @@
      * @apiSuccess {string="Y-m-d H:i:s"} -.autoOpen дата до которой работает автооткрытие двери
      * @apiSuccess {integer} [-.timezone] часовой пояс (default - Moscow Time)
      * @apiSuccess {string="0","1","2","3","5","7","10"} -.whiteRabbit автооткрытие двери
-     * @apiSuccess {string="t","f"} [_.paperBill] печатать бумажные платежки
-     * @apiSuccess {string="t","f"} _.disablePlog="f" прекратить "следить" за квартирой
-     * @apiSuccess {string="t","f"} _.hiddenPlog="f" показывать журнал только владельцу
-     * @apiSuccess {string="t","f"} [_.FRSDisabled] отключить распознование лиц для квартиры
+     * @apiSuccess {string="t","f"} [-.paperBill] печатать бумажные платежки
+     * @apiSuccess {string="t","f"} [-.disablePlog="f"] прекратить "следить" за квартирой
+     * @apiSuccess {string="t","f"} [-.hiddenPlog="f"] показывать журнал только владельцу
+     * @apiSuccess {string="t","f"} [-.FRSDisabled] распознование лиц для квартиры отключено
+     * @apiSuccess {string="t","f"} [-.paranoidiot] режим "параноика"
      */
 
     use backends\plog\plog;

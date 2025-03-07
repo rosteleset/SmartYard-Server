@@ -1,0 +1,4 @@
+CREATE TABLE houses_subscribers_paranoitiots(subscriber_device_id INTEGER, house_flat_id INTEGER);
+CREATE UNIQUE INDEX houses_subscribers_paranoitiots_uniq on houses_subscribers_paranoitiots(subscriber_device_id, house_flat_id);
+CREATE INDEX houses_subscribers_paranoitiots_subscriber_device_id on houses_subscribers_paranoitiots(subscriber_device_id);
+CREATE INDEX houses_subscribers_paranoitiots_house_flat_id on houses_subscribers_paranoitiots(house_flat_id);

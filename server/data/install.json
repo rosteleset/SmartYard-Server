@@ -208,5 +208,8 @@
     ],
     "64": [
         "v64_bundle.sql"
+    ],
+    "65": [
+        "v65_paranoidiots.sql"
     ]
 }

@@ -532,5 +532,16 @@
              */
 
             abstract function deletePathNode($nodeId);
+
+            /**
+             * @param integer domophoneId
+             * @param integer doorId
+             * @param string by
+             * @param mixed details
+             *
+             * @return boolean
+             */
+
+            abstract function paranoidiotEvent($domophoneId, $doorId, $by, $details);
         }
     }
