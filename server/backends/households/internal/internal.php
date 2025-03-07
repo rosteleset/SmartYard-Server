@@ -1912,8 +1912,7 @@
 
                         if ($query["subId"]) {
                             $domophones = $this->getDomophones("subId", $query["subId"]);
-                        }
-
+                        } else
                         if ($query["ip"]) {
                             $domophones = $this->getDomophones("ip", $query["ip"]);
                         }
