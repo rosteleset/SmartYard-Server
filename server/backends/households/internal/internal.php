@@ -3256,6 +3256,7 @@
                                 platform,
                                 push_token,
                                 push_token_type,
+                                ua,
                                 comments
                             from
                                 houses_rfids
@@ -3270,7 +3271,7 @@
                             where
                                 access_type = 2 and paranoid = 1 and push_disable = 0 and rfid = :rfid
                             group by
-                                address_house_id, house_subscriber_id, platform, push_token, push_token_type, comments
+                                address_house_id, house_subscriber_id, platform, push_token, push_token_type, ua, comments
                         ", [
                             "rfid" => $details,
                         ], [
@@ -3279,6 +3280,7 @@
                             "platform" => "platform",
                             "push_token" => "pushToken",
                             "push_token_type" => "tokenType",
+                            "ua" => "ua",
                             "comments" => "comments",
                         ]);
 
@@ -3288,14 +3290,23 @@
                 if ($paranoids) {
                     foreach ($paranoids as $paranoid) {
                         $house = $addresses->getHouse($paranoid["houseId"]);
+
+                        $ua = $paranoid["ua"];
+                        $l = explode(",", $ua);
+                        if ($l && count($l) > 1) {
+                            $l = $l[0];
+                        } else {
+                            $l = false;
+                        }
+
                         if (!$isdn->push([
                             "token" => $paranoid["pushToken"],
                             "type" => ((int)$paranoid["platform"] === 1) ? 0 : $paranoid["tokenType"], // force FCM for Apple for text messages
                             "timestamp" => time(),
                             "ttl" => 90,
                             "platform" => [ "android", "ios", "web" ][(int)$paranoid["platform"]],
-                            "title" => i18n("mobile.paranoidTitleRf"),
-                            "msg" => i18n("mobile.paranoidMsgRf", $house["houseFull"], $entrance["callerId"], $paranoid["comments"] ? $paranoid["comments"] : $details),
+                            "title" => i18nL($l, "mobile.paranoidTitleRf"),
+                            "msg" => i18nL($l, "mobile.paranoidMsgRf", $house["houseFull"], $entrance["callerId"], $paranoid["comments"] ? $paranoid["comments"] : $details),
                             "houseId" => $paranoid["houseId"],
                             "sound" => "default",
                             "pushAction" => "inbox",

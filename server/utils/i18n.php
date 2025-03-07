@@ -15,7 +15,13 @@
     }
 
     function i18n($msg, ...$args) {
-        $l = language();
+        return i18nL(language(), $msg, ...$args);
+    }
+
+    function i18nL($l, $msg, ...$args) {
+        if (!$l) {
+            $l = language();
+        }
         $lang = false;
         try {
             $lang = json_decode(@file_get_contents(__DIR__ . "/../i18n/$l.json"), true, 512, JSON_THROW_ON_ERROR);
