@@ -426,6 +426,23 @@
                     return false;
                 }
 
+                $altCamerasIds[0] = $cameraId;
+                for ($i = 0; $i <= 7; $i++) {
+                    if (@(int)$altCamerasIds[$i]) {
+                        $entrances = $this->getEntrances("cameraId", [ "cameraId" => (int)(int)$altCamerasIds[$i]]);
+                        if ($entrances && $entrances[0]["entranceId"] != $entranceId) {
+                            setLastError("doublicatedCamera");
+                            return false;
+                        }
+                        for ($j = 0; $j <= 7; $j++) {
+                            if ($i != $j && @(int)$altCamerasIds[$i] == @(int)$altCamerasIds[$j]) {
+                                setLastError("doublicatedCamera");
+                                return false;
+                            }
+                        }
+                    }
+                }
+
                 if (!$shared) {
                     if ($this->db->modify("delete from houses_houses_entrances where house_entrance_id = $entranceId and address_house_id != $houseId") === false) {
                         return false;
