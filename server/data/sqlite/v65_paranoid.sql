@@ -1,0 +1,1 @@
+ALTER TABLE houses_flats_devices ADD COLUMN paranoid INTEGER DEFAULT 0;

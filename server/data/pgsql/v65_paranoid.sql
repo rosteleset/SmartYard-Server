@@ -1,0 +1,1 @@
+ALTER TABLE houses_flats_devices ADD IF NOT EXISTS paranoid INTEGER DEFAULT 0;

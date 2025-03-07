@@ -2240,8 +2240,8 @@
                     $n += $this->db->modify("delete from houses_subscribers_devices where last_seen < " . strtotime("-" . $this->config["backends"]["households"]["autoclean_devices_interval"], time()));
                 }
 
-                // TODO: paranoidiotEvent (pushes for idiots)
-                // clear paranoidiot (if flat owner/plog settings changes)
+                // TODO: paranoidEvent (pushes for idiots)
+                // clear paranoid (if flat owner/plog settings changes)
 
                 $n += $this->db->modify("delete from houses_flats_devices where houses_flat_device_id in (select houses_flat_device_id from houses_flats_devices left join houses_subscribers_devices using (subscriber_device_id) left join houses_flats_subscribers on houses_subscribers_devices.house_subscriber_id = houses_flats_subscribers.house_subscriber_id and houses_flats_devices.house_flat_id = houses_flats_subscribers.house_flat_id where houses_flats_subscribers.house_flat_id is null)");
 
@@ -2473,7 +2473,7 @@
                             "singlify"
                         ]
                     );
-                    $flats = $this->db->get("select house_flat_id, voip_enabled, flat, address_house_id, paranoidiot from houses_flats_devices left join houses_flats using (house_flat_id) where subscriber_device_id = :subscriber_device_id",
+                    $flats = $this->db->get("select house_flat_id, voip_enabled, flat, address_house_id, paranoid from houses_flats_devices left join houses_flats using (house_flat_id) where subscriber_device_id = :subscriber_device_id",
                         [
                             "subscriber_device_id" => $device["deviceId"]
                         ],
@@ -2482,7 +2482,7 @@
                             "voip_enabled" => "voipEnabled",
                             "flat" => "flat",
                             "address_house_id" => "addressHouseId",
-                            "paranoidiot" => "paranoidiot",
+                            "paranoid" => "paranoid",
                         ]
                     );
                     $device["subscriber"] = $subscriber;
@@ -2630,11 +2630,11 @@
 
                 if (array_key_exists("flats", $params)) {
                     foreach ($params["flats"] as $flat) {
-                        if (!checkInt($flat["flatId"]) || !checkInt($flat["voipEnabled"]) || !checkInt($flat["paranoidiot"])) {
+                        if (!checkInt($flat["flatId"]) || !checkInt($flat["voipEnabled"]) || !checkInt($flat["paranoid"])) {
                             setLastError("invalidParams");
                             return false;
                         }
-                        if ($this->setDeviceFlat($deviceId, $flat["flatId"], $flat["voipEnabled"], $flat["paranoidiot"])) {
+                        if ($this->setDeviceFlat($deviceId, $flat["flatId"], $flat["voipEnabled"], $flat["paranoid"])) {
                             $result++;
                         }
                     }
@@ -2697,22 +2697,22 @@
              * @inheritDoc
              */
 
-            public function setDeviceFlat($deviceId, $flatId, $voipEnabled, $paranoidiot = 0) {
+            public function setDeviceFlat($deviceId, $flatId, $voipEnabled, $paranoid = 0) {
                 if (!checkInt($deviceId)) {
                     setLastError("invalidParams");
                     return false;
                 }
 
                 $r = $this->db->insert("
-                    INSERT INTO houses_flats_devices (subscriber_device_id, house_flat_id, voip_enabled, paranoidiot)
-                    VALUES (:subscriber_device_id, :house_flat_id, :voip_enabled, :paranoidiot)
+                    INSERT INTO houses_flats_devices (subscriber_device_id, house_flat_id, voip_enabled, paranoid)
+                    VALUES (:subscriber_device_id, :house_flat_id, :voip_enabled, :paranoid)
                     ON CONFLICT (subscriber_device_id, house_flat_id)
-                    DO UPDATE SET voip_enabled = :voip_enabled, paranoidiot = :paranoidiot
+                    DO UPDATE SET voip_enabled = :voip_enabled, paranoid = :paranoid
                 ", [
                     "subscriber_device_id" => $deviceId,
                     "house_flat_id" => $flatId,
                     "voip_enabled" => $voipEnabled ? 1 : 0,
-                    "paranoidiot" => $paranoidiot ? 1 : 0,
+                    "paranoid" => $paranoid ? 1 : 0,
                 ]) !== false;
 
                 if (!$r) {
@@ -3177,8 +3177,8 @@
              * @inheritDoc
              */
 
-            function paranoidiotEvent($entranceId, $by, $details) {
-                // TODO: paranoidiotEvent (pushes for idiots)
+            function paranoidEvent($entranceId, $by, $details) {
+                // TODO: paranoidEvent (pushes for idiots)
 
                 // [minimal (?) delay]
                 // rf (rf) from event (internal/actions/openDoor)

@@ -20,7 +20,7 @@
      * @apiBody {string="t","f"} [settings.disablePlog] прекратить "следить" за квартирой
      * @apiBody {string="t","f"} [settings.hiddenPlog] показывать журнал только владельцу
      * @apiBody {string="t","f"} [settings.FRSDisabled] отключить распознование лиц для квартиры (если нет значит недоступен)
-     * @apiBody {string="t","f"} [settings.paranoidiot] режим "параноика" (если нет значит недоступен)
+     * @apiBody {string="t","f"} [settings.paranoid] режим "параноика" (если нет значит недоступен)
      *
      * @apiSuccess {object} - настройки квартиры
      * @apiSuccess {string="t","f"} -.allowDoorCode="t" код открытия двери разрешен
@@ -34,7 +34,7 @@
      * @apiSuccess {string="t","f"} [-.disablePlog="f"] прекратить "следить" за квартирой
      * @apiSuccess {string="t","f"} [-.hiddenPlog="f"] показывать журнал только владельцу
      * @apiSuccess {string="t","f"} [-.FRSDisabled] распознование лиц для квартиры отключено
-     * @apiSuccess {string="t","f"} [-.paranoidiot] режим "параноика"
+     * @apiSuccess {string="t","f"} [-.paranoid] режим "параноика"
      */
 
     use backends\plog\plog;

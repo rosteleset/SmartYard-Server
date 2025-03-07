@@ -1,1 +1,0 @@
-ALTER TABLE houses_flats_devices ADD COLUMN paranoidiot INTEGER DEFAULT 0;

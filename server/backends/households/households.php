@@ -406,12 +406,12 @@
              * @param integer $deviceId
              * @param integer $flatId
              * @param integer $voipEnabled
-             * @param integer $paranoidiot
+             * @param integer $paranoid
              *
              * @return boolean
              */
 
-            abstract public function setDeviceFlat($deviceId, $flatId, $voipEnabled, $paranoidiot = 0);
+            abstract public function setDeviceFlat($deviceId, $flatId, $voipEnabled, $paranoid = 0);
 
             /**
              * @param string search
@@ -547,6 +547,6 @@
              * @return boolean
              */
 
-            abstract function paranoidiotEvent($entranceId, $by, $details);
+            abstract function paranoidEvent($entranceId, $by, $details);
         }
     }
