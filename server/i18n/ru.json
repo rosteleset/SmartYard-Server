@@ -52,8 +52,8 @@
         "maxAttempts": "Превышено максимальное число попыток ввода",
         "pinError": "Пин-код введен неверно",
         "deviceCountError": "Превышен лимит зарегистрированных устройств",
-        "paranoidTitle": "Door opened by rfId",
-        "paranoidMsg": "Door %s, %s opened by rfId %s (%s)"
+        "paranoidTitle": "Открытие двери по ключу",
+        "paranoidMsg": "%s, %s открыта ключoм %s (%s)"
     },
 
     "services": {

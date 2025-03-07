@@ -53,7 +53,7 @@
         "pinError": "The PIN code was entered incorrectly",
         "deviceCountError": "The limit of registered devices has been exceeded",
         "paranoidTitle": "Door opened by rfId",
-        "paranoidMsg": "Door %s, %s opened by rfId %s (%s)"
+        "paranoidMsg": "%s, %s opened by rfId %s (%s)"
     },
 
     "services": {
