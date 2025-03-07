@@ -3269,7 +3269,7 @@
                             left join
                                 houses_flats on houses_flats.house_flat_id = houses_flats_subscribers.house_flat_id
                             where
-                                access_type = 2 and paranoid = 1 and push_disable = 0 and rfid = :rfid
+                                access_type = 2 and paranoid = 1 and watch = 1 and push_disable = 0 and rfid = :rfid
                             group by
                                 address_house_id, house_subscriber_id, platform, push_token, push_token_type, ua, comments
                         ", [
