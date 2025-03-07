@@ -341,6 +341,23 @@
                     return false;
                 }
 
+                $altCamerasIds[0] = $cameraId;
+                for ($i = 0; $i <= 7; $i++) {
+                    if (@(int)$altCamerasIds[$i]) {
+                        $entrances = $this->getEntrances("cameraId", [ "cameraId" => (int)(int)$altCamerasIds[$i]]);
+                        if (count($entrances)) {
+                            setLastError("doublicatedCamera");
+                            return false;
+                        }
+                        for ($j = 0; $j <= 7; $j++) {
+                            if ($i != $j && @(int)$altCamerasIds[$i] == @(int)$altCamerasIds[$j]) {
+                                setLastError("doublicatedCamera");
+                                return false;
+                            }
+                        }
+                    }
+                }
+
                 $entranceId = $this->db->insert("insert into houses_entrances (entrance_type, entrance, lat, lon, shared, plog, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, alt_camera_id_1, alt_camera_id_2, alt_camera_id_3, alt_camera_id_4, alt_camera_id_5, alt_camera_id_6, alt_camera_id_7, cms_levels, path) values (:entrance_type, :entrance, :lat, :lon, :shared, :plog, :caller_id, :house_domophone_id, :domophone_output, :cms, :cms_type, :camera_id, :alt_camera_id_1, :alt_camera_id_2, :alt_camera_id_3, :alt_camera_id_4, :alt_camera_id_5, :alt_camera_id_6, :alt_camera_id_7, :cms_levels, :path)", [
                     ":entrance_type" => $entranceType,
                     ":entrance" => $entrance,
@@ -430,7 +447,7 @@
                 for ($i = 0; $i <= 7; $i++) {
                     if (@(int)$altCamerasIds[$i]) {
                         $entrances = $this->getEntrances("cameraId", [ "cameraId" => (int)(int)$altCamerasIds[$i]]);
-                        if ($entrances && $entrances[0]["entranceId"] != $entranceId) {
+                        if (count($entrances) && $entrances[0]["entranceId"] != $entranceId) {
                             setLastError("doublicatedCamera");
                             return false;
                         }
