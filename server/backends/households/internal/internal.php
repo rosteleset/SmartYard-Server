@@ -3228,7 +3228,8 @@
                             "house_subscriber_id" => "subscriberId",
                             "platform" => "platform",
                             "push_token" => "pushToken",
-                            "push_token_type" => "tokenType"
+                            "push_token_type" => "tokenType",
+                            "comments" => "comments",
                         ]);
 
                         foreach ($paranoids as $paranoid) {
@@ -3245,6 +3246,7 @@
                                 "pushAction" => "paranoid",
                             ])) {
                                 setLastError("pushCantBeSent");
+                                return false;
                             }
                         }
 
