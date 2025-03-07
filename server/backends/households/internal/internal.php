@@ -3197,6 +3197,8 @@
                     return false;
                 }
 
+                $paranoids = false;
+
                 switch ($by) {
                     case "rf":
                         $paranoids = $this->db->get("
@@ -3232,26 +3234,28 @@
                             "comments" => "comments",
                         ]);
 
-                        foreach ($paranoids as $paranoid) {
-                            $house = $addresses->getHouse($paranoid["houseId"]);
-                            if (!$isdn->push([
-                                "token" => $paranoid["pushToken"],
-                                "type" => ((int)$paranoid["platform"] === 1) ? 0 : $paranoid["tokenType"], // force FCM for Apple for text messages
-                                "timestamp" => time(),
-                                "ttl" => 90,
-                                "platform" => [ "android", "ios", "web" ][(int)$paranoid["platform"]],
-                                "title" => i18n("mobile.paranoidTitle"),
-                                "msg" => i18n("mobile.paranoidMsg", $house["houseFull"], $entrance["callerId"], $details, $paranoid["comments"]),
-                                "flatId" => $paranoid["flatId"],
-                                "sound" => "default",
-                                "pushAction" => "paranoid",
-                            ])) {
-                                setLastError("pushCantBeSent");
-                                return false;
-                            }
-                        }
-
                         break;
+                }
+
+                if ($paranoids) {
+                    foreach ($paranoids as $paranoid) {
+                        $house = $addresses->getHouse($paranoid["houseId"]);
+                        if (!$isdn->push([
+                            "token" => $paranoid["pushToken"],
+                            "type" => ((int)$paranoid["platform"] === 1) ? 0 : $paranoid["tokenType"], // force FCM for Apple for text messages
+                            "timestamp" => time(),
+                            "ttl" => 90,
+                            "platform" => [ "android", "ios", "web" ][(int)$paranoid["platform"]],
+                            "title" => i18n("mobile.paranoidTitle"),
+                            "msg" => i18n("mobile.paranoidMsg", $house["houseFull"], $entrance["callerId"], $details, $paranoid["comments"]),
+                            "flatId" => $paranoid["flatId"],
+                            "sound" => "default",
+                            "pushAction" => "inbox",
+                        ])) {
+                            setLastError("pushCantBeSent");
+                            return false;
+                        }
+                    }
                 }
             }
         }
