@@ -17,8 +17,8 @@
             /**
              * @inheritDoc
              */
-            function __construct($config, $db, $redis, $login = false)
-            {
+
+            function __construct($config, $db, $redis, $login = false) {
                 parent::__construct($config, $db, $redis, $login);
 
                 require_once __DIR__ . '/../../../utils/clickhouse.php';
@@ -35,8 +35,8 @@
             /**
              * @inheritDoc
              */
-            public function sendMessage($subscriberId, $title, $msg, $action = "inbox")
-            {
+
+            public function sendMessage($subscriberId, $title, $msg, $action = "inbox") {
                 $households = loadBackend("households");
                 $isdn = loadBackend("isdn");
                 $devices = $households->getDevices("subscriber", $subscriberId);

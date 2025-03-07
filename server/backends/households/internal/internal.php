@@ -3188,6 +3188,63 @@
 
                 // or (better?) [2-3 min delay]
                 // all from backends/plog/processEvents
+
+                $entrance = $this->getEntrance($entranceId);
+                $addresses = loadBackend("addresses");
+
+                switch ($by) {
+                    case "rf":
+                        $paranoids = $this->db->get("
+                            select
+                                access_to as house_flat_id,
+                                address_house_id,
+                                house_subscriber_id,
+                                platform,
+                                push_token,
+                                push_token_type,
+                                comments
+                            from
+                                houses_rfids
+                            left join
+                                houses_flats_subscribers on houses_flats_subscribers.house_flat_id = houses_rfids.access_to
+                            left join
+                                houses_subscribers_devices using (house_subscriber_id)
+                            left join
+                                houses_flats_devices on houses_flats_devices.house_flat_id = houses_rfids.access_to and houses_flats_devices.subscriber_device_id = houses_subscribers_devices.subscriber_device_id
+                            left join
+                                houses_flats on houses_flats.house_flat_id = houses_flats_subscribers.house_flat_id
+                            where
+                                access_type = 1 and paranoid = 1 and push_disable = 0 and rfid = :rfid
+                        ", [
+                            "rfid" => $details,
+                        ], [
+                            "house_flat_id" => "flatId",
+                            "address_house_id" => "houseId",
+                            "house_subscriber_id" => "subscriberId",
+                            "platform" => "platform",
+                            "push_token" => "pushToken",
+                            "push_token_type" => "tokenType"
+                        ]);
+
+                        foreach ($paranoids as $paranoid) {
+                            $house = $addresses->getHouse($paranoid["houseId"]);
+                            if (!$isdn->push([
+                                "token" => $paranoid["pushToken"],
+                                "type" => ((int)$paranoid["platform"] === 1) ? 0 : $paranoid["tokenType"], // force FCM for Apple for text messages
+                                "timestamp" => time(),
+                                "ttl" => 90,
+                                "platform" => [ "android", "ios", "web" ][(int)$paranoid["platform"]],
+                                "title" => i18n("mobile.paranoidTitle"),
+                                "msg" => i18n("mobile.paranoidMsg", $house["houseFull"], $entrance["callerId"], $details, $paranoid["comments"]),
+                                "sound" => "default",
+                                "pushAction" => "paranoid",
+                            ])) {
+                                setLastError("pushCantBeSent");
+                            }
+                        }
+
+                        break;
+                }
             }
         }
     }

@@ -51,7 +51,9 @@
         "addressAlreadyExists": "Некоторые адреса уже были доступны вам в приложении",
         "maxAttempts": "Превышено максимальное число попыток ввода",
         "pinError": "Пин-код введен неверно",
-        "deviceCountError": "Превышен лимит зарегистрированных устройств"
+        "deviceCountError": "Превышен лимит зарегистрированных устройств",
+        "paranoidTitle": "Door opened by rfId",
+        "paranoidMsg": "Door %s, %s opened by rfId %s (%s)"
     },
 
     "services": {

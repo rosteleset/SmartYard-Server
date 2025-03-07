@@ -51,7 +51,9 @@
         "addressAlreadyExists": "Some addresses were already available to you in the app",
         "maxAttempts": "Maximum number of login attempts exceeded",
         "pinError": "The PIN code was entered incorrectly",
-        "deviceCountError": "The limit of registered devices has been exceeded"
+        "deviceCountError": "The limit of registered devices has been exceeded",
+        "paranoidTitle": "Door opened by rfId",
+        "paranoidMsg": "Door %s, %s opened by rfId %s (%s)"
     },
 
     "services": {
