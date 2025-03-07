@@ -3219,7 +3219,7 @@
                             left join
                                 houses_flats on houses_flats.house_flat_id = houses_flats_subscribers.house_flat_id
                             where
-                                access_type = 1 and paranoid = 1 and push_disable = 0 and rfid = :rfid
+                                access_type = 2 and paranoid = 1 and push_disable = 0 and rfid = :rfid
                         ", [
                             "rfid" => $details,
                         ], [
