@@ -385,6 +385,7 @@ app.get('/push', function (req, res) {
             "callerId",
             "platform",
             "flatId",
+            "houseId",
             "flatNumber",
             "hash",
             "pass",

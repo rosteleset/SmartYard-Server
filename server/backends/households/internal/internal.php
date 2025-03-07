@@ -3251,7 +3251,6 @@
                     case "rfId":
                         $paranoids = $this->db->get("
                             select
-                                access_to as house_flat_id,
                                 address_house_id,
                                 house_subscriber_id,
                                 platform,
@@ -3270,10 +3269,11 @@
                                 houses_flats on houses_flats.house_flat_id = houses_flats_subscribers.house_flat_id
                             where
                                 access_type = 2 and paranoid = 1 and push_disable = 0 and rfid = :rfid
+                            group by
+                                address_house_id, house_subscriber_id, platform, push_token, push_token_type, comments
                         ", [
                             "rfid" => $details,
                         ], [
-                            "house_flat_id" => "flatId",
                             "address_house_id" => "houseId",
                             "house_subscriber_id" => "subscriberId",
                             "platform" => "platform",
@@ -3296,7 +3296,7 @@
                             "platform" => [ "android", "ios", "web" ][(int)$paranoid["platform"]],
                             "title" => i18n("mobile.paranoidTitleRf"),
                             "msg" => i18n("mobile.paranoidMsgRf", $house["houseFull"], $entrance["callerId"], $details, $paranoid["comments"]),
-                            "flatId" => $paranoid["flatId"],
+                            "houseId" => $paranoid["houseId"],
                             "sound" => "default",
                             "pushAction" => "inbox",
                         ])) {
