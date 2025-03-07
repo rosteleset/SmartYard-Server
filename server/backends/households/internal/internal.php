@@ -3191,6 +3191,11 @@
 
                 $entrance = $this->getEntrance($entranceId);
                 $addresses = loadBackend("addresses");
+                $isdn = loadBackend("isdn");
+
+                if (!$entrance || !$addresses || !$isdn) {
+                    return false;
+                }
 
                 switch ($by) {
                     case "rf":
