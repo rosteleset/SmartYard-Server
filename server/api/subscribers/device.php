@@ -19,7 +19,7 @@
      * @apiBody {Boolean} [voipEnabled]
      * @apiBody {Boolean} [pushDisable]
      * @apiBody {Boolean} [moneyDisable]
-     * @apiBody {Object[]} [voipFlats]
+     * @apiBody {Object[]} [flats]
      * @apiBody {String} [ua]
      * @apiBody {String} [ip]
      * @apiBody {String} [version]

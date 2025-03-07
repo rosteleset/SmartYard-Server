@@ -38,7 +38,8 @@
             by: "subscriberId",
             query: device.subscriberId,
         }).done(r => {
-            let flats = [];
+            let voipFlats = [];
+            let paranoidiotFlats = [];
 
             if (r && r.subscribers) {
                 for (let i in r.subscribers[0].flats) {
@@ -53,17 +54,25 @@
                     }
 
                     let voip = false;
+                    let paranoidiot = false;
 
                     for (let j in device.flats) {
                         if (device.flats[j].flatId == r.subscribers[0].flats[i].flatId) {
                             voip = device.flats[j].voipEnabled;
+                            paranoidiot = device.flats[j].paranoidiot;
                         }
                     }
 
-                    flats.push({
+                    voipFlats.push({
                         "id": r.subscribers[0].flats[i].flatId,
                         "text": trimStr($.trim(r.subscribers[0].flats[i].house.houseFull + ", " + r.subscribers[0].flats[i].flat), 64, true) + " " + link,
                         "checked": !!voip,
+                    });
+
+                    paranoidiotFlats.push({
+                        "id": r.subscribers[0].flats[i].flatId,
+                        "text": trimStr($.trim(r.subscribers[0].flats[i].house.houseFull + ", " + r.subscribers[0].flats[i].flat), 64, true) + " " + link,
+                        "checked": !!paranoidiot,
                     });
                 }
             }
@@ -136,11 +145,18 @@
                         ],
                     },
                     {
-                        id: "flats",
+                        id: "voipFlats",
                         type: "multiselect",
                         title: i18n("addresses.voipEnabledFlats"),
-                        options: flats,
-                        hidden: flats.length == 0,
+                        options: voipFlats,
+                        hidden: voipFlats.length == 0,
+                    },
+                    {
+                        id: "paranoidiotFlats",
+                        type: "multiselect",
+                        title: i18n("addresses.paranoidiotFlats"),
+                        options: paranoidiotFlats,
+                        hidden: paranoidiotFlats.length == 0,
                     },
                     {
                         id: "pushDisable",
@@ -179,12 +195,13 @@
                     if (result.delete === "yes") {
                         modules.addresses.subscriberDevices.doDeleteDevice(result.uid);
                     } else {
-                        if (flats.length) {
+                        if (voipFlats.length) {
                             f = [];
-                            for (let i in flats) {
+                            for (let i in voipFlats) {
                                 f.push({
-                                    flatId: flats[i].id,
-                                    voipEnabled: (result.flats.indexOf(flats[i].id) >= 0 || result.flats.indexOf(flats[i].id.toString()) >= 0) ? 1 : 0,
+                                    flatId: voipFlats[i].id,
+                                    voipEnabled: (result.voipFlats.indexOf(voipFlats[i].id) >= 0 || result.voipFlats.indexOf(voipFlats[i].id.toString()) >= 0) ? 1 : 0,
+                                    paranoidiot: (result.paranoidiotFlats.indexOf(paranoidiotFlats[i].id) >= 0 || result.paranoidiotFlats.indexOf(paranoidiotFlats[i].id.toString()) >= 0) ? 1 : 0,
                                 });
                             }
                         }
@@ -193,7 +210,7 @@
                             voipEnabled: result.voipEnabled,
                             pushDisable: result.pushDisable,
                             moneyDisable: result.moneyDisable,
-                            voipFlats: f,
+                            flats: f,
                         });
                     }
                 }

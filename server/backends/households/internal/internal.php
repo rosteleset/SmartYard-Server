@@ -2241,7 +2241,7 @@
                 }
 
                 // TODO: paranoidiotEvent (pushes for idiots)
-                // clear flags for paranoidiot (if flat owner/plog settings changes)
+                // clear paranoidiot (if flat owner/plog settings changes)
 
                 $n += $this->db->modify("delete from houses_flats_devices where houses_flat_device_id in (select houses_flat_device_id from houses_flats_devices left join houses_subscribers_devices using (subscriber_device_id) left join houses_flats_subscribers on houses_subscribers_devices.house_subscriber_id = houses_flats_subscribers.house_subscriber_id and houses_flats_devices.house_flat_id = houses_flats_subscribers.house_flat_id where houses_flats_subscribers.house_flat_id is null)");
 
@@ -2628,13 +2628,13 @@
                     }
                 }
 
-                if (array_key_exists("voipFlats", $params)) {
-                    foreach ($params["voipFlats"] as $flat) {
-                        if (!checkInt($flat["flatId"]) || !checkInt($flat["voipEnabled"])) {
+                if (array_key_exists("flats", $params)) {
+                    foreach ($params["flats"] as $flat) {
+                        if (!checkInt($flat["flatId"]) || !checkInt($flat["voipEnabled"]) || !checkInt($flat["paranoidiot"])) {
                             setLastError("invalidParams");
                             return false;
                         }
-                        if ($this->setDeviceFlat($deviceId, $flat["flatId"], $flat["voipEnabled"])) {
+                        if ($this->setDeviceFlat($deviceId, $flat["flatId"], $flat["voipEnabled"], $flat["paranoidiot"])) {
                             $result++;
                         }
                     }
@@ -2697,7 +2697,7 @@
              * @inheritDoc
              */
 
-            public function setDeviceFlat($deviceId, $flatId, $voipEnabled, $paranoidiot) {
+            public function setDeviceFlat($deviceId, $flatId, $voipEnabled, $paranoidiot = 0) {
                 if (!checkInt($deviceId)) {
                     setLastError("invalidParams");
                     return false;

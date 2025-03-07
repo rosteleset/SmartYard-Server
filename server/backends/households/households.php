@@ -411,7 +411,7 @@
              * @return boolean
              */
 
-            abstract public function setDeviceFlat($deviceId, $flatId, $voipEnabled, $paranoidiot);
+            abstract public function setDeviceFlat($deviceId, $flatId, $voipEnabled, $paranoidiot = 0);
 
             /**
              * @param string search
