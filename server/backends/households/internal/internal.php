@@ -3242,6 +3242,7 @@
                                 "platform" => [ "android", "ios", "web" ][(int)$paranoid["platform"]],
                                 "title" => i18n("mobile.paranoidTitle"),
                                 "msg" => i18n("mobile.paranoidMsg", $house["houseFull"], $entrance["callerId"], $details, $paranoid["comments"]),
+                                "flatId" => $paranoid["flatId"],
                                 "sound" => "default",
                                 "pushAction" => "paranoid",
                             ])) {
