@@ -1683,8 +1683,8 @@
             /**
              * @inheritDoc
              */
-            public function getKeys($by, $query)
-            {
+
+            public function getKeys($by, $query) {
                 $q = "";
                 $p = false;
 
@@ -1773,8 +1773,8 @@
             /**
              * @inheritDoc
              */
-            public function addKey($rfId, $accessType, $accessTo, $comments)
-            {
+
+            public function addKey($rfId, $accessType, $accessTo, $comments) {
                 if (!checkInt($accessTo) || !checkInt($accessType) || !checkStr($rfId, [ "minLength" => 6, "maxLength" => 32 ]) || !checkStr($rfId, [ "minLength" => 6, "maxLength" => 32 ]) || !checkStr($comments, [ "maxLength" => 128 ])) {
                     setLastError("invalidParams");
                     return false;
@@ -1798,8 +1798,8 @@
             /**
              * @inheritDoc
              */
-            public function deleteKey($keyId)
-            {
+
+            public function deleteKey($keyId) {
                 if (!checkInt($keyId)) {
                     setLastError("invalidParams");
                     return false;
@@ -1816,8 +1816,8 @@
             /**
              * @inheritDoc
              */
-            public function modifyKey($keyId, $comments)
-            {
+
+            public function modifyKey($keyId, $comments) {
                 if (!checkInt($keyId)) {
                     setLastError("invalidParams");
                     return false;
@@ -1831,8 +1831,8 @@
             /**
              * @inheritDoc
              */
-            public function lastSeenKey($rfId)
-            {
+
+            public function lastSeenKey($rfId) {
                 if (!checkStr($rfId, [ "minLength" => 6, "maxLength" => 32 ])) {
                     setLastError("invalidParams");
                     return false;
@@ -1847,8 +1847,8 @@
             /**
              * @inheritDoc
              */
-            function doorOpened($flatId)
-            {
+
+            function doorOpened($flatId) {
                 if (!checkInt($flatId)) {
                     setLastError("invalidParams");
                     return false;
