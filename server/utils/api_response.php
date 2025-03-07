@@ -12,6 +12,7 @@
      * @param $message
      * @return void
      */
+
     function response($code = 204, $data = false, $name = false, $message = false) {
         $response_codes = [
             200 => [ 'name' => 'OK', 'message' => 'Хорошо' ],
@@ -58,15 +59,18 @@
             498 => [ 'name' => 'Invalid Token', 'message' => 'Неверный токен или отсутствует'],
             503 => [ 'name' => 'Service Unavailable', 'message' => 'Сервис недоступен' ],
         ];
+
         header('Content-Type: application/json');
         http_response_code($code);
 
         if ((int)$code == 204) {
             exit;
         }
+
         $ret = [
             'code' => $code,
         ];
+
         if (!$message) {
             if ($name) {
                 $message = $name;
@@ -74,18 +78,24 @@
                 $message = @$response_codes[$code]['message'];
             }
         }
+
         if (!$name) {
             $name = @$response_codes[$code]['name'];
         }
+
         if ($name) {
             $ret['name'] = $name;
         }
+
         if ($message) {
             $ret['message'] = $message;
         }
+
         if ($data) {
             $ret['data'] = $data;
         }
+
         echo json_encode($ret, JSON_UNESCAPED_UNICODE);
+
         exit;
     }

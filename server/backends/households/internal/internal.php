@@ -2240,6 +2240,9 @@
                     $n += $this->db->modify("delete from houses_subscribers_devices where last_seen < " . strtotime("-" . $this->config["backends"]["households"]["autoclean_devices_interval"], time()));
                 }
 
+                // TODO: paranoidiotEvent (pushes for idiots)
+                // clear flags for paranoidiot (if flat owner/plog settings changes)
+
                 $n += $this->db->modify("delete from houses_flats_devices where houses_flat_device_id in (select houses_flat_device_id from houses_flats_devices left join houses_subscribers_devices using (subscriber_device_id) left join houses_flats_subscribers on houses_subscribers_devices.house_subscriber_id = houses_flats_subscribers.house_subscriber_id and houses_flats_devices.house_flat_id = houses_flats_subscribers.house_flat_id where houses_flats_subscribers.house_flat_id is null)");
 
                 return $n;
@@ -2470,7 +2473,7 @@
                             "singlify"
                         ]
                     );
-                    $flats = $this->db->get("select house_flat_id, voip_enabled, flat, address_house_id from houses_flats_devices left join houses_flats using (house_flat_id) where subscriber_device_id = :subscriber_device_id",
+                    $flats = $this->db->get("select house_flat_id, voip_enabled, flat, address_house_id, paranoidiot from houses_flats_devices left join houses_flats using (house_flat_id) where subscriber_device_id = :subscriber_device_id",
                         [
                             "subscriber_device_id" => $device["deviceId"]
                         ],
@@ -2479,6 +2482,7 @@
                             "voip_enabled" => "voipEnabled",
                             "flat" => "flat",
                             "address_house_id" => "addressHouseId",
+                            "paranoidiot" => "paranoidiot",
                         ]
                     );
                     $device["subscriber"] = $subscriber;
@@ -2491,8 +2495,8 @@
             /**
              * @inheritDoc
              */
-            public function addDevice($subscriber, $deviceToken, $platform, $authToken)
-            {
+
+            public function addDevice($subscriber, $deviceToken, $platform, $authToken) {
 
                 $deviceId = $this->db->insert("insert into houses_subscribers_devices (house_subscriber_id, device_token, platform, auth_token, registered, voip_enabled) values (:house_subscriber_id, :device_token, :platform, :auth_token, :registered, 1)", [
                     "house_subscriber_id" => $subscriber,
@@ -2692,22 +2696,23 @@
             /**
              * @inheritDoc
              */
-            public function setDeviceFlat($deviceId, $flatId, $voipEnabled)
-            {
+
+            public function setDeviceFlat($deviceId, $flatId, $voipEnabled, $paranoidiot) {
                 if (!checkInt($deviceId)) {
                     setLastError("invalidParams");
                     return false;
                 }
 
                 $r = $this->db->insert("
-                    INSERT INTO houses_flats_devices (subscriber_device_id, house_flat_id, voip_enabled)
-                    VALUES (:subscriber_device_id, :house_flat_id, :voip_enabled)
+                    INSERT INTO houses_flats_devices (subscriber_device_id, house_flat_id, voip_enabled, paranoidiot)
+                    VALUES (:subscriber_device_id, :house_flat_id, :voip_enabled, :paranoidiot)
                     ON CONFLICT (subscriber_device_id, house_flat_id)
-                    DO UPDATE SET voip_enabled = :voip_enabled
+                    DO UPDATE SET voip_enabled = :voip_enabled, paranoidiot = :paranoidiot
                 ", [
                     "subscriber_device_id" => $deviceId,
                     "house_flat_id" => $flatId,
                     "voip_enabled" => $voipEnabled ? 1 : 0,
+                    "paranoidiot" => $paranoidiot ? 1 : 0,
                 ]) !== false;
 
                 if (!$r) {
@@ -3172,8 +3177,17 @@
              * @inheritDoc
              */
 
-            function paranoidiotEvent($domophoneId, $doorId, $by, $details) {
+            function paranoidiotEvent($entranceId, $by, $details) {
+                // TODO: paranoidiotEvent (pushes for idiots)
 
+                // [minimal (?) delay]
+                // rf (rf) from event (internal/actions/openDoor)
+                // app (mobile) from mobile (mobile/addresses/openDoor)
+                // face (flatId) from frs (internal/frs/callback)
+                // code (code) from event (internal/actions/openDoor)
+
+                // or (better?) [2-3 min delay]
+                // all from backends/plog/processEvents
             }
         }
     }

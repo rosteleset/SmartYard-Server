@@ -52,8 +52,10 @@ foreach ($entrances as $entrance) {
             $redis->set($frs_key, 1, $config["backends"]["frs"]["open_door_timeout"]);
             $plog = loadBackend("plog");
             if ($plog) {
-                $plog->addDoorOpenDataById(time(), $domophone_id, plog::EVENT_OPENED_BY_FACE, $domophone_output,
-                    $face_id . "|" . $event_id);
+                $plog->addDoorOpenDataById(time(), $domophone_id, plog::EVENT_OPENED_BY_FACE, $domophone_output, $face_id . "|" . $event_id);
+
+                // TODO: paranoidiotEvent (pushes for idiots)
+                // $households->paranoidiotEvent($entranceId, "code", $details);
             }
         }
     }

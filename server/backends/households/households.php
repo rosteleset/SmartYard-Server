@@ -392,28 +392,33 @@
              * @param $params
              * @return boolean
              */
+
             abstract public function modifyDevice($deviceId, $params = []);
 
             /**
              * @param $deviceId
              * @return boolean
              */
+
             abstract public function deleteDevice($deviceId);
 
             /**
              * @param integer $deviceId
              * @param integer $flatId
              * @param integer $voipEnabled
+             * @param integer $paranoidiot
              *
              * @return boolean
              */
-            abstract public function setDeviceFlat($deviceId, $flatId, $voipEnabled);
+
+            abstract public function setDeviceFlat($deviceId, $flatId, $voipEnabled, $paranoidiot);
 
             /**
              * @param string search
              *
              * @return mixed
              */
+
             abstract function searchSubscriber($search);
 
             /**
@@ -421,6 +426,7 @@
              *
              * @return mixed
              */
+
             abstract function searchFlat($search);
 
             /**
@@ -534,14 +540,13 @@
             abstract function deletePathNode($nodeId);
 
             /**
-             * @param integer domophoneId
-             * @param integer doorId
+             * @param integer entranceId
              * @param string by
              * @param mixed details
              *
              * @return boolean
              */
 
-            abstract function paranoidiotEvent($domophoneId, $doorId, $by, $details);
+            abstract function paranoidiotEvent($entranceId, $by, $details);
         }
     }

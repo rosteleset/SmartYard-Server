@@ -74,21 +74,26 @@
 
             // Add door open data
             $plogDoorOpen = $plog->addDoorOpenData($date, $ip, $subId, $event, $door, $detail);
+
+            // TODO: paranoidiotEvent (pushes for idiots)
+            // $households->paranoidiotEvent($entranceId, "rf", $details);
+
             response(201, ["id" => $plogDoorOpen]);
-            break;
 
         case $events['OPEN_BY_CODE']:
             // Add door open data
             $plogDoorOpen = $plog->addDoorOpenData($date, $ip, $subId, $event, $door, $detail);
+
+            // TODO: paranoidiotEvent (pushes for idiots)
+            // $households->paranoidiotEvent($entranceId, "code", $details);
+
             response(201, ["id" => $plogDoorOpen]);
-            break;
 
         case $events['OPEN_BY_CALL']:
             /* not used
             example event: "[49704] Opening door by DTMF command for apartment 1"
              */
             response(204);
-            break;
 
         case $events['OPEN_BY_BUTTON']:
             //FIXME: move SQL request to backend 'helpers'
@@ -96,9 +101,9 @@
             /* "Host-->FRS | Event: open door by button.
             send request to FRS for "freeze motion detection" on this entry"
             */
-            $result = $db->get('SELECT frs, camera_id FROM cameras 
+            $result = $db->get('SELECT frs, camera_id FROM cameras
                                 WHERE camera_id = (
-                                SELECT camera_id FROM houses_domophones 
+                                SELECT camera_id FROM houses_domophones
                                 LEFT JOIN houses_entrances USING (house_domophone_id)
                                 WHERE (ip = :ip OR sub_id = :sub_id) AND domophone_output = :door)',
                 ["ip" => $ip, "sub_id" => $subId, "door" => $door]);
@@ -115,6 +120,6 @@
                 //error_log("Internal API, method openDoor: invalid frsUrl on camera_id: $streamId");
             }
             response(204);
-            break;
     }
+
     exit();
