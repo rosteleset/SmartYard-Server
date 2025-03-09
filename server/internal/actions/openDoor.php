@@ -75,7 +75,7 @@
             // Add door open data
             $plogDoorOpen = $plog->addDoorOpenData($date, $ip, $subId, $event, $door, $detail);
 
-            // paranoidEvent (pushes for idiots)
+            // paranoidEvent (pushes)
             $households->paranoidEvent($ip, $subId, $door, "rfId", $detail);
 
             response(201, ["id" => $plogDoorOpen]);
@@ -84,7 +84,7 @@
             // Add door open data
             $plogDoorOpen = $plog->addDoorOpenData($date, $ip, $subId, $event, $door, $detail);
 
-            // TODO: paranoidEvent (pushes for idiots)
+            // TODO: paranoidEvent (pushes)
             // $households->paranoidEvent($entranceId, "code", $details);
 
             response(201, ["id" => $plogDoorOpen]);

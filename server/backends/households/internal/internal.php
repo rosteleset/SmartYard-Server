@@ -2301,7 +2301,7 @@
                     $n += $this->db->modify("delete from houses_subscribers_devices where last_seen < " . strtotime("-" . $this->config["backends"]["households"]["autoclean_devices_interval"], time()));
                 }
 
-                // TODO: paranoidEvent (pushes for idiots)
+                // TODO: paranoidEvent (pushes)
                 // clear paranoid (if flat owner/plog settings changes)
 
                 $n += $this->db->modify("delete from houses_flats_devices where houses_flat_device_id in (select houses_flat_device_id from houses_flats_devices left join houses_subscribers_devices using (subscriber_device_id) left join houses_flats_subscribers on houses_subscribers_devices.house_subscriber_id = houses_flats_subscribers.house_subscriber_id and houses_flats_devices.house_flat_id = houses_flats_subscribers.house_flat_id where houses_flats_subscribers.house_flat_id is null)");
@@ -3239,7 +3239,7 @@
              */
 
             function paranoidEvent() {
-                // TODO: paranoidEvent (pushes for idiots)
+                // TODO: paranoidEvent (pushes)
 
                 // [minimal (?) delay]
                 // rfId (rfId) from event (internal/actions/openDoor)
@@ -3343,7 +3343,7 @@
                             "msg" => i18nL($l, "mobile.paranoidMsgRf", $house["houseFull"], $entrance["callerId"], $paranoid["comments"] ? $paranoid["comments"] : $details),
                             "houseId" => $paranoid["houseId"],
                             "sound" => "default",
-                            "pushAction" => "inbox",
+                            "pushAction" => @$this->config["backends"]["households"]["paranoid_push_action"] ? $this->config["backends"]["households"]["paranoid_push_action"] : "paranoid",
                         ])) {
                             setLastError("pushCantBeSent");
                             return false;

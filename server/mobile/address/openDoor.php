@@ -59,7 +59,7 @@
             if ($plog) {
                 $plog->addDoorOpenDataById(time(), $domophone_id, $plog::EVENT_OPENED_BY_APP, $door_id, $subscriber['mobile']);
 
-                // TODO: paranoidEvent (pushes for idiots)
+                // TODO: paranoidEvent (pushes)
                 // $households->paranoidEvent($entranceId, "code", $details);
             }
         }

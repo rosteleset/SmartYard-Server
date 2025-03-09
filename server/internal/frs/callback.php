@@ -54,7 +54,7 @@ foreach ($entrances as $entrance) {
             if ($plog) {
                 $plog->addDoorOpenDataById(time(), $domophone_id, plog::EVENT_OPENED_BY_FACE, $domophone_output, $face_id . "|" . $event_id);
 
-                // TODO: paranoidEvent (pushes for idiots)
+                // TODO: paranoidEvent (pushes)
                 // $households->paranoidEvent($entranceId, "code", $details);
             }
         }
