@@ -14,6 +14,7 @@
      * @apiBody {Number="0,1,2,3,4,5"} accessType 0 - universal, 1 - subscriber, 2 - flat, 3 - entrance, 4 - house, 5 - company
      * @apiBody {Number} accessTo
      * @apiBody {String} comments
+     * @apiBody {Number} watch
      *
      * @apiSuccess {Number} key
      */
@@ -30,6 +31,7 @@
      *
      * @apiParam {Number} keyId
      * @apiBody {String} comments
+     * @apiBody {Number} watch
      *
      * @apiSuccess {Boolean} operationResult
      */
@@ -66,7 +68,7 @@
             public static function POST($params) {
                 $households = loadBackend("households");
 
-                $keyId = $households->addKey($params["rfId"], $params["accessType"], $params["accessTo"], $params["comments"]);
+                $keyId = $households->addKey($params["rfId"], $params["accessType"], $params["accessTo"], $params["comments"], $params["watch"]);
 
                 return api::ANSWER($keyId, ($keyId !== false) ? "key" : false);
             }
@@ -74,7 +76,7 @@
             public static function PUT($params) {
                 $households = loadBackend("households");
 
-                $success = $households->modifyKey($params["_id"], $params["comments"]);
+                $success = $households->modifyKey($params["_id"], $params["comments"], $params["watch"]);
 
                 return api::ANSWER($success);
             }

@@ -294,6 +294,7 @@
              * @param $flats
              * @return boolean
              */
+
             abstract public function setSubscriberFlats($subscriberId, $flats);
 
             /**
@@ -301,6 +302,7 @@
              * @param $query
              * @return mixed
              */
+
             abstract public function getKeys($by, $query);
 
             /**
@@ -310,25 +312,29 @@
              * @param $comments
              * @return false|integer
              */
-            abstract public function addKey($rfId, $accessType, $accessTo, $comments);
+
+            abstract public function addKey($rfId, $accessType, $accessTo, $comments, $watch);
 
             /**
              * @param $keyId
              * @param $comments
              * @return boolean
              */
-            abstract public function modifyKey($keyId, $comments);
+
+            abstract public function modifyKey($keyId, $comments, $watch);
 
             /**
              * @param $keyId
              * @return boolean
              */
+
             abstract public function deleteKey($keyId);
 
             /**
              * @param $rfId
              * @return boolean
              */
+
             abstract public function lastSeenKey($rfId);
 
             /**

@@ -1767,6 +1767,7 @@
                     "access_to" => "accessTo",
                     "last_seen" => "lastSeen",
                     "comments" => "comments",
+                    "watch" => "watch",
                 ]);
             }
 
@@ -1774,17 +1775,18 @@
              * @inheritDoc
              */
 
-            public function addKey($rfId, $accessType, $accessTo, $comments) {
-                if (!checkInt($accessTo) || !checkInt($accessType) || !checkStr($rfId, [ "minLength" => 6, "maxLength" => 32 ]) || !checkStr($rfId, [ "minLength" => 6, "maxLength" => 32 ]) || !checkStr($comments, [ "maxLength" => 128 ])) {
+            public function addKey($rfId, $accessType, $accessTo, $comments, $watch) {
+                if (!checkInt($accessTo) || !checkInt($watch) || !checkInt($accessType) || !checkStr($rfId, [ "minLength" => 6, "maxLength" => 32 ]) || !checkStr($rfId, [ "minLength" => 6, "maxLength" => 32 ]) || !checkStr($comments, [ "maxLength" => 128 ])) {
                     setLastError("invalidParams");
                     return false;
                 }
 
-                $r = $this->db->insert("insert into houses_rfids (rfid, access_type, access_to, comments) values (:rfid, :access_type, :access_to, :comments)", [
+                $r = $this->db->insert("insert into houses_rfids (rfid, access_type, access_to, comments) values (:rfid, :access_type, :access_to, :comments, :watch)", [
                     "rfid" => $rfId,
                     "access_type" => $accessType,
                     "access_to" => $accessTo,
                     "comments" => $comments,
+                    "watch" => $watch,
                 ]);
 
                 $queue = loadBackend("queue");
@@ -1817,14 +1819,15 @@
              * @inheritDoc
              */
 
-            public function modifyKey($keyId, $comments) {
-                if (!checkInt($keyId)) {
+            public function modifyKey($keyId, $comments, $watch) {
+                if (!checkInt($keyId) || !checkInt($watch)) {
                     setLastError("invalidParams");
                     return false;
                 }
 
-                return $this->db->modify("update houses_rfids set comments = :comments where house_rfid_id = $keyId", [
+                return $this->db->modify("update houses_rfids set comments = :comments, watch = :watch where house_rfid_id = $keyId", [
                     "comments" => $comments,
+                    "watch" => $watch,
                 ]);
             }
 
