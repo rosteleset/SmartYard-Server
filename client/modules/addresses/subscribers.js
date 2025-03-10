@@ -666,7 +666,7 @@
                                 data: list[i].comments,
                             },
                             {
-                                data: list[i].watch,
+                                data: parseInt(list[i].watch) ? i18n("yes") : i18n("no"),
                             },
                         ],
                     });
