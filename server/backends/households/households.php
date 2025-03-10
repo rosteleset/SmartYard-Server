@@ -310,6 +310,8 @@
              * @param $accessType
              * @param $accessTo
              * @param $comments
+             * @param @watch
+             *
              * @return false|integer
              */
 
@@ -318,6 +320,8 @@
             /**
              * @param $keyId
              * @param $comments
+             * @param @watch
+             *
              * @return boolean
              */
 
