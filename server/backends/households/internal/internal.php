@@ -1775,13 +1775,13 @@
              * @inheritDoc
              */
 
-            public function addKey($rfId, $accessType, $accessTo, $comments, $watch) {
+            public function addKey($rfId, $accessType, $accessTo, $comments, $watch = 0) {
                 if (!checkInt($accessTo) || !checkInt($watch) || !checkInt($accessType) || !checkStr($rfId, [ "minLength" => 6, "maxLength" => 32 ]) || !checkStr($rfId, [ "minLength" => 6, "maxLength" => 32 ]) || !checkStr($comments, [ "maxLength" => 128 ])) {
                     setLastError("invalidParams");
                     return false;
                 }
 
-                $r = $this->db->insert("insert into houses_rfids (rfid, access_type, access_to, comments) values (:rfid, :access_type, :access_to, :comments, :watch)", [
+                $r = $this->db->insert("insert into houses_rfids (rfid, access_type, access_to, comments, watch) values (:rfid, :access_type, :access_to, :comments, :watch)", [
                     "rfid" => $rfId,
                     "access_type" => $accessType,
                     "access_to" => $accessTo,

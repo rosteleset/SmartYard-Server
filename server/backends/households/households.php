@@ -313,7 +313,7 @@
              * @return false|integer
              */
 
-            abstract public function addKey($rfId, $accessType, $accessTo, $comments, $watch);
+            abstract public function addKey($rfId, $accessType, $accessTo, $comments, $watch = 0);
 
             /**
              * @param $keyId
