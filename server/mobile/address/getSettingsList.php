@@ -94,6 +94,10 @@
         }
         $f['roommates'] = $rms;
 
+        if ($is_owner) {
+            $f["keys"] = $households->getKeys("flatId", $f['flatId']);
+        }
+
         $flats[] = $f;
     }
 

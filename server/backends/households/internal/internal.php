@@ -1819,7 +1819,7 @@
              * @inheritDoc
              */
 
-            public function modifyKey($keyId, $comments, $watch) {
+            public function modifyKey($keyId, $comments, $watch = 0) {
                 if (!checkInt($keyId) || !checkInt($watch)) {
                     setLastError("invalidParams");
                     return false;
