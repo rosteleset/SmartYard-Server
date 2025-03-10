@@ -364,11 +364,11 @@
             {
                 $households = loadBackend('households');
 
-                if (isset($sub_id)) {
+                if (!empty($sub_id)) {
                     return $households->getDomophones('subId', $sub_id)[0]['domophoneId'] ?? null;
                 }
 
-                if (isset($ip)) {
+                if (!empty($ip)) {
                     return $households->getDomophones('ip', $ip)[0]['domophoneId'] ?? null;
                 }
 
