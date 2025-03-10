@@ -190,7 +190,7 @@
                 },
                 {
                     id: "watch",
-                    type: "noYes",
+                    type: "noyes",
                     title: i18n("addresses.watch"),
                 },
             ],
@@ -476,9 +476,9 @@
                     },
                     {
                         id: "watch",
-                        type: "noYes",
+                        type: "noyes",
                         title: i18n("addresses.watch"),
-                        hidden: parseInt(key.accessTo) != 2,
+                        hidden: parseInt(key.accessType) != 2,
                         value: key.watch,
                     },
                 ],
