@@ -217,7 +217,7 @@
                             hidden: parseInt(key.accessTo) != 2,
                             value: key.watch,
                         },
-                            ],
+                    ],
                     callback: function (result) {
                         PUT("subscribers", "key", result.keyId, {
                             comments: result.comments,
