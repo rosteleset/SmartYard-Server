@@ -3356,15 +3356,15 @@
                             $l = false;
                         }
 
-                        $cameras = $households->getCameras("id", $entrance["cameraId"]);
+                        $cameras = $this->getCameras("id", $entrance["cameraId"]);
 
                         $hash = md5(GUIDv4());
 
                         if ($cameras && $cameras[0]) {
-                            $model = loadDevice('camera', $cameras[0]["model"], $cameras[0]["url"], $cameras[0]["credentials"]);
+                            $device = loadDevice('camera', $cameras[0]["model"], $cameras[0]["url"], $cameras[0]["credentials"]);
 
-                            $redis->setex("shot_" . $hash, 15 * 60, $model->getCamshot());
-                            $redis->setex("live_" . $hash, 60, json_encode([
+                            $redis->setex("shot_" . $hash, 15 * 60, $device->getCamshot());
+                            $redis->setex("live_" . $hash, 3 * 60, json_encode([
                                 "model" => $cameras[0]["model"],
                                 "url" => $cameras[0]["url"],
                                 "credentials" => $cameras[0]["credentials"],
