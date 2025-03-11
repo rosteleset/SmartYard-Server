@@ -3287,33 +3287,53 @@
                 switch ($by) {
                     case "rfId":
                         $paranoids = $this->db->get("
-                            select
-                                address_house_id,
-                                house_subscriber_id,
-                                platform,
-                                push_token,
-                                push_token_type,
-                                ua,
-                                comments
-                            from
-                                houses_rfids
-                            left join
-                                houses_flats_subscribers on houses_flats_subscribers.house_flat_id = houses_rfids.access_to
-                            left join
-                                houses_subscribers_devices using (house_subscriber_id)
-                            left join
-                                houses_flats_devices on houses_flats_devices.house_flat_id = houses_rfids.access_to and houses_flats_devices.subscriber_device_id = houses_subscribers_devices.subscriber_device_id
-                            left join
-                                houses_flats on houses_flats.house_flat_id = houses_flats_subscribers.house_flat_id
-                            where
-                                access_type = 2 and paranoid = 1 and watch = 1 and push_disable = 0 and rfid = :rfid
+                            select * from (
+                                select
+                                    address_house_id,
+                                    platform,
+                                    push_token,
+                                    push_token_type,
+                                    ua,
+                                    comments
+                                from
+                                    houses_rfids
+                                left join
+                                    houses_flats_subscribers on houses_flats_subscribers.house_subscriber_id = houses_rfids.access_to
+                                left join
+                                    houses_flats on houses_flats.house_flat_id = houses_flats_subscribers.house_flat_id
+                                left join
+                                    houses_subscribers_devices using (house_subscriber_id)
+                                left join
+                                    houses_flats_devices on houses_flats_devices.house_flat_id = houses_flats.house_flat_id and houses_flats_devices.subscriber_device_id = houses_subscribers_devices.subscriber_device_id
+                                where
+                                    access_type = 1 and paranoid = 1 and watch = 1 and rfid = :rfid
+                                union all
+                                    select
+                                        address_house_id,
+                                        platform,
+                                        push_token,
+                                        push_token_type,
+                                        ua,
+                                        comments
+                                    from
+                                        houses_rfids
+                                    left join
+                                        houses_flats_subscribers on houses_flats_subscribers.house_flat_id = houses_rfids.access_to
+                                    left join
+                                        houses_subscribers_devices using (house_subscriber_id)
+                                    left join
+                                        houses_flats_devices on houses_flats_devices.house_flat_id = houses_rfids.access_to and houses_flats_devices.subscriber_device_id = houses_subscribers_devices.subscriber_device_id
+                                    left join
+                                        houses_flats on houses_flats.house_flat_id = houses_flats_subscribers.house_flat_id
+                                    where
+                                        access_type = 2 and paranoid = 1 and watch = 1 and push_disable = 0 and rfid = :rfid
+                            ) as t
                             group by
-                                address_house_id, house_subscriber_id, platform, push_token, push_token_type, ua, comments
+                                address_house_id, platform, push_token, push_token_type, ua, comments
                         ", [
                             "rfid" => $details,
                         ], [
                             "address_house_id" => "houseId",
-                            "house_subscriber_id" => "subscriberId",
                             "platform" => "platform",
                             "push_token" => "pushToken",
                             "push_token_type" => "tokenType",
