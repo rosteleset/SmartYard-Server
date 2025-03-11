@@ -372,11 +372,11 @@ app.get('/push', function (req, res) {
 
     let pushed = false;
 
-    if (req.query.hash || req.query.pass) {
-        let data = {
-            timestamp: Math.round((new Date()).getTime() / 1000).toString(),
-        };
+    let data = {
+        timestamp: Math.round((new Date()).getTime() / 1000).toString(),
+    };
 
+    if ((req.query.hash || req.query.pass) && !req.query.msg) {
         let fields = [
             "server",
             "port",
@@ -455,6 +455,18 @@ app.get('/push', function (req, res) {
     }
 
     if (req.query.msg) {
+
+        let fields = [
+            "houseId",
+            "hash",
+        ];
+
+        for (let i = 0; i < fields.length; i++) {
+            if (req.query[fields[i]]) {
+                data[fields[i]] = req.query[fields[i]];
+            }
+        }
+/*
         realPush({
             title: req.query.title,
             body: req.query.msg,
@@ -469,6 +481,42 @@ app.get('/push', function (req, res) {
             mutableContent: false,
         }, req.query.token, req.query.type, res);
         pushed = true;
+*/
+
+        if (req.query.platform == 'ios') {
+            realPush({
+                title: req.query.title,
+                body: req.query.msg,
+                badge: req.query.badge ? req.query.badge : '1',
+                sound: "default",
+            }, {
+                messageId: req.query.messageId ? req.query.messageId : '',
+                badge: req.query.badge ? req.query.badge : '1',
+                action: req.query.pushAction ? req.query.pushAction : 'inbox',
+            }, {
+                priority: 'high',
+                mutableContent: false,
+            }, req.query.token, req.query.type, res);
+            pushed = true;
+        }
+
+        if (req.query.platform == 'android') {
+            realPush({}, {
+                title: req.query.title,
+                body: req.query.msg,
+                badge: req.query.badge ? req.query.badge : '1',
+                sound: "default",
+                messageId: req.query.messageId ? req.query.messageId : '',
+                badge: req.query.badge ? req.query.badge : '1',
+                action: req.query.pushAction ? req.query.pushAction : 'inbox',
+                houseId: fields.houseId ? fields.houseId : '',
+                hash: fields.hash ? fields.hash : '',
+            }, {
+                priority: 'high',
+                mutableContent: false,
+            }, req.query.token, req.query.type, res);
+            pushed = true;
+        }
     }
 
     if (!pushed) {
