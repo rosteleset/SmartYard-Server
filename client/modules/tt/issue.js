@@ -346,6 +346,7 @@
     },
 
     issueAction: function (issueId, action, callback, prefferredValues, timeout) {
+        loadingStart();
         GET("tt", "issue", issueId, true).
         fail(FAIL).
         fail(loadingDone).
