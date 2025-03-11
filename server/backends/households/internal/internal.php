@@ -3336,6 +3336,21 @@
                             $l = false;
                         }
 
+                        $cameras = $households->getCameras("id", $entrance["cameraId"]);
+
+                        $hash = md5(GUIDv4());
+
+                        if ($cameras && $cameras[0]) {
+                            $model = loadDevice('camera', $cameras[0]["model"], $cameras[0]["url"], $cameras[0]["credentials"]);
+
+                            $redis->setex("shot_" . $hash, 15 * 60, $model->getCamshot());
+                            $redis->setex("live_" . $hash, 60, json_encode([
+                                "model" => $cameras[0]["model"],
+                                "url" => $cameras[0]["url"],
+                                "credentials" => $cameras[0]["credentials"],
+                            ]));
+                        }
+
                         if (!$isdn->push([
                             "token" => $paranoid["pushToken"],
                             "type" => ((int)$paranoid["platform"] === 1) ? 0 : $paranoid["tokenType"], // force FCM for Apple for text messages
@@ -3345,6 +3360,7 @@
                             "title" => i18nL($l, "mobile.paranoidTitleRf"),
                             "msg" => i18nL($l, "mobile.paranoidMsgRf", $house["houseFull"], $entrance["callerId"], $paranoid["comments"] ? $paranoid["comments"] : $details),
                             "houseId" => $paranoid["houseId"],
+                            "hash" => $hash,
                             "sound" => "default",
                             "pushAction" => @$this->config["backends"]["households"]["paranoid_push_action"] ? $this->config["backends"]["households"]["paranoid_push_action"] : "paranoid",
                         ])) {
