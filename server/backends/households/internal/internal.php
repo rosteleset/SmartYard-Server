@@ -3363,8 +3363,8 @@
                         if ($cameras && $cameras[0]) {
                             $device = loadDevice('camera', $cameras[0]["model"], $cameras[0]["url"], $cameras[0]["credentials"]);
 
-                            $redis->setex("shot_" . $hash, 15 * 60, $device->getCamshot());
-                            $redis->setex("live_" . $hash, 3 * 60, json_encode([
+                            $this->redis->setex("shot_" . $hash, 15 * 60, $device->getCamshot());
+                            $this->redis->setex("live_" . $hash, 3 * 60, json_encode([
                                 "model" => $cameras[0]["model"],
                                 "url" => $cameras[0]["url"],
                                 "credentials" => $cameras[0]["credentials"],
