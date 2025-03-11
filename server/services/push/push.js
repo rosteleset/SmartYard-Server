@@ -509,8 +509,9 @@ app.get('/push', function (req, res) {
                 messageId: req.query.messageId ? req.query.messageId : '',
                 badge: req.query.badge ? req.query.badge : '1',
                 action: req.query.pushAction ? req.query.pushAction : 'inbox',
-                houseId: fields.houseId ? fields.houseId : '',
-                hash: fields.hash ? fields.hash : '',
+                houseId: data.houseId ? data.houseId : '',
+                hash: data.hash ? data.hash : '',
+                timestamp: data.timestamp ? data.timestamp : '',
             }, {
                 priority: 'high',
                 mutableContent: false,
