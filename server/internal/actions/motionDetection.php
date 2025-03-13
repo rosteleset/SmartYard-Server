@@ -52,7 +52,7 @@
     }
 
     $frsServer = $frs->getServerByUrl($frsUrl);
-    $api_type = $frsServer[frs::API_TYPE];
+    $api_type = $frsServer[frs::API_TYPE] ?? null;
     if ($api_type === frs::API_LPRS) {
         $method = $motionActive ? frs::M_START_WORKFLOW : frs::M_STOP_WORKFLOW;
         $params = [frs::P_STREAM_ID => strval($streamId)];
