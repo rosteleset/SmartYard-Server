@@ -3382,7 +3382,7 @@
                             "houseId" => $paranoid["houseId"],
                             "hash" => $hash,
                             "sound" => "default",
-                            "pushAction" => @$this->config["backends"]["households"]["paranoid_push_action"] ? $this->config["backends"]["households"]["paranoid_push_action"] : "paranoid",
+                            "pushAction" => @$this->config["backends"]["households"]["event_push_action"] ? $this->config["backends"]["households"]["event_push_action"] : "paranoid",
                         ])) {
                             setLastError("pushCantBeSent");
                             return false;
