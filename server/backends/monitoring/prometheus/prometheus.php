@@ -8,6 +8,7 @@ enum AlertNames: string
     case ICMP_HOST_UNREACHABLE = 'ICMPHostUnreachable';
     case SIP_CLIENT_OFFLINE = 'SipClientOffline';
     case DVR_STREAM_ERROR = 'DvrStreamErr';
+    case HTTP_HOST_UNREACHABLE = 'HTTPHostUnreachable';
 }
 
 class prometheus extends monitoring
@@ -104,7 +105,8 @@ class prometheus extends monitoring
     {
         try {
             // TODO: refactor url
-            $url = '/api/v1/query?query=ALERTS{alertname=~"ICMPHostUnreachable|SipClientOffline"}';
+            $url = '/api/v1/query?query=ALERTS{alertname=~"ICMPHostUnreachable|SipClientOffline|HTTPHostUnreachable"}';
+            //TODO: test http alerts
             if ($deviceType === 'camera'){
                 $url = '/api/v1/query?query=ALERTS{alertname=~"ICMPHostUnreachable|DvrStreamErr"}';
             }
@@ -142,7 +144,8 @@ class prometheus extends monitoring
                             ];
                             break;
                         }
-                    } elseif ($alertName === AlertNames::ICMP_HOST_UNREACHABLE->value) {
+                    }
+                    elseif ($alertName === AlertNames::ICMP_HOST_UNREACHABLE->value) {
                         if ($host['ip'] === $instance){
                             $hostStatus[$hostId]['status'] = [
                                 'status' => 'Offline',
@@ -150,11 +153,21 @@ class prometheus extends monitoring
                             ];
                             break;
                         }
-                    } elseif ($alertName === AlertNames::DVR_STREAM_ERROR->value) {
+                    }
+                    elseif ($alertName === AlertNames::DVR_STREAM_ERROR->value) {
                         if ($host['streamName'] === $name) {
                             $hostStatus[$hostId]['status'] = [
                                 'status' => 'DVRerr',
                                 'message' => i18n('monitoring.dvrErr'),
+                            ];
+                            break;
+                        }
+                    }
+                    elseif ($alertName === AlertNames::HTTP_HOST_UNREACHABLE->value) {
+                        if ($host['ip'] === $instance){
+                            $hostStatus[$hostId]['status'] = [
+                                'status' => 'Other',
+                                'message' => i18n('monitoring.otherErr'),
                             ];
                             break;
                         }
