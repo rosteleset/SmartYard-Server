@@ -3,53 +3,47 @@
  * Return target host for blackbox prometheus monitoring, checking http
  */
     header('Content-Type: application/json; charset=utf-8');
+    require_once 'monitoring_utils.php';
 
-    function checkAuth()
-    {
-        global $config;
-        $expectedToken = $config['backends']['monitoring']['service_discovery_token'];
-
-        if ($expectedToken) {
-            $authHeader = $_SERVER['Authorization'] ?? $_SERVER['HTTP_AUTHORIZATION'] ?? '';
-            if (preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
-                $receivedToken = $matches[1];
-                if ($receivedToken !== $expectedToken) {
-                    response(498, null, null, 'Invalid token or empty');
-                    exit(1);
-                }
-            } else {
-                response(498, null, null, 'Token not provided');
-                exit(1);
-            }
-        }
-    }
-
-    if ($config['backends']['monitoring']['backend'] !== 'prometheus'){
-        response(500, false, false, 'Monitoring backend not configured');
-        exit(1);
-    }
-
-    checkAuth();
+    checkMonitoringConfig($config);
+    checkAuth($config);
 
     $households = loadBackend("households");
+    $cameras = loadBackend("cameras");
+    $result = [];
+
     if ($config['backends']['monitoring']['backend'] !== 'prometheus'){
         response(500, false, false, 'Monitoring backend not configured');
         exit(1);
     }
-    $domophones = $households->getDomophones("all");
 
-    $result = [];
+    $domophones = $households->getDomophones("all");
+    $allCameras = $cameras->getCameras();
 
     foreach ($domophones as $device) {
         if ($device['enabled'] == 1  && $device['model'] !== 'sputnik.json') {
             $result[] = [
                 'targets' => [$device['url']],
                 'labels' => [
-                    'job' => 'blackbox-icmp',
+                    'job' => 'blackbox-http',
                     'alias' => "http",
                     'name' => $device['name'],
                     'type' => 'domophone'
                 ]
+            ];
+        }
+    }
+
+    foreach ($allCameras as $camera) {
+        if ($camera['enabled'] == 1 && $camera['model'] === 'fake.json' && filter_var($camera['url'], FILTER_VALIDATE_URL)) {
+            $result[] = [
+                'targets' => [$camera['url']],
+                'labels' => [
+                    'job' => 'blackbox-http',
+                    'alias' => "http",
+                    'name' => $camera['name'],
+                    'type' => 'camera'
+                ],
             ];
         }
     }
