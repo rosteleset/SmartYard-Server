@@ -1,0 +1,10 @@
+process_names:
+  - name: mysqld
+    cmdline:
+      - 'mysqld'
+  - name: run_php
+    cmdline:
+      - 'run_frs'
+  - name: php-fpm
+    cmdline:
+      - 'php-fpm'

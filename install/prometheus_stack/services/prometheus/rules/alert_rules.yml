@@ -1,0 +1,69 @@
+groups:
+  - name: test
+    rules:
+      - alert: PrometheusTargetMissing
+        expr: up == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Prometheus target missing (instance {{ $labels.instance }})"
+          description: "A Prometheus target has disappeared. An exporter might be crashed. VALUE = {{ $value }}  LABELS: {{ $labels }}"
+
+  - name: icmp_checks
+    rules:
+      - alert: ICMPHostUnreachable
+        expr: probe_success{alias="ping"} == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Host unreachable via ICMP (instance {{ $labels.instance }})"
+          description: "The host {{ $labels.instance }} is not reachable via ICMP for more than 5 minutes. VALUE = {{ $value }}  LABELS: {{ $labels }}"
+
+  # Alert for any restarted intercom and uptime < 900 seconds
+  - name: intercom_restarted
+    rules:
+      - alert: HostRestarted
+        expr: sys_intercom_uptime_seconds < 900
+        for: 1m
+        labels:
+          severity: info
+        annotations:
+          summary: "Device has ben restarted (instance {{ $labels.instance }})"
+          description: "Intercom {{ $labels.instance }} was rebooted . VALUE = {{ $value }}  LABELS: {{ $labels }}"
+
+  # Alert for SIP registration offline on intercom
+  - name: intercom_sip_registration
+    rules:
+      - alert: SipClientOffline
+        expr: sys_intercom_sip_status == 0
+        for: 5m
+        labels:
+          severity: info
+        annotations:
+          summary: "SIP client not register (instance {{ $labels.instance }})"
+          description: "Intercom {{ $labels.instance }} VALUE = {{ $value }}  LABELS: {{ $labels }}"
+
+  # Alert for flussonic streams
+  - name: flussonic_stream_bad_health
+    rules:
+      - alert: DvrStreamErr
+        expr: max_over_time(stream_retry_count[5m]) > 0
+        labels:
+          severity: info
+        annotations:
+          summary: "DVR stream name {{ $labels.name }} stream error"
+          description: "Server {{ $labels.instance }}  stream name {{ $labels.name }}  . VALUE = {{ $value }}  LABELS: {{ $labels }}"
+
+    # Alert ICMP availability but HTTP not responding
+  - name: intercom_http_unavailable
+    rules:
+      - alert: HTTPHostUnreachable
+        expr: probe_success{alias="ping"} == 1 and on(name) probe_success{alias="http"} == 0
+        for: 1m
+        labels:
+          severity: info
+        annotations:
+          summary: "HTTP API not available (instance {{ $labels.instance }})"
+          description: "Host {{ $labels.instance }} responds to ICMP requests but the API is not available . VALUE = {{ $value }}  LABELS: {{ $labels }}"

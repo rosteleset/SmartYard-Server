@@ -1,0 +1,142 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  # 'node-exporter'
+  - job_name: 'node'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['node-exporter:9100']
+
+#  'blackbox-icmp'
+  - job_name: 'blackbox-icmp'
+    scrape_interval: 30s
+    metrics_path: /probe
+    params:
+      module: [ icmp ]
+    relabel_configs:
+      - source_labels: [ __address__ ]
+        target_label: __param_target
+      - source_labels: [ __param_target ]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:9115
+#    file_sd_configs:
+#      - files:
+#          - /etc/prometheus/targets.d/blackbox-icmp.yml
+    http_sd_configs:
+      - url: '${RBT_SERVICE_DISCOVERY_BASE_URI}/internal/prometheus/targets_icmp'
+        refresh_interval: 5m
+        bearer_token: '${RBT_SERVICE_DISCOVERY_TOKEN}'
+
+#  'blackbox-http'
+  - job_name: 'blackbox-http'
+    scrape_interval: 30s
+    metrics_path: /probe
+    params:
+      module: [ http_2xx ]
+    relabel_configs:
+      - source_labels: [ __address__ ]
+        target_label: __param_target
+      - source_labels: [ __param_target ]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:9115
+    http_sd_configs:
+      - url: '${RBT_SERVICE_DISCOVERY_BASE_URI}/internal/prometheus/targets_http'
+        refresh_interval: 5m
+        bearer_token: '${RBT_SERVICE_DISCOVERY_TOKEN}'
+
+#  'blackbox-tcp'
+#  - job_name: 'blackbox-tcp'
+#    scrape_interval: 30s
+#    metrics_path: /probe
+#    params:
+#      module: [ tcp_connect ]
+#    relabel_configs:
+#      - source_labels: [ __address__ ]
+#        target_label: __param_target
+#      - source_labels: [ __param_target ]
+#        target_label: instance
+#      - target_label: __address__
+#        replacement: blackbox-exporter:9115
+#    file_sd_configs:
+#      - files:
+#          - /etc/prometheus/targets.d/blackbox-tcp.yml
+
+#  'asterisk'
+  - job_name: 'asterisk'
+    scheme: https
+    scrape_interval: 30s
+    metrics_path: /metrics
+    static_configs:
+      - targets: [ '${RBT_ASTERISK_URI}' ]
+    basic_auth:
+      username: '${RBT_ASTERISK_USERNAME}'
+      password: '${RBT_ASTERISK_PASSWORD}'
+
+#  'SmartYard-Server/domophone'
+  - job_name: 'SmartYard-Server/domophone'
+    scrape_interval: 5m
+## auth custom exporter
+#    basic_auth:
+#      username: "${RBT_EXPORTER_USERNAME}"
+#      password: "${RBT_EXPORTER_PASSWORD}"
+    metrics_path: /probe
+    http_sd_configs:
+      - url: '${RBT_SERVICE_DISCOVERY_BASE_URI}/internal/prometheus/targets_domophone'
+        refresh_interval: 5m
+        bearer_token: '${RBT_SERVICE_DISCOVERY_TOKEN}'
+    relabel_configs:
+      - source_labels: [ __address__ ]
+        target_label: __param_url
+      - source_labels: [ username ]
+        target_label: __param_username
+      - source_labels: [ password ]
+        target_label: __param_password
+      - source_labels: [ model ]
+        target_label: __param_model
+      - source_labels: [ __param_url ]
+        target_label: instance
+      - target_label: __address__
+        replacement: '${RBT_EXPORTER_URI}'
+
+  - job_name: 'flussonic_server'
+    scrape_interval: 1m
+    scheme: https
+    metrics_path: /streamer/api/v3/config
+    basic_auth:
+      username: '${RBT_FLUSSONIC_USERNAME}'
+      password: '${RBT_FLUSSONIC_PASSWORD}'
+    params:
+      format: [ openmetrics ]
+    static_configs:
+      - targets: [ '${RBT_FLUSSONIC_URI}' ]
+
+  - job_name: 'flussonic_streams'
+    scrape_interval: 1m
+    scheme: https
+    metrics_path: /streamer/api/v3/streams
+    basic_auth:
+          username: '${RBT_FLUSSONIC_USERNAME}'
+          password: '${RBT_FLUSSONIC_PASSWORD}'
+    params:
+      format: [ openmetrics ]
+    static_configs:
+      - targets: [ '${RBT_FLUSSONIC_URI}' ]
+
+  - job_name: 'process-exporter'
+    scrape_interval: 5s
+    static_configs:
+      - targets: [ 'process-exporter:9256' ]
+
+rule_files:
+  - 'rules/alert_rules.yml'
+  - 'rules/*.yml'
+
+alerting:
+  alertmanagers:
+    - scheme: http
+      static_configs:
+        - targets:
+            - "alertmanager:9093"

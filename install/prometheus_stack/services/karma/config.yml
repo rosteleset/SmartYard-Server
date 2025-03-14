@@ -1,0 +1,92 @@
+alertmanager:
+  interval: 30s
+  servers:
+    - name: ams-do
+      uri: http://alertmanager:9093
+      timeout: 10s
+      proxy: false
+      readonly: true
+
+annotations:
+  default:
+    hidden: true
+  hidden:
+    - help
+  visible: []
+
+debug: true
+karma:
+  name: SmartYard | Karma
+labels:
+  order:
+    - job
+    - node
+  color:
+    static:
+      - job
+    unique:
+      - cluster
+      - node
+      - "@receiver"
+      - "@cluster"
+    custom:
+      severity:
+        - value: info
+          color: "#87c4e0"
+        - value: warning
+          color: "#ffae42"
+        - value: critical
+          color: "#ff220c"
+  valueOnly:
+    - severity
+    - job
+    - "@cluster"
+  strip_re:
+    - "app.*"
+    - "helm.*"
+    - "issue.*"
+    - "alertname.*"
+    - "cluster.*"
+    - "io_castle.*"
+    - "service.*"
+    - "instance.*"
+grid:
+  sorting:
+    order: label
+    reverse: false
+    label: cluster
+    customValues:
+      labels:
+        cluster:
+          rke-ny-do: 1
+          ams-do: 2
+          ru-selectel: 3
+          rke-ru-vds: 4
+          hetzner-dev: 5
+  auto:
+    order:
+      - cluster
+  groupLimit: 6
+listen:
+  address: "0.0.0.0"
+  port: 8080
+  prefix: /
+log:
+  config: false
+  level: debug
+  timestamp: true
+receivers:
+  keep: []
+  strip: []
+ui:
+  refresh: 10s
+  hideFiltersWhenIdle: true
+  colorTitlebar: true
+  theme: auto
+  animations: true
+  minimalGroupWidth: 420
+  alertsPerGroup: 5
+  collapseGroups: expanded
+  multiGridLabel: cluster
+  multiGridSortReverse: true
+

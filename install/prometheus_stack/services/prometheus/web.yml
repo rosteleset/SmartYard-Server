@@ -1,0 +1,3 @@
+#  user: admin password:  prometheus
+basic_auth_users:
+  admin: $2b$10$leOsqgS/qbXg2aHY/WETqOh2pFdWL4cD3bN0WynA3fpRNDLhy8sqG
