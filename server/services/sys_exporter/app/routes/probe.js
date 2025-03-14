@@ -3,7 +3,7 @@ import { Registry } from "prom-client";
 import { APP_NAME } from "../constants.js";
 import { createMetrics } from "../metrics/metricsFactory.js";
 import { getMetrics } from "../utils/metrics.js";
-import {globalSipStatusGauge, globalUptimeGauge} from "../metrics/registry.js";
+import { globalSipStatusGauge, globalUptimeGauge } from "../metrics/registry.js";
 
 
 const router = express.Router();

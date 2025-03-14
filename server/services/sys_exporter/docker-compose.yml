@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   sys_exporter:
     container_name: sys_exporter
