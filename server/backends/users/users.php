@@ -220,26 +220,41 @@
                     $user = $this->getUser($uid);
 
                     if (!$user) {
-                        return false;
+                        $this->db->modify("delete from core_users_notifications_queue where notification_id = :notification_id", [
+                            "notification_id" => $notification["id"],
+                        ]);
+                        continue;
                     }
 
                     if (!in_array($user["notification"], [ "tgEmail", "emailTg", "tg", "email" ])) {
-                        return false;
+                        $this->db->modify("delete from core_users_notifications_queue where notification_id = :notification_id", [
+                            "notification_id" => $notification["id"],
+                        ]);
+                        continue;
                     }
 
                     if ($user["notification"] == "tg" && (!$user["tg"] || !@$this->config["telegram"]["bot"])) {
-                        return false;
+                        $this->db->modify("delete from core_users_notifications_queue where notification_id = :notification_id", [
+                            "notification_id" => $notification["id"],
+                        ]);
+                        continue;
                     }
 
                     if ($user["notification"] == "email" && (!$user["eMail"] || !$this->config["email"])) {
-                        return false;
+                        $this->db->modify("delete from core_users_notifications_queue where notification_id = :notification_id", [
+                            "notification_id" => $notification["id"],
+                        ]);
+                        continue;
                     }
 
                     $message = trim($message);
                     $subject = trim($subject);
 
                     if (!$message) {
-                        return false;
+                        $this->db->modify("delete from core_users_notifications_queue where notification_id = :notification_id", [
+                            "notification_id" => $notification["id"],
+                        ]);
+                        continue;
                     }
 
                     $id = false;
