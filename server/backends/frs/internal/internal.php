@@ -233,10 +233,10 @@
                     self::P_URL => $image_url
                 ];
                 if ($width > 0 && $height > 0) {
-                    $method_params[self::P_FACE_LEFT] = $left;
-                    $method_params[self::P_FACE_TOP] = $top;
-                    $method_params[self::P_FACE_WIDTH] = $width;
-                    $method_params[self::P_FACE_HEIGHT] = $height;
+                    $method_params[self::P_FACE_LEFT] = intval($left);
+                    $method_params[self::P_FACE_TOP] = intval($top);
+                    $method_params[self::P_FACE_WIDTH] = intval($width);
+                    $method_params[self::P_FACE_HEIGHT] = intval($height);
                 }
 
                 $response = $this->apiCallFrs($cam[self::CAMERA_FRS], self::M_REGISTER_FACE, $method_params);
@@ -428,6 +428,7 @@
                         return false;
                     if ($all_faces && array_key_exists(self::P_DATA, $all_faces)) {
                         $frs_all_faces = array_merge($frs_all_faces, $all_faces[self::P_DATA]);
+                        sort($frs_all_faces, SORT_NUMERIC);
                     }
                 }
 
@@ -456,7 +457,7 @@
                 }
 
                 //delete unmatched faces in RBT
-                $diff_faces = array_diff($rbt_all_faces, $frs_all_faces, $this->getIgnoredSyncingFaces());
+                $diff_faces = array_values(array_diff($rbt_all_faces, $frs_all_faces, $this->getIgnoredSyncingFaces()));
                 if ($diff_faces) {
                     $query = "delete from frs_links_faces where face_id in (" . implode(",", $diff_faces) . ")";
                     if ($this->db->modify($query) === false)
@@ -476,7 +477,7 @@
                 }
 
                 //delete unmatched faces in FRS
-                $diff_faces = array_diff($frs_all_faces, $rbt_all_faces, $this->getIgnoredSyncingFaces());
+                $diff_faces = array_values(array_diff($frs_all_faces, $rbt_all_faces, $this->getIgnoredSyncingFaces()));
                 if ($diff_faces) {
                     foreach ($frs_servers as $frs_server) {
                         $this->apiCallFrs($frs_server[self::FRS_BASE_URL], self::M_DELETE_FACES, [self::P_FACE_IDS => $diff_faces]);
@@ -494,6 +495,7 @@
                         foreach ($streams[self::P_DATA] as $item)
                         {
                             if (array_key_exists(self::P_FACE_IDS, $item)) {
+                                sort($item[self::P_FACE_IDS], SORT_NUMERIC);
                                 $frs_all_data[$frs_server[self::FRS_BASE_URL]][$item[self::P_STREAM_ID]][self::P_FACE_IDS] = $item[self::P_FACE_IDS];
                             } else {
                                 $frs_all_data[$frs_server[self::FRS_BASE_URL]][$item[self::P_STREAM_ID]][self::P_FACE_IDS] = [];
@@ -643,14 +645,20 @@
                         if (array_key_exists($stream_id, $data)) {
                             $method_params = [
                                 self::P_STREAM_ID => $stream_id,
-                                self::P_URL => $data[$stream_id][self::P_URL],
-                                self::P_CALLBACK_URL => $data[$stream_id][self::P_CALLBACK_URL],
                             ];
+                            if (isset($data[$stream_id][self::P_URL])) {
+                                $method_params[self::P_URL] = $data[$stream_id][self::P_URL];
+                            }
+                            if (isset($data[$stream_id][self::P_CALLBACK_URL])) {
+                                $method_params[self::P_CALLBACK_URL] = $data[$stream_id][self::P_CALLBACK_URL];
+                            }
                             $faces = $data[$stream_id][self::P_FACE_IDS] ?? null;
                             if (isset($faces)) {
                                 $method_params[self::P_FACE_IDS] = $faces;
                             }
-                            $method_params[self::P_CONFIG] = $data[$stream_id][self::P_CONFIG];
+                            if (isset($data[$stream_id][self::P_CONFIG])) {
+                                $method_params[self::P_CONFIG] = $data[$stream_id][self::P_CONFIG];
+                            }
 
                             $this->apiCallFrs($base_url, self::M_ADD_STREAM, $method_params);
                         }
@@ -665,12 +673,12 @@
                     $common_streams = array_intersect_key($data, $frs_all_data[$base_url]);
                     foreach ($common_streams as $stream_id => $stream_data) {
                         $rbt_faces = $stream_data[self::P_FACE_IDS];
-                        $diff_faces = array_diff($rbt_faces, $frs_all_data[$base_url][$stream_id][self::P_FACE_IDS], $this->getIgnoredSyncingFaces());
+                        $diff_faces = array_values(array_diff($rbt_faces, $frs_all_data[$base_url][$stream_id][self::P_FACE_IDS], $this->getIgnoredSyncingFaces()));
                         if ($diff_faces) {
                             $this->apiCallFrs($base_url, self::M_ADD_FACES, [self::P_STREAM_ID => $stream_id, self::P_FACE_IDS => $diff_faces]);
                         }
 
-                        $diff_faces = array_diff($frs_all_data[$base_url][$stream_id][self::P_FACE_IDS], $rbt_faces, $this->getIgnoredSyncingFaces());
+                        $diff_faces = array_values(array_diff($frs_all_data[$base_url][$stream_id][self::P_FACE_IDS], $rbt_faces, $this->getIgnoredSyncingFaces()));
                         if ($diff_faces)
                             $this->apiCallFrs($base_url, self::M_REMOVE_FACES, [self::P_STREAM_ID => $stream_id, self::P_FACE_IDS => $diff_faces]);
                     }
