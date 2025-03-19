@@ -105,7 +105,7 @@ foreach ($e_flats as $key => $values) {
             if (!in_array($value, $flats_with_event)) {
                 $flats_with_event[] = $value;
                 $plog->addDoorOpenDataById(time(), $domophone_id, plog::EVENT_OPENED_BY_VEHICLE, $domophone_output,
-                    $number . "|" . $value . "|" . $event_id);
+                    $number . "|" . $value . "|" . $event_id . "|" . $camera_id);
             }
         }
     }
