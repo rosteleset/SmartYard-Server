@@ -60,6 +60,9 @@
         "SSSNet",
         "errcode"
     ],
+    "beward_ds": [
+        "RTSP"
+    ],
     "is": [
         "STM32.DEBUG",
         "Вызов метода",

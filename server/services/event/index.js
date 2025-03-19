@@ -52,7 +52,7 @@ switch (serviceParam) {
         break;
 
     case SERVICE_BEWARD_DS:
-        const bewardServiceDS = new BewardServiceDS(SERVICE_BEWARD_DS, serviceConfig);
+        const bewardServiceDS = new BewardServiceDS(SERVICE_BEWARD_DS, serviceConfig, spamWords[SERVICE_BEWARD_DS]);
         bewardServiceDS.createSyslogServer();
         break;
 
