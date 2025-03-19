@@ -213,7 +213,7 @@
                     "title": "FRS server",
 
                     // URL for API calls. For FALPRS project should be like this: http://127.0.0.1:9051/frs/api/
-                    "url": "http://127.0.0.1:9051"
+                    "url": "http://127.0.0.1:9051",
 
                     // Optional authorization token for FALPRS project
                     "authToken": "f430e029-8dbf-4167-9d44-8b5ece2ed4c0"
@@ -221,7 +221,7 @@
                 {
                     "api": "lprs"
                     "title": "LPRS server",
-                    "url": "http://127.0.0.1:9051/lprs/api/"
+                    "url": "http://127.0.0.1:9051/lprs/api/",
 
                     // Optional authorization token for FALPRS project
                     "authToken": "a1ec6fc6-b6d4-44a9-8756-f8cd5d9f70e8"
