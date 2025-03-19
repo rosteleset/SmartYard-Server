@@ -734,7 +734,8 @@
                             }
                         }
                         if (count($t)) {
-                            $cars = array_unique(implode("\n", $t));
+                            $t = array_unique($t);
+                            $cars = implode("\n", $t);
                         } else {
                             $cars = null;
                         }
