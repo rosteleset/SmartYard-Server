@@ -208,7 +208,7 @@
             "servers": [
                 {
                     // API type of FALPRS project. One of: frs, lprs
-                    // "api": "frs"
+                    // "api": "frs",
 
                     "title": "FRS server",
 
@@ -219,7 +219,7 @@
                     "authToken": "f430e029-8dbf-4167-9d44-8b5ece2ed4c0"
                 },
                 {
-                    "api": "lprs"
+                    "api": "lprs",
                     "title": "LPRS server",
                     "url": "http://127.0.0.1:9051/lprs/api/",
 
