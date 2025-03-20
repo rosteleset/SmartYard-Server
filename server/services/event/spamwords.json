@@ -61,7 +61,8 @@
         "errcode"
     ],
     "beward_ds": [
-        "RTSP"
+        "RTSP",
+        "Request"
     ],
     "is": [
         "STM32.DEBUG",
