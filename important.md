@@ -1,3 +1,8 @@
+# 2025-03-20
+
+The deprecated syslog service has been removed from the project. You should now use
+the [event service](install/11.event.md).
+
 # 2025-02-07
 
 Use global composer as dependency manager

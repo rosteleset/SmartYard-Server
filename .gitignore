@@ -40,7 +40,6 @@ client/custom.html
 client/config/config.json
 client/config/config.yml
 
-!server/services/syslog/package.json
 !server/services/push/package.json
 !server/services/ami/package.json
 !server/services/mqtt/package.json
@@ -71,7 +70,6 @@ server/integration.php
 server/mqtt/node_modules
 server/mqtt/package.json
 server/mqtt/package-lock.json
-server/services/syslog/config.json
 server/services/push/assets/*
 server/services/push/.env*
 server/services/event/config.json
