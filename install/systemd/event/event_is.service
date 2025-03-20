@@ -1,5 +1,5 @@
 [Unit]
-Description=Event service for Intersviaz intercom syslog messages
+Description=Event service for Intersvyaz intercom syslog messages
 Documentation=https://github.com/rosteleset/SmartYard-Server/tree/main/install
 After=network.target
 
