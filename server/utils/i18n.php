@@ -23,6 +23,7 @@
             $l = language();
         }
         $lang = false;
+        $clang = false;
         try {
             $lang = json_decode(@file_get_contents(__DIR__ . "/../i18n/$l.json"), true, 512, JSON_THROW_ON_ERROR);
         } catch (\Exception $e) {
@@ -32,8 +33,20 @@
                 die("can't load language file\n");
             }
         }
+        try {
+            $clang = json_decode(@file_get_contents(__DIR__ . "/../i18n/custom/$l.json"), true, 512, JSON_THROW_ON_ERROR);
+        } catch (\Exception $e) {
+            try {
+                $clang = json_decode(@file_get_contents(__DIR__ . "/../i18n/custom/en.json"), true, 512, JSON_THROW_ON_ERROR);
+            } catch (\Exception $e) {
+                //
+            }
+        }
         if (!$lang || !is_array($lang)) {
             die("can't load language file\n");
+        }
+        if ($clang && is_array($clang)) {
+            $lang = array_replace_recursive($lang, $clang);
         }
         try {
             $t = explode(".", $msg);
