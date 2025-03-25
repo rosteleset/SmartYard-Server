@@ -3,11 +3,10 @@
     /**
      * @api {post} /actions/callFinished store events to db 'plog_call_done'
      * @apiVersion 1.0.0
-     * @apiDescription
+     * @apiDescription *** in process ****
      *
      * @apiGroup internal
      *
-     * @apiParam {Object}
      * @apiParam {string} date timestamp related to the call finished event.
      * @apiParam {string|null} ip IP address associated with the event.
      * @apiParam {string|null} subId subscription ID related to the event

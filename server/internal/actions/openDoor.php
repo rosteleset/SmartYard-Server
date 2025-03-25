@@ -7,7 +7,6 @@
      *
      * @apiGroup internal
      *
-     * @apiParam {Object}
      * @apiParam {Number} date timestamp related to the call finished event.
      * @apiParam {string|null} ip IP address associated with the event.
      * @apiParam {string|null} subId subscription ID related to the event
