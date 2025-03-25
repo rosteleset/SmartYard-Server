@@ -608,9 +608,13 @@ function timezonesOptions () {
 
     for (let i in timezones) {
         if (!already[timezones[i]] && (!config.enabledTz || config.enabledTz.indexOf(timezones[i]) >= 0)) {
+            let l = i18n("tz." + timezones[i]);
+            if (l == "tz." + timezones[i]) {
+                l = timezones[i];
+            }
             tz.push({
                 id: timezones[i],
-                text: i18n("tz." + timezones[i]),
+                text: l,
             });
         }
         already[timezones[i]] = true;
