@@ -189,9 +189,15 @@
              */
             public function bestQualityByDateFrs($cam, $date, $event_uuid = "")
             {
+                $dt = date('Y-m-d H:i:s', $date);
+                $frs_server = $this->getServerByUrl($cam[self::CAMERA_FRS]);
+                $api_type = $frs_server[frs::API_TYPE] ?? null;
+                if ($api_type === frs::API_FRS) {
+                    $dt = date('Y-m-d\TH:i:sO', $date);
+                }
                 $method_params = [
                     self::P_STREAM_ID => $cam[self::CAMERA_ID],
-                    self::P_DATE => date('Y-m-d H:i:s', $date)
+                    self::P_DATE => $dt
                 ];
                 if ($event_uuid)
                     $method_params[self::P_EVENT_UUID] = $event_uuid;
