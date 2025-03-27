@@ -270,7 +270,7 @@ class brovotech extends camera
 
     public function getCamshot(): string
     {
-        return $this->apiCall('/action/snap');
+        return $this->apiCall('/action/snap', 'GET', [], null, 2);
     }
 
     public function getSysinfo(): array
