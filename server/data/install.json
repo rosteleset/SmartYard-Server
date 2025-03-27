@@ -211,5 +211,8 @@
     ],
     "65": [
         "v65_paranoid.sql"
+    ],
+    "66": [
+        "v66_custom_fields.sql"
     ]
 }

@@ -1,0 +1,2 @@
+ALTER TABLE custom_fields ADD IF NOT EXISTS magic_icon CHARACTER VARYING;
+ALTER TABLE custom_fields ADD IF NOT EXISTS magic_function CHARACTER VARYING;
