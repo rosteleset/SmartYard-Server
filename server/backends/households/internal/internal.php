@@ -42,7 +42,8 @@
                         contract,
                         login,
                         password,
-                        cars
+                        cars,
+                        subscribers_limit
                     from
                         houses_flats
                     where
@@ -68,6 +69,7 @@
                     "login" => "login",
                     "password" => "password",
                     "cars" => "cars",
+                    "subscribers_limit" => "subscribersLimit",
                 ],
                 [
                     "singlify"
@@ -742,6 +744,16 @@
                         $params["cars"] = $cars;
                     }
 
+                    if (array_key_exists("subscribersLimit", $params)) {
+                        if (!$params["subscribersLimit"]) {
+                            $params["subscribersLimit"] = -1;
+                        }
+                        if (!checkInt($params["subscribersLimit"])) {
+                            setLastError("invalidParams");
+                            return false;
+                        }
+                    }
+
                     $mod = $this->db->modifyEx("update houses_flats set %s = :%s where house_flat_id = $flatId", [
                         "floor" => "floor",
                         "flat" => "flat",
@@ -760,6 +772,7 @@
                         "login" => "login",
                         "password" => "password",
                         "cars" => "cars",
+                        "subscribers_limit" => "subscribersLimit",
                     ], $params);
 
                     $queue = loadBackend("queue");
@@ -1469,6 +1482,21 @@
                 if ($subscriberId && $flatId) {
                     if (!checkInt($flatId)) {
                         setLastError("invalidFlat");
+                        return false;
+                    }
+
+                    $flat = $this->getFlat($flatId);
+
+                    $already = $this->db->get("select count(*) as subscribers from houses_flats_subscribers where house_flat_id = :house_flat_id", [
+                        "house_flat_id" => $flatId,
+                    ], [
+                        "subscribers" => "subscribers",
+                    ], [
+                        "fieldlify"
+                    ]);
+
+                    if ((int)$flat["subscribersLimit"] && $already >= (int)$flat["subscribersLimit"]) {
+                        setLastError("subscribersLimitExceeded");
                         return false;
                     }
 

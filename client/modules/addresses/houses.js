@@ -2474,6 +2474,16 @@
                         value: flat.cars,
                         tab: i18n("addresses.cars"),
                     },
+                    {
+                        id: "subscribersLimit",
+                        type: "text",
+                        title: i18n("addresses.subscribersLimit"),
+                        placeholder: i18n("addresses.subscribersLimit"),
+                        validate: a => {
+                            return !!(!a || parseInt(a) > 0);
+                        },
+                        value: (parseInt(flat.subscribersLimit) > 0) ? flat.subscribersLimit : '',
+                    },
                 ],
                 callback: result => {
                     delete result.autoBlock;

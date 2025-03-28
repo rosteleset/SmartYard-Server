@@ -363,13 +363,15 @@
     "bundle": "Бандл",
     "paranoidFlats": "\"Параноик\" (поквартирно)",
     "watch": "Наблюдать",
+    "subscribersLimit": "Ограничение по пользователям",
     "errors": {
         "UNIQUE constraint failed: addresses_houses.address_settlement_id, addresses_houses.address_street_id, addresses_houses.house": "Такой дом уже существует",
         "UNIQUE constraint failed: houses_houses_entrances.house_entrance_id, houses_houses_entrances.prefix": "Такой префикс уже используется",
         "UNIQUE constraint failed: houses_entrances.domophone_id, houses_entrances.domophone_output": "Этот выход уже занят",
         "UNIQUE constraint failed: houses_cameras_houses.camera_id, houses_cameras_houses.address_house_id": "Эта камера уже добавлена для данного дома",
         "ERROR: duplicate key value violates unique constraint \"houses_flats_login\"": "Такой логин уже используется",
-        "UNIQUE constraint failed: houses_domophones.url": "Домофон с таким URL'ом уже добавлен"
+        "UNIQUE constraint failed: houses_domophones.url": "Домофон с таким URL'ом уже добавлен",
+        "subscribersLimitExceeded": "Превышен лимит по количеству жильцов"
     },
     "methods": {
         "addresses": {
