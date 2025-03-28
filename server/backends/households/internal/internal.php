@@ -1690,6 +1690,21 @@
                 $r = true;
 
                 foreach ($flats as $flatId => $flat) {
+                    $_flat = $this->getFlat($flatId);
+
+                    $already = $this->db->get("select count(*) as subscribers from houses_flats_subscribers where house_flat_id = :house_flat_id", [
+                        "house_flat_id" => $flatId,
+                    ], [
+                        "subscribers" => "subscribers",
+                    ], [
+                        "fieldlify"
+                    ]);
+
+                    if ((int)$_flat["subscribersLimit"] && $already >= (int)$_flat["subscribersLimit"]) {
+                        setLastError("subscribersLimitExceeded");
+                        continue;
+                    }
+
                     $r = $r && $this->db->insert("insert into houses_flats_subscribers (house_subscriber_id, house_flat_id, role) values (:house_subscriber_id, :house_flat_id, :role)", [
                         "house_subscriber_id" => $subscriberId,
                         "house_flat_id" => $flatId,
