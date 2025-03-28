@@ -2587,6 +2587,8 @@
                             } else {
                                 return false;
                             }
+                        } else {
+                            break;
                         }
                     } while (true);
                 }
