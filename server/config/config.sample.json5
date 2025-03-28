@@ -98,7 +98,18 @@
             "backend": "internal",
             // "n month", "n day" or "n year"
             // autoremove subscriber devices by inactivity
-            "autoclean_devices_interval": "6 month"
+            "autoclean_devices_interval": "6 month",
+            "test_numbers": [
+                "79123456781",
+                "79123456782",
+                "79123456783",
+                "79123456784",
+                "79123456785"
+            ],
+            // <= 0 - unlimited
+            "max_devices_per_mobile": -1,
+            // replace || forbidden
+            "max_devices_per_mobile_strategy": "replace",
         },
 
         "cameras": {

@@ -90,10 +90,14 @@
                     if ($device) {
                         $households->modifyDevice($device["deviceId"], [ "authToken" => $token ]);
                     } else {
-                        $households->addDevice($subscriber_id, $device_token, $platform, $token);
+                        if (!$households->addDevice($subscriber_id, $device_token, $platform, $token)) {
+                            response(403);
+                        }
                     }
                 } else {
-                    $households->addDevice($subscriber_id, $device_token, $platform, $token);
+                    if (!$households->addDevice($subscriber_id, $device_token, $platform, $token)) {
+                        response(403);
+                    }
                 }
 
                 response(200, ['accessToken' => $token, 'names' => $names]);

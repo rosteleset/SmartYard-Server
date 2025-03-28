@@ -48,7 +48,7 @@
         $result = $result || $isdn->checkIncoming('8' . substr($user_phone, 1));
     }
 
-    if ($result || $user_phone == "79123456781" || $user_phone == "79123456782" || $user_phone == "79123456783" || $user_phone == "79123456784" || $user_phone == "79123456785") {
+    if ($result || in_array($user_phone, @$config["backends"]["households"]["test_numbers"] ? : [])) {
         $token = GUIDv4();
         $subscribers = $households->getSubscribers("mobile", $user_phone);
         $devices = false;
@@ -82,7 +82,9 @@
         }
 
         if (!$deviceExists) {
-            $households->addDevice($subscriber_id, $device_token, $platform, $token);
+            if (!$households->addDevice($subscriber_id, $device_token, $platform, $token)) {
+                response(403);
+            };
         }
 
         response(200, ['accessToken' => $token, 'names' => $names]);

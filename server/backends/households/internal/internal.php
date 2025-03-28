@@ -2563,6 +2563,34 @@
 
             public function addDevice($subscriber, $deviceToken, $platform, $authToken) {
 
+                if (@$this->config["backends"]["households"]["max_devices_per_mobile"] > 0) {
+                    do {
+                        $already = (int)$this->db->get("select count(*) as devices from houses_subscribers_devices where house_subscriber_id = :house_subscriber_id", [
+                            "house_subscriber_id" => $subscriber,
+                        ], [
+                            "devices" => "devices",
+                        ], [
+                            "fieldlify",
+                        ]);
+                        if ((int)$this->config["backends"]["households"]["max_devices_per_mobile"] > $already) {
+                            if (@$this->config["backends"]["households"]["max_devices_per_mobile_strategy"] == "replace") {
+                                $last = (int)$this->db->get("select subscriber_device_id from houses_subscribers_devices where house_subscriber_id = :house_subscriber_id order by last_seen desc limit 1", [
+                                    "house_subscriber_id" => $subscriber,
+                                ], [
+                                    "subscriber_device_id" => "subscriberDeviceId",
+                                ], [
+                                    "fieldlify",
+                                ]);
+                                $this->db->modify("delete from houses_subscribers_devices where subscriber_device_id = :subscriber_device_id", [
+                                    "subscriber_device_id" => $last,
+                                ]);
+                            } else {
+                                return false;
+                            }
+                        }
+                    } while (true);
+                }
+
                 $deviceId = $this->db->insert("insert into houses_subscribers_devices (house_subscriber_id, device_token, platform, auth_token, registered, voip_enabled) values (:house_subscriber_id, :device_token, :platform, :auth_token, :registered, 1)", [
                     "house_subscriber_id" => $subscriber,
                     "device_token" => $deviceToken,
