@@ -91,12 +91,16 @@
                         $households->modifyDevice($device["deviceId"], [ "authToken" => $token ]);
                     } else {
                         if (!$households->addDevice($subscriber_id, $device_token, $platform, $token)) {
-                            response(403);
+                            response(403, [
+                                "error" => i18n("mobile.overLimit"),
+                            ]);
                         }
                     }
                 } else {
                     if (!$households->addDevice($subscriber_id, $device_token, $platform, $token)) {
-                        response(403);
+                        response(403, [
+                            "error" => i18n("mobile.overLimit"),
+                        ]);
                     }
                 }
 

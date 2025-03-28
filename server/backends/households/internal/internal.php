@@ -2572,7 +2572,7 @@
                         ], [
                             "fieldlify",
                         ]);
-                        if ((int)$this->config["backends"]["households"]["max_devices_per_mobile"] > $already) {
+                        if ($already >= (int)$this->config["backends"]["households"]["max_devices_per_mobile"]) {
                             if (@$this->config["backends"]["households"]["max_devices_per_mobile_strategy"] == "replace") {
                                 $last = (int)$this->db->get("select subscriber_device_id from houses_subscribers_devices where house_subscriber_id = :house_subscriber_id order by last_seen desc limit 1", [
                                     "house_subscriber_id" => $subscriber,
