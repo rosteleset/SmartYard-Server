@@ -48,6 +48,8 @@
             response(200, [ "method" => "sms" ]);
         }
 
+        //TODO: add check for self_registering and existing number
+
         // real accounts
         switch ($confirmMethod) {
             case 'outgoingCall':
