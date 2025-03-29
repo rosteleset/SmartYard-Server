@@ -60,7 +60,7 @@
             $names = ["name" => $subscriber["subscriberName"], "patronymic" => $subscriber["subscriberPatronymic"], "last" => $subscriber["subscriberLast"]];
             $devices = $households->getDevices("subscriber", $subscriber_id);
         } else {
-            $canAdd = @$config["backends"]["households"]["self_registering"] ? : true;
+            $canAdd = @isset($config["backends"]["households"]["self_registering"]) ? : true;
 
             if ($canAdd) {
                 $subscriber_id = $households->addSubscriber($user_phone);
