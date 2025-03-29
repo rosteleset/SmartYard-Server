@@ -104,6 +104,8 @@
                 "79123456784",
                 "79123456785"
             ],
+            // self_registering - true by default
+            "self_registering": true,
             // <= 0 - unlimited
             "max_devices_per_mobile": -1,
             // replace || forbidden

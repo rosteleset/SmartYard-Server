@@ -51,10 +51,10 @@
         "addressAlreadyExists": "Some addresses were already available to you in the app",
         "maxAttempts": "Maximum number of login attempts exceeded",
         "pinError": "The PIN code was entered incorrectly",
-        "deviceCountError": "The limit of registered devices has been exceeded",
         "paranoidTitleRf": "Door opened by rfId",
         "paranoidMsgRf": "%s, %s opened by rfId \"%s\"",
-        "overLimit": "Device limit per mobile number exceeded"
+        "overLimit": "Device limit per mobile number exceeded",
+        "contactProviderForAdding": "Please contact your provider"
     },
 
     "services": {

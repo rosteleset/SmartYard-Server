@@ -60,7 +60,15 @@
             $names = ["name" => $subscriber["subscriberName"], "patronymic" => $subscriber["subscriberPatronymic"], "last" => $subscriber["subscriberLast"]];
             $devices = $households->getDevices("subscriber", $subscriber_id);
         } else {
-            $subscriber_id = $households->addSubscriber($user_phone);
+            $canAdd = @$config["backends"]["households"]["self_registering"] ? : true;
+
+            if ($canAdd) {
+                $subscriber_id = $households->addSubscriber($user_phone);
+            } else {
+                response(403, [
+                    "error" => i18n("mobile.contactProviderForAdding"),
+                ]);
+            }
         }
 
         if (!$subscriber_id) {
