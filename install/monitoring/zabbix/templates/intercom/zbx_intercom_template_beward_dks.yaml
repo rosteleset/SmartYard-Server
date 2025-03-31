@@ -1,7 +1,7 @@
 zabbix_export:
   version: '6.4'
   template_groups:
-    - uuid: e858e071fe054cdabec002d7d99891e9
+    - uuid: 6207024e7115434a8abfd202bf7f283a
       name: Templates/Intercoms
   templates:
     - uuid: 1def59ffd59d4d3e88fcdfc7c3fe0377
@@ -83,7 +83,7 @@ zabbix_export:
           triggers:
             - uuid: 50c838fdf4e94ec380fdec039e7cb18f
               expression: 'count(/Intercom_BEWARD_DKS/intercom.sipstatus,10m,,"0")>5'
-              name: 'SIP registration failure'
+              name: 'SIP: Registration failure'
               event_name: 'INTERCOM: {HOST.NAME} | SIP registration failure'
               priority: WARNING
               description: 'Check SIP registration on device more 10 minutes'
@@ -131,8 +131,9 @@ zabbix_export:
           triggers:
             - uuid: e65f7c65fbdb46f3ad95df7b8ed1792b
               expression: 'nodata(/Intercom_BEWARD_DKS/intercom.systeminfo,600)=1'
-              name: 'HTTP Check unavailable but ICMP available'
-              priority: AVERAGE
+              name: 'HTTP: port/service unreachable (ICMP OK)'
+              priority: WARNING
+              description: 'HTTP Check unavailable but ICMP available'
               dependencies:
                 - name: 'ICMP: High ICMP ping loss'
                   expression: 'min(/Intercom_BEWARD_DKS/icmppingloss,5m)>{$ICMP_LOSS_WARN} and min(/Intercom_BEWARD_DKS/icmppingloss,5m)<100'

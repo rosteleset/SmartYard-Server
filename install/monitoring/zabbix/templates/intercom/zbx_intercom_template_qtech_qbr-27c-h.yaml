@@ -1,7 +1,7 @@
 zabbix_export:
   version: '6.4'
   template_groups:
-    - uuid: e858e071fe054cdabec002d7d99891e9
+    - uuid: 6207024e7115434a8abfd202bf7f283a
       name: Templates/Intercoms
   templates:
     - uuid: 4b1e045ce6f54de8b626da09c747bb5d
@@ -89,7 +89,7 @@ zabbix_export:
           triggers:
             - uuid: e9ae3baa1af24263a5e18f77c11404bf
               expression: 'count(/Intercom_QTECH_QDB-27C-H/intercom.sipstatus,10m,,"0")>5'
-              name: 'SIP registration failure'
+              name: 'SIP: Registration failure'
               event_name: 'INTERCOM: {HOST.NAME} | SIP registration failure'
               priority: WARNING
               description: 'Check SIP registration on device more 10 minutes'
@@ -121,7 +121,9 @@ zabbix_export:
           triggers:
             - uuid: 99ae21b91ee04720b6d215df5478e37e
               expression: last(/Intercom_QTECH_QDB-27C-H/intercom.systeminfo)=0
-              name: 'HTTP Check unavailable but ICMP available'
+              name: 'HTTP: port/service unreachable (ICMP OK)'
+              priority: WARNING
+              description: 'HTTP Check unavailable but ICMP available'
               dependencies:
                 - name: 'ICMP: Unavailable by ICMP ping'
                   expression: 'max(/Intercom_QTECH_QDB-27C-H/icmpping,#3)=0'

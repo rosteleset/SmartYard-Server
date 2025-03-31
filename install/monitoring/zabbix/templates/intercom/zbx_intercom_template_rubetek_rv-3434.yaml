@@ -1,7 +1,7 @@
 zabbix_export:
   version: '6.4'
   template_groups:
-    - uuid: e858e071fe054cdabec002d7d99891e9
+    - uuid: 6207024e7115434a8abfd202bf7f283a
       name: Templates/Intercoms
   templates:
     - uuid: f5f60cb8e6c04543bf32905fdd8bbe67
@@ -84,7 +84,7 @@ zabbix_export:
           triggers:
             - uuid: 6561eda8062b4bbe9e083cf4ef89bce7
               expression: 'count(/Intercom_RUBETEK_RV-3434/intercom.sipstatus,10m,,"0")>5'
-              name: 'SIP registration failure'
+              name: 'SIP: Registration failure'
               event_name: 'INTERCOM: {HOST.NAME} | SIP registration failure'
               priority: WARNING
         - uuid: 21094f26dbc34f5fb01b7e7bf44aef4c
@@ -104,8 +104,9 @@ zabbix_export:
           triggers:
             - uuid: 89c5b087f8144a02ad1fb3a686ecd6d9
               expression: 'nodata(/Intercom_RUBETEK_RV-3434/intercom.systeminfo,600)=1'
-              name: 'HTTP Check unavailable but ICMP available'
-              priority: AVERAGE
+              name: 'HTTP: port/service unreachable (ICMP OK)'
+              priority: WARNING
+              description: 'HTTP Check unavailable but ICMP available'
         - uuid: 6f70e2267a0f4f02b7c47c7166c8e991
           name: 'RUBETEK Intercom: uptime'
           type: HTTP_AGENT
