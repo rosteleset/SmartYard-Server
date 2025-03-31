@@ -7,7 +7,8 @@ use Exception;
 enum Triggers: string
 {
     case ICMP = 'ICMP: Unavailable by ICMP ping';
-    case SIP =  'SIP registration failure';
+    case SIP =  'SIP: Registration failure';
+    case HTTP = 'HTTP: port/service unreachable (ICMP OK)';
 }
 
 class zabbix extends monitoring
@@ -69,7 +70,7 @@ class zabbix extends monitoring
             switch ($deviceType) {
                 case 'domophone':
                 case 'camera':
-                    return $this->processHostTriggers($host);
+                    return $this->processHostTriggers($host['ip']);
             }
         } catch (Exception $e){
             $this->log("method deviceStatus: " . $e->getMessage());
@@ -1376,7 +1377,7 @@ class zabbix extends monitoring
         $triggers = $this->getTriggers($hostname);
         if (!$triggers) {
             return [
-                "status" => "unknown",
+                "status" => "Unknown",
                 "message" => i18n("monitoring.unknown"),
             ];
         }
