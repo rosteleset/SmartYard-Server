@@ -1072,6 +1072,7 @@
                     foreach ($domophones as $domophone) {
                         $targetHosts[] = [
                             'hostId' => $domophone['domophoneId'],
+                            'enabled' => $domophone['enabled'],
                             'ip' => $domophone['ip'],
                             'url' => $domophone['url'],
                         ];
@@ -1356,7 +1357,13 @@
                     $monitoring = loadBackend("monitoring");
 
                     if ($monitoring) {
-                        $domophone["status"] = $monitoring->deviceStatus("domophone", $domophone["ip"]);
+                        $targetHost = [
+                            'hostId' => $domophone['domophoneId'],
+                            'enabled' => $domophone['enabled'],
+                            'ip' => $domophone["ip"],
+                            'url' => $domophone["url"],
+                        ];
+                        $domophone["status"] = $monitoring->deviceStatus("domophone", $targetHost);
                     }
 
                     $domophone["json"] = json_decode(file_get_contents(__DIR__ . "/../../../hw/ip/domophone/models/" . $domophone["model"]), true);

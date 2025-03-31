@@ -74,8 +74,9 @@ namespace backends\cameras {
                 foreach ($cameras as $camera) {
                     $targetHosts[] = [
                         'hostId' => $camera['cameraId'],
-                        'ip' => $camera['ip'],
-                        'url' => $camera['url'],
+                        'enabled' => $camera['enabled'],
+                        'ip' => $camera['ip'] ?? null,
+                        'url' => $camera['url'] ?? null,
                         'dvrStream' => $camera['dvrStream']
                     ];
                 }
