@@ -15,7 +15,13 @@
     {
         /**
          * @param string $deviceType
-         * @param string $host
+         * @param array{
+         *     hostIdgit : int|string,
+         *     enabled: bool,
+         *     ip: string,
+         *     url?: string,
+         *     dvrStream?: string
+         * } $host
          * @return bool|mixed
          */
         abstract public function deviceStatus($deviceType, $host);

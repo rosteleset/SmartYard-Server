@@ -13,7 +13,9 @@ enum AlertNames: string
 
 class prometheus extends monitoring
 {
-    protected $servers = [];
+    protected mixed $servers = [];
+    private const string ENDPOINT_HEALTH_CHECK = '/-/healthy';
+    private const string ENDPOINT_ALERTS_QUERY = '/api/v1/query?query=';
 
     public function __construct($config, $db, $redis, $login = false)
     {
@@ -33,6 +35,47 @@ class prometheus extends monitoring
          * Implement me
          */
 
+    }
+
+    public function configureMonitoring(): void
+    {
+        $this->log("Prometheus used dynamic configuration");
+    }
+
+    public function deviceStatus($deviceType, $host)
+    {
+        try {
+            $this->log("Run deviceStatus for {$deviceType} host IP: " . $host['ip']);
+            // skip disabled host
+            if (!$host['enabled']) {
+                return $this->createStatusResponse("Unknown", 'monitoring.unknown');
+            }
+            $query = $this->buildAlertQuery($deviceType, $host['ip']);
+            $alerts = $this->apiCallToRndServer(self::ENDPOINT_ALERTS_QUERY . $query)['data']['result'];
+            $hostStatuses = $this->initHostStatuses($deviceType, [$host]);
+            $this->processAlerts($alerts, $hostStatuses);
+            $this->setDefaultStatus($hostStatuses);
+            return $hostStatuses[$host['hostId']]['status'];
+        } catch (Exception $e) {
+            $this->log("deviceStatus error: " . $e->getMessage());
+            return null;
+        }
+    }
+
+    public function devicesStatus($deviceType, $hosts)
+    {
+        try {
+            $this->log("Run devicesStatus for {$deviceType}, host count: " . count($hosts));
+            $query = $this->buildAlertQuery($deviceType);
+            $alerts = $this->apiCallToRndServer(self::ENDPOINT_ALERTS_QUERY . $query)['data']['result'];
+            $hostStatuses = $this->initHostStatuses($deviceType, $hosts);
+            $this->processAlerts($alerts, $hostStatuses);
+            $this->setDefaultStatus($hostStatuses);
+            return $hostStatuses;
+        }catch (Exception $e) {
+            $this->log("devicesStatus error: " . $e->getMessage());
+            return null;
+        }
     }
 
     private function apiCall($url, $username = null, $password = null)
@@ -81,122 +124,12 @@ class prometheus extends monitoring
         error_log($message);
     }
 
-    public function deviceStatus($deviceType, $host)
-    {
-        // TODO: Implement deviceStatus() method.
-    }
-
-    public function devicesStatus($deviceType, $hosts)
-    {
-        try {
-            $this->log("Run devicesStatus: " . $deviceType);
-            switch ($deviceType) {
-                case 'domophone':
-                case 'camera':
-                    return $this->processAlarms($deviceType, $hosts);
-            }
-        } catch (Exception $e) {
-            $this->log("Method devicesStatus: " . $e->getMessage());
-            return null;
-        }
-    }
-
-    private function processAlarms($deviceType, $hosts)
-    {
-        try {
-            // TODO: refactor url
-            $url = '/api/v1/query?query=ALERTS{alertname=~"ICMPHostUnreachable|SipClientOffline|HTTPHostUnreachable"}';
-            //TODO: test http alerts
-            if ($deviceType === 'camera'){
-                $url = '/api/v1/query?query=ALERTS{alertname=~"ICMPHostUnreachable|DvrStreamErr"}';
-            }
-            $hostStatus = [];
-
-            foreach ($hosts as $host){
-                $hostStatus[$host['hostId']] = [
-                    'ip' => $host['ip'],
-                    'url' => $host['url'],
-                    'status' => [],
-                ];
-
-                if ($deviceType === 'camera'){
-                    $hostStatus[$host['hostId']]['dvrStream'] = $host['dvrStream'];
-                    $hostStatus[$host['hostId']]['streamName'] = $this->getStreamName($host['dvrStream']);
-                }
-            }
-
-            // alerts from prometheus
-            $alerts = $this->apiCallToRndServer($url)['data']['result'];
-
-            foreach ($alerts as $alert){
-                $instance = $alert['metric']['instance'];
-                $alertName = $alert['metric']['alertname'];
-                $url = $alert['metric']['url'] ?? null;
-                $name = $alert['metric']['name'] ?? null;
-
-                foreach ($hostStatus as $hostId => $host){
-                    // check alert type
-                    if ($alertName === AlertNames::SIP_CLIENT_OFFLINE->value) {
-                        if ($url && $host['url'] === $url){
-                            $hostStatus[$hostId]['status'] = [
-                                'status' => 'SIP error',
-                                'message' => i18n('monitoring.sipRegistrationFail'),
-                            ];
-                            break;
-                        }
-                    }
-                    elseif ($alertName === AlertNames::ICMP_HOST_UNREACHABLE->value) {
-                        if ($host['ip'] === $instance){
-                            $hostStatus[$hostId]['status'] = [
-                                'status' => 'Offline',
-                                'message' => i18n('monitoring.offline'),
-                            ];
-                            break;
-                        }
-                    }
-                    elseif ($alertName === AlertNames::DVR_STREAM_ERROR->value) {
-                        if ($host['streamName'] === $name) {
-                            $hostStatus[$hostId]['status'] = [
-                                'status' => 'DVRerr',
-                                'message' => i18n('monitoring.dvrErr'),
-                            ];
-                            break;
-                        }
-                    }
-                    elseif ($alertName === AlertNames::HTTP_HOST_UNREACHABLE->value) {
-                        if ($host['ip'] === $instance){
-                            $hostStatus[$hostId]['status'] = [
-                                'status' => 'Other',
-                                'message' => i18n('monitoring.otherErr'),
-                            ];
-                            break;
-                        }
-                    }
-                }
-            }
-
-            // If the host does not have an ALERTs status, we assume that it is OK
-            foreach ($hostStatus as $hostId => $host) {
-                if (empty($host['status'])) {
-                    $hostStatus[$hostId]['status'] = [
-                        'status' => 'OK',
-                        'message' => i18n('monitoring.online'),
-                    ];
-                }
-            }
-
-            return $hostStatus;
-        } catch (Exception $e){
-            throw $e;
-        }
-    }
-
     /**
      * Parse DVR URL to stream name, tested only flussonic
      * @param $url
      * @return string|null
      */
-    private function getStreamName($url): ?string
+    private function getStreamName($url): ? string
     {
         if (preg_match('/^https:\/\/[^\/]+\/([^\/]+)(?:\/(index\.m3u8|video\.m3u8))?$/', $url, $matches)) {
             return $matches[1]; // stream name
@@ -204,12 +137,9 @@ class prometheus extends monitoring
         return null;
     }
 
-    public function configureMonitoring() {
-    }
-
-    private function checkServerAvailability($server)
+    private function checkServerAvailability($server): bool
     {
-        $url = $server['url'] . '/-/healthy'; // simple URL for check availability service
+        $url = $server['url'] . self::ENDPOINT_HEALTH_CHECK; // simple URL for check availability service
         $method = 'GET';
         $contentType = 'text/plain';
 
@@ -242,19 +172,22 @@ class prometheus extends monitoring
             }
 
             if ($httpCode !== 200 || trim($response) !== 'Prometheus Server is Healthy.') {
-                $this->log("Server {$server['url']} returned an unexpected response: " . var_export($response, true));
+                $this->log("checkServerAvailability. Server {$server['url']} returned an unexpected response: " . var_export($response, true));
                 return false;
             }
 
             return true;
 
         } catch (Exception $e) {
-            $this->log("Exception while checking server {$server['url']}: " . $e->getMessage());
+            $this->log("checkServerAvailability. Exception while checking server {$server['url']}: " . $e->getMessage());
             return false;
         }
     }
 
-    private function apiCallToRndServer($endpoint)
+    /**
+     * @throws Exception
+     */
+    private function apiCallToRndServer(string $endpoint)
     {
         $servers = $this->servers;
         $serversCount =count($servers);
@@ -278,7 +211,7 @@ class prometheus extends monitoring
 
         // Availability servers is not found
         if (count($availableServers) === 0) {
-            throw new Exception("All servers is down.");
+            throw new Exception("All Prometheus servers is down.");
         }
 
         // Select availability server for request
@@ -287,12 +220,88 @@ class prometheus extends monitoring
         $url = $server['url'] . $endpoint;
 
         try {
-            $response = $this->apiCall($url, $server['username'], $server['password']);
-            $this->log("CALL: ".  $server['url']);
-            return $response;
+            $this->log("API call to prometheus server: ".  $server['url']);
+            return $this->apiCall($url, $server['username'], $server['password']);
         } catch (Exception $e) {
             $this->log("API call failed for server {$server['url']}: " . $e->getMessage());
             throw $e;
+        }
+    }
+
+    private function createStatusResponse($status, $message): array
+    {
+        return [
+            'status' => $status,
+            'message' => i18n($message),
+        ];
+    }
+
+    private function buildAlertQuery(string $deviceType, ?string $instance = null): string
+    {
+        $alerts = match ($deviceType) {
+            'domophone' => 'ALERTS{alertname=~"ICMPHostUnreachable|SipClientOffline|HTTPHostUnreachable"',
+            'camera' => 'ALERTS{alertname=~"ICMPHostUnreachable|DvrStreamErr|HTTPHostUnreachable"',
+        };
+        if ($instance) {
+            $alerts  .= ",instance=\"$instance\"";
+        }
+        $alerts .= '}';
+        return $alerts;
+    }
+
+    private function initHostStatuses(string $deviceType, array $hosts): array
+    {
+        $hostStatuses = [];
+        foreach ($hosts as $host) {
+            $hostStatuses[$host['hostId']] = [
+                'ip' => $host['ip'],
+                'enabled' => $host['enabled'],
+                'url' => $host['url'],
+                'status' => !$host['enabled'] ? $this->createStatusResponse("Unknown", 'monitoring.unknown') : [],
+            ];
+            if ($deviceType === 'camera'){
+                $hostStatuses[$host['hostId']]['dvrStream'] = $host['dvrStream'];
+                $hostStatuses[$host['hostId']]['streamName'] = $this->getStreamName($host['dvrStream']);
+            }
+        }
+        return $hostStatuses;
+    }
+
+    private function processAlerts(array $alerts, array &$hostStatuses): void
+    {
+        foreach ($alerts as $alert) {
+            $instance = $alert['metric']['instance'] ?? null;
+            $alertName = $alert['metric']['alertname'] ?? null;
+            $url = $alert['metric']['url'] ?? null;
+            $name = $alert['metric']['name'] ?? null;
+
+            foreach ($hostStatuses as $hostId => &$host) {
+                $status = $this->determinateStatus($alertName, $instance, $url, $name, $host);
+                if ($status) {
+                    $host['status'] = $status;
+                    break;
+                }
+            }
+        }
+    }
+
+    private function determinateStatus(string $alertName, string $instance, ?string $url, ?string $name, array $host): ?array
+    {
+        return match ($alertName) {
+            AlertNames::SIP_CLIENT_OFFLINE->value => ($url && $host['url'] === $url) ? $this->createStatusResponse('SIP error', 'monitoring.sipRegistrationFail') : null,
+            AlertNames::ICMP_HOST_UNREACHABLE->value => ($host['ip'] === $instance) ? $this->createStatusResponse('Offline','monitoring.offline') : null,
+            AlertNames::DVR_STREAM_ERROR->value => ($host['streamName'] === $name) ? $this->createStatusResponse('DVR error', 'monitoring.dvrError') : null,
+            AlertNames::HTTP_HOST_UNREACHABLE->value => ($host['ip'] === $instance) ? $this->createStatusResponse('Other', 'monitoring.otherErr') : null,
+            default => null,
+        };
+    }
+
+    private function setDefaultStatus(array &$hostStatuses): void
+    {
+        foreach ($hostStatuses as &$host) {
+            if (empty($host['status'])) {
+                $host['status'] = $this->createStatusResponse('OK', 'monitoring.online');
+            }
         }
     }
 }
