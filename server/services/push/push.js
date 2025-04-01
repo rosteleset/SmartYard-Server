@@ -110,6 +110,7 @@ const realPush = (msg, data, options, token, type, res) => {
                             'mutable-content': 1,
                             'badge': badge,
                             'sound': 'default',
+                            'interruption-level': 'time-sensitive',
                         },
                     },
                 },
