@@ -1502,7 +1502,7 @@
                         "fieldlify"
                     ]);
 
-                    if ((int)$flat["subscribersLimit"] && $already >= (int)$flat["subscribersLimit"]) {
+                    if ((int)$flat["subscribersLimit"] > 0 && $already >= (int)$flat["subscribersLimit"]) {
                         setLastError("subscribersLimitExceeded");
                         return false;
                     }
