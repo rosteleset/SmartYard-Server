@@ -1493,18 +1493,19 @@
                     }
 
                     $flat = $this->getFlat($flatId);
+                    if ((int)$flat["subscribersLimit"] > 0) {
+                        $already = (int)$this->db->get("select count(*) as subscribers from houses_flats_subscribers where house_flat_id = :house_flat_id", [
+                            "house_flat_id" => $flatId,
+                        ], [
+                            "subscribers" => "subscribers",
+                        ], [
+                            "fieldlify"
+                        ]);
 
-                    $already = $this->db->get("select count(*) as subscribers from houses_flats_subscribers where house_flat_id = :house_flat_id", [
-                        "house_flat_id" => $flatId,
-                    ], [
-                        "subscribers" => "subscribers",
-                    ], [
-                        "fieldlify"
-                    ]);
-
-                    if ((int)$flat["subscribersLimit"] > 0 && $already >= (int)$flat["subscribersLimit"]) {
-                        setLastError("subscribersLimitExceeded");
-                        return false;
+                        if ($already >= (int)$flat["subscribersLimit"]) {
+                            setLastError("subscribersLimitExceeded");
+                            return false;
+                        }
                     }
 
                     if ($message) {
