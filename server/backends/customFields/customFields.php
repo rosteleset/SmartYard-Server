@@ -16,7 +16,7 @@
 
             /**
              * @param string applyTo
-             * @param integer $id
+             * @param integer id
              *
              * @return mixed
              */
@@ -25,7 +25,7 @@
 
             /**
              * @param string applyTo
-             * @param integer $id
+             * @param integer id
              * @param mixed $set
              *
              * @return mixed
@@ -35,7 +35,7 @@
 
             /**
              * @param string applyTo
-             * @param integer $id
+             * @param integer id
              *
              * @return mixed
              */
@@ -44,8 +44,18 @@
 
             /**
              * @param string applyTo
-             * @param integer $id
-             * @param mixed $set
+             * @param string customField
+             * @param string value
+             *
+             * @return mixed
+             */
+
+            abstract function searchForValue($applyTo, $customField, $value);
+
+            /**
+             * @param string applyTo
+             * @param integer id
+             * @param mixed set
              *
              * @return mixed
              */

@@ -40,6 +40,15 @@
              * @inheritDoc
              */
 
+            function searchForValue($applyTo, $customField, $value) {
+
+            }
+
+
+            /**
+             * @inheritDoc
+             */
+
             public function getFields($applyTo) {
 
             }
