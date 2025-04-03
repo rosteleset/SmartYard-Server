@@ -58,6 +58,10 @@ server/api/**/custom
 server/api/**/custom/
 server/api/**/custom/**
 server/api/**/custom/*
+server/cli/custom
+server/cli/custom/
+server/cli/custom/**
+server/cli/custom/*
 server/data/files/*
 server/data/files/**
 server/db/backup/*
