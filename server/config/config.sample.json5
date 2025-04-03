@@ -27,7 +27,7 @@
         // How to show cameras in the mobile app. One of: list, tree, userDefined. List(default) - cameras are shown on the map; tree - cameras are shown as a tree structure; userDefined - user has a switch in the common settings
         "cctv_view": "list",
         // Active app's tab at start. One of: addresses, notifications, chat, pay, menu. The default value is addresses
-        "active_tab": "addresses"
+        "active_tab": "addresses",
     },
 
     "db": {
@@ -63,33 +63,33 @@
         "authentication": {
             "backend": "internal",
             "2faName": "SmartYard",
-            "2faTitle": "RBT"
+            "2faTitle": "RBT",
         },
 
         "authorization": {
-            "backend": "allow"
+            "backend": "allow",
         },
 
         "accounting": {
-            "backend": "syslog"
+            "backend": "syslog",
         },
 
         "users": {
-            "backend": "internal"
+            "backend": "internal",
         },
 
         "geocoder": {
             "backend": "dadata",
-            "token": "<!-- your dadata token here --!>"
+            "token": "<!-- your dadata token here --!>",
         },
 
         "files": {
-            "backend": "mongo"
+            "backend": "mongo",
         },
 
         "addresses": {
             "backend": "internal",
-            "text_search_mode": "default"
+            "text_search_mode": "default",
         },
 
         "households": {
@@ -113,7 +113,7 @@
         },
 
         "cameras": {
-            "backend": "internal"
+            "backend": "internal",
         },
 
         "isdn": {
@@ -130,11 +130,11 @@
             "backend": "lanta",
             "common_secret": "<!-- your secret here --!>",
             "confirm_method": "outgoingCall",
-            "confirm_number": "88002220374"
+            "confirm_number": "88002220374",
         },
 
         "inbox": {
-            "backend": "clickhouse"
+            "backend": "clickhouse",
         },
 
         "plog": {
@@ -149,11 +149,11 @@
             "ttl_camshot_days": 180,
             // your back time shift in seconds for receiving video shot from media server (hint 3)
             "back_time_shift_video_shot": 3,
-            "cron_process_events_scheduler": "minutely"
+            "cron_process_events_scheduler": "minutely",
         },
 
         "configs": {
-            "backend": "json"
+            "backend": "json",
         },
 
         "dvr": {
@@ -173,13 +173,13 @@
             "stub": {
                 "payment_require_url": "https://video.server.hostname:8443/stub_payment_require",
                 "service_url": "https://video.server.hostname:8443/stub_service",
-                "fallback_url": "https://video.server.hostname:8443/fallback"
-            }
+                "fallback_url": "https://video.server.hostname:8443/fallback",
+            },
         },
 
         "dvr_exports": {
             "backend": "mongo",
-            "dvr_files_ttl": 259200
+            "dvr_files_ttl": 259200,
         },
 
         "sip": {
@@ -191,7 +191,7 @@
                     "trunk": "first",
                     "ip": "<!-- your asterisk server external ip (or domain name) here --!>",
                     "sip_tcp_port": 5060,
-                    "sip_udp_port": 5060
+                    "sip_udp_port": 5060,
                 },
                 {
                     "title": "SBC server | Kamailio",
@@ -203,12 +203,12 @@
                     "sip_tcp_port": "<!-- set your kamailio tcp port here --!>",
                     "sip_udp_port": "<!-- set your kamailio udp port here --!>",
                     "sip_tls_port": "<!-- set your kamailio tls port here --!>",
-                    "auth_token": "<!-- id use bearer token for auth set token or remove this key --!>"
-                }
+                    "auth_token": "<!-- id use bearer token for auth set token or remove this key --!>",
+                },
             ],
             "stuns": [
-                "stun:stun.l.google.com:19302"
-            ]
+                "stun:stun.l.google.com:19302",
+            ],
         },
 
         "frs": {
@@ -227,7 +227,7 @@
                     "url": "http://127.0.0.1:9051",
 
                     // Optional authorization token for FALPRS project
-                    "authToken": "f430e029-8dbf-4167-9d44-8b5ece2ed4c0"
+                    "authToken": "f430e029-8dbf-4167-9d44-8b5ece2ed4c0",
                 },
                 {
                     "api": "lprs",
@@ -235,13 +235,13 @@
                     "url": "http://127.0.0.1:9051/lprs/api/",
 
                     // Optional authorization token for FALPRS project
-                    "authToken": "a1ec6fc6-b6d4-44a9-8756-f8cd5d9f70e8"
-                }
-            ]
+                    "authToken": "a1ec6fc6-b6d4-44a9-8756-f8cd5d9f70e8",
+                },
+            ],
         },
 
         "cs": {
-            "backend": "internal"
+            "backend": "internal",
         },
 
         "mqtt": {
@@ -251,16 +251,20 @@
             "ws": "wss://example.com/mqtt",
             "mqtt": "mqtt://127.0.0.1:1883",
             "username": "rbt",
-            "password": "<!-- your mosquitto password here --!>"
+            "password": "<!-- your mosquitto password here --!>",
         },
 
         "queue": {
-            "backend": "internal"
+            "backend": "internal",
         },
 
         "contacts": {
             "backend": "internal",
-            "collection": "CNT"
+            "collection": "CNT",
+        },
+
+        "customFields": {
+            "backend": "internal",
         },
     },
 
@@ -273,50 +277,50 @@
     },
 
     "telegram": {
-        "bot": "<!-- your telegram bot token here --!>"
+        "bot": "<!-- your telegram bot token here --!>",
     },
 
     "document_builder": {
         "bin": "/opt/onlyoffice/documentbuilder/docbuilder",
         "tmp": "/tmp/print",
         "www_user": "www-data",
-        "www_group": "www-data"
+        "www_group": "www-data",
     },
 
     "syslog_servers": {
         "beward": [
-            "syslog.udp:127.0.0.1:45450"
+            "syslog.udp:127.0.0.1:45450",
         ],
         "beward_ds": [
-            "syslog.udp:127.0.0.1:45451"
+            "syslog.udp:127.0.0.1:45451",
         ],
         "qtech": [
-            "syslog.udp:127.0.0.1:45452"
+            "syslog.udp:127.0.0.1:45452",
         ],
         "is": [
-            "syslog.udp:127.0.0.1:45453"
+            "syslog.udp:127.0.0.1:45453",
         ],
         "hikvision": [
-            "syslog.udp:127.0.0.1:45454"
+            "syslog.udp:127.0.0.1:45454",
         ],
         "akuvox": [
-            "syslog.udp:127.0.0.1:45455"
+            "syslog.udp:127.0.0.1:45455",
         ],
         "rubetek": [
-            "syslog.udp:127.0.0.1:45456"
+            "syslog.udp:127.0.0.1:45456",
         ],
         "sputnik": [
-            "https://example.com:55457/smart-yard"
+            "https://example.com:55457/smart-yard",
         ],
         "ufanet": [
-            "syslog.udp:127.0.0.1:45459"
+            "syslog.udp:127.0.0.1:45459",
         ],
         "brovotech": [
-            "syslog.udp:127.0.0.1:46450"
+            "syslog.udp:127.0.0.1:46450",
         ]
     },
 
     "ntp_servers": [
-        "ntp:<-- your ntp server ip here -->:123"
-    ]
+        "ntp:<-- your ntp server ip here -->:123",
+    ],
 }

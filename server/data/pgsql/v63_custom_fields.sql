@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS custom_fields
     field CHARACTER VARYING,
     field_display CHARACTER VARYING,
     field_description CHARACTER VARYING,
-    regex  CHARACTER VARYING,
+    regex CHARACTER VARYING,
     link CHARACTER VARYING,
     format CHARACTER VARYING,
     editor CHARACTER VARYING,

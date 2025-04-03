@@ -832,8 +832,8 @@
             /**
              * @inheritDoc
              */
-            function deleteFlat($flatId)
-            {
+
+            function deleteFlat($flatId) {
                 if (!checkInt($flatId)) {
                     return false;
                 }
@@ -843,7 +843,15 @@
                     $queue->changed("flat", $flatId);
                 }
 
-                $r = $this->db->modify("delete from houses_flats where house_flat_id = $flatId") !== false;
+                $customFields = loadBackend("customFields");
+
+                $r = true;
+
+                if ($customFields) {
+                    $r = $customFields->deleteValues("flat", $flatId);
+                }
+
+                $r = $r && $this->db->modify("delete from houses_flats where house_flat_id = $flatId") !== false;
                 $r = $r && $this->db->modify("delete from houses_entrances_flats where house_flat_id not in (select house_flat_id from houses_flats)") !== false;
                 $r = $r && $this->db->modify("delete from houses_flats_subscribers where house_flat_id not in (select house_flat_id from houses_flats)") !== false;
                 $r = $r && $this->db->modify("delete from houses_cameras_flats where house_flat_id not in (select house_flat_id from houses_flats)") !== false;

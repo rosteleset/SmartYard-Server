@@ -7,7 +7,7 @@ CREATE TABLE custom_fields
     field TEXT,
     field_display TEXT,
     field_description TEXT,
-    regex  TEXT,
+    regex TEXT,
     link TEXT,
     format TEXT,
     editor TEXT,

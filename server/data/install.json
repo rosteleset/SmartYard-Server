@@ -217,5 +217,8 @@
     ],
     "67": [
         "v67_subscribers_flats.sql"
+    ],
+    "68": [
+        "v68_custom_fields.sql"
     ]
 }

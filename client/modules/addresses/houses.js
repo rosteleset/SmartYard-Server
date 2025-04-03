@@ -1,8 +1,16 @@
 ({
     init: function () {
-        moduleLoaded("addresses.houses", this);
+        if (AVAIL("houses", "customFieldsConfiguration")) {
+            GET("houses", "customFieldsConfiguration").done(r => {
+                this.customFieldsConfiguration = r.customFieldsConfiguration;
+                moduleLoaded("addresses.houses", this);
+            }).fail(FAIL);
+        } else {
+            moduleLoaded("addresses.houses", this);
+        }
     },
 
+    customFieldsConfiguration: {},
     houseId: "0",
     settlementId: "0",
     streetId: "0",
@@ -1033,6 +1041,205 @@
             }
         }
 
+        let fields = [
+            {
+                id: "floor",
+                type: "text",
+                title: i18n("addresses.floor"),
+                placeholder: i18n("addresses.floor"),
+            },
+            {
+                id: "flat",
+                type: "text",
+                title: i18n("addresses.flat"),
+                placeholder: i18n("addresses.flat"),
+                validate: (v) => {
+                    return $.trim(v) !== "";
+                }
+            },
+            {
+                id: "code",
+                type: "text",
+                title: i18n("addresses.addCode"),
+                placeholder: i18n("addresses.addCode"),
+                value: md5(guid()),
+            },
+            {
+                id: "entrances",
+                type: "multiselect",
+                title: i18n("addresses.entrances"),
+                hidden: entrances.length <= 0,
+                options: entrances,
+                allButtons: false,
+            },
+            {
+                id: "manualBlock",
+                type: "select",
+                title: i18n("addresses.manualBlock"),
+                placeholder: i18n("addresses.manualBlock"),
+                options: [
+                    {
+                        id: "0",
+                        text: i18n("no"),
+                    },
+                    {
+                        id: "1",
+                        text: i18n("yes"),
+                    },
+                ]
+            },
+            {
+                id: "adminBlock",
+                type: "select",
+                title: i18n("addresses.adminBlock"),
+                placeholder: i18n("addresses.adminBlock"),
+                options: [
+                    {
+                        id: "0",
+                        text: i18n("no"),
+                    },
+                    {
+                        id: "1",
+                        text: i18n("yes"),
+                    },
+                ]
+            },
+            {
+                id: "openCode",
+                type: "text",
+                title: i18n("addresses.openCode"),
+                placeholder: i18n("addresses.openCode"),
+                validate: (v) => {
+                    if (+v >= 10001 && +v <= 99999 || v === '') {
+                        return true;
+                    } else {
+                        error(i18n("addresses.openCodeError"));
+                    }
+                },
+            },
+            {
+                id: "plog",
+                type: "select",
+                title: i18n("addresses.plog"),
+                placeholder: i18n("addresses.plog"),
+                options: [
+                    {
+                        id: "0",
+                        text: i18n("addresses.plogNone"),
+                    },
+                    {
+                        id: "1",
+                        text: i18n("addresses.plogAll"),
+                    },
+                    {
+                        id: "2",
+                        text: i18n("addresses.plogOwner"),
+                    },
+                    {
+                        id: "3",
+                        text: i18n("addresses.adminDisabled"),
+                    },
+                ],
+                value: 1,
+            },
+            {
+                id: "autoOpen",
+                type: "datetime-local",
+                sec: true,
+                title: i18n("addresses.autoOpen"),
+            },
+            {
+                id: "whiteRabbit",
+                type: "select",
+                title: i18n("addresses.whiteRabbit"),
+                placeholder: i18n("addresses.whiteRabbit"),
+                options: [
+                    {
+                        id: "0",
+                        text: i18n("no"),
+                    },
+                    {
+                        id: "1",
+                        text: i18n("addresses.1m"),
+                    },
+                    {
+                        id: "2",
+                        text: i18n("addresses.2m"),
+                    },
+                    {
+                        id: "3",
+                        text: i18n("addresses.3m"),
+                    },
+                    {
+                        id: "5",
+                        text: i18n("addresses.5m"),
+                    },
+                    {
+                        id: "7",
+                        text: i18n("addresses.7m"),
+                    },
+                    {
+                        id: "10",
+                        text: i18n("addresses.10m"),
+                    },
+                ]
+            },
+            {
+                id: "sipEnabled",
+                type: "select",
+                title: i18n("addresses.sipEnabled"),
+                placeholder: i18n("addresses.sipEnabled"),
+                options: [
+                    {
+                        id: "0",
+                        text: i18n("no"),
+                    },
+                    {
+                        id: "1",
+                        text: i18n("addresses.sip"),
+                    },
+                    {
+                        id: "2",
+                        text: i18n("addresses.webRtc"),
+                    },
+                ],
+                select: (el, id, prefix) => {
+                    if (parseInt(el.val()) > 0) {
+                        $("#" + prefix + "sipPassword").parent().parent().parent().show();
+                    } else {
+                        $("#" + prefix + "sipPassword").parent().parent().parent().hide();
+                    }
+                },
+            },
+            {
+                id: "sipPassword",
+                type: "text",
+                title: i18n("addresses.sipPassword"),
+                placeholder: i18n("addresses.sipPassword"),
+                hidden: true,
+                validate: (v, prefix) => {
+                    if (parseInt($("#" + prefix + "sipEnabled").val())) {
+                        return $.trim(v).length >= 8 && $.trim(v).length <= 16;
+                    } else {
+                        return $.trim(v).length === 0 || ($.trim(v).length >= 8 && $.trim(v).length <= 16);
+                    }
+                },
+                button: {
+                    "class": "fas fa-magic",
+                    click: prefix => {
+                        PWGen.initialize();
+                        $("#" + prefix + "sipPassword").val(PWGen.generate());
+                    }
+                }
+            },
+        ];
+
+        if (modules.addresses.houses.customFieldsConfiguration && modules.addresses.houses.customFieldsConfiguration.flats) {
+            for (let i in modules.addresses.houses.customFieldsConfiguration && modules.addresses.houses.customFieldsConfiguration.flats) {
+
+            }
+        }
+
         cardForm({
             title: i18n("addresses.addFlat"),
             footer: true,
@@ -1040,198 +1247,7 @@
             topApply: true,
             apply: i18n("add"),
             size: "lg",
-            fields: [
-                {
-                    id: "floor",
-                    type: "text",
-                    title: i18n("addresses.floor"),
-                    placeholder: i18n("addresses.floor"),
-                },
-                {
-                    id: "flat",
-                    type: "text",
-                    title: i18n("addresses.flat"),
-                    placeholder: i18n("addresses.flat"),
-                    validate: (v) => {
-                        return $.trim(v) !== "";
-                    }
-                },
-                {
-                    id: "code",
-                    type: "text",
-                    title: i18n("addresses.addCode"),
-                    placeholder: i18n("addresses.addCode"),
-                    value: md5(guid()),
-                },
-                {
-                    id: "entrances",
-                    type: "multiselect",
-                    title: i18n("addresses.entrances"),
-                    hidden: entrances.length <= 0,
-                    options: entrances,
-                    allButtons: false,
-                },
-                {
-                    id: "manualBlock",
-                    type: "select",
-                    title: i18n("addresses.manualBlock"),
-                    placeholder: i18n("addresses.manualBlock"),
-                    options: [
-                        {
-                            id: "0",
-                            text: i18n("no"),
-                        },
-                        {
-                            id: "1",
-                            text: i18n("yes"),
-                        },
-                    ]
-                },
-                {
-                    id: "adminBlock",
-                    type: "select",
-                    title: i18n("addresses.adminBlock"),
-                    placeholder: i18n("addresses.adminBlock"),
-                    options: [
-                        {
-                            id: "0",
-                            text: i18n("no"),
-                        },
-                        {
-                            id: "1",
-                            text: i18n("yes"),
-                        },
-                    ]
-                },
-                {
-                    id: "openCode",
-                    type: "text",
-                    title: i18n("addresses.openCode"),
-                    placeholder: i18n("addresses.openCode"),
-                    validate: (v) => {
-                        if (+v >= 10001 && +v <= 99999 || v === '') {
-                            return true;
-                        } else {
-                            error(i18n("addresses.openCodeError"));
-                        }
-                    },
-                },
-                {
-                    id: "plog",
-                    type: "select",
-                    title: i18n("addresses.plog"),
-                    placeholder: i18n("addresses.plog"),
-                    options: [
-                        {
-                            id: "0",
-                            text: i18n("addresses.plogNone"),
-                        },
-                        {
-                            id: "1",
-                            text: i18n("addresses.plogAll"),
-                        },
-                        {
-                            id: "2",
-                            text: i18n("addresses.plogOwner"),
-                        },
-                        {
-                            id: "3",
-                            text: i18n("addresses.adminDisabled"),
-                        },
-                    ],
-                    value: 1,
-                },
-                {
-                    id: "autoOpen",
-                    type: "datetime-local",
-                    sec: true,
-                    title: i18n("addresses.autoOpen"),
-                },
-                {
-                    id: "whiteRabbit",
-                    type: "select",
-                    title: i18n("addresses.whiteRabbit"),
-                    placeholder: i18n("addresses.whiteRabbit"),
-                    options: [
-                        {
-                            id: "0",
-                            text: i18n("no"),
-                        },
-                        {
-                            id: "1",
-                            text: i18n("addresses.1m"),
-                        },
-                        {
-                            id: "2",
-                            text: i18n("addresses.2m"),
-                        },
-                        {
-                            id: "3",
-                            text: i18n("addresses.3m"),
-                        },
-                        {
-                            id: "5",
-                            text: i18n("addresses.5m"),
-                        },
-                        {
-                            id: "7",
-                            text: i18n("addresses.7m"),
-                        },
-                        {
-                            id: "10",
-                            text: i18n("addresses.10m"),
-                        },
-                    ]
-                },
-                {
-                    id: "sipEnabled",
-                    type: "select",
-                    title: i18n("addresses.sipEnabled"),
-                    placeholder: i18n("addresses.sipEnabled"),
-                    options: [
-                        {
-                            id: "0",
-                            text: i18n("no"),
-                        },
-                        {
-                            id: "1",
-                            text: i18n("addresses.sip"),
-                        },
-                        {
-                            id: "2",
-                            text: i18n("addresses.webRtc"),
-                        },
-                    ],
-                    select: (el, id, prefix) => {
-                        if (parseInt(el.val()) > 0) {
-                            $("#" + prefix + "sipPassword").parent().parent().parent().show();
-                        } else {
-                            $("#" + prefix + "sipPassword").parent().parent().parent().hide();
-                        }
-                    },
-                },
-                {
-                    id: "sipPassword",
-                    type: "text",
-                    title: i18n("addresses.sipPassword"),
-                    placeholder: i18n("addresses.sipPassword"),
-                    hidden: true,
-                    validate: (v, prefix) => {
-                        if (parseInt($("#" + prefix + "sipEnabled").val())) {
-                            return $.trim(v).length >= 8 && $.trim(v).length <= 16;
-                        } else {
-                            return $.trim(v).length === 0 || ($.trim(v).length >= 8 && $.trim(v).length <= 16);
-                        }
-                    },
-                    button: {
-                        "class": "fas fa-magic",
-                        click: prefix => {
-                            PWGen.initialize();
-                            $("#" + prefix + "sipPassword").val(PWGen.generate());
-                        }
-                    }
-                },
-            ],
+            fields: fields,
             callback: result => {
                 let apartmentsAndLevels = {};
                 for (let i in entrances) {
@@ -2125,66 +2141,59 @@
     },
 
     modifyFlat: function (flatId, houseId, canDelete) {
-        let flat = false;
 
-        for (let i in modules.addresses.houses.meta.flats) {
-            if (modules.addresses.houses.meta.flats[i].flatId == flatId) {
-                flat = modules.addresses.houses.meta.flats[i];
-                break;
-            }
-        }
+        function realModifyFlat(flatId, houseId, canDelete, customFields) {
+            let flat = false;
 
-        if (flat) {
-
-            let entrances = [];
-            let entrances_selected = [];
-            let entrances_settings = {};
-
-            let prefx = md5(guid());
-
-            for (let i in flat.entrances) {
-                entrances_selected.push(flat.entrances[i].entranceId);
-                entrances_settings[flat.entrances[i].entranceId] = flat.entrances[i];
-            }
-
-            for (let i in modules.addresses.houses.meta.entrances) {
-                if (parseInt(modules.addresses.houses.meta.entrances[i].domophoneOutput) === 0 && parseInt(modules.addresses.houses.meta.entrances[i].shared) === 0) {
-                    let inputs = `<div class="row mt-2 ${prefx}" data-entrance-id="${modules.addresses.houses.meta.entrances[i].entranceId}" style="display: none; margin-right: 0px!important;">`;
-                    inputs += `
-                        <div class="col" style="padding-right: 0px!important;">
-                            <input type="text" class="form-control form-control-sm ${prefx}-apartment" data-entrance-id="${modules.addresses.houses.meta.entrances[i].entranceId}" placeholder="${i18n("addresses.apartment")}" value="${entrances_settings[modules.addresses.houses.meta.entrances[i].entranceId] ? entrances_settings[modules.addresses.houses.meta.entrances[i].entranceId].apartment : ""}">
-                        </div>
-                    `;
-                    if (modules.addresses.houses.meta.entrances[i].cms.toString() !== "0") {
-                        inputs += `
-                            <div class="col" style="padding-right: 0px!important;">
-                                <input type="text" class="form-control form-control-sm ${prefx}-apartmentLevels" data-entrance-id="${modules.addresses.houses.meta.entrances[i].entranceId}" placeholder="${i18n("addresses.apartmentLevels")}" value="${entrances_settings[modules.addresses.houses.meta.entrances[i].entranceId] ? entrances_settings[modules.addresses.houses.meta.entrances[i].entranceId].apartmentLevels : ""}">
-                            </div>
-                        `;
-                    }
-                    inputs += `</div>`;
-                    entrances.push({
-                        id: modules.addresses.houses.meta.entrances[i].entranceId,
-                        text: i18n("addresses.entranceType" + modules.addresses.houses.meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules.addresses.houses.meta.entrances[i].entranceType.substring(1) + "Full") + " " + modules.addresses.houses.meta.entrances[i].entrance + inputs,
-                    });
-                } else {
-                    entrances.push({
-                        id: modules.addresses.houses.meta.entrances[i].entranceId,
-                        text: i18n("addresses.entranceType" + modules.addresses.houses.meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules.addresses.houses.meta.entrances[i].entranceType.substring(1) + "Full") + " " + modules.addresses.houses.meta.entrances[i].entrance,
-                    });
+            for (let i in modules.addresses.houses.meta.flats) {
+                if (modules.addresses.houses.meta.flats[i].flatId == flatId) {
+                    flat = modules.addresses.houses.meta.flats[i];
+                    break;
                 }
             }
 
-            cardForm({
-                title: i18n("addresses.editFlat"),
-                footer: true,
-                borderless: true,
-                topApply: true,
-                delete: canDelete ? (houseId ? i18n("addresses.deleteFlat") : false) : false,
-                deleteTab: canDelete ? (houseId ? i18n("addresses.primary") : false) : false,
-                apply: i18n("edit"),
-                size: "lg",
-                fields: [
+            if (flat) {
+
+                let entrances = [];
+                let entrances_selected = [];
+                let entrances_settings = {};
+
+                let prefx = md5(guid());
+
+                for (let i in flat.entrances) {
+                    entrances_selected.push(flat.entrances[i].entranceId);
+                    entrances_settings[flat.entrances[i].entranceId] = flat.entrances[i];
+                }
+
+                for (let i in modules.addresses.houses.meta.entrances) {
+                    if (parseInt(modules.addresses.houses.meta.entrances[i].domophoneOutput) === 0 && parseInt(modules.addresses.houses.meta.entrances[i].shared) === 0) {
+                        let inputs = `<div class="row mt-2 ${prefx}" data-entrance-id="${modules.addresses.houses.meta.entrances[i].entranceId}" style="display: none; margin-right: 0px!important;">`;
+                        inputs += `
+                            <div class="col" style="padding-right: 0px!important;">
+                                <input type="text" class="form-control form-control-sm ${prefx}-apartment" data-entrance-id="${modules.addresses.houses.meta.entrances[i].entranceId}" placeholder="${i18n("addresses.apartment")}" value="${entrances_settings[modules.addresses.houses.meta.entrances[i].entranceId] ? entrances_settings[modules.addresses.houses.meta.entrances[i].entranceId].apartment : ""}">
+                            </div>
+                        `;
+                        if (modules.addresses.houses.meta.entrances[i].cms.toString() !== "0") {
+                            inputs += `
+                                <div class="col" style="padding-right: 0px!important;">
+                                    <input type="text" class="form-control form-control-sm ${prefx}-apartmentLevels" data-entrance-id="${modules.addresses.houses.meta.entrances[i].entranceId}" placeholder="${i18n("addresses.apartmentLevels")}" value="${entrances_settings[modules.addresses.houses.meta.entrances[i].entranceId] ? entrances_settings[modules.addresses.houses.meta.entrances[i].entranceId].apartmentLevels : ""}">
+                                </div>
+                            `;
+                        }
+                        inputs += `</div>`;
+                        entrances.push({
+                            id: modules.addresses.houses.meta.entrances[i].entranceId,
+                            text: i18n("addresses.entranceType" + modules.addresses.houses.meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules.addresses.houses.meta.entrances[i].entranceType.substring(1) + "Full") + " " + modules.addresses.houses.meta.entrances[i].entrance + inputs,
+                        });
+                    } else {
+                        entrances.push({
+                            id: modules.addresses.houses.meta.entrances[i].entranceId,
+                            text: i18n("addresses.entranceType" + modules.addresses.houses.meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules.addresses.houses.meta.entrances[i].entranceType.substring(1) + "Full") + " " + modules.addresses.houses.meta.entrances[i].entrance,
+                        });
+                    }
+                }
+
+                let fields = [
                     {
                         id: "flatId",
                         type: "text",
@@ -2484,42 +2493,68 @@
                         },
                         value: (parseInt(flat.subscribersLimit) > 0) ? flat.subscribersLimit : '',
                     },
-                ],
-                callback: result => {
-                    delete result.autoBlock;
-                    let apartmentsAndLevels = {};
-                    for (let i in entrances) {
-                        if ($(`.${prefx}-apartment[data-entrance-id="${entrances[i].id}"]`).length) {
-                            apartmentsAndLevels[entrances[i].id] = {
-                                apartment: $(`.${prefx}-apartment[data-entrance-id="${entrances[i].id}"]`).val(),
-                                apartmentLevels: $(`.${prefx}-apartmentLevels[data-entrance-id="${entrances[i].id}"]`).val(),
+                ];
+
+                if (modules.addresses.houses.customFieldsConfiguration && modules.addresses.houses.customFieldsConfiguration.flats) {
+                    for (let i in modules.addresses.houses.customFieldsConfiguration && modules.addresses.houses.customFieldsConfiguration.flats) {
+
+                    }
+                }
+
+                cardForm({
+                    title: i18n("addresses.editFlat"),
+                    footer: true,
+                    borderless: true,
+                    topApply: true,
+                    delete: canDelete ? (houseId ? i18n("addresses.deleteFlat") : false) : false,
+                    deleteTab: canDelete ? (houseId ? i18n("addresses.primary") : false) : false,
+                    apply: i18n("edit"),
+                    size: "lg",
+                    fields: fields,
+                    callback: result => {
+                        delete result.autoBlock;
+                        let apartmentsAndLevels = {};
+                        for (let i in entrances) {
+                            if ($(`.${prefx}-apartment[data-entrance-id="${entrances[i].id}"]`).length) {
+                                apartmentsAndLevels[entrances[i].id] = {
+                                    apartment: $(`.${prefx}-apartment[data-entrance-id="${entrances[i].id}"]`).val(),
+                                    apartmentLevels: $(`.${prefx}-apartmentLevels[data-entrance-id="${entrances[i].id}"]`).val(),
+                                }
                             }
                         }
-                    }
-                    if (result.delete === "yes") {
-                        modules.addresses.houses.deleteFlat(flatId, houseId);
-                    } else {
-                        result.flatId = flatId;
-                        result.apartmentsAndLevels = apartmentsAndLevels;
-                        result.houseId = houseId;
-                        modules.addresses.houses.doModifyFlat(result);
-                    }
-                },
-            });
+                        if (result.delete === "yes") {
+                            modules.addresses.houses.deleteFlat(flatId, houseId);
+                        } else {
+                            result.flatId = flatId;
+                            result.apartmentsAndLevels = apartmentsAndLevels;
+                            result.houseId = houseId;
+                            modules.addresses.houses.doModifyFlat(result);
+                        }
+                    },
+                });
 
-            for (let i in entrances_selected) {
-                $("." + prefx + "[data-entrance-id='" + entrances_selected[i] + "']").show();
-            }
-
-            $(".checkBoxOption-entrances").off("change").on("change", function () {
-                if ($(this).prop("checked")) {
-                    $("." + prefx + "[data-entrance-id='" + $(this).attr("data-id") + "']").show();
-                } else {
-                    $("." + prefx + "[data-entrance-id='" + $(this).attr("data-id") + "']").hide();
+                for (let i in entrances_selected) {
+                    $("." + prefx + "[data-entrance-id='" + entrances_selected[i] + "']").show();
                 }
-            });
+
+                $(".checkBoxOption-entrances").off("change").on("change", function () {
+                    if ($(this).prop("checked")) {
+                        $("." + prefx + "[data-entrance-id='" + $(this).attr("data-id") + "']").show();
+                    } else {
+                        $("." + prefx + "[data-entrance-id='" + $(this).attr("data-id") + "']").hide();
+                    }
+                });
+            } else {
+                error(i18n("addresses.flatNotFound"));
+            }
+        }
+
+        if (modules.addresses.houses.customFieldsConfiguration && modules.addresses.houses.customFieldsConfiguration.flats) {
+            QUERYID("houses", "customFields", "flat", { id: flatId }, true).done(r => {
+                realModifyFlat(flatId, houseId, canDelete, r.customFields);
+            }).fail(FAIL);
         } else {
-            error(i18n("addresses.flatNotFound"));
+            realModifyFlat(flatId, houseId, canDelete);
         }
     },
 
