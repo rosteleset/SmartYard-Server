@@ -330,6 +330,18 @@
         }
     }
 
+    foreach (scandir(__DIR__ . "/cli/custom") as $file) {
+        $c = explode(".php", $file);
+
+        if (count($c) == 2 && $c[0] && !$c[1]) {
+            require_once __DIR__ . "/cli/custom/" . $file;
+
+            if (class_exists('\cli\\' . $c[0])) {
+                new ('\cli\\' . $c[0])($global_cli);
+            }
+        }
+    }
+
     for ($i = 1; $i < count($argv); $i++) {
         $a = explode('=', $argv[$i]);
         if ($a[0] == '--parent-pid') {
