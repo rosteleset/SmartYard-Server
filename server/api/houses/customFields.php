@@ -5,7 +5,7 @@
      *
      * @apiVersion 1.0.0
      *
-     * @apiName customFields
+     * @apiName getCustomFields
      * @apiGroup houses
      *
      * @apiHeader {String} authorization authentication token
@@ -20,7 +20,7 @@
      *
      * @apiVersion 1.0.0
      *
-     * @apiName customFields
+     * @apiName putCustomFields
      * @apiGroup houses
      *
      * @apiHeader {String} authorization authentication token
