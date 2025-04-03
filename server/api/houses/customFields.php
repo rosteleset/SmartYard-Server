@@ -9,8 +9,8 @@
      * @apiGroup houses
      *
      * @apiHeader {String} authorization authentication token
-     * @apiQuery {String="flat"} applyTo
-     * @apiBody {Number} id
+     * @apiParam {String="flat"} applyTo
+     * @apiQuery {Number} id
      *
      * @apiSuccess {Object[]} customFields
      */

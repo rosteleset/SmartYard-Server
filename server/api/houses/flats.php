@@ -10,7 +10,7 @@
      *
      * @apiHeader {String} authorization authentication token
      *
-     * @apiQuery {String="flatIdByPrefix,apartment,code,openCode,rfId,subscriberId,houseId,domophoneId,credentials,login,contract"} by
+     * @apiQuery {String="flatIdByPrefix,apartment,code,openCode,rfId,subscriberId,houseId,domophoneId,credentials,login,contract,customField"} by
      * @apiQuery {Mixed} params
      *
      * @apiSuccess {Object[]} flats
