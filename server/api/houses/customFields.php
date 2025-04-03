@@ -16,6 +16,22 @@
      */
 
     /**
+     * @api {put} /api/houses/customFields/:applyTo get custom fields for houses
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName customFields
+     * @apiGroup houses
+     *
+     * @apiHeader {String} authorization authentication token
+     * @apiParam {String="flat"} applyTo
+     * @apiBody {Number} id
+     * @apiBody {Object[]} customFields
+     *
+     * @apiSuccess {Object[]} customFields
+     */
+
+    /**
      * houses api
      */
 
