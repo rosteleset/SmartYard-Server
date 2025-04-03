@@ -16,7 +16,7 @@
      */
 
     /**
-     * @api {put} /api/houses/customFields/:applyTo get custom fields for houses
+     * @api {put} /api/houses/customFields/:applyTo modify (upsert) custom fields for houses
      *
      * @apiVersion 1.0.0
      *
