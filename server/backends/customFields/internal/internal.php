@@ -167,11 +167,7 @@
                 $n += $this->db->modify("delete from custom_fields_values where field not in (select field from custom_fields)");
                 $n += $this->db->modify("delete from custom_fields_options where custom_field_id not in (select custom_field_id from custom_fields)");
 
-                if (!$n) {
-                    return true;
-                } else {
-                    return $n + $this->cleanup();
-                }
+                return $n;
             }
         }
     }

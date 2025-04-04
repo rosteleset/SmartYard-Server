@@ -1101,11 +1101,7 @@
                 $n += $this->db->modify("delete from addresses_areas where address_region_id is not null and address_region_id not in (select address_region_id from addresses_regions)");
                 $n += $this->db->modify("delete from addresses_areas where address_region_id is null");
 
-                if (!$n) {
-                    return true;
-                } else {
-                    return $n + $this->cleanup();
-                }
+                return $n;
             }
 
             /**
