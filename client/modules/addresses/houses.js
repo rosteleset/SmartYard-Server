@@ -282,7 +282,7 @@
 
     doModifyFlat: function (flat) {
         loadingStart();
-        PUT("houses", "flat", flat.flatId, flat).
+        return PUT("houses", "flat", flat.flatId, flat).
         fail(FAIL).
         done((result, code, response) => {
             message(i18n("addresses.flatWasChanged"));
@@ -2534,7 +2534,7 @@
                                 cf.title = modules.addresses.houses.customFieldsConfiguration.flat[i].fieldDisplay;
                                 cf.placeholder = modules.addresses.houses.customFieldsConfiguration.flat[i].fieldDisplay;
                                 cf.tab = i18n("customFields");
-                                // cf.value =
+                                cf.value = customFields[modules.addresses.houses.customFieldsConfiguration.flat[i].field] ? customFields[modules.addresses.houses.customFieldsConfiguration.flat[i].field] : "";
                                 if (modules.addresses.houses.customFieldsConfiguration.flat[i].magicIcon && modules.addresses.houses.customFieldsConfiguration.flat[i].magicFunction && modules.custom && modules.custom[modules.addresses.houses.customFieldsConfiguration.flat[i].magicFunction]) {
                                     cf.button = {};
                                     cf.button.click = modules.custom[modules.addresses.houses.customFieldsConfiguration.flat[i].magicFunction];
@@ -2557,6 +2557,18 @@
                     size: "lg",
                     fields: fields,
                     callback: result => {
+                        let cf = {};
+                        if (modules.addresses.houses.customFieldsConfiguration && modules.addresses.houses.customFieldsConfiguration.flat) {
+                            for (let i in modules.addresses.houses.customFieldsConfiguration.flat) {
+                                switch (modules.addresses.houses.customFieldsConfiguration.flat[i].type) {
+                                    case "text":
+                                        let id = "_cf_" + modules.addresses.houses.customFieldsConfiguration.flat[i].field;
+                                        cf[id.substring(4)] = result[id];
+                                        delete result[id];
+                                        break;
+                                }
+                            }
+                        }
                         delete result.autoBlock;
                         let apartmentsAndLevels = {};
                         for (let i in entrances) {
@@ -2573,7 +2585,15 @@
                             result.flatId = flatId;
                             result.apartmentsAndLevels = apartmentsAndLevels;
                             result.houseId = houseId;
-                            modules.addresses.houses.doModifyFlat(result);
+                            modules.addresses.houses.doModifyFlat(result, true).done(() => {
+                                if (modules.addresses.houses.customFieldsConfiguration && modules.addresses.houses.customFieldsConfiguration.flat) {
+                                    PUT("houses", "customFields", "flat", {
+                                        id: flatId,
+                                        customFields: cf,
+                                    }).
+                                    fail(FAIL);
+                                }
+                            });
                         }
                     },
                 });

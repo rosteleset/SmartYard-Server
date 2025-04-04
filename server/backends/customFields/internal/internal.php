@@ -114,7 +114,7 @@
              * @inheritDoc
              */
 
-            function searchForValue($applyTo, $field, $value) {
+            public function searchForValue($applyTo, $field, $value) {
                 return $this->db->get("select id from custom_fields_values where apply_to = :apply_to and field = :field and value = : value", [
                     "apply_to" => $applyTo,
                     "field" => $field,
@@ -156,6 +156,24 @@
                     "magic_icon" => "magicIcon",
                     "magic_function" => "magicFunction",
                 ]);
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+            public function cleanup() {
+                $n = 0;
+
+                $n += $this->db->modify("delete from custom_fields_values where apply_to not in (select apply_to from custom_fields)");
+                $n += $this->db->modify("delete from custom_fields_values where field not in (select field from custom_fields)");
+                $n += $this->db->modify("delete from custom_fields_options where custom_field_id not in (select custom_field_id from custom_fields)");
+
+                if (!$n) {
+                    return true;
+                } else {
+                    return $n + $this->cleanup();
+                }
             }
         }
     }

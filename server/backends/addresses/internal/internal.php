@@ -1078,8 +1078,8 @@
             /**
              * @inheritDoc
              */
-            function cleanup()
-            {
+
+            public function cleanup() {
                 $n = 0;
 
                 $n += $this->db->modify("delete from addresses_houses where address_settlement_id is not null and address_settlement_id not in (select address_settlement_id from addresses_settlements)");
