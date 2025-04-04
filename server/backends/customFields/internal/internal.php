@@ -169,5 +169,13 @@
 
                 return $n;
             }
+
+            public function cron($part) {
+                if ($part === "5min") {
+                    $this->cleanup();
+                }
+
+                return true;
+            }
         }
     }

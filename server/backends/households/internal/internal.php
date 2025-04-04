@@ -2404,6 +2404,7 @@
             /**
              * @inheritDoc
              */
+
             public function cron($part) {
                 if ($part === "hourly") {
                     $this->updateDevicesIds();
