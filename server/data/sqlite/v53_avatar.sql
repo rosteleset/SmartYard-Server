@@ -1,1 +1,1 @@
-ALTER TABLE core_users ADD IF NOT EXISTS avatar TEXT;
+ALTER TABLE core_users ADD COLUMN avatar TEXT;

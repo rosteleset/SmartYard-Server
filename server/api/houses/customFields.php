@@ -67,13 +67,13 @@
                 if (!$customFields) {
                     return api::ERROR();
                 } else {
+                    $success = false;
+
                     if ($params["_id"] == "flat") {
-                        $customFields = $customFields->modifyValues("flat", @$params["id"], @$params["customFields"]);
-                    } else {
-                        return api::ERROR();
+                        $success = $customFields->modifyValues("flat", @$params["id"], @$params["customFields"]);
                     }
 
-                    return api::ANSWER($customFields, "customFields");
+                    return api::ANSWER($success);
                 }
             }
 

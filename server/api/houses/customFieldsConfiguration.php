@@ -34,7 +34,7 @@
                     return api::ERROR();
                 } else {
                     $customFieldsConfiguration = [
-                        "flats" => $customFields->getFields("flats"),
+                        "flat" => $customFields->getFields("flat"),
                     ];
 
                     return api::ANSWER($customFieldsConfiguration, "customFieldsConfiguration");

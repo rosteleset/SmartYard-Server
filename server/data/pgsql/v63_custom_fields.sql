@@ -15,9 +15,9 @@ CREATE TABLE IF NOT EXISTS custom_fields
     search INTEGER,
     required INTEGER
 );
-CREATE UNIQUE INDEX custom_fields_name on custom_fields(field);
+CREATE UNIQUE INDEX IF NOT EXISTS custom_fields_name ON custom_fields(field);
 
-CREATE TABLE IF NOT EXISTS common_custom_fileds_options
+CREATE TABLE IF NOT EXISTS custom_fields_options
 (
     custom_field_option_id SERIAL PRIMARY KEY,
     custom_field_id INTEGER,
@@ -25,4 +25,4 @@ CREATE TABLE IF NOT EXISTS common_custom_fileds_options
     display_order INTEGER,
     option_display CHARACTER VARYING
 );
-CREATE UNIQUE INDEX custom_fields_options_uniq on common_custom_fileds_options(custom_field_option_id, option);
+CREATE UNIQUE INDEX IF NOT EXISTS custom_fields_options_uniq ON custom_fields_options(custom_field_option_id, option);

@@ -17,12 +17,12 @@ CREATE TABLE custom_fields
 );
 CREATE UNIQUE INDEX custom_fields_name on custom_fields(field);
 
-CREATE TABLE common_custom_fileds_options
+CREATE TABLE custom_fields_options
 (
-    custom_field_option_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    field_option_id INTEGER PRIMARY KEY AUTOINCREMENT,
     custom_field_id INTEGER,
     option TEXT,
     display_order INTEGER,
     option_display TEXT
 );
-CREATE UNIQUE INDEX custom_fields_options_uniq on common_custom_fileds_options(custom_field_option_id, option);
+CREATE UNIQUE INDEX custom_fields_options_uniq on custom_fields_options(custom_field_option_id, option);

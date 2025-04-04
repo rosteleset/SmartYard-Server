@@ -1046,12 +1046,14 @@
                 id: "floor",
                 type: "text",
                 title: i18n("addresses.floor"),
+                tab: i18n("addresses.primary"),
                 placeholder: i18n("addresses.floor"),
             },
             {
                 id: "flat",
                 type: "text",
                 title: i18n("addresses.flat"),
+                tab: i18n("addresses.primary"),
                 placeholder: i18n("addresses.flat"),
                 validate: (v) => {
                     return $.trim(v) !== "";
@@ -1061,6 +1063,7 @@
                 id: "code",
                 type: "text",
                 title: i18n("addresses.addCode"),
+                tab: i18n("addresses.primary"),
                 placeholder: i18n("addresses.addCode"),
                 value: md5(guid()),
             },
@@ -1068,6 +1071,7 @@
                 id: "entrances",
                 type: "multiselect",
                 title: i18n("addresses.entrances"),
+                tab: i18n("addresses.primary"),
                 hidden: entrances.length <= 0,
                 options: entrances,
                 allButtons: false,
@@ -1076,6 +1080,7 @@
                 id: "manualBlock",
                 type: "select",
                 title: i18n("addresses.manualBlock"),
+                tab: i18n("addresses.primary"),
                 placeholder: i18n("addresses.manualBlock"),
                 options: [
                     {
@@ -1092,6 +1097,7 @@
                 id: "adminBlock",
                 type: "select",
                 title: i18n("addresses.adminBlock"),
+                tab: i18n("addresses.primary"),
                 placeholder: i18n("addresses.adminBlock"),
                 options: [
                     {
@@ -1108,6 +1114,7 @@
                 id: "openCode",
                 type: "text",
                 title: i18n("addresses.openCode"),
+                tab: i18n("addresses.primary"),
                 placeholder: i18n("addresses.openCode"),
                 validate: (v) => {
                     if (+v >= 10001 && +v <= 99999 || v === '') {
@@ -1121,6 +1128,7 @@
                 id: "plog",
                 type: "select",
                 title: i18n("addresses.plog"),
+                tab: i18n("addresses.primary"),
                 placeholder: i18n("addresses.plog"),
                 options: [
                     {
@@ -1147,11 +1155,13 @@
                 type: "datetime-local",
                 sec: true,
                 title: i18n("addresses.autoOpen"),
+                tab: i18n("addresses.primary"),
             },
             {
                 id: "whiteRabbit",
                 type: "select",
                 title: i18n("addresses.whiteRabbit"),
+                tab: i18n("addresses.primary"),
                 placeholder: i18n("addresses.whiteRabbit"),
                 options: [
                     {
@@ -1188,6 +1198,7 @@
                 id: "sipEnabled",
                 type: "select",
                 title: i18n("addresses.sipEnabled"),
+                tab: i18n("addresses.primary"),
                 placeholder: i18n("addresses.sipEnabled"),
                 options: [
                     {
@@ -1215,6 +1226,7 @@
                 id: "sipPassword",
                 type: "text",
                 title: i18n("addresses.sipPassword"),
+                tab: i18n("addresses.primary"),
                 placeholder: i18n("addresses.sipPassword"),
                 hidden: true,
                 validate: (v, prefix) => {
@@ -1234,9 +1246,25 @@
             },
         ];
 
-        if (modules.addresses.houses.customFieldsConfiguration && modules.addresses.houses.customFieldsConfiguration.flats) {
-            for (let i in modules.addresses.houses.customFieldsConfiguration && modules.addresses.houses.customFieldsConfiguration.flats) {
-
+        if (modules.addresses.houses.customFieldsConfiguration && modules.addresses.houses.customFieldsConfiguration.flat) {
+            for (let i in modules.addresses.houses.customFieldsConfiguration.flat) {
+                let cf;
+                switch (modules.addresses.houses.customFieldsConfiguration.flat[i].type) {
+                    case "text":
+                        cf = {};
+                        cf.id = "_cf_" + modules.addresses.houses.customFieldsConfiguration.flat[i].field;
+                        cf.type = modules.addresses.houses.customFieldsConfiguration.flat[i].editor;
+                        cf.title = modules.addresses.houses.customFieldsConfiguration.flat[i].fieldDisplay;
+                        cf.placeholder = modules.addresses.houses.customFieldsConfiguration.flat[i].fieldDisplay;
+                        cf.tab = i18n("customFields");
+                        if (modules.addresses.houses.customFieldsConfiguration.flat[i].magicIcon && modules.addresses.houses.customFieldsConfiguration.flat[i].magicFunction && modules.custom && modules.custom[modules.addresses.houses.customFieldsConfiguration.flat[i].magicFunction]) {
+                            cf.button = {};
+                            cf.button.click = modules.custom[modules.addresses.houses.customFieldsConfiguration.flat[i].magicFunction];
+                            cf.button.class = modules.addresses.houses.customFieldsConfiguration.flat[i].magicIcon;
+                        }
+                        fields.push(cf);
+                        break;
+                }
             }
         }
 
@@ -2495,9 +2523,26 @@
                     },
                 ];
 
-                if (modules.addresses.houses.customFieldsConfiguration && modules.addresses.houses.customFieldsConfiguration.flats) {
-                    for (let i in modules.addresses.houses.customFieldsConfiguration && modules.addresses.houses.customFieldsConfiguration.flats) {
-
+                if (modules.addresses.houses.customFieldsConfiguration && modules.addresses.houses.customFieldsConfiguration.flat) {
+                    for (let i in modules.addresses.houses.customFieldsConfiguration.flat) {
+                        let cf;
+                        switch (modules.addresses.houses.customFieldsConfiguration.flat[i].type) {
+                            case "text":
+                                cf = {};
+                                cf.id = "_cf_" + modules.addresses.houses.customFieldsConfiguration.flat[i].field;
+                                cf.type = modules.addresses.houses.customFieldsConfiguration.flat[i].editor;
+                                cf.title = modules.addresses.houses.customFieldsConfiguration.flat[i].fieldDisplay;
+                                cf.placeholder = modules.addresses.houses.customFieldsConfiguration.flat[i].fieldDisplay;
+                                cf.tab = i18n("customFields");
+                                // cf.value =
+                                if (modules.addresses.houses.customFieldsConfiguration.flat[i].magicIcon && modules.addresses.houses.customFieldsConfiguration.flat[i].magicFunction && modules.custom && modules.custom[modules.addresses.houses.customFieldsConfiguration.flat[i].magicFunction]) {
+                                    cf.button = {};
+                                    cf.button.click = modules.custom[modules.addresses.houses.customFieldsConfiguration.flat[i].magicFunction];
+                                    cf.button.class = modules.addresses.houses.customFieldsConfiguration.flat[i].magicIcon;
+                                }
+                                fields.push(cf);
+                                break;
+                        }
                     }
                 }
 
@@ -2549,7 +2594,7 @@
             }
         }
 
-        if (modules.addresses.houses.customFieldsConfiguration && modules.addresses.houses.customFieldsConfiguration.flats) {
+        if (modules.addresses.houses.customFieldsConfiguration && modules.addresses.houses.customFieldsConfiguration.flat) {
             QUERYID("houses", "customFields", "flat", { id: flatId }, true).done(r => {
                 realModifyFlat(flatId, houseId, canDelete, r.customFields);
             }).fail(FAIL);
