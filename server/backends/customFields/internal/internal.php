@@ -133,8 +133,6 @@
                     return false;
                 }
 
-                error_log($applyTo);
-
                 return $this->db->get("select * from custom_fields where apply_to = :apply_to", [
                     "apply_to" => $applyTo,
                 ], [
