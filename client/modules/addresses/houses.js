@@ -2755,6 +2755,9 @@
                     },
                     {
                         title: i18n("addresses.flat"),
+                    },
+                    {
+                        title: i18n("addresses.contract"),
                         fullWidth: true,
                     },
                 ],
@@ -2788,6 +2791,10 @@
                                 },
                                 {
                                     data: modules.addresses.houses.meta.flats[i].flat,
+                                    nowrap: true,
+                                },
+                                {
+                                    data: modules.addresses.houses.meta.flats[i].contract ? modules.addresses.houses.meta.flats[i].contract : "-",
                                     nowrap: true,
                                 },
                             ],
