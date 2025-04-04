@@ -50,7 +50,7 @@
              * @return mixed
              */
 
-            abstract function searchForValue($applyTo, $field, $value);
+            abstract function searchByValue($applyTo, $field, $value);
 
             /**
              * @param string applyTo

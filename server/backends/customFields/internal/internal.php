@@ -114,8 +114,8 @@
              * @inheritDoc
              */
 
-            public function searchForValue($applyTo, $field, $value) {
-                return $this->db->get("select id from custom_fields_values where apply_to = :apply_to and field = :field and value = : value", [
+            public function searchByValue($applyTo, $field, $value) {
+                return $this->db->get("select id from custom_fields_values where apply_to = :apply_to and field = :field and value = :value", [
                     "apply_to" => $applyTo,
                     "field" => $field,
                     "value" => $value,

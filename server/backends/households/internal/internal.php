@@ -307,6 +307,35 @@
                             "number" => $params["number"],
                         ];
                         break;
+
+                    case "customField":
+                        $customFields = loadBackend("customFields");
+
+                        if (!$customFields) {
+                            return false;
+                        }
+
+                        $cf = $customFields->searchByValue("flat", $params["field"], $params["value"]);
+
+                        $t = [];
+
+                        print_r($cf);
+
+                        foreach ($cf as $i) {
+                            if ((int)$i) {
+                                $t[] = (int)$i;
+                            }
+                        }
+
+                        $t = implode(", ", array_unique($t, SORT_NUMERIC));
+
+                        if (!$t) {
+                            return false;
+                        }
+
+                        $q = "select house_flat_id from houses_flats where house_flat_id in ($t)";
+
+                        break;
                 }
 
                 $flats = $this->db->get($q, $p);
