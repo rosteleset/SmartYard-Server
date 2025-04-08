@@ -46,7 +46,7 @@
     }
 
     if (@$config["db"]["schema"]) {
-        $db->exec("SET search_path TO " . $config["db"]["schema"]);
+        $db->exec("SET search_path TO " . $config["db"]["schema"] . ", public");
     }
 
     try {

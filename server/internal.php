@@ -52,7 +52,7 @@
     }
 
     if (@$config["db"]["schema"]) {
-        $db->exec("SET search_path TO " . $config["db"]["schema"]);
+        $db->exec("SET search_path TO " . $config["db"]["schema"] . ", public");
     }
 
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
