@@ -89,6 +89,7 @@
 
         "addresses": {
             "backend": "internal",
+            // possible values for postgresql: trgm, fts, ftsa, default (levenshtein)
             "text_search_mode": "default",
         },
 
