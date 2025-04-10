@@ -2354,9 +2354,9 @@
 
                     $companies = $companies->getCompanies();
 
-                    if ($cameras !== false) {
-                        foreach ($cameras as $camera) {
-                            $ol[] = $camera["cameraId"];
+                    if ($companies !== false) {
+                        foreach ($companies as $companies) {
+                            $ol[] = $companies["companyId"];
                         }
                     } else {
                         return false;
