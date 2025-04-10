@@ -922,8 +922,8 @@
             /**
              * @inheritDoc
              */
-            function destroyEntrance($entranceId)
-            {
+
+            function destroyEntrance($entranceId) {
                 if (!checkInt($entranceId)) {
                     return false;
                 }
@@ -947,8 +947,8 @@
             /**
              * @inheritDoc
              */
-            public function getCms($entranceId)
-            {
+
+            public function getCms($entranceId) {
                 if (!checkInt($entranceId)) {
                     setLastError("noEntranceId");
                     return false;
@@ -965,8 +965,8 @@
             /**
              * @inheritDoc
              */
-            public function setCms($entranceId, $cms)
-            {
+
+            public function setCms($entranceId, $cms) {
                 if (!checkInt($entranceId)) {
                     setLastError("noEntranceId");
                     return false;
@@ -1004,8 +1004,8 @@
             /**
              * @inheritDoc
              */
-            public function getDomophones($by = "all", $query = -1, $withStatus = false)
-            {
+
+            public function getDomophones($by = "all", $query = -1, $withStatus = false) {
                 $q = "select * from houses_domophones order by house_domophone_id";
                 $r = [
                     "house_domophone_id" => "domophoneId",
@@ -1302,8 +1302,11 @@
                 return $r;
             }
 
-            public function autoconfigureDomophone($domophoneId, $firstTime)
-            {
+            /**
+             * @inheritDoc
+             */
+
+            public function autoconfigureDomophone($domophoneId, $firstTime) {
                 if (!checkInt($firstTime)) {
                     setLastError("firstTime");
                     return false;
@@ -1330,8 +1333,8 @@
             /**
              * @inheritDoc
              */
-            public function autoconfigDone($domophoneId)
-            {
+
+            public function autoconfigDone($domophoneId) {
                 if (!checkInt($domophoneId)) {
                     setLastError("noId");
                     return false;

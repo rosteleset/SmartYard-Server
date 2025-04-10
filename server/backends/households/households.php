@@ -228,11 +228,13 @@
              * @param $firstTime
              * @return boolean
              */
+
             abstract public function autoconfigureDomophone($domophoneId, $firstTime);
 
             /**
              * @param $domophoneId
              */
+
             abstract public function autoconfigDone($domophoneId);
 
             /**
