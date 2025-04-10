@@ -292,10 +292,12 @@
             /**
              * @param $subscriberId
              * @param $flats
+             * @param $limitCheck
+             *
              * @return boolean
              */
 
-            abstract public function setSubscriberFlats($subscriberId, $flats);
+            abstract public function setSubscriberFlats($subscriberId, $flats, $limitCheck = false);
 
             /**
              * @param $by

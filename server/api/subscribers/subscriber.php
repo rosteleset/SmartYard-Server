@@ -21,7 +21,7 @@
      */
 
     /**
-     * @api {post} /api/subscribers/subscriber/:subscriberId modify subscriber
+     * @api {put} /api/subscribers/subscriber/:subscriberId modify subscriber
      *
      * @apiVersion 1.0.0
      *

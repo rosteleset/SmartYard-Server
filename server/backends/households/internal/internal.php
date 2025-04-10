@@ -1419,7 +1419,7 @@
 
                 switch ($by) {
                     case "flatId":
-                        $q = "select * from houses_subscribers_mobile where house_subscriber_id in (select house_subscriber_id from houses_flats_subscribers where house_flat_id = :house_flat_id)";
+                        $q = "select * from houses_subscribers_mobile where house_subscriber_id in (select house_subscriber_id from houses_flats_subscribers where house_flat_id = :house_flat_id) order by id";
                         $p = [
                             "house_flat_id" => (int)$query,
                         ];
@@ -1722,17 +1722,11 @@
              * @inheritDoc
              */
 
-            public function setSubscriberFlats($subscriberId, $flats) {
+            public function setSubscriberFlats($subscriberId, $flats, $limitCheck = false) {
                 if (!checkInt($subscriberId)) {
                     setLastError("invalidParams");
                     return false;
                 }
-
-                if (!$this->db->modify("delete from houses_flats_subscribers where house_subscriber_id = $subscriberId")) {
-                    return false;
-                }
-
-                $r = true;
 
                 foreach ($flats as $flatId => $flat) {
                     $_flat = $this->getFlat($flatId);
@@ -1745,11 +1739,19 @@
                         "fieldlify"
                     ]);
 
-                    if ((int)$_flat["subscribersLimit"] && $already >= (int)$_flat["subscribersLimit"]) {
+                    if ($limitCheck && (int)$_flat["subscribersLimit"] > 0 && $already >= (int)$_flat["subscribersLimit"]) {
                         setLastError("subscribersLimitExceeded");
-                        continue;
+                        return false;
                     }
+                }
 
+                if (!$this->db->modify("delete from houses_flats_subscribers where house_subscriber_id = $subscriberId")) {
+                    return false;
+                }
+
+                $r = true;
+
+                foreach ($flats as $flatId => $flat) {
                     $r = $r && $this->db->insert("insert into houses_flats_subscribers (house_subscriber_id, house_flat_id, role) values (:house_subscriber_id, :house_flat_id, :role)", [
                         "house_subscriber_id" => $subscriberId,
                         "house_flat_id" => $flatId,
