@@ -1880,9 +1880,11 @@
                     "watch" => $watch,
                 ]);
 
-                $queue = loadBackend("queue");
-                if ($queue) {
-                    $queue->changed("key", $r);
+                if ($r) {
+                    $queue = loadBackend("queue");
+                    if ($queue) {
+                        $queue->changed("key", $r);
+                    }
                 }
 
                 return $r;
