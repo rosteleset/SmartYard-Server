@@ -1,3 +1,14 @@
+# 2025-04-11
+
+You will need to update mongodb php library and driver
+
+```bash
+find /usr/lib/php/ | grep mongodb.so | xargs rm
+pecl install -f mongodb
+cd /opt/rbt/server
+composer update
+```
+
 # 2025-03-20
 
 The deprecated syslog service has been removed from the project. You should now use
