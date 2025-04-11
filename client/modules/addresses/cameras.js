@@ -379,8 +379,8 @@
                 result.direction = $.trim(p[0]);
                 result.angle = $.trim(p[1]);
                 result.distance = $.trim(p[2]);
-                result.rcArea = null;
-                result.mdArea = null;
+                result.rcArea = [];
+                result.mdArea = [];
                 modules.addresses.cameras.doAddCamera(result);
             },
         });
