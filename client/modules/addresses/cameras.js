@@ -370,6 +370,10 @@
                 modules.addresses.cameras.marker.on('dragend', () => {
                     $("#" + prefix + "geo").val(modules.addresses.cameras.marker.getLatLng().lat + "," + modules.addresses.cameras.marker.getLatLng().lng);
                 });
+
+                setTimeout(() => {
+                    modules.addresses.cameras.map.invalidateSize()
+                }, 100);
             },
             callback: result => {
                 let g = result.geo.split(",");
@@ -762,6 +766,10 @@
                     modules.addresses.cameras.marker.on('dragend', () => {
                         $("#" + prefix + "geo").val(modules.addresses.cameras.marker.getLatLng().lat + "," + modules.addresses.cameras.marker.getLatLng().lng);
                     });
+
+                    setTimeout(() => {
+                        modules.addresses.cameras.map.invalidateSize()
+                    }, 100);
 
                     let h = '';
                     h += `<div id="${prefix}md"></div>`;
