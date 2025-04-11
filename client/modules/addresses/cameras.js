@@ -370,10 +370,11 @@
                 modules.addresses.cameras.marker.on('dragend', () => {
                     $("#" + prefix + "geo").val(modules.addresses.cameras.marker.getLatLng().lat + "," + modules.addresses.cameras.marker.getLatLng().lng);
                 });
-
-                setTimeout(() => {
-                    modules.addresses.cameras.map.invalidateSize()
-                }, 100);
+            },
+            tabActivate: function (prefix, tab) {
+                if (tab == i18n("addresses.map")) {
+                    modules.addresses.cameras.map.invalidateSize();
+                }
             },
             callback: result => {
                 let g = result.geo.split(",");
@@ -767,10 +768,6 @@
                         $("#" + prefix + "geo").val(modules.addresses.cameras.marker.getLatLng().lat + "," + modules.addresses.cameras.marker.getLatLng().lng);
                     });
 
-                    setTimeout(() => {
-                        modules.addresses.cameras.map.invalidateSize()
-                    }, 100);
-
                     let h = '';
                     h += `<div id="${prefix}md"></div>`;
                     h += `<div class="mt-2">`;
@@ -932,6 +929,10 @@
                         }, image ? image: "img/cctv.png", camera.rcArea, r => {
                             rcArea = r;
                         });
+                    }
+
+                    if (tab == i18n("addresses.map")) {
+                        modules.addresses.cameras.map.invalidateSize();
                     }
                 },
                 callback: result => {
