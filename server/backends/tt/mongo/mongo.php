@@ -584,7 +584,7 @@
                     }
 
                     $al = array_map(function ($indexInfo) {
-                        return [ 'v' => $indexInfo->getVersion(), 'key' => $indexInfo->getKey(), 'name' => $indexInfo->getName(), 'ns' => $indexInfo->getNamespace() ];
+                        return [ 'v' => $indexInfo->getVersion(), 'key' => $indexInfo->getKey(), 'name' => $indexInfo->getName() ];
                     }, iterator_to_array($this->mongo->$db->$acr->listIndexes()));
 
                     $already = [];
@@ -1415,7 +1415,7 @@
                     $acr = $args["--project"];
 
                     $indexes = array_map(function ($indexInfo) {
-                        return [ 'v' => $indexInfo->getVersion(), 'key' => $indexInfo->getKey(), 'name' => $indexInfo->getName(), 'ns' => $indexInfo->getNamespace() ];
+                        return [ 'v' => $indexInfo->getVersion(), 'key' => $indexInfo->getKey(), 'name' => $indexInfo->getName() ];
                     }, iterator_to_array($this->mongo->$db->$acr->listIndexes()));
 
                     foreach ($indexes as $i) {
@@ -1451,7 +1451,7 @@
                         $acr = $p["acronym"];
 
                         $indexes = array_map(function ($indexInfo) {
-                            return [ 'v' => $indexInfo->getVersion(), 'key' => $indexInfo->getKey(), 'name' => $indexInfo->getName(), 'ns' => $indexInfo->getNamespace() ];
+                            return [ 'v' => $indexInfo->getVersion(), 'key' => $indexInfo->getKey(), 'name' => $indexInfo->getName() ];
                         }, iterator_to_array($this->mongo->$db->$acr->listIndexes()));
 
                         foreach ($indexes as $i) {
@@ -1509,7 +1509,7 @@
                     $acr = $args["--project"];
 
                     $indexes = array_map(function ($indexInfo) {
-                        return [ 'v' => $indexInfo->getVersion(), 'key' => $indexInfo->getKey(), 'name' => $indexInfo->getName(), 'ns' => $indexInfo->getNamespace() ];
+                        return [ 'v' => $indexInfo->getVersion(), 'key' => $indexInfo->getKey(), 'name' => $indexInfo->getName() ];
                     }, iterator_to_array($this->mongo->$db->$acr->listIndexes()));
 
                     foreach ($indexes as $i) {

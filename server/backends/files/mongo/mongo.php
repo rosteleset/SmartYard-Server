@@ -233,7 +233,7 @@
                     $c = 0;
 
                     $indexes = array_map(function ($indexInfo) {
-                        return [ 'v' => $indexInfo->getVersion(), 'key' => $indexInfo->getKey(), 'name' => $indexInfo->getName(), 'ns' => $indexInfo->getNamespace() ];
+                        return [ 'v' => $indexInfo->getVersion(), 'key' => $indexInfo->getKey(), 'name' => $indexInfo->getName() ];
                     }, iterator_to_array($this->mongo->$db->$collection->listIndexes()));
 
                     foreach ($indexes as $i) {
@@ -288,7 +288,7 @@
                     $db = $this->dbName;
 
                     $indexes = array_map(function ($indexInfo) {
-                        return [ 'v' => $indexInfo->getVersion(), 'key' => $indexInfo->getKey(), 'name' => $indexInfo->getName(), 'ns' => $indexInfo->getNamespace() ];
+                        return [ 'v' => $indexInfo->getVersion(), 'key' => $indexInfo->getKey(), 'name' => $indexInfo->getName() ];
                     }, iterator_to_array($this->mongo->$db->$collection->listIndexes()));
 
                     $c = 0;
@@ -345,7 +345,7 @@
                     $c = 0;
 
                     $indexes = array_map(function ($indexInfo) {
-                        return [ 'v' => $indexInfo->getVersion(), 'key' => $indexInfo->getKey(), 'name' => $indexInfo->getName(), 'ns' => $indexInfo->getNamespace() ];
+                        return [ 'v' => $indexInfo->getVersion(), 'key' => $indexInfo->getKey(), 'name' => $indexInfo->getName() ];
                     }, iterator_to_array($this->mongo->$db->$acr->listIndexes()));
 
                     foreach ($indexes as $i) {
