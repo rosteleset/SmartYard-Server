@@ -76,7 +76,7 @@
             public static function PUT($params) {
                 $households = loadBackend("households");
 
-                $success = $households->modifyKey($params["_id"], $params["comments"], $params["watch"]);
+                $success = $households->modifyKey($params["_id"], $params["comments"], @$params["watch"]);
 
                 return api::ANSWER($success);
             }
