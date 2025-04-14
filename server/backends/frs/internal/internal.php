@@ -430,8 +430,10 @@
                 foreach ($frs_servers as $frs_server) {
                     $frs_urls[] = $frs_server[self::FRS_BASE_URL];
                     $all_faces = $this->apiCallFrs($frs_server[self::FRS_BASE_URL], self::M_LIST_ALL_FACES, null);
-                    if ($all_faces[self::P_CODE] > 204)
+                    if ($all_faces[self::P_CODE] > 204) {
+                        echo("Call to API method " . self::M_LIST_ALL_FACES . " failed with result: " . $all_faces[self::P_CODE] . PHP_EOL);
                         return false;
+                    }
                     if ($all_faces && array_key_exists(self::P_DATA, $all_faces)) {
                         $frs_all_faces = array_merge($frs_all_faces, $all_faces[self::P_DATA]);
                         sort($frs_all_faces, SORT_NUMERIC);
@@ -440,8 +442,10 @@
 
                 $query = "select face_id, face_uuid from frs_faces order by 1";
                 $result = $this->db->get($query, [], []);
-                if ($result === false)
+                if ($result === false) {
+                    echo("Query failed: " . print_r($query, true) . PHP_EOL);
                     return false;
+                }
 
                 $rbt_all_faces = [];
                 $rbt_all_face_uuids = [];
@@ -466,8 +470,10 @@
                 $diff_faces = array_values(array_diff($rbt_all_faces, $frs_all_faces, $this->getIgnoredSyncingFaces()));
                 if ($diff_faces) {
                     $query = "delete from frs_links_faces where face_id in (" . implode(",", $diff_faces) . ")";
-                    if ($this->db->modify($query) === false)
+                    if ($this->db->modify($query) === false) {
+                        echo("Query failed: " . print_r($query, true) . PHP_EOL);
                         return false;
+                    }
 
                     foreach ($diff_faces as $f_id) {
                         $query = "select face_uuid from frs_faces where face_id = :face_id";
@@ -478,8 +484,10 @@
                     }
 
                     $query = "delete from frs_faces where face_id in (" . implode(",", $diff_faces) . ")";
-                    if ($this->db->modify($query) === false)
+                    if ($this->db->modify($query) === false) {
+                        echo("Query failed: " . print_r($query, true) . PHP_EOL);
                         return false;
+                    }
                 }
 
                 //delete unmatched faces in FRS
@@ -495,8 +503,10 @@
                     $api_type = $frs_server[frs::API_TYPE] ?? null;
                     $frs_all_data[$frs_server[self::FRS_BASE_URL]] = [];
                     $streams = $this->apiCallFrs($frs_server[self::FRS_BASE_URL], self::M_LIST_STREAMS, null);
-                    if ($streams[self::P_CODE] > 204)
+                    if ($streams[self::P_CODE] > 204) {
+                        echo("Call to API method " . self::M_LIST_STREAMS . " failed with result: " . $streams[self::P_CODE] . PHP_EOL);
                         return false;
+                    }
                     if ($streams && isset($streams[self::P_DATA]) && is_array($streams[self::P_DATA]))
                         foreach ($streams[self::P_DATA] as $item)
                         {
@@ -535,8 +545,10 @@
                     order by
                       1, 2";
                 $rbt_data = $this->db->get($query);
-                if ($rbt_data === false)
+                if ($rbt_data === false) {
+                    echo("Query failed: " . print_r($query, true) . PHP_EOL);
                     return false;
+                }
 
                 if (is_array($rbt_data))
                     foreach ($rbt_data as $item) {
@@ -615,8 +627,10 @@
                     order by
                       1, 2, 3";
                 $rbt_data = $this->db->get($query);
-                if ($rbt_data === false)
+                if ($rbt_data === false) {
+                    echo("Query failed: " . print_r($query, true) . PHP_EOL);
                     return false;
+                }
 
                 if (is_array($rbt_data))
                     foreach ($rbt_data as $item) {
@@ -693,8 +707,10 @@
                 //delete all unattached faces in RBT
                 $query = "select f.face_id from frs_faces f where f.face_id not in (select fl.face_id from frs_links_faces fl)";
                 $result = $this->db->get($query, [], []);
-                if ($result === false)
+                if ($result === false) {
+                    echo("Query failed: " . print_r($query, true) . PHP_EOL);
                     return false;
+                }
 
                 foreach ($result as $row) {
                     $face_id = $row["face_id"];
@@ -721,7 +737,10 @@
                     $lprs_streams[$lprs_server[self::FRS_BASE_URL]] = [];
                     $streams = $this->apiCallLprs($lprs_server[self::FRS_BASE_URL], self::M_LIST_STREAMS, null);
                     if ($streams[self::P_CODE] > 204)
+                    {
+                        echo("Call to API method " . self::M_LIST_STREAMS . " failed with result: " . $streams[self::P_CODE] . PHP_EOL);
                         return false;
+                    }
 
                     if ($streams && isset($streams[self::P_DATA]) && is_array($streams[self::P_DATA])) {
                         foreach ($streams[self::P_DATA] as $item) {
@@ -744,7 +763,10 @@
                       1, 2";
                 $rbt_data = $this->db->get($query);
                 if ($rbt_data === false)
+                {
+                    echo("Query failed: " . print_r($query, true) . PHP_EOL);
                     return false;
+                }
 
                 if (is_array($rbt_data))
                     foreach ($rbt_data as $item) {
@@ -810,6 +832,7 @@
             private function syncData(): bool
             {
                 if (!is_array($this->servers())) {
+                    echo("frs section is incorrect." . PHP_EOL);
                     return false;
                 }
 
