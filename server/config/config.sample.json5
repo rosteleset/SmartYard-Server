@@ -318,6 +318,9 @@
         ],
         "brovotech": [
             "syslog.udp:127.0.0.1:46450",
+        ],
+        "soyuz": [
+            "syslog.udp:127.0.0.1:46466"
         ]
     },
 

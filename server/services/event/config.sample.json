@@ -47,6 +47,9 @@
     },
     "brovotech": {
       "port": 46450
+    },
+    "soyuz": {
+      "port": 46466
     }
   }
 }
