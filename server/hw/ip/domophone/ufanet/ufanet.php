@@ -96,7 +96,7 @@ abstract class ufanet extends domophone
             'Encode[0].MainFormat[0].Video.BitRateControl' => 'vbr',
 
             // Video extra stream
-            'Encode[0].ExtraFormat[0].VideoEnable' => 'true',
+            'Encode[0].ExtraFormat[0].VideoEnable' => 'false',
             'Encode[0].ExtraFormat[0].Video.Compression' => 'h264',
             'Encode[0].ExtraFormat[0].Video.resolution' => '640x352',
             'Encode[0].ExtraFormat[0].Video.FPS' => 25,
@@ -570,6 +570,7 @@ abstract class ufanet extends domophone
                     'KEY_READ_ERROR' => 'ОШИБКА ЧТЕНИЯ КЛЮЧА',
                     'KEY_BROKEN_ERROR' => 'КЛЮЧ ВЫШЕЛ ИЗ СТРОЯ',
                     'KEY_UNSUPPORTED_ERROR' => 'КЛЮЧ НЕ ПОДДЕРЖИВАЕТСЯ',
+                    'ALWAYS_OPEN' => 'ДВЕРИ ОТКРЫТЫ',
                 ],
             ],
         ]);
