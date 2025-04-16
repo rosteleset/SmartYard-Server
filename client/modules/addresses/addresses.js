@@ -97,7 +97,16 @@
                     break;
                 }
             }
-        } else {
+        }
+        if (object == "city") {
+            for (let i in modules.addresses.meta.cities) {
+                if (modules.addresses.meta.cities[i]["cityId"] == id) {
+                    title = modules.addresses.meta.cities[i].cityWithType;
+                    break;
+                }
+            }
+        }
+        else {
             for (let i in modules.addresses.meta[object + "s"]) {
                 if (modules.addresses.meta[object + "s"][i][object + "Id"] == id) {
                     title = modules.addresses.meta[object + "s"][i][object + "WithType"];
