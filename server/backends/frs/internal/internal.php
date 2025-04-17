@@ -427,8 +427,10 @@
                 $frs_all_faces = [];
 
                 $frs_urls = [];
+                $rbt_all_data = [];
                 foreach ($frs_servers as $frs_server) {
                     $frs_urls[] = $frs_server[self::FRS_BASE_URL];
+                    $rbt_all_data[$frs_server[self::FRS_BASE_URL]] = [];
                     $all_faces = $this->apiCallFrs($frs_server[self::FRS_BASE_URL], self::M_LIST_ALL_FACES, null);
                     if ($all_faces[self::P_CODE] > 204) {
                         echo("Call to API method " . self::M_LIST_ALL_FACES . " failed with result: " . $all_faces[self::P_CODE] . PHP_EOL);
@@ -531,7 +533,6 @@
                         }
                 }
 
-                $rbt_all_data = [];
                 $query = "
                     select
                       c.frs,
