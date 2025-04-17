@@ -46,10 +46,17 @@ class UfanetService extends SyslogService {
 
         // Opening a door by RFID key
         if (message.includes('keyhex=') && message.includes('pass=OK')) {
-            // Same message for internal and external readers
-            const hexRfid = message.split(' ')[1].split('=')[1].padStart(14, '0').toUpperCase();
-            await API.openDoor({ date: date, ip: host, door: 0, detail: hexRfid, by: 'rfid' });
+            if (message.includes('type=password')) {
+                const code = parseInt(message.split('key=')[1].split(' ')[0]);
+                await API.openDoor({ date: date, ip: host, door: 0, detail: code, by: 'code' });
+            }
+            else {
+                // Same message for internal and external readers
+                const hexRfid = message.split(' ')[1].split('=')[1].padStart(14, '0').toUpperCase();
+                await API.openDoor({ date: date, ip: host, door: 0, detail: hexRfid, by: 'rfid' });
+            }
         }
+
 
         // All calls are done
         if (message.includes('pickup 0')) {

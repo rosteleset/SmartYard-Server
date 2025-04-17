@@ -41,22 +41,31 @@ abstract class ufanet extends domophone
 
     protected ?string $cmsModelName = null;
 
-    public function addRfid(string $code, int $apartment = 0): void
+    protected array $personalEntryCodes = [];
+
+    public function addRfid(string $code, int $apartment = 0, int $type = 1): void
     {
         $this->loadRfids();
+
+        $rfidData = "$apartment;$type";
+
+        if ($type === 3) {
+            $this->rfids[substr($code, -5)] = $rfidData;
+            return;
+        }
 
         $lowercaseCode = strtolower($code);
         $internalRfid = substr($lowercaseCode, 6);
         $externalRfid = '00' . substr($lowercaseCode, 8);
 
-        $this->rfids[$internalRfid] = $apartment ?: '';
-        $this->rfids[$externalRfid] = $apartment ?: '';
+        $this->rfids[$internalRfid] = $rfidData;
+        $this->rfids[$externalRfid] = $rfidData;
     }
 
     public function addRfids(array $rfids): void
     {
         foreach ($rfids as $rfid) {
-            $this->addRfid($rfid);
+            $this->addRfid(code: $rfid, type: in_array($rfid, $this->personalEntryCodes) ? 3 : 1);
         }
     }
 
@@ -194,7 +203,8 @@ abstract class ufanet extends domophone
             $lowercaseCode = strtolower($code);
             $internalRfid = substr($lowercaseCode, 6);
             $externalRfid = '00' . substr($lowercaseCode, 8);
-            unset($this->rfids[$internalRfid], $this->rfids[$externalRfid]);
+            $personalEntryCode = substr($lowercaseCode, -5);
+            unset($this->rfids[$internalRfid], $this->rfids[$externalRfid], $this->rfids[$personalEntryCode]);
         }
     }
 
@@ -342,7 +352,14 @@ abstract class ufanet extends domophone
         $dbConfig['sip']['stunServer'] = '';
         $dbConfig['sip']['stunPort'] = 3478;
 
+        $this->personalEntryCodes = [];
         foreach ($dbConfig['apartments'] as &$apartment) {
+            $code = $apartment['code'];
+            if ($code != '0') {
+                $code = str_pad($code, 14, '0', STR_PAD_LEFT);
+                $dbConfig['rfids'][$code] = $code;
+                $this->personalEntryCodes[] = $code;
+            }
             $apartment['code'] = 0;
             $apartment['cmsLevels'] = [];
         }
@@ -364,6 +381,7 @@ abstract class ufanet extends domophone
     protected function getApartments(): array
     {
         $this->loadDialplans();
+        $this->loadRfids();
 
         $apartments = [];
 
@@ -372,9 +390,19 @@ abstract class ufanet extends domophone
                 continue;
             }
 
+            // The Ufanet intercom stores personal entry codes as keys. Restore structure that configurator expects
+            $currentCode = 0;
+            foreach ($this->rfids as $code => $data) {
+                if (preg_match('/^(\d+);3$/', $data, $matches)) {
+                    if ($matches[1] == $apartmentNumber) {
+                        $currentCode = $code;
+                    }
+                }
+            }
+
             $apartments[$apartmentNumber] = [
                 'apartment' => $apartmentNumber,
-                'code' => 0,
+                'code' => $currentCode,
                 'sipNumbers' => [$dialplan['sip_number']],
                 'cmsEnabled' => $dialplan['analog'],
                 'cmsLevels' => [],
