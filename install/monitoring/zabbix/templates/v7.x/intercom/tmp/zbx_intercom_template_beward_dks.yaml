@@ -4,10 +4,10 @@ zabbix_export:
     - uuid: 6207024e7115434a8abfd202bf7f283a
       name: Templates/Intercoms
   templates:
-    - uuid: 46bbe9b8518d49e9b6f5dc7ad15b2926
-      template: Intercom_BEWARD_DS
-      name: 'Intercom | BEWARD DS by HTTP'
-      description: 'Intercom BEWARD DS panel monitoring'
+    - uuid: 1def59ffd59d4d3e88fcdfc7c3fe0377
+      template: Intercom_BEWARD_DKS
+      name: 'Intercom | BEWARD DKS by HTTP'
+      description: 'Intercom BEWARD DKS panel monitoring'
       vendor:
         name: SmartYard
         version: 6.4-0
@@ -16,7 +16,7 @@ zabbix_export:
       groups:
         - name: Templates/Intercoms
       items:
-        - uuid: 372d931c52c84afeb01e843a015f2f66
+        - uuid: 4f8f4d853bc44f1c9e5bc8a7296a7535
           name: 'BEWARD Intercom: device model'
           type: DEPENDENT
           key: intercom.devicemodel
@@ -32,7 +32,7 @@ zabbix_export:
                 - $.DeviceModel
           master_item:
             key: intercom.systeminfo
-        - uuid: 6a31837f8e1b411bab23cbcf20261735
+        - uuid: 6bfdfaf153a24dcc857ac80f3ce77a76
           name: 'BEWARD Intercom: fw version'
           type: DEPENDENT
           key: intercom.fwversion
@@ -49,12 +49,13 @@ zabbix_export:
           master_item:
             key: intercom.systeminfo
           triggers:
-            - uuid: 626e0c6db182478eb8bd42124e262be9
-              expression: 'last(/Intercom_BEWARD_DS/intercom.fwversion,#1)<>last(/Intercom_BEWARD_DS/intercom.fwversion,#2) and length(last(/Intercom_BEWARD_DS/intercom.fwversion))>0'
+            - uuid: 350f1a533ab349aeb460c108b25cbe88
+              expression: 'last(/Intercom_BEWARD_DKS/intercom.fwversion,#1)<>last(/Intercom_BEWARD_DKS/intercom.fwversion,#2) and length(last(/Intercom_BEWARD_DKS/intercom.fwversion))>0'
               name: 'Firmware version has changed'
-              event_name: 'INTERCOM: {HOST.NAME} | Firmvare version has changed (new version: {ITEM.VALUE})'
+              event_name: 'INTERCOM: {HOST.NAME} | Firmware version has changed (new version: {ITEM.VALUE})'
+              status: DISABLED
               priority: INFO
-        - uuid: 2ca02adc720e44a7947a2d8a2727e21f
+        - uuid: e80beda3e9904dcdb7aba7a5abc20f53
           name: 'BEWARD Intercom: SIP registration status'
           type: HTTP_AGENT
           key: intercom.sipstatus
@@ -80,16 +81,21 @@ zabbix_export:
             - name: action
               value: regstatus
           triggers:
-            - uuid: b0da5bc661234f09b9901ae2e8b74132
-              expression: 'count(/Intercom_BEWARD_DS/intercom.sipstatus,10m,,"0")>5'
+            - uuid: 50c838fdf4e94ec380fdec039e7cb18f
+              expression: 'count(/Intercom_BEWARD_DKS/intercom.sipstatus,10m,,"0")>5'
               name: 'SIP: Registration failure'
               event_name: 'INTERCOM: {HOST.NAME} | SIP registration failure'
               priority: WARNING
               description: 'Check SIP registration on device more 10 minutes'
-        - uuid: 4cd0ca8ed3244fd2a80568c25f060109
+              dependencies:
+                - name: 'Device has been restarted'
+                  expression: last(/Intercom_BEWARD_DKS/intercom.uptime)<10m
+                  recovery_expression: last(/Intercom_BEWARD_DKS/intercom.uptime)>15m
+        - uuid: 101cf114b0074980b54432db2199fc9f
           name: 'BEWARD Intercom: system info'
           type: HTTP_AGENT
           key: intercom.systeminfo
+          delay: 1h
           history: 1h
           trends: '0'
           value_type: TEXT
@@ -103,6 +109,9 @@ zabbix_export:
                 - ''
               error_handler: CUSTOM_VALUE
               error_handler_params: '{"html":{"head":{"title":"Connection error"}}}'
+            - type: DISCARD_UNCHANGED
+              parameters:
+                - ''
             - type: JAVASCRIPT
               parameters:
                 - |
@@ -120,14 +129,55 @@ zabbix_export:
             - name: action
               value: get
           triggers:
-            - uuid: 8928462967984a4cad26768802895037
-              expression: 'nodata(/Intercom_BEWARD_DS/intercom.systeminfo,600)=1'
+            - uuid: e65f7c65fbdb46f3ad95df7b8ed1792b
+              expression: 'nodata(/Intercom_BEWARD_DKS/intercom.systeminfo,600)=1'
               name: 'HTTP: port/service unreachable (ICMP OK)'
               priority: WARNING
               description: 'HTTP Check unavailable but ICMP available'
-              dependencies:
-                - name: 'ICMP: Unavailable by ICMP ping'
-                  expression: 'max(/Intercom_BEWARD_DS/icmpping,#3)=0'
+#              dependencies:
+#                - name: 'ICMP Ping: Unavailable by ICMP ping'
+#                  expression: 'min(/Intercom_BEWARD_DKS/icmppingloss,5m)>{$ICMP_LOSS_WARN} and min(/Intercom_BEWARD_DKS/icmppingloss,5m)<100'
+        - uuid: 08c81ea3a8fb4540a626cea86d095531
+          name: 'BEWARD Intercom: uptime'
+          type: DEPENDENT
+          key: intercom.uptime
+          delay: '0'
+          history: 7d
+          trends: 90d
+          value_type: FLOAT
+          units: uptime
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.UpTime
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var timeParts = value.split(":")
+                  return parseInt(timeParts[0]) * 3600 + parseInt(timeParts[1]) * 60 + parseInt(timeParts[2]);
+          master_item:
+            key: intercom.systeminfo
+          triggers:
+            - uuid: 28bb274a9fb54630a563e7cd0378bdf5
+              expression: last(/Intercom_BEWARD_DKS/intercom.uptime)<10m
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: last(/Intercom_BEWARD_DKS/intercom.uptime)>15m
+              name: 'Device has been restarted'
+              event_name: 'INTERCOM: {HOST.NAME} | has been restarted (uptime < 10m)'
+              priority: INFO
+              description: 'Device has been restarted'
+              manual_close: 'YES'
+            - uuid: d8a1cbf3b2b949798d8c62d29738a82b
+              expression: 'count(/Intercom_BEWARD_DKS/intercom.uptime,1800,,"5")<=200'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: last(/Intercom_BEWARD_DKS/intercom.uptime)>=3600
+              name: 'Intercom: power fail'
+              status: DISABLED
+              priority: HIGH
+              description: |
+                The device was rebooted more than 5 times in an hour.
+                Need to check power supply.
+              manual_close: 'YES'
       tags:
         - tag: class
           value: hardware
@@ -141,7 +191,7 @@ zabbix_export:
           value: admin
           description: 'WEB GUI | API username, default value admin'
       valuemaps:
-        - uuid: 3c210eaa3a824a1ea847f9337ccdb446
+        - uuid: 78045dc1942f41c1b8e6216b7d2a69ed
           name: 'SIP registration status'
           mappings:
             - value: '0'

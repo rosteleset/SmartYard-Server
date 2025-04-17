@@ -1,0 +1,180 @@
+zabbix_export:
+  version: '7.2'
+  template_groups:
+    - uuid: 6207024e7115434a8abfd202bf7f283a
+      name: Templates/Intercoms
+  templates:
+    - uuid: 4b1e045ce6f54de8b626da09c747bb5d
+      template: Intercom_QTECH_QDB-27C-H
+      name: 'Intercom | QTECH QDB-27C-H by HTTP'
+      description: 'Intercom QTECH QDB-27C-H panel monitoring'
+      vendor:
+        name: SmartYard
+        version: 2025-04
+      templates:
+        - name: 'ICMP Ping'
+      groups:
+        - name: Templates/Intercoms
+      items:
+        - uuid: 644a5ce311644a858ee5062c9f0fc1e5
+          name: 'QTECH Intercom: device model'
+          type: DEPENDENT
+          key: intercom.devicemodel
+          history: 7d
+          value_type: TEXT
+          description: 'device model'
+          inventory_link: HARDWARE
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.model
+          master_item:
+            key: intercom.systeminfo
+        - uuid: f1c7651f6f494ab7a0a8960dc89a1b22
+          name: 'QTECH Intercom: fw version'
+          type: DEPENDENT
+          key: intercom.fwversion
+          history: 7d
+          value_type: CHAR
+          description: 'Check current firmware version'
+          inventory_link: SOFTWARE
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.firmware
+          master_item:
+            key: intercom.systeminfo
+          triggers:
+            - uuid: cd2e037853044d1ba0ac795394494cfe
+              expression: 'last(/Intercom_QTECH_QDB-27C-H/intercom.fwversion,#1)<>last(/Intercom_QTECH_QDB-27C-H/intercom.fwversion,#2) and length(last(/Intercom_QTECH_QDB-27C-H/intercom.fwversion))>0'
+              name: 'Firmware version has changed'
+              event_name: 'INTERCOM: {HOST.NAME} | Firmvare version has changed (new version: {ITEM.VALUE})'
+              priority: INFO
+        - uuid: 8bf6e966c0184dcc8897a5a995d23453
+          name: 'QTECH Intercom: SIP registration status'
+          type: HTTP_AGENT
+          key: intercom.sipstatus
+          history: '0'
+          trends: '0'
+          authtype: BASIC
+          username: '{$HOST_USERNAME}'
+          password: '{$HOST_PASSWORD}'
+          description: 'Check SIP registration'
+          valuemap:
+            name: 'SIP registration status'
+          preprocessing:
+            - type: CHECK_NOT_SUPPORTED
+              parameters:
+                - '-1'
+              error_handler: CUSTOM_VALUE
+              error_handler_params: '{"html":{"head":{"title":"Connection error"}}}'
+            - type: JSONPATH
+              parameters:
+                - $.data.SipAccount.AccountStatus
+          url: 'http://{HOST.CONN}/api'
+          post_type: JSON
+          posts: |
+            {
+                "target": "sip",
+                "action": "get",
+                "data": {
+                    "AccountId": 0
+                }
+            }
+          request_method: POST
+          triggers:
+            - uuid: e9ae3baa1af24263a5e18f77c11404bf
+              expression: 'count(/Intercom_QTECH_QDB-27C-H/intercom.sipstatus,10m,,"0")>5'
+              name: 'SIP: Registration failure'
+              event_name: 'INTERCOM: {HOST.NAME} | SIP registration failure'
+              priority: WARNING
+              description: 'Check SIP registration on device more 10 minutes'
+        - uuid: 342f50176e7c4a6eb613db7559d6c4e7
+          name: 'QTECH Intercom: system info'
+          type: HTTP_AGENT
+          key: intercom.systeminfo
+          history: 1h
+          value_type: TEXT
+          authtype: BASIC
+          username: '{$HOST_USERNAME}'
+          password: '{$HOST_PASSWORD}'
+          description: 'Get system information'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.body.data
+              error_handler: DISCARD_VALUE
+          url: 'http://{HOST.CONN}/api'
+          post_type: JSON
+          posts: |
+            {
+                "target": "firmware",
+                "action": "status"
+            }
+          request_method: POST
+          output_format: JSON
+          triggers:
+            - uuid: 99ae21b91ee04720b6d215df5478e37e
+              expression: last(/Intercom_QTECH_QDB-27C-H/intercom.systeminfo)=0
+              name: 'HTTP: port/service unreachable (ICMP OK)'
+              priority: WARNING
+              description: 'HTTP Check unavailable but ICMP available'
+              dependencies:
+                - name: 'ICMP Ping: Unavailable by ICMP ping'
+                  expression: 'max(/Intercom_QTECH_QDB-27C-H/icmpping,#3)=0'
+        - uuid: 253957306d7445638ddcbb18d4645f83
+          name: 'QTECH Intercom: uptime'
+          type: DEPENDENT
+          key: intercom.uptime
+          history: 7d
+          value_type: FLOAT
+          trends: 90d
+          units: uptime
+          description: 'Uptime device'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.UpTime
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  const dayMatch = value.match(/day:(\d+)/);
+                  const timeMatch = value.match(/(\d+):\s*(\d+):\s*(\d+)/);
+                  const days = parseInt(dayMatch[1], 10);
+                  const hours = parseInt(timeMatch[1].trim(), 10);
+                  const minutes = parseInt(timeMatch[2].trim(), 10);
+                  const seconds = parseInt(timeMatch[3].trim(), 10);
+                  return days * 86400 + hours * 3600 + minutes * 60 + seconds;
+          master_item:
+            key: intercom.systeminfo
+          triggers:
+            - uuid: fcb17a484fff4becb48cf7496effe107
+              expression: last(/Intercom_QTECH_QDB-27C-H/intercom.uptime)<10m
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: last(/Intercom_QTECH_QDB-27C-H/intercom.uptime)>15m
+              name: 'Device has been restarted'
+              event_name: 'INTERCOM: {HOST.NAME} | has been restarted (uptime < 10m)'
+              priority: INFO
+              description: 'Device has been restarted'
+      tags:
+        - tag: class
+          value: hardware
+        - tag: target
+          value: qtech
+      macros:
+        - macro: '{$HOST_PASSWORD}'
+          value: admin
+          description: 'WEB GUI | API password, default value admin'
+        - macro: '{$HOST_USERNAME}'
+          value: admin
+          description: 'WEB GUI | API username, default value admin'
+      valuemaps:
+        - uuid: 30b36a8991f4426a85624e0aa6076db4
+          name: 'SIP registration status'
+          mappings:
+            - value: '0'
+              newvalue: Disable
+            - value: '1'
+              newvalue: Failure
+            - value: '2'
+              newvalue: Online

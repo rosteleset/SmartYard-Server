@@ -1,0 +1,29 @@
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: e858e071fe054cdabec002d7d99891e9
+      name: Templates/Intercoms
+  templates:
+    - uuid: e2f60ec54f644a9fa0866045f6b79adb
+      template: Intercom_SILINES_RODOS
+      name: 'Intercom | SILINES_RODOS by ICMP'
+      description: 'Relay SILINES RODOS by ICMP panel monitoring'
+      vendor:
+        name: SmartYard
+        version: 2025-04
+      templates:
+        - name: 'ICMP Ping'
+      groups:
+        - name: Templates/Intercoms
+      tags:
+        - tag: class
+          value: hardware
+        - tag: target
+          value: silines
+      macros:
+        - macro: '{$HOST_PASSWORD}'
+          value: admin
+          description: 'WEB GUI | API password, default value admin'
+        - macro: '{$HOST_USERNAME}'
+          value: admin
+          description: 'WEB GUI | API username, default value admin'

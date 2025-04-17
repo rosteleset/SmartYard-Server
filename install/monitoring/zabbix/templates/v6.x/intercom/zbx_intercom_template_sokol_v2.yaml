@@ -1,0 +1,175 @@
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: 6207024e7115434a8abfd202bf7f283a
+      name: Templates/Intercoms
+  templates:
+    - uuid: 6a9fffb80a26444495920fe4210985bf
+      template: Intercom_IS_ISCOM_X1_REV.2
+      name: 'Intercom | IS SOKOL V2 by HTTP'
+      description: 'Intercom IS ISCOM X1 rev.2 panel monitoring'
+      vendor:
+        name: SmartYard
+        version: 2025-04
+      templates:
+        - name: 'ICMP Ping'
+      groups:
+        - name: Templates/Intercoms
+      items:
+        - uuid: 6a3ac86b542d462a80bb4644a9abec36
+          name: 'Sokol Intercom: device model'
+          type: DEPENDENT
+          key: intercom.devicemodel
+          delay: '0'
+          history: 7d
+          trends: '0'
+          value_type: TEXT
+          description: 'device model'
+          inventory_link: HARDWARE
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.model
+          master_item:
+            key: intercom.systeminfo
+        - uuid: cd96d52161d245c6b4bc5be2b969e54c
+          name: 'Sokol Intercom: fw version'
+          type: DEPENDENT
+          key: intercom.fwversion
+          delay: '0'
+          history: 7d
+          trends: '0'
+          value_type: CHAR
+          description: 'Check current firmware version'
+          inventory_link: SOFTWARE
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.opt.name
+          master_item:
+            key: intercom.systemversions
+          triggers:
+            - uuid: f21a5dfe789148028c94dbdd04d41fa1
+              expression: 'last(/Intercom_IS_ISCOM_X1_REV.2/intercom.fwversion,#1)<>last(/Intercom_IS_ISCOM_X1_REV.2/intercom.fwversion,#2) and length(last(/Intercom_IS_ISCOM_X1_REV.2/intercom.fwversion))>0'
+              name: 'Firmware version has changed'
+              event_name: 'INTERCOM: {HOST.NAME} | Firmvare version has changed (new version: {ITEM.VALUE})'
+              priority: INFO
+        - uuid: 2eb21951b0b541709c7d95fcdae3cfc5
+          name: 'Sokol Intercom: SIP registration status'
+          type: DEPENDENT
+          key: intercom.sipstatus
+          delay: '0'
+          history: 7d
+          description: 'Check SIP registration'
+          valuemap:
+            name: 'SIP registration status'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.registerStatus
+            - type: BOOL_TO_DECIMAL
+              parameters:
+                - ''
+          master_item:
+            key: intercom.systeminfo
+          triggers:
+            - uuid: 93390ba4bfc14d12adc4c2821bdb5507
+              expression: 'count(/Intercom_IS_ISCOM_X1_REV.2/intercom.sipstatus,10m,,"0")>5'
+              name: 'SIP: Registration failure'
+              event_name: 'INTERCOM: {HOST.NAME} | SIP registration failure'
+              priority: WARNING
+              description: 'Check SIP registration on device more 10 minutes'
+        - uuid: 81f5a995aa1e497a805d630da80ec8b3
+          name: 'Sokol Intercom: system info'
+          type: HTTP_AGENT
+          key: intercom.systeminfo
+          history: 1h
+          trends: '0'
+          value_type: TEXT
+          authtype: BASIC
+          username: '{$HOST_USERNAME}'
+          password: '{$HOST_PASSWORD}'
+          description: 'Get system information'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.body
+          url: 'http://{HOST.CONN}/system/info'
+          output_format: JSON
+          tags:
+            - tag: component
+              value: raw
+          triggers:
+            - uuid: 5d6d394345a34acbbdf7c3acfec068b0
+              expression: 'nodata(/Intercom_IS_ISCOM_X1_REV.2/intercom.systeminfo,600)=1'
+              name: 'HTTP: port/service unreachable (ICMP OK)'
+              priority: WARNING
+              description: 'HTTP Check unavailable but ICMP available'
+              dependencies:
+                - name: 'ICMP Ping: Unavailable by ICMP ping'
+                  expression: 'max(/Intercom_IS_ISCOM_X1_REV.2/icmpping,#3)=0'
+        - uuid: a6049607ab5d48b0b5d85c2871cf594e
+          name: 'Sokol Intercom: system versions'
+          type: HTTP_AGENT
+          key: intercom.systemversions
+          history: '0'
+          trends: '0'
+          value_type: TEXT
+          authtype: BASIC
+          username: '{$HOST_USERNAME}'
+          password: '{$HOST_PASSWORD}'
+          description: 'Get versions information'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.body
+          url: 'http://{HOST.CONN}/v2/system/versions'
+          output_format: JSON
+          tags:
+            - tag: component
+              value: raw
+        - uuid: 8e7bb30af071464a90c583877d5c0ad0
+          name: 'Sokol Intercom: uptime'
+          type: DEPENDENT
+          key: intercom.uptime
+          delay: '0'
+          history: 7d
+          trends: 90d
+          value_type: FLOAT
+          units: uptime
+          description: 'Uptime device'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.uptime
+          master_item:
+            key: intercom.systeminfo
+          triggers:
+            - uuid: fb23377339b74aff8a3974d0b6821a1e
+              expression: last(/Intercom_IS_ISCOM_X1_REV.2/intercom.uptime)<10m
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: last(/Intercom_IS_ISCOM_X1_REV.2/intercom.uptime)>15m
+              name: 'Device has been restarted'
+              event_name: 'INTERCOM: {HOST.NAME} | has been restarted (uptime < 10m)'
+              priority: INFO
+              description: 'Device has been restarted'
+      tags:
+        - tag: class
+          value: hardware
+        - tag: target
+          value: is
+      macros:
+        - macro: '{$HOST_PASSWORD}'
+          value: '123456'
+          description: 'WEB GUI | API password, default value admin'
+        - macro: '{$HOST_USERNAME}'
+          value: root
+          description: 'WEB GUI | API username, default value admin'
+      valuemaps:
+        - uuid: 823c141c31704821bfba3d970afad679
+          name: 'SIP registration status'
+          mappings:
+            - value: '0'
+              newvalue: Offline
+            - value: '1'
+              newvalue: Online

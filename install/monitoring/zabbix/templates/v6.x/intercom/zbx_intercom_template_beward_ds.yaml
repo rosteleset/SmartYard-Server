@@ -1,0 +1,150 @@
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: 6207024e7115434a8abfd202bf7f283a
+      name: Templates/Intercoms
+  templates:
+    - uuid: 46bbe9b8518d49e9b6f5dc7ad15b2926
+      template: Intercom_BEWARD_DS
+      name: 'Intercom | BEWARD DS by HTTP'
+      description: 'Intercom BEWARD DS panel monitoring'
+      vendor:
+        name: SmartYard
+        version: 2025-04
+      templates:
+        - name: 'ICMP Ping'
+      groups:
+        - name: Templates/Intercoms
+      items:
+        - uuid: 372d931c52c84afeb01e843a015f2f66
+          name: 'BEWARD Intercom: device model'
+          type: DEPENDENT
+          key: intercom.devicemodel
+          delay: '0'
+          history: 7d
+          trends: '0'
+          status: DISABLED
+          value_type: TEXT
+          inventory_link: HARDWARE
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.DeviceModel
+          master_item:
+            key: intercom.systeminfo
+        - uuid: 6a31837f8e1b411bab23cbcf20261735
+          name: 'BEWARD Intercom: fw version'
+          type: DEPENDENT
+          key: intercom.fwversion
+          delay: '0'
+          history: 7d
+          trends: '0'
+          value_type: TEXT
+          description: 'Check current firmware version'
+          inventory_link: SOFTWARE
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.SoftwareVersion
+          master_item:
+            key: intercom.systeminfo
+          triggers:
+            - uuid: 626e0c6db182478eb8bd42124e262be9
+              expression: 'last(/Intercom_BEWARD_DS/intercom.fwversion,#1)<>last(/Intercom_BEWARD_DS/intercom.fwversion,#2) and length(last(/Intercom_BEWARD_DS/intercom.fwversion))>0'
+              name: 'Firmware version has changed'
+              event_name: 'INTERCOM: {HOST.NAME} | Firmvare version has changed (new version: {ITEM.VALUE})'
+              priority: INFO
+        - uuid: 2ca02adc720e44a7947a2d8a2727e21f
+          name: 'BEWARD Intercom: SIP registration status'
+          type: HTTP_AGENT
+          key: intercom.sipstatus
+          history: 7d
+          trends: '0'
+          authtype: BASIC
+          username: '{$HOST_USERNAME}'
+          password: '{$HOST_PASSWORD}'
+          description: 'Check SIP registration'
+          valuemap:
+            name: 'SIP registration status'
+          preprocessing:
+            - type: CHECK_NOT_SUPPORTED
+              parameters:
+                - ''
+              error_handler: CUSTOM_VALUE
+              error_handler_params: '{"html":{"head":{"title":"Connection error"}}}'
+            - type: JAVASCRIPT
+              parameters:
+                - 'return value.split("\n")[0].split("AccountReg1=")[1]'
+          url: 'http://{HOST.CONN}/cgi-bin/sip_cgi'
+          query_fields:
+            - name: action
+              value: regstatus
+          triggers:
+            - uuid: b0da5bc661234f09b9901ae2e8b74132
+              expression: 'count(/Intercom_BEWARD_DS/intercom.sipstatus,10m,,"0")>5'
+              name: 'SIP: Registration failure'
+              event_name: 'INTERCOM: {HOST.NAME} | SIP registration failure'
+              priority: WARNING
+              description: 'Check SIP registration on device more 10 minutes'
+        - uuid: 4cd0ca8ed3244fd2a80568c25f060109
+          name: 'BEWARD Intercom: system info'
+          type: HTTP_AGENT
+          key: intercom.systeminfo
+          history: 1h
+          trends: '0'
+          value_type: TEXT
+          authtype: BASIC
+          username: '{$HOST_USERNAME}'
+          password: '{$HOST_PASSWORD}'
+          description: 'Get system information from Beward SIP intercom'
+          preprocessing:
+            - type: CHECK_NOT_SUPPORTED
+              parameters:
+                - ''
+              error_handler: CUSTOM_VALUE
+              error_handler_params: '{"html":{"head":{"title":"Connection error"}}}'
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var arr = value.trim().split('\n')
+                  var data = {};
+                  arr.forEach(function(line) {
+                      var keyValue = line.split('=');
+                      if (keyValue[0] === 'SoftwareVersion' || keyValue[0] === 'UpTime' || keyValue[0] === 'DeviceModel') {
+                          data[keyValue[0]] = keyValue[1];
+                      }
+                  });
+                  return JSON.stringify(data)
+          url: 'http://{HOST.CONN}/cgi-bin/systeminfo_cgi'
+          query_fields:
+            - name: action
+              value: get
+          triggers:
+            - uuid: 8928462967984a4cad26768802895037
+              expression: 'nodata(/Intercom_BEWARD_DS/intercom.systeminfo,600)=1'
+              name: 'HTTP: port/service unreachable (ICMP OK)'
+              priority: WARNING
+              description: 'HTTP Check unavailable but ICMP available'
+              dependencies:
+                - name: 'ICMP Ping: Unavailable by ICMP ping'
+                  expression: 'max(/Intercom_BEWARD_DS/icmpping,#3)=0'
+      tags:
+        - tag: class
+          value: hardware
+        - tag: target
+          value: beward
+      macros:
+        - macro: '{$HOST_PASSWORD}'
+          value: admin
+          description: 'WEB GUI | API password, default value admin'
+        - macro: '{$HOST_USERNAME}'
+          value: admin
+          description: 'WEB GUI | API username, default value admin'
+      valuemaps:
+        - uuid: 3c210eaa3a824a1ea847f9337ccdb446
+          name: 'SIP registration status'
+          mappings:
+            - value: '0'
+              newvalue: Offline
+            - value: '1'
+              newvalue: Online

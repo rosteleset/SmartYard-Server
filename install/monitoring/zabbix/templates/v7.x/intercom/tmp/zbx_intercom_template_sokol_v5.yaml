@@ -4,10 +4,10 @@ zabbix_export:
     - uuid: 6207024e7115434a8abfd202bf7f283a
       name: Templates/Intercoms
   templates:
-    - uuid: 4b1e045ce6f54de8b626da09c747bb5d
-      template: Intercom_QTECH_QDB-27C-H
-      name: 'Intercom | QTECH QDB-27C-H by HTTP'
-      description: 'Intercom QTECH QDB-27C-H panel monitoring'
+    - uuid: 1d5ed10a31bc471ea4f93bd8ab980c18
+      template: Intercom_IS_ISCOM_X1_REV.5
+      name: 'Intercom | IS SOKOL V5 by HTTP'
+      description: 'Intercom IS ISCOM X1 rev.5 (Sokol plius) panel monitoring'
       vendor:
         name: SmartYard
         version: 6.4-0
@@ -16,8 +16,8 @@ zabbix_export:
       groups:
         - name: Templates/Intercoms
       items:
-        - uuid: 644a5ce311644a858ee5062c9f0fc1e5
-          name: 'QTECH Intercom: device model'
+        - uuid: 9ffb484b281d4d89aa502280b63a2394
+          name: 'Sokol Intercom: device model'
           type: DEPENDENT
           key: intercom.devicemodel
           delay: '0'
@@ -32,8 +32,8 @@ zabbix_export:
                 - $.model
           master_item:
             key: intercom.systeminfo
-        - uuid: f1c7651f6f494ab7a0a8960dc89a1b22
-          name: 'QTECH Intercom: fw version'
+        - uuid: 4c03ea3fba9149f8980a7e02f5f9b479
+          name: 'Sokol Intercom: fw version'
           type: DEPENDENT
           key: intercom.fwversion
           delay: '0'
@@ -45,56 +45,39 @@ zabbix_export:
           preprocessing:
             - type: JSONPATH
               parameters:
-                - $.firmware
+                - $.opt.name
           master_item:
-            key: intercom.systeminfo
+            key: intercom.systemversions
           triggers:
-            - uuid: cd2e037853044d1ba0ac795394494cfe
-              expression: 'last(/Intercom_QTECH_QDB-27C-H/intercom.fwversion,#1)<>last(/Intercom_QTECH_QDB-27C-H/intercom.fwversion,#2) and length(last(/Intercom_QTECH_QDB-27C-H/intercom.fwversion))>0'
+            - uuid: 64a94aea0b85453f8aa612e71cb8f1da
+              expression: 'last(/Intercom_IS_ISCOM_X1_REV.5/intercom.fwversion,#1)<>last(/Intercom_IS_ISCOM_X1_REV.5/intercom.fwversion,#2) and length(last(/Intercom_IS_ISCOM_X1_REV.5/intercom.fwversion))>0'
               name: 'Firmware version has changed'
               event_name: 'INTERCOM: {HOST.NAME} | Firmvare version has changed (new version: {ITEM.VALUE})'
               priority: INFO
-        - uuid: 8bf6e966c0184dcc8897a5a995d23453
-          name: 'QTECH Intercom: SIP registration status'
-          type: HTTP_AGENT
+        - uuid: 603818b71c5947d9af9245cbeea830fd
+          name: 'Sokol Intercom: SIP registration status'
+          type: DEPENDENT
           key: intercom.sipstatus
-          history: '0'
+          delay: '0'
+          history: 7d
           trends: '0'
-          authtype: BASIC
-          username: '{$HOST_USERNAME}'
-          password: '{$HOST_PASSWORD}'
+          value_type: TEXT
           description: 'Check SIP registration'
-          valuemap:
-            name: 'SIP registration status'
           preprocessing:
-            - type: CHECK_NOT_SUPPORTED
-              parameters:
-                - ''
-              error_handler: CUSTOM_VALUE
-              error_handler_params: '{"html":{"head":{"title":"Connection error"}}}'
             - type: JSONPATH
               parameters:
-                - $.data.SipAccount.AccountStatus
-          url: 'http://{HOST.CONN}/api'
-          posts: |
-            {
-                "target": "sip",
-                "action": "get",
-                "data": {
-                    "AccountId": 0
-                }
-            }
-          post_type: JSON
-          request_method: POST
+                - $.registerStatus
+          master_item:
+            key: intercom.systeminfo
           triggers:
-            - uuid: e9ae3baa1af24263a5e18f77c11404bf
-              expression: 'count(/Intercom_QTECH_QDB-27C-H/intercom.sipstatus,10m,,"0")>5'
+            - uuid: 62ad991c141d4acd9caff26a8a750619
+              expression: 'count(/Intercom_IS_ISCOM_X1_REV.5/intercom.sipstatus,10m,,"0")>5'
               name: 'SIP: Registration failure'
               event_name: 'INTERCOM: {HOST.NAME} | SIP registration failure'
               priority: WARNING
               description: 'Check SIP registration on device more 10 minutes'
-        - uuid: 342f50176e7c4a6eb613db7559d6c4e7
-          name: 'QTECH Intercom: system info'
+        - uuid: 8165b46c43c44c78812d6bdb8a62385f
+          name: 'Sokol Intercom: system info'
           type: HTTP_AGENT
           key: intercom.systeminfo
           history: 1h
@@ -107,28 +90,43 @@ zabbix_export:
           preprocessing:
             - type: JSONPATH
               parameters:
-                - $.body.data
-              error_handler: DISCARD_VALUE
-          url: 'http://{HOST.CONN}/api'
-          posts: |
-            {
-                "target": "firmware",
-                "action": "status"
-            }
-          post_type: JSON
-          request_method: POST
+                - $.body
+          url: 'http://{HOST.CONN}/system/info'
           output_format: JSON
+          tags:
+            - tag: component
+              value: raw
           triggers:
-            - uuid: 99ae21b91ee04720b6d215df5478e37e
-              expression: last(/Intercom_QTECH_QDB-27C-H/intercom.systeminfo)=0
+            - uuid: 55ded787d79b44cdb5461992318fe620
+              expression: 'nodata(/Intercom_IS_ISCOM_X1_REV.5/intercom.systeminfo,600)=1'
               name: 'HTTP: port/service unreachable (ICMP OK)'
               priority: WARNING
               description: 'HTTP Check unavailable but ICMP available'
               dependencies:
-                - name: 'ICMP: Unavailable by ICMP ping'
-                  expression: 'max(/Intercom_QTECH_QDB-27C-H/icmpping,#3)=0'
-        - uuid: 253957306d7445638ddcbb18d4645f83
-          name: 'QTECH Intercom: uptime'
+                - name: 'ICMP Ping: Unavailable by ICMP ping'
+                  expression: 'max(/Intercom_IS_ISCOM_X1_REV.5/icmpping,#3)=0'
+        - uuid: 01a513ec0b1142fb98604f56b42ba2fa
+          name: 'Sokol Intercom: system versions'
+          type: HTTP_AGENT
+          key: intercom.systemversions
+          history: '0'
+          trends: '0'
+          value_type: TEXT
+          authtype: BASIC
+          username: '{$HOST_USERNAME}'
+          password: '{$HOST_PASSWORD}'
+          description: 'Get versions information'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.body
+          url: 'http://{HOST.CONN}/v2/system/versions'
+          output_format: JSON
+          tags:
+            - tag: component
+              value: raw
+        - uuid: d9d928f3c02d4c48a20cfb72acccce49
+          name: 'Sokol Intercom: uptime'
           type: DEPENDENT
           key: intercom.uptime
           delay: '0'
@@ -140,24 +138,14 @@ zabbix_export:
           preprocessing:
             - type: JSONPATH
               parameters:
-                - $.UpTime
-            - type: JAVASCRIPT
-              parameters:
-                - |
-                  const dayMatch = value.match(/day:(\d+)/);
-                  const timeMatch = value.match(/(\d+):\s*(\d+):\s*(\d+)/);
-                  const days = parseInt(dayMatch[1], 10);
-                  const hours = parseInt(timeMatch[1].trim(), 10);
-                  const minutes = parseInt(timeMatch[2].trim(), 10);
-                  const seconds = parseInt(timeMatch[3].trim(), 10);
-                  return days * 86400 + hours * 3600 + minutes * 60 + seconds;
+                - $.uptime
           master_item:
             key: intercom.systeminfo
           triggers:
-            - uuid: fcb17a484fff4becb48cf7496effe107
-              expression: last(/Intercom_QTECH_QDB-27C-H/intercom.uptime)<10m
+            - uuid: 17e4940145484052b072aea569bbc3a2
+              expression: last(/Intercom_IS_ISCOM_X1_REV.5/intercom.uptime)<10m
               recovery_mode: RECOVERY_EXPRESSION
-              recovery_expression: last(/Intercom_QTECH_QDB-27C-H/intercom.uptime)>15m
+              recovery_expression: last(/Intercom_IS_ISCOM_X1_REV.5/intercom.uptime)>15m
               name: 'Device has been restarted'
               event_name: 'INTERCOM: {HOST.NAME} | has been restarted (uptime < 10m)'
               priority: INFO
@@ -166,16 +154,16 @@ zabbix_export:
         - tag: class
           value: hardware
         - tag: target
-          value: qtech
+          value: is
       macros:
         - macro: '{$HOST_PASSWORD}'
-          value: admin
+          value: '123456'
           description: 'WEB GUI | API password, default value admin'
         - macro: '{$HOST_USERNAME}'
-          value: admin
+          value: root
           description: 'WEB GUI | API username, default value admin'
       valuemaps:
-        - uuid: 30b36a8991f4426a85624e0aa6076db4
+        - uuid: 84e3fde322dc4b78beb7a22557b46533
           name: 'SIP registration status'
           mappings:
             - value: '0'
