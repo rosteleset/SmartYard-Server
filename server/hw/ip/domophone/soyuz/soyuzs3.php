@@ -3,7 +3,7 @@
 namespace hw\ip\domophone\soyuz;
 
 /**
- * Class representing a Sokol ISCom X1 Plus (rev.5) intercom.
+ * Class representing a Soyuz S3 intercom.
  */
 class soyuzs3 extends soyuz
 {

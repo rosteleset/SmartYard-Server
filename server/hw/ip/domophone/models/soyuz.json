@@ -1,7 +1,7 @@
 {
-    "title": "SOYUZ DOMOPHONE",
-    "vendor": "Soyuz",
-    "model": "soyuz-ip",
+    "title": "SOYUZ S3",
+    "vendor": "SOYUZ",
+    "model": "S3",
     "class": "soyuzs3",
     "eventServer": "soyuz",
     "outputs": 1,
