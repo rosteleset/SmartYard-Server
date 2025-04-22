@@ -94,8 +94,7 @@
              */
 
             public function getMessages($subscriberId, $by, $params) {
-                $w = "";
-                $q = [];
+                $q = "";
 
                 if (!checkInt($subscriberId)) {
                     setLastError("invalidSubscriberId");
