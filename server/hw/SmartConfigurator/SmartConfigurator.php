@@ -36,7 +36,7 @@ class SmartConfigurator
 
     public function makeConfiguration($retryCount = 0): void
     {
-        $maxRetries = 0;
+        $maxRetries = 1;
         $difference = $this->getDifference();
 
         if (!$difference) {
