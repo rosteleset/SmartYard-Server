@@ -92,8 +92,8 @@
             /**
              * @inheritDoc
              */
-            public function getMessages($subscriberId, $by, $params)
-            {
+
+            public function getMessages($subscriberId, $by, $params) {
                 $w = "";
                 $q = [];
 
@@ -103,9 +103,9 @@
                 }
 
                 $households = loadBackend("households");
-                $devices = $households->getDevices("subscriber", $subscriberId);
+                $subscribers = $households->getSubscribers("id", $subscriberId);
 
-                if (!@$devices) {
+                if (!@$subscribers) {
                     setLastError("mobileSubscriberNotRegistered");
                     return false;
                 }
@@ -113,7 +113,7 @@
                 $date_from = (int)$params["dateFrom"];
                 $date_to = (int)$params["dateTo"];
                 $msg_id = (int)$params;
-                $id = $devices[0]["subscriber"]["mobile"];
+                $id = $subscribers[0]["mobile"];
 
                 switch ($by) {
                     case "dates":
