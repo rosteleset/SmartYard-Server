@@ -74,6 +74,7 @@
                     type: "yesno",
                     title: i18n("addresses.enabled"),
                     value: "1",
+                    tab: i18n("addresses.primary"),
                 },
                 {
                     id: "model",
@@ -81,6 +82,7 @@
                     title: i18n("addresses.model"),
                     placeholder: i18n("addresses.model"),
                     options: models,
+                    tab: i18n("addresses.primary"),
                 },
                 {
                     id: "server",
@@ -88,6 +90,7 @@
                     title: i18n("addresses.server"),
                     placeholder: i18n("addresses.server"),
                     options: servers,
+                    tab: i18n("addresses.primary"),
                 },
                 {
                     id: "url",
@@ -105,6 +108,7 @@
                             return false;
                         }
                     },
+                    tab: i18n("addresses.primary"),
                 },
                 {
                     id: "credentials",
@@ -113,7 +117,8 @@
                     placeholder: i18n("addresses.credentials"),
                     validate: v => {
                         return $.trim(v) !== "";
-                    }
+                    },
+                    tab: i18n("addresses.primary"),
                 },
                 {
                     id: "dtmf",
@@ -124,12 +129,14 @@
                     validate: v => {
                         return [ "*", "#", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" ].indexOf($.trim(v)) >= 0;
                     },
+                    tab: i18n("addresses.primary"),
                 },
                 {
                     id: "nat",
                     type: "yesno",
                     title: i18n("addresses.nat"),
                     value: "0",
+                    tab: i18n("addresses.primary"),
                 },
                 {
                     id: "video",
@@ -146,6 +153,7 @@
                         },
                     ],
                     value: "inband",
+                    tab: i18n("addresses.primary"),
                 },
                 {
                     id: "name",
@@ -155,6 +163,7 @@
                     validate: v => {
                         return $.trim(v).length <= 64;
                     },
+                    tab: i18n("addresses.primary"),
                 },
                 {
                     id: "comments",
@@ -164,12 +173,21 @@
                     validate: v => {
                         return $.trim(v).length <= 64;
                     },
+                    tab: i18n("addresses.primary"),
                 },
                 {
                     id: "display",
                     type: "area",
                     title: i18n("addresses.display"),
                     placeholder: i18n("addresses.display"),
+                    tab: i18n("addresses.primary"),
+                },
+                {
+                    id: "ext",
+                    type: "json",
+                    title: false,
+                    tab: i18n("addresses.ext"),
+                    noHover: true,
                 },
             ],
             callback: modules.addresses.domophones.doAddDomophone,
@@ -211,6 +229,7 @@
                 topApply: true,
                 apply: i18n("edit"),
                 delete: i18n("addresses.deleteDomophone"),
+                deleteTab: i18n("addresses.primary"),
                 size: "lg",
                 fields: [
                     {
@@ -220,12 +239,14 @@
                         value: domophoneId,
                         readonly: true,
                         hint: 100000 + parseInt(domophoneId),
+                        tab: i18n("addresses.primary"),
                     },
                     {
                         id: "enabled",
                         type: "yesno",
                         title: i18n("addresses.enabled"),
                         value: domophone.enabled,
+                        tab: i18n("addresses.primary"),
                     },
                     {
                         id: "model",
@@ -234,6 +255,7 @@
                         placeholder: i18n("addresses.model"),
                         options: models,
                         value: domophone.model,
+                        tab: i18n("addresses.primary"),
                     },
                     {
                         id: "server",
@@ -242,6 +264,7 @@
                         placeholder: i18n("addresses.server"),
                         options: servers,
                         value: domophone.server,
+                        tab: i18n("addresses.primary"),
                     },
                     {
                         id: "url",
@@ -260,6 +283,7 @@
                                 return false;
                             }
                         },
+                        tab: i18n("addresses.primary"),
                     },
                     {
                         id: "credentials",
@@ -269,7 +293,8 @@
                         value: domophone.credentials,
                         validate: v => {
                             return $.trim(v) !== "";
-                        }
+                        },
+                        tab: i18n("addresses.primary"),
                     },
                     {
                         id: "dtmf",
@@ -280,18 +305,21 @@
                         validate: v => {
                             return [ "*", "#", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" ].indexOf($.trim(v)) >= 0;
                         },
+                        tab: i18n("addresses.primary"),
                     },
                     {
                         id: "firstTime",
                         type: "yesno",
                         title: i18n("addresses.firstTime"),
                         value: domophone.firstTime,
+                        tab: i18n("addresses.primary"),
                     },
                     {
                         id: "nat",
                         type: "yesno",
                         title: i18n("addresses.nat"),
                         value: domophone.nat,
+                        tab: i18n("addresses.primary"),
                     },
                     {
                         id: "video",
@@ -308,12 +336,14 @@
                             },
                         ],
                         value: domophone.video,
+                        tab: i18n("addresses.primary"),
                     },
                     {
                         id: "locksAreOpen",
                         type: "yesno",
                         title: i18n("addresses.locksAreOpen"),
                         value: domophone.locksAreOpen,
+                        tab: i18n("addresses.primary"),
                     },
                     {
                         id: "name",
@@ -324,6 +354,7 @@
                         validate: v => {
                             return $.trim(v).length <= 64;
                         },
+                        tab: i18n("addresses.primary"),
                     },
                     {
                         id: "comments",
@@ -334,6 +365,7 @@
                         validate: v => {
                             return $.trim(v).length <= 64;
                         },
+                        tab: i18n("addresses.primary"),
                     },
                     {
                         id: "display",
@@ -341,6 +373,15 @@
                         title: i18n("addresses.display"),
                         placeholder: i18n("addresses.display"),
                         value: domophone.display,
+                        tab: i18n("addresses.primary"),
+                    },
+                    {
+                        id: "ext",
+                        type: "json",
+                        title: false,
+                        tab: i18n("addresses.ext"),
+                        value: domophone.ext,
+                        noHover: true,
                     },
                 ],
                 callback: result => {

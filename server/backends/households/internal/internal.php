@@ -1024,6 +1024,7 @@
                     "sub_id" => "sub_id",
                     "display" => "display",
                     "video" => "video",
+                    "ext" => "ext",
                 ];
 
                 switch ($by) {
@@ -1106,6 +1107,10 @@
                     $targetHosts = [];
                     $domophones = $this->db->get($q, false, $r);
 
+                    foreach ($domophones as &$domophone) {
+                        $domophone["ext"] = json_decode($domophone["ext"]);
+                    }
+
                     foreach ($domophones as $domophone) {
                         $targetHosts[] = [
                             'hostId' => $domophone['domophoneId'],
@@ -1124,7 +1129,13 @@
 
                     return $domophones;
                 } else {
-                    return $this->db->get($q, false, $r);
+                    $domophones = $this->db->get($q, false, $r);
+
+                    foreach ($domophones as &$domophone) {
+                        $domophone["ext"] = json_decode($domophone["ext"]);
+                    }
+
+                    return $domophones;
                 }
             }
 
@@ -1132,7 +1143,7 @@
              * @inheritDoc
              */
 
-            public function addDomophone($enabled, $model, $server, $url,  $credentials, $dtmf, $nat, $comments, $name, $display, $video) {
+            public function addDomophone($enabled, $model, $server, $url,  $credentials, $dtmf, $nat, $comments, $name, $display, $video, $ext) {
                 if (!$model) {
                     setLastError("moModel");
                     return false;
@@ -1179,7 +1190,7 @@
                 }
                 $display = trim(implode("\n", $t));
 
-                $domophoneId = $this->db->insert("insert into houses_domophones (enabled, model, server, url, credentials, dtmf, nat, comments, name, display, video) values (:enabled, :model, :server, :url, :credentials, :dtmf, :nat, :comments, :name, :display, :video)", [
+                $domophoneId = $this->db->insert("insert into houses_domophones (enabled, model, server, url, credentials, dtmf, nat, comments, name, display, video, ext) values (:enabled, :model, :server, :url, :credentials, :dtmf, :nat, :comments, :name, :display, :video, :ext)", [
                     "enabled" => (int)$enabled,
                     "model" => $model,
                     "server" => $server,
@@ -1191,6 +1202,7 @@
                     "name" => $name,
                     "display" => $display ? : null,
                     "video" => $video,
+                    "ext" => json_encode($ext),
                 ]);
 
                 if ($domophoneId) {
@@ -1210,7 +1222,7 @@
              * @inheritDoc
              */
 
-            public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $dtmf, $firstTime, $nat, $locksAreOpen, $comments, $name, $display, $video) {
+            public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $dtmf, $firstTime, $nat, $locksAreOpen, $comments, $name, $display, $video, $ext) {
                 if (!checkInt($domophoneId)) {
                     setLastError("noId");
                     return false;
@@ -1273,7 +1285,7 @@
                 }
                 $display = trim(implode("\n", $t));
 
-                $r = $this->db->modify("update houses_domophones set enabled = :enabled, model = :model, server = :server, url = :url, credentials = :credentials, dtmf = :dtmf, first_time = :first_time, nat = :nat, locks_are_open = :locks_are_open, comments = :comments, name = :name, display = :display, video = :video where house_domophone_id = $domophoneId", [
+                $r = $this->db->modify("update houses_domophones set enabled = :enabled, model = :model, server = :server, url = :url, credentials = :credentials, dtmf = :dtmf, first_time = :first_time, nat = :nat, locks_are_open = :locks_are_open, comments = :comments, name = :name, display = :display, video = :video, ext = :ext where house_domophone_id = $domophoneId", [
                     "enabled" => (int)$enabled,
                     "model" => $model,
                     "server" => $server,
@@ -1287,6 +1299,7 @@
                     "name" => $name,
                     "display" => $display ? : null,
                     "video" => $video,
+                    "ext" => json_encode($ext),
                 ]);
 
                 if ($r) {
@@ -1389,6 +1402,7 @@
                     "sub_id" => "sub_id",
                     "display" => "display",
                     "video" => "video",
+                    "ext" => "ext",
                 ], [
                     "singlify"
                 ]);
@@ -1407,6 +1421,8 @@
                     }
 
                     $domophone["json"] = json_decode(file_get_contents(__DIR__ . "/../../../hw/ip/domophone/models/" . $domophone["model"]), true);
+                    $domophone["ext"] = json_decode($domophone["ext"]);
+
                 }
 
                 return $domophone;

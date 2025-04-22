@@ -27,7 +27,7 @@
      *
      * @apiBody {Object} issue
      *
-     * @apiSuccess {String} issueId
+     * @apiSuccess {String} id
      */
 
     /**

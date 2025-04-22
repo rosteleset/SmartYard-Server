@@ -220,5 +220,8 @@
     ],
     "68": [
         "v68_custom_fields.sql"
+    ],
+    "69": [
+        "v69_domophones.sql"
     ]
 }
