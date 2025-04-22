@@ -1,35 +1,19 @@
 <?php
 
     /**
-     * @api {get} /api/subscribers/subscribers get subscribers by flat
+     * @api {get} /api/subscribers/subscribers get subscribers by
      *
      * @apiVersion 1.0.0
      *
-     * @apiName subscribersByFlat
+     * @apiName subscribersBy
      * @apiGroup subscribers
      *
      * @apiHeader {String} authorization authentication token
      *
-     * @apiBody {String} by flatId
+     * @apiBody {String="flatId","houseId","subscriberId"} by
      * @apiBody {Number} query
      *
      * @apiSuccess {Object[]} flat
-     */
-
-    /**
-     * @api {get} /api/subscribers/subscribers get subscribers by id
-     *
-     * @apiVersion 1.0.0
-     *
-     * @apiName subscribersById
-     * @apiGroup subscribers
-     *
-     * @apiHeader {String} authorization authentication token
-     *
-     * @apiBody {String} by subscriberId
-     * @apiBody {Number} query
-     *
-     * @apiSuccess {Object[]} subscribers
      */
 
     /**
@@ -58,6 +42,10 @@
                         ];
 
                         return api::ANSWER($flat, $flat ? "flat" : false);
+
+                    case "houseId":
+                        $subscribers = $households->getSubscribers("houseId", @$params["query"]);
+                        return api::ANSWER($subscribers, $subscribers ? "subscribers" : false);
 
                     case "subscriberId":
                         $subscribers = $households->getSubscribers("id", @$params["query"]);
