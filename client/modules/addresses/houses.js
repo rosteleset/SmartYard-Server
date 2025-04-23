@@ -1244,24 +1244,26 @@
             if (modules.addresses.houses.customFieldsConfiguration && modules.addresses.houses.customFieldsConfiguration.flat) {
                 for (let i in modules.addresses.houses.customFieldsConfiguration.flat) {
                     let cf;
-                    switch (modules.addresses.houses.customFieldsConfiguration.flat[i].type) {
-                        case "text":
-                            cf = {};
-                            cf.id = "_cf_" + modules.addresses.houses.customFieldsConfiguration.flat[i].field;
-                            cf.type = modules.addresses.houses.customFieldsConfiguration.flat[i].editor;
-                            cf.title = modules.addresses.houses.customFieldsConfiguration.flat[i].fieldDisplay;
-                            cf.placeholder = modules.addresses.houses.customFieldsConfiguration.flat[i].fieldDisplay;
-                            cf.tab = i18n("customFields");
-                            if (modules.addresses.houses.customFieldsConfiguration.flat[i].magicIcon && modules.addresses.houses.customFieldsConfiguration.flat[i].magicFunction && modules.custom && modules.custom[modules.addresses.houses.customFieldsConfiguration.flat[i].magicFunction]) {
-                                cf.button = {};
-                                cf.button.click = modules.custom[modules.addresses.houses.customFieldsConfiguration.flat[i].magicFunction];
-                                cf.button.class = modules.addresses.houses.customFieldsConfiguration.flat[i].magicIcon;
-                                if (modules.addresses.houses.customFieldsConfiguration.flat[i].magicHint) {
-                                    cf.button.hint = modules.addresses.houses.customFieldsConfiguration.flat[i].magicHint;
+                    if (parseInt(modules.addresses.houses.customFieldsConfiguration.flat[i].add)) {
+                        switch (modules.addresses.houses.customFieldsConfiguration.flat[i].type) {
+                            case "text":
+                                cf = {};
+                                cf.id = "_cf_" + modules.addresses.houses.customFieldsConfiguration.flat[i].field;
+                                cf.type = modules.addresses.houses.customFieldsConfiguration.flat[i].editor;
+                                cf.title = modules.addresses.houses.customFieldsConfiguration.flat[i].fieldDisplay;
+                                cf.placeholder = modules.addresses.houses.customFieldsConfiguration.flat[i].fieldDisplay;
+                                cf.tab = i18n("customFields");
+                                if (modules.addresses.houses.customFieldsConfiguration.flat[i].magicIcon && modules.addresses.houses.customFieldsConfiguration.flat[i].magicFunction && modules.custom && modules.custom[modules.addresses.houses.customFieldsConfiguration.flat[i].magicFunction]) {
+                                    cf.button = {};
+                                    cf.button.click = modules.custom[modules.addresses.houses.customFieldsConfiguration.flat[i].magicFunction];
+                                    cf.button.class = modules.addresses.houses.customFieldsConfiguration.flat[i].magicIcon;
+                                    if (modules.addresses.houses.customFieldsConfiguration.flat[i].magicHint) {
+                                        cf.button.hint = modules.addresses.houses.customFieldsConfiguration.flat[i].magicHint;
+                                    }
                                 }
-                            }
-                            fields.push(cf);
-                            break;
+                                fields.push(cf);
+                                break;
+                        }
                     }
                 }
             }
@@ -2538,25 +2540,27 @@
                 if (modules.addresses.houses.customFieldsConfiguration && modules.addresses.houses.customFieldsConfiguration.flat) {
                     for (let i in modules.addresses.houses.customFieldsConfiguration.flat) {
                         let cf;
-                        switch (modules.addresses.houses.customFieldsConfiguration.flat[i].type) {
-                            case "text":
-                                cf = {};
-                                cf.id = "_cf_" + modules.addresses.houses.customFieldsConfiguration.flat[i].field;
-                                cf.type = modules.addresses.houses.customFieldsConfiguration.flat[i].editor;
-                                cf.title = modules.addresses.houses.customFieldsConfiguration.flat[i].fieldDisplay;
-                                cf.placeholder = modules.addresses.houses.customFieldsConfiguration.flat[i].fieldDisplay;
-                                cf.tab = i18n("customFields");
-                                cf.value = customFields[modules.addresses.houses.customFieldsConfiguration.flat[i].field] ? customFields[modules.addresses.houses.customFieldsConfiguration.flat[i].field] : "";
-                                if (modules.addresses.houses.customFieldsConfiguration.flat[i].magicIcon && modules.addresses.houses.customFieldsConfiguration.flat[i].magicFunction && modules.custom && modules.custom[modules.addresses.houses.customFieldsConfiguration.flat[i].magicFunction]) {
-                                    cf.button = {};
-                                    cf.button.click = modules.custom[modules.addresses.houses.customFieldsConfiguration.flat[i].magicFunction];
-                                    cf.button.class = modules.addresses.houses.customFieldsConfiguration.flat[i].magicIcon;
-                                    if (modules.addresses.houses.customFieldsConfiguration.flat[i].magicHint) {
-                                        cf.button.hint = modules.addresses.houses.customFieldsConfiguration.flat[i].magicHint;
+                        if (parseInt(modules.addresses.houses.customFieldsConfiguration.flat[i].modify)) {
+                            switch (modules.addresses.houses.customFieldsConfiguration.flat[i].type) {
+                                case "text":
+                                    cf = {};
+                                    cf.id = "_cf_" + modules.addresses.houses.customFieldsConfiguration.flat[i].field;
+                                    cf.type = modules.addresses.houses.customFieldsConfiguration.flat[i].editor;
+                                    cf.title = modules.addresses.houses.customFieldsConfiguration.flat[i].fieldDisplay;
+                                    cf.placeholder = modules.addresses.houses.customFieldsConfiguration.flat[i].fieldDisplay;
+                                    cf.tab = i18n("customFields");
+                                    cf.value = customFields[modules.addresses.houses.customFieldsConfiguration.flat[i].field] ? customFields[modules.addresses.houses.customFieldsConfiguration.flat[i].field] : "";
+                                    if (modules.addresses.houses.customFieldsConfiguration.flat[i].magicIcon && modules.addresses.houses.customFieldsConfiguration.flat[i].magicFunction && modules.custom && modules.custom[modules.addresses.houses.customFieldsConfiguration.flat[i].magicFunction]) {
+                                        cf.button = {};
+                                        cf.button.click = modules.custom[modules.addresses.houses.customFieldsConfiguration.flat[i].magicFunction];
+                                        cf.button.class = modules.addresses.houses.customFieldsConfiguration.flat[i].magicIcon;
+                                        if (modules.addresses.houses.customFieldsConfiguration.flat[i].magicHint) {
+                                            cf.button.hint = modules.addresses.houses.customFieldsConfiguration.flat[i].magicHint;
+                                        }
                                     }
-                                }
-                                fields.push(cf);
-                                break;
+                                    fields.push(cf);
+                                    break;
+                            }
                         }
                     }
                 }
