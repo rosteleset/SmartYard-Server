@@ -10,8 +10,8 @@
         /**
          * clickhouse archive class
          */
-        class clickhouse extends inbox
-        {
+
+        class clickhouse extends inbox {
             private $clickhouse;
 
             /**
@@ -38,10 +38,9 @@
 
             public function sendMessage($subscriberId, $title, $msg, $action = "inbox") {
                 $households = loadBackend("households");
-                $isdn = loadBackend("isdn");
-                $devices = $households->getDevices("subscriber", $subscriberId);
+                $subscribers = $households->getSubscribers("id", $subscriberId);
 
-                if (!@$devices) {
+                if (!@$subscribers) {
                     setLastError("mobileSubscriberNotRegistered");
                     return false;
                 }
@@ -60,29 +59,34 @@
                     return false;
                 }
 
-                $unreaded = $this->unreaded($subscriberId);
+                $devices = $households->getDevices("subscriber", $subscriberId);
 
-                foreach ($devices as $device) {
-                    if ($isdn && checkInt($device["platform"]) && checkInt($device["tokenType"]) && $device["pushToken"]) {
-                        if (!(($action == "inbox" && (int)$device["pushDisable"]) || ($action == "money" && (int)$device["moneyDisable"]))) {
-                            if (!$result = $isdn->push([
-                                "token" => $device["pushToken"],
-                                "type" => ((int)$device["platform"] === 1) ? 0 : $device["tokenType"], // force FCM for Apple for text messages
-                                "timestamp" => time(),
-                                "ttl" => 30,
-                                "platform" => [ "android", "ios", "web" ][(int)$device["platform"]],
-                                "title" => $title,
-                                "msg" => $msg,
-                                "badge" => $unreaded,
-                                "sound" => "default",
-                                "pushAction" => $action,
-                                "messageId" => $msgId,
-                            ])) {
-                                setLastError("pushCantBeSent");
+                if ($devices && count($devices)) {
+                    $isdn = loadBackend("isdn");
+                    $unreaded = $this->unreaded($subscriberId);
+
+                    foreach ($devices as $device) {
+                        if ($isdn && checkInt($device["platform"]) && checkInt($device["tokenType"]) && $device["pushToken"]) {
+                            if (!(($action == "inbox" && (int)$device["pushDisable"]) || ($action == "money" && (int)$device["moneyDisable"]))) {
+                                if (!$result = $isdn->push([
+                                    "token" => $device["pushToken"],
+                                    "type" => ((int)$device["platform"] === 1) ? 0 : $device["tokenType"], // force FCM for Apple for text messages
+                                    "timestamp" => time(),
+                                    "ttl" => 30,
+                                    "platform" => [ "android", "ios", "web" ][(int)$device["platform"]],
+                                    "title" => $title,
+                                    "msg" => $msg,
+                                    "badge" => $unreaded,
+                                    "sound" => "default",
+                                    "pushAction" => $action,
+                                    "messageId" => $msgId,
+                                ])) {
+                                    setLastError("pushCantBeSent");
+                                }
                             }
+                        } else {
+                            setLastError("pushCantBeSent");
                         }
-                    } else {
-                        setLastError("pushCantBeSent");
                     }
                 }
 
@@ -167,8 +171,8 @@
             /**
              * @inheritDoc
              */
-            public function markMessageAsReaded($subscriberId, $msgId = false)
-            {
+
+            public function markMessageAsReaded($subscriberId, $msgId = false) {
                 if (!checkInt($subscriberId)) {
                     setLastError("invalidSubscriberId");
                     return false;
@@ -199,8 +203,8 @@
             /**
              * @inheritDoc
              */
-            public function markMessageAsDelivered($subscriberId, $msgId = false)
-            {
+
+            public function markMessageAsDelivered($subscriberId, $msgId = false) {
                 if (!checkInt($subscriberId)) {
                     setLastError("invalidSubscriberId");
                     return false;
@@ -231,8 +235,8 @@
             /**
              * @inheritDoc
              */
-            public function unreaded($subscriberId)
-            {
+
+            public function unreaded($subscriberId) {
                 if (!checkInt($subscriberId)) {
                     setLastError("invalidSubscriberId");
                     return false;
@@ -264,8 +268,8 @@
             /**
              * @inheritDoc
              */
-            public function undelivered($subscriberId)
-            {
+
+            public function undelivered($subscriberId) {
                 if (!checkInt($subscriberId)) {
                     setLastError("invalidSubscriberId");
                     return false;
@@ -297,8 +301,8 @@
             /**
              * @inheritDoc
              */
-            public function cron($part)
-            {
+
+            public function cron($part) {
                 if ($part == '5min') {
                     $i = true;
 
