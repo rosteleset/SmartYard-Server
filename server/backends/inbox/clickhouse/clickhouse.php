@@ -46,7 +46,7 @@
                 }
 
                 $msgId = $this->db->insert("insert into inbox (id, date, title, msg, action, expire, delivered, readed, code) values (:id, :date, :title, :msg, :action, :expire, 0, 0, null)", [
-                    "id" => $devices[0]["subscriber"]["mobile"],
+                    "id" => $subscribers[0]["mobile"],
                     "date" => time(),
                     "title" => $title,
                     "msg" => $msg,
