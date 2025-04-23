@@ -31,7 +31,7 @@
      * @apiBody {String} body
      * @apiBody {String} action
      *
-     * @apiSuccess {Number} msgId
+     * @apiSuccess {Object} sent
      */
 
     /**
@@ -65,7 +65,7 @@
 
                 $success = $inbox->sendMessage($params["_id"], $params["title"], $params["body"], $params["action"]);
 
-                return api::ANSWER($success, ($success !== false) ? false : "notAcceptable");
+                return api::ANSWER($success, ($success !== false) ? "sent" : "notAcceptable");
             }
 
             public static function index() {
