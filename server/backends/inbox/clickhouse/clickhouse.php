@@ -61,6 +61,8 @@
 
                 $devices = $households->getDevices("subscriber", $subscriberId);
 
+                $count = 0;
+
                 if ($devices && count($devices)) {
                     $isdn = loadBackend("isdn");
                     $unreaded = $this->unreaded($subscriberId);
@@ -68,7 +70,7 @@
                     foreach ($devices as $device) {
                         if ($isdn && checkInt($device["platform"]) && checkInt($device["tokenType"]) && $device["pushToken"]) {
                             if (!(($action == "inbox" && (int)$device["pushDisable"]) || ($action == "money" && (int)$device["moneyDisable"]))) {
-                                if (!$result = $isdn->push([
+                                if ($result = $isdn->push([
                                     "token" => $device["pushToken"],
                                     "type" => ((int)$device["platform"] === 1) ? 0 : $device["tokenType"], // force FCM for Apple for text messages
                                     "timestamp" => time(),
@@ -81,6 +83,8 @@
                                     "pushAction" => $action,
                                     "messageId" => $msgId,
                                 ])) {
+                                    $count++;
+                                } else {
                                     setLastError("pushCantBeSent");
                                 }
                             }
@@ -90,7 +94,10 @@
                     }
                 }
 
-                return $msgId;
+                return [
+                    "msgId" => $msgId,
+                    "messagesSent" => $count,
+                ];
             }
 
             /**
