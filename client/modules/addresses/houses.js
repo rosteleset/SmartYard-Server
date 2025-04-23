@@ -3657,13 +3657,13 @@
                                         ]
                                     },
                                 ],
-                                callback: message => {
+                                callback: msg => {
                                     let n = 0;
                                     (function send() {
                                         let subscriber = result.subscribers.pop();
                                         n++;
                                         if (subscriber) {
-                                            POST("inbox", "message", subscriber.subscriberId, message).
+                                            POST("inbox", "message", subscriber.subscriberId, msg).
                                             fail(FAIL).
                                             done(send);
                                         } else {
