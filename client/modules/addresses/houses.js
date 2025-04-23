@@ -3659,9 +3659,9 @@
                                 ],
                                 callback: msg => {
                                     let n = 0;
-                                    (function send(result) {
+                                    (function send(sent) {
                                         let subscriber = result.subscribers.pop();
-                                        console.log(result);
+                                        console.log(sent);
                                         n++;
                                         if (subscriber) {
                                             POST("inbox", "message", subscriber.subscriberId, msg).
