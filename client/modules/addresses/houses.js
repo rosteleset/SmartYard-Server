@@ -1256,6 +1256,9 @@
                                 cf.button = {};
                                 cf.button.click = modules.custom[modules.addresses.houses.customFieldsConfiguration.flat[i].magicFunction];
                                 cf.button.class = modules.addresses.houses.customFieldsConfiguration.flat[i].magicIcon;
+                                if (modules.addresses.houses.customFieldsConfiguration.flat[i].magicHint) {
+                                    cf.button.hint = modules.addresses.houses.customFieldsConfiguration.flat[i].magicHint;
+                                }
                             }
                             fields.push(cf);
                             break;
