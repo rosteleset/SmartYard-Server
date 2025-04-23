@@ -3661,8 +3661,9 @@
                                     let n = 0;
                                     (function send(sent) {
                                         let subscriber = result.subscribers.pop();
-                                        console.log(sent);
-                                        n++;
+                                        if (sent) {
+                                            n += sent.count;
+                                        }
                                         if (subscriber) {
                                             POST("inbox", "message", subscriber.subscriberId, msg).
                                             fail(FAIL).

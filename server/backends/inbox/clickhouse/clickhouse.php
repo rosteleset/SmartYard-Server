@@ -96,7 +96,7 @@
 
                 return [
                     "msgId" => $msgId,
-                    "messagesSent" => $count,
+                    "count" => $count,
                 ];
             }
 
