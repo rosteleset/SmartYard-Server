@@ -5,7 +5,7 @@
         "<b>RoBoT - RBT (SmartYard-Server)</b>",
         "",
         "Client version: %s",
-        "Server version: %s",
+        "SmartYard version: %s",
         "DB version: %s",
         "<hr/>Fully autonomous server part for quick launch of your intercom and video surveillance service SmartYard (Теледом)"
     ]
