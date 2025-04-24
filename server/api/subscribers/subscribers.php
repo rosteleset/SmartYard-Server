@@ -13,7 +13,7 @@
      * @apiBody {String="flatId","houseId","subscriberId"} by
      * @apiBody {Number} query
      *
-     * @apiSuccess {Object[]} flat
+     * @apiSuccess {Object[]} result result is "flat" for flatId or "subscribers" for others
      */
 
     /**

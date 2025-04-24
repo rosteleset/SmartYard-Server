@@ -1244,21 +1244,26 @@
             if (modules.addresses.houses.customFieldsConfiguration && modules.addresses.houses.customFieldsConfiguration.flat) {
                 for (let i in modules.addresses.houses.customFieldsConfiguration.flat) {
                     let cf;
-                    switch (modules.addresses.houses.customFieldsConfiguration.flat[i].type) {
-                        case "text":
-                            cf = {};
-                            cf.id = "_cf_" + modules.addresses.houses.customFieldsConfiguration.flat[i].field;
-                            cf.type = modules.addresses.houses.customFieldsConfiguration.flat[i].editor;
-                            cf.title = modules.addresses.houses.customFieldsConfiguration.flat[i].fieldDisplay;
-                            cf.placeholder = modules.addresses.houses.customFieldsConfiguration.flat[i].fieldDisplay;
-                            cf.tab = i18n("customFields");
-                            if (modules.addresses.houses.customFieldsConfiguration.flat[i].magicIcon && modules.addresses.houses.customFieldsConfiguration.flat[i].magicFunction && modules.custom && modules.custom[modules.addresses.houses.customFieldsConfiguration.flat[i].magicFunction]) {
-                                cf.button = {};
-                                cf.button.click = modules.custom[modules.addresses.houses.customFieldsConfiguration.flat[i].magicFunction];
-                                cf.button.class = modules.addresses.houses.customFieldsConfiguration.flat[i].magicIcon;
-                            }
-                            fields.push(cf);
-                            break;
+                    if (parseInt(modules.addresses.houses.customFieldsConfiguration.flat[i].add)) {
+                        switch (modules.addresses.houses.customFieldsConfiguration.flat[i].type) {
+                            case "text":
+                                cf = {};
+                                cf.id = "_cf_" + modules.addresses.houses.customFieldsConfiguration.flat[i].field;
+                                cf.type = modules.addresses.houses.customFieldsConfiguration.flat[i].editor;
+                                cf.title = modules.addresses.houses.customFieldsConfiguration.flat[i].fieldDisplay;
+                                cf.placeholder = modules.addresses.houses.customFieldsConfiguration.flat[i].fieldDisplay;
+                                cf.tab = i18n("customFields");
+                                if (modules.addresses.houses.customFieldsConfiguration.flat[i].magicIcon && modules.addresses.houses.customFieldsConfiguration.flat[i].magicFunction && modules.custom && modules.custom[modules.addresses.houses.customFieldsConfiguration.flat[i].magicFunction]) {
+                                    cf.button = {};
+                                    cf.button.click = modules.custom[modules.addresses.houses.customFieldsConfiguration.flat[i].magicFunction];
+                                    cf.button.class = modules.addresses.houses.customFieldsConfiguration.flat[i].magicIcon;
+                                    if (modules.addresses.houses.customFieldsConfiguration.flat[i].magicHint) {
+                                        cf.button.hint = modules.addresses.houses.customFieldsConfiguration.flat[i].magicHint;
+                                    }
+                                }
+                                fields.push(cf);
+                                break;
+                        }
                     }
                 }
             }
@@ -2535,22 +2540,27 @@
                 if (modules.addresses.houses.customFieldsConfiguration && modules.addresses.houses.customFieldsConfiguration.flat) {
                     for (let i in modules.addresses.houses.customFieldsConfiguration.flat) {
                         let cf;
-                        switch (modules.addresses.houses.customFieldsConfiguration.flat[i].type) {
-                            case "text":
-                                cf = {};
-                                cf.id = "_cf_" + modules.addresses.houses.customFieldsConfiguration.flat[i].field;
-                                cf.type = modules.addresses.houses.customFieldsConfiguration.flat[i].editor;
-                                cf.title = modules.addresses.houses.customFieldsConfiguration.flat[i].fieldDisplay;
-                                cf.placeholder = modules.addresses.houses.customFieldsConfiguration.flat[i].fieldDisplay;
-                                cf.tab = i18n("customFields");
-                                cf.value = customFields[modules.addresses.houses.customFieldsConfiguration.flat[i].field] ? customFields[modules.addresses.houses.customFieldsConfiguration.flat[i].field] : "";
-                                if (modules.addresses.houses.customFieldsConfiguration.flat[i].magicIcon && modules.addresses.houses.customFieldsConfiguration.flat[i].magicFunction && modules.custom && modules.custom[modules.addresses.houses.customFieldsConfiguration.flat[i].magicFunction]) {
-                                    cf.button = {};
-                                    cf.button.click = modules.custom[modules.addresses.houses.customFieldsConfiguration.flat[i].magicFunction];
-                                    cf.button.class = modules.addresses.houses.customFieldsConfiguration.flat[i].magicIcon;
-                                }
-                                fields.push(cf);
-                                break;
+                        if (parseInt(modules.addresses.houses.customFieldsConfiguration.flat[i].modify)) {
+                            switch (modules.addresses.houses.customFieldsConfiguration.flat[i].type) {
+                                case "text":
+                                    cf = {};
+                                    cf.id = "_cf_" + modules.addresses.houses.customFieldsConfiguration.flat[i].field;
+                                    cf.type = modules.addresses.houses.customFieldsConfiguration.flat[i].editor;
+                                    cf.title = modules.addresses.houses.customFieldsConfiguration.flat[i].fieldDisplay;
+                                    cf.placeholder = modules.addresses.houses.customFieldsConfiguration.flat[i].fieldDisplay;
+                                    cf.tab = i18n("customFields");
+                                    cf.value = customFields[modules.addresses.houses.customFieldsConfiguration.flat[i].field] ? customFields[modules.addresses.houses.customFieldsConfiguration.flat[i].field] : "";
+                                    if (modules.addresses.houses.customFieldsConfiguration.flat[i].magicIcon && modules.addresses.houses.customFieldsConfiguration.flat[i].magicFunction && modules.custom && modules.custom[modules.addresses.houses.customFieldsConfiguration.flat[i].magicFunction]) {
+                                        cf.button = {};
+                                        cf.button.click = modules.custom[modules.addresses.houses.customFieldsConfiguration.flat[i].magicFunction];
+                                        cf.button.class = modules.addresses.houses.customFieldsConfiguration.flat[i].magicIcon;
+                                        if (modules.addresses.houses.customFieldsConfiguration.flat[i].magicHint) {
+                                            cf.button.hint = modules.addresses.houses.customFieldsConfiguration.flat[i].magicHint;
+                                        }
+                                    }
+                                    fields.push(cf);
+                                    break;
+                            }
                         }
                     }
                 }
@@ -3392,7 +3402,6 @@
                 title: i18n("addresses.addFlatsWizard"),
                 click: () => {
                     let entrances = [];
-                    let prefx = md5(guid());
 
                     for (let i in modules.addresses.houses.meta.entrances) {
                         entrances.push({
@@ -3603,6 +3612,83 @@
                         },
                     });
                 }
+            },
+            {
+                title: i18n("addresses.broadcast"),
+                click: function () {
+                    loadingStart();
+                    QUERY("subscribers", "subscribers", {
+                        by: "houseId",
+                        query: params.houseId
+                    }, true).
+                    fail(FAIL).
+                    done(result => {
+                        loadingDone();
+                        if (result && result.subscribers && result.subscribers.length) {
+                            cardForm({
+                                title: i18n("addresses.messageSend"),
+                                footer: true,
+                                borderless: true,
+                                topApply: true,
+                                apply: "addresses.doMessageSend",
+                                size: "lg",
+                                fields: [
+                                    {
+                                        id: "title",
+                                        type: "text",
+                                        title: i18n("addresses.messageTitle"),
+                                        placeholder: i18n("addresses.messageTitle"),
+                                        validate: (v) => {
+                                            return $.trim(v) !== "";
+                                        }
+                                    },
+                                    {
+                                        id: "body",
+                                        type: "area",
+                                        title: i18n("addresses.messageBody"),
+                                        placeholder: i18n("addresses.messageBody"),
+                                        validate: (v) => {
+                                            return $.trim(v) !== "";
+                                        }
+                                    },
+                                    {
+                                        id: "action",
+                                        type: "select2",
+                                        title: i18n("addresses.messageAction"),
+                                        options: [
+                                            {
+                                                value: "inbox",
+                                                text: i18n("addresses.messageActionInbox"),
+                                            },
+                                            {
+                                                value: "money",
+                                                text: i18n("addresses.messageActionBalancePlus"),
+                                            },
+                                        ]
+                                    },
+                                ],
+                                callback: msg => {
+                                    let n = 0;
+                                    (function send(r) {
+                                        let subscriber = result.subscribers.pop();
+                                        if (r && r.sent) {
+                                            n += r.sent.count;
+                                        }
+                                        if (subscriber) {
+                                            POST("inbox", "message", subscriber.subscriberId, msg).
+                                            fail(FAIL).
+                                            done(send);
+                                        } else {
+                                            message(i18n("addresses.messagesSent", n));
+                                        }
+                                    })();
+                                },
+                            });
+                        } else {
+                            warning(i18n("addresses.noSubscribersFond"));
+                        }
+                    });
+                },
             }]);
 
             modules.addresses.houses.renderHouse(params.houseId);

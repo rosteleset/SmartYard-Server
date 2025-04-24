@@ -756,7 +756,6 @@ function loadModule() {
             }
             lang[module] = i18n;
         })
-        .fail(FAIL)
         .always(() => {
             if (config && config.customSubModules && config.customSubModules[module]) {
                 $.get("modules/" + module + "/custom/i18n/" + l + ".json?ver=" + version, i18n => {
