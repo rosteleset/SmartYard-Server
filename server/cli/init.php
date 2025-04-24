@@ -165,6 +165,7 @@
                 }
 
                 echo "\n";
+
                 if ($code !== 0) {
                     exit($code);
                 }
