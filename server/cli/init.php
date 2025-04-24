@@ -151,6 +151,8 @@
                     if ($code !== 0) {
                         exit($code);
                     }
+
+                    $version = substr(explode(" ", explode("\n", `git log -1`)[0])[1], 0, 7);
                 } else {
                     if (@$args["--version"]) {
                         $version = $args["--version"];
@@ -183,6 +185,8 @@
                         exit($code);
                     }
                 }
+
+                file_put_contents("version", $version);
 
                 initDB();
                 echo "\n";
