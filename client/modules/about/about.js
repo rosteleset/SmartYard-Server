@@ -10,14 +10,17 @@
 
         document.title = i18n("windowTitle") + " :: " + i18n("about.about");
 
-        $.get("version.cli?_=" + Math.random()).
-        done(cli => {
-            GET("server", "version", false, true).
-            done(v => {
-                $("#mainForm").html(i18n("about.text", cli ? cli : 'unknown', v.appVersion ? v.appVersion : 'unknown', v.dbVersion ? v.dbVersion : 'unknown'));
-            }).
-            fail(FAIL).
-            always(loadingDone);
+        $.get("modules/custom/version?_=" + Math.random()).
+        done(custom => {
+            $.get("version.cli?_=" + Math.random()).
+            done(cli => {
+                GET("server", "version", false, true).
+                done(v => {
+                    $("#mainForm").html(i18n("about.text", cli ? cli : 'unknown', v.appVersion ? v.appVersion : 'unknown', v.dbVersion ? v.dbVersion : 'unknown', custom ? custom : i18n('no')));
+                }).
+                fail(FAIL).
+                always(loadingDone);
+            }).fail(FAIL);
         }).fail(FAIL);
     },
 }).init();

@@ -7,6 +7,7 @@
         "Client version: %s",
         "SmartYard version: %s",
         "DB version: %s",
+        "Customization version: %s",
         "<hr/>Fully autonomous server part for quick launch of your intercom and video surveillance service SmartYard (Теледом)"
     ]
 }
