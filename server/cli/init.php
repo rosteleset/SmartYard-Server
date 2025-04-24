@@ -140,6 +140,13 @@
                     exit(2);
                 }
 
+                $currentVersion = @file_get_contents("version");
+
+                if ($version == $currentVersion) {
+                    echo "No new releases found\n";
+                    exit(2);
+                }
+
                 maintenance(true);
                 wait_all();
 
