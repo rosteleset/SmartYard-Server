@@ -132,14 +132,14 @@
 
                 if ($devel) {
                     $code = false;
-                    system("git checkout main", $code);
+                    system("git pull https://github.com/rosteleset/SmartYard-Server main", $code);
                     echo "\n";
                     if ($code !== 0) {
                         exit($code);
                     }
 
                     $code = false;
-                    system("git pull https://github.com/rosteleset/SmartYard-Server main", $code);
+                    system("git checkout main", $code);
                     echo "\n";
                     if ($code !== 0) {
                         exit($code);
