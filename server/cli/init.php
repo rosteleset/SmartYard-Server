@@ -173,8 +173,6 @@
 
                 file_put_contents("version", $version);
 
-                chdir(__DIR__ . "/..");
-
                 initDB();
                 echo "\n";
 
