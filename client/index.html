@@ -43,43 +43,49 @@
             done(v1 => {
                 $.get("version.cli?_=" + Math.random()).
                 done(v2 => {
-                    version = md5(v1 + "/" + v2);
-                    lStore("_version", version);
-                    if ("serviceWorker" in navigator) {
-                        navigator.serviceWorker.getRegistrations().
-                        then(r => {
-                            r.forEach(w => {
-                                if (w && w.active && w.active.scriptURL) {
-                                    let url = new URL(w.active.scriptURL);
-                                    let pathname = url.pathname.split("/");
-                                    let search = url.search;
-                                    if (search && search[0] == "?") {
-                                        search = search.substring(1);
+                    $.get("modules/custom/version?_=" + Math.random()).
+                    done(v3 => {
+                        version = md5(v1 + "/" + v2 + "/" + v3);
+                        lStore("_version", version);
+                        if ("serviceWorker" in navigator) {
+                            navigator.serviceWorker.getRegistrations().
+                            then(r => {
+                                r.forEach(w => {
+                                    if (w && w.active && w.active.scriptURL) {
+                                        let url = new URL(w.active.scriptURL);
+                                        let pathname = url.pathname.split("/");
+                                        let search = url.search;
+                                        if (search && search[0] == "?") {
+                                            search = search.substring(1);
+                                        }
+                                        search = $.deparam(search);
+                                        if (pathname[pathname.length - 1] == "sw.js" && (!search.ver || search.ver != version)) {
+                                            w.unregister();
+                                            needRestart = true;
+                                        }
                                     }
-                                    search = $.deparam(search);
-                                    if (pathname[pathname.length - 1] == "sw.js" && (!search.ver || search.ver != version)) {
-                                        w.unregister();
-                                        needRestart = true;
-                                    }
+                                });
+                            }).
+                            then(() => {
+                                if (needRestart) {
+                                    setTimeout(() => {
+                                        lStore("_reload", Math.random());
+                                        window.location.reload();
+                                    }, 500);
+                                } else {
+                                    navigator.serviceWorker.register('sw.js?ver=' + version).then(sw => {
+                                        serviceWorker = sw;
+                                        cfg(c);
+                                    });
                                 }
                             });
-                        }).
-                        then(() => {
-                            if (needRestart) {
-                                setTimeout(() => {
-                                    lStore("_reload", Math.random());
-                                    window.location.reload();
-                                }, 500);
-                            } else {
-                                navigator.serviceWorker.register('sw.js?ver=' + version).then(sw => {
-                                    serviceWorker = sw;
-                                    cfg(c);
-                                });
-                            }
-                        });
-                    } else {
+                        } else {
+                            cfg(c);
+                        }
+                    }).
+                    fail(() => {
                         cfg(c);
-                    }
+                    });
                 }).
                 fail(() => {
                     cfg(c);
