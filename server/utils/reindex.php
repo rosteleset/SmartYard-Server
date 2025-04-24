@@ -15,21 +15,20 @@
 
         $n = 0;
 
-        echo __DIR__ . "\n";
+        $apis = scandir(__DIR__ . "/../api");
 
-        $apis = scandir("api");
         foreach ($apis as $api) {
-            if ($api != "." && $api != ".." && is_dir(__DIR__ . "api/$api")) {
-                $methods = array_unique(array_merge(scandir("api/$api"), scandir("api/$api/custom")));
+            if ($api != "." && $api != ".." && is_dir(__DIR__ . "/../api/$api")) {
+                $methods = array_unique(array_merge(scandir(__DIR__ . "/../api/$api"), scandir(__DIR__ . "/../api/$api/custom")));
 
                 foreach ($methods as $method) {
-                    if ($method != "." && $method != ".." && substr($method, -4) == ".php" && is_file("api/$api/$method")) {
+                    if ($method != "." && $method != ".." && substr($method, -4) == ".php" && is_file(__DIR__ . "/../api/$api/$method")) {
                         $method = substr($method, 0, -4);
-                        if (file_exists("api/$api/custom/$method.php")) {
-                            $file = "api/$api/custom/$method.php";
+                        if (file_exists(__DIR__ .  "../api/$api/custom/$method.php")) {
+                            $file = __DIR__ . "/../api/$api/custom/$method.php";
                             $class = "\\api\\$api\\custom\\$method";
                         } else {
-                            $file = "api/$api/$method.php";
+                            $file = __DIR__ . "/../api/$api/$method.php";
                             $class = "\\api\\$api\\$method";
                         }
                         require_once $file;
