@@ -199,7 +199,7 @@
 
                 maintenance(false);
 
-                echo "current SmartYard version: $version\n\n";
+                echo "SmartYard: $version\n\n";
 
                 exit(0);
             }
