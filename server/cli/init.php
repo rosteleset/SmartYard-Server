@@ -158,35 +158,15 @@
                 $code = false;
 
                 if ($devel) {
-                    $code = false;
-                    system("git pull https://github.com/rosteleset/SmartYard-Server main", $code);
-                    echo "\n";
-                    if ($code !== 0) {
-                        exit($code);
-                    }
-
-                    $code = false;
-                    system("git checkout main", $code);
-                    echo "\n";
-                    if ($code !== 0) {
-                        exit($code);
-                    }
-
-                    $code = false;
-                    system("git pull", $code);
-                    echo "\n";
-                    if ($code !== 0) {
-                        exit($code);
-                    }
-
+                    system("git pull https://github.com/rosteleset/SmartYard-Server main && git checkout main && git pull", $code);
                     $version = substr(explode(" ", explode("\n", `git log -1`)[0])[1], 0, 7);
                 } else {
-                    $code = false;
                     system("git pull https://github.com/rosteleset/SmartYard-Server $version --force", $code);
-                    echo "\n";
-                    if ($code !== 0) {
-                        exit($code);
-                    }
+                }
+
+                echo "\n";
+                if ($code !== 0) {
+                    exit($code);
                 }
 
                 file_put_contents("version", $version);
