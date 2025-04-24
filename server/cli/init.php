@@ -41,6 +41,13 @@
 
                 $global_cli["#"]["initialization and update"]["update"] = [
                     "description" => "Update client and server from git",
+                    "params" => [
+                        [
+                            "devel" => [
+                                "optional" => true,
+                            ],
+                        ],
+                    ],
                     "exec" => [ $this, "update" ],
                 ];
             }
@@ -101,7 +108,7 @@
                 exit(0);
             }
 
-            function update() {
+            function update($args) {
                 global $config;
 
                 maintenance(true);
@@ -113,6 +120,8 @@
                 chdir(__DIR__ . "/..");
 
                 $code = false;
+
+                $devel = array_key_exists("--devel", $args);
 
                 system("git pull", $code);
                 echo "\n";
