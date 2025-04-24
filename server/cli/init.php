@@ -134,16 +134,17 @@
 
                 if ($devel) {
                     system("git checkout master", $code);
+                    echo "\n";
+
+                    if ($code !== 0) {
+                        exit($code);
+                    }
+
+                    system("git pull", $code);
+                    echo "\n";
                 } else {
                     system("git checkout `git ls-remote --tags https://github.com/rosteleset/SmartYard-Server | awk \"{print \$2;}\" | cut -d \"/\" -f 3 | sort --version-sort --field-separator=. | tail -n 1`", $code);
                 }
-
-                if ($code !== 0) {
-                    exit($code);
-                }
-
-                system("git pull", $code);
-                echo "\n";
 
                 if ($code !== 0) {
                     exit($code);
