@@ -142,6 +142,13 @@
                     exit($code);
                 }
 
+                system("git pull", $code);
+                echo "\n";
+
+                if ($code !== 0) {
+                    exit($code);
+                }
+
                 initDB();
                 echo "\n";
 
