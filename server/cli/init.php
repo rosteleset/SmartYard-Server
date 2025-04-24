@@ -47,6 +47,13 @@
                                 "optional" => true,
                             ],
                         ],
+                        [
+                            "version" => [
+                                "value" => "string",
+                                "placeholder" => "version",
+                                "optional" => true,
+                            ],
+                        ],
                     ],
                     "exec" => [ $this, "update" ],
                 ];
@@ -123,31 +130,58 @@
 
                 $devel = array_key_exists("--devel", $args);
 
-                system("git pull", $code);
-                echo "\n";
-
-                if ($code !== 0) {
-                    exit($code);
-                }
-
-                $code = false;
-
                 if ($devel) {
-                    system("git checkout master", $code);
+                    $code = false;
+                    system("git checkout main", $code);
                     echo "\n";
-
                     if ($code !== 0) {
                         exit($code);
                     }
 
-                    system("git pull", $code);
+                    $code = false;
+                    system("git pull https://github.com/rosteleset/SmartYard-Server main", $code);
                     echo "\n";
+                    if ($code !== 0) {
+                        exit($code);
+                    }
                 } else {
-                    system("git checkout `git ls-remote --tags https://github.com/rosteleset/SmartYard-Server | awk \"{print \$2;}\" | cut -d \"/\" -f 3 | sort --version-sort --field-separator=. | tail -n 1`", $code);
-                }
+                    if (@$args["--version"]) {
+                        $version = $args["--version"];
+                    } else {
+                        $tags = explode("\n", `git ls-remote --tags https://github.com/rosteleset/SmartYard-Server`);
 
-                if ($code !== 0) {
-                    exit($code);
+                        $t = [];
+
+                        foreach ($tags as $v) {
+                            $v = explode("/", $v);
+                            if (count($v) > 1) {
+                                $t[] = $v[count($v) - 1];
+                            }
+                        }
+
+                        usort($t, 'version_compare');
+
+                        if (count($t) > 0) {
+                            $version = $t[count($t) - 1];
+                        } else {
+                            echo "no releases found\n";
+                            exit(1);
+                        }
+                    }
+
+                    $code = false;
+                    system("git pull https://github.com/rosteleset/SmartYard-Server $version", $code);
+                    echo "\n";
+                    if ($code !== 0) {
+                        exit($code);
+                    }
+
+                    $code = false;
+                    system("git checkout $version", $code);
+                    echo "\n";
+                    if ($code !== 0) {
+                        exit($code);
+                    }
                 }
 
                 initDB();
