@@ -199,6 +199,8 @@
 
                 maintenance(false);
 
+                echo "current SmartYard version: $version\n\n";
+
                 exit(0);
             }
         }
