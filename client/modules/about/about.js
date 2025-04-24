@@ -12,7 +12,7 @@
 
         GET("server", "version", false, true).
         done(v => {
-            $("#mainForm").html(i18n("about.text", version, v.serverVersion));
+            $("#mainForm").html(i18n("about.text", version, v.appVersion, v.dbVersion));
         }).
         fail(FAIL).
         always(loadingDone);
