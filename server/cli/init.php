@@ -159,10 +159,10 @@
                 $out = [];
 
                 if ($devel) {
-                    exec("git pull https://github.com/rosteleset/SmartYard-Server main 2>&1 && git checkout main 2>&1 && git pull 2>&1", $out, $code);
+                    exec("git pull 2>&1 && git checkout main 2>&1", $out, $code);
                     $version = substr(explode(" ", explode("\n", `git log -1`)[0])[1], 0, 7);
                 } else {
-                    exec("git pull https://github.com/rosteleset/SmartYard-Server $version --force 2>&1 && git -c advice.detachedHead=false checkout $version 2>&1", $out, $code);
+                    exec("git pull 2>&1 && git -c advice.detachedHead=false checkout $version 2>&1", $out, $code);
                 }
 
                 if ($code !== 0) {
