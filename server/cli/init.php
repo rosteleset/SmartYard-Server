@@ -156,17 +156,18 @@
                 chdir(__DIR__ . "/..");
 
                 $code = false;
+                $out = [];
 
                 if ($devel) {
-                    system("git pull https://github.com/rosteleset/SmartYard-Server main && git checkout main && git pull", $code);
+                    exec("git pull https://github.com/rosteleset/SmartYard-Server main  2>&1 && git checkout main  2>&1 && git pull 2>&1", $out, $code);
                     $version = substr(explode(" ", explode("\n", `git log -1`)[0])[1], 0, 7);
                 } else {
-                    system("git pull https://github.com/rosteleset/SmartYard-Server $version --force", $code);
+                    exec("git pull https://github.com/rosteleset/SmartYard-Server $version --force 2>&1", $out, $code);
                 }
 
-                echo "\n";
-
                 if ($code !== 0) {
+                    echo implode("\n", $out);
+                    echo "\n";
                     exit($code);
                 }
 
