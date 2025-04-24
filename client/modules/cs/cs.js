@@ -130,7 +130,7 @@
                                                 uid: cell.attr("data-uid"),
                                                 sid: modules.cs.sid,
                                                 expire: 60 * 60 * 24 * 7,
-                                                comment: result.comment,
+                                                comment: $.trim(result.comment),
                                             }).
                                             fail(FAIL).
                                             fail(() => {
