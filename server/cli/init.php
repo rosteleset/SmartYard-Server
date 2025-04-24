@@ -182,13 +182,14 @@
                     if ($code !== 0) {
                         exit($code);
                     }
-
+/*
                     $code = false;
                     system("git -c advice.detachedHead=false checkout $version", $code);
                     echo "\n";
                     if ($code !== 0) {
                         exit($code);
                     }
+*/
                 }
 
                 initDB();
