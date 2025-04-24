@@ -142,7 +142,7 @@
 
                 $currentVersion = @file_get_contents("version");
 
-                if ($version == $currentVersion) {
+                if (!$devel && $version == $currentVersion) {
                     echo "No new releases found\n";
                     exit(2);
                 }
