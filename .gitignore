@@ -108,4 +108,4 @@ asterisk/extconfig.conf
 asterisk/http.conf
 asterisk/pjsip.conf
 
-version
+./version

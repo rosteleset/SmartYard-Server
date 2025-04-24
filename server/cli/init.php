@@ -153,7 +153,7 @@
                 backup_db();
                 echo "\n";
 
-                chdir(__DIR__ . "/..");
+                chdir(__DIR__ . "/../..");
 
                 $code = false;
                 $out = [];
