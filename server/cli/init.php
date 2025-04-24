@@ -48,6 +48,11 @@
                             ],
                         ],
                         [
+                            "pre-release" => [
+                                "optional" => true,
+                            ],
+                        ],
+                        [
                             "version" => [
                                 "value" => "string",
                                 "placeholder" => "version",
@@ -130,6 +135,10 @@
 
                 $devel = array_key_exists("--devel", $args);
 
+                if ($devel && @$args["--version"]) {
+                    \cliUsage();
+                }
+
                 if ($devel) {
                     $code = false;
                     system("git pull https://github.com/rosteleset/SmartYard-Server main", $code);
@@ -157,25 +166,7 @@
                     if (@$args["--version"]) {
                         $version = $args["--version"];
                     } else {
-                        $tags = explode("\n", `git ls-remote --tags https://github.com/rosteleset/SmartYard-Server`);
-
-                        $t = [];
-
-                        foreach ($tags as $v) {
-                            $v = explode("/", $v);
-                            if (count($v) > 1) {
-                                $t[] = $v[count($v) - 1];
-                            }
-                        }
-
-                        usort($t, 'version_compare');
-
-                        if (count($t) > 0) {
-                            $version = $t[count($t) - 1];
-                        } else {
-                            echo "no releases found\n";
-                            exit(1);
-                        }
+                        $version = json_decode(file_get_contents("https://api.github.com/repos/rosteleset/SmartYard-Server/releases/latest", false, stream_context_create([ 'http' => [ 'method' => 'GET', 'header' => [ 'User-Agent: PHP', 'Content-type: application/x-www-form-urlencoded' ] ] ])), true)["tag_name"];
                     }
 
                     $code = false;
