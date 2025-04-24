@@ -177,19 +177,11 @@
                     }
 
                     $code = false;
-                    system("git pull https://github.com/rosteleset/SmartYard-Server $version", $code);
+                    system("git pull https://github.com/rosteleset/SmartYard-Server $version --force", $code);
                     echo "\n";
                     if ($code !== 0) {
                         exit($code);
                     }
-/*
-                    $code = false;
-                    system("git -c advice.detachedHead=false checkout $version", $code);
-                    echo "\n";
-                    if ($code !== 0) {
-                        exit($code);
-                    }
-*/
                 }
 
                 initDB();
