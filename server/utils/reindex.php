@@ -15,9 +15,11 @@
 
         $n = 0;
 
+        echo __DIR__ . "\n";
+
         $apis = scandir("api");
         foreach ($apis as $api) {
-            if ($api != "." && $api != ".." && is_dir("api/$api")) {
+            if ($api != "." && $api != ".." && is_dir(__DIR__ . "api/$api")) {
                 $methods = array_unique(array_merge(scandir("api/$api"), scandir("api/$api/custom")));
 
                 foreach ($methods as $method) {
