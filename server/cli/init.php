@@ -144,6 +144,13 @@
                     if ($code !== 0) {
                         exit($code);
                     }
+
+                    $code = false;
+                    system("git pull", $code);
+                    echo "\n";
+                    if ($code !== 0) {
+                        exit($code);
+                    }
                 } else {
                     if (@$args["--version"]) {
                         $version = $args["--version"];
