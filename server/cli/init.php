@@ -135,6 +135,10 @@
                     $version = @json_decode(file_get_contents("https://api.github.com/repos/rosteleset/SmartYard-Server/releases/latest", false, stream_context_create([ 'http' => [ 'method' => 'GET', 'header' => [ 'User-Agent: PHP', 'Content-type: application/x-www-form-urlencoded' ] ] ])), true)["tag_name"];
                 }
 
+                if ($devel) {
+                    $version = @json_decode(file_get_contents("https://api.github.com/repos/rosteleset/SmartYard-Server/commits/main", false, stream_context_create([ 'http' => [ 'method' => 'GET', 'header' => [ 'User-Agent: PHP', 'Content-type: application/x-www-form-urlencoded' ] ] ])), true)["sha"];
+                }
+
                 if (!$version) {
                     echo "No releases found\n";
                     exit(2);
@@ -144,7 +148,7 @@
 
                 $currentVersion = @file_get_contents("version");
 
-                if (!$devel && $version == $currentVersion) {
+                if ($version == $currentVersion) {
                     echo "No new releases found\n";
                     exit(2);
                 }
