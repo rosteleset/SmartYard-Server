@@ -166,7 +166,12 @@
                     if (@$args["--version"]) {
                         $version = $args["--version"];
                     } else {
-                        $version = json_decode(file_get_contents("https://api.github.com/repos/rosteleset/SmartYard-Server/releases/latest", false, stream_context_create([ 'http' => [ 'method' => 'GET', 'header' => [ 'User-Agent: PHP', 'Content-type: application/x-www-form-urlencoded' ] ] ])), true)["tag_name"];
+                        $version = @json_decode(file_get_contents("https://api.github.com/repos/rosteleset/SmartYard-Server/releases/latest", false, stream_context_create([ 'http' => [ 'method' => 'GET', 'header' => [ 'User-Agent: PHP', 'Content-type: application/x-www-form-urlencoded' ] ] ])), true)["tag_name"];
+                    }
+
+                    if (!$version) {
+                        echo "No releases found\n";
+                        exit(2);
                     }
 
                     $code = false;
