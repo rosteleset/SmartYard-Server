@@ -117,7 +117,7 @@
                                                 validate: (v) => {
                                                     return $.trim(v) !== "";
                                                 }
-                                            }
+                                            },
                                         ],
                                         callback: result => {
                                             cell.addClass("spinner-small");
@@ -137,7 +137,7 @@
                                                 cell.removeClass("spinner-small");
                                             });
                                         },
-                                    }).show();
+                                    });
                                 }, i18n("cs.coordinate"), i18n("cs.reserve"), 58 * 1000);
                                 break;
 
@@ -341,7 +341,7 @@
                     },
                     validate: v => {
                         return v && $.trim(v) && v !== '-' && v !== 'undefined';
-                    }
+                    },
                 },
             ],
             callback: result => {
@@ -364,7 +364,7 @@
                     cell.removeClass("spinner-small");
                 });
             },
-        }).show();
+        });
     },
 
     colMenu: function (col) {
@@ -719,7 +719,7 @@
                                 }
                             }
                         },
-                    }).show();
+                    });
                 });
 
                 $(".colSettings").off("click").on("click", function () {
@@ -848,7 +848,7 @@
                                 }
                             }
                         },
-                    }).show();
+                    });
                 });
 
                 $(".colMenuAssignAll").off("click").on("click", function () {
@@ -1093,7 +1093,7 @@
                                 message(i18n("cs.sheetWasSaved"));
                             });
                         },
-                    }).show();
+                    });
                 });
 
                 modules.cs.idle = true;
@@ -1197,7 +1197,7 @@
                                 loadingDone();
                             });
                         },
-                    }).show();
+                    });
                 });
 
                 $("#addCSsheet").off("click").on("click", () => {
@@ -1244,7 +1244,7 @@
                             lStore("_sheet_date", result.date);
                             window.location.href = "?#cs.sheet&sheet=" + encodeURIComponent(result.sheet) + "&date=" + encodeURIComponent(result.date);
                         },
-                    }).show();
+                    });
                 });
 
                 $("#editCSsheet").off("click").on("click", () => {

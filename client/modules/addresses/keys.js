@@ -145,7 +145,7 @@
                     window.location = refreshUrl();
                 });
             },
-        }).show();
+        });
     },
 
     removeKey: function (keyId) {
@@ -231,7 +231,7 @@
                             window.location = refreshUrl();
                         });
                     },
-                }).show();
+                });
             } else {
                 error(i18n("addresses.keyNotFound"));
             }

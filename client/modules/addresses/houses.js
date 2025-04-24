@@ -103,7 +103,7 @@
                     fail(loadingDone);
                 }
             },
-        }).show();
+        });
     },
 
     cmses: function (domophoneId, selected) {

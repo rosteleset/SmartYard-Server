@@ -42,7 +42,7 @@
                 }).
                 always(modules.tt.settings.renderProjects);
             },
-        }).show();
+        });
     },
 
     addStatus: function () {
@@ -79,7 +79,7 @@
                 }).
                 always(modules.tt.settings.renderStatuses);
             },
-        }).show();
+        });
     },
 
     addResolution: function () {
@@ -110,7 +110,7 @@
                 }).
                 always(modules.tt.settings.renderResolutions);
             },
-        }).show();
+        });
     },
 
     addCustomField: function () {
@@ -212,7 +212,7 @@
                 }).
                 always(modules.tt.settings.renderCustomFields);
             },
-        }).show();
+        });
     },
 
     addProjectUser: function (projectId, users, roles) {
@@ -264,7 +264,7 @@
                     modules.tt.settings.projectUsers(projectId);
                 });
             },
-        }).show();
+        });
     },
 
     addProjectGroup: function (projectId, groups, roles) {
@@ -317,7 +317,7 @@
                     modules.tt.settings.projectGroups(projectId);
                 });
             },
-        }).show();
+        });
     },
 
     addPrint: function () {
@@ -379,7 +379,7 @@
                 }).
                 always(modules.tt.settings.renderPrints);
             },
-        }).show();
+        });
     },
 
     modifyProject: function (projectId) {
@@ -531,7 +531,7 @@
                     always(modules.tt.settings.renderProjects);
                 }
             },
-        }).show();
+        });
     },
 
     modifyStatus: function (statusId) {
@@ -591,7 +591,7 @@
                     always(modules.tt.settings.renderStatuses);
                 }
             },
-        }).show();
+        });
     },
 
     modifyResolution: function (resolutionId) {
@@ -639,7 +639,7 @@
                     always(modules.tt.settings.renderResolutions);
                 }
             },
-        }).show();
+        });
     },
 
     modifyRole: function (roleId) {
@@ -696,7 +696,7 @@
                 }).
                 done(modules.tt.settings.renderRoles);
             },
-        }).show();
+        });
     },
 
     modifyCustomField: function (customFieldId) {
@@ -1060,7 +1060,7 @@
                 }).
                 always(modules.tt.settings.renderPrints);
             },
-        }).show();
+        });
     },
 
     deleteProject: function (projectId) {
@@ -1174,7 +1174,7 @@
                 }).
                 always(modules.tt.settings.renderProjects);
             },
-        }).show();
+        });
     },
 
     addProjectFilter: function (projectId, personals) {
@@ -1245,7 +1245,7 @@
                     modules.tt.settings.projectFilters(projectId);
                 });
             },
-        }).show();
+        });
     },
 
     deleteProjectFilter: function (projectFilterId, projectId) {
@@ -1445,7 +1445,7 @@
                 }).
                 always(modules.tt.settings.renderProjects);
             },
-        }).show();
+        });
     },
 
     projectCustomFields: function (projectId) {
@@ -1502,7 +1502,7 @@
                 }).
                 always(modules.tt.settings.renderProjects);
             },
-        }).show();
+        });
     },
 
     projectCustomFieldsNoJournal: function (projectId) {
@@ -1559,7 +1559,7 @@
                 }).
                 always(modules.tt.settings.renderProjects);
             },
-        }).show();
+        });
     },
 
     projectDeleteUser: function (projectRoleId, projectId) {
@@ -2058,7 +2058,7 @@
                 loadingStart();
                 let vo = [];
                 for (let i in result.viewers) {
-                     vo.push(vi[result.viewers[i]]);
+                    vo.push(vi[result.viewers[i]]);
                 }
                 PUT("tt", "project", projectId, {
                     viewers: vo,
@@ -2069,7 +2069,7 @@
                 }).
                 always(modules.tt.settings.renderProjects);
             },
-        }).show();
+        });
     },
 
     renderProjects: function () {
@@ -2303,7 +2303,7 @@
             callback: f => {
                 window.location.href = "?#tt.settings&section=workflow&workflow=" + encodeURIComponent(f.file);
             },
-        }).show();
+        });
     },
 
     renderWorkflows: function () {
@@ -2489,7 +2489,7 @@
             callback: f => {
                 window.location.href = "?#tt.settings&section=lib&lib=" + encodeURIComponent(f.file);
             },
-        }).show();
+        });
     },
 
     renderWorkflowLibs: function () {
@@ -3035,7 +3035,7 @@
             callback: f => {
                 window.location.href = "?#tt.settings&section=filter&filter=" + encodeURIComponent(f.file);
             },
-        }).show();
+        });
     },
 
     renderFilters: function () {
@@ -3291,7 +3291,7 @@
                         }).
                         always(modules.tt.settings.renderCrontabs);
                     },
-                }).show();
+                });
             }).
             fail(FAIL).
             always(loadingDone);
@@ -3489,7 +3489,7 @@
                 callback: r => {
                     window.location.href = `?#tt.settings&section=viewer&field=${encodeURIComponent(r.field)}&name=${encodeURIComponent(r.name)}`;
                 },
-            }).show();
+            });
         }).
         fail(FAIL).
         always(loadingDone);

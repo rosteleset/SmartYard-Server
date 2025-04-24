@@ -185,7 +185,7 @@
                 }
                 modules.tt.issue.createIssueForm(result.project, result.workflow, result.catalog, (!!parent) ? encodeURIComponent(parent) : "");
             },
-        }).show();
+        });
     },
 
     createIssueForm: function (current_project, workflow, catalog, parent) {
@@ -308,7 +308,7 @@
                     cancel: () => {
                         window.location.href = "?#tt&_=" + Math.random();
                     },
-                });
+                }).show();
 
                 loadingDone();
             }).
@@ -1169,7 +1169,7 @@
                         window.location.href = refreshUrl();
                     });
                 },
-            }).show();
+            });
         });
 
         $(".modifyComment").off("click").on("click", function () {
@@ -1234,7 +1234,7 @@
                         });
                     }
                 },
-            }).show();
+            });
         });
 
         $(".ttSaAddFile").off("click").on("click", () => {
@@ -1273,7 +1273,7 @@
                         });
                     }
                 },
-            }).show();
+            });
         });
 
         $(".ttSaAddSingleFile").off("click").on("click", () => {
@@ -1450,7 +1450,7 @@
                         window.location.href = refreshUrl();
                     });
                 },
-            }).show();
+            });
         });
 
         $(".unlinkIssue").off("click").on("click", function () {

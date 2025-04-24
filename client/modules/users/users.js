@@ -174,7 +174,7 @@
             callback: function (result) {
                 modules.users.doAddUser(result.login, result.realName, result.eMail, result.phone);
             },
-        }).show();
+        });
     },
 
     modifyUser: function (uid) {
@@ -721,7 +721,7 @@
                             modules.users.doModifyUser(result);
                         }
                     },
-                }).show();
+                });
             }).
             fail(FAIL).
             always(loadingDone);
