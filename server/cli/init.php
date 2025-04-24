@@ -140,6 +140,8 @@
                     exit(2);
                 }
 
+                chdir(__DIR__ . "/../..");
+
                 $currentVersion = @file_get_contents("version");
 
                 if (!$devel && $version == $currentVersion) {
@@ -153,8 +155,6 @@
                 backup_db();
                 echo "\n";
 
-                chdir(__DIR__ . "/../..");
-
                 $code = false;
                 $out = [];
 
@@ -162,7 +162,7 @@
                     exec("git stash 2>&1 && git pull https://github.com/rosteleset/SmartYard-Server main 2>&1 && git checkout main 2>&1 && git pull 2>&1", $out, $code);
                     $version = substr(explode(" ", explode("\n", `git log -1`)[0])[1], 0, 7);
                 } else {
-                    exec("git pull 2>&1 && git -c advice.detachedHead=false checkout $version 2>&1", $out, $code);
+                    exec("git pull https://github.com/rosteleset/SmartYard-Server main 2>&1 && git -c advice.detachedHead=false checkout $version 2>&1", $out, $code);
                 }
 
                 if ($code !== 0) {
