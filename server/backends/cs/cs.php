@@ -13,13 +13,14 @@
          */
 
         abstract class cs extends backend {
+
             /**
              * @param $sheet
              * @param $date
              * @return mixed
              */
-            public function getCS($sheet, $date, $extended = false)
-            {
+
+            public function getCS($sheet, $date, $extended = false) {
                 $files = loadBackend("files");
 
                 if (!$files) {
@@ -63,8 +64,8 @@
              * @param $data
              * @return boolean
              */
-            public function putCS($sheet, $date, $data)
-            {
+
+            public function putCS($sheet, $date, $data) {
                 $files = loadBackend("files");
                 $mqtt = loadBackend("mqtt");
 
@@ -115,8 +116,8 @@
              * @param $date
              * @return boolean
              */
-            public function deleteCS($sheet, $date)
-            {
+
+            public function deleteCS($sheet, $date) {
                 $files = loadBackend("files");
                 $mqtt = loadBackend("mqtt");
 
@@ -147,8 +148,8 @@
             /**
              * @return false|array
              */
-            public function getCSes()
-            {
+
+            public function getCSes() {
                 $files = loadBackend("files");
 
                 if (!$files) {
@@ -172,8 +173,8 @@
              * @param $step
              * @param $comment
              */
-            public function setCell($action, $sheet, $date, $col, $row, $uid, $expire = 0, $sid = "", $step = 0, $comment = "")
-            {
+
+            public function setCell($action, $sheet, $date, $col, $row, $uid, $expire = 0, $sid = "", $step = 0, $comment = "") {
                 $mqtt = loadBackend("mqtt");
 
                 $expire = (int)($expire ? : 60);
@@ -186,14 +187,14 @@
 
                         foreach ($keys as $key) {
                             $cell = json_decode($this->redis->get($key), true);
+                            $payload = explode("_", $key);
                             if (
-                                ($action == "claim" && $cell["login"] == $this->login && $cell["mode"] == "claimed") ||
-                                ($action == "release" && $cell["login"] == $this->login && $cell["mode"] == "claimed") ||
-                                ($action == "release" && $cell["login"] == $this->login && $cell["mode"] == "reserved" && (int)$cell["uid"] == (int)$uid) ||
-                                ($action == "release-force" && $cell["mode"] == "reserved" && (int)$cell["uid"] == (int)$uid)
+                                ($action == "claim" && $cell["login"] == $this->login && $cell["mode"] == "claimed" && $cell["sheet"] == $sheet && $cell["date"] == $date && $cell["col"] == $col && $cell["row"] == $row) ||
+                                ($action == "release" && $cell["login"] == $this->login && $cell["mode"] == "claimed" && $cell["sheet"] == $sheet && $cell["date"] == $date && $cell["col"] == $col && $cell["row"] == $row) ||
+                                ($action == "release" && $cell["login"] == $this->login && $cell["mode"] == "reserved" && (int)$cell["uid"] == (int)$uid && $cell["sheet"] == $sheet && $cell["date"] == $date && $cell["col"] == $col && $cell["row"] == $row) ||
+                                ($action == "release-force" && $cell["mode"] == "reserved" && (int)$cell["uid"] == (int)$uid && $cell["sheet"] == $sheet && $cell["date"] == $date && $cell["col"] == $col && $cell["row"] == $row)
                             ) {
                                 $this->redis->delete($key);
-                                $payload = explode("_", $key);
 
                                 if ($mqtt) {
                                     $mqtt->broadcast("cs/cell", [
@@ -287,16 +288,16 @@
              * @param $col
              * @param $row
              */
-            public function getCellByXYZ($sheet, $date, $col, $row)
-            {
+
+            public function getCellByXYZ($sheet, $date, $col, $row) {
 
             }
 
             /**
              * @param $uid
              */
-            public function getCellByUID($uid)
-            {
+
+            public function getCellByUID($uid) {
 
             }
 
@@ -304,8 +305,8 @@
              * @param $sheet
              * @param $date
              */
-            public function cells($sheet, $date)
-            {
+
+            public function cells($sheet, $date) {
 
             }
 

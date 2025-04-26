@@ -96,7 +96,7 @@
                                         row: cell.attr("data-row"),
                                         uid: cell.attr("data-uid"),
                                         sid: modules.cs.sid,
-                                        expire: 60,
+                                        expire: 300,
                                     }).
                                     fail(FAIL).
                                     fail(() => {
@@ -129,7 +129,7 @@
                                                 row: cell.attr("data-row"),
                                                 uid: cell.attr("data-uid"),
                                                 sid: modules.cs.sid,
-                                                expire: 60 * 60 * 24 * 7,
+                                                expire: 7 * 24 * 60 * 60,
                                                 comment: $.trim(result.comment),
                                             }).
                                             fail(FAIL).
@@ -357,7 +357,7 @@
                     row: cell.attr("data-row"),
                     uid: cell.attr("data-uid"),
                     sid: modules.cs.sid,
-                    expire: 60,
+                    expire: 300,
                 }).
                 fail(FAIL).
                 fail(() => {
@@ -1005,7 +1005,7 @@
                             row: cell.attr("data-row"),
                             uid: cell.attr("data-uid"),
                             sid: modules.cs.sid,
-                            expire: 60,
+                            expire: 300,
                         }).
                         fail(FAIL).
                         fail(() => {
@@ -1018,10 +1018,16 @@
                 for (let i in modules.cs.currentSheet.cells) {
                     switch (modules.cs.currentSheet.cells[i].mode) {
                         case "claimed":
+                            if (modules.cs.currentSheet.sheet.specialRowClass) {
+                                $(".dataCell[data-uid=" + modules.cs.currentSheet.cells[i].uid + "]").removeClass(modules.cs.currentSheet.sheet.specialRowClass);
+                            }
                             $(".dataCell[data-uid=" + modules.cs.currentSheet.cells[i].uid + "]").addClass(modules.cs.currentSheet.sheet.blockedClass).attr("data-login", modules.cs.currentSheet.cells[i].login).attr("data-login-display", modules.users.login2name(modules.cs.currentSheet.cells[i].login));
                             break;
 
                         case "reserved":
+                            if (modules.cs.currentSheet.sheet.specialRowClass) {
+                                $(".dataCell[data-uid=" + modules.cs.currentSheet.cells[i].uid + "]").removeClass(modules.cs.currentSheet.sheet.specialRowClass);
+                            }
                             $(".dataCell[data-uid=" + modules.cs.currentSheet.cells[i].uid + "]").addClass(modules.cs.currentSheet.sheet.reservedClass).attr("data-login", modules.cs.currentSheet.cells[i].login).attr("data-login-display", modules.users.login2name(modules.cs.currentSheet.cells[i].login) + (modules.cs.currentSheet.cells[i].comment ? ("\n[" + modules.cs.currentSheet.cells[i].comment + "]") : ""));
                             break;
                     }
