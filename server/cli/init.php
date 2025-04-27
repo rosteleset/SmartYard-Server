@@ -46,9 +46,7 @@
                             "devel" => [
                                 "optional" => true,
                             ],
-                        ],
-                        [
-                            "pre-release" => [
+                            "force" => [
                                 "optional" => true,
                             ],
                         ],
@@ -56,6 +54,14 @@
                             "version" => [
                                 "value" => "string",
                                 "placeholder" => "version",
+                                "optional" => true,
+                            ],
+                            "force" => [
+                                "optional" => true,
+                            ],
+                        ],
+                        [
+                            "force" => [
                                 "optional" => true,
                             ],
                         ],
@@ -124,6 +130,7 @@
                 global $config;
 
                 $devel = array_key_exists("--devel", $args);
+                $force = array_key_exists("--force", $args);
 
                 if ($devel && @$args["--version"]) {
                     \cliUsage();
@@ -148,7 +155,7 @@
 
                 $currentVersion = @explode(" ", file_get_contents("version"))[0];
 
-                if ($version == $currentVersion) {
+                if ($version == $currentVersion && !$force) {
                     echo "No new releases found\n";
                     exit(2);
                 }
@@ -175,7 +182,7 @@
                     exit($code);
                 }
 
-                file_put_contents("version", $version . " (" . date("Ymd") . ")");
+                file_put_contents("version", $version . " (" . date("Y-m-d") . ")");
 
                 initDB();
                 echo "\n";
