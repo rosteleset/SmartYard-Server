@@ -146,7 +146,7 @@
                     $version = @substr(json_decode(file_get_contents("https://api.github.com/repos/rosteleset/SmartYard-Server/commits/main", false, stream_context_create([ 'http' => [ 'method' => 'GET', 'header' => [ 'User-Agent: PHP', 'Content-type: application/x-www-form-urlencoded' ] ] ])), true)["sha"], 0, 7);
                 }
 
-                $currentVersion = @file_get_contents("version");
+                $currentVersion = @explode(" ", file_get_contents("version"))[0];
 
                 if ($version == $currentVersion) {
                     echo "No new releases found\n";
@@ -175,7 +175,7 @@
                     exit($code);
                 }
 
-                file_put_contents("version", $version);
+                file_put_contents("version", $version . " (" . date("Ymd") . ")");
 
                 initDB();
                 echo "\n";
