@@ -43,6 +43,11 @@
                     "description" => "Update client and server from git",
                     "params" => [
                         [
+                            "force" => [
+                                "optional" => true,
+                            ],
+                        ],
+                        [
                             "devel" => [
                                 "optional" => true,
                             ],
@@ -56,11 +61,6 @@
                                 "placeholder" => "version",
                                 "optional" => true,
                             ],
-                            "force" => [
-                                "optional" => true,
-                            ],
-                        ],
-                        [
                             "force" => [
                                 "optional" => true,
                             ],
