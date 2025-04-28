@@ -910,7 +910,7 @@
                         c++;
                         h += ttDate(response.journal[i].date);
                         h += "<span class='ml-2 text-info text-bold'>";
-                        h += members[response.journal[i].login]?members[response.journal[i].login]:response.journal[i].login;
+                        h += members[response.journal[i].login] ? members[response.journal[i].login] : response.journal[i].login;
                         h += "</span>";
                         h += "<span class='ml-2'>";
                         h += i18n("tt.journalAction" + action.charAt(0).toUpperCase() + action.substring(1), indx);
