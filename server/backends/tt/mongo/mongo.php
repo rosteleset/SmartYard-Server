@@ -244,10 +244,16 @@
 
             private function standartPreprocessValues($preprocess) {
                 $preprocess["%%strToday"] = date("Y-m-d");
+
                 $preprocess["%%strToday+1day"] = date("Y-m-d", strtotime("+1 day"));
+                $preprocess["%%strToday+2day"] = date("Y-m-d", strtotime("+2 day"));
+                $preprocess["%%strToday+3day"] = date("Y-m-d", strtotime("+3 day"));
                 $preprocess["%%strToday-1day"] = date("Y-m-d", strtotime("-1 day"));
+                $preprocess["%%strToday-2day"] = date("Y-m-d", strtotime("-2 day"));
+                $preprocess["%%strToday-3day"] = date("Y-m-d", strtotime("-3 day"));
 
                 $preprocess["%%timestamp"] = time();
+
                 $preprocess["%%timestampToday"] = strtotime(date("Y-m-d"));
                 $preprocess["%%timestamp+1hour"] = strtotime(date("Y-m-d", strtotime("+1 hour")));
                 $preprocess["%%timestamp+2hours"] = strtotime(date("Y-m-d", strtotime("+2 hour")));
