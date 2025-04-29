@@ -352,6 +352,15 @@
                             validate: (v, prefix) => {
                                 return ($.trim(v).length === 0) || ($.trim(v).length >= 8 && $(`#${prefix}password`).val() === $(`#${prefix}confirm`).val());
                             },
+                            button: {
+                                class: "fas fa-fw fa-magic",
+                                hint: i18n("users.generatePassword"),
+                                click: prefix => {
+                                    let p = PWGen.generate();
+                                    $(`#${prefix}password`).val(p);
+                                    $(`#${prefix}confirm`).val(p);
+                                },
+                            },
                             tab: i18n("users.primary"),
                         },
                         {
@@ -363,6 +372,19 @@
                             hidden: uid.toString() === "0",
                             validate: (v, prefix) => {
                                 return ($.trim(v).length === 0) || ($.trim(v).length >= 8 && $(`#${prefix}password`).val() === $(`#${prefix}confirm`).val());
+                            },
+                            button: {
+                                class: "fas fa-fw fa-eye",
+                                hint: i18n("users.showPassword"),
+                                click: prefix => {
+                                    if ($(`#${prefix}password`).attr("type") == "password") {
+                                        $(`#${prefix}password`).attr("type", "text");
+                                        $(`#${prefix}confirm`).attr("type", "text");
+                                    } else {
+                                        $(`#${prefix}password`).attr("type", "password");
+                                        $(`#${prefix}confirm`).attr("type", "password");
+                                    }
+                                },
                             },
                             tab: i18n("users.primary"),
                         },

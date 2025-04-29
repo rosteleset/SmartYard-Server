@@ -55,6 +55,8 @@
     "avatarClear": "Отменить изменения",
     "avatarApply": "Обрезать",
     "avatarDelete": "Удалить аватар",
+    "showPassword": "Показать / скрыть пароль",
+    "generatePassword": "Сгенерировать пароль",
     "errors": {
         "invalid2FACredentials": "Неверный код авторизации"
     },
