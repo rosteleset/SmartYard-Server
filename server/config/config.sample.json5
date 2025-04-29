@@ -318,6 +318,9 @@
         "ufanet": [
             "syslog.udp:127.0.0.1:45459",
         ],
+        "soyuz": [
+            "syslog.udp:127.0.0.1:45460"
+        ],
         "brovotech": [
             "syslog.udp:127.0.0.1:46450",
         ]
