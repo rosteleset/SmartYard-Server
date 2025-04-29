@@ -1,14 +1,24 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <title>inbox</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <!--
     <link rel="stylesheet" href="reset.css">
     <link rel="stylesheet" href="styles.css">
     -->
     <style type="text/css">
+        :root {
+            --accent: #28323E;
+            --no-accent: #6D7A8A;
+            --light-background: #FFFFFF;
+            --shaded-background: #F3F4FA;
+            --brand: #298BFF;
+        }
+
         @font-face {
             font-family: "SourceSansPro";
             src: url("static/fonts/sourcesanspro/sourcesanspro.ttf");
@@ -34,58 +44,73 @@
             src: url("static/fonts/sourcesanspro/sourcesansprosemibold.ttf");
         }
 
-        *, *::before, *::after {
+        *,
+        *::before,
+        *::after {
             box-sizing: border-box;
         }
 
-        html, body {
+        html,
+        body {
             width: 100%;
             height: 100%;
             font-family: SourceSansPro, sans-serif;
             font-size: 14px;
-            background: #f3f4fa;
+            background: var(--shaded-background);
             overflow-x: hidden;
         }
 
-        h1, .h1,
-        h2, .h2,
-        h3, .h3,
-        h4, .h4,
-        h5, .h5,
-        h6, .h6 {
+        h1,
+        .h1,
+        h2,
+        .h2,
+        h3,
+        .h3,
+        h4,
+        .h4,
+        h5,
+        .h5,
+        h6,
+        .h6 {
             margin-top: 0;
             margin-bottom: 0;
             font-family: SourceSansProBold, sans-serif;
             font-weight: normal;
-            color: #28323e;
+            color: var(--accent);
         }
 
-        h1, .h1 {
+        h1,
+        .h1 {
             font-size: 32px;
             line-height: 120%;
         }
 
-        h2, .h2 {
+        h2,
+        .h2 {
             font-size: 28px;
             line-height: 120%;
         }
 
-        h3, .h3 {
+        h3,
+        .h3 {
             font-size: 24px;
             line-height: 24px;
         }
 
-        h4, .h4 {
+        h4,
+        .h4 {
             font-size: 20px;
             line-height: 24px;
         }
 
-        h5, .h5 {
+        h5,
+        .h5 {
             font-size: 18px;
             line-height: 24px;
         }
 
-        h6, .h6 {
+        h6,
+        .h6 {
             font-size: 16px;
             line-height: 24px;
         }
@@ -129,7 +154,7 @@
             display: block;
             font-size: 14px;
             line-height: 18px;
-            color: #6d7a8a;
+            color: var(--no-accent);
             opacity: .5;
         }
 
@@ -155,7 +180,7 @@
             padding: 20px 12px;
             padding-bottom: 8px;
             width: 100%;
-            background: #fff;
+            background: var(--light-background);
             border-radius: 20px;
             border-top-left-radius: 0;
             word-break: break-word;
@@ -169,13 +194,13 @@
             margin-bottom: 10px;
             line-height: 18px;
             text-decoration: none;
-            color: #007bff;
+            color: var(--brand);
         }
 
         .inbox-message-content p {
             margin-bottom: 10px;
             line-height: 18px;
-            color: #6d7a8a;
+            color: var(--no-accent);
         }
 
         .inbox-message-primary .inbox-message-content p:first-child {
@@ -183,7 +208,7 @@
             font-family: SourceSansProSemiBold;
             font-size: 18px;
             line-height: 22px;
-            color: #28323e;
+            color: var(--accent);
         }
 
         .inbox-message-content p:last-child {
@@ -209,11 +234,13 @@
         }
     </style>
 </head>
+
 <body>
-<div class="inbox-block">%c</div>
-<script type="application/javascript">
-//    scrollingElement = (document.scrollingElement || document.body)
-//    scrollingElement.scrollTop = scrollingElement.scrollHeight;
-</script>
+    <div class="inbox-block">%c</div>
+    <script type="application/javascript">
+        //    scrollingElement = (document.scrollingElement || document.body)
+        //    scrollingElement.scrollTop = scrollingElement.scrollHeight;
+    </script>
 </body>
+
 </html>
