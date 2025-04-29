@@ -1,5 +1,5 @@
 zabbix_export:
-  version: '6.4'
+  version: '7.2'
   template_groups:
     - uuid: 6207024e7115434a8abfd202bf7f283a
       name: Templates/Intercoms
@@ -10,7 +10,7 @@ zabbix_export:
       description: 'Intercom QTECH QDB-27C-H panel monitoring'
       vendor:
         name: SmartYard
-        version: 6.4-0
+        version: 2025-04
       templates:
         - name: 'ICMP Ping'
       groups:
@@ -20,9 +20,7 @@ zabbix_export:
           name: 'QTECH Intercom: device model'
           type: DEPENDENT
           key: intercom.devicemodel
-          delay: '0'
           history: 7d
-          trends: '0'
           value_type: TEXT
           description: 'device model'
           inventory_link: HARDWARE
@@ -36,9 +34,7 @@ zabbix_export:
           name: 'QTECH Intercom: fw version'
           type: DEPENDENT
           key: intercom.fwversion
-          delay: '0'
           history: 7d
-          trends: '0'
           value_type: CHAR
           description: 'Check current firmware version'
           inventory_link: SOFTWARE
@@ -69,13 +65,14 @@ zabbix_export:
           preprocessing:
             - type: CHECK_NOT_SUPPORTED
               parameters:
-                - ''
+                - '-1'
               error_handler: CUSTOM_VALUE
               error_handler_params: '{"html":{"head":{"title":"Connection error"}}}'
             - type: JSONPATH
               parameters:
                 - $.data.SipAccount.AccountStatus
           url: 'http://{HOST.CONN}/api'
+          post_type: JSON
           posts: |
             {
                 "target": "sip",
@@ -84,7 +81,6 @@ zabbix_export:
                     "AccountId": 0
                 }
             }
-          post_type: JSON
           request_method: POST
           triggers:
             - uuid: e9ae3baa1af24263a5e18f77c11404bf
@@ -98,7 +94,6 @@ zabbix_export:
           type: HTTP_AGENT
           key: intercom.systeminfo
           history: 1h
-          trends: '0'
           value_type: TEXT
           authtype: BASIC
           username: '{$HOST_USERNAME}'
@@ -110,12 +105,12 @@ zabbix_export:
                 - $.body.data
               error_handler: DISCARD_VALUE
           url: 'http://{HOST.CONN}/api'
+          post_type: JSON
           posts: |
             {
                 "target": "firmware",
                 "action": "status"
             }
-          post_type: JSON
           request_method: POST
           output_format: JSON
           triggers:
@@ -125,16 +120,15 @@ zabbix_export:
               priority: WARNING
               description: 'HTTP Check unavailable but ICMP available'
               dependencies:
-                - name: 'ICMP: Unavailable by ICMP ping'
+                - name: 'ICMP Ping: Unavailable by ICMP ping'
                   expression: 'max(/Intercom_QTECH_QDB-27C-H/icmpping,#3)=0'
         - uuid: 253957306d7445638ddcbb18d4645f83
           name: 'QTECH Intercom: uptime'
           type: DEPENDENT
           key: intercom.uptime
-          delay: '0'
           history: 7d
-          trends: 90d
           value_type: FLOAT
+          trends: 90d
           units: uptime
           description: 'Uptime device'
           preprocessing:

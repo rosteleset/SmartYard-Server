@@ -196,7 +196,7 @@
                     modules.permissions.doAddUserRights(result.uid, result.api, result.method, result.actionAllow, result.actionDeny);
                 }
             },
-        }).show();
+        });
     },
 
     editRights: function (group, group_user, api_name, method_name, allow, deny, options, guid, api, method) {
@@ -266,7 +266,7 @@
                     modules.permissions.doAddUserRights(guid, api, method, result.actionAllow, result.actionDeny);
                 }
             },
-        }).show();
+        });
     },
 
     /*

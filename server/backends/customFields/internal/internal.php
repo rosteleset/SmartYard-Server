@@ -153,6 +153,9 @@
                     "required" => "required",
                     "magic_icon" => "magicIcon",
                     "magic_function" => "magicFunction",
+                    "magic_hint" => "magicHint",
+                    "add" => "add",
+                    "modify" => "modify",
                 ]);
             }
 

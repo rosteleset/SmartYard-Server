@@ -10,7 +10,7 @@ zabbix_export:
       description: 'Relay SILINES RODOS by ICMP panel monitoring'
       vendor:
         name: SmartYard
-        version: 6.4-0
+        version: 2025-04
       templates:
         - name: 'ICMP Ping'
       groups:

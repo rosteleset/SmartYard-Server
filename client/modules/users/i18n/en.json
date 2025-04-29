@@ -55,6 +55,8 @@
     "avatarClear": "Clear avatar",
     "avatarApply": "Crop",
     "avatarDelete": "Delete avatar",
+    "showPassword": "Show / hide password",
+    "generatePassword": "Generate password",
     "errors": {
         "invalid2FACredentials": "Invalid authentication code"
     },

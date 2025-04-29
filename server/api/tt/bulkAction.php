@@ -38,7 +38,7 @@
                 if ($tt) {
                     $issues = $tt->getIssues($params["project"], $params["query"], [ "issueId", "workflow", "status" ]);
 
-                    $success = true;
+                    $success = 0;
 
                     if ($issues && count($issues)) {
                         foreach ($issues["issues"] as $issue) {
@@ -47,7 +47,9 @@
                                     $issue[$key] = $value;
                                 }
                             }
-                            $success = $success && $tt->loadWorkflow($issue["workflow"])->action($issue, $params["action"], $tt->getIssue($issue["issueId"]));
+                            if ($tt->loadWorkflow($issue["workflow"])->action($issue, $params["action"], $tt->getIssue($issue["issueId"]))) {
+                                $success++;
+                            }
                         }
                     }
 

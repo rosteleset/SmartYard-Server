@@ -10,7 +10,7 @@ zabbix_export:
       description: 'Intercom RUBETEK RV-3434 panel monitoring'
       vendor:
         name: SmartYard
-        version: 6.4-0
+        version: 2025-04
       templates:
         - name: 'ICMP Ping'
       groups:
@@ -107,6 +107,9 @@ zabbix_export:
               name: 'HTTP: port/service unreachable (ICMP OK)'
               priority: WARNING
               description: 'HTTP Check unavailable but ICMP available'
+              dependencies:
+                - name: 'ICMP Ping: Unavailable by ICMP ping'
+                  expression: 'max(/Intercom_RUBETEK_RV-3434/icmpping,#3)=0'
         - uuid: 6f70e2267a0f4f02b7c47c7166c8e991
           name: 'RUBETEK Intercom: uptime'
           type: HTTP_AGENT

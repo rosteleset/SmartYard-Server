@@ -1,0 +1,72 @@
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: 441c5f644e5a41b98e9b8d9ab7ae94e8
+      name: Templates/SmartYard-Server
+  templates:
+    - uuid: f205782b93e8463f9e4a2d66ea6fef08
+      template: SmartYard-Server_FRS
+      name: 'SmartYard-Server | FRS'
+      description: 'Face Recognition System (FRS):  component monitoring'
+      vendor:
+        name: SmartYard
+        version: 2024-12
+      groups:
+        - name: Templates/SmartYard-Server
+      items:
+        - uuid: f372110a6a6549beac14a33c289bff54
+          name: 'Triton Inference Server status'
+          key: 'net.tcp.port[localhost,8000]'
+          description: 'Check tcp port 8000 using Triton Inference Server on localhost'
+          valuemap:
+            name: 'Service status'
+          tags:
+            - tag: Application
+              value: 'Triton Inference Server'
+            - tag: Service
+              value: FRS
+          triggers:
+            - uuid: b04961c8e51240148284fe4ba6018d8f
+              expression: 'last(/SmartYard-Server_FRS/net.tcp.port[localhost,8000])<1'
+              name: 'FRS: Triton Inference Server failure'
+              priority: WARNING
+        - uuid: 582e8e69791d47e7a2aad357b666058b
+          name: 'MySQL running process'
+          key: 'proc.num[mysqld]'
+          description: 'Count running MySQL process'
+          valuemap:
+            name: 'Service status'
+          tags:
+            - tag: Application
+              value: MySQL
+            - tag: Service
+              value: FRS
+          triggers:
+            - uuid: 68443bd9a1434540960aa4bb8fd9d382
+              expression: 'last(/SmartYard-Server_FRS/proc.num[mysqld])<1'
+              name: 'FRS: MySQL failure'
+              priority: WARNING
+        - uuid: 2d9cf7d53678419ab9c538d618efc360
+          name: 'FRS running process'
+          key: 'proc.num[run_frs]'
+          description: 'Count running FRS process'
+          valuemap:
+            name: 'Service status'
+          tags:
+            - tag: Application
+              value: FRS
+            - tag: Service
+              value: FRS
+          triggers:
+            - uuid: ea04d87ec80a4e0caf802445d7b3a271
+              expression: 'last(/SmartYard-Server_FRS/proc.num[run_frs])<1'
+              name: 'FRS: process failure'
+              priority: WARNING
+      valuemaps:
+        - uuid: ab6d00266f9d4dc383eee6bca19e8309
+          name: 'Service status'
+          mappings:
+            - value: '1'
+              newvalue: Running
+            - value: '0'
+              newvalue: Stopped

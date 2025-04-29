@@ -185,7 +185,7 @@
                 }
                 modules.tt.issue.createIssueForm(result.project, result.workflow, result.catalog, (!!parent) ? encodeURIComponent(parent) : "");
             },
-        }).show();
+        });
     },
 
     createIssueForm: function (current_project, workflow, catalog, parent) {
@@ -308,7 +308,7 @@
                     cancel: () => {
                         window.location.href = "?#tt&_=" + Math.random();
                     },
-                });
+                }).show();
 
                 loadingDone();
             }).
@@ -910,7 +910,7 @@
                         c++;
                         h += ttDate(response.journal[i].date);
                         h += "<span class='ml-2 text-info text-bold'>";
-                        h += members[response.journal[i].login]?members[response.journal[i].login]:response.journal[i].login;
+                        h += members[response.journal[i].login] ? members[response.journal[i].login] : response.journal[i].login;
                         h += "</span>";
                         h += "<span class='ml-2'>";
                         h += i18n("tt.journalAction" + action.charAt(0).toUpperCase() + action.substring(1), indx);
@@ -1169,7 +1169,7 @@
                         window.location.href = refreshUrl();
                     });
                 },
-            }).show();
+            });
         });
 
         $(".modifyComment").off("click").on("click", function () {
@@ -1234,7 +1234,7 @@
                         });
                     }
                 },
-            }).show();
+            });
         });
 
         $(".ttSaAddFile").off("click").on("click", () => {
@@ -1273,7 +1273,7 @@
                         });
                     }
                 },
-            }).show();
+            });
         });
 
         $(".ttSaAddSingleFile").off("click").on("click", () => {
@@ -1450,7 +1450,7 @@
                         window.location.href = refreshUrl();
                     });
                 },
-            }).show();
+            });
         });
 
         $(".unlinkIssue").off("click").on("click", function () {

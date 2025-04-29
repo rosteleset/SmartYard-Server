@@ -1,0 +1,380 @@
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: 441c5f644e5a41b98e9b8d9ab7ae94e8
+      name: Templates/SmartYard-Server
+  templates:
+    - uuid: 6d9fe37d81984bc0ae3383aa782e3adb
+      template: 'Flussonic Media Server'
+      name: 'Flussonic Media Server'
+      vendor:
+        name: SmartYard
+        version: 2024-12
+      groups:
+        - name: Templates/SmartYard-Server
+      items:
+        - uuid: 4649049e2f37443b97672e8a91b52d13
+          name: 'Flussonic: get server information'
+          type: HTTP_AGENT
+          key: flussonic.get_serverinfo
+          history: '0'
+          trends: '0'
+          value_type: TEXT
+          authtype: BASIC
+          username: '{$FL.USER}'
+          password: '{$FL.PASSWORD}'
+          url: '{$FL.TRANSFER.PROTOCOL}://{HOST.CONN}:{$FL.PORT}/flussonic/api/v3/config'
+          query_fields:
+            - name: select
+              value: 'position,name,title'
+            - name: limit
+              value: '{$FL.LIMIT_STREAMS}'
+          tags:
+            - tag: Application
+              value: Flussonic
+            - tag: component
+              value: raw
+        - uuid: 208db29fbd294a138c8fb672fc3e06b0
+          name: 'Flussonic: get server streams'
+          type: HTTP_AGENT
+          key: flussonic.get_server_streams
+          history: '0'
+          trends: '0'
+          status: DISABLED
+          value_type: TEXT
+          authtype: BASIC
+          username: '{$FL.USER}'
+          password: '{$FL.PASSWORD}'
+          preprocessing:
+            - type: STR_REPLACE
+              parameters:
+                - streams
+                - data
+          url: '{$FL.TRANSFER.PROTOCOL}://{HOST.CONN}:{$FL.PORT}/flussonic/api/v3/streams'
+          query_fields:
+            - name: select
+              value: 'position,name,title'
+            - name: limit
+              value: '{$FL.LIMIT_STREAMS}'
+          tags:
+            - tag: Application
+              value: Flussonic
+            - tag: component
+              value: raw
+        - uuid: 82ef571aa83b4b0a9675a87196d52915
+          name: 'Flussonic: speed input'
+          type: DEPENDENT
+          key: flussonic.input_kbit
+          delay: '0'
+          history: 7d
+          trends: 90d
+          units: bps
+          description: 'Flussonic speed input'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.stats.input_kbit
+            - type: MULTIPLIER
+              parameters:
+                - '1024'
+          master_item:
+            key: flussonic.get_serverinfo
+          tags:
+            - tag: Application
+              value: Flussonic
+        - uuid: edadde7fea71478f9081921db29433fa
+          name: 'Flussonic: license type'
+          type: DEPENDENT
+          key: flussonic.license_type
+          delay: '0'
+          history: 7d
+          trends: '0'
+          value_type: TEXT
+          description: 'Flussonic license type'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.stats.license_type
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 1d
+          master_item:
+            key: flussonic.get_serverinfo
+          tags:
+            - tag: Application
+              value: Flussonic
+        - uuid: 1362dbfeeb784188bbe42f034bdcd697
+          name: 'Flussonic: streams online'
+          type: DEPENDENT
+          key: flussonic.online_streams
+          delay: '0'
+          history: 7d
+          trends: 90d
+          description: 'Flussonic streams online'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.stats.online_streams
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 1d
+          master_item:
+            key: flussonic.get_serverinfo
+          tags:
+            - tag: Application
+              value: Flussonic
+        - uuid: 9e166254bec944b3b08a4cada2bdfd21
+          name: 'Flussonic: speed output'
+          type: DEPENDENT
+          key: flussonic.output_kbit
+          delay: '0'
+          history: 7d
+          trends: 90d
+          units: bps
+          description: 'Flussonic speed output'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.stats.output_kbit
+            - type: MULTIPLIER
+              parameters:
+                - '1024'
+          master_item:
+            key: flussonic.get_serverinfo
+          tags:
+            - tag: Application
+              value: Flussonic
+        - uuid: f8c5943e823b4b6fa33dfdfa9a4d748e
+          name: 'Flussonic: streamer status'
+          type: DEPENDENT
+          key: flussonic.streamer_status
+          delay: '0'
+          history: 7d
+          trends: '0'
+          value_type: TEXT
+          description: 'Flussonic streamer status'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.stats.streamer_status
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 1d
+          master_item:
+            key: flussonic.get_serverinfo
+          tags:
+            - tag: Application
+              value: Flussonic
+        - uuid: bbb30f833797482aabe83e4e4f10a986
+          name: 'Flussonic: clients total'
+          type: DEPENDENT
+          key: flussonic.total_clients
+          delay: '0'
+          history: 7d
+          trends: 90d
+          description: 'Flussonic clients total'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.stats.total_clients
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 1d
+          master_item:
+            key: flussonic.get_serverinfo
+          tags:
+            - tag: Application
+              value: Flussonic
+        - uuid: 439f480afd504bad8d9a1df69a4b0ec8
+          name: 'Flussonic: streams total'
+          type: DEPENDENT
+          key: flussonic.total_streams
+          delay: '0'
+          history: 7d
+          trends: 90d
+          description: 'Flussonic streams total'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.stats.total_streams
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 1d
+          master_item:
+            key: flussonic.get_serverinfo
+          tags:
+            - tag: Application
+              value: Flussonic
+        - uuid: 1ef0038466924fd38a1341d28234c7cb
+          name: 'Flussonic: version'
+          type: DEPENDENT
+          key: flussonic.version
+          delay: '0'
+          history: 7d
+          trends: '0'
+          value_type: TEXT
+          description: 'Flussonic version'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.stats.server_version
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 1d
+          master_item:
+            key: flussonic.get_serverinfo
+          tags:
+            - tag: Application
+              value: Flussonic
+        - uuid: a9fcce6f0a5441368b80adf2fc5ec1fa
+          name: 'Flussonic: version next'
+          type: DEPENDENT
+          key: flussonic.version_nest
+          delay: '0'
+          history: 7d
+          trends: '0'
+          value_type: TEXT
+          description: 'Flussonic version next'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.stats.next_version
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 1d
+          master_item:
+            key: flussonic.get_serverinfo
+          tags:
+            - tag: Application
+              value: Flussonic
+      discovery_rules:
+        - uuid: 674e8f45b31f4476afe8d63381bad471
+          name: 'Flussonic stream discovery'
+          type: HTTP_AGENT
+          key: stream.discovery
+          authtype: BASIC
+          username: '{$FL.USER}'
+          password: '{$FL.PASSWORD}'
+          item_prototypes:
+            - uuid: 3f9e1e49785b400498172f2cb606c577
+              name: 'Stream "{#STREAM_NAME}" alive status'
+              type: DEPENDENT
+              key: 'stream[{#STREAM_NAME},alive]'
+              delay: '0'
+              description: 'Flussonic stream Input source status'
+              valuemap:
+                name: Status
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.streams[0].stats.alive'
+                - type: BOOL_TO_DECIMAL
+                  parameters:
+                    - ''
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 1h
+              master_item:
+                key: 'stream[{#STREAM_NAME}]'
+              tags:
+                - tag: Application
+                  value: 'Flussonic streams - alive status'
+            - uuid: ed4c85ec50f844738bc74f7ec7fdb466
+              name: 'Stream "{#STREAM_NAME}" errors'
+              type: DEPENDENT
+              key: 'stream[{#STREAM_NAME},input_error_rate]'
+              delay: '0'
+              description: 'Flussonic stream errors rate'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.streams[0].stats.input_error_rate'
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 1h
+              master_item:
+                key: 'stream[{#STREAM_NAME}]'
+              tags:
+                - tag: Application
+                  value: 'Flussonic streams - errors status'
+            - uuid: e414dc89396949729c0b976ef1544ece
+              name: 'Stream "{#STREAM_NAME}" running'
+              type: DEPENDENT
+              key: 'stream[{#STREAM_NAME},running]'
+              delay: '0'
+              description: 'Flussonic running stream status'
+              valuemap:
+                name: Status
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$.streams[0].stats.running'
+                - type: BOOL_TO_DECIMAL
+                  parameters:
+                    - ''
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - 1h
+              master_item:
+                key: 'stream[{#STREAM_NAME}]'
+              tags:
+                - tag: Application
+                  value: 'Flussonic streams - running status'
+            - uuid: 7762548653f94941a541ad3a81d81db8
+              name: 'Stream "{#STREAM_NAME}"'
+              type: HTTP_AGENT
+              key: 'stream[{#STREAM_NAME}]'
+              history: '0'
+              trends: '0'
+              value_type: TEXT
+              authtype: BASIC
+              username: '{$FL.USER}'
+              password: '{$FL.PASSWORD}'
+              timeout: '60'
+              url: '{$FL.TRANSFER.PROTOCOL}://{HOST.CONN}:{$FL.PORT}/streamer/api/v3/streams?name={#STREAM_NAME}'
+              tags:
+                - tag: Application
+                  value: 'Flussonic streams - raw'
+          trigger_prototypes:
+            - uuid: 6cd6de0e562a406f8e2da17c167a980d
+              expression: 'avg(/Flussonic Media Server/stream[{#STREAM_NAME},alive],2)=0 and last(/Flussonic Media Server/stream[{#STREAM_NAME},running])=1'
+              name: 'Stream "{#STREAM_NAME}" not working'
+              priority: WARNING
+              description: 'Flussonic stream not work, check source'
+              tags:
+                - tag: Application
+                  value: 'Flussonic streams - status fail'
+          timeout: '60'
+          url: '{$FL.TRANSFER.PROTOCOL}://{HOST.CONN}:{$FL.PORT}/flussonic/api/v3/streams?select=position,name,title&limit={$FL.LIMIT_STREAMS}'
+          lld_macro_paths:
+            - lld_macro: '{#STREAM_NAME}'
+              path: $.name
+            - lld_macro: '{#STREAM_TITLE}'
+              path: $.title
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - 'return value.replace(''streams'', ''data'');'
+      macros:
+        - macro: '{$FL.HOST}'
+          description: 'Flussonic Media Server host'
+        - macro: '{$FL.LIMIT_STREAMS}'
+          value: '2000'
+          description: 'Flussonic Media Server limit query'
+        - macro: '{$FL.PASSWORD}'
+          description: 'Flussonic Media Server API password'
+        - macro: '{$FL.PORT}'
+          description: 'Flussonic Media Server listen port'
+        - macro: '{$FL.TRANSFER.PROTOCOL}'
+          value: https
+          description: 'Transfer protocol, default value HTTPS'
+        - macro: '{$FL.USER}'
+          description: 'Flussonic Media Server API username'
+      valuemaps:
+        - uuid: 387aa6128e4e4bf2ad14e4a61e7d2320
+          name: Status
+          mappings:
+            - value: '0'
+              newvalue: Failure
+            - value: '1'
+              newvalue: Running

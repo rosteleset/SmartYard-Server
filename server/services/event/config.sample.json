@@ -45,11 +45,11 @@
     "ufanet": {
       "port": 45459
     },
+    "soyuz": {
+      "port": 45460
+    },
     "brovotech": {
       "port": 46450
-    },
-    "soyuz": {
-      "port": 46466
     }
   }
 }

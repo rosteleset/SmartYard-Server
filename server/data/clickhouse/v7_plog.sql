@@ -1,1 +1,1 @@
-ALTER TABLE plog (ADD COLUMN IF NOT EXISTS `vehicle` String AFTER preview);
+ALTER TABLE plog ADD COLUMN IF NOT EXISTS `vehicle` String AFTER preview;

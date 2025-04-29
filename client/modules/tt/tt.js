@@ -1182,7 +1182,7 @@
                         switch (cf.editor) {
                             case "yesno":
                             case "noyes":
-                                val = parseInt(val)?i18n("yes"):i18n("no");
+                                val = parseInt(val) ? i18n("yes") : i18n("no");
                                 break;
 
                             case "json":

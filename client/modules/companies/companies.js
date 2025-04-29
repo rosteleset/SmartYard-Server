@@ -78,7 +78,7 @@
                 fail(FAIL).
                 fail(loadingDone);
             },
-        }).show();
+        });
     },
 
     modifyCompany: function (companyId) {
@@ -157,7 +157,7 @@
                         window.location = refreshUrl();
                     });
                 },
-            }).show();
+            });
         }).
         fail(FAIL).
         always(loadingDone);

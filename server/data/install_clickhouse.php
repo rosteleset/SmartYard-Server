@@ -9,7 +9,7 @@ function getCurrentDbVersion(clickhouse $clickhouse): int
 function initClickhouseDB(clickhouse $clickhouse)
 {
     try {
-        $install = json_decode(file_get_contents('data/install_clickhouse.json'), true);
+        $install = json_decode(file_get_contents(__DIR__ . '/install_clickhouse.json'), true);
         if ($install === null) {
             throw new Exception("Error reading install file");
         }
@@ -33,7 +33,7 @@ function initClickhouseDB(clickhouse $clickhouse)
             foreach ($steps as $step) {
                 echo "================= $step\n";
 
-                $sql = @file_get_contents("data/clickhouse/$step");
+                $sql = @file_get_contents(__DIR__ . "/clickhouse/$step");
                 if ($sql === false) {
                     throw new Exception("Error reading *.sql file: " . error_get_last()['message']);
                 }

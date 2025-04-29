@@ -3,7 +3,7 @@
 namespace hw\ip\common\soyuz;
 
 /**
- * Trait providing common functionality related to Intersvyaz (IS) devices.
+ * Trait providing common functionality related to Soyuz devices.
  */
 trait soyuz
 {

@@ -5,7 +5,7 @@ namespace hw\ip\domophone\soyuz;
 use hw\ip\domophone\domophone;
 
 /**
- * Abstract class representing an Intersvyaz (IS) domophone.
+ * Abstract class representing a Soyuz domophone.
  */
 abstract class soyuz extends domophone
 {

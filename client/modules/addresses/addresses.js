@@ -97,7 +97,16 @@
                     break;
                 }
             }
-        } else {
+        }
+        if (object == "city") {
+            for (let i in modules.addresses.meta.cities) {
+                if (modules.addresses.meta.cities[i]["cityId"] == id) {
+                    title = modules.addresses.meta.cities[i].cityWithType;
+                    break;
+                }
+            }
+        }
+        else {
             for (let i in modules.addresses.meta[object + "s"]) {
                 if (modules.addresses.meta[object + "s"][i][object + "Id"] == id) {
                     title = modules.addresses.meta[object + "s"][i][object + "WithType"];
@@ -985,7 +994,7 @@
                         modules.addresses.doModifyArea(areaId, parseInt(result.regionId), result.areaUuid, result.areaWithType, result.areaType, result.areaTypeFull, result.area, parseInt(area.regionId), result.timezone);
                     }
                 },
-            }).show();
+            });
         } else {
             error(i18n("addresses.areaNotFound"));
         }
@@ -1132,7 +1141,7 @@
                         modules.addresses.doModifyCity(cityId, parseInt(result.regionId), parseInt(result.areaId), result.cityUuid, result.cityWithType, result.cityType, result.cityTypeFull, result.city, parseInt(city.regionId), parseInt(city.areaId), result.timezone);
                     }
                 },
-            }).show();
+            });
         } else {
             error(i18n("addresses.cityNotFound"));
         }
@@ -1268,7 +1277,7 @@
                         modules.addresses.doModifySettlement(settlementId, parseInt(result.areaId), parseInt(result.cityId), result.settlementUuid, result.settlementWithType, result.settlementType, result.settlementTypeFull, result.settlement, parseInt(settlement.areaId), parseInt(settlement.cityId));
                     }
                 },
-            }).show();
+            });
         } else {
             error(i18n("addresses.settlementNotFound"));
         }
@@ -1404,7 +1413,7 @@
                         modules.addresses.doModifyStreet(streetId, parseInt(result.cityId), parseInt(result.settlementId), result.streetUuid, result.streetWithType, result.streetType, result.streetTypeFull, result.street, parseInt(street.cityId), parseInt(street.settlementId));
                     }
                 },
-            }).show();
+            });
         } else {
             error(i18n("addresses.streetNotFound"));
         }
@@ -1556,7 +1565,7 @@
                             modules.addresses.doModifyHouse(houseId, parseInt(result.settlementId), parseInt(result.streetId), result.houseUuid, result.houseType, result.houseTypeFull, result.houseFull, result.house, parseInt(house.settlementId), parseInt(house.streetId), parseInt(result.companyId));
                         }
                     },
-                }).show();
+                });
             } else {
                 error(i18n("addresses.houseNotFound"));
             }
@@ -1660,7 +1669,7 @@
             callback: function (result) {
                 modules.addresses.doAddRegion(result.regionUuid, result.regionIsoCode, result.regionWithType, result.regionType, result.regionTypeFull, result.region, result.timezone);
             },
-        }).show();
+        });
     },
 
     addArea: function (regionId) {
@@ -1731,7 +1740,7 @@
             callback: function (result) {
                 modules.addresses.doAddArea(regionId, result.areaUuid, result.areaWithType, result.areaType, result.areaTypeFull, result.area, result.timezone);
             },
-        }).show();
+        });
     },
 
     addCity: function (regionId, areaId) {
@@ -1802,7 +1811,7 @@
             callback: function (result) {
                 modules.addresses.doAddCity(regionId, areaId, result.cityUuid, result.cityWithType, result.cityType, result.cityTypeFull, result.city, result.timezone);
             },
-        }).show();
+        });
     },
 
     addSettlement: function (areaId, cityId) {
@@ -1863,7 +1872,7 @@
             callback: function (result) {
                 modules.addresses.doAddSettlement(areaId, cityId, result.settlementUuid, result.settlementWithType, result.settlementType, result.settlementTypeFull, result.settlement);
             },
-        }).show();
+        });
     },
 
     addStreet: function (cityId, settlementId) {
@@ -1924,7 +1933,7 @@
             callback: function (result) {
                 modules.addresses.doAddStreet(cityId, settlementId, result.streetUuid, result.streetWithType, result.streetType, result.streetTypeFull, result.street);
             },
-        }).show();
+        });
     },
 
     addHouse: function (settlementId, streetId) {
@@ -1995,7 +2004,7 @@
                 callback: function (result) {
                     modules.addresses.doAddHouse(settlementId, streetId, result.houseUuid, result.houseType, result.houseTypeFull, result.houseFull, result.house, (companies.length > 1 && result.companyId) ? result.companyId : "0");
                 },
-            }).show();
+            });
         }
 
         if (AVAIL("companies", "companies") && modules.companies) {
@@ -2239,6 +2248,7 @@
         done(modules.addresses.addresses).
         done(() => {
             cardTable({
+                target: "#mainForm",
                 title: {
                     caption: i18n("addresses.regions"),
                     button: {
@@ -2278,7 +2288,6 @@
 
                     return rows;
                 },
-                target: "#mainForm",
             });
         }).
         fail(FAIL).

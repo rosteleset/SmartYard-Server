@@ -29,14 +29,17 @@
 
             public static function GET($params) {
                 try {
-                    $version = (int)$params["_db"]->query("select var_value from core_vars where var_name = 'dbVersion'", \PDO::FETCH_ASSOC)->fetch()["var_value"];
+                    $dbVersion = (int)$params["_db"]->query("select var_value from core_vars where var_name = 'dbVersion'", \PDO::FETCH_ASSOC)->fetch()["var_value"];
+                    $appVersion = @file_get_contents(__DIR__ . "../../../../version");
                 } catch (\Exception $e) {
-                    $version = 0;
+                    $dbVersion = 0;
+                    $appVersion = 0;
                 }
 
                 return [
                     "200" => [
-                        "serverVersion" => $version,
+                        "dbVersion" => $dbVersion,
+                        "appVersion" => $appVersion,
                     ]
                 ];
             }

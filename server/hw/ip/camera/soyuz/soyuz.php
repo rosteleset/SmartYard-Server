@@ -6,7 +6,7 @@ use hw\ip\camera\camera;
 use hw\ip\camera\entities\DetectionZone;
 
 /**
- * Class representing an Intersvyaz (IS) camera.
+ * Class representing a Soyuz camera.
  */
 class soyuz extends camera
 {

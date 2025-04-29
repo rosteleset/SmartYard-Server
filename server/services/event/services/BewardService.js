@@ -41,15 +41,17 @@ class BewardService extends SyslogService {
         }
 
         // Opening a door by RFID key
-        if (msg.includes("Opening door by RFID") || msg.includes("Opening door by external RFID")) {
+        if (msg.includes('Opening door') && msg.includes('RFID')) {
             const rfid = msg.match(/\b([0-9A-Fa-f]{6,14})\b/g)?.[0];
 
-            if (rfid !== undefined) {
-                const fullRfid = rfid.padStart(14, '0');
-                const isExternalReader = msg.includes('external') || fullRfid[6] === '0' && fullRfid[7] === '0';
-                const door = isExternalReader ? 1 : 0;
-                await API.openDoor({ date: date, ip: host, door: door, detail: fullRfid, by: "rfid" });
+            if (rfid === undefined) {
+                return;
             }
+
+            const fullRfid = rfid.padStart(14, '0');
+            const isExternalReader = msg.toLowerCase().includes('ext') || fullRfid[6] === '0' && fullRfid[7] === '0';
+            const door = isExternalReader ? 1 : 0;
+            await API.openDoor({ date: date, ip: host, door: door, detail: fullRfid, by: "rfid" });
         }
 
         // Opening a door by personal code

@@ -41,6 +41,31 @@
 
                 $global_cli["#"]["initialization and update"]["update"] = [
                     "description" => "Update client and server from git",
+                    "params" => [
+                        [
+                            "force" => [
+                                "optional" => true,
+                            ],
+                        ],
+                        [
+                            "devel" => [
+                                "optional" => true,
+                            ],
+                            "force" => [
+                                "optional" => true,
+                            ],
+                        ],
+                        [
+                            "version" => [
+                                "value" => "string",
+                                "placeholder" => "version",
+                                "optional" => true,
+                            ],
+                            "force" => [
+                                "optional" => true,
+                            ],
+                        ],
+                    ],
                     "exec" => [ $this, "update" ],
                 ];
             }
@@ -101,8 +126,39 @@
                 exit(0);
             }
 
-            function update() {
+            function update($args) {
                 global $config;
+
+                $devel = array_key_exists("--devel", $args);
+                $force = array_key_exists("--force", $args);
+
+                if ($devel && @$args["--version"]) {
+                    \cliUsage();
+                }
+
+                if (@$args["--version"]) {
+                    $version = $args["--version"];
+                } else {
+                    $version = @json_decode(file_get_contents("https://api.github.com/repos/rosteleset/SmartYard-Server/releases/latest", false, stream_context_create([ 'http' => [ 'method' => 'GET', 'header' => [ 'User-Agent: PHP', 'Content-type: application/x-www-form-urlencoded' ] ] ])), true)["tag_name"];
+                }
+
+                if (!$version) {
+                    echo "No releases found\n";
+                    exit(2);
+                }
+
+                chdir(__DIR__ . "/../..");
+
+                if ($devel) {
+                    $version = @substr(json_decode(file_get_contents("https://api.github.com/repos/rosteleset/SmartYard-Server/commits/main", false, stream_context_create([ 'http' => [ 'method' => 'GET', 'header' => [ 'User-Agent: PHP', 'Content-type: application/x-www-form-urlencoded' ] ] ])), true)["sha"], 0, 7);
+                }
+
+                $currentVersion = @explode(" ", file_get_contents("version"))[0];
+
+                if ($version == $currentVersion && !$force) {
+                    echo "No new releases found\n";
+                    exit(2);
+                }
 
                 maintenance(true);
                 wait_all();
@@ -110,16 +166,23 @@
                 backup_db();
                 echo "\n";
 
-                chdir(__DIR__ . "/..");
-
                 $code = false;
+                $out = [];
 
-                system("git pull", $code);
-                echo "\n";
+                if ($devel) {
+                    exec("git pull https://github.com/rosteleset/SmartYard-Server main 2>&1 && git checkout main 2>&1 && git pull 2>&1", $out, $code);
+                    $version = substr(explode(" ", explode("\n", `git log -1`)[0])[1], 0, 7);
+                } else {
+                    exec("git pull https://github.com/rosteleset/SmartYard-Server main 2>&1 && git checkout main 2>&1 && git pull 2>&1 && git -c advice.detachedHead=false checkout $version 2>&1", $out, $code);
+                }
 
                 if ($code !== 0) {
+                    echo implode("\n", $out);
+                    echo "\n";
                     exit($code);
                 }
+
+                file_put_contents("version", $version . " (" . date("Y-m-d") . ")");
 
                 initDB();
                 echo "\n";
@@ -144,6 +207,8 @@
                 echo "\n";
 
                 maintenance(false);
+
+                echo "SmartYard: $currentVersion -> $version\n\n";
 
                 exit(0);
             }
