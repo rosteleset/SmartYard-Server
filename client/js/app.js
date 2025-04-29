@@ -707,6 +707,7 @@ function loadModule() {
     let module = moduleLoadQueue.shift();
     lastLoadedModule = module;
     if (!module) {
+//        console.log("loading done");
         for (let i in modules) {
             if (typeof modules[i].allLoaded == "function") {
                 modules[i].allLoaded();
@@ -730,6 +731,7 @@ function loadModule() {
         window.onhashchange = hashChange;
         $("#app").show();
     } else {
+//        console.log("loading module: " + module);
         let l = lStore("_lang");
         if (!l) {
             l = config.defaultLanguage;
@@ -754,7 +756,6 @@ function loadModule() {
             }
             lang[module] = i18n;
         })
-        .fail(FAIL)
         .always(() => {
             if (config && config.customSubModules && config.customSubModules[module]) {
                 $.get("modules/" + module + "/custom/i18n/" + l + ".json?ver=" + version, i18n => {
@@ -790,6 +791,7 @@ function loadModule() {
 }
 
 function moduleLoaded(module, object) {
+//    console.log("module loaded: " + module);
     let m = module.split(".");
 
     if (!modules[module] && m.length === 1 && object) {
@@ -822,6 +824,7 @@ function loadSubModules(parent, subModules, doneOrParentObject) {
             moduleLoaded(parent, doneOrParentObject);
         }
     } else{
+//        console.log("loading submodule: " + module);
         $.getScript("modules/" + parent + "/" + module + ".js?ver=" + version).
         done(() => {
             loadSubModules(parent, subModules, doneOrParentObject);
@@ -835,6 +838,7 @@ function loadCustomSubModules(parent, subModules) {
     if (!module) {
         loadModule();
     } else{
+//        console.log("loding custom submodule: " + module);
         $.getScript("modules/" + parent + "/custom/" + module + ".js?ver=" + version).
         done(() => {
             loadCustomSubModules(parent, subModules);

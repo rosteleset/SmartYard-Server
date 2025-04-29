@@ -9,7 +9,7 @@ zabbix_export:
       name: 'SmartYard-Server | Asterisk'
       vendor:
         name: SmartYard
-        version: 6.4-0
+        version: 2024-12
       groups:
         - name: Templates/SmartYard-Server
       items:

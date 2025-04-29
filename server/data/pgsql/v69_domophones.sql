@@ -1,0 +1,1 @@
+ALTER TABLE houses_domophones ADD IF NOT EXISTS ext CHARACTER VARYING;

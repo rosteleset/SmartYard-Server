@@ -15,19 +15,20 @@
 
         $n = 0;
 
-        $apis = scandir("api");
+        $apis = scandir(__DIR__ . "/../api");
+
         foreach ($apis as $api) {
-            if ($api != "." && $api != ".." && is_dir("api/$api")) {
-                $methods = array_unique(array_merge(scandir("api/$api"), scandir("api/$api/custom")));
+            if ($api != "." && $api != ".." && is_dir(__DIR__ . "/../api/$api")) {
+                $methods = array_unique(array_merge(scandir(__DIR__ . "/../api/$api"), scandir(__DIR__ . "/../api/$api/custom")));
 
                 foreach ($methods as $method) {
-                    if ($method != "." && $method != ".." && substr($method, -4) == ".php" && is_file("api/$api/$method")) {
+                    if ($method != "." && $method != ".." && substr($method, -4) == ".php" && is_file(__DIR__ . "/../api/$api/$method")) {
                         $method = substr($method, 0, -4);
-                        if (file_exists("api/$api/custom/$method.php")) {
-                            $file = "api/$api/custom/$method.php";
+                        if (file_exists(__DIR__ .  "../api/$api/custom/$method.php")) {
+                            $file = __DIR__ . "/../api/$api/custom/$method.php";
                             $class = "\\api\\$api\\custom\\$method";
                         } else {
-                            $file = "api/$api/$method.php";
+                            $file = __DIR__ . "/../api/$api/$method.php";
                             $class = "\\api\\$api\\$method";
                         }
                         require_once $file;
@@ -100,5 +101,5 @@
 
         $db->exec("delete from core_api_methods as a1 where permissions_same is not null and permissions_same not in (select aid from core_api_methods as a2)");
 
-        echo "reindex done\n";
+        echo "reindex done ($n methods)\n";
     }

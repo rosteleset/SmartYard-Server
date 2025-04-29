@@ -122,7 +122,7 @@
             callback: function (result) {
                 modules.groups.doAddGroup(result.acronym, result.name);
             },
-        }).show();
+        });
     },
 
     modifyGroup: function (gid) {
@@ -195,7 +195,7 @@
                             modules.groups.doModifyGroup(result.gid, result.acronym, result.name, result.admin);
                         }
                     },
-                }).show();
+                });
             }).
             fail(FAIL).
             always(loadingDone);
@@ -364,6 +364,7 @@
 
             GET("accounts", "groups", false, true).done(response => {
                 cardTable({
+                    target: "#mainForm",
                     title: {
                         caption: i18n("groups.groups"),
                         button: {
@@ -432,7 +433,6 @@
 
                         return rows;
                     },
-                    target: "#mainForm",
                     pageChange: page => {
                         modules.groups.startPage = page;
                     },

@@ -162,7 +162,7 @@
 
                 modules.addresses.subscribers.doAddSubscriber(result);
             },
-        }).show();
+        });
     },
 
     addKey: function () {
@@ -204,7 +204,7 @@
 
                 modules.addresses.subscribers.doAddKey(result);
             },
-        }).show();
+        });
     },
 
     modifySubscriber: function (subscriberId, list, flatId) {
@@ -354,7 +354,7 @@
                         modules.addresses.subscribers.doModifySubscriber(result);
                     }
                 },
-            }).show();
+            });
         } else {
             error(i18n("addresses.subscriberNotFound"));
         }
@@ -431,7 +431,7 @@
                     modules.addresses.subscribers.doModifySubscriber(result);
                 }
             },
-        }).show();
+        });
     },
 
     modifyKey: function (keyId, list) {
@@ -489,7 +489,7 @@
                         modules.addresses.subscribers.doModifyKey(result);
                     }
                 },
-            }).show();
+            });
         } else {
             error(i18n("addresses.keyNotFound"));
         }

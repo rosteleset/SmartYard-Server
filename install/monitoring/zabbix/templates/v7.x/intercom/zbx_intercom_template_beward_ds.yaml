@@ -1,5 +1,5 @@
 zabbix_export:
-  version: '6.4'
+  version: '7.2'
   template_groups:
     - uuid: 6207024e7115434a8abfd202bf7f283a
       name: Templates/Intercoms
@@ -10,7 +10,7 @@ zabbix_export:
       description: 'Intercom BEWARD DS panel monitoring'
       vendor:
         name: SmartYard
-        version: 6.4-0
+        version: 2025-04
       templates:
         - name: 'ICMP Ping'
       groups:
@@ -20,11 +20,9 @@ zabbix_export:
           name: 'BEWARD Intercom: device model'
           type: DEPENDENT
           key: intercom.devicemodel
-          delay: '0'
           history: 7d
-          trends: '0'
-          status: DISABLED
           value_type: TEXT
+          status: DISABLED
           inventory_link: HARDWARE
           preprocessing:
             - type: JSONPATH
@@ -36,9 +34,7 @@ zabbix_export:
           name: 'BEWARD Intercom: fw version'
           type: DEPENDENT
           key: intercom.fwversion
-          delay: '0'
           history: 7d
-          trends: '0'
           value_type: TEXT
           description: 'Check current firmware version'
           inventory_link: SOFTWARE
@@ -69,7 +65,7 @@ zabbix_export:
           preprocessing:
             - type: CHECK_NOT_SUPPORTED
               parameters:
-                - ''
+                - '-1'
               error_handler: CUSTOM_VALUE
               error_handler_params: '{"html":{"head":{"title":"Connection error"}}}'
             - type: JAVASCRIPT
@@ -91,7 +87,6 @@ zabbix_export:
           type: HTTP_AGENT
           key: intercom.systeminfo
           history: 1h
-          trends: '0'
           value_type: TEXT
           authtype: BASIC
           username: '{$HOST_USERNAME}'
@@ -100,7 +95,7 @@ zabbix_export:
           preprocessing:
             - type: CHECK_NOT_SUPPORTED
               parameters:
-                - ''
+                - '-1'
               error_handler: CUSTOM_VALUE
               error_handler_params: '{"html":{"head":{"title":"Connection error"}}}'
             - type: JAVASCRIPT
@@ -126,7 +121,7 @@ zabbix_export:
               priority: WARNING
               description: 'HTTP Check unavailable but ICMP available'
               dependencies:
-                - name: 'ICMP: Unavailable by ICMP ping'
+                - name: 'ICMP Ping: Unavailable by ICMP ping'
                   expression: 'max(/Intercom_BEWARD_DS/icmpping,#3)=0'
       tags:
         - tag: class

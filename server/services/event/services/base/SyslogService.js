@@ -42,6 +42,7 @@ class SyslogService {
      * @param {number} date - The date the syslog message was received by the server, in timestamp format.
      * @param {string} host - The host from which the syslog message came.
      * @param {string} message - The syslog message content.
+     * @returns {Promise<void>} - A promise that resolves when the message has been processed.
      * @throws {Error} - Throws an error if the method is not implemented.
      * @abstract
      */

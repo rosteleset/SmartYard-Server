@@ -96,7 +96,7 @@
                                         row: cell.attr("data-row"),
                                         uid: cell.attr("data-uid"),
                                         sid: modules.cs.sid,
-                                        expire: 60,
+                                        expire: 300,
                                     }).
                                     fail(FAIL).
                                     fail(() => {
@@ -117,7 +117,7 @@
                                                 validate: (v) => {
                                                     return $.trim(v) !== "";
                                                 }
-                                            }
+                                            },
                                         ],
                                         callback: result => {
                                             cell.addClass("spinner-small");
@@ -129,15 +129,15 @@
                                                 row: cell.attr("data-row"),
                                                 uid: cell.attr("data-uid"),
                                                 sid: modules.cs.sid,
-                                                expire: 60 * 60 * 24 * 7,
-                                                comment: result.comment,
+                                                expire: 7 * 24 * 60 * 60,
+                                                comment: $.trim(result.comment),
                                             }).
                                             fail(FAIL).
                                             fail(() => {
                                                 cell.removeClass("spinner-small");
                                             });
                                         },
-                                    }).show();
+                                    });
                                 }, i18n("cs.coordinate"), i18n("cs.reserve"), 58 * 1000);
                                 break;
 
@@ -341,7 +341,7 @@
                     },
                     validate: v => {
                         return v && $.trim(v) && v !== '-' && v !== 'undefined';
-                    }
+                    },
                 },
             ],
             callback: result => {
@@ -357,14 +357,14 @@
                     row: cell.attr("data-row"),
                     uid: cell.attr("data-uid"),
                     sid: modules.cs.sid,
-                    expire: 60,
+                    expire: 300,
                 }).
                 fail(FAIL).
                 fail(() => {
                     cell.removeClass("spinner-small");
                 });
             },
-        }).show();
+        });
     },
 
     colMenu: function (col) {
@@ -719,7 +719,7 @@
                                 }
                             }
                         },
-                    }).show();
+                    });
                 });
 
                 $(".colSettings").off("click").on("click", function () {
@@ -848,7 +848,7 @@
                                 }
                             }
                         },
-                    }).show();
+                    });
                 });
 
                 $(".colMenuAssignAll").off("click").on("click", function () {
@@ -866,6 +866,7 @@
                     }
 
                     if (col_name && logins) {
+                        loadingStart();
                         let bulk = {
                             project: modules.cs.currentSheet.sheet.project,
                             query: { },
@@ -879,6 +880,7 @@
                         PUT("tt", "bulkAction", false, bulk).
                         fail(FAIL).
                         done(() => {
+                            loadingDone();
                             message(i18n("cs.done"));
                         });
                     } else {
@@ -1005,7 +1007,7 @@
                             row: cell.attr("data-row"),
                             uid: cell.attr("data-uid"),
                             sid: modules.cs.sid,
-                            expire: 60,
+                            expire: 300,
                         }).
                         fail(FAIL).
                         fail(() => {
@@ -1018,10 +1020,16 @@
                 for (let i in modules.cs.currentSheet.cells) {
                     switch (modules.cs.currentSheet.cells[i].mode) {
                         case "claimed":
+                            if (modules.cs.currentSheet.sheet.specialRowClass) {
+                                $(".dataCell[data-uid=" + modules.cs.currentSheet.cells[i].uid + "]").removeClass(modules.cs.currentSheet.sheet.specialRowClass);
+                            }
                             $(".dataCell[data-uid=" + modules.cs.currentSheet.cells[i].uid + "]").addClass(modules.cs.currentSheet.sheet.blockedClass).attr("data-login", modules.cs.currentSheet.cells[i].login).attr("data-login-display", modules.users.login2name(modules.cs.currentSheet.cells[i].login));
                             break;
 
                         case "reserved":
+                            if (modules.cs.currentSheet.sheet.specialRowClass) {
+                                $(".dataCell[data-uid=" + modules.cs.currentSheet.cells[i].uid + "]").removeClass(modules.cs.currentSheet.sheet.specialRowClass);
+                            }
                             $(".dataCell[data-uid=" + modules.cs.currentSheet.cells[i].uid + "]").addClass(modules.cs.currentSheet.sheet.reservedClass).attr("data-login", modules.cs.currentSheet.cells[i].login).attr("data-login-display", modules.users.login2name(modules.cs.currentSheet.cells[i].login) + (modules.cs.currentSheet.cells[i].comment ? ("\n[" + modules.cs.currentSheet.cells[i].comment + "]") : ""));
                             break;
                     }
@@ -1093,7 +1101,7 @@
                                 message(i18n("cs.sheetWasSaved"));
                             });
                         },
-                    }).show();
+                    });
                 });
 
                 modules.cs.idle = true;
@@ -1197,7 +1205,7 @@
                                 loadingDone();
                             });
                         },
-                    }).show();
+                    });
                 });
 
                 $("#addCSsheet").off("click").on("click", () => {
@@ -1244,7 +1252,7 @@
                             lStore("_sheet_date", result.date);
                             window.location.href = "?#cs.sheet&sheet=" + encodeURIComponent(result.sheet) + "&date=" + encodeURIComponent(result.date);
                         },
-                    }).show();
+                    });
                 });
 
                 $("#editCSsheet").off("click").on("click", () => {

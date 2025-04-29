@@ -31,7 +31,7 @@
      * @apiBody {String} body
      * @apiBody {String} action
      *
-     * @apiSuccess {Number} msgId
+     * @apiSuccess {Object} sent
      */
 
     /**
@@ -63,9 +63,9 @@
             public static function POST($params) {
                 $inbox = loadBackend("inbox");
 
-                $msgId = $inbox->sendMessage($params["_id"], $params["title"], $params["body"], $params["action"]);
+                $success = $inbox->sendMessage($params["_id"], $params["title"], $params["body"], $params["action"]);
 
-                return api::ANSWER($msgId, ($msgId !== false) ? "$msgId" : "");
+                return api::ANSWER($success, ($success !== false) ? "sent" : "notAcceptable");
             }
 
             public static function index() {

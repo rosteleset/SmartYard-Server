@@ -1,16 +1,16 @@
 zabbix_export:
-  version: '6.4'
+  version: '7.2'
   template_groups:
     - uuid: e858e071fe054cdabec002d7d99891e9
       name: Templates/Intercoms
   templates:
-    - uuid: 05d3fea353894493b3196f092f7e5fdb
-      template: Intercom_UFANET_SECRET_TOP
-      name: 'Intercom | UFANET SECRET TOP by HTTP'
-      description: 'Intercom UFANET SECRET TOP by HTTP panel monitoring'
+    - uuid: e2f60ec54f644a9fa0866045f6b79adb
+      template: Intercom_SILINES_RODOS
+      name: 'Intercom | SILINES_RODOS by ICMP'
+      description: 'Relay SILINES RODOS by ICMP panel monitoring'
       vendor:
         name: SmartYard
-        version: 6.4-0
+        version: 2025-04
       templates:
         - name: 'ICMP Ping'
       groups:
@@ -19,7 +19,7 @@ zabbix_export:
         - tag: class
           value: hardware
         - tag: target
-          value: ufanet
+          value: silines
       macros:
         - macro: '{$HOST_PASSWORD}'
           value: admin
@@ -27,11 +27,3 @@ zabbix_export:
         - macro: '{$HOST_USERNAME}'
           value: admin
           description: 'WEB GUI | API username, default value admin'
-      valuemaps:
-        - uuid: b08a822a35bc4c529c10a80ff264a8d3
-          name: 'SIP registration status'
-          mappings:
-            - value: '0'
-              newvalue: Offline
-            - value: '1'
-              newvalue: Online

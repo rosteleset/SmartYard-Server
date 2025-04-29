@@ -1,7 +1,7 @@
 zabbix_export:
-  version: '6.4'
+  version: '7.2'
   template_groups:
-    - uuid: 6207024e7115434a8abfd202bf7f283a
+    - uuid: e858e071fe054cdabec002d7d99891e9
       name: Templates/Intercoms
   templates:
     - uuid: 1def59ffd59d4d3e88fcdfc7c3fe0377
@@ -10,7 +10,7 @@ zabbix_export:
       description: 'Intercom BEWARD DKS panel monitoring'
       vendor:
         name: SmartYard
-        version: 6.4-0
+        version: 2025-04
       templates:
         - name: 'ICMP Ping'
       groups:
@@ -20,11 +20,9 @@ zabbix_export:
           name: 'BEWARD Intercom: device model'
           type: DEPENDENT
           key: intercom.devicemodel
-          delay: '0'
           history: 7d
-          trends: '0'
-          status: DISABLED
           value_type: TEXT
+          status: DISABLED
           inventory_link: HARDWARE
           preprocessing:
             - type: JSONPATH
@@ -36,9 +34,7 @@ zabbix_export:
           name: 'BEWARD Intercom: fw version'
           type: DEPENDENT
           key: intercom.fwversion
-          delay: '0'
           history: 7d
-          trends: '0'
           value_type: TEXT
           description: 'Check current firmware version'
           inventory_link: SOFTWARE
@@ -70,7 +66,7 @@ zabbix_export:
           preprocessing:
             - type: CHECK_NOT_SUPPORTED
               parameters:
-                - ''
+                - '-1'
               error_handler: CUSTOM_VALUE
               error_handler_params: '{"html":{"head":{"title":"Connection error"}}}'
             - type: JAVASCRIPT
@@ -97,7 +93,6 @@ zabbix_export:
           key: intercom.systeminfo
           delay: 1h
           history: 1h
-          trends: '0'
           value_type: TEXT
           authtype: BASIC
           username: '{$HOST_USERNAME}'
@@ -106,12 +101,10 @@ zabbix_export:
           preprocessing:
             - type: CHECK_NOT_SUPPORTED
               parameters:
-                - ''
+                - '-1'
               error_handler: CUSTOM_VALUE
               error_handler_params: '{"html":{"head":{"title":"Connection error"}}}'
             - type: DISCARD_UNCHANGED
-              parameters:
-                - ''
             - type: JAVASCRIPT
               parameters:
                 - |
@@ -135,16 +128,15 @@ zabbix_export:
               priority: WARNING
               description: 'HTTP Check unavailable but ICMP available'
               dependencies:
-                - name: 'ICMP: High ICMP ping loss'
-                  expression: 'min(/Intercom_BEWARD_DKS/icmppingloss,5m)>{$ICMP_LOSS_WARN} and min(/Intercom_BEWARD_DKS/icmppingloss,5m)<100'
+                - name: 'ICMP Ping: Unavailable by ICMP ping'
+                  expression: 'max(/Intercom_BEWARD_DKS/icmpping,#3)=0'
         - uuid: 08c81ea3a8fb4540a626cea86d095531
           name: 'BEWARD Intercom: uptime'
           type: DEPENDENT
           key: intercom.uptime
-          delay: '0'
           history: 7d
-          trends: 90d
           value_type: FLOAT
+          trends: 90d
           units: uptime
           preprocessing:
             - type: JSONPATH

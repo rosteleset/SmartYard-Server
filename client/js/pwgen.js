@@ -12,6 +12,10 @@
  */
 
 PWGen = {
+    maxLength: 8,
+    includeCapitalLetter: true,
+    includeNumber: true,
+
     initialize: function() {
         this.maxLength = 8;
         this.includeCapitalLetter = true;

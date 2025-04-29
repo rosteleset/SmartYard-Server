@@ -145,7 +145,7 @@
                     window.location = refreshUrl();
                 });
             },
-        }).show();
+        });
     },
 
     removeKey: function (keyId) {
@@ -214,7 +214,7 @@
                             id: "watch",
                             type: "noyes",
                             title: i18n("addresses.watch"),
-                            hidden: parseInt(key.accessType) != 1 && parseInt(params.by) != 2,
+                            hidden: parseInt(key.accessType) != 1,
                             value: key.watch,
                         },
                     ],
@@ -231,7 +231,7 @@
                             window.location = refreshUrl();
                         });
                     },
-                }).show();
+                });
             } else {
                 error(i18n("addresses.keyNotFound"));
             }

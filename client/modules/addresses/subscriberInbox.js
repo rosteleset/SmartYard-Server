@@ -59,7 +59,7 @@
             callback: function (result) {
                 modules.addresses.subscriberInbox.doSendMessage(subscriberId, result);
             },
-        }).show();
+        });
     },
 
     renderSubscriberInbox: function (subscriberId) {

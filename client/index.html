@@ -39,45 +39,57 @@
         function ver(c) {
             let needRestart = false;
 
-            $.get("version?_=" + Math.random()).
-            done(v => {
-                version = v;
-                lStore("_version", version);
-                if ("serviceWorker" in navigator) {
-                    navigator.serviceWorker.getRegistrations().
-                    then(r => {
-                        r.forEach(w => {
-                            if (w && w.active && w.active.scriptURL) {
-                                let url = new URL(w.active.scriptURL);
-                                let pathname = url.pathname.split("/");
-                                let search = url.search;
-                                if (search && search[0] == "?") {
-                                    search = search.substring(1);
+            $.get("version.app?_=" + Math.random()).
+            done(v1 => {
+                $.get("version.cli?_=" + Math.random()).
+                done(v2 => {
+                    $.get("modules/custom/version?_=" + Math.random()).
+                    done(v3 => {
+                        version = md5(v1 + "/" + v2 + "/" + v3);
+                        lStore("_version", version);
+                        if ("serviceWorker" in navigator) {
+                            navigator.serviceWorker.getRegistrations().
+                            then(r => {
+                                r.forEach(w => {
+                                    if (w && w.active && w.active.scriptURL) {
+                                        let url = new URL(w.active.scriptURL);
+                                        let pathname = url.pathname.split("/");
+                                        let search = url.search;
+                                        if (search && search[0] == "?") {
+                                            search = search.substring(1);
+                                        }
+                                        search = $.deparam(search);
+                                        if (pathname[pathname.length - 1] == "sw.js" && (!search.ver || search.ver != version)) {
+                                            w.unregister();
+                                            needRestart = true;
+                                        }
+                                    }
+                                });
+                            }).
+                            then(() => {
+                                if (needRestart) {
+                                    setTimeout(() => {
+                                        lStore("_reload", Math.random());
+                                        window.location.reload();
+                                    }, 500);
+                                } else {
+                                    navigator.serviceWorker.register('sw.js?ver=' + version).then(sw => {
+                                        serviceWorker = sw;
+                                        cfg(c);
+                                    });
                                 }
-                                search = $.deparam(search);
-                                if (pathname[pathname.length - 1] == "sw.js" && (!search.ver || search.ver != version)) {
-                                    w.unregister();
-                                    needRestart = true;
-                                }
-                            }
-                        });
-                    }).
-                    then(() => {
-                        if (needRestart) {
-                            setTimeout(() => {
-                                lStore("_reload", Math.random());
-                                window.location.reload();
-                            }, 500);
-                        } else {
-                            navigator.serviceWorker.register('sw.js?ver=' + version).then(sw => {
-                                serviceWorker = sw;
-                                cfg(c);
                             });
+                        } else {
+                            cfg(c);
                         }
+                    }).
+                    fail(() => {
+                        cfg(c);
                     });
-                } else {
+                }).
+                fail(() => {
                     cfg(c);
-                }
+                });
             }).
             fail(() => {
                 cfg(c);
@@ -284,7 +296,7 @@
     </div>
 
     <!-- confirmModal -->
-    <div class="modal mt-4" id="confirmModal" role="dialog" aria-labelledby="confirmModalLabel" aria-hidden="true" style="padding-top: 4rem!important; display: none;">
+    <div class="modal mt-4" id="confirmModal" role="dialog" aria-labelledby="confirmModalLabel" style="padding-top: 4rem!important; display: none;">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header pointer pl-4 pt-2 pb-2" id="confirmModalHeader">
@@ -300,7 +312,7 @@
     </div>
 
     <!-- yesnoModal -->
-    <div class="modal mt-4" id="yesnoModal" role="dialog" aria-labelledby="yesnoModalLabel" aria-hidden="true" style="padding-top: 4rem!important; display: none;">
+    <div class="modal mt-4" id="yesnoModal" role="dialog" aria-labelledby="yesnoModalLabel" style="padding-top: 4rem!important; display: none;">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header pointer pl-4 pt-2 pb-2" id="yesnoModalHeader">
@@ -317,7 +329,7 @@
     </div>
 
     <!-- alertModal -->
-    <div class="modal mt-4" id="alertModal" role="dialog" aria-labelledby="alertModalLabel" aria-hidden="true" style="padding-top: 4rem!important; display: none;">
+    <div class="modal mt-4" id="alertModal" role="dialog" aria-labelledby="alertModalLabel" style="padding-top: 4rem!important; display: none;">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header pointer pl-4 pt-2 pb-2" id="alertModalHeader">
@@ -333,7 +345,7 @@
     </div>
 
     <!-- promptModal -->
-    <div class="modal mt-4" id="promptModal" role="dialog" aria-labelledby="promptModalLabel" aria-hidden="true" style="padding-top: 4rem!important; display: none;">
+    <div class="modal mt-4" id="promptModal" role="dialog" aria-labelledby="promptModalLabel" style="padding-top: 4rem!important; display: none;">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header pointer pl-4 pt-2 pb-2" id="promptModalHeader">
