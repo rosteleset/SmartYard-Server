@@ -22,6 +22,8 @@ trait soyuz
 
     public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow'): void
     {
+        $this->apiCall('/v2/system/tz', 'PUT', ['tz' => $timezone]);
+        $this->apiCall('/v2/system/ntp', 'PUT', ['ntp'=>[$server]);
     }
 
     public function getSysinfo(): array
@@ -114,10 +116,12 @@ trait soyuz
 
     protected function getNtpConfig(): array
     {
+        $general = $this->apiCall('/v2/system/general');
+        $ntp = $this->apiCall('/v2/system/ntp');
         return [
-            'server' => '0.time.openipc.org',
+            'server' => $ntp[0],
             'port' => 123,
-            'timezone' => 'Asia/Yekaterinburg',
+            'timezone' => $general['tz'],
         ];
     }
 
