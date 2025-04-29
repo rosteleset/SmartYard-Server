@@ -356,6 +356,7 @@
                                 class: "fas fa-fw fa-magic",
                                 hint: i18n("users.generatePassword"),
                                 click: prefix => {
+                                    PWGen.initialize();
                                     let p = PWGen.generate();
                                     $(`#${prefix}password`).val(p);
                                     $(`#${prefix}confirm`).val(p);
