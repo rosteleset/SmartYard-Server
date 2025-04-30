@@ -1169,7 +1169,7 @@
              * @return boolean
              */
 
-            private static function an($a){
+            private static function an($a) {
                 return ctype_digit(implode('', array_keys($a)));
             }
 
@@ -2274,8 +2274,7 @@
              * @inheritDoc
              */
 
-            public function cron($part)
-            {
+            public function cron($part) {
                 $success = true;
 
                 $tasks = $this->db->get("select acronym, filter, action, uid, login from tt_crontabs left join tt_projects using (project_id) left join core_users using (uid) where crontab = :crontab and enabled = 1", [
@@ -2301,7 +2300,10 @@
                                     $issue = $this->getIssue($issues["issues"][$i]["issueId"]);
 
                                     if ($issue) {
-                                        $this->loadWorkflow($issue["workflow"])->action($issue, $task["action"], $issue);
+                                        $set = [
+                                            "issueId" => $issue["issueId"],
+                                        ];
+                                        $this->loadWorkflow($issue["workflow"])->action($set, $task["action"], $issue);
                                     }
                                 }
                             } while (count($issues["issues"]));
