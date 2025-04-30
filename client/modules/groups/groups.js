@@ -373,7 +373,7 @@
                         },
                         filter: true,
                     },
-                    edit: modules.groups.modifyGroup,
+                    edit: AVAIL("accounts", "group", "PUT") ? modules.groups.modifyGroup : false,
                     startPage: modules.groups.startPage,
                     columns: [
                         {
