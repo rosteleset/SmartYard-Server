@@ -440,8 +440,8 @@
                                                     modules.cs.issuesInSheet[uid] = "";
                                                 }
                                                 let title = "";
-                                                if (modules.cs.currentSheet.sheet.fields.cells.hint && r.issues.issues[i][modules.cs.currentSheet.sheet.fields.cells.hint]) {
-                                                    title = escapeHTML(r.issues.issues[i][modules.cs.currentSheet.sheet.fields.cells.hint]);
+                                                if (modules.cs.currentSheet.sheet.fields.hint && r.issues.issues[i][modules.cs.currentSheet.sheet.fields.hint]) {
+                                                    title = escapeHTML(r.issues.issues[i][modules.cs.currentSheet.sheet.fields.hint]);
                                                 }
                                                 if (closed) {
                                                     modules.cs.issuesInSheet[uid] += `<span class="${modules.cs.currentSheet.sheet.issueClosedClass}"><a class="csIssueSpan pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a></span><br />`;
