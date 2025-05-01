@@ -957,18 +957,24 @@
                         }
                     }
 
-                    modules.cs.issues.sort((a, b) => {
-                        return rows.indexOf(a) - rows.indexOf(b);
-                    })
+                    let issues = [];
 
                     for (let i in modules.cs.issues) {
                         if (md5(modules.cs.issues[i][modules.cs.currentSheet.sheet.fields.col]) == col && modules.cs.issues[i][modules.cs.currentSheet.sheet.fields.map]) {
-                            markers += modules.cs.issues[i][modules.cs.currentSheet.sheet.fields.map].coordinates[1] + "," + modules.cs.issues[i][modules.cs.currentSheet.sheet.fields.map].coordinates[0] + "," + modules.cs.issues[i][modules.cs.currentSheet.sheet.fields.row] + "|";
+                            issues.push(modules.cs.issues[i]);
                         }
                     }
 
+                    issues.sort((a, b) => {
+                        return rows.indexOf(a) - rows.indexOf(b);
+                    })
+
+                    for (let i in issues) {
+                        markers += issues[i][modules.cs.currentSheet.sheet.fields.map].coordinates[1] + "," + issues[i][modules.cs.currentSheet.sheet.fields.map].coordinates[0] + "," + issues[i][modules.cs.currentSheet.sheet.fields.row] + "|";
+                    }
+
                     window.location.href = navigateUrl("map", {
-                        markers
+                        markersLine: markers
                     });
                 });
 

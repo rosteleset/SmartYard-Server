@@ -85,7 +85,7 @@
 
         if (typeof lon != "undefined" && typeof lat != "undefined") {
             modules.map.map.setView([lat, lon], zoom);
-            if (!params.markers) {
+            if (!(params.markersLine)) {
                 L.marker([lat, lon]).addTo(modules.map.map);
             }
 /*
@@ -106,7 +106,7 @@
                 navigator.geolocation.getCurrentPosition(success => {
                     console.log(success.coords.latitude, success.coords.longitude);
                     modules.map.map.setView([success.coords.latitude, success.coords.longitude], zoom);
-                    if (!params.markers) {
+                    if (!(params.markersLine)) {
                         L.marker([success.coords.latitude, success.coords.longitude]).addTo(modules.map.map);
                     }
                 }, () => {
@@ -115,9 +115,9 @@
             }
         }
 
-        if (params.markers) {
+        if (params.markersLine) {
             let cluster = new L.markerClusterGroup({ spiderfyOnMaxZoom: false, disableClusteringAtZoom: 15, });
-            let markers = params.markers.split("|");
+            let markers = params.markersLine.split("|");
             let line = [];
 
             for (let i in markers) {
