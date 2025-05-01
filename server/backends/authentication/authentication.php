@@ -203,7 +203,7 @@
                     }
                 }
 
-                error_log("\nFAIL2BAN: $ip authentication fail: " . implode(" ", $authorization) . "\n");
+                error_log("\nFAIL2BAN: $ip");
 
                 return false;
             }
