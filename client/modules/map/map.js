@@ -63,9 +63,9 @@
         }).addTo(modules.map.map);
 
         let
-            lat = (config.map && config.map.default && config.map.default.lat)?config.map.default.lat:51.505,
-            lon = (config.map && config.map.default && config.map.default.lon)?config.map.default.lon:-0.09,
-            zoom = (config.map && config.map.default && config.map.default.zoom)?config.map.default.zoom:13
+            lat = (config.map && config.map.default && config.map.default.lat) ? config.map.default.lat : 51.505,
+            lon = (config.map && config.map.default && config.map.default.lon) ? config.map.default.lon : -0.09,
+            zoom = (config.map && config.map.default && config.map.default.zoom) ? config.map.default.zoom : 13
         ;
 
         if (params.coords) {
@@ -85,7 +85,9 @@
 
         if (typeof lon != "undefined" && typeof lat != "undefined") {
             modules.map.map.setView([lat, lon], zoom);
-            L.marker([lat, lon]).addTo(modules.map.map);
+            if (!params.markers) {
+                L.marker([lat, lon]).addTo(modules.map.map);
+            }
 /*
             let homeMarker = L.AwesomeMarkers.icon({
                 icon: 'home fas fa-fw fa-home',
@@ -104,10 +106,20 @@
                 navigator.geolocation.getCurrentPosition(success => {
                     console.log(success.coords.latitude, success.coords.longitude);
                     modules.map.map.setView([success.coords.latitude, success.coords.longitude], zoom);
-                    L.marker([success.coords.latitude, success.coords.longitude]).addTo(modules.map.map);
+                    if (!params.markers) {
+                        L.marker([success.coords.latitude, success.coords.longitude]).addTo(modules.map.map);
+                    }
                 }, () => {
                     modules.map.map.setView([lat, lon], zoom);
                 });
+            }
+        }
+
+        if (params.markers) {
+            let markers = params.markers.split("|");
+            for (let i in markers) {
+                let marker = markers[i].split(",");
+                L.marker([marker[0], marker[1]]).bindTooltip(marker[2], { permanent: true, direction: "right" }).addTo(modules.map.map);
             }
         }
 
