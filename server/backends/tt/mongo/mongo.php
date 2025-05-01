@@ -1244,7 +1244,7 @@
                                 }
                             }
 
-                            if (!count(array_diff($o, $n)) && !count(array_diff($n, $o))) {
+                            if (!count(@array_diff($o, $n)) && !count(@array_diff($n, $o))) {
                                 unset($old[$key]);
                                 unset($new[$key]);
                             }
