@@ -118,12 +118,16 @@
         if (params.markers) {
             let cluster = new L.markerClusterGroup({ spiderfyOnMaxZoom: false, disableClusteringAtZoom: 15, });
             let markers = params.markers.split("|");
+            let line = [];
+
             for (let i in markers) {
                 let marker = markers[i].split(",");
                 if (marker.length >= 3) {
-                    L.marker([marker[0], marker[1]]).bindTooltip(marker[2], { permanent: true, direction: "top", offset: [ -15, -6 ] }).addTo(cluster);
+                    line.push([ marker[0], marker[1] ]);
+                    L.marker([ marker[0], marker[1] ]).bindTooltip(marker[2], { permanent: true, direction: "top", offset: [ -15, -6 ] }).addTo(cluster);
                 }
             }
+            L.polyline(line, { color: 'red', dashArray: '5, 10' }).addTo(cluster);
             cluster.addTo(modules.map.map);
             modules.map.map.fitBounds(cluster.getBounds());
         }
