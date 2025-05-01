@@ -439,19 +439,23 @@
                                                 if (!modules.cs.issuesInSheet[uid]) {
                                                     modules.cs.issuesInSheet[uid] = "";
                                                 }
+                                                let title = "";
+                                                if (modules.cs.currentSheet.sheet.fields.cells.hint && r.issues.issues[i][modules.cs.currentSheet.sheet.fields.cells.hint]) {
+                                                    title = escapeHTML(r.issues.issues[i][modules.cs.currentSheet.sheet.fields.cells.hint]);
+                                                }
                                                 if (closed) {
-                                                    modules.cs.issuesInSheet[uid] += `<span class="${modules.cs.currentSheet.sheet.issueClosedClass}"><a class="csIssueSpan pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}">${r.issues.issues[i].issueId}</a></span><br />`;
+                                                    modules.cs.issuesInSheet[uid] += `<span class="${modules.cs.currentSheet.sheet.issueClosedClass}"><a class="csIssueSpan pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a></span><br />`;
                                                 } else
                                                 if (installers && installers.length && !done) {
-                                                    modules.cs.issuesInSheet[uid] += `<span class="${modules.cs.currentSheet.sheet.issueAssignedClass}"><a class="csIssueSpan pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}">${r.issues.issues[i].issueId}</a></span><br />`;
+                                                    modules.cs.issuesInSheet[uid] += `<span class="${modules.cs.currentSheet.sheet.issueAssignedClass}"><a class="csIssueSpan pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a></span><br />`;
                                                 } else
                                                 if ((!installers || !installers.length) && done) {
-                                                    modules.cs.issuesInSheet[uid] += `<span class="${modules.cs.currentSheet.sheet.issueDoneClass}"><a class="csIssueSpan pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}">${r.issues.issues[i].issueId}</a></span><br />`;
+                                                    modules.cs.issuesInSheet[uid] += `<span class="${modules.cs.currentSheet.sheet.issueDoneClass}"><a class="csIssueSpan pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a></span><br />`;
                                                 } else
                                                 if (installers && installers.length && done) {
-                                                    modules.cs.issuesInSheet[uid] += `<span class="${modules.cs.currentSheet.sheet.issueAssignedClass} ${modules.cs.currentSheet.sheet.issueDoneClass}"><a class="csIssueSpan pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}">${r.issues.issues[i].issueId}</a></span><br />`;
+                                                    modules.cs.issuesInSheet[uid] += `<span class="${modules.cs.currentSheet.sheet.issueAssignedClass} ${modules.cs.currentSheet.sheet.issueDoneClass}"><a class="csIssueSpan pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a></span><br />`;
                                                 } else {
-                                                    modules.cs.issuesInSheet[uid] += `<a class="csIssueSpan pointer text-dark pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}">${r.issues.issues[i].issueId}</a><br />`;
+                                                    modules.cs.issuesInSheet[uid] += `<a class="csIssueSpan pointer text-dark pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a><br />`;
                                                 }
                                             }
                                         }
