@@ -948,6 +948,18 @@
                     let col = $(this).attr("data-col");
 
                     let markers = "";
+                    let rows = "";
+
+                    for (let i in modules.cs.currentSheet.sheet.data) {
+                        if (md5(modules.cs.currentSheet.sheet.data[i].col) == col) {
+                            rows = modules.cs.currentSheet.sheet.data[i].rows;
+                            break;
+                        }
+                    }
+
+                    modules.cs.issues.sort((a, b) => {
+                        return rows.indexOf(a) - rows.indexOf(b);
+                    })
 
                     for (let i in modules.cs.issues) {
                         if (md5(modules.cs.issues[i][modules.cs.currentSheet.sheet.fields.col]) == col && modules.cs.issues[i][modules.cs.currentSheet.sheet.fields.map]) {
