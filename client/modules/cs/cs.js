@@ -379,6 +379,9 @@
         h += `<li class="pointer dropdown-item colClearAssigners" data-col="${md5(col)}">${i18n("cs.clearAssigners")}</li>`;
         h += `<li class="dropdown-divider"></li>`;
         h += `<li class="pointer dropdown-item colSettings" data-col="${md5(col)}">${i18n("cs.colSettings")}</li>`;
+        h += `<li class="dropdown-divider"></li>`;
+        h += `<li class="pointer dropdown-item colListIssues" data-col="${md5(col)}">${i18n("cs.list")}</li>`;
+        h += `<li class="pointer dropdown-item colMapIssues" data-col="${md5(col)}">${i18n("cs.map")}</li>`;
         h += `</ul></span>`;
 
         return h;
@@ -923,6 +926,18 @@
                     } else {
                         mAlert(i18n("cs.columnNotFound"));
                     }
+                });
+
+                $(".colListIssues").off("click").on("click", () => {
+                    let col = $(this).attr("data-col");
+
+                    console.log("list", col);
+                });
+
+                $(".colMapIssues").off("click").on("click", () => {
+                    let col = $(this).attr("data-col");
+
+                    console.log("map", col);
                 });
 
                 $(".dataCell").off("click").on("click", function () {
