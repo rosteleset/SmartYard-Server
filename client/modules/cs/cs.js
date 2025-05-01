@@ -975,14 +975,14 @@
                     h += `</div>`;
 
                     h += '<div class="card mt-0 mb-0" style="max-height: calc(100vh - 140px);">';
-                    h += `<div class="card-body table-responsive p-0" style="overflow-x: hidden!important;">`;
-                    h += '<table width="100%" class="datatable">';
+                    h += `<div class="card-body table-responsive p-2" style="overflow-x: hidden!important;">`;
+                    h += '<table width="100%" class="datatable" style="">';
 
                     for (let i in issues) {
                         h += '<tr>';
                         h += '<td nowrap>' + issues[i][modules.cs.currentSheet.sheet.fields.row] + '</td>';
                         h += '<td nowrap>' + issues[i].issueId + '</td>';
-                        h += '<td style="width: 100%;s">' + issues[i][modules.cs.currentSheet.sheet.fields.list] + '</td>';
+                        h += '<td style="width: 100%;s">' + (issues[i][modules.cs.currentSheet.sheet.fields.list] ? issues[i][modules.cs.currentSheet.sheet.fields.list] : '?') + '</td>';
                         h += '</tr>';
                     }
 
