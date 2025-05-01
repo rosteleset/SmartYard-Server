@@ -966,8 +966,8 @@
                     }
 
                     issues.sort((a, b) => {
-                        return rows.indexOf(a) - rows.indexOf(b);
-                    })
+                        return rows.indexOf(a[modules.cs.currentSheet.sheet.fields.row]) - rows.indexOf(b[modules.cs.currentSheet.sheet.fields.row]);
+                    });
 
                     for (let i in issues) {
                         markers += issues[i][modules.cs.currentSheet.sheet.fields.map].coordinates[1] + "," + issues[i][modules.cs.currentSheet.sheet.fields.map].coordinates[0] + "," + issues[i][modules.cs.currentSheet.sheet.fields.row] + "|";
