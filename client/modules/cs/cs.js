@@ -955,7 +955,9 @@
                         }
                     }
 
-                    console.log(markers);
+                    window.location.href = navigateUrl("map", {
+                        markers
+                    });
                 });
 
                 $(".dataCell").off("click").on("click", function () {
