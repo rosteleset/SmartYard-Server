@@ -119,7 +119,7 @@
             let markers = params.markers.split("|");
             for (let i in markers) {
                 let marker = markers[i].split(",");
-                if (marker.length) {
+                if (marker.length >= 3) {
                     L.marker([marker[0], marker[1]]).bindTooltip(marker[2], { permanent: true, direction: "top", offset: [ -15, -6 ] }).addTo(modules.map.map);
                 }
             }
