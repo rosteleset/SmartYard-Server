@@ -975,6 +975,7 @@
                     h += `</div>`;
 
                     h += '<div class="card mt-0 mb-0" style="max-height: calc(100vh - 140px);">';
+                    h += `<div class="card-body table-responsive p-0" style="overflow-x: hidden!important;">`;
                     h += '<table width="100%" class="datatable">';
 
                     for (let i in issues) {
@@ -987,11 +988,16 @@
 
                     h += '</table>';
                     h += '</div>';
+                    h += '</div>';
 
                     modal(h);
 
                     $(".modalFormCancel").off("click").on("click", () => {
                         $('#modal').modal('hide');
+                    });
+
+                    $("#modal").draggable({
+                        handle: "#modalHeader",
                     });
                 });
 
