@@ -941,7 +941,30 @@
                 $(".colListIssues").off("click").on("click", function () {
                     let col = $(this).attr("data-col");
 
-                    console.log("list", col);
+                    let rows = "";
+
+                    for (let i in modules.cs.currentSheet.sheet.data) {
+                        if (md5(modules.cs.currentSheet.sheet.data[i].col) == col) {
+                            rows = modules.cs.currentSheet.sheet.data[i].rows;
+                            break;
+                        }
+                    }
+
+                    let issues = [];
+
+                    for (let i in modules.cs.issues) {
+                        if (md5(modules.cs.issues[i][modules.cs.currentSheet.sheet.fields.col]) == col && modules.cs.issues[i][modules.cs.currentSheet.sheet.fields.map]) {
+                            issues.push(modules.cs.issues[i]);
+                        }
+                    }
+
+                    issues.sort((a, b) => {
+                        return rows.indexOf(a[modules.cs.currentSheet.sheet.fields.row]) - rows.indexOf(b[modules.cs.currentSheet.sheet.fields.row]);
+                    });
+
+                    for (let i in issues) {
+                        console.log(issues[i][modules.cs.currentSheet.sheet.fields.row], issues[i].issueId, issues[i][modules.cs.currentSheet.sheet.fields.list]);
+                    }
                 });
 
                 $(".colMapIssues").off("click").on("click", function () {
