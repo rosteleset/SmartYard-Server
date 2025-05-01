@@ -962,9 +962,25 @@
                         return rows.indexOf(a[modules.cs.currentSheet.sheet.fields.row]) - rows.indexOf(b[modules.cs.currentSheet.sheet.fields.row]);
                     });
 
+                    $("#modalBody").parent().removeClass("modal-sm modal-lg modal-xl");
+                    $("#modalBody").parent().addClass("modal-xl");
+
+                    let h = '';
+                    h += '<div class="card mt-0 mb-0" style="max-height: calc(100vh - 140px);">';
+                    h += '<table width="100%" class="datatable">';
+
                     for (let i in issues) {
-                        console.log(issues[i][modules.cs.currentSheet.sheet.fields.row], issues[i].issueId, issues[i][modules.cs.currentSheet.sheet.fields.list]);
+                        h += '<tr>';
+                        h += '<td nowrap>' + issues[i][modules.cs.currentSheet.sheet.fields.row] + '</td>';
+                        h += '<td nowrap>' + issues[i].issueId + '</td>';
+                        h += '<td>' + issues[i][modules.cs.currentSheet.sheet.fields.row] + '</td>';
+                        h += '</tr>';
                     }
+
+                    h += '</table>';
+                    h += '</div>';
+
+                    modal(h);
                 });
 
                 $(".colMapIssues").off("click").on("click", function () {
