@@ -966,6 +966,14 @@
                     $("#modalBody").parent().addClass("modal-xl");
 
                     let h = '';
+
+                    h += `<div class="card-header pointer" id="modalHeader">`;
+                    h += `<h3 class="card-title text-bold">`;
+                    h += i18n("cs.list");
+                    h += `</h3>`;
+                    h += `<button type="button" class="btn btn-danger btn-xs btn-tool-rbt-right ml-2 float-right modalFormCancel" data-dismiss="modal" title="${i18n("cancel")}"><i class="far fa-fw fa-times-circle"></i></button>`;
+                    h += `</div>`;
+
                     h += '<div class="card mt-0 mb-0" style="max-height: calc(100vh - 140px);">';
                     h += '<table width="100%" class="datatable">';
 
@@ -973,7 +981,7 @@
                         h += '<tr>';
                         h += '<td nowrap>' + issues[i][modules.cs.currentSheet.sheet.fields.row] + '</td>';
                         h += '<td nowrap>' + issues[i].issueId + '</td>';
-                        h += '<td>' + issues[i][modules.cs.currentSheet.sheet.fields.row] + '</td>';
+                        h += '<td style="width: 100%;s">' + issues[i][modules.cs.currentSheet.sheet.fields.list] + '</td>';
                         h += '</tr>';
                     }
 
@@ -981,6 +989,10 @@
                     h += '</div>';
 
                     modal(h);
+
+                    $(".modalFormCancel").off("click").on("click", () => {
+                        $('#modal').modal('hide');
+                    });
                 });
 
                 $(".colMapIssues").off("click").on("click", function () {
