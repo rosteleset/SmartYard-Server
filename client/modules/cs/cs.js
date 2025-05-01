@@ -434,7 +434,7 @@
                                                 start = k;
                                             }
                                             if (k - start < cells) {
-                                                modules.cs.issues[r.issues.issues[i].issueId] = true;
+                                                modules.cs.issues[r.issues.issues[i].issueId] = r.issues.issues[i];
                                                 if (!modules.cs.issuesInSheet) {
                                                     modules.cs.issuesInSheet = {};
                                                 }
@@ -880,10 +880,12 @@
                             action: modules.cs.currentSheet.sheet.setAssignedAction,
                             set: { }
                         };
+
                         bulk.query[modules.cs.currentSheet.sheet.fields.sheet] = modules.cs.currentSheet.sheet.sheet;
                         bulk.query[modules.cs.currentSheet.sheet.fields.date] = modules.cs.currentSheet.sheet.date;
                         bulk.query[modules.cs.currentSheet.sheet.fields.col] = col_name;
                         bulk.set[modules.cs.currentSheet.sheet.fields.assigned] = logins;
+
                         PUT("tt", "bulkAction", false, bulk).
                         fail(FAIL).
                         done(() => {
@@ -914,10 +916,12 @@
                             action: modules.cs.currentSheet.sheet.setAssignedAction,
                             set: { },
                         };
+
                         bulk.query[modules.cs.currentSheet.sheet.fields.sheet] = modules.cs.currentSheet.sheet.sheet;
                         bulk.query[modules.cs.currentSheet.sheet.fields.date] = modules.cs.currentSheet.sheet.date;
                         bulk.query[modules.cs.currentSheet.sheet.fields.col] = col_name;
                         bulk.set[modules.cs.currentSheet.sheet.fields.assigned] = [];
+
                         PUT("tt", "bulkAction", false, bulk).
                         fail(FAIL).
                         done(() => {
@@ -928,13 +932,13 @@
                     }
                 });
 
-                $(".colListIssues").off("click").on("click", () => {
+                $(".colListIssues").off("click").on("click", function () {
                     let col = $(this).attr("data-col");
 
                     console.log("list", col);
                 });
 
-                $(".colMapIssues").off("click").on("click", () => {
+                $(".colMapIssues").off("click").on("click", function () {
                     let col = $(this).attr("data-col");
 
                     console.log("map", col);
