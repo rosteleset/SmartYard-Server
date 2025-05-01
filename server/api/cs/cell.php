@@ -78,6 +78,11 @@
                 $success = false;
 
                 if ($cs && ($params["action"] == "claim" || $params["action"] == "release")) {
+                    if (!$params["col"]) {
+                        error_log(print_r([
+                            $params["action"], $params["sheet"], $params["date"], $params["col"], $params["row"], $params["uid"], (int)@$params["expire"], @$params["sid"], @$params["step"]
+                        ], true));
+                    }
                     $success = $cs->setCell($params["action"], $params["sheet"], $params["date"], $params["col"], $params["row"], $params["uid"], (int)@$params["expire"], @$params["sid"], @$params["step"]);
                 }
 
