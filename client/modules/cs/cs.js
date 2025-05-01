@@ -554,12 +554,12 @@
                 for (let p in parts) {
                     if (p != cp) {
                         if (parseInt(p) >= 0 || p) {
-                            h += "<tr><td>&nbsp;</td><td style='border: none!important; font-weight: bold;' class='text-primary' colspan='" + maxCols.toString() + "'><span class='hoverable csPart'>" + p + "</span></td></tr>";
+                            h += "<tr><td nowrap style='width: 0%'>&nbsp;</td><td style='border: none!important; font-weight: bold;' class='text-primary' colspan='" + maxCols.toString() + "'><span class='hoverable csPart'>" + p + "</span></td></tr>";
                         }
                         cp = p;
                     }
                     h += '<tr>';
-                    h += '<td>&nbsp;</td>';
+                    h += '<td nowrap style="width: 0%">&nbsp;</td>';
                     let cCols = 0;
                     for (let i in modules.cs.cols) {
                         if (parts[p].indexOf(modules.cs.cols[i]) < 0) {
@@ -601,9 +601,9 @@
                     for (let i in modules.cs.rows) {
                         h += '<tr>';
                         if (response.sheet.sheet.timeClass) {
-                            h += '<td class="timeCell ' + response.sheet.sheet.timeClass + '">' + escapeHTML(modules.cs.rows[i]) + '</td>';
+                            h += '<td class="timeCell ' + response.sheet.sheet.timeClass + '" nowrap style="width: 0%">' + escapeHTML(modules.cs.rows[i]) + '</td>';
                         } else {
-                            h += '<td class="timeCell">' + escapeHTML(modules.cs.rows[i]) + '</td>';
+                            h += '<td class="timeCell" nowrap style="width: 0%">' + escapeHTML(modules.cs.rows[i]) + '</td>';
                         }
                         cCols = 0;
                         for (let j in modules.cs.cols) {
