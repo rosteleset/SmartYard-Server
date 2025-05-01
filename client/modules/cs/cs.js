@@ -379,9 +379,15 @@
         h += `<li class="pointer dropdown-item colClearAssigners" data-col="${md5(col)}">${i18n("cs.clearAssigners")}</li>`;
         h += `<li class="dropdown-divider"></li>`;
         h += `<li class="pointer dropdown-item colSettings" data-col="${md5(col)}">${i18n("cs.colSettings")}</li>`;
-        h += `<li class="dropdown-divider"></li>`;
-        h += `<li class="pointer dropdown-item colListIssues" data-col="${md5(col)}">${i18n("cs.list")}</li>`;
-        h += `<li class="pointer dropdown-item colMapIssues" data-col="${md5(col)}">${i18n("cs.map")}</li>`;
+        if (modules.cs.currentSheet.sheet.fields.map || modules.cs.currentSheet.sheet.fields.list) {
+            h += `<li class="dropdown-divider"></li>`;
+        }
+        if (modules.cs.currentSheet.sheet.fields.list) {
+            h += `<li class="pointer dropdown-item colListIssues" data-col="${md5(col)}">${i18n("cs.list")}</li>`;
+        }
+        if (modules.cs.currentSheet.sheet.fields.map) {
+            h += `<li class="pointer dropdown-item colMapIssues" data-col="${md5(col)}">${i18n("cs.map")}</li>`;
+        }
         h += `</ul></span>`;
 
         return h;
@@ -941,7 +947,15 @@
                 $(".colMapIssues").off("click").on("click", function () {
                     let col = $(this).attr("data-col");
 
-                    console.log("map", col);
+                    let markers = "";
+
+                    for (let i in modules.cs.issues) {
+                        if (md5(modules.cs.issues[i][modules.cs.currentSheet.sheet.fields.col]) == col && modules.cs.issues[i][modules.cs.currentSheet.sheet.fields.map]) {
+                            markers += modules.cs.issues[i][modules.cs.currentSheet.sheet.fields.map].coordinates[1] + "," + modules.cs.issues[i][modules.cs.currentSheet.sheet.fields.map].coordinates[0] + "," + modules.cs.issues[i][modules.cs.currentSheet.sheet.fields.row] + "|";
+                        }
+                    }
+
+                    console.log(markers);
                 });
 
                 $(".dataCell").off("click").on("click", function () {
