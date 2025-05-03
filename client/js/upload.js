@@ -127,7 +127,7 @@ function loadFile(mimeTypes, maxSize, callback, button, quiet) {
 }
 
 function loadFiles(mimeTypes, maxSize, callback) {
-    uploadForm(mimeTypes, button);
+    uploadForm(mimeTypes);
     $("#fileInput").prop("multiple", true);
 
     let files = [];
