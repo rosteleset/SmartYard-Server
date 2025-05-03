@@ -24,7 +24,8 @@ function uploadForm(mimeTypes, button) {
     $("#uploadModalTitle").text(i18n("upload"));
     $("#uploadModalCancel").attr("title", i18n("cancel"));
     $("#chooseFileToUpload").text(i18n("chooseFile"));
-    $("#uploadButton").text(button?button:i18n("doUpload"));
+    $("#uploadButton").text(button ? button : i18n("doUpload"));
+    $("#fileInput").prop("multiple", false);
 }
 
 function loadFile(mimeTypes, maxSize, callback, button, quiet) {
@@ -43,6 +44,7 @@ function loadFile(mimeTypes, maxSize, callback, button, quiet) {
             ${i18n("fileType")}:<br />
         `).parent().show();
         $("#uploadButton").hide();
+
         $("#fileInput").off("change").val("").click().on("change", () => {
             files = document.querySelector("#fileInput").files;
 
@@ -102,15 +104,13 @@ function loadFile(mimeTypes, maxSize, callback, button, quiet) {
                     let reader = new FileReader();
                     reader.onloadend = () => {
                         let body = reader.result.split(';base64,')[1];
-                        if (typeof callback === "function") {
-                            callback({
-                                name: file.name,
-                                size: file.size,
-                                date: file.lastModified,
-                                type: file.type,
-                                body: body,
-                            });
-                        }
+                        callback({
+                            name: file.name,
+                            size: file.size,
+                            date: file.lastModified,
+                            type: file.type,
+                            body: body,
+                        });
                     };
                     reader.readAsDataURL(blob);
                 }, 100);
@@ -124,4 +124,59 @@ function loadFile(mimeTypes, maxSize, callback, button, quiet) {
     }
 
     $("#chooseFileToUpload").click();
+}
+
+function loadFiles(mimeTypes, maxSize, callback) {
+    uploadForm(mimeTypes, button);
+    $("#fileInput").prop("multiple", true);
+
+    let files = [];
+    let loaded = [];
+
+    $("#fileInput").off("change").val("").click().on("change", () => {
+        files = document.querySelector("#fileInput").files;
+
+        if (files.length === 0) {
+            error(i18n("noFileSelected"));
+            return;
+        }
+
+        for (let i in files) {
+            if (mimeTypes && mimeTypes.indexOf(files[i].type) === -1) {
+                error("incorrectFileType");
+                return;
+            }
+            if (maxSize && files[i].size > maxSize) {
+                error("exceededSize");
+                return;
+            }
+        }
+
+        (function loadFile() {
+            let file = files.pop();
+
+            if (file) {
+                fetch(URL.createObjectURL(file)).then(response => {
+                    return response.blob();
+                }).then(blob => {
+                    setTimeout(() => {
+                        let reader = new FileReader();
+                        reader.onloadend = () => {
+                            let body = reader.result.split(';base64,')[1];
+                            loaded.push({
+                                name: file.name,
+                                size: file.size,
+                                date: file.lastModified,
+                                type: file.type,
+                                body: body,
+                            });
+                        };
+                        reader.readAsDataURL(blob);
+                    }, 100);
+                });
+            } else {
+                callback(loaded);
+            }
+        })();
+    });
 }

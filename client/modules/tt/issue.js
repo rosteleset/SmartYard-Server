@@ -1277,13 +1277,11 @@
         });
 
         $(".ttSaAddSingleFile").off("click").on("click", () => {
-            let mimeTypes;
-
             let maxSize = parseInt(project.maxFileSize);
 
             let files = [];
 
-            loadFile(mimeTypes, maxSize, file => {
+            loadFile(false, maxSize, file => {
                 if (file) {
                     files.push(file);
                     loadingStart();
@@ -1298,13 +1296,11 @@
         });
 
         $(".ttSaAddSingleFileQuiet").off("click").on("click", () => {
-            let mimeTypes;
-
             let maxSize = parseInt(project.maxFileSize);
 
             let files = [];
 
-            loadFile(mimeTypes, maxSize, file => {
+            loadFile(false, maxSize, file => {
                 if (file) {
                     files.push(file);
                     loadingStart();
@@ -1316,6 +1312,22 @@
                     });
                 }
             }, false, true);
+        });
+
+        $(".ttSaAddMultipleFilesQuiet").off("click").on("click", () => {
+            let maxSize = parseInt(project.maxFileSize);
+
+            loadFiles(false, maxSize, files => {
+                if (files) {
+                    loadingStart();
+                    POST("tt", "file", false, { issueId: issue.issue.issueId, attachments: files }).
+                    fail(FAIL).
+                    fail(loadingDone).
+                    done(() => {
+                        window.location.href = refreshUrl();
+                    });
+                }
+            });
         });
 
         $(".deleteFile").off("click").on("click", function () {
