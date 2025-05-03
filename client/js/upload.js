@@ -152,10 +152,12 @@ function loadFiles(mimeTypes, maxSize, callback) {
             }
         }
 
-        (function loadFile() {
-            let file = files.pop();
+        let i = 0;
 
-            if (file) {
+        (function loadFile() {
+            if (i < files.length) {
+                let file = files[i];
+                i++;
                 fetch(URL.createObjectURL(file)).then(response => {
                     return response.blob();
                 }).then(blob => {
