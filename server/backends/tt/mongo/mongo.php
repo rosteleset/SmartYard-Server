@@ -839,7 +839,7 @@
                         $attachments[$i]["body"] = @file_get_contents($attachment["url"]);
                     }
 
-                    if (strlen($attachments[$i]["body"]) <= 0 || strlen($attachments[$i]["body"]) > $project["maxFileSize"]) {
+                    if (strlen(@$attachments[$i]["body"]) <= 0 || strlen(@$attachments[$i]["body"]) > $project["maxFileSize"]) {
                         return false;
                     }
                 }
