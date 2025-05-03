@@ -172,6 +172,7 @@ function loadFiles(mimeTypes, maxSize, callback) {
                                 type: file.type,
                                 body: body,
                             });
+                            loadFile();
                         };
                         reader.readAsDataURL(blob);
                     }, 100);
