@@ -826,16 +826,16 @@
 
                 $files = loadBackend("files");
 
-                foreach ($attachments as &$attachment) {
+                foreach ($attachments as $i => $attachment) {
                     $list = $files->searchFiles([ "metadata.issue" => true, "metadata.issueId" => $issueId, "filename" => $attachment["name"] ]);
                     if (count($list)) {
                         return false;
                     }
                     if (@$attachment["body"]) {
-                        $attachment["body"] = base64_decode($attachment["body"]);
+                        $attachment[$i]["body"] = base64_decode($attachment["body"]);
                     } else
                     if (@$attachment["url"]) {
-                        $attachment["body"] = @file_get_contents($attachment["url"]);
+                        $attachment[$i]["body"] = @file_get_contents($attachment["url"]);
                     }
                     if (strlen($attachment["body"]) <= 0 || strlen($attachment["body"]) > $project["maxFileSize"]) {
                         return false;
