@@ -204,6 +204,7 @@
     "saAddFile": "Attach file(s)",
     "saAddSingleFile": "Attach file",
     "saAddSingleFileQuiet": "Attach file",
+    "saAddMultipleFilesQuiet": "Attach file(s)",
     "saDelete": "Delete issue",
     "saWatch": "Watch / Unwatch",
     "saAssignToMe": "Assign to Me",
