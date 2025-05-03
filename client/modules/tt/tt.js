@@ -10,6 +10,7 @@
         "saAddFile",
         "saAddSingleFile",
         "saAddSingleFileQuiet",
+        "saAddMultipleFilesQuiet",
         "saAssignToMe",
         "saWatch",
         "saDelete",
