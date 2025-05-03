@@ -831,13 +831,15 @@
                     if (count($list)) {
                         return false;
                     }
+
                     if (@$attachment["body"]) {
                         $attachments[$i]["body"] = base64_decode($attachment["body"]);
                     } else
                     if (@$attachment["url"]) {
                         $attachments[$i]["body"] = @file_get_contents($attachment["url"]);
                     }
-                    if (strlen($attachment["body"]) <= 0 || strlen($attachment["body"]) > $project["maxFileSize"]) {
+
+                    if (strlen($attachments[$i]["body"]) <= 0 || strlen($attachments[$i]["body"]) > $project["maxFileSize"]) {
                         return false;
                     }
                 }
