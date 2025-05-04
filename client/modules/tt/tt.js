@@ -644,6 +644,7 @@
                             return {
                                 id: "_cf_" + fieldId,
                                 type: editor,
+                                float: parseInt(cf.float) ? Math.pow(10, -parseInt(cf.float)) : false,
                                 title: modules.tt.issueFieldTitle(field),
                                 placeholder: modules.tt.issueFieldTitle(field),
                                 hint: cf.fieldDescription ? cf.fieldDescription : false,

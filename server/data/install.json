@@ -226,5 +226,8 @@
     ],
     "70": [
         "v70_custom_fields.sql"
+    ],
+    "71": [
+        "v71_custom_fields.sql"
     ]
 }

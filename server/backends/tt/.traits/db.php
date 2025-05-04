@@ -641,8 +641,8 @@
             /**
              * @inheritDoc
              */
-            public function getCustomFields()
-            {
+
+            public function getCustomFields() {
                 $cache = $this->cacheGet("FIELDS");
                 if ($cache) {
                     return $cache;
@@ -661,6 +661,7 @@
                             link,
                             format,
                             editor,
+                            float,
                             indx,
                             search,
                             required
@@ -695,7 +696,8 @@
                             "regex" => $customField["regex"],
                             "link" => $customField["link"],
                             "format" => $customField["format"],
-                            "editor" => trim($customField["editor"]?$customField["editor"]:""),
+                            "editor" => trim($customField["editor"] ? $customField["editor"] : ""),
+                            "float" => $customField["float"] ? $customField["float"] : "0",
                             "indx" => $customField["indx"],
                             "search" => $customField["search"],
                             "required" => $customField["required"],
@@ -956,8 +958,8 @@
             /**
              * @inheritDoc
              */
-            public function modifyCustomField($customFieldId, $catalog, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indx, $search, $required, $editor)
-            {
+
+            public function modifyCustomField($customFieldId, $catalog, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indx, $search, $required, $editor, $float) {
                 $this->clearCache();
 
                 if (!checkInt($customFieldId)) {
@@ -973,6 +975,10 @@
                 }
 
                 if (!checkInt($required)) {
+                    return false;
+                }
+
+                if (!checkInt($float)) {
                     return false;
                 }
 
@@ -996,6 +1002,7 @@
                             link = :link,
                             format = :format,
                             editor = :editor,
+                            float = :float,
                             indx = :indx,
                             search = :search,
                             required = :required
@@ -1011,6 +1018,7 @@
                         ":link" => $link,
                         ":format" => $format,
                         ":editor" => $editor,
+                        ":float" => $float,
                         ":indx" => $indx,
                         ":search" => $search,
                         ":required" => $required,

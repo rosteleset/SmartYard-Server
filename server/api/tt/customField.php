@@ -40,6 +40,7 @@
      * @apiBody {Boolean} search
      * @apiBody {Boolean} required
      * @apiBody {String} editor
+     * @apiBody {Number} float
      *
      * @apiSuccess {Boolean} operationResult
      */
@@ -80,7 +81,7 @@
             }
 
             public static function PUT($params) {
-                $success = loadBackend("tt")->modifyCustomField($params["_id"], $params["catalog"], $params["fieldDisplay"], $params["fieldDescription"], $params["regex"], $params["format"], $params["link"], $params["options"], $params["indx"], $params["search"], $params["required"], $params["editor"]);
+                $success = loadBackend("tt")->modifyCustomField($params["_id"], $params["catalog"], $params["fieldDisplay"], $params["fieldDescription"], $params["regex"], $params["format"], $params["link"], $params["options"], $params["indx"], $params["search"], $params["required"], $params["editor"], $params["float"]);
 
                 return api::ANSWER($success, ($success !== false) ? false : "notAcceptable");
             }

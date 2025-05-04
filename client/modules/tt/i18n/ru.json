@@ -331,6 +331,7 @@
     "customFieldsNoJournal": "Настраиваемые поля скрытые в журнале",
     "issueSave": "Сохранить",
     "issueWasSaved": "Задача сохранена",
+    "float": "Знаков после запятой",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",

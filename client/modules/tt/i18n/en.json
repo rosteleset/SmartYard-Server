@@ -329,6 +329,7 @@
     "new": "now",
     "issueSave": "Save",
     "issueWasSaved": "Task was saved",
+    "float": "Decimal places",
     "methods": {
         "tt": {
             "_title": "Task manager",

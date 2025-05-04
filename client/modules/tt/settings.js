@@ -856,6 +856,21 @@
                             },
                         ],
                         hidden: cf.type !== "text",
+                        select: (el, id, prefix) => {
+                            if ($(el).val() == "number") {
+                                $("#" + prefix + "float").parent().parent().show();
+                            } else {
+                                $("#" + prefix + "float").parent().parent().hide();
+                            }
+                        },
+                    },
+                    {
+                        id: "float",
+                        type: "number",
+                        title: i18n("tt.float"),
+                        placeholder: "0",
+                        value: cf.float,
+                        hidden: cf.editor != "number",
                     },
                     {
                         id: "link",

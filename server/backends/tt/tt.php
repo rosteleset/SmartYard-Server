@@ -762,10 +762,11 @@
              * @param $search
              * @param $required
              * @param $editor
+             * @param $float
              * @return boolean
              */
 
-            abstract public function modifyCustomField($customFieldId, $catalog, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indx, $search, $required, $editor);
+            abstract public function modifyCustomField($customFieldId, $catalog, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indx, $search, $required, $editor, $float);
 
             /**
              * @param $customFieldId
