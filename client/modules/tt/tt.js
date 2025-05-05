@@ -1671,7 +1671,20 @@
             }
 
             $(".tt_issues_filter").off("click").on("click", function () {
-                modules.tt.selectFilter($(this).attr("data-filter-name"));
+                let filter = $(this).attr("data-filter-name");
+                loadingStart();
+                GET("tt", "filter", filter, true).
+                done(f => {
+                    try {
+                        f = JSON.parse(f.body);
+                        console.log(f);
+                    } catch (e) {
+                        //
+                    }
+                    modules.tt.selectFilter(filter);
+                }).
+                fail(FAIL).
+                fail(loadingDone);
             });
 
             $(`.tt_pager[data-target="${issuesListId}"]`).off("click").on("click", function () {
