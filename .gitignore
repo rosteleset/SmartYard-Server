@@ -107,5 +107,6 @@ asterisk/config.lua
 asterisk/extconfig.conf
 asterisk/http.conf
 asterisk/pjsip.conf
+asterisk/logger.conf
 
 ./version
