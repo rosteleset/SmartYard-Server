@@ -50,8 +50,10 @@
             editor.getSession().getUndoManager().reset();
             editor.clearSelection();
             editor.setFontSize(14);
+
             editor.commands.removeCommand("removeline");
             editor.commands.removeCommand("redo");
+
             editor.commands.addCommand({
                 name: "removeline",
                 description: "Remove line",
@@ -63,6 +65,7 @@
                 scrollIntoView: "cursor",
                 multiSelectAction: "forEachLine"
             });
+
             editor.commands.addCommand({
                 name: "redo",
                 description: "Redo",
@@ -72,6 +75,7 @@
                 },
                 exec: function (editor) { editor.redo(); }
             });
+
             editor.commands.addCommand({
                 name: 'save',
                 bindKey: {
@@ -82,6 +86,16 @@
                     $("#sheetSave").click();
                 }),
             });
+/*
+            editor.getSession().on("changeAnnotation", function () {
+                let annot = editor.getSession().getAnnotations();
+
+                for (let key in annot) {
+                    if (annot.hasOwnProperty(key))
+                        console.log('"' + annot[key].text + '" on line: ' + annot[key].row);
+                    }
+            });
+*/
             $("#sheetSave").off("click").on("click", () => {
                 loadingStart();
                 let json;
