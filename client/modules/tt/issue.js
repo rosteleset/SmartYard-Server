@@ -808,7 +808,7 @@
             h += "<table>";
             for (let i in issue.issue.linkedIssues.issues) {
                 h += "<tr>";
-                h += `<td class='text-bold hoverable ttIssue'>${issue.issue.linkedIssues.issues[i].issueId}</td>`;
+                h += `<td><a class='text-bold hoverable ttIssue' href='/?#tt&issue=${issue.issue.linkedIssues.issues[i].issueId}'>${issue.issue.linkedIssues.issues[i].issueId}</a></td>`;
                 h += `<td class='pl-2'>${ttDate(issue.issue.linkedIssues.issues[i].created, true)}</td>`;
                 h += `<td class='pl-2'>${modules.tt.issueField2Html(issue.issue.linkedIssues.issues[i], "author", undefined, "left")}</td>`;
                 h += `<td class='pl-2'>${issue.issue.linkedIssues.issues[i].subject}</td>`;
