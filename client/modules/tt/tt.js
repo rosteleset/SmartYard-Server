@@ -1749,8 +1749,7 @@
                                 },
                             })
                         } else {
-                            loadingDone();
-                            FAIL();
+                            modules.tt.selectFilter(filter);
                         }
                     } catch (e) {
                         loadingDone();
