@@ -442,7 +442,6 @@
                     }
                 } else {
                     $issues = $this->mongo->$db->$collection->find($query, $options);
-
                     $count = $this->mongo->$db->$collection->countDocuments($query);
                 }
 

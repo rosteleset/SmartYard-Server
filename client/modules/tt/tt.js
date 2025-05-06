@@ -231,7 +231,7 @@
         }
     },
 
-    issueField2FormFieldEditor: function (issue, field, projectId, filter, prefferredValue) {
+    issueField2FormFieldEditor: function (issue, field, projectId, filter, prefferredValue, title) {
 
         function peoples(project, withGroups, withUsers) {
             let p = [];
@@ -328,7 +328,7 @@
                     return {
                         id: "issueId",
                         type: "text",
-                        title: modules.tt.issueFieldTitle(field),
+                        title: title ? title: modules.tt.issueFieldTitle(field),
                         placeholder: modules.tt.issueFieldTitle(field),
                         value: (typeof prefferredValue !== "undefined") ? prefferredValue : ((issue && issue.issueId) ? issue.issueId : ""),
                         hidden: true,
@@ -338,7 +338,7 @@
                     return {
                         id: "subject",
                         type: "text",
-                        title: modules.tt.issueFieldTitle(field),
+                        title: title ? title: modules.tt.issueFieldTitle(field),
                         placeholder: modules.tt.issueFieldTitle(field),
                         value: (typeof prefferredValue !== "undefined") ? prefferredValue : ((issue && issue.subject) ? issue.subject : ""),
                         validate: v => {
@@ -350,7 +350,7 @@
                     return {
                         id: "description",
                         type: "area",
-                        title: modules.tt.issueFieldTitle(field),
+                        title: title ? title: modules.tt.issueFieldTitle(field),
                         placeholder: modules.tt.issueFieldTitle(field),
                         value: (typeof prefferredValue !== "undefined") ? prefferredValue : ((issue && issue.description) ? issue.description : ""),
                         validate: v => {
@@ -362,7 +362,7 @@
                     return {
                         id: "comment",
                         type: "area",
-                        title: modules.tt.issueFieldTitle(field),
+                        title: title ? title: modules.tt.issueFieldTitle(field),
                         placeholder: modules.tt.issueFieldTitle(field),
                         validate: v => {
                             return $.trim(v) !== "";
@@ -373,7 +373,7 @@
                     return {
                         id: "comment",
                         type: "area",
-                        title: modules.tt.issueFieldTitle(field),
+                        title: title ? title: modules.tt.issueFieldTitle(field),
                         placeholder: modules.tt.issueFieldTitle(field),
                     };
 
@@ -389,16 +389,16 @@
                         }
                     }
 
-                return {
-                    id: "resolution",
-                    type: "select2",
-                    title: modules.tt.issueFieldTitle(field),
-                    options: select2Filter(resolutions, filter),
-                    value: (typeof prefferredValue !== "undefined") ? prefferredValue : ((issue && issue.resolution) ? issue.resolution : -1),
-                    validate: v => {
-                        return $.trim(v) !== "";
-                    },
-                };
+                    return {
+                        id: "resolution",
+                        type: "select2",
+                        title: title ? title: modules.tt.issueFieldTitle(field),
+                        options: select2Filter(resolutions, filter),
+                        value: (typeof prefferredValue !== "undefined") ? prefferredValue : ((issue && issue.resolution) ? issue.resolution : -1),
+                        validate: v => {
+                            return $.trim(v) !== "";
+                        },
+                    };
 
                 case "status":
                     let statuses = [];
@@ -413,7 +413,7 @@
                     return {
                         id: "status",
                         type: "select2",
-                        title: modules.tt.issueFieldTitle(field),
+                        title: title ? title: modules.tt.issueFieldTitle(field),
                         options: select2Filter(statuses, filter),
                         value: (typeof prefferredValue !== "undefined") ? prefferredValue : ((issue && issue.status) ? issue.status : -1),
                     };
@@ -424,7 +424,7 @@
                         type: "select2",
                         tags: true,
                         multiple: true,
-                        title: modules.tt.issueFieldTitle(field),
+                        title: title ? title: modules.tt.issueFieldTitle(field),
                         placeholder: modules.tt.issueFieldTitle(field),
                         options: select2Filter(tags, filter),
                         value: (typeof prefferredValue !== "undefined") ? prefferredValue : ((issue && issue.tags) ? Object.values(issue.tags) : []),
@@ -435,7 +435,7 @@
                         id: "assigned",
                         type: "select2",
                         multiple: [3, 4, 5].indexOf(parseInt(project.assigned)) >= 0,
-                        title: modules.tt.issueFieldTitle(field),
+                        title: title ? title: modules.tt.issueFieldTitle(field),
                         placeholder: modules.tt.issueFieldTitle(field),
                         options: select2Filter(peoples(project, [0, 2, 3, 5].indexOf(parseInt(project.assigned)) >= 0, [0, 1, 3, 4].indexOf(parseInt(project.assigned)) >= 0), filter),
                         value: (typeof prefferredValue !== "undefined") ? prefferredValue : ((issue && issue.assigned) ? Object.values(issue.assigned) : []),
@@ -446,7 +446,7 @@
                         id: "watchers",
                         type: "select2",
                         multiple: true,
-                        title: modules.tt.issueFieldTitle(field),
+                        title: title ? title: modules.tt.issueFieldTitle(field),
                         placeholder: modules.tt.issueFieldTitle(field),
                         options: select2Filter(peoples(project, false, true), filter),
                         value: (typeof prefferredValue !== "undefined") ? prefferredValue:((issue && issue.watchers) ? Object.values(issue.watchers) : []),
@@ -476,7 +476,7 @@
                     return {
                         id: fieldId,
                         type: "select2",
-                        title: modules.tt.issueFieldTitle(field),
+                        title: title ? title: modules.tt.issueFieldTitle(field),
                         placeholder: modules.tt.issueFieldTitle(field),
                         options: select2Filter(options, filter),
                         multiple: true,
@@ -531,7 +531,7 @@
                     return {
                         id: "attachments",
                         type: "files",
-                        title: modules.tt.issueFieldTitle(field),
+                        title: title ? title: modules.tt.issueFieldTitle(field),
                         maxSize: project.maxFileSize,
                     };
 
@@ -569,11 +569,22 @@
                     return {
                         id: "workflow",
                         type: "select2",
-                        title: modules.tt.issueFieldTitle(field),
+                        title: title ? title: modules.tt.issueFieldTitle(field),
                         placeholder: modules.tt.issueFieldTitle(field),
                         options: select2Filter(workflowsByProject(project), filter),
                         value: issue.workflow,
                     };
+
+                case "created":
+                    return {
+                        id: fieldId,
+                        type: "datetime-local",
+                        title: title ? title: modules.tt.issueFieldTitle(field),
+                        placeholder: modules.tt.issueFieldTitle(field),
+                        sec: true,
+                        value: (typeof prefferredValue !== "undefined") ? prefferredValue : ((issue && issue.assigned) ? Object.values(issue.assigned) : []),
+                    }
+
             }
         } else {
             if (fieldId) {
@@ -645,7 +656,7 @@
                                 id: "_cf_" + fieldId,
                                 type: editor,
                                 float: parseInt(cf.float) ? Math.pow(10, -parseInt(cf.float)) : false,
-                                title: modules.tt.issueFieldTitle(field),
+                                title: title ? title: modules.tt.issueFieldTitle(field),
                                 placeholder: modules.tt.issueFieldTitle(field),
                                 hint: cf.fieldDescription ? cf.fieldDescription : false,
                                 sec: true,
@@ -687,7 +698,7 @@
                             return {
                                 id: "_cf_" + fieldId,
                                 type: "select2",
-                                title: modules.tt.issueFieldTitle(field),
+                                title: title ? title: modules.tt.issueFieldTitle(field),
                                 placeholder: modules.tt.issueFieldTitle(field),
                                 hint: cf.fieldDescription?cf.fieldDescription:false,
                                 options: select2Filter(options, filter),
@@ -758,7 +769,7 @@
                             return {
                                 id: "_cf_" + fieldId,
                                 type: "select2",
-                                title: modules.tt.issueFieldTitle(field),
+                                title: title ? title: modules.tt.issueFieldTitle(field),
                                 placeholder: modules.tt.issueFieldTitle(field),
                                 hint: cf.fieldDescription?cf.fieldDescription:false,
                                 options: select2Filter(options, filter),
@@ -801,7 +812,7 @@
                             return {
                                 id: "_cf_" + fieldId,
                                 type: "select2",
-                                title: modules.tt.issueFieldTitle(field),
+                                title: title ? title: modules.tt.issueFieldTitle(field),
                                 placeholder: modules.tt.issueFieldTitle(field),
                                 hint: cf.fieldDescription?cf.fieldDescription:false,
                                 options: select2Filter(options, filter),
@@ -828,7 +839,7 @@
                             return {
                                 id: "_cf_" + fieldId,
                                 type: "select2",
-                                title: modules.tt.issueFieldTitle(field),
+                                title: title ? title: modules.tt.issueFieldTitle(field),
                                 placeholder: modules.tt.issueFieldTitle(field),
                                 hint: cf.fieldDescription?cf.fieldDescription:false,
                                 options: select2Filter(options, filter),
@@ -896,7 +907,7 @@
                             return {
                                 id: "_cf_" + fieldId,
                                 type: "select2",
-                                title: modules.tt.issueFieldTitle(field),
+                                title: title ? title: modules.tt.issueFieldTitle(field),
                                 placeholder: modules.tt.issueFieldTitle(field),
                                 hint: cf.fieldDescription?cf.fieldDescription:false,
                                 options: select2Filter(options, filter),
@@ -1575,6 +1586,23 @@
             query.sort = lStore("sortBy:" + x);
         }
 
+        let t = lStore(`_filter_form_${x}`);
+        if (t) {
+            let preprocess = {};
+            let types = {};
+            for (let i in t) {
+                if (i != "types") {
+                    preprocess['%%' + i] = t[i];
+                } else {
+                    for (let j in t[i]) {
+                        types['%%' + j] = t[i][j];
+                    }
+                }
+            }
+            query.preprocess = preprocess;
+            query.types = types;
+        }
+
         QUERY("tt", "issues", query, true).
         done(response => {
             if (response && response.issues && response.issues.all) {
@@ -1677,11 +1705,58 @@
                 done(f => {
                     try {
                         f = JSON.parse(f.body);
-                        console.log(f);
                     } catch (e) {
-                        //
+                        f = false;
                     }
-                    modules.tt.selectFilter(filter);
+                    try {
+                        if (f && f.form && f.form.title && f.form.fields && f.form.fields.length > 0) {
+                            let values = lStore(`_filter_form_${filter}`);
+                            let fields = [];
+                            let project;
+
+                            for (let i in modules.tt.meta.projects) {
+                                if (modules.tt.meta.projects[i].acronym == lStore("ttProject")) {
+                                    project = modules.tt.meta.projects[i];
+                                    break;
+                                }
+                            }
+
+                            let types = {};
+
+                            for (let i in f.form.fields) {
+                                let t = modules.tt.issueField2FormFieldEditor(null, f.form.fields[i].field, project.projectId, false, (values && values[`_form_${f.form.fields[i].id}`]) ? values[`_form_${f.form.fields[i].id}`] : "", f.form.fields[i].title);
+                                t.id = `_form_${f.form.fields[i].id}`;
+                                fields.push(t);
+                                if (f.form.fields[i].cast) {
+                                    types[t.id] = f.form.fields[i].cast;
+                                }
+                            }
+
+                            loadingDone();
+
+                            cardForm({
+                                title: f.form.title,
+                                apply: f.form.apply,
+                                fields: fields,
+                                topApply: f.form.topApply,
+                                footer: f.form.footer,
+                                borderless: f.form.borderless,
+                                size: "lg",
+                                callback: r => {
+                                    r.types = types;
+                                    lStore(`_filter_form_${filter}`, r);
+                                    modules.tt.selectFilter(filter);
+                                },
+                            })
+                        } else {
+                            loadingDone();
+                            FAIL();
+                        }
+                    } catch (e) {
+                        loadingDone();
+                        console.error(e);
+                        FAIL();
+                    }
                 }).
                 fail(FAIL).
                 fail(loadingDone);

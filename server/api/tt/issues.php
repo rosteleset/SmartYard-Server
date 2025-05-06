@@ -63,6 +63,16 @@
                         if ($filter) {
                             $preprocess = [];
 
+                            if (@$params["preprocess"]) {
+                                $preprocess = $params["preprocess"];
+                            }
+
+                            $types = [];
+
+                            if (@$params["types"]) {
+                                $types = $params["types"];
+                            }
+
                             if ($params && array_key_exists("search", $params) && trim($params["search"])) {
                                 $preprocess["%%search"] = trim($params["search"]);
                             }
@@ -72,11 +82,11 @@
                             }
 
                             if (isset($filter["pipeline"])) {
-                                $issues = $tt->getIssues(@$params["project"] ? : "TT", @$filter["pipeline"], @$filter["fields"], [], @$params["skip"] ? : 0, @$params["limit"] ? : 5, $preprocess, [], true);
+                                $issues = $tt->getIssues(@$params["project"] ? : "TT", @$filter["pipeline"], @$filter["fields"], [], @$params["skip"] ? : 0, @$params["limit"] ? : 5, $preprocess, $types, true);
                             }
 
                             if (isset($filter["filter"])) {
-                                $issues = $tt->getIssues(@$params["project"] ? : "TT", @$filter["filter"], @$filter["fields"], @$params["sort"] ? : (array_key_exists("sort", $filter) ? $filter["sort"] : [ "created" => 1 ]), @$params["skip"] ? : 0, @$params["limit"] ? : 5, $preprocess);
+                                $issues = $tt->getIssues(@$params["project"] ? : "TT", @$filter["filter"], @$filter["fields"], @$params["sort"] ? : (array_key_exists("sort", $filter) ? $filter["sort"] : [ "created" => 1 ]), @$params["skip"] ? : 0, @$params["limit"] ? : 5, $preprocess, $types);
                             }
                         } else {
                             setLastError("filterNotFound");
