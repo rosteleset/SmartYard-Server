@@ -837,6 +837,7 @@
                 h += " ";
                 h += i18n("tt.commented");
 //                h += " [#" + (parseInt(i) + 1) + "]: ";
+                h += "&nbsp;";
                 h += ttDate(issue.issue.comments[i].created);
                 if (issue.issue.comments[i].private) {
                     h += "<i class='ml-2 fas fa-fw fa-eye-slash text-warning'></i>";
@@ -1076,6 +1077,7 @@
                             h += " ";
                             h += result.cdr[i].src + "&nbsp;>>>&nbsp;" + result.cdr[i].dst + ", " + result.cdr[i].billsec + " " + i18n("tt.sec");
 //                            h += " [#" + (parseInt(i) + 1) + "]: ";
+                            h += "&nbsp;";
                             h += ttDate(result.cdr[i].start);
                             h += "</div>";
 
@@ -1118,6 +1120,7 @@
                             h += " ";
                             h += result.cdr[i].src + "&nbsp;>>>&nbsp;" + result.cdr[i].dst + ", " + result.cdr[i].billsec + " " + i18n("tt.sec");
 //                            h += " [#" + (parseInt(i) + 1) + "]: ";
+                            h += "&nbsp;";
                             h += ttDate(result.cdr[i].start);
                             h += "</div>";
                             h += "<div class='ml-2 mb-2 mt-1'>";
