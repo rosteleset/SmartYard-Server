@@ -1357,7 +1357,9 @@
              */
 
             public function matchFilter($project, $filter, $issueId) {
-                $filter = @json_decode($this->getFilter($params["filter"]), true);
+                $db = $this->dbName;
+
+                $filter = @json_decode($this->getFilter($filter), true);
 
                 if ($filter) {
                     $db = $this->dbName;
@@ -1365,16 +1367,18 @@
                     $query = false;
 
                     if (isset($filter["pipeline"])) {
-                        $query = json_decode(json_encode($tt->getIssuesQuery($project, @$filter["pipeline"], [ "issueId" ], [], 0, 1, [], [], true)));
+                        $query = json_decode(json_encode($this->getIssuesQuery($project, @$filter["pipeline"], [ "issueId" ], [], 0, 1, [], [], true)));
                     }
 
                     if (isset($filter["filter"])) {
-                        $query = json_decode(json_encode($tt->getIssuesQuery($project, @$filter["filter"], [ "issueId" ], [ "created" => 1 ], 0, 1), true));
+                        $query = json_decode(json_encode($this->getIssuesQuery($project, @$filter["filter"], [ "issueId" ], [ "created" => 1 ], 0, 1), true));
                     }
 
                     if ($query) {
                         $pipeline = [
-                            $query,
+                            [
+                                "\$match" => $query,
+                            ],
                             [
                                 "\$match" => [
                                     "issueId" => $issueId
@@ -1382,9 +1386,12 @@
                             ],
                         ];
 
-                        return count($this->mongo->$db->$collection->aggregate($pipeline));
-                    }
+                        foreach ($this->mongo->$db->$project->aggregate($pipeline) as $i) {
+                            return true;
+                        }
 
+                        return false;
+                    }
                 } else {
                     return false;
                 }

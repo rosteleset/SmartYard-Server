@@ -1055,9 +1055,10 @@
                 modules.tt.issue.callsLoaded = true;
                 if (result.cdr && result.cdr.length) {
                     if ($("#issueComments").text()) {
+                        let comments = $(".issueComment");
                         for (let i in result.cdr) {
-                            let comments = $(".issueComment");
-                            let h = "<tr class='issueComment' data-time='" + result.cdr[i].start + "'>";
+
+                            let h = "<tr class='issueCall' data-time='" + result.cdr[i].start + "'>";
                             h += "<td class='pl-1' style='font-size: 14px;'>";
                             h += "<div>";
                             h += "*" + (parseInt(i) + 1) + " ";
@@ -1071,8 +1072,10 @@
                             h += "</div>";
                             h += "</td>";
                             h += "</tr>";
+
                             let f = false;
                             let last = false;
+
                             $(comments.get().reverse()).each(function () {
                                 let comment = $(this);
                                 if (!last) {
@@ -1084,6 +1087,7 @@
                                     return false;
                                 }
                             });
+
                             if (!f) {
                                 $(h).insertAfter(last);
                             }
@@ -1091,7 +1095,7 @@
                     } else {
                         let h = `<tr><td style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.comments")}' style="font-size: 11pt;"/></td></tr>`;
                         for (let i in result.cdr) {
-                            h += "<tr class='issueComment' data-time='" + result.cdr[i].start + "'>";
+                            h += "<tr class='issueCall' data-time='" + result.cdr[i].start + "'>";
                             h += "<td class='pl-1' style='font-size: 14px;'>";
                             h += "<div>";
                             h += "*" + (parseInt(i) + 1) + " ";
