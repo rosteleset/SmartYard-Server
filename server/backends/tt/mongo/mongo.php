@@ -324,13 +324,7 @@
                 return $types;
             }
 
-            /**
-             * @inheritDoc
-             */
-
-            public function getIssues($collection, $query, $fields = [], $sort = [ "created" => 1 ], $skip = 0, $limit = 100, $preprocess = [], $types = [], $byPipeline = false) {
-                $db = $this->dbName;
-
+            private function getIssuesQuery($collection, $query, $fields = [], $sort = [ "created" => 1 ], $skip = 0, $limit = 100, $preprocess = [], $types = [], $byPipeline = false) {
                 $me = $this->myRoles();
 
                 if (!@$me[$collection]) {
@@ -378,7 +372,17 @@
                     return array_values($issues);
                 };
 
-                $query = $this->preprocessFilter($query, $preprocess, $types);
+                return $this->preprocessFilter($query, $preprocess, $types);
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+            public function getIssues($collection, $query, $fields = [], $sort = [ "created" => 1 ], $skip = 0, $limit = 100, $preprocess = [], $types = [], $byPipeline = false) {
+                $db = $this->dbName;
+
+                $query = $this->getIssuesQuery($collection, $query, $fields, $sort, $skip, $limit, $preprocess, $types, $byPipeline);
 
                 $projection = [];
 
@@ -441,6 +445,7 @@
                         $count = $document["countDocuments"];
                     }
                 } else {
+                    $_query = json_decode(json_encode($query), true);
                     $issues = $this->mongo->$db->$collection->find($query, $options);
                     $count = $this->mongo->$db->$collection->countDocuments($query);
                 }
@@ -1345,6 +1350,46 @@
                 }
 
                 return false;
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+            public function matchFilter($project, $filter, $issueId) {
+                $filter = @json_decode($this->getFilter($params["filter"]), true);
+
+                if ($filter) {
+                    $db = $this->dbName;
+
+                    $query = false;
+
+                    if (isset($filter["pipeline"])) {
+                        $query = json_decode(json_encode($tt->getIssuesQuery($project, @$filter["pipeline"], [ "issueId" ], [], 0, 1, [], [], true)));
+                    }
+
+                    if (isset($filter["filter"])) {
+                        $query = json_decode(json_encode($tt->getIssuesQuery($project, @$filter["filter"], [ "issueId" ], [ "created" => 1 ], 0, 1), true));
+                    }
+
+                    if ($query) {
+                        $issues = $this->mongo->$db->$collection->aggregate([
+                            $query,
+                            [
+                                "\$match" => [
+                                    "issueId" => [
+                                        "\$exists" => true
+                                    ]
+                                ],
+                            ]
+                        ]);
+
+                        return count($issues);
+                    }
+
+                } else {
+                    return false;
+                }
             }
 
             /**

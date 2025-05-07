@@ -15,16 +15,16 @@
             /**
              * @inheritDoc
              */
-            public function allow($params)
-            {
+
+            public function allow($params) {
                 return true;
             }
 
             /**
              * @inheritDoc
              */
-            public function capabilities()
-            {
+
+            public function capabilities() {
                 $cap = parent::capabilities();
 
                 if ($cap) {
@@ -41,6 +41,7 @@
             /**
              * @inheritDoc
              */
+
             public function getProjects($acronym = false) {
                 $key = $acronym ? "PROJECT:$acronym" : "PROJECTS";
 

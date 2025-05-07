@@ -170,6 +170,9 @@
                         },
                         "myself" => function () {
                             return [ loadBackend("users")->getUser($this->uid) ];
+                        },
+                        "matchFilter" => function (...$args) {
+                            return [ $this->matchFilter(...$args) ];
                         }
                     ]);
 
@@ -2218,7 +2221,7 @@
              * @return mixed
              */
 
-             abstract public function getSuggestions($project, $field, $query);
+            abstract public function getSuggestions($project, $field, $query);
 
             /**
              * @param string $issueId
@@ -2258,6 +2261,7 @@
              * @param string $rightSide
              * @param string $icon
              * @param string $color
+             *
              * @return mixed
              */
 
@@ -2266,10 +2270,20 @@
             /**
              * @param string $filter
              * @param boolean $all
+             *
              * @return mixed
              */
 
             public abstract function deleteFavoriteFilter($filter, $all = false);
+
+            /**
+             * @param string $filter
+             * @param string $issueId
+             *
+             * return boolean
+             */
+
+            public abstract function matchFilter($project, $filter, $issueId);
 
             /**
              * @inheritDoc
