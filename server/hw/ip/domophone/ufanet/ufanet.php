@@ -352,7 +352,7 @@ abstract class ufanet extends domophone
                 $dbConfig['cmsModel'] = $cmsType;
             }
 
-            $dbConfig['matrix'] = $this->remapMatrix($dbConfig['matrix']);
+            $dbConfig['matrix'] = $this->remapMatrix($dbConfig['matrix'], $dbConfig['apartments']);
         }
 
         $dbConfig['cmsLevels'] = [];
@@ -719,14 +719,15 @@ abstract class ufanet extends domophone
         }
     }
 
-    protected function remapMatrix(array $matrix): array
+    protected function remapMatrix(array $matrix, array $configApartments = []): array
     {
         $this->loadDialplans();
 
         $newMatrix = [];
         $edge = $this->getMatrixEdge();
         foreach ($matrix as $index => $cell) {
-            if (!isset($this->dialplans[$cell['apartment']])) {
+            $apartment = $cell['apartment'];
+            if (!isset($this->dialplans[$apartment]) && !isset($configApartments[$apartment])) {
                 continue;
             }
 
@@ -736,7 +737,7 @@ abstract class ufanet extends domophone
                 continue;
             }
 
-            $newCell = self::getMatrixCell($mapping + $edge, $cell['apartment']);
+            $newCell = self::getMatrixCell($mapping + $edge, $apartment);
             $newMatrix[$newCell['index']] = $newCell['value'];
         }
 
