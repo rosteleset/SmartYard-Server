@@ -1373,16 +1373,16 @@
                     }
 
                     if ($query) {
-                        $issues = $this->mongo->$db->$collection->aggregate([
+                        $pipeline = [
                             $query,
                             [
                                 "\$match" => [
                                     "issueId" => $issueId
                                 ],
                             ],
-                        ]);
+                        ];
 
-                        return count($issues);
+                        return count($this->mongo->$db->$collection->aggregate($pipeline));
                     }
 
                 } else {
