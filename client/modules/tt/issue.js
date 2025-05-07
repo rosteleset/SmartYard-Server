@@ -1055,10 +1055,10 @@
                 modules.tt.issue.callsLoaded = true;
                 if (result.cdr && result.cdr.length) {
                     if ($("#issueComments").text()) {
-                        let comments = $(".issueComment");
                         for (let i in result.cdr) {
+                            let comments = $(".issueComment");
 
-                            let h = "<tr class='issueCall' data-time='" + result.cdr[i].start + "' data-date='" + date("d-m-Y", result.cdr[i].start) + "'>";
+                            let h = "<tr class='issueComment issueCall' data-time='" + result.cdr[i].start + "' data-date='" + date("d-m-Y", result.cdr[i].start) + "'>";
                             h += "<td class='pl-1' style='font-size: 14px;'>";
                             h += "<div>";
                             h += "*" + (parseInt(i) + 1) + " ";
@@ -1073,29 +1073,31 @@
                             h += "</td>";
                             h += "</tr>";
 
+                            let first = comments.first();
                             let f = false;
-                            let last = false;
 
-                            $(comments.get().reverse()).each(function () {
-                                let comment = $(this);
-                                if (!last) {
-                                    last = comment;
-                                }
-                                if (parseInt(result.cdr[i].start) < parseInt(comment.attr("data-time"))) {
-                                    f = true;
-                                    $(h).insertBefore(comment);
-                                    return false;
-                                }
-                            });
+                            if (parseInt(result.cdr[i].start) < parseInt(first.attr("data-time"))) {
+                                $(h).insertBefore(first);
+                                f = true;
+                            } else {
+                                comments.each(function () {
+                                    let comment = $(this);
+                                    if (parseInt(result.cdr[i].start) > parseInt(comment.attr("data-time"))) {
+                                        $(h).insertAfter(comment);
+                                        f = true;
+                                        return false;
+                                    }
+                                });
+                            }
 
                             if (!f) {
-                                $(h).insertAfter(last);
+                                $(h).insertAfter(comments.last());
                             }
                         }
                     } else {
                         let h = `<tr><td style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.comments")}' style="font-size: 11pt;"/></td></tr>`;
                         for (let i in result.cdr) {
-                            h += "<tr class='issueCall' data-time='" + result.cdr[i].start + "' data-date='" + date("d-m-Y", result.cdr[i].start) + "'>";
+                            h += "<tr class='issueComment issueCall' data-time='" + result.cdr[i].start + "' data-date='" + date("d-m-Y", result.cdr[i].start) + "'>";
                             h += "<td class='pl-1' style='font-size: 14px;'>";
                             h += "<div>";
                             h += "*" + (parseInt(i) + 1) + " ";
