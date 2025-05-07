@@ -1377,11 +1377,9 @@
                             $query,
                             [
                                 "\$match" => [
-                                    "issueId" => [
-                                        "\$exists" => true
-                                    ]
+                                    "issueId" => $issueId
                                 ],
-                            ]
+                            ],
                         ]);
 
                         return count($issues);
