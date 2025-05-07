@@ -836,7 +836,7 @@
                 h += "</span>";
                 h += " ";
                 h += i18n("tt.commented");
-                h += " [#" + (parseInt(i) + 1) + "]: ";
+//                h += " [#" + (parseInt(i) + 1) + "]: ";
                 h += ttDate(issue.issue.comments[i].created);
                 if (issue.issue.comments[i].private) {
                     h += "<i class='ml-2 fas fa-fw fa-eye-slash text-warning'></i>";
@@ -1075,7 +1075,7 @@
                             h += "</span>";
                             h += " ";
                             h += result.cdr[i].src + "&nbsp;>>>&nbsp;" + result.cdr[i].dst + ", " + result.cdr[i].billsec + " " + i18n("tt.sec");
-                            h += " [#" + (parseInt(i) + 1) + "]: ";
+//                            h += " [#" + (parseInt(i) + 1) + "]: ";
                             h += ttDate(result.cdr[i].start);
                             h += "</div>";
 
@@ -1112,11 +1112,13 @@
                             h += "<tr class='issueComment' data-time='" + result.cdr[i].start + "' data-date='" + date("d-m-Y H:i:s", result.cdr[i].start) + "'>";
                             h += "<td class='pl-1' style='font-size: 14px;'>";
                             h += "<div>";
-                            h += "*" + (parseInt(i) + 1) + " ";
-                            h += ttDate(result.cdr[i].start);
-                            h += "<span class='ml-2 text-info text-bold'>";
-                            h += result.cdr[i].src + "&nbsp;>>>&nbsp;" + result.cdr[i].dst + " [" + result.cdr[i].billsec + " " + i18n("tt.sec") + "]";
+                            h += "<span class='text-bold'>";
+                            h += i18n("tt.call");
                             h += "</span>";
+                            h += " ";
+                            h += result.cdr[i].src + "&nbsp;>>>&nbsp;" + result.cdr[i].dst + ", " + result.cdr[i].billsec + " " + i18n("tt.sec");
+//                            h += " [#" + (parseInt(i) + 1) + "]: ";
+                            h += ttDate(result.cdr[i].start);
                             h += "</div>";
                             h += "<div class='ml-2 mb-2 mt-1'>";
                             h += `<audio src='${result.cdr[i].file}' controls='true' preload='none'>`;
