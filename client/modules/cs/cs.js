@@ -1474,7 +1474,7 @@
 
         document.title = i18n("windowTitle") + " :: " + i18n("cs.cs");
 
-        if (params.sheet && params.sheet_date) {
+        if (params.sheet && params.date) {
             lStore("_sheet_name", params.sheet);
             lStore("_sheet_date", params.date);
         }
