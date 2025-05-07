@@ -310,6 +310,7 @@
     "calls": "Calls",
     "callsLoaded": "%s calls found",
     "callsNotFound": "Calls not found",
+    "call": "Call",
     "sec": "sec",
     "sortBy": "Order by:",
     "sortDir": "Order direction:",
