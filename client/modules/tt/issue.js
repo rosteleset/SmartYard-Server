@@ -828,7 +828,7 @@
         if (issue.issue.comments && Object.keys(issue.issue.comments).length) {
             h += `<tr><td style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.comments")}' style="font-size: 11pt;"/></td></tr>`;
             for (let i in issue.issue.comments) {
-                h += "<tr class='issueComment' data-time='" + issue.issue.comments[i].created + "'>";
+                h += "<tr class='issueComment' data-time='" + issue.issue.comments[i].created + "' data-date='" + date("d-m-Y", issue.issue.comments[i].created) + "'>";
                 h += "<td class='pl-1' style='font-size: 14px;'>";
                 h += "<div>";
                 h += "<span class='text-bold'>";
@@ -1058,7 +1058,7 @@
                         let comments = $(".issueComment");
                         for (let i in result.cdr) {
 
-                            let h = "<tr class='issueCall' data-time='" + result.cdr[i].start + "'>";
+                            let h = "<tr class='issueCall' data-time='" + result.cdr[i].start + "' data-date='" + date("d-m-Y", result.cdr[i].start) + "'>";
                             h += "<td class='pl-1' style='font-size: 14px;'>";
                             h += "<div>";
                             h += "*" + (parseInt(i) + 1) + " ";
@@ -1095,7 +1095,7 @@
                     } else {
                         let h = `<tr><td style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.comments")}' style="font-size: 11pt;"/></td></tr>`;
                         for (let i in result.cdr) {
-                            h += "<tr class='issueCall' data-time='" + result.cdr[i].start + "'>";
+                            h += "<tr class='issueCall' data-time='" + result.cdr[i].start + "' data-date='" + date("d-m-Y", result.cdr[i].start) + "'>";
                             h += "<td class='pl-1' style='font-size: 14px;'>";
                             h += "<div>";
                             h += "*" + (parseInt(i) + 1) + " ";
