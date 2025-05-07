@@ -33,6 +33,8 @@ abstract class ufanet extends domophone
         'QAD-100' => ['type' => 'DIGITAL'],
     ];
 
+    protected const PERSONAL_CODE_RFID_DATA_REGEXP = '/^(\d+);3$/';
+
     /** @var array|null $dialplans An array that holds dialplan information, which may be null if not loaded. */
     protected ?array $dialplans = null;
 
@@ -40,8 +42,6 @@ abstract class ufanet extends domophone
     protected ?array $rfids = null;
 
     protected ?string $cmsModelName = null;
-
-    protected array $personalEntryCodes = [];
 
     public function addRfid(string $code, int $apartment = 0, int $type = 1): void
     {
@@ -65,7 +65,7 @@ abstract class ufanet extends domophone
     public function addRfids(array $rfids): void
     {
         foreach ($rfids as $rfid) {
-            $this->addRfid(code: $rfid, type: in_array($rfid, $this->personalEntryCodes) ? 3 : 1);
+            $this->addRfid($rfid);
         }
     }
 
@@ -78,6 +78,15 @@ abstract class ufanet extends domophone
     ): void
     {
         $this->loadDialplans();
+
+        $this->cleanupApartmentPersonalCodes($apartment);
+        if ($code !== 0) {
+            $this->addRfid(
+                code: (string)$code,
+                apartment: $apartment,
+                type: 3,
+            );
+        }
 
         $this->dialplans[$apartment] = [
             'sip_number' => "$sipNumbers[0]" ?? '',
@@ -352,15 +361,7 @@ abstract class ufanet extends domophone
         $dbConfig['sip']['stunServer'] = '';
         $dbConfig['sip']['stunPort'] = 3478;
 
-        $this->personalEntryCodes = [];
         foreach ($dbConfig['apartments'] as &$apartment) {
-            $code = $apartment['code'];
-            if ($code != '0') {
-                $code = str_pad($code, 14, '0', STR_PAD_LEFT);
-                $dbConfig['rfids'][$code] = $code;
-                $this->personalEntryCodes[] = $code;
-            }
-            $apartment['code'] = 0;
             $apartment['cmsLevels'] = [];
         }
 
@@ -393,9 +394,15 @@ abstract class ufanet extends domophone
             // The Ufanet intercom stores personal entry codes as keys. Restore structure that configurator expects
             $currentCode = 0;
             foreach ($this->rfids as $code => $data) {
-                if (preg_match('/^(\d+);3$/', $data, $matches)) {
+                if (preg_match(self::PERSONAL_CODE_RFID_DATA_REGEXP, $data, $matches)) {
                     if ($matches[1] == $apartmentNumber) {
-                        $currentCode = $code;
+                        // Force SmartConfigurator to reconfigure apartment if somehow multiple personal codes exists
+                        if ($currentCode !== 0) {
+                            $currentCode = -1;
+                            break;
+                        } else {
+                            $currentCode = $code;
+                        }
                     }
                 }
             }
@@ -496,10 +503,18 @@ abstract class ufanet extends domophone
         $uniqueRfids = [];
 
         // Get RFIDs and remove leading zeros
-        $normalizedRfids = array_map(fn($rfid) => ltrim($rfid, '0'), array_keys($this->rfids));
+        $normalizedRfids = [];
+        foreach ($this->rfids as $rfid => $data) {
+            $normalizedRfids[ltrim($rfid, '0')] = $data;
+        }
 
         // Identify unique RFIDs
-        foreach ($normalizedRfids as $rfid) {
+        foreach ($normalizedRfids as $rfid => $data) {
+            // Skip personal codes
+            if (preg_match(self::PERSONAL_CODE_RFID_DATA_REGEXP, $data)) {
+                continue;
+            }
+
             $isUnique = true;
 
             foreach ($normalizedRfids as $compareRfid) {
@@ -516,6 +531,13 @@ abstract class ufanet extends domophone
 
         // Convert RFIDs to uppercase and pad them with leading zeros
         return array_map(fn($rfid) => str_pad(strtoupper($rfid), 14, '0', STR_PAD_LEFT), $uniqueRfids);
+    }
+
+    protected function cleanupApartmentPersonalCodes(int $apartment): void
+    {
+        $this->rfids = array_filter($this->rfids, function (string $data) use ($apartment) {
+            return "$apartment;3" != $data;
+        });
     }
 
     protected function getSipConfig(): array

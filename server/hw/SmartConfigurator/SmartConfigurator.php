@@ -114,12 +114,10 @@ class SmartConfigurator
     {
         $rfidsToBeAdded = [];
 
-        $transformedDbConfig = $this->device->transformDbConfig($this->dbConfig);
-
         foreach ($rfids as $rfidCode) {
             echo "$rfidCode... ";
 
-            if (!in_array($rfidCode, $transformedDbConfig['rfids'])) {
+            if (!in_array($rfidCode, $this->dbConfig['rfids'])) {
                 $this->device->deleteRfid($rfidCode);
             } else {
                 $rfidsToBeAdded[] = $rfidCode;
