@@ -1101,15 +1101,16 @@
                         break;
                 }
 
+                $domophones = $this->db->get($q, false, $r);
+
+                foreach ($domophones as $key => $domophone) {
+                    $domophones[$key]["ext"] = json_decode($domophone["ext"]);
+                }
+
                 $monitoring = loadBackend("monitoring");
 
                 if ($monitoring && $withStatus) {
                     $targetHosts = [];
-                    $domophones = $this->db->get($q, false, $r);
-
-                    foreach ($domophones as &$domophone) {
-                        $domophone["ext"] = json_decode($domophone["ext"]);
-                    }
 
                     foreach ($domophones as $domophone) {
                         $targetHosts[] = [
@@ -1121,22 +1122,15 @@
                     }
 
                     $targetStatus = $monitoring->devicesStatus("domophone", $targetHosts);
+
                     if ($targetStatus) {
                         foreach ($domophones as &$domophone) {
                             $domophone["status"] = $targetStatus[$domophone["domophoneId"]]['status'];
                         }
                     }
-
-                    return $domophones;
-                } else {
-                    $domophones = $this->db->get($q, false, $r);
-
-                    foreach ($domophones as &$domophone) {
-                        $domophone["ext"] = json_decode($domophone["ext"]);
-                    }
-
-                    return $domophones;
                 }
+
+                return $domophones;
             }
 
             /**
