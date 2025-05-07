@@ -1474,6 +1474,11 @@
 
         document.title = i18n("windowTitle") + " :: " + i18n("cs.cs");
 
+        if (params.sheet && params.sheet_date) {
+            lStore("_sheet_name", params.sheet);
+            lStore("_sheet_date", params.date);
+        }
+
         if (modules.cs.menuItem) {
             $("#" + modules.cs.menuItem).children().first().attr("href", "?#cs&_=" + Math.random());
         }
