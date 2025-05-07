@@ -3447,31 +3447,35 @@
         done(() => {
             let fields = [
                 {
+                    id: "assigned",
+                    text: i18n("tt.assigned") + ' [assigned]',
+                },
+                {
                     id: "catalog",
-                    text: i18n("tt.catalog"),
+                    text: i18n("tt.catalog") + ' [catalog]',
                 },
                 {
                     id: "subject",
-                    text: i18n("tt.subject"),
+                    text: i18n("tt.subject") + ' [subject]',
                 },
                 {
                     id: "description",
-                    text: i18n("tt.description"),
+                    text: i18n("tt.description") + ' [description]',
                 },
                 {
                     id: "status",
-                    text: i18n("tt.status"),
+                    text: i18n("tt.status") + ' [status]',
                 },
                 {
                     id: "resolution",
-                    text: i18n("tt.resolution"),
+                    text: i18n("tt.resolution") + ' [resolution]',
                 },
             ];
 
             for (let i in modules.tt.meta.customFields) {
                 fields.push({
                     id: "_cf_" + modules.tt.meta.customFields[i].field,
-                    text: modules.tt.meta.customFields[i].fieldDisplay,
+                    text: modules.tt.meta.customFields[i].fieldDisplay + ' [_cf_' + modules.tt.meta.customFields[i].field + ']',
                 });
             }
 
@@ -3480,6 +3484,7 @@
                 footer: true,
                 borderless: true,
                 topApply: true,
+                size: "lg",
                 fields: [
                     {
                         id: "field",
