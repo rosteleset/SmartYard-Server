@@ -789,7 +789,7 @@
             h += "<table>";
             for (let i in issue.issue.childrens.issues) {
                 h += "<tr>";
-                h += `<td><a class='text-bold hoverable ttIssue' href='/?#tt&issue=${issue.issue.childrens.issues[i].issueId}'>${issue.issue.childrens.issues[i].issueId}</a></td>`;
+                h += `<td><a class='text-bold hoverable' href='/?#tt&issue=${issue.issue.childrens.issues[i].issueId}'>${issue.issue.childrens.issues[i].issueId}</a></td>`;
                 h += `<td class='pl-2'>${ttDate(issue.issue.childrens.issues[i].created, true)}</td>`;
                 h += `<td class='pl-2'>${modules.tt.issueField2Html(issue.issue.childrens.issues[i], "author", undefined, "left")}</td>`;
                 h += `<td class='pl-2'>${issue.issue.childrens.issues[i].subject}</td>`;
@@ -808,7 +808,7 @@
             h += "<table>";
             for (let i in issue.issue.linkedIssues.issues) {
                 h += "<tr>";
-                h += `<td><a class='text-bold hoverable ttIssue' href='/?#tt&issue=${issue.issue.linkedIssues.issues[i].issueId}'>${issue.issue.linkedIssues.issues[i].issueId}</a></td>`;
+                h += `<td><a class='text-bold hoverable' href='/?#tt&issue=${issue.issue.linkedIssues.issues[i].issueId}'>${issue.issue.linkedIssues.issues[i].issueId}</a></td>`;
                 h += `<td class='pl-2'>${ttDate(issue.issue.linkedIssues.issues[i].created, true)}</td>`;
                 h += `<td class='pl-2'>${modules.tt.issueField2Html(issue.issue.linkedIssues.issues[i], "author", undefined, "left")}</td>`;
                 h += `<td class='pl-2'>${issue.issue.linkedIssues.issues[i].subject}</td>`;
@@ -866,7 +866,7 @@
         $("#mainForm").html(h);
 
         $(".ttIssue").off("click").on("click", function () {
-            window.location.href = "?#tt&issue=" + encodeURIComponent($(this).text());
+            // window.location.href = "?#tt&issue=" + encodeURIComponent($(this).text());
         });
 
         $(".ttJournal").off("click").on("click", () => {
@@ -1029,7 +1029,7 @@
                     }
                     $("#issueJournal").html(h).show();
                     $(".ttIssue").off("click").on("click", function () {
-                        window.location.href = "?#tt&issue=" + encodeURIComponent($(this).text());
+                        // window.location.href = "?#tt&issue=" + encodeURIComponent($(this).text());
                     });
                 }).
                 always(loadingDone);
