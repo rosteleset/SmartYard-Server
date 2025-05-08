@@ -30,6 +30,9 @@ trait ufanet
         $this->reboot();
         $this->wait();
 
+        // After rebooting, the intercom functions remain unavailable for some time
+        sleep(10);
+
         // Sync time now
         $this->apiCall('/cgi-bin/j/sync-time.cgi');
     }

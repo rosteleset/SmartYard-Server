@@ -36,7 +36,7 @@ class SmartConfigurator
 
     public function makeConfiguration($retryCount = 0): void
     {
-        $maxRetries = 0;
+        $maxRetries = 1;
         $difference = $this->getDifference();
 
         if (!$difference) {
@@ -114,10 +114,12 @@ class SmartConfigurator
     {
         $rfidsToBeAdded = [];
 
+        $transformedDbConfig = $this->device->transformDbConfig($this->dbConfig);
+
         foreach ($rfids as $rfidCode) {
             echo "$rfidCode... ";
 
-            if (!in_array($rfidCode, $this->dbConfig['rfids'])) {
+            if (!in_array($rfidCode, $transformedDbConfig['rfids'])) {
                 $this->device->deleteRfid($rfidCode);
             } else {
                 $rfidsToBeAdded[] = $rfidCode;
