@@ -1442,7 +1442,8 @@
 
                 $comments = trim(implode("\n", $comments));
 
-                return $this->db->modify("update tt_projects set comments = :comments where project_id = $projectId", false, [
+                return $this->db->modify("update tt_projects set comments = :comments where project_id = :project_id", [
+                    "project_id" => $projectId,
                     "comments" => $comments,
                 ]);
             }
@@ -1465,8 +1466,8 @@
             /**
              * @inheritDoc
              */
-            public function addFavoriteFilter($filter, $rightSide, $icon, $color)
-            {
+
+            public function addFavoriteFilter($filter, $rightSide, $icon, $color) {
                 if (!checkStr($filter)) {
                     return false;
                 }
@@ -1487,8 +1488,8 @@
             /**
              * @inheritDoc
              */
-            public function deleteFavoriteFilter($filter, $all = false)
-            {
+
+            public function deleteFavoriteFilter($filter, $all = false) {
                 if (!checkStr($filter)) {
                     return false;
                 }
@@ -1508,6 +1509,7 @@
             /**
              * @inheritDoc
              */
+
             public function getCrontabs() {
                 $cache = $this->cacheGet("CRONTABS");
                 if ($cache) {
