@@ -131,11 +131,21 @@
 
                 $comment = false;
                 $commentPrivate = false;
+                $commentType = false;
+
                 if (array_key_exists("comment", $issue) && $issue["comment"]) {
                     $comment = trim($issue["comment"]);
-                    $commentPrivate = !!$issue["commentPrivate"];
+                    $commentPrivate = !!@$issue["commentPrivate"];
+                    if (checkStr(@$issue["commentType"], [ "minLength" => 1, "maxLength" => 32])) {
+                        $commentType = $issue["commentType"];
+                    }
                     unset($issue["comment"]);
-                    unset($issue["commentPrivate"]);
+                    if (array_key_exists("commentType", $issue)) {
+                        unset($issue["commentPrivate"]);
+                    }
+                    if (array_key_exists("commentPrivate", $issue)) {
+                        unset($issue["commentPrivate"]);
+                    }
                 }
 
                 if (array_key_exists("comments", $issue)) {
@@ -166,7 +176,7 @@
                     unset($issue["journal"]);
                 }
 
-                if ($comment && !$this->addComment($issue["issueId"], $comment, $commentPrivate, false, true)) {
+                if ($comment && !$this->addComment($issue["issueId"], $comment, $commentPrivate, $commentType, true)) {
                     return false;
                 }
 
