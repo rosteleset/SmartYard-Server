@@ -1442,7 +1442,9 @@
 
                 $comments = trim(implode("\n", $comments));
 
-                return $this->db->modify("update tt_projects set comments = :comments where project_id = $projectId");
+                return $this->db->modify("update tt_projects set comments = :comments where project_id = $projectId", false, [
+                    "comments" => $comments,
+                ]);
             }
 
             /**
