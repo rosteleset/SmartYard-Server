@@ -2114,7 +2114,7 @@
             callback: r => {
                 loadingStart();
                 PUT("tt", "project", projectId, {
-                    viewers: r.comments,
+                    comments: r.comments,
                 }).
                 fail(FAIL).
                 done(() => {
