@@ -2087,6 +2087,44 @@
         });
     },
 
+    projectCommentTypes: function (projectId) {
+        let project = false;
+
+        for (let i in modules.tt.meta.projects) {
+            if (modules.tt.meta.projects[i].projectId == projectId) {
+                project = modules.tt.meta.projects[i];
+                break;
+            }
+        }
+
+        cardForm({
+            title: i18n("tt.projectCommentTypes"),
+            footer: true,
+            borderless: true,
+            noHover: true,
+            topApply: true,
+            singleColumn: true,
+            fields: [
+                {
+                    id: "comments",
+                    type: "area",
+                    value: project.comments,
+                },
+            ],
+            callback: r => {
+                loadingStart();
+                PUT("tt", "project", projectId, {
+                    viewers: r.comments,
+                }).
+                fail(FAIL).
+                done(() => {
+                    message(i18n("tt.projectWasChanged"));
+                }).
+                always(modules.tt.settings.renderProjects);
+            },
+        });
+    },
+
     renderProjects: function () {
         loadingStart();
         GET("tt", "tt", false, true).
@@ -2176,6 +2214,11 @@
                                         icon: "fas fa-tags",
                                         title: i18n("tt.tags"),
                                         click: modules.tt.settings.projectTags,
+                                    },
+                                    {
+                                        icon: "fas fa-comment-alt",
+                                        title: i18n("tt.commentTypes"),
+                                        click: modules.tt.settings.projectCommentTypes,
                                     },
                                     {
                                         title: "-",

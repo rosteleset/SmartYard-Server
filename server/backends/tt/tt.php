@@ -292,7 +292,11 @@
                             return [ mb_substr(...$args) ];
                         },
                         "trim" => function ($str) {
-                            return [ trim(preg_replace('~^\s+|\s+$~u', '', $str)) ];
+                            if (function_exists("mb_trim")) {
+                                return [ mb_trim(preg_replace('~^\s+|\s+$~u', '', $str)) ];
+                            } else {
+                                return [ trim(preg_replace('~^\s+|\s+$~u', '', $str)) ];
+                            }
                         }
                     ]);
 
@@ -1131,6 +1135,14 @@
              */
 
             abstract public function setProjectViewers($projectId, $viewers);
+
+            /**
+             * @param $projectId
+             * @param $comments
+             * @return mixed
+             */
+
+            abstract public function setProjectComments($projectId, $comments);
 
             /**
              * @return mixed

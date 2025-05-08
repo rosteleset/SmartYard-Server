@@ -52,11 +52,11 @@
 
                 try {
                     if ($acronym) {
-                        $projects = $this->db->get("select project_id, acronym, project, max_file_size, search_subject, search_description, search_comments, assigned from tt_projects where acronym = :acronym", [
+                        $projects = $this->db->get("select project_id, acronym, project, max_file_size, search_subject, search_description, search_comments, assigned, comments from tt_projects where acronym = :acronym", [
                             "acronym" => $acronym,
                         ]);
                     } else {
-                        $projects = $this->db->get("select project_id, acronym, project, max_file_size, search_subject, search_description, search_comments, assigned from tt_projects order by acronym");
+                        $projects = $this->db->get("select project_id, acronym, project, max_file_size, search_subject, search_description, search_comments, assigned, comments from tt_projects order by acronym");
                     }
                     $_projects = [];
 
@@ -202,6 +202,7 @@
                             "searchDescription" => $project["search_description"],
                             "searchComments" => $project["search_comments"],
                             "assigned" => $project["assigned"],
+                            "comments" => $project["comments"],
                             "workflows" => $w,
                             "filters" => $f,
                             "resolutions" => $r,
@@ -1381,6 +1382,7 @@
             /**
              * @inheritDoc
              */
+
             public function setProjectViewers($projectId, $viewers) {
                 $this->clearCache();
 
@@ -1404,8 +1406,50 @@
             /**
              * @inheritDoc
              */
-            public function getFavoriteFilters()
-            {
+
+            public function setProjectComments($projectId, $comments) {
+                $this->clearCache();
+
+                if (!checkInt($projectId)) {
+                    return false;
+                }
+
+                $t = [];
+
+                $comments = explode("\n", $comments);
+
+                if (function_exists("mb_trim")) {
+                    foreach ($comments as $c) {
+                        if (mb_trim(preg_replace('~^\s+|\s+$~u', '', $c))) {
+                            $t[] = $c;
+                        }
+                    }
+                } else {
+                    foreach ($comments as $c) {
+                        if (trim(preg_replace('~^\s+|\s+$~u', '', $c))) {
+                            $t[] = $c;
+                        }
+                    }
+                }
+
+                $comments = array_unique($t);
+
+                if (extension_loaded('intl') === true) {
+                    collator_asort(collator_create('root'), $comments);
+                } else {
+                    asort($comments);
+                }
+
+                $comments = trim(implode("\n", $comments));
+
+                return $this->db->modify("update tt_projects set comments = :comments where project_id = $projectId");
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+            public function getFavoriteFilters() {
                 return $this->db->get("select filter, right_side, icon, color from tt_favorite_filters where login = :login", [
                     "login" => $this->login,
                 ], [

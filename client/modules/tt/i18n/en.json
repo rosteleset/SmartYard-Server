@@ -331,6 +331,7 @@
     "issueSave": "Save",
     "issueWasSaved": "Task was saved",
     "float": "Decimal places",
+    "commentTypes": "Comment types",
     "methods": {
         "tt": {
             "_title": "Task manager",
