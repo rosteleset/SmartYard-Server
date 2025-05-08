@@ -2060,6 +2060,7 @@
             noHover: true,
             topApply: true,
             singleColumn: true,
+            noFocus: true,
             fields: [
                 {
                     id: "viewers",

@@ -920,7 +920,7 @@ function cardForm(params) {
             });
         }
 
-        if (autofocus && !focus) {
+        if (autofocus && !focus && !params.noFocus) {
             $("#" + autofocus).focus();
         }
 
