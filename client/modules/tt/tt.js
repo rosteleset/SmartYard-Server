@@ -1081,7 +1081,7 @@
                         break;
 
                     case "parent":
-                        val = `<span><a class='hoverable text-bold' class='' href='/?#tt&issue=${val}'>${val}</a></span>`;
+                        val = `<span><a class='hoverable text-bold' class='' href='?#tt&issue=${val}'>${val}</a></span>`;
                         break;
 
                     case "created":
