@@ -136,12 +136,13 @@
                 if (array_key_exists("comment", $issue) && $issue["comment"]) {
                     $comment = trim($issue["comment"]);
                     $commentPrivate = !!@$issue["commentPrivate"];
-                    if (checkStr(@$issue["commentType"], [ "minLength" => 1, "maxLength" => 32])) {
-                        $commentType = $issue["commentType"];
+                    $commentType = @$issue["commentType"];
+                    if (checkStr($commentType, [ "minLength" => 1, "maxLength" => 32])) {
+                        $commentType = $commentType;
                     }
                     unset($issue["comment"]);
                     if (array_key_exists("commentType", $issue)) {
-                        unset($issue["commentPrivate"]);
+                        unset($issue["commentType"]);
                     }
                     if (array_key_exists("commentPrivate", $issue)) {
                         unset($issue["commentPrivate"]);
