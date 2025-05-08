@@ -2098,7 +2098,7 @@
         }
 
         cardForm({
-            title: i18n("tt.projectCommentTypes"),
+            title: i18n("tt.commentTypes"),
             footer: true,
             borderless: true,
             noHover: true,
