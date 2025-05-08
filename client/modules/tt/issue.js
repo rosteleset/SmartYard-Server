@@ -828,7 +828,7 @@
         if (issue.issue.comments && Object.keys(issue.issue.comments).length) {
             let cts = [];
             try {
-                cts = modules.tt.meta.comments.split("\n");
+                cts = project.comments.split("\n");
             } catch (_) {
                 //
             }
