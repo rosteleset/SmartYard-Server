@@ -11,6 +11,7 @@
     preCoordinate: false,
     csChangedTimeout: -1,
     menuItem: false,
+    highlight: false,
 
     init: function () {
         if (parseInt(myself.uid) > 0) {
@@ -458,6 +459,9 @@
                                                 if (modules.cs.currentSheet.sheet.fields.hint && r.issues.issues[i][modules.cs.currentSheet.sheet.fields.hint]) {
                                                     title = escapeHTML(r.issues.issues[i][modules.cs.currentSheet.sheet.fields.hint]);
                                                 }
+                                                if (modules.cs.highlight == r.issues.issues[i].issueId) {
+                                                    modules.cs.issuesInSheet[uid] += `<span class="${modules.cs.currentSheet.sheet.issueHighlightClass ? modules.cs.currentSheet.sheet.issueHighlightClass : "bg-orange"}"><a class="csIssueSpan pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a></span><br />`;
+                                                } else
                                                 if (closed) {
                                                     modules.cs.issuesInSheet[uid] += `<span class="${modules.cs.currentSheet.sheet.issueClosedClass}"><a class="csIssueSpan pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a></span><br />`;
                                                 } else
@@ -1477,6 +1481,10 @@
         if (params.sheet && params.date) {
             lStore("_sheet_name", params.sheet);
             lStore("_sheet_date", params.date);
+        }
+
+        if (params.highlight) {
+            modules.cs.highlight = params.highlight;
         }
 
         if (modules.cs.menuItem) {
