@@ -231,6 +231,6 @@
         "v71_custom_fields.sql"
     ],
     "72": [
-        "v71_project_comments.sql"
+        "v72_project_comments.sql"
     ]
 }
