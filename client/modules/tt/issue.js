@@ -1533,7 +1533,7 @@
             let c = project.comments.split("\n");
             for (let i in c) {
                 options.push({
-                    id: i + 100,
+                    id: parseInt(i) + 100,
                     text: c[i],
                 });
             }
