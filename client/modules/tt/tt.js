@@ -2109,7 +2109,7 @@
                                         },
                                         {
                                             id: "leftSide",
-                                            title: i18n("tt.filterleftSide"),
+                                            title: i18n("tt.filterLeftSide"),
                                             type: "noyes",
                                         },
                                     ],
