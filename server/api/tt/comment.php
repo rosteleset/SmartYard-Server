@@ -12,7 +12,7 @@
      *
      * @apiBody {String} issueId
      * @apiBody {String} comment
-     * @apiBody {Booleaning} commentPrivate
+     * @apiBody {Boolean} commentPrivate
      * @apiBody {String} type
      *
      * @apiSuccess {Boolean} operationResult

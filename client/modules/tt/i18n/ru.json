@@ -202,6 +202,7 @@
     "commentsHidden": "Комментарии (+%s)",
     "commentsHideFilter": "Скрывать комментарии",
     "commentPrivate": "Только для сотрудников",
+    "commentType": "Тип комментария",
     "saAddComment": "Комментарий",
     "saAddFile": "Приложить файл(ы)",
     "saAddSingleFile": "Приложить файл",

@@ -195,6 +195,9 @@
                 case "commentPrivate":
                     return i18n("tt.commentPrivate");
 
+                case "commentType":
+                    return i18n("tt.commentType");
+
                 case "attachmentFilename":
                     return i18n("tt.attachmentFilename");
 
