@@ -993,7 +993,6 @@
                             k = [...new Set(k)].sort();
                             for (let j in k) {
                                 if (noJournal.indexOf(k[j]) >= 0) continue;
-//                                if (sep) {
                                     h += "<tr class='tr-hoverable'>";
                                     h += "<td class='pl-2 td-journal nowrap'>";
                                     h += modules.tt.issueFieldTitle(k[j]) + ": ";
@@ -1002,24 +1001,6 @@
                                     h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].new[k[j]], "journal");
                                     h += "</td>";
                                     h += "</tr>";
-//                                } else {
-/*
-                                    h += "<tr class='tr-hoverable'>";
-                                    h += "<td class='pl-2 td-journal nowrap'>";
-                                    h += modules.tt.issueFieldTitle(k[j]) + " (" + i18n("tt.old") + "): ";
-                                    h += "</td>";
-                                    h += "<td class='pl-2 td-journal' style='width: 100%;'>&nbsp;</td>";
-                                    h += "</tr>";
-                                    h += "<tr class='tr-hoverable'>";
-                                    h += "<td class='pl-2 td-journal nowrap'>";
-                                    h += modules.tt.issueFieldTitle(k[j]) + " (" + i18n("tt.new") + "): ";
-                                    h += "</td>";
-                                    h += "<td class='pl-2 td-journal' style='width: 100%;'>";
-                                    h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].new[k[j]], "journal");
-                                    h += "</td>";
-                                    h += "</tr>";
-                                }
-*/
                             }
                         }
 
@@ -1037,14 +1018,6 @@
                                 h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].old[k[j]], "journal");
                                 h += "</td>";
                                 h += "</tr>";
-/*
-                                h += "<tr class='tr-hoverable'>";
-                                h += "<td class='pl-2 td-journal nowrap'>";
-                                h += modules.tt.issueFieldTitle(k[j]) + " (" + i18n("tt.new") + "): ";
-                                h += "</td>";
-                                h += "<td class='pl-2 td-journal' style='width: 100%;'>&nbsp;</td>";
-                                h += "</tr>";
-*/
                             }
                         }
                     }
@@ -1556,7 +1529,32 @@
         });
 
         $(".commentsMenu").off("click").on("click", () => {
-            cardForm
+            let options = [];
+
+            let c = project.comments.split("\n");
+            for (let i in c) {
+                options.push({
+                    id: i + 100,
+                    text: c[i],
+                });
+            }
+
+            cardForm({
+                title: i18n("commentsHideFilter"),
+                footer: true,
+                borderless: true,
+                noFocus: true,
+                fields: [
+                    {
+                        id: "comment",
+                        type: "multiselect",
+                        options,
+                    },
+                ],
+                callback: result => {
+                    //
+                },
+            });
         });
 
         $("#stepPrev").off("click").on("click", () => {
