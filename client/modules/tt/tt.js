@@ -1372,6 +1372,7 @@
         if (!target) {
             $("#rightTopDynamic").html(rtd);
             current_project = $("#ttProjectSelect").val();
+            lStore("ttProject", current_project);
         }
 
         $("#ttProjectSelect").off("change").on("change", () => {
