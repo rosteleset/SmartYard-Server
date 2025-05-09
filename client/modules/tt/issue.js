@@ -1539,16 +1539,24 @@
                 });
             }
 
+            let v = [];
+            if (lStore("ttCommentsFilter")) {
+                v = lStore("ttCommentsFilter");
+            }
+
             cardForm({
                 title: i18n("commentsHideFilter"),
                 footer: true,
                 borderless: true,
                 noFocus: true,
+                noHover: true,
+                singleColumn: true,
                 fields: [
                     {
                         id: "comment",
                         type: "multiselect",
                         options,
+                        values:
                     },
                 ],
                 callback: result => {
