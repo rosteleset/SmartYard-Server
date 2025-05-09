@@ -1559,7 +1559,12 @@
                     },
                 ],
                 callback: r => {
-                    console.log(r);
+                    let h = [];
+                    for (let i in r) {
+                        h.push(parseInt(r[i]));
+                    }
+                    lStore("ttCommentsFilter", h);
+                    window.location.reload();
                 },
             });
         });
