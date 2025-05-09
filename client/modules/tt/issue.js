@@ -840,7 +840,7 @@
                 if (cts.indexOf(issue.issue.comments[i].type) >= 0) {
                     ct = cts.indexOf(issue.issue.comments[i].type) + 100;
                 }
-                if (cf.indexOf(ct) < 0) {
+                if (cf && Array.isArray(cf) && cf.indexOf(ct) < 0) {
                     h += "<tr class='issueComment' data-type='" + ct + "' data-time='" + issue.issue.comments[i].created + "' data-date='" + date("d-m-Y H:i:s", issue.issue.comments[i].created) + "'>";
                     h += "<td class='pl-1' style='font-size: 14px;'>";
                     h += "<div>";
