@@ -848,7 +848,7 @@
                     h += "<span class='text-bold'>";
                     h += members[issue.issue.comments[i].author] ? members[issue.issue.comments[i].author] : issue.issue.comments[i].author;
                     h += "</span>";
-                    h += " ";
+                    h += "&nbsp;";
                     h += i18n("tt.commented");
                     h += "&nbsp;";
                     h += ttDate(issue.issue.comments[i].created);
@@ -909,7 +909,6 @@
                     let h = '';
                     h += `<tr><td style='width: 100%' colspan='2'><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.journal")}' style='font-size: 11pt;'/></td></tr>`;
                     let jf = true;
-//                    let c = 1;
                     for (let i in response.journal) {
                         let o = response.journal[i].old && typeof response.journal[i].old.length == 'undefined';
                         let n = response.journal[i].new && typeof response.journal[i].new.length == 'undefined';
@@ -918,7 +917,6 @@
                         }
                         let action = response.journal[i].action.split("#")[0];
                         let indx = parseInt(response.journal[i].action.split("#")[1]) + 1;
-                        let sep = ![ "modifyIssue", "modifyComment" ].includes(action.split("#")[0]);
                         h += "<tr>";
                         if (jf) {
                             jf = false;
@@ -927,15 +925,13 @@
                             h += "<td class='pl-1 pt-3' style='font-size: 14px;' colspan='2'>";
                         }
                         h += "<div>";
-//                        h += "#" + c + " ";
-//                        c++;
-                        h += ttDate(response.journal[i].date);
-                        h += "<span class='ml-2 text-info text-bold'>";
+                        h += "<span class='text-bold'>";
                         h += members[response.journal[i].login] ? members[response.journal[i].login] : response.journal[i].login;
                         h += "</span>";
-                        h += "<span class='ml-2'>";
+                        h += "&nbsp;";
                         h += i18n("tt.journalAction" + action.charAt(0).toUpperCase() + action.substring(1), indx);
-                        h += "</span>";
+                        h += "&nbsp;";
+                        h += ttDate(response.journal[i].date);
                         h += "</div>";
                         h += "</td>";
                         h += "</tr>";
