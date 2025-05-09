@@ -1552,7 +1552,7 @@
                 singleColumn: true,
                 fields: [
                     {
-                        id: "comment",
+                        id: "comments",
                         type: "multiselect",
                         options,
                         value,
@@ -1560,11 +1560,13 @@
                 ],
                 callback: r => {
                     let h = [];
-                    for (let i in r) {
-                        h.push(parseInt(r[i]));
+                    for (let i in r.comments) {
+                        h.push(parseInt(r.comments[i]));
                     }
                     lStore("ttCommentsFilter", h);
-                    setTimeout(window.location.reload, 100);
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 50);
                 },
             });
         });
