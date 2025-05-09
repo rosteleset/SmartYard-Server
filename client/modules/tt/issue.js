@@ -1558,8 +1558,8 @@
                         value,
                     },
                 ],
-                callback: result => {
-                    //
+                callback: r => {
+                    console.log(r);
                 },
             });
         });
