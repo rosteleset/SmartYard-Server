@@ -199,6 +199,7 @@
     "foreground": "Text color",
     "background": "Background color",
     "comments": "Comments",
+    "commentsHidden": "Comments (+%s)",
     "commentPrivate": "For Employees Only",
     "saAddComment": "Comment",
     "saAddFile": "Attach file(s)",

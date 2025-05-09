@@ -832,38 +832,47 @@
             } catch (_) {
                 //
             }
+            let cf = lStore("ttCommentsFilter");
+            let hc = 0;
             h += `<tr><td style="width: 100%"><hr class='hr-text-pointer mt-1 mb-1 commentsMenu' data-content='&#x2630; ${i18n("tt.comments")}' style="font-size: 11pt;"/></td></tr>`;
             for (let i in issue.issue.comments) {
                 let ct = 0;
                 if (cts.indexOf(issue.issue.comments[i].type) >= 0) {
                     ct = cts.indexOf(issue.issue.comments[i].type) + 100;
                 }
-                h += "<tr class='issueComment' data-type='" + ct + "' data-time='" + issue.issue.comments[i].created + "' data-date='" + date("d-m-Y H:i:s", issue.issue.comments[i].created) + "'>";
-                h += "<td class='pl-1' style='font-size: 14px;'>";
-                h += "<div>";
-                h += "<span class='text-bold'>";
-                h += members[issue.issue.comments[i].author] ? members[issue.issue.comments[i].author] : issue.issue.comments[i].author;
-                h += "</span>";
-                h += " ";
-                h += i18n("tt.commented");
-                h += "&nbsp;";
-                h += ttDate(issue.issue.comments[i].created);
-                if (issue.issue.comments[i].private) {
-                    h += "<i class='ml-2 fas fa-fw fa-eye-slash text-warning'></i>";
-                } else {
-                    h += "<i class='ml-2 fas fa-fw fa-eye text-success'></i>";
-                }
-                if (modules.tt.meta.myRoles[issue.issue.project] >= 20 && !modules.tt.meta.finalStatus[issue.issue.status]) {
-                    if (modules.tt.meta.myRoles[issue.issue.project] >= 70 || issue.issue.comments[i].author == lStore("_login")) {
-                        h += `<i class='far fa-fw fa-edit ml-2 pointer text-primary modifyComment' data-index='${i}'></i>`;
+                if (cf.indexOf(ct) < 0) {
+                    h += "<tr class='issueComment' data-type='" + ct + "' data-time='" + issue.issue.comments[i].created + "' data-date='" + date("d-m-Y H:i:s", issue.issue.comments[i].created) + "'>";
+                    h += "<td class='pl-1' style='font-size: 14px;'>";
+                    h += "<div>";
+                    h += "<span class='text-bold'>";
+                    h += members[issue.issue.comments[i].author] ? members[issue.issue.comments[i].author] : issue.issue.comments[i].author;
+                    h += "</span>";
+                    h += " ";
+                    h += i18n("tt.commented");
+                    h += "&nbsp;";
+                    h += ttDate(issue.issue.comments[i].created);
+                    if (issue.issue.comments[i].private) {
+                        h += "<i class='ml-2 fas fa-fw fa-eye-slash text-warning'></i>";
+                    } else {
+                        h += "<i class='ml-2 fas fa-fw fa-eye text-success'></i>";
                     }
+                    if (modules.tt.meta.myRoles[issue.issue.project] >= 20 && !modules.tt.meta.finalStatus[issue.issue.status]) {
+                        if (modules.tt.meta.myRoles[issue.issue.project] >= 70 || issue.issue.comments[i].author == lStore("_login")) {
+                            h += `<i class='far fa-fw fa-edit ml-2 pointer text-primary modifyComment' data-index='${i}'></i>`;
+                        }
+                    }
+                    h += "</div>";
+                    h += "<div class='ml-2 mb-2 mt-1'>";
+                    h += convertLinks(nl2br($.trim(escapeHTML(issue.issue.comments[i].body))));
+                    h += "</div>";
+                    h += "</td>";
+                    h += "</tr>";
+                } else {
+                    hc++;
                 }
-                h += "</div>";
-                h += "<div class='ml-2 mb-2 mt-1'>";
-                h += convertLinks(nl2br($.trim(escapeHTML(issue.issue.comments[i].body))));
-                h += "</div>";
-                h += "</td>";
-                h += "</tr>";
+            }
+            if (hc) {
+                $(".commentsMenu").attr("data-content", "&#x2630; " + i18n("tt.commentsHidden", hc));
             }
         }
 

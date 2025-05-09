@@ -199,6 +199,7 @@
     "foreground": "Цвет текста",
     "background": "Цвет фона",
     "comments": "Комментарии",
+    "commentsHidden": "Комментарии (+%s)",
     "commentPrivate": "Только для сотрудников",
     "saAddComment": "Комментарий",
     "saAddFile": "Приложить файл(ы)",
