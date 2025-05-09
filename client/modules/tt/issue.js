@@ -825,6 +825,8 @@
 
         h += "<table style='width: 100%;' class='ml-2' id='issueComments'>";
 
+        let hc = 0;
+
         if (issue.issue.comments && Object.keys(issue.issue.comments).length) {
             let cts = [];
             try {
@@ -833,14 +835,13 @@
                 //
             }
             let cf = lStore("ttCommentsFilter");
-            let hc = 0;
             h += `<tr><td style="width: 100%"><hr class='hr-text-pointer mt-1 mb-1 commentsMenu' data-content='&#x2630; ${i18n("tt.comments")}' style="font-size: 11pt;"/></td></tr>`;
             for (let i in issue.issue.comments) {
                 let ct = 0;
                 if (cts.indexOf(issue.issue.comments[i].type) >= 0) {
                     ct = cts.indexOf(issue.issue.comments[i].type) + 100;
                 }
-                if (cf && Array.isArray(cf) && cf.indexOf(ct) < 0) {
+                if (!cf || !Array.isArray(cf) || cf.indexOf(ct) < 0) {
                     h += "<tr class='issueComment' data-type='" + ct + "' data-time='" + issue.issue.comments[i].created + "' data-date='" + date("d-m-Y H:i:s", issue.issue.comments[i].created) + "'>";
                     h += "<td class='pl-1' style='font-size: 14px;'>";
                     h += "<div>";
@@ -871,9 +872,6 @@
                     hc++;
                 }
             }
-            if (hc) {
-                $(".commentsMenu").attr("data-content", "&#x2630; " + i18n("tt.commentsHidden", hc));
-            }
         }
 
         h += "</table>";
@@ -883,6 +881,10 @@
         h += "</div>";
 
         $("#mainForm").html(h);
+
+        if (hc) {
+            $(".commentsMenu").attr("data-content", "&#x2630; " + i18n("tt.commentsHidden", hc));
+        }
 
         $(".ttIssue").off("click").on("click", function () {
             // window.location.href = "?#tt&issue=" + encodeURIComponent($(this).text());
