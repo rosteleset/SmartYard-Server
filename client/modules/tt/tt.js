@@ -2121,7 +2121,7 @@
                                             leftSide: r.leftSide,
                                         }).
                                         done(() => {
-                                            window.location = refreshUrl();
+                                            window.location.reload();
                                         }).
                                         fail(FAIL).
                                         fail(loadingDone);
@@ -2132,7 +2132,7 @@
                                     loadingStart();
                                     DELETE("tt", "favoriteFilter", x).
                                     done(() => {
-                                        window.location = refreshUrl();
+                                        window.location.reload();
                                     }).
                                     fail(FAIL).
                                     fail(loadingDone);
