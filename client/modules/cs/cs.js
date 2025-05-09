@@ -1483,9 +1483,7 @@
             lStore("_sheet_date", params.date);
         }
 
-        if (params.highlight) {
-            modules.cs.highlight = params.highlight;
-        }
+        modules.cs.highlight = params.highlight;
 
         if (modules.cs.menuItem) {
             $("#" + modules.cs.menuItem).children().first().attr("href", "?#cs&_=" + Math.random());
