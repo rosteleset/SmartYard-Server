@@ -735,9 +735,9 @@
                     }
 
                     if ($this->two_fa($uid, false)) {
-                        echo "2fa disabled for user: #$uid (${args["--disable-2fa"]})\n";
+                        echo "2fa disabled for user: #$uid ({$args["--disable-2fa"]})\n";
                     } else {
-                        echo "failed to disable 2fa for user: #$uid (${args["--disable-2fa"]})\n";
+                        echo "failed to disable 2fa for user: #$uid ({$args["--disable-2fa"]})\n";
                     }
 
                     exit(0);

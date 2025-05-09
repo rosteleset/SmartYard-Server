@@ -18,6 +18,7 @@
              */
 
             protected $config, $db, $redis, $login, $uid, $cache = [];
+            public $backend = '';
 
             /**
              * default constructor

@@ -20,6 +20,8 @@
              * @param $redis
              */
 
+            protected \clickhouse $clickhouse;
+
             function __construct($config, $db, $redis, $login = false) {
                 parent::__construct($config, $db, $redis, $login);
 
