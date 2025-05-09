@@ -660,16 +660,24 @@
                     return false;
                 }
 
-                $this->addJournalRecord($issueId, "addComment", null, [
-                    "commentBody" => $comment,
-                    "commentPrivate" => $private,
-                    "commentType" => $type,
-                ], false, $silent);
+                $this->addJournalRecord($issueId, "addComment", null,
+                    $type ?
+                    [
+                        "commentBody" => $comment,
+                        "commentPrivate" => $private,
+                        "commentType" => $type,
+                    ] : [
+                        "commentBody" => $comment,
+                        "commentPrivate" => $private,
+                    ],
+                    false, $silent
+                );
 
                 return $this->mongo->$db->$acr->updateOne(
                     [
                         "issueId" => $issueId,
                     ],
+                    $type ?
                     [
                         "\$push" => [
                             "comments" => [
@@ -678,6 +686,15 @@
                                 "author" => $this->login,
                                 "private" => $private,
                                 "type" => $type,
+                            ],
+                        ],
+                    ] : [
+                        "\$push" => [
+                            "comments" => [
+                                "body" => $comment,
+                                "created" => time(),
+                                "author" => $this->login,
+                                "private" => $private,
                             ],
                         ],
                     ]
