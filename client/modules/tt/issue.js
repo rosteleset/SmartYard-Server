@@ -1538,13 +1538,13 @@
                 });
             }
 
-            let values = [];
+            let value = [];
             if (lStore("ttCommentsFilter")) {
-                values = lStore("ttCommentsFilter");
+                value = lStore("ttCommentsFilter");
             }
 
             cardForm({
-                title: i18n("commentsHideFilter"),
+                title: i18n("tt.commentsHideFilter"),
                 footer: true,
                 borderless: true,
                 noFocus: true,
@@ -1555,7 +1555,7 @@
                         id: "comment",
                         type: "multiselect",
                         options,
-                        values,
+                        value,
                     },
                 ],
                 callback: result => {
