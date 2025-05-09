@@ -2116,6 +2116,7 @@
                                     callback: r => {
                                         loadingStart();
                                         POST("tt", "favoriteFilter", x, {
+                                            project: lStore("ttProject"),
                                             icon: r.icon,
                                             color: r.color,
                                             leftSide: r.leftSide,
@@ -2242,6 +2243,10 @@
     },
 
     route: function (params) {
+        if (params.project) {
+            lStore("ttProject", params.project);
+        }
+
         loadingStart();
 
         subTop();
