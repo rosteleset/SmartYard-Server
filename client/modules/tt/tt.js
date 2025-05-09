@@ -60,7 +60,7 @@
         if (modules.tt.menuItem && parseInt(myself.uid) && AVAIL("tt", "favoriteFilter")) {
             let h = "";
             for (let i in modules.tt.meta.favoriteFilters) {
-                if (parseInt(modules.tt.meta.favoriteFilters[i].rightSide)) {
+                if (parseInt(modules.tt.meta.favoriteFilters[i].leftSide)) {
                     let title = modules.tt.meta.filtersExt[modules.tt.meta.favoriteFilters[i].filter].shortName ? modules.tt.meta.filtersExt[modules.tt.meta.favoriteFilters[i].filter].shortName : modules.tt.meta.filtersExt[modules.tt.meta.favoriteFilters[i].filter].name;
                     h += `
                         <li class="nav-item" title="${escapeHTML(title)}" style="margin-top: 3px;">
@@ -2108,8 +2108,8 @@
                                             value: ""
                                         },
                                         {
-                                            id: "rightSide",
-                                            title: i18n("tt.filterRightSide"),
+                                            id: "leftSide",
+                                            title: i18n("tt.filterleftSide"),
                                             type: "noyes",
                                         },
                                     ],
@@ -2118,7 +2118,7 @@
                                         POST("tt", "favoriteFilter", x, {
                                             icon: r.icon,
                                             color: r.color,
-                                            rightSide: r.rightSide,
+                                            leftSide: r.leftSide,
                                         }).
                                         done(() => {
                                             window.location = refreshUrl();

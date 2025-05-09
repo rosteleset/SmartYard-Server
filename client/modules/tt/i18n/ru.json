@@ -325,7 +325,7 @@
     "commented": "прокомментировал(а)",
     "addFavoriteFilter": "Добавить фильтр в избранные",
     "filterIcon": "Иконка",
-    "filterRightSide": "Отображать справа",
+    "filterLeftSide": "Отображать слева",
     "filterColor": "Цвет",
     "removeFavoriteFilter": "Убрать фильтр из избранных",
     "favoriteFilters": "Избранные фильтры",

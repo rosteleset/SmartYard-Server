@@ -235,5 +235,8 @@
     ],
     "73": [
         "v73_favorite_filters.sql"
+    ],
+    "74": [
+        "v74_favorite_filters.sql"
     ]
 }

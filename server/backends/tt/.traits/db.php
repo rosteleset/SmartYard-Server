@@ -1453,12 +1453,12 @@
              */
 
             public function getFavoriteFilters() {
-                return $this->db->get("select filter, project, right_side, icon, color from tt_favorite_filters where login = :login", [
+                return $this->db->get("select filter, project, left_side, icon, color from tt_favorite_filters where login = :login", [
                     "login" => $this->login,
                 ], [
                     "filter" => "filter",
                     "project" => "project",
-                    "right_side" => "rightSide",
+                    "left_side" => "leftSide",
                     "icon" => "icon",
                     "color" => "color",
                 ]);
@@ -1468,20 +1468,20 @@
              * @inheritDoc
              */
 
-            public function addFavoriteFilter($filter, $project, $rightSide, $icon, $color) {
+            public function addFavoriteFilter($filter, $project, $leftSide, $icon, $color) {
                 if (!checkStr($filter)) {
                     return false;
                 }
 
-                if (!checkInt($rightSide)) {
+                if (!checkInt($leftSide)) {
                     return false;
                 }
 
-                return $this->db->insert("insert into tt_favorite_filters (login, filter, project, right_side, icon, color) values (:login, :filter, :project, :right_side, :icon, :color)", [
+                return $this->db->insert("insert into tt_favorite_filters (login, filter, project, left_side, icon, color) values (:login, :filter, :project, :left_side, :icon, :color)", [
                     "login" => $this->login,
                     "filter" => $filter,
                     "project" => $project,
-                    "right_side" => $rightSide,
+                    "left_side" => $leftSide,
                     "icon" => $icon,
                     "color" => $color,
                 ]);

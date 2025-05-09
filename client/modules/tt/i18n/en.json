@@ -325,7 +325,7 @@
     "commented": "commented",
     "addFavoriteFilter": "Add filter to favorites",
     "filterIcon": "Icon",
-    "filterRightSide": "Show at right sidebar",
+    "filterLeftSide": "Show at left sidebar",
     "filterColor": "Color",
     "removeFavoriteFilter": "Remove filter from favorites",
     "favoriteFilters": "Favorite filters",
