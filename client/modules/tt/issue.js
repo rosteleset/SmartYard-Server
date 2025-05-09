@@ -1530,7 +1530,6 @@
 
         $(".commentsMenu").off("click").on("click", () => {
             let options = [];
-
             let c = project.comments.split("\n");
             for (let i in c) {
                 options.push({
@@ -1539,9 +1538,9 @@
                 });
             }
 
-            let v = [];
+            let values = [];
             if (lStore("ttCommentsFilter")) {
-                v = lStore("ttCommentsFilter");
+                values = lStore("ttCommentsFilter");
             }
 
             cardForm({
@@ -1556,7 +1555,7 @@
                         id: "comment",
                         type: "multiselect",
                         options,
-                        values:
+                        values,
                     },
                 ],
                 callback: result => {
