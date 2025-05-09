@@ -200,6 +200,7 @@
     "background": "Цвет фона",
     "comments": "Комментарии",
     "commentsHidden": "Комментарии (+%s)",
+    "commentsHideFilter": "Скрывать комментарии",
     "commentPrivate": "Только для сотрудников",
     "saAddComment": "Комментарий",
     "saAddFile": "Приложить файл(ы)",

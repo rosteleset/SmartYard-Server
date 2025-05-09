@@ -1564,7 +1564,7 @@
                         h.push(parseInt(r[i]));
                     }
                     lStore("ttCommentsFilter", h);
-                    window.location.reload();
+                    setTimeout(window.location.reload, 100);
                 },
             });
         });

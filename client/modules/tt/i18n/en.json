@@ -200,6 +200,7 @@
     "background": "Background color",
     "comments": "Comments",
     "commentsHidden": "Comments (+%s)",
+    "commentsHideFilter": "Hide comments",
     "commentPrivate": "For Employees Only",
     "saAddComment": "Comment",
     "saAddFile": "Attach file(s)",
