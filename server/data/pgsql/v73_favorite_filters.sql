@@ -1,0 +1,1 @@
+ALTER TABLE tt_favorite_filters ADD IF NOT EXISTS project CHARACTER VARYING DEFAULT 'RTL';

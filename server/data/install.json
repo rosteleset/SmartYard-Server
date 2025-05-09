@@ -232,5 +232,8 @@
     ],
     "72": [
         "v72_project_comments.sql"
+    ],
+    "73": [
+        "v73_favorite_filters.sql"
     ]
 }
