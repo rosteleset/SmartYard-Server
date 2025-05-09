@@ -883,7 +883,7 @@
         $("#mainForm").html(h);
 
         if (hc) {
-            $(".commentsMenu").attr("data-content", "&#x2630; " + i18n("tt.commentsHidden", hc));
+            $(".commentsMenu").attr("data-content", "☰ " + i18n("tt.commentsHidden", hc));
         }
 
         $(".ttIssue").off("click").on("click", function () {
