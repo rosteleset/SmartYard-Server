@@ -694,7 +694,7 @@
                         if (parseInt(modules.users.meta[i].uid)) {
                             u.push({
                                 id: modules.users.meta[i].login,
-                                text: modules.users.meta[i].realName,
+                                text: modules.users.meta[i].realName + ' [' + modules.users.meta[i].login + ']',
                             });
                         }
                     }
@@ -713,6 +713,7 @@
                         footer: true,
                         borderless: true,
                         topApply: true,
+                        size: "lg",
                         fields: [
                             {
                                 id: "logins",
