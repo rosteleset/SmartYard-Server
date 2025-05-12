@@ -130,7 +130,7 @@
                                                 row: cell.attr("data-row"),
                                                 uid: cell.attr("data-uid"),
                                                 sid: modules.cs.sid,
-                                                expire: 7 * 24 * 60 * 60,
+                                                expire: (modules.cs.currentSheet.sheet.reserveDays ? parseInt(modules.cs.currentSheet.sheet.reserveDays) : 21) * 24 * 60 * 60,
                                                 comment: $.trim(result.comment),
                                             }).
                                             fail(FAIL).
