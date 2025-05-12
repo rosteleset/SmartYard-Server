@@ -276,15 +276,19 @@ $.deparam = function (query) {
             let name = decodeURIComponent(pair[0]);
             let value = decodeURIComponent(pair[1]);
 
-            let path = name.match(/(^[^\[]+)(\[.*\]$)?/);
-            let first = path[1];
-            if (path[2]) {
-                path = path[2].match(/(?=\[(.*)\]$)/)[1].split('][')
-            } else {
-                path = [];
+            try {
+                let path = name.match(/(^[^\[]+)(\[.*\]$)?/);
+                let first = path[1];
+                if (path[2]) {
+                    path = path[2].match(/(?=\[(.*)\]$)/)[1].split('][')
+                } else {
+                    path = [];
+                }
+                path.unshift(first);
+                setValue(data, path, value);
+            } catch (e) {
+                //
             }
-            path.unshift(first);
-            setValue(data, path, value);
         }
 
         return data;
