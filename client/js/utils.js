@@ -243,6 +243,23 @@ function findBootstrapEnvironment() {
 }
 
 $.deparam = function (query) {
+
+    function setValue(root, path, value) {
+        if (path.length > 1) {
+            let  dir = path.shift();
+            if (typeof root[dir] == 'undefined') {
+                root[dir] = path[0] == '' ? [] : {};
+            }
+            setValue(root[dir], path, value);
+        } else {
+            if (root instanceof Array) {
+                root.push(value);
+            } else {
+                root[path] = value;
+            }
+        }
+    };
+
     if (query) {
         if (query[0] == "?") {
             query = query.substring(1);
@@ -251,22 +268,6 @@ $.deparam = function (query) {
         if (query[0] == "&") {
             query = query.substring(1);
         }
-
-        let setValue = function (root, path, value) {
-            if (path.length > 1) {
-                let  dir = path.shift();
-                if (typeof root[dir] == 'undefined') {
-                    root[dir] = path[0] == '' ? [] : {};
-                }
-                arguments.callee(root[dir], path, value);
-            } else {
-                if (root instanceof Array) {
-                    root.push(value);
-                } else {
-                    root[path] = value;
-                }
-            }
-        };
 
         let nvp = query.split('&');
         let data = {};
