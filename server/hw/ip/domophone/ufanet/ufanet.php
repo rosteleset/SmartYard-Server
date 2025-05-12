@@ -2,6 +2,7 @@
 
 namespace hw\ip\domophone\ufanet;
 
+use Generator;
 use hw\ip\domophone\domophone;
 
 /**
@@ -23,14 +24,16 @@ abstract class ufanet extends domophone
         'KKM-100S2' => ['type' => 'BEWARD_100'],
         'KKM-105' => ['type' => 'BEWARD_105_108'],
         'KKM-108' => ['type' => 'BEWARD_105_108'],
-        'KM20-1' => ['type' => 'ELTIS', 'mode' => 1],
-        'KM100-7.1' => ['type' => 'ELTIS', 'mode' => 1],
-        'KM100-7.2' => ['type' => 'ELTIS', 'mode' => 1],
-        'KM100-7.3' => ['type' => 'ELTIS', 'mode' => 1],
-        'KM100-7.5' => ['type' => 'ELTIS', 'mode' => 1],
-        'KMG-100' => ['type' => 'CYFRAL', 'mode' => 1],
+        'KM20-1' => ['type' => 'ELTIS', 'mode' => 1, 'edge' => 20],
+        'KM100-7.1' => ['type' => 'ELTIS', 'mode' => 1, 'edge' => 100],
+        'KM100-7.2' => ['type' => 'ELTIS', 'mode' => 1, 'edge' => 100],
+        'KM100-7.3' => ['type' => 'ELTIS', 'mode' => 1, 'edge' => 100],
+        'KM100-7.5' => ['type' => 'ELTIS', 'mode' => 1, 'edge' => 100],
+        'KMG-100' => ['type' => 'CYFRAL', 'mode' => 1, 'edge' => 100],
         'QAD-100' => ['type' => 'DIGITAL'],
     ];
+
+    protected const PERSONAL_CODE_RFID_DATA_REGEXP = '/^(\d+);3$/';
 
     /** @var array|null $dialplans An array that holds dialplan information, which may be null if not loaded. */
     protected ?array $dialplans = null;
@@ -38,16 +41,25 @@ abstract class ufanet extends domophone
     /** @var array|null $rfids An array that holds RFID codes information, which may be null if not loaded. */
     protected ?array $rfids = null;
 
-    public function addRfid(string $code, int $apartment = 0): void
+    protected ?string $cmsModelName = null;
+
+    public function addRfid(string $code, int $apartment = 0, int $type = 1): void
     {
         $this->loadRfids();
+
+        $rfidData = "$apartment;$type";
+
+        if ($type === 3) {
+            $this->rfids[substr($code, -5)] = $rfidData;
+            return;
+        }
 
         $lowercaseCode = strtolower($code);
         $internalRfid = substr($lowercaseCode, 6);
         $externalRfid = '00' . substr($lowercaseCode, 8);
 
-        $this->rfids[$internalRfid] = $apartment ?: '';
-        $this->rfids[$externalRfid] = $apartment ?: '';
+        $this->rfids[$internalRfid] = $rfidData;
+        $this->rfids[$externalRfid] = $rfidData;
     }
 
     public function addRfids(array $rfids): void
@@ -66,6 +78,15 @@ abstract class ufanet extends domophone
     ): void
     {
         $this->loadDialplans();
+
+        $this->cleanupApartmentPersonalCodes($apartment);
+        if ($code !== 0) {
+            $this->addRfid(
+                code: (string)$code,
+                apartment: $apartment,
+                type: 3,
+            );
+        }
 
         $this->dialplans[$apartment] = [
             'sip_number' => "$sipNumbers[0]" ?? '',
@@ -96,7 +117,7 @@ abstract class ufanet extends domophone
             'Encode[0].MainFormat[0].Video.BitRateControl' => 'vbr',
 
             // Video extra stream
-            'Encode[0].ExtraFormat[0].VideoEnable' => 'true',
+            'Encode[0].ExtraFormat[0].VideoEnable' => 'false',
             'Encode[0].ExtraFormat[0].Video.Compression' => 'h264',
             'Encode[0].ExtraFormat[0].Video.resolution' => '640x352',
             'Encode[0].ExtraFormat[0].Video.FPS' => 25,
@@ -123,7 +144,20 @@ abstract class ufanet extends domophone
 
     public function configureMatrix(array $matrix): void
     {
-        // Empty implementation
+        $remappedMatrix = $this->remapMatrix($matrix);
+
+        foreach ($this->getApartmentsDialplans(true) as $apartment => $dialplan) {
+            foreach ($remappedMatrix as $cell) {
+                if ($apartment === $cell['apartment']) {
+                    $apartment = $cell['apartment'];
+                    $line = $cell['hundreds'] * 100 + $cell['tens'] * 10 + $cell['units'];
+                    $this->dialplans[$apartment]['map'] = $line;
+                    continue 2;
+                }
+            }
+
+            $this->dialplans[$apartment]['map'] = 0;
+        }
     }
 
     public function configureSip(
@@ -178,7 +212,8 @@ abstract class ufanet extends domophone
             $lowercaseCode = strtolower($code);
             $internalRfid = substr($lowercaseCode, 6);
             $externalRfid = '00' . substr($lowercaseCode, 8);
-            unset($this->rfids[$internalRfid], $this->rfids[$externalRfid]);
+            $personalEntryCode = substr($lowercaseCode, -5);
+            unset($this->rfids[$internalRfid], $this->rfids[$externalRfid], $this->rfids[$personalEntryCode]);
         }
     }
 
@@ -312,12 +347,14 @@ abstract class ufanet extends domophone
     {
         if ($dbConfig['cmsModel'] !== '') {
             $cmsType = self::CMS_PARAMS[$dbConfig['cmsModel']]['type'];
+            $this->cmsModelName = $dbConfig['cmsModel'];
             if (in_array($cmsType, ['METAKOM', 'ELTIS', 'BEWARD_105_108'])) {
                 $dbConfig['cmsModel'] = $cmsType;
             }
+
+            $dbConfig['matrix'] = $this->remapMatrix($dbConfig['matrix'], $dbConfig['apartments']);
         }
 
-        $dbConfig['matrix'] = [];
         $dbConfig['cmsLevels'] = [];
 
         $dbConfig['sip']['stunEnabled'] = false;
@@ -325,7 +362,6 @@ abstract class ufanet extends domophone
         $dbConfig['sip']['stunPort'] = 3478;
 
         foreach ($dbConfig['apartments'] as &$apartment) {
-            $apartment['code'] = 0;
             $apartment['cmsLevels'] = [];
         }
 
@@ -346,6 +382,7 @@ abstract class ufanet extends domophone
     protected function getApartments(): array
     {
         $this->loadDialplans();
+        $this->loadRfids();
 
         $apartments = [];
 
@@ -354,9 +391,25 @@ abstract class ufanet extends domophone
                 continue;
             }
 
+            // The Ufanet intercom stores personal entry codes as keys. Restore structure that configurator expects
+            $currentCode = 0;
+            foreach ($this->rfids as $code => $data) {
+                if (preg_match(self::PERSONAL_CODE_RFID_DATA_REGEXP, $data, $matches)) {
+                    if ($matches[1] == $apartmentNumber) {
+                        // Force SmartConfigurator to reconfigure apartment if somehow multiple personal codes exists
+                        if ($currentCode !== 0) {
+                            $currentCode = -1;
+                            break;
+                        } else {
+                            $currentCode = $code;
+                        }
+                    }
+                }
+            }
+
             $apartments[$apartmentNumber] = [
                 'apartment' => $apartmentNumber,
-                'code' => 0,
+                'code' => $currentCode,
                 'sipNumbers' => [$dialplan['sip_number']],
                 'cmsEnabled' => $dialplan['analog'],
                 'cmsLevels' => [],
@@ -428,7 +481,19 @@ abstract class ufanet extends domophone
 
     protected function getMatrix(): array
     {
-        return [];
+        $this->loadDialplans();
+
+        $matrix = [];
+        foreach ($this->getApartmentsDialplans() as $apartment => $dialplan) {
+            if (!isset($this->dialplans[$apartment])) {
+                continue;
+            }
+
+            $cell = self::getMatrixCell($dialplan['map'], $apartment);
+            $matrix[$cell['index']] = $cell['value'];
+        }
+
+        return $matrix;
     }
 
     protected function getRfids(): array
@@ -438,10 +503,18 @@ abstract class ufanet extends domophone
         $uniqueRfids = [];
 
         // Get RFIDs and remove leading zeros
-        $normalizedRfids = array_map(fn($rfid) => ltrim($rfid, '0'), array_keys($this->rfids));
+        $normalizedRfids = [];
+        foreach ($this->rfids as $rfid => $data) {
+            $normalizedRfids[ltrim($rfid, '0')] = $data;
+        }
 
         // Identify unique RFIDs
-        foreach ($normalizedRfids as $rfid) {
+        foreach ($normalizedRfids as $rfid => $data) {
+            // Skip personal codes
+            if (preg_match(self::PERSONAL_CODE_RFID_DATA_REGEXP, $data)) {
+                continue;
+            }
+
             $isUnique = true;
 
             foreach ($normalizedRfids as $compareRfid) {
@@ -458,6 +531,13 @@ abstract class ufanet extends domophone
 
         // Convert RFIDs to uppercase and pad them with leading zeros
         return array_map(fn($rfid) => str_pad(strtoupper($rfid), 14, '0', STR_PAD_LEFT), $uniqueRfids);
+    }
+
+    protected function cleanupApartmentPersonalCodes(int $apartment): void
+    {
+        $this->rfids = array_filter($this->rfids, function (string $data) use ($apartment) {
+            return "$apartment;3" != $data;
+        });
     }
 
     protected function getSipConfig(): array
@@ -570,6 +650,7 @@ abstract class ufanet extends domophone
                     'KEY_READ_ERROR' => 'ОШИБКА ЧТЕНИЯ КЛЮЧА',
                     'KEY_BROKEN_ERROR' => 'КЛЮЧ ВЫШЕЛ ИЗ СТРОЯ',
                     'KEY_UNSUPPORTED_ERROR' => 'КЛЮЧ НЕ ПОДДЕРЖИВАЕТСЯ',
+                    'ALWAYS_OPEN' => 'ДВЕРИ ОТКРЫТЫ',
                 ],
             ],
         ]);
@@ -621,5 +702,65 @@ abstract class ufanet extends domophone
         if ($this->rfids !== null) {
             $this->apiCall('/api/v1/rfids', 'PUT', $this->rfids);
         }
+    }
+
+    protected function getMatrixEdge(): ?int
+    {
+        return self::CMS_PARAMS[$this->cmsModelName]['edge'] ?? null;
+    }
+
+    /** @return Generator<int, array> */
+    protected function getApartmentsDialplans(bool $unmapped = false): Generator
+    {
+        foreach ($this->dialplans as $apartment => $dialplan) {
+            if (ctype_digit((string) $apartment) && ($dialplan['map'] != 0 || $unmapped)) {
+                yield (int)$apartment => $dialplan;
+            }
+        }
+    }
+
+    protected function remapMatrix(array $matrix, array $configApartments = []): array
+    {
+        $this->loadDialplans();
+
+        $newMatrix = [];
+        $edge = $this->getMatrixEdge();
+        foreach ($matrix as $index => $cell) {
+            $apartment = $cell['apartment'];
+            if (!isset($this->dialplans[$apartment]) && !isset($configApartments[$apartment])) {
+                continue;
+            }
+
+            $mapping = $cell['hundreds'] * 100 + $cell['tens'] * 10 + $cell['units'];
+            if ($edge && $mapping % $edge !== 0) {
+                $newMatrix[$index] = $cell;
+                continue;
+            }
+
+            $newCell = self::getMatrixCell($mapping + $edge, $apartment);
+            $newMatrix[$newCell['index']] = $newCell['value'];
+        }
+
+        return $newMatrix;
+    }
+
+    /** @return array{index:string,value:array} */
+    protected static function getMatrixCell(int $mapping, int $apartment): array
+    {
+        $hundreds = floor($mapping / 100);
+        $tens = floor(($mapping - $hundreds * 100) / 10);
+        $units = $mapping - ($hundreds * 100 + $tens * 10);
+
+        $index = "$hundreds$tens$units";
+
+        return [
+            'index' => $index,
+            'value' => [
+                'hundreds' => $hundreds,
+                'tens' => $tens,
+                'units' => $units,
+                'apartment' => $apartment,
+            ]
+        ];
     }
 }
