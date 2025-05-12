@@ -258,7 +258,7 @@ $.deparam = function (query) {
                 root[path] = value;
             }
         }
-    };
+    }
 
     if (query) {
         if (query[0] == "?") {
