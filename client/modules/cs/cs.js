@@ -992,7 +992,7 @@
                     for (let i in issues) {
                         h += '<tr>';
                         h += '<td nowrap class="pl-2 pr-2">' + issues[i][modules.cs.currentSheet.sheet.fields.row] + '</td>';
-                        h += '<td nowrap class="pl-2 pr-2">' + issues[i].issueId + '</td>';
+                        h += '<td nowrap class="pl-2 pr-2"><a href="?#tt&issue=' + issues[i].issueId + '">' + issues[i].issueId + '</a></td>';
                         h += '<td style="width: 100%;" class="pl-2 pr-2">' + (issues[i][modules.cs.currentSheet.sheet.fields.list] ? issues[i][modules.cs.currentSheet.sheet.fields.list] : '?') + '</td>';
                         h += '</tr>';
                     }
