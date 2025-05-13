@@ -671,7 +671,7 @@
                         case "select":
                             let already = {};
 
-                            if (cf.format.indexOf("suggestions") >= 0) {
+                            if (cf.format.indexOf("suggestions") >= 0 || !cf.required) {
                                 already[""] = 1;
                                 options.push({
                                     id: "",
