@@ -675,7 +675,7 @@
                                 already[""] = 1;
                                 options.push({
                                     id: "",
-                                    text: "-",
+                                    text: "",
                                 });
                             }
 
