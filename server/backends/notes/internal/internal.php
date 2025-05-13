@@ -16,8 +16,7 @@
              * @inheritDoc
              */
 
-            public function getNotes()
-            {
+            public function getNotes() {
                 return $notes = $this->db->get("select * from notes where owner = :owner order by position_order", [
                     "owner" => $this->login,
                 ], [
@@ -41,8 +40,7 @@
              * @inheritDoc
              */
 
-            public function addNote($subject, $body, $checks, $category, $remind, $icon, $font, $color, $x, $y, $z)
-            {
+            public function addNote($subject, $body, $checks, $category, $remind, $icon, $font, $color, $x, $y, $z) {
                 $body = trim($body);
 
                 if (!$body) {
@@ -93,8 +91,7 @@
              * @inheritDoc
              */
 
-            public function modifyNote11($id, $subject, $body, $category, $remind, $icon, $font, $color, $x, $y, $z)
-            {
+            public function modifyNote11($id, $subject, $body, $category, $remind, $icon, $font, $color, $x, $y, $z) {
                 $body = trim($body);
 
                 if (!$body || !checkInt($id)) {
@@ -123,8 +120,7 @@
              * @inheritDoc
              */
 
-            public function modifyNote4($id, $x, $y, $z)
-            {
+            public function modifyNote4($id, $x, $y, $z) {
                 if (!checkInt($id)) {
                     setLastError("invalidParams");
                     return false;
@@ -143,8 +139,7 @@
              * @inheritDoc
              */
 
-            public function modifyNote3($id, $line, $checked)
-            {
+            public function modifyNote3($id, $line, $checked) {
                 if (!checkInt($id) || !checkInt($line) || !checkInt($checked)) {
                     setLastError("invalidParams");
                     return false;
@@ -176,8 +171,7 @@
              * @inheritDoc
              */
 
-            public function deleteNote($id)
-            {
+            public function deleteNote($id) {
                 if (!checkInt($id)) {
                     setLastError("invalidParams");
                     return false;
@@ -189,29 +183,27 @@
                 ]);
             }
 
-            public function __call($method, $arguments)
-            {
+            public function __call($method, $arguments) {
                 if ($method == 'modifyNote') {
                     if (count($arguments) == 11) {
-                       return call_user_func_array([ $this, 'modifyNote11' ], $arguments);
+                        return call_user_func_array([ $this, 'modifyNote11' ], $arguments);
                     }
                     else
                     if (count($arguments) == 4) {
-                       return call_user_func_array([ $this, 'modifyNote4' ], $arguments);
+                        return call_user_func_array([ $this, 'modifyNote4' ], $arguments);
                     }
                     else
                     if (count($arguments) == 3) {
                         return call_user_func_array([ $this, 'modifyNote3' ], $arguments);
-                     }
-                 }
+                    }
+                }
             }
 
             /**
              * @inheritDoc
              */
 
-            public function cron($part)
-            {
+            public function cron($part) {
                 if ($part == "minutely") {
                     $notes = $this->db->get("select note_id, owner, note_subject, note_body from notes where reminded = 0 and remind < :now", [
                         "now" => time(),
@@ -226,7 +218,7 @@
 
                     foreach ($notes as $note) {
                         $users->notify($users->getUidByLogin($note["owner"]), $note["subject"], $note["body"]);
-                        $this->db->modify("update notes set reminded = 1 where note_id = ${note["id"]}");
+                        $this->db->modify("update notes set reminded = 1 where note_id = {$note["id"]}");
                     }
                 }
 

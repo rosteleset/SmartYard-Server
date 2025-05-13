@@ -160,63 +160,63 @@ namespace backends\issue_adapter {
             }
             switch ($issueType) {
                 case self::ISSUE_REQUEST_CALLBACK:
-                    $issue[self::F_DESCRIPTION] = "ФИО: ${data[self::PARAM_USER_NAME]}\n"
+                    $issue[self::F_DESCRIPTION] = "ФИО: {$data[self::PARAM_USER_NAME]}\n"
                         . "Выполнить звонок клиенту по запросу с приложения.";
                     break;
 
                 case self::ISSUE_REQUEST_FRAGMENT:
                     $issue[self::CF_CAMERA_ID] = strval($data[self::PARAM_CAMERA_ID]);
-                    $issue[self::F_DESCRIPTION] = "ФИО: ${data[self::PARAM_USER_NAME]}\n"
-                        . "Обработать запрос на добавление видеофрагмента из архива видовой видеокамеры ${data[self::PARAM_CAMERA_NAME]}"
-                        . " (id = ${data[self::PARAM_CAMERA_ID]}) по парамертам:\n"
-                        . "дата - ${data[self::PARAM_FRAGMENT_DATE]};\n"
-                        . "время - ${data[self::PARAM_FRAGMENT_TIME]};\n"
-                        . "продолжительность фрагмента - ${data[self::PARAM_FRAGMENT_DURATION]} минут.\n"
-                        . "Комментарий пользователя: ${data[self::PARAM_COMMENTS]}.";
+                    $issue[self::F_DESCRIPTION] = "ФИО: {$data[self::PARAM_USER_NAME]}\n"
+                        . "Обработать запрос на добавление видеофрагмента из архива видовой видеокамеры {$data[self::PARAM_CAMERA_NAME]}"
+                        . " (id = {$data[self::PARAM_CAMERA_ID]}) по парамертам:\n"
+                        . "дата - {$data[self::PARAM_FRAGMENT_DATE]};\n"
+                        . "время - {$data[self::PARAM_FRAGMENT_TIME]};\n"
+                        . "продолжительность фрагмента - {$data[self::PARAM_FRAGMENT_DURATION]} минут.\n"
+                        . "Комментарий пользователя: {$data[self::PARAM_COMMENTS]}.";
                     break;
 
                 case self::ISSUE_REMOVE_ADDRESS:
-                    $issue[self::F_DESCRIPTION] = "ФИО: ${data[self::PARAM_USER_NAME]}\n"
-                        . "Адрес, введённый пользователем: ${data[self::PARAM_INPUT_ADDRESS]}.\n"
-                        . "Удаление адреса из приложения. Причина: ${data[self::PARAM_COMMENTS]}.";
+                    $issue[self::F_DESCRIPTION] = "ФИО: {$data[self::PARAM_USER_NAME]}\n"
+                        . "Адрес, введённый пользователем: {$data[self::PARAM_INPUT_ADDRESS]}.\n"
+                        . "Удаление адреса из приложения. Причина: {$data[self::PARAM_COMMENTS]}.";
                     break;
 
                 case self::ISSUE_CONNECT_SERVICES_NO_COMMON:
-                    $issue[self::F_DESCRIPTION] = "ФИО: ${data[self::PARAM_USER_NAME]}\n"
-                        . "Адрес, введённый пользователем: ${data[self::PARAM_INPUT_ADDRESS]}.\n"
-                        . "Подключение услуг(и): ${data[self::PARAM_SERVICES]}.\n"
+                    $issue[self::F_DESCRIPTION] = "ФИО: {$data[self::PARAM_USER_NAME]}\n"
+                        . "Адрес, введённый пользователем: {$data[self::PARAM_INPUT_ADDRESS]}.\n"
+                        . "Подключение услуг(и): {$data[self::PARAM_SERVICES]}.\n"
                         . "Выполнить звонок клиенту и осуществить консультацию.";
                     break;
 
                 case self::ISSUE_CONNECT_SERVICES_HAS_COMMON:
-                    $issue[self::F_DESCRIPTION] = "ФИО: ${data[self::PARAM_USER_NAME]}\n"
-                        . "Адрес, введённый пользователем: ${data[self::PARAM_INPUT_ADDRESS]}.\n"
-                        . "Подключение услуг(и): ${data[self::PARAM_SERVICES]}.\n"
+                    $issue[self::F_DESCRIPTION] = "ФИО: {$data[self::PARAM_USER_NAME]}\n"
+                        . "Адрес, введённый пользователем: {$data[self::PARAM_INPUT_ADDRESS]}.\n"
+                        . "Подключение услуг(и): {$data[self::PARAM_SERVICES]}.\n"
                         . "Требуется подтверждение адреса и подключение выбранных услуг.";
                     break;
 
                 case self::ISSUE_CONNECT_SERVICES_NO_NETWORK:
-                    $issue[self::F_DESCRIPTION] = "ФИО: ${data[self::PARAM_USER_NAME]}\n"
-                        . "Адрес, введённый пользователем: ${data[self::PARAM_INPUT_ADDRESS]}.\n"
-                        . "Подключение услуг(и): ${data[self::PARAM_SERVICES]}.";
+                    $issue[self::F_DESCRIPTION] = "ФИО: {$data[self::PARAM_USER_NAME]}\n"
+                        . "Адрес, введённый пользователем: {$data[self::PARAM_INPUT_ADDRESS]}.\n"
+                        . "Подключение услуг(и): {$data[self::PARAM_SERVICES]}.";
                     break;
 
                 case self::ISSUE_REQUEST_QR_CODE_OFFICE:
                     $issue[self::CF_QR_DELIVERY] = $this->config['backends']['issue_adapter'][$issueType][self::CF_QR_DELIVERY];
-                    $issue[self::F_DESCRIPTION] = "ФИО: ${data[self::PARAM_USER_NAME]}\n"
-                        . "Адрес, введённый пользователем: ${data[self::PARAM_INPUT_ADDRESS]}.\n"
+                    $issue[self::F_DESCRIPTION] = "ФИО: {$data[self::PARAM_USER_NAME]}\n"
+                        . "Адрес, введённый пользователем: {$data[self::PARAM_INPUT_ADDRESS]}.\n"
                         . "Клиент подойдет в офис для получения подтверждения.";
                     break;
 
                 case self::ISSUE_REQUEST_QR_CODE_COURIER:
                     $issue[self::CF_QR_DELIVERY] = $this->config['backends']['issue_adapter'][$issueType][self::CF_QR_DELIVERY];
-                    $issue[self::F_DESCRIPTION] = "ФИО: ${data[self::PARAM_USER_NAME]}\n"
-                        . "Адрес, введённый пользователем: ${data[self::PARAM_INPUT_ADDRESS]}.\n"
+                    $issue[self::F_DESCRIPTION] = "ФИО: {$data[self::PARAM_USER_NAME]}\n"
+                        . "Адрес, введённый пользователем: {$data[self::PARAM_INPUT_ADDRESS]}.\n"
                         . "Подготовить конверт с QR-кодом. Далее заявку отправить курьеру.";
                     break;
 
                 case self::ISSUE_REQUEST_CREDENTIALS:
-                    $issue[self::F_DESCRIPTION] = "ФИО: ${data[self::PARAM_USER_NAME]}\n"
+                    $issue[self::F_DESCRIPTION] = "ФИО: {$data[self::PARAM_USER_NAME]}\n"
                         . "Выполнить звонок клиенту для напоминания номера договора и пароля от личного кабинета.";
                     break;
 

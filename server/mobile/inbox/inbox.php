@@ -61,7 +61,7 @@
         }
         $msg = $parsedown->parse($msg);
         $msg = str_replace("<a href=", "<a target=\"_blank\" href=", $msg);
-        $msg = preg_replace("/([+7][0-9]{11})|([7|8][0-9]{10})/i", "<a href='tel:\${0}'>\${0}</a>", $msg);
+        $msg = preg_replace("/([+7][0-9]{11})|([7|8][0-9]{10})/i", "<a href='tel:\$0'>\$0</a>", $msg);
         $h .= $msg;
         $h .= "</p>";
         $h .= "<span class=\"inbox-message-time\">".date("H:i", $dd)."</span></div></div>";

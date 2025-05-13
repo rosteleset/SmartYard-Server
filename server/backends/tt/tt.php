@@ -2200,14 +2200,14 @@
                     $templateExt = $templateExt[count($templateExt) - 1];
                     $templateName = "$path/$tmp-tmp.$templateExt";
                     file_put_contents($templateName, $template["body"]);
-                    $formatter = str_replace('${templateName}', $templateName, $formatter);
+                    $formatter = str_replace('{$templateName}', $templateName, $formatter);
                 }
 
                 $outFile = "$path/$tmp-out.{$print["extension"]}";
 
-                $formatter = str_replace('${outFile}', $outFile, $formatter);
-                $formatter = str_replace('${extension}', $print["extension"], $formatter);
-                $formatter = str_replace('${tmp}', $path, $formatter);
+                $formatter = str_replace('{$outFile}', $outFile, $formatter);
+                $formatter = str_replace('{$extension}', $print["extension"], $formatter);
+                $formatter = str_replace('{$tmp}', $path, $formatter);
 
                 $formatter = "var data = " . json_encode($data). ";\n\n" . $formatter;
 
