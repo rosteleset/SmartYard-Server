@@ -15,6 +15,12 @@
         abstract class users extends backend {
 
             /**
+             * @var object $clickhouse clickhouse db
+             */
+
+            protected $clickhouse;
+
+            /**
              * @param $config
              * @param $db
              * @param $redis

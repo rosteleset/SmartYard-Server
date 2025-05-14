@@ -20,6 +20,12 @@
             protected $config, $db, $redis, $login, $uid, $cache = [];
 
             /**
+             * @var string $backend self name
+             */
+
+            public $backend;
+
+            /**
              * default constructor
              *
              * @param object $config link to config structute

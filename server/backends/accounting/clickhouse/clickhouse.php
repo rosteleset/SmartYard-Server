@@ -11,7 +11,12 @@
          */
 
         class clickhouse extends accounting {
-            private $clickhouse;
+
+            /**
+             * @var object $clickhouse clickhouse db
+             */
+
+            protected $clickhouse;
 
             /**
              * @param $config
