@@ -587,7 +587,8 @@
         h += "<span class='mr-3'>";
         let url = new URL(window.location.href);
         url = url.origin + url.pathname + "?#tt&issue=" + issue.issue["issueId"];
-        h += "<span class='cc hover pointer' id='issueIssueId' data-clipboard-target='#issueIssueId' data-clipboard-text='" + url + "'>" + issue.issue["issueId"] + "</span>";
+        h += "<span class='cc hover pointer fas fa-fw fa-link mr-2' id='issueIssueIdUrl' data-clipboard-target='#issueIssueIdUrl' data-clipboard-text='" + url + "'></span>";
+        h += "<span class='cc hover pointer' id='issueIssueIdText' data-clipboard-target='#issueIssueIdText' data-clipboard-text='" + issue.issue["issueId"] + "'>" + issue.issue["issueId"] + "</span>";
         if (!isEmpty(issue.actions)) {
             h += ":";
         }
