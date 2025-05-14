@@ -54,12 +54,8 @@ abstract class ufanet extends domophone
             return;
         }
 
-        $lowercaseCode = strtolower($code);
-        $internalRfid = substr($lowercaseCode, 6);
-        $externalRfid = '00' . substr($lowercaseCode, 8);
-
-        $this->rfids[$internalRfid] = $rfidData;
-        $this->rfids[$externalRfid] = $rfidData;
+        $normalizedRfid = substr(strtolower($code), 6);
+        $this->rfids[$normalizedRfid] = $rfidData;
     }
 
     public function addRfids(array $rfids): void
@@ -210,10 +206,9 @@ abstract class ufanet extends domophone
             $this->rfids = [];
         } else {
             $lowercaseCode = strtolower($code);
-            $internalRfid = substr($lowercaseCode, 6);
-            $externalRfid = '00' . substr($lowercaseCode, 8);
+            $normalizedRfid = substr($lowercaseCode, 6);
             $personalEntryCode = substr($lowercaseCode, -5);
-            unset($this->rfids[$internalRfid], $this->rfids[$externalRfid], $this->rfids[$personalEntryCode]);
+            unset($this->rfids[$normalizedRfid], $this->rfids[$personalEntryCode]);
         }
     }
 
@@ -730,7 +725,7 @@ abstract class ufanet extends domophone
     protected function getApartmentsDialplans(bool $unmapped = false): Generator
     {
         foreach ($this->dialplans as $apartment => $dialplan) {
-            if (ctype_digit((string) $apartment) && ($dialplan['map'] != 0 || $unmapped)) {
+            if (ctype_digit((string)$apartment) && ($dialplan['map'] != 0 || $unmapped)) {
                 yield (int)$apartment => $dialplan;
             }
         }
