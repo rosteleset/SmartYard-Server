@@ -563,10 +563,9 @@
 
                         $frs_server = $this->getServerByUrl($frs_base_url);
                         $api_type = $frs_server[frs::API_TYPE] ?? null;
+                        $rbt_all_data[$frs_base_url][$stream_id][self::P_URL] = $this->config["api"]["internal"] . "/frs/camshot/" . $stream_id;
+                        $rbt_all_data[$frs_base_url][$stream_id][self::P_CALLBACK_URL] = $this->config["api"]["internal"] . "/frs/callback?stream_id=" . $stream_id;
                         if ($api_type === frs::API_FRS) {
-                            $rbt_all_data[$frs_base_url][$stream_id][self::P_URL] = $this->config["api"]["internal"] . "/frs/camshot/" . $stream_id;
-                            $rbt_all_data[$frs_base_url][$stream_id][self::P_CALLBACK_URL] = $this->config["api"]["internal"] . "/frs/callback?stream_id=" . $stream_id;
-
                             $config = null;
                             if (isset($item['rc_area']) && $item['rc_area'] !== "null") {
                                 $area = json_decode($item['rc_area'], true);
