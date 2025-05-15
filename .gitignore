@@ -91,6 +91,7 @@ server/mobile/pay/custom/*.php
 server/mobile/sip/custom/*.php
 server/mobile/user/custom/*.php
 server/hw/**/custom
+server/hw/ip/domophone/ufanet/assets/display_image.jpg
 
 install/kamailio/kamailio-local.cfg
 install/kamailio/kamctlrc

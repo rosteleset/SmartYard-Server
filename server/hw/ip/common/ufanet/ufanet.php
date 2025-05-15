@@ -2,6 +2,8 @@
 
 namespace hw\ip\common\ufanet;
 
+use CURLFile;
+
 /**
  * Trait providing common functionality related to Ufanet devices.
  */
@@ -104,12 +106,16 @@ trait ufanet
         curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
 
         if ($payload !== null && $method !== 'GET') {
-            $jsonPayload = empty($payload)
-                ? json_encode($payload, JSON_FORCE_OBJECT)
-                : json_encode($payload, JSON_UNESCAPED_UNICODE);
+            if (array_filter($payload, static fn($value) => $value instanceof CURLFile)) {
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+            } else {
+                $jsonPayload = empty($payload)
+                    ? json_encode($payload, JSON_FORCE_OBJECT)
+                    : json_encode($payload, JSON_UNESCAPED_UNICODE);
 
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonPayload);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonPayload);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+            }
         }
 
         $res = curl_exec($ch);

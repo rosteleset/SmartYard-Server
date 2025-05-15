@@ -2,6 +2,7 @@
 
 namespace hw\ip\domophone\ufanet;
 
+use CURLFile;
 use Generator;
 use hw\ip\domophone\domophone;
 
@@ -229,6 +230,7 @@ abstract class ufanet extends domophone
         $this->setNetwork();
         $this->setRfidMode();
         $this->setDisplayLocalization();
+        $this->setDisplayImage();
     }
 
     public function setAudioLevels(array $levels): void
@@ -666,6 +668,27 @@ abstract class ufanet extends domophone
                 ],
             ],
         ]);
+    }
+
+    /**
+     * Upload and set display image.
+     *
+     * @param string|null $pathToImage (Optional) Path to the image which will be uploaded.
+     * If null, the default path will be used.
+     * @return void
+     */
+    protected function setDisplayImage(?string $pathToImage = null): void
+    {
+        if ($pathToImage === null) {
+            $pathToImage = __DIR__ . '/assets/display_image.jpg';
+        }
+
+        if (!file_exists($pathToImage) || !is_file($pathToImage)) {
+            return;
+        }
+
+        sleep(15); // Yes...
+        $this->apiCall('/api/v1/file', 'POST', ['IMAGE' => new CURLFile($pathToImage)]);
     }
 
     /**
