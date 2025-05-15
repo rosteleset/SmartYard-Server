@@ -293,7 +293,11 @@ function cardForm(params) {
                     params.fields[i].options[j].value = params.fields[i].options[j].text;
                 }
                 if (!params.fields[i].options[j].text) {
-                    params.fields[i].options[j].text = "&nbsp;";
+                    if (params.fields[i].type == "select2") {
+                        params.fields[i].options[j].text = "&nbsp;";
+                    } else {
+                        params.fields[i].options[j].text = "";
+                    }
                 }
             }
         }
