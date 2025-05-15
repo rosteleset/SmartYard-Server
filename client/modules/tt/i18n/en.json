@@ -335,6 +335,8 @@
     "issueWasSaved": "Task was saved",
     "float": "Decimal places",
     "commentTypes": "Comment types",
+    "issueIdUrl": "Copy issueId link to clipboard",
+    "issueIdText": "Copy issueId to clipboard",
     "methods": {
         "tt": {
             "_title": "Task manager",
