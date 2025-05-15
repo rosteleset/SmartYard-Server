@@ -836,7 +836,11 @@
                 //
             }
             let cf = lStore("ttCommentsFilter");
-            h += `<tr><td style="width: 100%"><hr class='hr-text-pointer mt-1 mb-1 commentsMenu' data-content='&#x2630; ${i18n("tt.comments")}' style="font-size: 11pt;"/></td></tr>`;
+            if (project.comments && comments.split("\n").length > 0 && trim(comments.split("\n")[0])) {
+                h += `<tr><td style="width: 100%"><hr class='hr-text-pointer mt-1 mb-1 commentsMenu' data-content='&#x2630; ${i18n("tt.comments")}' style="font-size: 11pt;"/></td></tr>`;
+            } else {
+                h += `<tr><td style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.comments")}' style="font-size: 11pt;"/></td></tr>`;
+            }
             for (let i in issue.issue.comments) {
                 let ct = 0;
                 if (cts.indexOf(issue.issue.comments[i].type) >= 0) {
@@ -1086,7 +1090,11 @@
                             }
                         }
                     } else {
-                        let h = `<tr><td style="width: 100%"><hr class='hr-text mt-1 mb-1 commentsMenu' data-content='&#x2630; ${i18n("tt.comments")}' style="font-size: 11pt;"/></td></tr>`;
+                        if (project.comments && comments.split("\n").length > 0 && trim(comments.split("\n")[0])) {
+                            h += `<tr><td style="width: 100%"><hr class='hr-text-pointer mt-1 mb-1 commentsMenu' data-content='&#x2630; ${i18n("tt.comments")}' style="font-size: 11pt;"/></td></tr>`;
+                        } else {
+                            h += `<tr><td style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.comments")}' style="font-size: 11pt;"/></td></tr>`;
+                        }
                         for (let i in result.cdr) {
                             h += "<tr class='issueComment' data-time='" + result.cdr[i].start + "' data-date='" + date("d-m-Y H:i:s", result.cdr[i].start) + "'>";
                             h += "<td class='pl-1' style='font-size: 14px;'>";
