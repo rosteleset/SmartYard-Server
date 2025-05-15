@@ -836,7 +836,7 @@
                 //
             }
             let cf = lStore("ttCommentsFilter");
-            if (project.comments && comments.split("\n").length > 0 && trim(comments.split("\n")[0])) {
+            if (project.comments && project.comments.split("\n").length > 0 && trim(project.comments.split("\n")[0])) {
                 h += `<tr><td style="width: 100%"><hr class='hr-text-pointer mt-1 mb-1 commentsMenu' data-content='&#x2630; ${i18n("tt.comments")}' style="font-size: 11pt;"/></td></tr>`;
             } else {
                 h += `<tr><td style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.comments")}' style="font-size: 11pt;"/></td></tr>`;
