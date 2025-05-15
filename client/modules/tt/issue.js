@@ -756,11 +756,11 @@
                 h += "<tr>";
                 h += "<td colspan='2' class='pl-1' style='font-size: 14px;'>";
                 h += "<div>";
-                h += "#" + (parseInt(i) + 1) + " ";
-                h += ttDate(issue.issue.attachments[i].metadata.added);
-                h += "<span class='ml-2 text-info text-bold'>";
+                h += "<span class='text-bold'>";
                 h += members[issue.issue.attachments[i].metadata.attachman]?members[issue.issue.attachments[i].metadata.attachman]:issue.issue.attachments[i].metadata.attachman;
                 h += "</span>";
+                h += "&nbsp;" + i18n("tt.wasAttached") + "&nbsp;";
+                h += ttDate(issue.issue.attachments[i].metadata.added);
                 if (modules.tt.meta.myRoles[issue.issue.project] >= 20 && !modules.tt.meta.finalStatus[issue.issue.status]) {
                     if (modules.tt.meta.myRoles[issue.issue.project] >= 70 || issue.issue.attachments[i].metadata.attachman == lStore("_login")) {
                         h += "<i class='far fa-trash-alt ml-2 pointer text-danger deleteFile'></i>";

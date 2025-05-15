@@ -337,6 +337,7 @@
     "commentTypes": "Comment types",
     "issueIdUrl": "Copy issueId link to clipboard",
     "issueIdText": "Copy issueId to clipboard",
+    "wasAttached": "attached",
     "methods": {
         "tt": {
             "_title": "Task manager",
