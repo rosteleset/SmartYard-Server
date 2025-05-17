@@ -811,10 +811,6 @@
                                 text: i18n("tt.customFieldEditorString"),
                             },
                             {
-                                id: "text-ro",
-                                text: i18n("tt.customFieldEditorStringRO"),
-                            },
-                            {
                                 id: "number",
                                 text: i18n("tt.customFieldEditorNumber"),
                             },
