@@ -1637,6 +1637,9 @@
                                 $item = $params[$item];
                             }
                             if ($cast) {
+                                if ($cast == "date") {
+                                    $item = date("Y-m-d", (int)$item);
+                                } else
                                 settype($item, $cast);
                             }
                         }
