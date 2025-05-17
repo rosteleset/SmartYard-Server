@@ -627,7 +627,8 @@
                                 prefferredValue = 0;
                             }
 
-                            let ro = cf.editor == "text-ro";
+                            let ro = cf.readonly;
+
                             let val;
                             let editor = cf.editor;
 

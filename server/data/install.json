@@ -238,5 +238,8 @@
     ],
     "74": [
         "v74_favorite_filters.sql"
+    ],
+    "75": [
+        "v75_readonly.sql"
     ]
 }
