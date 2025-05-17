@@ -1734,6 +1734,9 @@
                                 if (!f.form.fields[i].keepRO) {
                                     t.readonly = false;
                                 }
+                                if (f.form.fields[i].editor) {
+                                    t.type = f.form.fields[i].editor;
+                                }
                                 fields.push(t);
                                 if (f.form.fields[i].cast) {
                                     types[t.id] = f.form.fields[i].cast;
