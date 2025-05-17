@@ -2885,7 +2885,7 @@
                                     data: modules.tt.meta.customFields[i].catalog ? modules.tt.meta.customFields[i].catalog : "-",
                                 },
                                 {
-                                    data: modules.tt.meta.customFields[i].field + (parseInt(modules.tt.meta.customFields[i].readonly) ? '<sup>R</sup>' : ''),
+                                    data: modules.tt.meta.customFields[i].field + (parseInt(modules.tt.meta.customFields[i].readonly) ? '<sup class="bold text-danger">R</sup>' : ''),
                                 },
                                 {
                                     data: i18n("tt.customFieldType" + modules.tt.meta.customFields[i].type.charAt(0).toUpperCase() + modules.tt.meta.customFields[i].type.slice(1)),
