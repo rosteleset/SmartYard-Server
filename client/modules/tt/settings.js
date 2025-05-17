@@ -2882,17 +2882,17 @@
                                     data: modules.tt.meta.customFields[i].customFieldId,
                                 },
                                 {
-                                    data: modules.tt.meta.customFields[i].catalog?modules.tt.meta.customFields[i].catalog:"-",
+                                    data: modules.tt.meta.customFields[i].catalog ? modules.tt.meta.customFields[i].catalog : "-",
                                 },
                                 {
-                                    data: modules.tt.meta.customFields[i].field,
+                                    data: modules.tt.meta.customFields[i].field + (parseInt(modules.tt.meta.customFields[i].readonly) ? '<sup>R</sup>' : ''),
                                 },
                                 {
                                     data: i18n("tt.customFieldType" + modules.tt.meta.customFields[i].type.charAt(0).toUpperCase() + modules.tt.meta.customFields[i].type.slice(1)),
                                     nowrap: true,
                                 },
                                 {
-                                    data: editor + (parseInt(modules.tt.meta.customFields[i].readonly) ? '<sup>R</sup>' : ''),
+                                    data: editor,
                                     nowrap: true,
                                 },
                                 {

@@ -550,8 +550,8 @@
             /**
              * @inheritDoc
              */
-            public function addResolution($resolution)
-            {
+
+            public function addResolution($resolution) {
                 $this->clearCache();
 
                 $resolution = trim($resolution);
@@ -566,8 +566,8 @@
             /**
              * @inheritDoc
              */
-            public function modifyResolution($resolutionId, $resolution)
-            {
+
+            public function modifyResolution($resolutionId, $resolution) {
                 $this->clearCache();
 
                 $resolution = trim($resolution);
@@ -582,8 +582,8 @@
             /**
              * @inheritDoc
              */
-            public function deleteResolution($resolutionId)
-            {
+
+            public function deleteResolution($resolutionId) {
                 $this->clearCache();
 
                 if (!checkInt($resolutionId)) {
@@ -596,8 +596,8 @@
             /**
              * @inheritDoc
              */
-            public function setProjectResolutions($projectId, $resolutions)
-            {
+
+            public function setProjectResolutions($projectId, $resolutions) {
                 $this->clearCache();
 
                 // TODO: add transaction, commint, rollback
@@ -666,7 +666,8 @@
                             float,
                             indx,
                             search,
-                            required
+                            required,
+                            readonly
                         from
                             tt_issue_custom_fields
                         order by
@@ -703,6 +704,7 @@
                             "indx" => $customField["indx"],
                             "search" => $customField["search"],
                             "required" => $customField["required"],
+                            "readonly" => $customField["readonly"],
                             "options" => $_options,
                         ];
                     }
@@ -719,8 +721,8 @@
             /**
              * @inheritDoc
              */
-            public function addCustomField($catalog, $type, $field, $fieldDisplay)
-            {
+
+            public function addCustomField($catalog, $type, $field, $fieldDisplay) {
                 $this->clearCache();
 
                 $catalog = trim($catalog);
