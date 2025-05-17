@@ -627,7 +627,7 @@
                                 prefferredValue = 0;
                             }
 
-                            let ro = cf.readonly;
+                            let ro = parseInt(cf.readonly);
 
                             let val;
                             let editor = cf.editor;

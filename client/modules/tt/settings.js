@@ -2826,9 +2826,6 @@
                                 case "text":
                                     editor = i18n("tt.customFieldEditorString");
                                     break;
-                                case "text-ro":
-                                    editor = i18n("tt.customFieldEditorStringRO");
-                                    break;
                                 case "number":
                                     editor = i18n("tt.customFieldEditorNumber");
                                     break;
@@ -2864,7 +2861,7 @@
 
                         try {
                             if (modules.tt.meta.customFields[i].type == "select" || modules.tt.meta.customFields[i].type == "users") {
-                                editor = (modules.tt.meta.customFields[i].format.indexOf("multiple") >= 0)?i18n("tt.multiple"):i18n("tt.single");
+                                editor = (modules.tt.meta.customFields[i].format.indexOf("multiple") >= 0) ? i18n("tt.multiple") : i18n("tt.single");
                             }
                         } catch (_) {
                             // do nothing
@@ -2895,7 +2892,7 @@
                                     nowrap: true,
                                 },
                                 {
-                                    data: editor,
+                                    data: editor + (parseInt(modules.tt.meta.customFields[i].readonly) ? '<sup>R</sup>' : ''),
                                     nowrap: true,
                                 },
                                 {
