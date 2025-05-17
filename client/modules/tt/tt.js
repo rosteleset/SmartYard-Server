@@ -1730,6 +1730,9 @@
                             for (let i in f.form.fields) {
                                 let t = modules.tt.issueField2FormFieldEditor(null, f.form.fields[i].field, project.projectId, false, (values && values[`_form_${f.form.fields[i].id}`]) ? values[`_form_${f.form.fields[i].id}`] : "", f.form.fields[i].title);
                                 t.id = `_form_${f.form.fields[i].id}`;
+                                if (!f.form.fields[i].keepRO) {
+                                    t.readonly = false;
+                                }
                                 fields.push(t);
                                 if (f.form.fields[i].cast) {
                                     types[t.id] = f.form.fields[i].cast;
