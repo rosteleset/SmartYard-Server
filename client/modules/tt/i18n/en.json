@@ -337,6 +337,7 @@
     "issueIdUrl": "Copy issueId link to clipboard",
     "issueIdText": "Copy issueId to clipboard",
     "wasAttached": "attached",
+    "readonly": "Readonly",
     "methods": {
         "tt": {
             "_title": "Task manager",

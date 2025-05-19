@@ -41,12 +41,13 @@
      * @apiBody {Boolean} required
      * @apiBody {String} editor
      * @apiBody {Number} float
+     * @apiBody {Boolean} readonly
      *
      * @apiSuccess {Boolean} operationResult
      */
 
     /**
-     * @api {put} /api/tt/customField/:customFieldId delete custom field
+     * @api {delete} /api/tt/customField/:customFieldId delete custom field
      *
      * @apiVersion 1.0.0
      *
@@ -81,7 +82,7 @@
             }
 
             public static function PUT($params) {
-                $success = loadBackend("tt")->modifyCustomField($params["_id"], $params["catalog"], $params["fieldDisplay"], $params["fieldDescription"], $params["regex"], $params["format"], $params["link"], $params["options"], $params["indx"], $params["search"], $params["required"], $params["editor"], $params["float"]);
+                $success = loadBackend("tt")->modifyCustomField($params["_id"], $params["catalog"], $params["fieldDisplay"], $params["fieldDescription"], $params["regex"], $params["format"], $params["link"], $params["options"], $params["indx"], $params["search"], $params["required"], $params["editor"], $params["float"], $params["readonly"]);
 
                 return api::ANSWER($success, ($success !== false) ? false : "notAcceptable");
             }

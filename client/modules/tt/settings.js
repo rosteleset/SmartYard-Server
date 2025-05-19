@@ -953,6 +953,13 @@
                         value: cf.required,
                         hidden: cf.type === "virtual",
                     },
+                    {
+                        id: "readonly",
+                        type: "noyes",
+                        title: i18n("tt.readonly"),
+                        value: cf.readonly,
+                        hidden: cf.type === "virtual",
+                    },
                 ],
                 delete: i18n("tt.customFieldDelete"),
                 callback: function (result) {

@@ -963,7 +963,7 @@
              * @inheritDoc
              */
 
-            public function modifyCustomField($customFieldId, $catalog, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indx, $search, $required, $editor, $float) {
+            public function modifyCustomField($customFieldId, $catalog, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indx, $search, $required, $editor, $float, $readonly) {
                 $this->clearCache();
 
                 if (!checkInt($customFieldId)) {
@@ -983,6 +983,10 @@
                 }
 
                 if (!checkInt($float)) {
+                    return false;
+                }
+
+                if (!checkInt($readonly)) {
                     return false;
                 }
 
@@ -1009,7 +1013,8 @@
                             float = :float,
                             indx = :indx,
                             search = :search,
-                            required = :required
+                            required = :required,
+                            readonly = :readonly
                         where
                             issue_custom_field_id = $customFieldId
                     ");
@@ -1026,6 +1031,7 @@
                         ":indx" => $indx,
                         ":search" => $search,
                         ":required" => $required,
+                        ":readonly" => $readonly,
                     ]);
 
                     if ($cf["type"] === "select") {
