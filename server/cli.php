@@ -56,7 +56,7 @@
         "users",
     ];
 
-    function cli($stage, $backend = "#", $args) {
+    function cli($stage, $backend = "#", $args = []) {
         global $global_cli, $config;
 
         if ($config && $config["backends"]) {
