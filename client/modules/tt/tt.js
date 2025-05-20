@@ -1220,7 +1220,7 @@
                             val = nl2br(escapeHTML(val));
                         }
 
-                        if (cf.link) {
+                        if (cf.link && cf.link != "false") {
                             val = "<a href='" + cf.link.replaceAll('%value%', val) + "' target='_blank' class='hover'>" + val + "</a>";
                         }
 
@@ -1822,10 +1822,14 @@
             }
 
             let virtuals = {};
+            let links = {}
 
             for (let i in modules.tt.meta.customFields) {
                 if (modules.tt.meta.customFields[i].type == 'virtual') {
                     virtuals["_cf_" + modules.tt.meta.customFields[i].field] = 1;
+                }
+                if (modules.tt.meta.customFields[i].link) {
+                    links["_cf_" + modules.tt.meta.customFields[i].field] = modules.tt.meta.customFields[i].link;
                 }
             }
 
@@ -2165,16 +2169,36 @@
                             } ];
 
                             for (let j = 0; j < pKeys.length; j++) {
-                                cols.push({
-                                    data: modules.tt.issueField2Html(issues.issues[i], pKeys[j], undefined, "list", x),
-                                    nowrap: true,
-                                    click: navigateUrl("tt", {
-                                        issue: issues.issues[i]["issueId"],
-                                        filter: x ? x : "",
-                                        search: ($.trim(params.search) && params.search !== true) ? $.trim(params.search) : "",
-                                    }),
-                                    fullWidth: j == pKeys.length - 1,
-                                });
+                                if (links[pKeys[j]]) {
+                                    if (links[pKeys[j]] == "false") {
+                                        cols.push({
+                                            data: modules.tt.issueField2Html(issues.issues[i], pKeys[j], undefined, "list", x),
+                                            nowrap: true,
+                                            fullWidth: j == pKeys.length - 1,
+                                        });
+                                    } else {
+                                        let l = links[pKeys[j]];
+                                        cols.push({
+                                            data: modules.tt.issueField2Html(issues.issues[i], pKeys[j], undefined, "list", x),
+                                            nowrap: true,
+                                            click: () => {
+                                                window.open(l.replaceAll('%value%', issues.issues[i][pKeys[j]]));
+                                            },
+                                            fullWidth: j == pKeys.length - 1,
+                                        });
+                                    }
+                                } else {
+                                    cols.push({
+                                        data: modules.tt.issueField2Html(issues.issues[i], pKeys[j], undefined, "list", x),
+                                        nowrap: true,
+                                        click: navigateUrl("tt", {
+                                            issue: issues.issues[i]["issueId"],
+                                            filter: x ? x : "",
+                                            search: ($.trim(params.search) && params.search !== true) ? $.trim(params.search) : "",
+                                        }),
+                                        fullWidth: j == pKeys.length - 1,
+                                    });
+                                }
                             }
 
                             rows.push({
