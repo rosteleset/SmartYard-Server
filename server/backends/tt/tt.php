@@ -2165,8 +2165,7 @@
              * @return mixed
              */
 
-            public function printExec($id, $data)
-            {
+            public function printExec($id, $data) {
                 $tmp = md5(time() . rand());
 
                 $print = $this->getPrint($id);
@@ -2180,10 +2179,10 @@
                     $data[$i] = (string)$v;
                 }
 
-                $path = rtrim(@$this->config["document_builder"]["tmp"]?:"/tmp/print", "/");
-                $bin = @$this->config["document_builder"]["bin"]?:"/opt/onlyoffice/documentbuilder/docbuilder";
-                $user = @$this->config["document_builder"]["www_user"]?:"www-data";
-                $group = @$this->config["document_builder"]["www_group"]?:"www-data";
+                $path = rtrim(@$this->config["document_builder"]["tmp"] ?: "/tmp/print", "/");
+                $bin = @$this->config["document_builder"]["bin"] ?: "/opt/onlyoffice/documentbuilder/docbuilder";
+                $user = @$this->config["document_builder"]["www_user"] ?: "www-data";
+                $group = @$this->config["document_builder"]["www_group"] ?: "www-data";
 
                 if (!is_dir($path)) {
                     mkdir($path);
@@ -2199,6 +2198,8 @@
                     setLastError("formatterNotDefined");
                     return false;
                 }
+
+                error_log($template);
 
                 if ($template) {
                     $templateExt = explode(".", $template["name"]);
