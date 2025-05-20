@@ -2204,7 +2204,7 @@
                     $templateExt = $templateExt[count($templateExt) - 1];
                     $templateName = "$path/$tmp-tmp.$templateExt";
                     file_put_contents($templateName, $template["body"]);
-                    $formatter = str_replace('{$templateName}', $templateName, $formatter);
+                    $formatter = str_replace('${templateName}', $templateName, $formatter);
                 }
 
                 $outFile = "$path/$tmp-out.{$print["extension"]}";
