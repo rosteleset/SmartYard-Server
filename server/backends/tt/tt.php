@@ -2199,7 +2199,7 @@
                     return false;
                 }
 
-                error_log($template);
+                error_log(print_r($template), true);
 
                 if ($template) {
                     $templateExt = explode(".", $template["name"]);
