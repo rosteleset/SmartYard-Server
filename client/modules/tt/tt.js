@@ -2178,14 +2178,22 @@
                                         });
                                     } else {
                                         let l = links[pKeys[j]];
-                                        cols.push({
-                                            data: modules.tt.issueField2Html(issues.issues[i], pKeys[j], undefined, "list", x),
-                                            nowrap: true,
-                                            click: () => {
-                                                window.open(l.replaceAll('%value%', issues.issues[i][pKeys[j]]));
-                                            },
-                                            fullWidth: j == pKeys.length - 1,
-                                        });
+                                        if (issues.issues[i][pKeys[j]]) {
+                                            cols.push({
+                                                data: modules.tt.issueField2Html(issues.issues[i], pKeys[j], undefined, "list", x),
+                                                nowrap: true,
+                                                click: () => {
+                                                    window.open(l.replaceAll('%value%', issues.issues[i][pKeys[j]]));
+                                                },
+                                                fullWidth: j == pKeys.length - 1,
+                                            });
+                                        } else {
+                                            cols.push({
+                                                data: modules.tt.issueField2Html(issues.issues[i], pKeys[j], undefined, "list", x),
+                                                nowrap: true,
+                                                fullWidth: j == pKeys.length - 1,
+                                            });
+                                        }
                                     }
                                 } else {
                                     cols.push({
