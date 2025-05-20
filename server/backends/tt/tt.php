@@ -2199,8 +2199,6 @@
                     return false;
                 }
 
-                error_log(print_r($template, true));
-
                 if ($template) {
                     $templateExt = explode(".", $template["name"]);
                     $templateExt = $templateExt[count($templateExt) - 1];
@@ -2211,9 +2209,9 @@
 
                 $outFile = "$path/$tmp-out.{$print["extension"]}";
 
-                $formatter = str_replace('{$outFile}', $outFile, $formatter);
-                $formatter = str_replace('{$extension}', $print["extension"], $formatter);
-                $formatter = str_replace('{$tmp}', $path, $formatter);
+                $formatter = str_replace('${outFile}', $outFile, $formatter);
+                $formatter = str_replace('${extension}', $print["extension"], $formatter);
+                $formatter = str_replace('${tmp}', $path, $formatter);
 
                 $formatter = "var data = " . json_encode($data). ";\n\n" . $formatter;
 
