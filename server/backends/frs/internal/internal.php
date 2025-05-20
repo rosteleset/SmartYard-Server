@@ -98,6 +98,12 @@
                 else
                     $data = "";
                 $headers = ['Expect:', 'Accept: application/json', 'Content-Type: application/json'];
+
+                // X-Balancer-Data header
+                if ($method === self::M_MOTION_DETECTION && isset($params[self::P_STREAM_ID])) {
+                    $headers[] = 'X-Balancer-Data: ' . $params[self::P_STREAM_ID];
+                }
+
                 $auth_token = $this->getAuthToken($base_url);
                 if (isset($auth_token)) {
                     $headers[] = 'Authorization: Bearer ' . $auth_token;
@@ -1075,6 +1081,13 @@
                 else
                     $data = "";
                 $headers = ['Expect:', 'Accept: application/json', 'Content-Type: application/json'];
+
+                // X-Balancer-Data header
+                if (($method === self::M_START_WORKFLOW || $method === self::M_STOP_WORKFLOW)
+                    && isset($params[self::P_STREAM_ID])) {
+                    $headers[] = 'X-Balancer-Data: ' . $params[self::P_STREAM_ID];
+                }
+
                 $auth_token = $this->getAuthToken($base_url);
                 if (isset($auth_token)) {
                     $headers[] = 'Authorization: Bearer ' . $auth_token;
