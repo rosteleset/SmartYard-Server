@@ -23,6 +23,10 @@ trait ufanet
 
     public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow'): void
     {
+        if (!Timezone::isSupported($timezone)) {
+            return;
+        }
+
         $this->apiCall('/cgi-bin/configManager.cgi', 'GET', [
             'action' => 'setConfig',
             'NTP.Address' => "$server:$port",
@@ -70,6 +74,16 @@ trait ufanet
         ]);
 
         sleep(5);
+    }
+
+    public function transformDbConfig(array $dbConfig): array
+    {
+        // Set DB timezone to device timezone for unsupported items
+        if (!Timezone::isSupported($dbConfig['ntp']['timezone'])) {
+            $dbConfig['ntp']['timezone'] = $this->getNtpConfig()['timezone'] ?? 'Europe/Moscow';
+        }
+
+        return $dbConfig;
     }
 
     /**

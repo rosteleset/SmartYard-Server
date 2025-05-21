@@ -12,7 +12,9 @@ use hw\ip\domophone\domophone;
 abstract class ufanet extends domophone
 {
 
-    use \hw\ip\common\ufanet\ufanet;
+    use \hw\ip\common\ufanet\ufanet {
+        transformDbConfig as protected commonTransformDbConfig;
+    }
 
     /** @var array Set of parameters sent to the intercom for different CMS models. */
     protected const CMS_PARAMS = [
@@ -342,6 +344,8 @@ abstract class ufanet extends domophone
 
     public function transformDbConfig(array $dbConfig): array
     {
+        $dbConfig = $this->commonTransformDbConfig($dbConfig);
+
         if ($dbConfig['cmsModel'] !== '') {
             $cmsType = self::CMS_PARAMS[$dbConfig['cmsModel']]['type'];
             $this->cmsModelName = $dbConfig['cmsModel'];

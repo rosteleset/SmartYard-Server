@@ -11,8 +11,9 @@ use hw\ip\camera\utils\DetectionZoneUtils;
  */
 class ufanet extends camera
 {
-
-    use \hw\ip\common\ufanet\ufanet;
+    use \hw\ip\common\ufanet\ufanet {
+        transformDbConfig as protected commonTransformDbConfig;
+    }
 
     public function configureMotionDetection(array $detectionZones): void
     {
@@ -58,7 +59,6 @@ class ufanet extends camera
         ]);
 
         // Text OSD
-        // TODO: wait for fix
         $osdTextParams = [
             'OSD[0].Enable' => $text !== '' ? 'true' : 'false',
             'OSD[0].Text' => $text,
@@ -82,6 +82,8 @@ class ufanet extends camera
 
     public function transformDbConfig(array $dbConfig): array
     {
+        $dbConfig = $this->commonTransformDbConfig($dbConfig);
+
         // Convert detection zone from database to pixel
         if ($dbConfig['motionDetection']) {
             [$maxX, $maxY] = explode('x', $this->getResolution());
