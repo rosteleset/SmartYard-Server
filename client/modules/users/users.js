@@ -1017,7 +1017,7 @@
                                         nowrap: true,
                                     },
                                     {
-                                        data: response.users[i].tg ? i18n("yes") : i18n("no"),
+                                        data: (parseInt(response.users[i].tg) > 0) ? i18n("yes") : i18n("no"),
                                         nowrap: true,
                                     },
                                     {
