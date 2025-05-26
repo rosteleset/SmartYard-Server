@@ -472,6 +472,50 @@
     },
 
     renderIssue: function (issue, filter, search) {
+
+        function commentsMenu() {
+            let options = [];
+            let c = project.comments.split("\n");
+            for (let i in c) {
+                options.push({
+                    id: parseInt(i) + 100,
+                    text: c[i],
+                });
+            }
+
+            let value = [];
+            if (lStore("ttCommentsFilter")) {
+                value = lStore("ttCommentsFilter");
+            }
+
+            cardForm({
+                title: i18n("tt.commentsHideFilter"),
+                footer: true,
+                borderless: true,
+                noFocus: true,
+                noHover: true,
+                singleColumn: true,
+                fields: [
+                    {
+                        id: "comments",
+                        type: "multiselect",
+                        options,
+                        value,
+                    },
+                ],
+                callback: r => {
+                    let h = [];
+                    for (let i in r.comments) {
+                        h.push(parseInt(r.comments[i]));
+                    }
+                    lStore("ttCommentsFilter", h);
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 50);
+                },
+            });
+        }
+
         modules.tt.issue.callsLoaded = false;
 
         let count = false;
@@ -1115,6 +1159,7 @@
                             h += "</tr>";
                         }
                         $("#issueComments").html(h);
+                        $(".commentsMenu").off("click").on("click", commentsMenu);
                     }
                     message(i18n("tt.callsLoaded", result.cdr.length));
                 } else {
@@ -1531,48 +1576,7 @@
             });
         });
 
-        $(".commentsMenu").off("click").on("click", () => {
-            let options = [];
-            let c = project.comments.split("\n");
-            for (let i in c) {
-                options.push({
-                    id: parseInt(i) + 100,
-                    text: c[i],
-                });
-            }
-
-            let value = [];
-            if (lStore("ttCommentsFilter")) {
-                value = lStore("ttCommentsFilter");
-            }
-
-            cardForm({
-                title: i18n("tt.commentsHideFilter"),
-                footer: true,
-                borderless: true,
-                noFocus: true,
-                noHover: true,
-                singleColumn: true,
-                fields: [
-                    {
-                        id: "comments",
-                        type: "multiselect",
-                        options,
-                        value,
-                    },
-                ],
-                callback: r => {
-                    let h = [];
-                    for (let i in r.comments) {
-                        h.push(parseInt(r.comments[i]));
-                    }
-                    lStore("ttCommentsFilter", h);
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 50);
-                },
-            });
-        });
+        $(".commentsMenu").off("click").on("click", commentsMenu);
 
         $("#stepPrev").off("click").on("click", () => {
             loadingStart();
