@@ -1,7 +1,6 @@
 {
   "name": "ami",
   "version": "1.0.0",
-  "description": "",
   "main": "ami.js",
   "scripts": {
     "start": "node ami.js"
@@ -11,5 +10,10 @@
   "license": "ISC",
   "dependencies": {
     "asterisk-manager": "^0.2.0"
+  },
+  "description": "",
+  "devDependencies": {
+    "eslint": "^9.27.0",
+    "eslint-plugin-security": "^3.0.1"
   }
 }
