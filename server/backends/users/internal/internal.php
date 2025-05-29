@@ -12,7 +12,7 @@
 
         class internal extends users {
 
-            private $logins, $users;
+            private $logins, $users, $wc = 0;
 
             /**
              * @inheritDoc
@@ -116,6 +116,13 @@
              */
 
             public function getUser($uid, $withGroups = true) {
+
+                $this->wc++;
+
+                if ($this->wc > 3) {
+                    $this->getUsers();
+                }
+
                 if (!checkInt($uid)) {
                     return false;
                 }
