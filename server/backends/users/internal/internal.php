@@ -18,6 +18,15 @@
              * @inheritDoc
              */
 
+            function __construct() {
+                parent::__construct();
+                $this->getUsers();
+            }
+
+            /**
+             * @inheritDoc
+             */
+
             public function getUsers($withSessions = false, $withLast = false) {
                 if (!$withSessions) {
 
@@ -449,7 +458,7 @@
              * @inheritDoc
              */
 
-             function getLoginByUid($uid) {
+            function getLoginByUid($uid) {
                 if ($this->users[$uid]) {
                     return $this->users[$uid]["login"];
                 }
