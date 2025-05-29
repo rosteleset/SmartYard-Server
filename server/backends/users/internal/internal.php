@@ -20,7 +20,7 @@
 
             function __construct($config, $db, $redis, $login = false) {
                 parent::__construct($config, $db, $redis, $login);
-                $this->getUsers();
+                // $this->getUsers();
             }
 
             /**
