@@ -20,7 +20,6 @@
 
             function __construct($config, $db, $redis, $login = false) {
                 parent::__construct($config, $db, $redis, $login);
-                // $this->getUsers();
             }
 
             /**
@@ -120,7 +119,7 @@
                 $this->wc++;
 
                 if ($this->wc > 3) {
-                    $this->getUsers();
+                    $this->precacheUsers();
                 }
 
                 if (!checkInt($uid)) {
@@ -564,7 +563,7 @@
                 }
             }
 
-             /**
+            /**
               * @inheritDoc
               */
 
@@ -595,7 +594,7 @@
              * @inheritDoc
              */
 
-             public function putAvatar($uid, $avatar) {
+            public function putAvatar($uid, $avatar) {
                 if (!checkInt($uid)) {
                     return false;
                 }
@@ -614,11 +613,11 @@
                 }
             }
 
-             /**
+            /**
               * @inheritDoc
               */
 
-             public function getAvatar($uid) {
+            public function getAvatar($uid) {
                 if ($this->uid != 0) {
                     $uid = $this->uid;
                 }
@@ -760,6 +759,18 @@
                 }
 
                 parent::cli($args);
+            }
+
+            /**
+             * precache
+             */
+
+            private function precacheUsers() {
+                $users = $this->getUsers();
+
+                foreach ($users as $user) {
+                    $this->getUser($user["uid"]);
+                }
             }
         }
     }
