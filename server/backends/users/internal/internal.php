@@ -18,8 +18,8 @@
              * @inheritDoc
              */
 
-            function __construct() {
-                parent::__construct();
+            function __construct($config, $db, $redis, $login = false) {
+                parent::__construct($config, $db, $redis, $login);
                 $this->getUsers();
             }
 
