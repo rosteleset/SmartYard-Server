@@ -766,11 +766,13 @@
              */
 
             private function precacheUsers() {
-                $users = $this->getUsers();
+                /*
+                    $users = $this->getUsers();
 
-                foreach ($users as $user) {
-                    $this->getUser($user["uid"]);
-                }
+                    foreach ($users as $user) {
+                        $this->getUser($user["uid"]);
+                    }
+                */
             }
         }
     }
