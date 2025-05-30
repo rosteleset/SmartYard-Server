@@ -151,7 +151,7 @@
                 }
 
                 if ((int)$this->uid > 0) {
-                    $value = $this->redis->get($key);
+                    // $value = $this->redis->get($key);
                     if ($value) {
                         $this->cache[$key] = $value;
                         return json_decode($value, true);
@@ -174,9 +174,9 @@
 
                 if ($value != @$this->cache[$key]) {
                     $this->cache[$key] = $value;
-                    if ((int)$this->uid > 0) {
-                        $this->redis->setex($key, @$this->config["redis"]["backends_cache_ttl"] ? : ( 3 * 24 * 60 * 60 ), $value);
-                    }
+//                    if ((int)$this->uid > 0) {
+//                        $this->redis->setex($key, @$this->config["redis"]["backends_cache_ttl"] ? : ( 3 * 24 * 60 * 60 ), $value);
+//                    }
                 }
             }
 
@@ -189,9 +189,9 @@
                 $key = "CACHE:" . strtoupper($this->backend) . ":" . $key . ":" . $this->uid;
                 unset($this->cache[$key]);
 
-                if ((int)$this->uid > 0) {
-                    $this->redis->del($key);
-                }
+//                if ((int)$this->uid > 0) {
+//                    $this->redis->del($key);
+//                }
             }
 
             /**
@@ -201,14 +201,14 @@
             public function clearCache() {
                 $this->cache = [];
 
-                $_keys = $this->redis->keys("CACHE:" . strtoupper($this->backend) . ":*");
+                // $_keys = $this->redis->keys("CACHE:" . strtoupper($this->backend) . ":*");
 
                 $n = 0;
 
-                foreach ($_keys as $_key) {
-                    $this->redis->del($_key);
-                    $n++;
-                }
+//                foreach ($_keys as $_key) {
+//                    $this->redis->del($_key);
+//                    $n++;
+//                }
 
                 return $n;
             }
