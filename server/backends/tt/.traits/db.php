@@ -50,8 +50,6 @@
                     return $cache;
                 }
 
-                error_log("nc");
-
                 try {
                     if ($acronym) {
                         $projects = $this->db->get("select project_id, acronym, project, max_file_size, search_subject, search_description, search_comments, assigned, comments from tt_projects where acronym = :acronym", [
@@ -216,8 +214,9 @@
                             "tags" => $this->getTags($project["project_id"]),
                         ];
                     }
-                    error_log($key);
+
                     $this->cacheSet($key, $_projects);
+
                     return $_projects;
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
