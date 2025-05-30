@@ -788,7 +788,7 @@
                             "twoFA" => $user["secret"] ? 1 : 0,
                         ];
 
-                        $key = "USER:${user["uid"]}:1";
+                        $key = "USER:{$user["uid"]}:1";
 
                         if ($groups !== false) {
                             $_user["groups"] = $groups->getGroups($user["uid"]);

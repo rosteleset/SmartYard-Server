@@ -198,7 +198,7 @@
              * @return boolean
              */
 
-             public function setUsers($gid, $uids) {
+            public function setUsers($gid, $uids) {
                 $this->clearCache();
 
                 // TODO: add transaction, commint, rollback
@@ -286,6 +286,10 @@
                 return true;
             }
 
+            /**
+             * @inheritDoc
+             */
+
             public function deleteUser($uid) {
                 $this->clearCache();
 
@@ -302,6 +306,10 @@
 
                 return true;
             }
+
+            /**
+             * @inheritDoc
+             */
 
             public function cleanup() {
                 $n = 0;
@@ -324,6 +332,10 @@
                 return $n;
             }
 
+            /**
+             * @inheritDoc
+             */
+
             public function capabilities() {
                 return [
                     "mode" => "rw",
@@ -333,8 +345,8 @@
             /**
              * @inheritDoc
              */
-            public function getGroupByAcronym($acronym)
-            {
+
+            public function getGroupByAcronym($acronym) {
                 return $this->db->get("select gid from core_groups where acronym = :acronym", [
                     "acronym" => $acronym,
                 ], [
@@ -347,8 +359,8 @@
             /**
              * @inheritDoc
              */
-            public function addUserToGroup($uid, $gid)
-            {
+
+            public function addUserToGroup($uid, $gid) {
                 $this->clearCache();
 
                 if (!checkInt($uid) || !checkInt($gid)) {
@@ -361,6 +373,7 @@
             /**
              * @inheritDoc
              */
+
             public function cron($part) {
                 if ($part == "5min") {
                     $this->cleanup();
