@@ -353,6 +353,8 @@
                 if ($users && $groups) {
                     $gl = $groups->getGroups();
 
+                    $users->getUser(-1);
+
                     foreach ($gl as $g) {
                         $gu = [];
                         $uids = $groups->getUsers($g["gid"]);

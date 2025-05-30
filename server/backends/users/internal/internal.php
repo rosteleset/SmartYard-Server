@@ -12,7 +12,7 @@
 
         class internal extends users {
 
-            private $logins, $users, $wc = 0, $pc = false;
+            private $logins, $users, $pc = false;
 
             /**
              * @inheritDoc
@@ -115,7 +115,6 @@
              */
 
             public function getUser($uid, $withGroups = true) {
-
                 if (!checkInt($uid)) {
                     return false;
                 }
@@ -126,16 +125,13 @@
                     return $this->users[$key];
                 }
 
-                if ($this->wc > 3 && !$this->pc) {
-                    $this->precacheUsers();
-                    $this->pc = true;
-                } else {
-                    $this->wc++;
-                }
-
                 $cache = $this->cacheGet($key);
                 if ($cache) {
-                    $this->users[$key] = $cache;
+                    if ($uid >= 0) {
+                        $this->users[$key] = $cache;
+                    } else {
+                        $this->users = $cache;
+                    }
                     return $cache;
                 }
 
@@ -179,7 +175,7 @@
                                 $_user["persistentToken"] = $persistent;
                             }
 
-                            $this->cacheSet($key, $_user);
+                            $this->cacheSet($key, $_user, true);
                             $this->users[$key] = $_user;
 
                             return $_user;
@@ -193,6 +189,12 @@
                         return false;
                     }
                 } else {
+                    if ($this->pc) {
+                        return;
+                    }
+
+                    $this->pc = true;
+
                     // force fill memory cache
                     try {
                         $users = $this->db->queryEx("select uid, login, real_name, e_mail, phone, tg, notification, enabled, default_route, primary_group, acronym primary_group_acronym, secret from core_users left join core_groups on core_users.primary_group = core_groups.gid");
@@ -234,6 +236,8 @@
 
                             $this->users["USER:" . (int)$users[$i]["uid"] . ":" . (int)$withGroups] = $_user;
                         }
+
+                        $this->cacheSet($key, $this->users);
 
                         return true;
                     } catch (\Exception $e) {
@@ -521,8 +525,7 @@
              * @inheritDoc
              */
 
-            public function getUidByLogin($login)
-            {
+            public function getUidByLogin($login) {
                 $key = "UIDBYLOGIN:$login";
 
                 $cache = $this->cacheGet($key);
@@ -760,59 +763,6 @@
                 }
 
                 parent::cli($args);
-            }
-
-            /**
-             * precache
-             */
-
-            private function precacheUsers() {
-                $groups = loadBackend("groups");
-
-                try {
-                    $users = $this->db->queryEx("select uid, login, real_name, e_mail, phone, tg, notification, enabled, default_route, primary_group, acronym primary_group_acronym, secret from core_users left join core_groups on core_users.primary_group = core_groups.gid");
-
-                    foreach ($users as $user) {
-                        $_user = [
-                            "uid" => $user["uid"],
-                            "login" => $user["login"],
-                            "realName" => $user["real_name"],
-                            "eMail" => $user["e_mail"],
-                            "phone" => $user["phone"],
-                            "tg" => $user["tg"],
-                            "notification" => $user["notification"],
-                            "enabled" => $user["enabled"],
-                            "defaultRoute" => $user["default_route"],
-                            "primaryGroup" => $user["primary_group"],
-                            "primaryGroupAcronym" => $user["primary_group_acronym"],
-                            "twoFA" => $user["secret"] ? 1 : 0,
-                        ];
-
-                        $key = "USER:{$user["uid"]}:1";
-
-                        if ($groups !== false) {
-                            $_user["groups"] = $groups->getGroups($user["uid"]);
-                        }
-
-                        $persistent = false;
-                        $_keys = $this->redis->keys("persistent_*_" . $user["uid"]);
-                        foreach ($_keys as $_key) {
-                            $persistent = explode("_", $_key)[1];
-                            break;
-                        }
-
-                        if ($persistent) {
-                            $_user["persistentToken"] = $persistent;
-                        }
-
-                        $this->cacheSet($key, $_user);
-                        $this->users[$key] = $_user;
-                    }
-                } catch (\Exception $e) {
-                    error_log(print_r($e, true));
-                    $this->unCache($key);
-                    return false;
-                }
             }
         }
     }
