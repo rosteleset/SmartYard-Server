@@ -232,7 +232,7 @@ function mobileIntercom(flatId, flatNumber, domophoneId)
                         }))
                     end
 
-                    push(token, device.tokenType, device.platform, extension, hash, callerId, flatId, dtmf, "device.subscriber.mobile", flatNumber, domophoneId, bundle)
+                    push(token, device.tokenType, device.platform, extension, hash, callerId, flatId, dtmf, device.subscriber.mobile, flatNumber, domophoneId, bundle)
 
                     res = res .. "&Local/" .. extension
                 end
