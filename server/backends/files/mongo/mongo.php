@@ -17,8 +17,8 @@
             /**
              * @inheritDoc
              */
-            public function __construct($config, $db, $redis, $login = false)
-            {
+
+            public function __construct($config, $db, $redis, $login = false) {
                 parent::__construct($config, $db, $redis, $login);
 
                 $this->dbName = @$config["backends"]["files"]["db"]?:"rbt";
@@ -33,8 +33,8 @@
             /**
              * @inheritDoc
              */
-            public function addFile($realFileName, $stream, $metadata = [])
-            {
+
+            public function addFile($realFileName, $stream, $metadata = []) {
                 $db = $this->dbName;
 
                 $bucket = $this->mongo->$db->selectGridFSBucket();
@@ -51,8 +51,8 @@
             /**
              * @inheritDoc
              */
-            public function getFile($uuid)
-            {
+
+            public function getFile($uuid) {
                 $db = $this->dbName;
 
                 $bucket = $this->mongo->$db->selectGridFSBucket();
@@ -70,24 +70,24 @@
             /**
              * @inheritDoc
              */
-            public function getFileStream($uuid)
-            {
+
+            public function getFileStream($uuid) {
                 return $this->getFile($uuid)["stream"];
             }
 
             /**
              * @inheritDoc
              */
-            public function getFileInfo($uuid)
-            {
+
+            public function getFileInfo($uuid) {
                 return $this->getFile($uuid)["fileInfo"];
             }
 
             /**
              * @inheritDoc
              */
-            public function setFileMetadata($uuid, $metadata)
-            {
+
+            public function setFileMetadata($uuid, $metadata) {
                 $collection = "fs.files";
                 $db = $this->dbName;
 

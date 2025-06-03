@@ -310,5 +310,37 @@
 
             }
 
+            /**
+             * @inheritDoc
+             */
+
+            public function cleanup() {
+                $ttl = @(int)$this->config["backends"]["cs"]["ttl"] ?: 3;
+
+                $sheets = $this->getCSes();
+
+                $n = 0;
+
+                foreach ($sheets as $sheet) {
+                    if ($sheet["metadata"]["date"] < date("Y-m-d", strtotime("-$ttl day"))) {
+                        $this->deleteCS($sheet["metadata"]["sheet"], $sheet["metadata"]["date"]);
+                        $n++;
+                    }
+                }
+
+                return $n;
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+            function cron($part) {
+                if ($part === "5min") {
+                    $this->cleanup();
+                }
+
+                return true;
+            }
         }
     }

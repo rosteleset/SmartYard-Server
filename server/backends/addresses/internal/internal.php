@@ -115,8 +115,8 @@
             /**
              * @inheritDoc
              */
-            function deleteRegion($regionId)
-            {
+
+            function deleteRegion($regionId) {
                 if (!checkInt($regionId)) {
                     return false;
                 }
@@ -129,8 +129,8 @@
             /**
              * @inheritDoc
              */
-            function getAreas($regionId = false)
-            {
+
+            function getAreas($regionId = false) {
                 if ($regionId) {
                     if (!checkInt($regionId)) {
                         return false;
@@ -1107,8 +1107,8 @@
             /**
              * @inheritDoc
              */
-            function cron($part)
-            {
+
+            function cron($part) {
                 if ($part === "5min") {
                     $this->cleanup();
                 }
@@ -1119,8 +1119,8 @@
             /**
              * @inheritDoc
              */
-            function getFavorites()
-            {
+
+            function getFavorites() {
                 return $this->db->get("select object, id, title, icon, color from addresses_favorites where login = :login", [
                     "login" => $this->login,
                 ], [
