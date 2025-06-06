@@ -78,12 +78,11 @@
                 $success = false;
 
                 if ($cs && ($params["action"] == "claim" || $params["action"] == "release")) {
-                    if (!$params["col"]) {
-                        error_log(print_r([
-                            $params["action"], $params["sheet"], $params["date"], $params["col"], $params["row"], $params["uid"], (int)@$params["expire"], @$params["sid"], @$params["step"]
-                        ], true));
+                    if (@$params["col"] && @$params["row"]) {
+                        $success = $cs->setCell($params["action"], $params["sheet"], $params["date"], $params["col"], $params["row"], $params["uid"], (int)@$params["expire"], @$params["sid"], @$params["step"]);
+                    } else {
+                        $success = true;
                     }
-                    $success = $cs->setCell($params["action"], $params["sheet"], $params["date"], $params["col"], $params["row"], $params["uid"], (int)@$params["expire"], @$params["sid"], @$params["step"]);
                 }
 
                 return api::ANSWER($success);
