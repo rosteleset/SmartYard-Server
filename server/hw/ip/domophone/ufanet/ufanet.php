@@ -256,7 +256,7 @@ abstract class ufanet extends domophone
 
     public function setCallTimeout(int $timeout): void
     {
-        // Empty implementation
+        $this->apiCall('/api/v1/configuration', 'PATCH', ['commutator' => ['calltime' => $timeout]]);
     }
 
     public function setCmsLevels(array $levels): void
