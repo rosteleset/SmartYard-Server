@@ -1625,30 +1625,34 @@
              */
 
             public function preprocessFilter($query, $params, $types) {
-                if ($query) {
-                    array_walk_recursive($query, function (&$item, $key, $params) use ($types) {
-                        if (array_key_exists($item, $params)) {
-                            if (@$types[$item]) {
-                                $cast = $types[$item];
-                            } else {
-                                $cast = false;
+                if (!is_array($query)) {
+                    error_log(print_r($query, true));
+                } else {
+                    if ($query) {
+                        array_walk_recursive($query, function (&$item, $key, $params) use ($types) {
+                            if (array_key_exists($item, $params)) {
+                                if (@$types[$item]) {
+                                    $cast = $types[$item];
+                                } else {
+                                    $cast = false;
+                                }
+                                if (is_callable($params[$item])) {
+                                    $item = $params[$item]();
+                                } else {
+                                    $item = $params[$item];
+                                }
+                                if ($cast) {
+                                    if ($cast == "date") {
+                                        $item = date("Y-m-d", (int)$item);
+                                    } else
+                                    settype($item, $cast);
+                                }
                             }
-                            if (is_callable($params[$item])) {
-                                $item = $params[$item]();
-                            } else {
-                                $item = $params[$item];
-                            }
-                            if ($cast) {
-                                if ($cast == "date") {
-                                    $item = date("Y-m-d", (int)$item);
-                                } else
-                                settype($item, $cast);
-                            }
-                        }
-                    }, $params);
-                }
+                        }, $params);
+                    }
 
-                return $query;
+                    return $query;
+                }
             }
 
             /**
