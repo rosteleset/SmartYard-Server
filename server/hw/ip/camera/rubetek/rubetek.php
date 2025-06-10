@@ -44,7 +44,18 @@ class rubetek extends camera
 
     public function getCamshot(): string
     {
-        return $this->apiCall('/image', 'GET', [], 5);
+        if ($this->isLegacyVersion()) {
+            return $this->apiCall('/image', 'GET', [], 5);
+        }
+
+        $context = stream_context_create([
+            'http' => [
+                'timeout' => 5.0,
+            ],
+        ]);
+
+        $auth = base64_encode($this->login . ':' . $this->password);
+        return file_get_contents("$this->url/snap.jpg?auth=$auth", false, $context);
     }
 
     public function setOsdText(string $text = ''): void

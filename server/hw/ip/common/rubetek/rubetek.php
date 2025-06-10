@@ -49,12 +49,14 @@ trait rubetek
 
     public function getSysinfo(): array
     {
-        $version = $this->apiCall('/version', 'GET', [], 3);
+        $version = $this->apiCall('/version', 'GET', [], 3) ?? [];
 
-        $sysinfo['DeviceID'] = $version['serial_number'];
-        $sysinfo['DeviceModel'] = $version['model'];
-        $sysinfo['HardwareVersion'] = $version['hardware_version'];
-        $sysinfo['SoftwareVersion'] = $version['firmware_version'];
+        $sysinfo['DeviceID'] = $version['serial_number'] ?? null;
+        $sysinfo['DeviceModel'] = $version['model'] ?? null;
+        $sysinfo['HardwareVersion'] = $version['hardware_version'] ?? null;
+        $sysinfo['SoftwareVersion'] = $version['firmware_version'] ?? null;
+
+        $this->softwareVersion = $sysinfo['SoftwareVersion'];
 
         return $sysinfo;
     }
@@ -207,6 +209,6 @@ trait rubetek
      */
     protected function isLegacyVersion(): bool
     {
-        return $this->getSoftwareVersion() !== null && $this->getSoftwareVersion() < '2024.08.150111497';
+        return $this->getSoftwareVersion() !== null && $this->getSoftwareVersion() < '2025.04.171131928';
     }
 }

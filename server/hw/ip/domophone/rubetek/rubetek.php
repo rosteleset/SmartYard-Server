@@ -15,11 +15,6 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface
         transformDbConfig as protected commonTransformDbConfig;
     }
 
-    use legacy\rubetek {
-        getUnlocked as protected getUnlockedLegacy;
-        setUnlocked as protected setUnlockedLegacy;
-    }
-
     /**
      * @var array|null $dialplans An array that holds dialplan information,
      * which may be null if not loaded.
@@ -475,11 +470,6 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface
 
     public function setUnlocked(bool $unlocked = true): void
     {
-        if ($this->isLegacyVersion()) {
-            $this->setUnlockedLegacy($unlocked);
-            return;
-        }
-
         if ($unlocked) {
             $this->apiCall('/free_passage/start', 'POST', [
                 'door_access' => [1, 2],
@@ -841,10 +831,6 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface
 
     protected function getUnlocked(): bool
     {
-        if ($this->isLegacyVersion()) {
-            return $this->getUnlockedLegacy();
-        }
-
         return $this->apiCall('/operating_mode')['free_passage_mode'] ?? true;
     }
 
