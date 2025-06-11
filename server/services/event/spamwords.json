@@ -93,7 +93,19 @@
         "OnConnect",
         "MqttOverHttpService",
         "Free mem",
-        "response to version"
+        "response to version",
+        "[PanelApi]",
+        "[Rtsp]",
+        "[Mqtt]",
+        "[Sip]",
+        "[Tuner]",
+        "[VAM]",
+        "[onvifd]",
+        "[Images]",
+        "[WebRTC]",
+        "[Sound]",
+        "[Face]",
+        "[Http]"
     ],
     "ufanet": [
         "goke-i2c"
