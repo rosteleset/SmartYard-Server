@@ -336,7 +336,7 @@
              */
 
             function cron($part) {
-                if ($part === "5min") {
+                if ($part === "daily") {
                     $this->cleanup();
                 }
 
