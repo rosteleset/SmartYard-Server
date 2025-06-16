@@ -39,7 +39,7 @@
 
                 $bucket = $this->mongo->$db->selectGridFSBucket();
 
-                $id = $bucket->uploadFromStream($realFileName, $stream);
+                $id = $bucket->uploadFromStream(preg_replace('/[\+]/', '_', $realFileName), $stream);
 
                 if ($metadata) {
                     $this->setFileMetadata($id, $metadata);
