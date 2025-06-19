@@ -102,7 +102,7 @@ function cardForm(params) {
         }
     }
 
-    if (others && tabs.length && tabs.indexOf(i18n("other"))) {
+    if (others && tabs.length && tabs.indexOf(i18n("other")) < 0) {
         tabs.push(i18n("other"));
     }
 
@@ -532,7 +532,7 @@ function cardForm(params) {
                 if (params.fields[i].pattern) {
                     h += ` pattern="${params.fields[i].pattern}"`;
                 }
-                h += `>`;
+                h += ` />`;
                 if (params.fields[i].button) {
                     h += `<div class="input-group-append">`;
                     h += `<span id="${_prefix}${params.fields[i].id}-button" title="${params.fields[i].button.hint ? params.fields[i].button.hint : ''}" class="input-group-text pointer"><i class="fa-fw ${params.fields[i].button.class}"></i></span>`;
@@ -588,6 +588,10 @@ function cardForm(params) {
                     }
                     h += `</div>`;
                 }
+                break;
+
+            case "button":
+                h += `<input name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" type="${params.fields[i].type}" value="${params.fields[i].button.hint}" class="btn ${params.fields[i].button.class ? params.fields[i].button.class : 'btn-secondary'}" />`;
                 break;
         }
 
@@ -1014,9 +1018,15 @@ function cardForm(params) {
         }
 
         if (params.fields[i].button && typeof params.fields[i].button.click === "function") {
-            $(`#${_prefix}${params.fields[i].id}-button`).off("click").on("click", () => {
-                params.fields[i].button.click(_prefix);
-            });
+            if (params.fields[i].type == "button") {
+                $(`#${_prefix}${params.fields[i].id}`).off("click").on("click", () => {
+                    params.fields[i].button.click(_prefix);
+                });
+            } else {
+                $(`#${_prefix}${params.fields[i].id}-button`).off("click").on("click", () => {
+                    params.fields[i].button.click(_prefix);
+                });
+            }
         }
 
         if (params.fields[i].type == "select") {

@@ -2543,20 +2543,27 @@
                         if (parseInt(modules.addresses.houses.customFieldsConfiguration.flat[i].modify)) {
                             switch (modules.addresses.houses.customFieldsConfiguration.flat[i].type) {
                                 case "text":
+                                case "button":
                                     cf = {};
                                     cf.id = "_cf_" + modules.addresses.houses.customFieldsConfiguration.flat[i].field;
                                     cf.type = modules.addresses.houses.customFieldsConfiguration.flat[i].editor;
                                     cf.title = modules.addresses.houses.customFieldsConfiguration.flat[i].fieldDisplay;
                                     cf.placeholder = modules.addresses.houses.customFieldsConfiguration.flat[i].fieldDisplay;
-                                    cf.tab = i18n("customFields");
+                                    cf.tab = modules.addresses.houses.customFieldsConfiguration.flat[i].tab ? modules.addresses.houses.customFieldsConfiguration.flat[i].tab : i18n("customFields");
                                     cf.value = customFields[modules.addresses.houses.customFieldsConfiguration.flat[i].field] ? customFields[modules.addresses.houses.customFieldsConfiguration.flat[i].field] : "";
                                     if (modules.addresses.houses.customFieldsConfiguration.flat[i].magicIcon && modules.addresses.houses.customFieldsConfiguration.flat[i].magicFunction && modules.custom && modules.custom[modules.addresses.houses.customFieldsConfiguration.flat[i].magicFunction]) {
                                         cf.button = {};
                                         cf.button.click = modules.custom[modules.addresses.houses.customFieldsConfiguration.flat[i].magicFunction];
-                                        cf.button.class = modules.addresses.houses.customFieldsConfiguration.flat[i].magicIcon;
+                                        cf.button.class = modules.addresses.houses.customFieldsConfiguration.flat[i].magicClass;
                                         if (modules.addresses.houses.customFieldsConfiguration.flat[i].magicHint) {
                                             cf.button.hint = modules.addresses.houses.customFieldsConfiguration.flat[i].magicHint;
                                         }
+                                    }
+                                    if (modules.addresses.houses.customFieldsConfiguration.flat[i].type == "button") {
+                                        cf.button = {};
+                                        cf.button.hint = modules.addresses.houses.customFieldsConfiguration.flat[i].magicHint;
+                                        cf.button.click = modules.custom[modules.addresses.houses.customFieldsConfiguration.flat[i].magicFunction];
+                                        cf.button.class = modules.addresses.houses.customFieldsConfiguration.flat[i].magicClass;
                                     }
                                     fields.push(cf);
                                     break;

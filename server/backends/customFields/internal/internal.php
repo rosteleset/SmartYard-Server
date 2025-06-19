@@ -133,7 +133,7 @@
                     return false;
                 }
 
-                return $this->db->get("select * from custom_fields where apply_to = :apply_to", [
+                return $this->db->get("select * from custom_fields where apply_to = :apply_to order by weight", [
                     "apply_to" => $applyTo,
                 ], [
                     "custom_field_id" => "customFieldId",
@@ -151,11 +151,12 @@
                     "indx" => "indx",
                     "search" => "search",
                     "required" => "required",
-                    "magic_icon" => "magicIcon",
+                    "magic_class" => "magicClass",
                     "magic_function" => "magicFunction",
                     "magic_hint" => "magicHint",
                     "add" => "add",
                     "modify" => "modify",
+                    "tab" => "tab",
                 ]);
             }
 
