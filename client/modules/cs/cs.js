@@ -998,9 +998,9 @@
                         } else
                         if (typeof modules.cs.currentSheet.sheet.fields.list == "object") {
                             let l = 0;
-                            for (let i = 0; i < modules.cs.currentSheet.sheet.fields.list.length - 1; i++) {
+                            for (let j = 0; j < modules.cs.currentSheet.sheet.fields.list.length - 1; j++) {
                                 l++;
-                                h += '<td nowrap class="pl-2 pr-2">' + (issues[i][modules.cs.currentSheet.sheet.fields.list[i]] ? issues[i][modules.cs.currentSheet.sheet.fields.list[i]] : '?') + '</td>';
+                                h += '<td nowrap class="pl-2 pr-2">' + (issues[i][modules.cs.currentSheet.sheet.fields.list[j]] ? issues[i][modules.cs.currentSheet.sheet.fields.list[j]] : '?') + '</td>';
                             }
                             h += '<td style="width: 100%;" class="pl-2 pr-2">' + (issues[i][modules.cs.currentSheet.sheet.fields.list[l]] ? issues[i][modules.cs.currentSheet.sheet.fields.list[l]] : '?') + '</td>';
                         }
