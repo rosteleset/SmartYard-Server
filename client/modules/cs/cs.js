@@ -996,7 +996,7 @@
                         if (typeof modules.cs.currentSheet.sheet.fields.list == "string") {
                             h += '<td style="width: 100%;" class="pl-2 pr-2">' + (issues[i][modules.cs.currentSheet.sheet.fields.list] ? issues[i][modules.cs.currentSheet.sheet.fields.list] : '?') + '</td>';
                         } else
-                        if (typeof modules.cs.currentSheet.sheet.fields.list == "array") {
+                        if (typeof modules.cs.currentSheet.sheet.fields.list == "object") {
                             let l = 0;
                             for (let i = 0; i < modules.cs.currentSheet.sheet.fields.list.length - 1; i++) {
                                 l++;
