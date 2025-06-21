@@ -45,6 +45,9 @@
     "ufanet": {
       "port": 45459
     },
+    "soyuz": {
+      "port": 45460
+    },
     "brovotech": {
       "port": 46450
     }
