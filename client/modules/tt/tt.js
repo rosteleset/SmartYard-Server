@@ -120,7 +120,7 @@
         }
     },
 
-    issueFieldTitle: function (field) {
+    issueFieldTitle: function (field, target) {
         let fieldId;
 
         if (typeof field === "object") {
@@ -227,7 +227,11 @@
             }
 
             if (cf) {
-                return cf.fieldDisplay;
+                if (target == "list") {
+                    return cf.fieldDisplayList ? cf.fieldDisplayList : cf.fieldDisplay;
+                } else {
+                    return cf.fieldDisplay;
+                }
             } else {
                 return fieldId;
             }
@@ -1895,7 +1899,7 @@
 
             for (let i = 0; i < pKeys.length; i++) {
                 columns.push({
-                    title: modules.tt.issueFieldTitle(pKeys[i]),
+                    title: modules.tt.issueFieldTitle(pKeys[i], "list"),
                     nowrap: true,
                     fullWidth: i == pKeys.length - 1,
                 });
@@ -2175,6 +2179,7 @@
                                             data: modules.tt.issueField2Html(issues.issues[i], pKeys[j], undefined, "list", x),
                                             nowrap: true,
                                             fullWidth: j == pKeys.length - 1,
+                                            ellipses: j == pKeys.length - 1,
                                         });
                                     } else {
                                         let l = links[pKeys[j]];
@@ -2186,12 +2191,14 @@
                                                     window.open(l.replaceAll('%value%', issues.issues[i][pKeys[j]]));
                                                 },
                                                 fullWidth: j == pKeys.length - 1,
+                                                ellipses: j == pKeys.length - 1,
                                             });
                                         } else {
                                             cols.push({
                                                 data: modules.tt.issueField2Html(issues.issues[i], pKeys[j], undefined, "list", x),
                                                 nowrap: true,
                                                 fullWidth: j == pKeys.length - 1,
+                                                ellipses: j == pKeys.length - 1,
                                             });
                                         }
                                     }
@@ -2205,6 +2212,7 @@
                                             search: ($.trim(params.search) && params.search !== true) ? $.trim(params.search) : "",
                                         }),
                                         fullWidth: j == pKeys.length - 1,
+                                        ellipses: j == pKeys.length - 1,
                                     });
                                 }
                             }

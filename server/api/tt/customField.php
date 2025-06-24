@@ -14,6 +14,7 @@
      * @apiBody {String} type
      * @apiBody {String} field
      * @apiBody {String} fieldDisplay
+     * @apiBody {String} fieldDisplayList
      *
      * @apiSuccess {Number} customFieldId
      */
@@ -31,6 +32,7 @@
      * @apiParam {Number} customFieldId
      * @apiBody {String} catalog
      * @apiBody {String} fieldDisplay
+     * @apiBody {String} fieldDisplayList
      * @apiBody {String} fieldDescription
      * @apiBody {String} regex
      * @apiBody {String} format
@@ -76,13 +78,13 @@
         class customField extends api {
 
             public static function POST($params) {
-                $customFieldId = loadBackend("tt")->addCustomField($params["catalog"], $params["type"], $params["field"], $params["fieldDisplay"]);
+                $customFieldId = loadBackend("tt")->addCustomField($params["catalog"], $params["type"], $params["field"], $params["fieldDisplay"], $params["fieldDisplayList"]);
 
                 return api::ANSWER($customFieldId, ($customFieldId !== false) ? "customFieldId" : "notAcceptable");
             }
 
             public static function PUT($params) {
-                $success = loadBackend("tt")->modifyCustomField($params["_id"], $params["catalog"], $params["fieldDisplay"], $params["fieldDescription"], $params["regex"], $params["format"], $params["link"], $params["options"], $params["indx"], $params["search"], $params["required"], $params["editor"], $params["float"], $params["readonly"]);
+                $success = loadBackend("tt")->modifyCustomField($params["_id"], $params["catalog"], $params["fieldDisplay"], $params["fieldDisplayList"], $params["fieldDescription"], $params["regex"], $params["format"], $params["link"], $params["options"], $params["indx"], $params["search"], $params["required"], $params["editor"], $params["float"], $params["readonly"]);
 
                 return api::ANSWER($success, ($success !== false) ? false : "notAcceptable");
             }

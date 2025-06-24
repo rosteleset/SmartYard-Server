@@ -61,6 +61,7 @@
     "customFieldType": "Type",
     "customFieldWorkflow": "Auto",
     "customFieldDisplay": "Display (for people)",
+    "customFieldDisplayList": "Display (in list)",
     "customFieldDescription": "Description",
     "customFieldTypeText": "Text",
     "customFieldTypeSelect": "Select",

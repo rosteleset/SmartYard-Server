@@ -197,6 +197,12 @@
                         return $.trim(v) !== "";
                     }
                 },
+                {
+                    id: "fieldDisplayList",
+                    type: "text",
+                    title: i18n("tt.customFieldDisplayList"),
+                    placeholder: i18n("tt.customFieldDisplayList"),
+                },
             ],
             callback: function (result) {
                 loadingStart();
@@ -205,6 +211,7 @@
                     type: result.type,
                     field: result.field,
                     fieldDisplay: result.fieldDisplay,
+                    fieldDisplayList: result.fieldDisplayList,
                 }).
                 fail(FAIL).
                 done(() => {
@@ -772,6 +779,13 @@
                         validate: (v, prefix) => {
                             return $(`#${prefix}delete`).val() === "yes" || $.trim(v) !== "";
                         }
+                    },
+                    {
+                        id: "fieldDisplayList",
+                        type: "text",
+                        title: i18n("tt.customFieldDisplayList"),
+                        placeholder: i18n("tt.customFieldDisplayList"),
+                        value: cf.fieldDisplayList,
                     },
                     {
                         id: "fieldDescription",

@@ -709,3 +709,15 @@ body.dark-mode .hr-text::after {
   outline: 0;
   box-shadow: 0 0 0 1px #39f;
 }
+
+.ellipses-parent {
+  display: flex;
+}
+
+.ellipses-children {
+  flex: 1;
+  width: 0;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

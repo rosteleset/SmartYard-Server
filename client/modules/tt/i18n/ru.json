@@ -61,6 +61,7 @@
     "customFieldType": "Тип",
     "customFieldWorkflow": "Авто",
     "customFieldDisplay": "Отображение (для людей)",
+    "customFieldDisplayList": "Отображение (в списке)",
     "customFieldDescription": "Описание",
     "customFieldTypeText": "Текст",
     "customFieldTypeSelect": "Выбор",

@@ -50,9 +50,9 @@ function cardTable(params) {
         h += `</div>`;
     }
 
-    let pageLength = params.itemsPerPage?params.itemsPerPage:Number.MAX_VALUE;
-    let pagerItemsCount = params.pagerItemsCount?params.pagerItemsCount:10;
-    let currentPage = params.startPage?params.startPage:1;
+    let pageLength = params.itemsPerPage ? params.itemsPerPage : Number.MAX_VALUE;
+    let pagerItemsCount = params.pagerItemsCount ? params.pagerItemsCount : 10;
+    let currentPage = params.startPage ? params.startPage : 1;
 
     h += `<div class="card-body table-responsive p-0">`;
     h += `<table class="table table-hover">`;
@@ -163,10 +163,18 @@ function cardTable(params) {
                     h += ` width="100%"`;
                 }
                 h += `>`;
+                if (rows[i].cols[j].ellipses) {
+                    h += '<div class="ellipses-parent">';
+                    h += '<div class="ellipses-children">';
+                }
                 if (typeof rows[i].cols[j].click === "string") {
                     h += `<a href="${rows[i].cols[j].click}" class="nodec hoverable">${rows[i].cols[j].data}</a>`;
                 } else {
                     h += rows[i].cols[j].data;
+                }
+                if (rows[i].cols[j].ellipses) {
+                    h += '</div>';
+                    h += '</div>';
                 }
                 h += "</td>";
             }
@@ -412,6 +420,10 @@ function cardTable(params) {
         } else {
             $(params.target).html(h);
         }
+
+        $('.ellipses-children').each(function () {
+            $(this).attr('title', $(this).text());
+        });
 
         if (Math.ceil(rows.length / pageLength) > 1) {
             $("#" + tfoot).show();
