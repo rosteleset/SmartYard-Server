@@ -194,13 +194,13 @@ class DomophoneConfigurationBuilder extends ConfigurationBuilder
     /**
      * Add ticker text to the domophone configuration.
      *
-     * @param string $text The ticker text to display.
+     * @param array $textLines The ticker text lines to display.
      *
      * @return self
      */
-    public function addTickerText(string $text): self
+    public function addTickerText(array $textLines): self
     {
-        $this->config['tickerText'] = $text;
+        $this->config['tickerText'] = $textLines;
 
         return $this;
     }
