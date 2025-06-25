@@ -373,6 +373,21 @@ function pathToObject(parent, path) {
     return result;
 }
 
+function ildc() {
+    let mw = 0;
+
+    $(".ildc").each(function () {
+        let w = parseInt($(this).css("width"), 10);
+        if (w > mw) {
+            mw = w
+        }
+    });
+
+    mw += "px"
+
+    $(".ildc").css("width", mw);
+}
+
 Object.defineProperty(Array.prototype, "assoc", {
     value: function (key, target, val) {
         let arr = this;

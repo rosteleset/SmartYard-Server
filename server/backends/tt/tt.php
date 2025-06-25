@@ -1665,6 +1665,17 @@
              */
 
             public function linkIssues($issue1, $issue2) {
+                if (gettype($issue2) == "array") {
+                    $success = true;
+
+                    foreach ($issue2 as $is2) {
+                        error_log($is2);
+                        $success = $success && $this->linkIssues($issue1, $is2);
+                    }
+
+                    return $success;
+                }
+
                 $issue1 = $this->getIssue($issue1);
                 if (!$issue1) {
                     setLastError("issue1NotFound");

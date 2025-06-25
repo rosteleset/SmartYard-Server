@@ -223,6 +223,7 @@ select {
   color: black;
   text-align: left;
   height: 1.5em;
+  font-size: 11pt;
 }
 
 .hr-text::before {
@@ -257,6 +258,7 @@ select {
   color: black;
   text-align: left;
   height: 1.5em;
+  font-size: 11pt;
 }
 
 .hr-text-pointer::before {

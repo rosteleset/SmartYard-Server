@@ -55,7 +55,7 @@
 
                 $success = $tt->linkIssues(@$params["_id"], @$params["issueId"]);
 
-                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
+                return api::ANSWER($success, ($success !== false) ? false : "notAcceptable");
             }
 
             public static function DELETE($params) {
@@ -67,7 +67,7 @@
 
                 $success = $tt->unLinkIssues(@$params["_id"], @$params["issueId"]);
 
-                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
+                return api::ANSWER($success, ($success !== false) ? false : "notAcceptable");
             }
 
             public static function index() {

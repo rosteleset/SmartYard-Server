@@ -608,9 +608,9 @@
                 if (f) {
                     let x = modules.tt.issueField2Html(issue.issue, issue.fields[i], undefined, target);
                     if (x) {
-                        h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${modules.tt.issueFieldTitle(issue.fields[i])}' style="font-size: 11pt;"/></td></tr>`;
+                        h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${modules.tt.issueFieldTitle(issue.fields[i])}' /></td></tr>`;
                         h += "<tr>";
-                        h += "<td colspan='2' style='width: 100%; font-size: 12pt;' class='pl-1'>";
+                        h += "<td colspan='2' style='width: 100%;' class='pl-1'>";
                         h += x;
                         h += "</td>";
                         h += "</tr>";
@@ -795,10 +795,10 @@
         }
 
         if (issue.issue.attachments && Object.keys(issue.issue.attachments).length) {
-            h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.attachments")}' style="font-size: 11pt;"/></td></tr>`;
+            h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.attachments")}' /></td></tr>`;
             for (let i in issue.issue.attachments) {
                 h += "<tr>";
-                h += "<td colspan='2' class='pl-1' style='font-size: 14px;'>";
+                h += "<td colspan='2' class='pl-1'>";
                 h += "<div>";
                 h += "<span class='text-bold'>";
                 h += members[issue.issue.attachments[i].metadata.attachman]?members[issue.issue.attachments[i].metadata.attachman]:issue.issue.attachments[i].metadata.attachman;
@@ -828,17 +828,29 @@
         }
 
         if (issue.issue.childrens && issue.issue.childrens.issues && Object.keys(issue.issue.childrens.issues).length) {
-            h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.subIssues")}' style="font-size: 11pt;"/></td></tr>`;
+            h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.subIssues")}' /></td></tr>`;
             h += "<tr>";
-            h += "<td colspan='2' class='pl-1' style='font-size: 14px;'>";
-            h += "<table>";
+            h += "<td colspan='2' class='pl-1'>";
+            h += '<table class="datatable">';
+
+            h += '<thead>';
+            h += '<tr>';
+            h += '<th class="pl-2 pr-2 ildc">' + i18n("tt.issue") + '</th>';
+            h += '<th class="pl-2 pr-2 ildc">' + i18n("tt.created") + '</th>';
+            h += '<th class="pl-2 pr-2 ildc">' + i18n("tt.author") + '</th>';
+            h += '<th class="pl-2 pr-2 ildc">' + i18n("tt.status") + '</th>';
+            h += '<th class="pl-2 pr-2">' + i18n("tt.subject") + '</th>';
+            h += '</tr>';
+            h += '</thead>';
+
+            h += '<tbody>';
             for (let i in issue.issue.childrens.issues) {
                 h += "<tr>";
-                h += `<td><a class='text-bold hoverable' href='?#tt&issue=${issue.issue.childrens.issues[i].issueId}'>${issue.issue.childrens.issues[i].issueId}</a></td>`;
-                h += `<td class='pl-2'>${ttDate(issue.issue.childrens.issues[i].created, true)}</td>`;
-                h += `<td class='pl-2'>${modules.tt.issueField2Html(issue.issue.childrens.issues[i], "author", undefined, "left")}</td>`;
-                h += `<td class='pl-2'>${issue.issue.childrens.issues[i].subject}</td>`;
-                h += `<td class='pl-2'>${modules.tt.issueField2Html(issue.issue.childrens.issues[i], "status", undefined, "left")}</td>`;
+                h += `<td><a class='hoverable pl-2 pr-2 ildc' href='?#tt&issue=${issue.issue.childrens.issues[i].issueId}'>${issue.issue.childrens.issues[i].issueId}</a></td>`;
+                h += `<td class='pl-2 pr-2 ildc'>${ttDate(issue.issue.childrens.issues[i].created, true)}</td>`;
+                h += `<td class='pl-2 pr-2 ildc'>${modules.tt.issueField2Html(issue.issue.childrens.issues[i], "author", undefined, "left")}</td>`;
+                h += `<td class='pl-2 pr-2 ildc'>${issue.issue.childrens.issues[i].subject}</td>`;
+                h += `<td class='pl-2 pr-2 ildc'>${modules.tt.issueField2Html(issue.issue.childrens.issues[i], "status", undefined, "left")}</td>`;
                 h += "</tr>";
             }
             h += "</table>";
@@ -847,18 +859,33 @@
         }
 
         if (issue.issue.linkedIssues && issue.issue.linkedIssues.issues && Object.keys(issue.issue.linkedIssues.issues).length) {
-            h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.links")}' style="font-size: 11pt;"/></td></tr>`;
+            h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.links")}' /></td></tr>`;
             h += "<tr>";
-            h += "<td colspan='2' class='pl-1' style='font-size: 14px;'>";
-            h += "<table>";
+            h += "<td colspan='2' class='pl-1'>";
+
+            h += '<table class="datatable">';
+
+            h += '<thead>';
+            h += '<tr>';
+            h += '<th class="pl-2 pr-2 ildc">' + i18n("tt.issue") + '</th>';
+            h += '<th class="pl-2 pr-2 ildc">' + i18n("tt.created") + '</th>';
+            h += '<th class="pl-2 pr-2 ildc">' + i18n("tt.author") + '</th>';
+            h += '<th class="pl-2 pr-2 ildc">' + i18n("tt.status") + '</th>';
+            h += '<th class="pl-2 pr-2">' + i18n("tt.subject") + '</th>';
+            h += '<th class="pl-2 pr-2">&nbsp;</th>';
+            h += '</tr>';
+            h += '</thead>';
+
+            h += '<tbody>';
+
             for (let i in issue.issue.linkedIssues.issues) {
                 h += "<tr>";
-                h += `<td><a class='text-bold hoverable' href='?#tt&issue=${issue.issue.linkedIssues.issues[i].issueId}'>${issue.issue.linkedIssues.issues[i].issueId}</a></td>`;
-                h += `<td class='pl-2'>${ttDate(issue.issue.linkedIssues.issues[i].created, true)}</td>`;
-                h += `<td class='pl-2'>${modules.tt.issueField2Html(issue.issue.linkedIssues.issues[i], "author", undefined, "left")}</td>`;
-                h += `<td class='pl-2'>${issue.issue.linkedIssues.issues[i].subject}</td>`;
-                h += `<td class='pl-2'>${modules.tt.issueField2Html(issue.issue.linkedIssues.issues[i], "status", undefined, "left")}</td>`;
-                h += `<td class='pl-2'><i class='fas fa-fw fa-unlink pointer text-danger unlinkIssue' data-issueId='${issue.issue.linkedIssues.issues[i].issueId}'></i></td>`;
+                h += `<td><a class='hoverable pl-2 pr-2 ildc' href='?#tt&issue=${issue.issue.linkedIssues.issues[i].issueId}'>${issue.issue.linkedIssues.issues[i].issueId}</a></td>`;
+                h += `<td class='pl-2 pr-2 ildc'>${ttDate(issue.issue.linkedIssues.issues[i].created, true)}</td>`;
+                h += `<td class='pl-2 pr-2 ildc'>${modules.tt.issueField2Html(issue.issue.linkedIssues.issues[i], "author", undefined, "left")}</td>`;
+                h += `<td class='pl-2 pr-2 ildc'>${issue.issue.linkedIssues.issues[i].subject}</td>`;
+                h += `<td class='pl-2 pr-2'>${modules.tt.issueField2Html(issue.issue.linkedIssues.issues[i], "status", undefined, "left")}</td>`;
+                h += `<td class='pl-2 pr-2'><i class='fas fa-fw fa-unlink pointer text-danger unlinkIssue' data-issueId='${issue.issue.linkedIssues.issues[i].issueId}' title='${i18n("tt.unlinkIssuesTitle")}'></i></td>`;
                 h += "</tr>";
             }
             h += "</table>";
@@ -881,9 +908,9 @@
             }
             let cf = lStore("ttCommentsFilter");
             if (project.comments && project.comments.split("\n").length > 0 && trim(project.comments.split("\n")[0])) {
-                h += `<tr><td style="width: 100%"><hr class='hr-text-pointer mt-1 mb-1 commentsMenu' data-content='&#x2630; ${i18n("tt.comments")}' style="font-size: 11pt;"/></td></tr>`;
+                h += `<tr><td style="width: 100%"><hr class='hr-text-pointer mt-1 mb-1 commentsMenu' data-content='&#x2630; ${i18n("tt.comments")}' /></td></tr>`;
             } else {
-                h += `<tr><td style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.comments")}' style="font-size: 11pt;"/></td></tr>`;
+                h += `<tr><td style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.comments")}' /></td></tr>`;
             }
             for (let i in issue.issue.comments) {
                 let ct = 0;
@@ -892,7 +919,7 @@
                 }
                 if (!cf || !Array.isArray(cf) || cf.indexOf(ct) < 0) {
                     h += "<tr class='issueComment' data-type='" + ct + "' data-time='" + issue.issue.comments[i].created + "' data-date='" + date("d-m-Y H:i:s", issue.issue.comments[i].created) + "'>";
-                    h += "<td class='pl-1' style='font-size: 14px;'>";
+                    h += "<td class='pl-1'>";
                     h += "<div>";
                     h += "<span class='text-bold'>";
                     h += members[issue.issue.comments[i].author] ? members[issue.issue.comments[i].author] : issue.issue.comments[i].author;
@@ -956,7 +983,7 @@
                     $(".ttCalls").hide();
                     $("#issueComments").hide();
                     let h = '';
-                    h += `<tr><td style='width: 100%' colspan='2'><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.journal")}' style='font-size: 11pt;'/></td></tr>`;
+                    h += `<tr><td style='width: 100%' colspan='2'><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.journal")}' /></td></tr>`;
                     let jf = true;
                     for (let i in response.journal) {
                         let o = response.journal[i].old && typeof response.journal[i].old.length == 'undefined';
@@ -969,9 +996,9 @@
                         h += "<tr>";
                         if (jf) {
                             jf = false;
-                            h += "<td class='pl-1' style='font-size: 14px;' colspan='2'>";
+                            h += "<td class='pl-1' colspan='2'>";
                         } else {
-                            h += "<td class='pl-1 pt-3' style='font-size: 14px;' colspan='2'>";
+                            h += "<td class='pl-1 pt-3' colspan='2'>";
                         }
                         h += "<div>";
                         h += "<span class='text-bold'>";
@@ -1095,7 +1122,7 @@
                             let comments = $(".issueComment");
 
                             let h = "<tr class='issueComment' data-time='" + result.cdr[i].start + "' data-date='" + date("d-m-Y H:i:s", result.cdr[i].start) + "'>";
-                            h += "<td class='pl-1' style='font-size: 14px;'>";
+                            h += "<td class='pl-1'>";
                             h += "<div>";
                             h += "<span class='text-bold'>";
                             h += i18n("tt.call");
@@ -1136,13 +1163,13 @@
                     } else {
                         let h = '';
                         if (project.comments && project.comments.split("\n").length > 0 && trim(project.comments.split("\n")[0])) {
-                            h += `<tr><td style="width: 100%"><hr class='hr-text-pointer mt-1 mb-1 commentsMenu' data-content='&#x2630; ${i18n("tt.comments")}' style="font-size: 11pt;"/></td></tr>`;
+                            h += `<tr><td style="width: 100%"><hr class='hr-text-pointer mt-1 mb-1 commentsMenu' data-content='&#x2630; ${i18n("tt.comments")}' /></td></tr>`;
                         } else {
-                            h += `<tr><td style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.comments")}' style="font-size: 11pt;"/></td></tr>`;
+                            h += `<tr><td style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.comments")}' /></td></tr>`;
                         }
                         for (let i in result.cdr) {
                             h += "<tr class='issueComment' data-time='" + result.cdr[i].start + "' data-date='" + date("d-m-Y H:i:s", result.cdr[i].start) + "'>";
-                            h += "<td class='pl-1' style='font-size: 14px;'>";
+                            h += "<td class='pl-1'>";
                             h += "<div>";
                             h += "<span class='text-bold'>";
                             h += i18n("tt.call");
@@ -1450,12 +1477,13 @@
                 footer: true,
                 borderless: true,
                 topApply: true,
+                size: "xl",
                 fields: [
                     {
                         id: "issueId",
                         type: "select2",
                         title: i18n("tt.issue"),
-                        multiple: false,
+                        multiple: true,
                         options: [],
                         value: [],
                         validate: a => {
