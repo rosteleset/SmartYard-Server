@@ -50,3 +50,5 @@ module.exports = {
     RUSTORE_PROJECT_ID,
     RUSTORE_TOKEN
 }
+
+console.log(module.exports);
