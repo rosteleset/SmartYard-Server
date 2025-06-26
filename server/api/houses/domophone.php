@@ -56,7 +56,7 @@
      */
 
     /**
-     * @api {delete} /api/houses/domophone/:domophoneId get CMS matrix
+     * @api {delete} /api/houses/domophone/:domophoneId delete domophone device
      *
      * @apiVersion 1.0.0
      *

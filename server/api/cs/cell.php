@@ -10,11 +10,11 @@
      *
      * @apiHeader {String} token authentication token
      *
-     * @apiBody {String} [uid]
-     * @apiBody {String} [sheet]
-     * @apiBody {String} [date]
-     * @apiBody {String} [col]
-     * @apiBody {String} [row]
+     * @apiQuery {String} [uid]
+     * @apiQuery {String} [sheet]
+     * @apiQuery {String} [date]
+     * @apiQuery {String} [col]
+     * @apiQuery {String} [row]
      *
      * @apiSuccess {Object} cs
      */

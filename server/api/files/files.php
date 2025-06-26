@@ -10,8 +10,8 @@
      *
      * @apiHeader {String} token authentication token
      *
-     * @apiBody {String} [type]
-     * @apiBody {Boolean} [withContent]
+     * @apiQuery {String} [type]
+     * @apiQuery {Boolean} [withContent]
      *
      * @apiSuccess {Object} operationResult
      */

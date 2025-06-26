@@ -11,7 +11,7 @@
      * @apiHeader {String} authorization authentication token
      *
      * @apiParam {String} printId
-     * @apiBody {String} mode
+     * @apiQuery {String} mode
      *
      * @apiSuccess {Mixed} $mode
      */

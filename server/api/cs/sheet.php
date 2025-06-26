@@ -10,9 +10,9 @@
      *
      * @apiHeader {String} token authentication token
      *
-     * @apiBody {String} sheet
-     * @apiBody {Timestamp} date
-     * @apiBody {Boolean} [extended]
+     * @apiQuery {String} sheet
+     * @apiQuery {Timestamp} date
+     * @apiQuery {Boolean} [extended]
      *
      * @apiSuccess {Object} sheet
      */

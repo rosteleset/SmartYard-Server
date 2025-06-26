@@ -10,8 +10,8 @@
      *
      * @apiHeader {String} authorization authentication token
      *
-     * @apiBody {String="flatId,rfId,keyId,domophoneId"} by
-     * @apiBody {String} query
+     * @apiQuery {String="flatId,rfId,keyId,domophoneId"} by
+     * @apiQuery {String} query
      *
      * @apiSuccess {Object[]} keys
      */
@@ -26,8 +26,8 @@
      *
      * @apiHeader {String} authorization authentication token
      *
-     * @apiBody {Number} by 0 - universal, 1 - subscriber, 2 - flat, 3 - entrance, 4 - house, 5 - company
-     * @apiBody {Number} query
+     * @apiQuery {Number} by 0 - universal, 1 - subscriber, 2 - flat, 3 - entrance, 4 - house, 5 - company
+     * @apiQuery {Number} query
      *
      * @apiSuccess {Object[]} keys
      */

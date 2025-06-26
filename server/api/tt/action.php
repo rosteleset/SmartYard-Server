@@ -11,7 +11,7 @@
      * @apiHeader {String} authorization authentication token
      *
      * @apiParam {String} issueId
-     * @apiBody {String} action
+     * @apiQuery {String} action
      *
      * @apiSuccess {Object} template
      */

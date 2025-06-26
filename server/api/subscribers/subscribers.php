@@ -10,8 +10,8 @@
      *
      * @apiHeader {String} authorization authentication token
      *
-     * @apiBody {String="flatId","houseId","subscriberId"} by
-     * @apiBody {Number} query
+     * @apiQuery {String="flatId","houseId","subscriberId"} by
+     * @apiQuery {Number} query
      *
      * @apiSuccess {Object[]} result result is "flat" for flatId or "subscribers" for others
      */

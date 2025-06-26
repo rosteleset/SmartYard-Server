@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {put} /api/tt/json/:id get issue
+     * @api {put} /api/tt/json/:id get issue (raw)
      *
      * @apiVersion 1.0.0
      *
@@ -16,7 +16,7 @@
      */
 
     /**
-     * @api {put} /api/tt/json modify issue
+     * @api {put} /api/tt/json modify issue (raw)
      *
      * @apiVersion 1.0.0
      *

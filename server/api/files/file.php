@@ -10,8 +10,8 @@
      *
      * @apiHeader {String} token authentication token
      *
-     * @apiBody {String} [type]
-     * @apiBody {String} [filename]
+     * @apiQuery {String} [type]
+     * @apiQuery {String} [filename]
      *
      * @apiSuccess {Object} operationResult
      */

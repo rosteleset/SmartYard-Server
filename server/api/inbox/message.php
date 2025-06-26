@@ -11,7 +11,7 @@
      * @apiHeader {String} authorization authentication token
      *
      * @apiParam {Number} subscriberId
-     * @apiBody {Number} [messageId]
+     * @apiQuery {Number} [messageId]
      *
      * @apiSuccess {Object[]} messages
      */
