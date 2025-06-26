@@ -1,5 +1,7 @@
 const { argv } = require('node:process');
 
+let path = parseInt(argv[2]) ? (".env" + argv[2].toString()) : ".env";
+
 require("dotenv").config({
     path: argv[2] ? argv[2] : ".env",
 });
