@@ -4,6 +4,8 @@ require("dotenv").config({
     path: argv[2] ? argv[2] : ".env",
 });
 
+console.log("using " + (argv[2] ? argv[2] : ".env") + " config file");
+
 const path = require('path')
 
 //  Web server host and port
