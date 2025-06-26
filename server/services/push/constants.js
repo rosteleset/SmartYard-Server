@@ -1,12 +1,12 @@
 const { argv } = require('node:process');
 
-let path = parseInt(argv[2]) ? (".env" + argv[2].toString()) : ".env";
+let file = parseInt(argv[2]) ? (".env" + argv[2].toString()) : ".env";
 
 require("dotenv").config({
-    path: argv[2] ? argv[2] : ".env",
+    path: file,
 });
 
-console.log("using " + (argv[2] ? argv[2] : ".env") + " config file");
+console.log("using " + file + " config file");
 
 const path = require('path')
 
