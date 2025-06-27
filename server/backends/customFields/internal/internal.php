@@ -107,7 +107,7 @@
                 return $this->db->modify("delete from custom_fields_values where apply_to = :apply_to and id = :id", [
                     "apply_to" => $applyTo,
                     "id" => $id,
-                ]);
+                ]) !== false;
             }
 
             /**

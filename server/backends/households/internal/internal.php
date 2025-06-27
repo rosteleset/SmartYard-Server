@@ -364,15 +364,12 @@
                     return false;
                 }
 
-                if (!(int)$shared) {
-                    $prefix = 0;
-                }
-
                 if (!checkStr($callerId)) {
                     return false;
                 }
 
                 $altCamerasIds[0] = $cameraId;
+
                 for ($i = 0; $i <= 7; $i++) {
                     if (@(int)$altCamerasIds[$i]) {
                         $entrances = $this->getEntrances("cameraId", [ "cameraId" => (int)(int)$altCamerasIds[$i]]);
@@ -412,6 +409,8 @@
                     ":cms_levels" => $cmsLevels,
                     ":path" => (int)$path ? : null,
                 ]);
+
+                error_log("\n\n$prefix\n\n");
 
                 if (!$entranceId) {
                     return false;

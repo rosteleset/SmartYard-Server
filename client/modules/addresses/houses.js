@@ -169,9 +169,9 @@
 
     outputsSelect: function (el, id, prefix) {
         if (parseInt($("#" + prefix + "domophoneOutput").val()) > 0) {
-            $("#" + prefix + "cms").parent().parent().parent().hide();
+            $("#" + prefix + "cms-container").attr("data-form-runtime-hide", "1").hide();
         } else {
-            $("#" + prefix + "cms").parent().parent().parent().show();
+            $("#" + prefix + "cms-container").attr("data-form-runtime-hide", "0").show();
         }
 
         modules.addresses.houses.cmsSelect(el, id, prefix);
@@ -179,17 +179,11 @@
 
     cmsSelect: (el, id, prefix) => {
         if (parseInt($("#" + prefix + "cms").val()) !== 0 && $("#" + prefix + "cms:visible").length) {
-            $("#" + prefix + "cmsType").parent().parent().parent().show();
-            $("#" + prefix + "cmsLevels").parent().parent().show();
-            $("#" + prefix + "shared").parent().parent().parent().hide();
+            $("#" + prefix + "cmsType-container").attr("data-form-runtime-hide", "0").show();
+            $("#" + prefix + "cmsLevels-container").attr("data-form-runtime-hide", "0").show();
         } else {
-            $("#" + prefix + "cmsType").parent().parent().parent().hide();
-            $("#" + prefix + "cmsLevels").parent().parent().hide();
-            if (parseInt($("#" + prefix + "domophoneOutput").val())) {
-                $("#" + prefix + "shared").parent().parent().parent().hide();
-            } else {
-                $("#" + prefix + "shared").parent().parent().parent().show();
-            }
+            $("#" + prefix + "cmsType-container").attr("data-form-runtime-hide", "1").hide();
+            $("#" + prefix + "cmsLevels-container").attr("data-form-runtime-hide", "1").hide();
         }
 
         modules.addresses.houses.sharedSelect(el, id, prefix, true);
@@ -197,15 +191,15 @@
 
     sharedSelect: (el, id, prefix, cascade) => {
         if (parseInt($("#" + prefix + "shared").val()) && $("#" + prefix + "shared:visible").length) {
-            $("#" + prefix + "cms").parent().parent().parent().hide();
-            $("#" + prefix + "prefix").parent().parent().show();
+            $("#" + prefix + "cms-container").attr("data-form-runtime-hide", "1").hide();
+            $("#" + prefix + "prefix-container").attr("data-form-runtime-hide", "0").show();
         } else {
             if (parseInt($("#" + prefix + "domophoneOutput").val())) {
-                $("#" + prefix + "cms").parent().parent().parent().hide();
+                $("#" + prefix + "cms-container").attr("data-form-runtime-hide", "1").hide();
             } else {
-                $("#" + prefix + "cms").parent().parent().parent().show();
+                $("#" + prefix + "cms-container").attr("data-form-runtime-hide", "0").show();
             }
-            $("#" + prefix + "prefix").parent().parent().hide();
+            $("#" + prefix + "prefix-container").attr("data-form-runtime-hide", "1").hide();
         }
 
         if (!cascade) {
@@ -504,7 +498,7 @@
                                 type: "text",
                                 title: i18n("addresses.entrance"),
                                 placeholder: i18n("addresses.entrance"),
-                                validate: (v) => {
+                                validate: v => {
                                     return $.trim(v) !== "";
                                 },
                                 tab: i18n("addresses.primary"),
@@ -527,7 +521,7 @@
                                 id: "callerId",
                                 type: "text",
                                 title: i18n("addresses.callerId"),
-                                validate: (v) => {
+                                validate: v => {
                                     return $.trim(v) !== "";
                                 },
                                 tab: i18n("addresses.primary"),
@@ -907,10 +901,6 @@
                             result.lon = g[1];
                             if (parseInt(result.domophoneOutput) > 0) {
                                 result.cms = 0;
-                                result.shared = 0;
-                            }
-                            if (parseInt(result.cms) !== 0) {
-                                result.shared = 0;
                             }
                             if (parseInt(result.shared) !== 0) {
                                 result.cms = 0;
@@ -1056,7 +1046,7 @@
                     title: i18n("addresses.flat"),
                     tab: i18n("addresses.primary"),
                     placeholder: i18n("addresses.flat"),
-                    validate: (v) => {
+                    validate: v => {
                         return $.trim(v) !== "";
                     }
                 },
@@ -1117,12 +1107,8 @@
                     title: i18n("addresses.openCode"),
                     tab: i18n("addresses.primary"),
                     placeholder: i18n("addresses.openCode"),
-                    validate: (v) => {
-                        if (+v >= 10001 && +v <= 99999 || v === '') {
-                            return true;
-                        } else {
-                            error(i18n("addresses.openCodeError"));
-                        }
+                    validate: v => {
+                        return (parseInt(v) >= 10001 && parseInt(v) <= 99999) || v === '';
                     },
                 },
                 {
@@ -1510,7 +1496,7 @@
                                 title: i18n("addresses.entrance"),
                                 tab: i18n("addresses.primary"),
                                 placeholder: i18n("addresses.entrance"),
-                                validate: (v) => {
+                                validate: v => {
                                     return $.trim(v) !== "";
                                 },
                                 value: entrance.entrance,
@@ -1535,7 +1521,7 @@
                                 title: i18n("addresses.callerId"),
                                 tab: i18n("addresses.primary"),
                                 value: entrance.callerId,
-                                validate: (v) => {
+                                validate: v => {
                                     return $.trim(v) !== "";
                                 },
                             },
@@ -2268,7 +2254,7 @@
                         title: i18n("addresses.flat"),
                         placeholder: i18n("addresses.flat"),
                         value: flat.flat,
-                        validate: (v) => {
+                        validate: v => {
                             return $.trim(v) !== "";
                         },
                         tab: i18n("addresses.primary"),
@@ -2399,12 +2385,8 @@
                         title: i18n("addresses.openCode"),
                         placeholder: i18n("addresses.openCode"),
                         value: flat.openCode,
-                        validate: (v) => {
-                            if (+v >= 10001 && +v <= 99999 || v === '') {
-                                return true;
-                            } else {
-                                error(i18n("addresses.openCodeError"));
-                            }
+                        validate: v => {
+                            return (parseInt(v) >= 10001 && parseInt(v) <= 99999) || v === '';
                         },
                         tab: i18n("addresses.primary"),
                         button: {
@@ -3656,7 +3638,7 @@
                                         type: "text",
                                         title: i18n("addresses.messageTitle"),
                                         placeholder: i18n("addresses.messageTitle"),
-                                        validate: (v) => {
+                                        validate: v => {
                                             return $.trim(v) !== "";
                                         }
                                     },
@@ -3665,7 +3647,7 @@
                                         type: "area",
                                         title: i18n("addresses.messageBody"),
                                         placeholder: i18n("addresses.messageBody"),
-                                        validate: (v) => {
+                                        validate: v => {
                                             return $.trim(v) !== "";
                                         }
                                     },

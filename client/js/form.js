@@ -303,12 +303,12 @@ function cardForm(params) {
         }
 
         if (params.fields[i].hidden) {
-            h += `<tr style="display: none;">`;
+            h += `<tr style="display: none;" name="${_prefix}${params.fields[i].id}-container" id="${_prefix}${params.fields[i].id}-container">`;
         } else
         if (params.fields[i].tabHidden) {
-            h += `<tr style="display: none;" class="jsform-tabbed-item ${params.fields[i].noHover ? 'nohover' : ''}" data-tab-index='${tabs.indexOf(params.fields[i].tab)}'>`;
+            h += `<tr style="display: none;" class="jsform-tabbed-item ${params.fields[i].noHover ? 'nohover' : ''}" data-tab-index="${tabs.indexOf(params.fields[i].tab)}" name="${_prefix}${params.fields[i].id}-container" id="${_prefix}${params.fields[i].id}-container">`;
         } else {
-            h += `<tr class="jsform-tabbed-item ${params.fields[i].noHover ? 'nohover' : ''}" data-tab-index='${tabs.indexOf(params.fields[i].tab)}'>`;
+            h += `<tr class="jsform-tabbed-item ${params.fields[i].noHover ? 'nohover' : ''}" data-tab-index="${tabs.indexOf(params.fields[i].tab)}" name="${_prefix}${params.fields[i].id}-container" id="${_prefix}${params.fields[i].id}-container">`;
         }
 
         params.fields[i].type = params.fields[i].type ? params.fields[i].type : "text";
@@ -839,7 +839,7 @@ function cardForm(params) {
         if (!params.delete || $(`#${_prefix}delete`).val() !== "yes") {
             for (let i in params.fields) {
                 if (params.fields[i].id === "-") continue;
-                if (params.fields[i].hidden) continue;
+                if (params.fields[i].hidden && $(`#${_prefix}${params.fields[i].id}-container`).attr("data-form-runtime-hide") !== "0") continue;
                 if (params.fields[i].validate && typeof params.fields[i].validate === "function") {
                     if (!params.fields[i].validate(getVal(i), _prefix)) {
                         invalid.push(i);
@@ -1449,6 +1449,7 @@ function cardForm(params) {
         let i = parseInt($(this).attr("data-tab-index"));
         $(`.jsform-tabbed-item`).hide();
         $(`.jsform-tabbed-item[data-tab-index="${i}"]`).show();
+        $(`.jsform-tabbed-item[data-form-runtime-hide="1"]`).hide();
         $(`.jsform-nav-link`).removeClass("text-bold");
         $(`.jsform-nav-link[data-tab-index="${i}"]`).addClass("text-bold");
 
