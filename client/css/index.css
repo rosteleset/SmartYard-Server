@@ -319,7 +319,42 @@ select {
   background-color: white;
 }
 
-body.dark-mode .hr-text::after .hr-text-white::after .hr-text-pointer::after {
+.hr-text-white-large {
+  line-height: 1em;
+  position: relative;
+  outline: 0;
+  border: 0;
+  color: black;
+  text-align: left;
+  height: 1.5em;
+  font-size: 11pt;
+}
+
+.hr-text-white-large::before {
+  content: "";
+  background: linear-gradient(to left, transparent, rgb(128 128 128 / 75%));
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 100%;
+  height: 1px;
+  opacity: 0.5;
+}
+
+.hr-text-white-large::after {
+  content: attr(data-content);
+  position: relative;
+  display: inline-block;
+  padding-left: 0;
+  padding-right: 0.5em;
+  line-height: 1.5em;
+  color: #17a2b8 !important;
+  font-weight: bold;
+  background-color: #f4f6f9;
+  opacity: 1 !important;
+}
+
+body.dark-mode .hr-text::after .hr-text-white::after .hr-text-pointer::after hr-text-white-large::after {
   background-color: #454d55;
 }
 
