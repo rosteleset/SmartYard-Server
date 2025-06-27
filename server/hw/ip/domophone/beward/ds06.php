@@ -9,7 +9,6 @@ use hw\ip\domophone\domophone;
  */
 class ds06 extends beward
 {
-
     public function addRfid(string $code, int $apartment = 0): void
     {
         // Empty implementation
@@ -264,11 +263,6 @@ class ds06 extends beward
         // Empty implementation
     }
 
-    public function setTickerText(string $text = ''): void
-    {
-        // Empty implementation
-    }
-
     public function setUnlockTime(int $time = 3): void
     {
         $this->apiCall('webs/almControllerCfgEx', ['outdelay1' => $time]);
@@ -285,7 +279,6 @@ class ds06 extends beward
         $timezone = $dbConfig['ntp']['timezone'];
         $dbConfig['ntp']['timezone'] = "{$this->getIdByTimezone($timezone)}";
         $dbConfig['rfids'] = [];
-        $dbConfig['tickerText'] = '';
         $dbConfig['unlocked'] = false;
 
         foreach ($dbConfig['apartments'] as &$apartment) {
@@ -403,11 +396,6 @@ class ds06 extends beward
     protected function getMatrix(): array
     {
         return [];
-    }
-
-    protected function getTickerText(): string
-    {
-        return '';
     }
 
     protected function getUnlocked(): bool

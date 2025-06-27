@@ -7,7 +7,6 @@ namespace hw\ip\domophone\is;
  */
 class iscomx1 extends is
 {
-
     public function prepare(): void
     {
         parent::prepare();
@@ -26,18 +25,6 @@ class iscomx1 extends is
                 ],
             ]);
         }
-    }
-
-    public function setTickerText(string $text = ''): void
-    {
-        // Empty implementation
-    }
-
-    public function transformDbConfig(array $dbConfig): array
-    {
-        $parentDbConfig = parent::transformDbConfig($dbConfig);
-        $parentDbConfig['tickerText'] = '';
-        return $parentDbConfig;
     }
 
     protected function getApartmentCmsParams(?int $answer, ?int $quiescent): array

@@ -2,14 +2,14 @@
 
 namespace hw\ip\domophone\qtech;
 
+use hw\Interfaces\DisplayTextInterface;
 use hw\ip\domophone\domophone;
 
 /**
  * Abstract class representing a Qtech domophone.
  */
-abstract class qtech extends domophone
+abstract class qtech extends domophone implements DisplayTextInterface
 {
-
     use \hw\ip\common\qtech\qtech;
 
     /**
@@ -275,6 +275,11 @@ abstract class qtech extends domophone
         return [];
     }
 
+    public function getDisplayText(): array
+    {
+        return [$this->getParam('Config.Settings.OTHERS.GreetMsg')];
+    }
+
     public function getLineDiagnostics(int $apartment): string
     {
         $this->loadDialplans();
@@ -390,6 +395,19 @@ abstract class qtech extends domophone
         $this->setParams(['Config.Programable.SOFTKEY01.Param1' => $sipNumber]);
     }
 
+    public function setDisplayText(array $textLines): void
+    {
+        $this->setParams([
+            'Config.Settings.OTHERS.AccountStatusEnable' => 2,
+            'Config.Settings.OTHERS.GreetMsg' => $textLines[0] ?? '',
+            'Config.Settings.OTHERS.SendingMsg' => 'Вызываю...',
+            'Config.Settings.OTHERS.TalkingMsg' => 'Говорите',
+            'Config.Settings.OTHERS.OpenDoorSucMsg' => 'Дверь открыта!',
+            'Config.Settings.OTHERS.OpenDoorFaiMsg' => 'Ошибка!',
+            'Config.DoorSetting.GENERAL.DisplayNumber' => 1,
+        ]);
+    }
+
     public function setDtmfCodes(string $code1 = '1', string $code2 = '2', string $code3 = '3', string $codeCms = '1'): void
     {
         $this->setParams([
@@ -429,20 +447,6 @@ abstract class qtech extends domophone
         $this->setParams([
             'Config.Features.DOORPHONE.MaxCallTime' => $timeout,
             'Config.Features.DOORPHONE.Max485CallTime' => $timeout,
-        ]);
-    }
-
-    public function setTickerText(string $text = ''): void
-    {
-        // TODO: translation into other languages
-        $this->setParams([
-            'Config.Settings.OTHERS.AccountStatusEnable' => 2,
-            'Config.Settings.OTHERS.GreetMsg' => $text,
-            'Config.Settings.OTHERS.SendingMsg' => 'Вызываю...',
-            'Config.Settings.OTHERS.TalkingMsg' => 'Говорите',
-            'Config.Settings.OTHERS.OpenDoorSucMsg' => 'Дверь открыта!',
-            'Config.Settings.OTHERS.OpenDoorFaiMsg' => 'Ошибка!',
-            'Config.DoorSetting.GENERAL.DisplayNumber' => 1,
         ]);
     }
 
@@ -880,11 +884,6 @@ abstract class qtech extends domophone
             'stunServer' => $this->getParam('Config.Account1.STUN.Server'),
             'stunPort' => $this->getParam('Config.Account1.STUN.Port'),
         ];
-    }
-
-    protected function getTickerText(): string
-    {
-        return $this->getParam('Config.Settings.OTHERS.GreetMsg');
     }
 
     protected function getUnlocked(): bool

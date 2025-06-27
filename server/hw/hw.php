@@ -44,7 +44,7 @@ abstract class hw
      *
      * @return array An array representing the current configuration.
      */
-    abstract public function getCurrentConfig(): array;
+    abstract public function getConfig(): array;
 
     /**
      * Check the availability of the device.

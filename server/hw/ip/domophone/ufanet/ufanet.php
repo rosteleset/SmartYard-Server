@@ -4,14 +4,14 @@ namespace hw\ip\domophone\ufanet;
 
 use CURLFile;
 use Generator;
+use hw\Interfaces\DisplayTextInterface;
 use hw\ip\domophone\domophone;
 
 /**
  * Abstract class representing an Ufanet intercom.
  */
-abstract class ufanet extends domophone
+abstract class ufanet extends domophone implements DisplayTextInterface
 {
-
     use \hw\ip\common\ufanet\ufanet {
         transformDbConfig as protected commonTransformDbConfig;
     }
@@ -46,6 +46,26 @@ abstract class ufanet extends domophone
     protected ?array $rfids = null;
 
     protected ?string $cmsModelName = null;
+
+    /** @return array{index:string,value:array} */
+    protected static function getMatrixCell(int $mapping, int $apartment): array
+    {
+        $hundreds = floor($mapping / 100);
+        $tens = floor(($mapping - $hundreds * 100) / 10);
+        $units = $mapping - ($hundreds * 100 + $tens * 10);
+
+        $index = "$hundreds$tens$units";
+
+        return [
+            'index' => $index,
+            'value' => [
+                'hundreds' => $hundreds,
+                'tens' => $tens,
+                'units' => $units,
+                'apartment' => $apartment,
+            ]
+        ];
+    }
 
     public function addRfid(string $code, int $apartment = 0, int $type = 1): void
     {
@@ -216,6 +236,11 @@ abstract class ufanet extends domophone
         }
     }
 
+    public function getDisplayText(): array
+    {
+        return $this->apiCall('/api/v1/configuration')['display']['labels'];
+    }
+
     public function getLineDiagnostics(int $apartment): string|int|float
     {
         $url = "/api/v1/apartments/$apartment/test";
@@ -281,6 +306,19 @@ abstract class ufanet extends domophone
         ];
     }
 
+    public function setDisplayText(array $textLines): void
+    {
+        $this->apiCall('/api/v1/configuration', 'PATCH', [
+            'display' => [
+                'labels' => [
+                    $textLines[0] ?? '',
+                    $textLines[1] ?? '',
+                    $textLines[2] ?? '',
+                ],
+            ],
+        ]);
+    }
+
     public function setDtmfCodes(
         string $code1 = '1',
         string $code2 = '2',
@@ -321,11 +359,6 @@ abstract class ufanet extends domophone
     public function setTalkTimeout(int $timeout): void
     {
         // Empty implementation
-    }
-
-    public function setTickerText(string $text = ''): void
-    {
-        $this->apiCall('/api/v1/configuration', 'PATCH', ['display' => ['labels' => [$text, '', '']]]);
     }
 
     public function setUnlockTime(int $time = 3): void
@@ -387,6 +420,13 @@ abstract class ufanet extends domophone
         return $dbConfig;
     }
 
+    protected function cleanupApartmentPersonalCodes(int $apartment): void
+    {
+        $this->rfids = array_filter($this->rfids, function (string $data) use ($apartment) {
+            return "$apartment;3" != $data;
+        });
+    }
+
     protected function getApartments(): array
     {
         $this->loadDialplans();
@@ -425,6 +465,16 @@ abstract class ufanet extends domophone
         }
 
         return $apartments;
+    }
+
+    /** @return Generator<int, array> */
+    protected function getApartmentsDialplans(bool $unmapped = false): Generator
+    {
+        foreach ($this->dialplans as $apartment => $dialplan) {
+            if (ctype_digit((string)$apartment) && ($dialplan['map'] != 0 || $unmapped)) {
+                yield (int)$apartment => $dialplan;
+            }
+        }
     }
 
     protected function getAudioLevels(): array
@@ -504,6 +554,11 @@ abstract class ufanet extends domophone
         return $matrix;
     }
 
+    protected function getMatrixEdge(): ?int
+    {
+        return self::CMS_PARAMS[$this->cmsModelName]['edge'] ?? null;
+    }
+
     protected function getRfids(): array
     {
         $this->loadRfids();
@@ -541,13 +596,6 @@ abstract class ufanet extends domophone
         return array_map(fn($rfid) => str_pad(strtoupper($rfid), 14, '0', STR_PAD_LEFT), $uniqueRfids);
     }
 
-    protected function cleanupApartmentPersonalCodes(int $apartment): void
-    {
-        $this->rfids = array_filter($this->rfids, function (string $data) use ($apartment) {
-            return "$apartment;3" != $data;
-        });
-    }
-
     protected function getSipConfig(): array
     {
         [
@@ -567,11 +615,6 @@ abstract class ufanet extends domophone
             'stunServer' => '',
             'stunPort' => 3478,
         ];
-    }
-
-    protected function getTickerText(): string
-    {
-        return $this->apiCall('/api/v1/configuration')['display']['labels'][0] ?? '';
     }
 
     protected function getUnlocked(): bool
@@ -603,6 +646,31 @@ abstract class ufanet extends domophone
         }
     }
 
+    protected function remapMatrix(array $matrix, array $configApartments = []): array
+    {
+        $this->loadDialplans();
+
+        $newMatrix = [];
+        $edge = $this->getMatrixEdge();
+        foreach ($matrix as $index => $cell) {
+            $apartment = $cell['apartment'];
+            if (!isset($this->dialplans[$apartment]) && !isset($configApartments[$apartment])) {
+                continue;
+            }
+
+            $mapping = $cell['hundreds'] * 100 + $cell['tens'] * 10 + $cell['units'];
+            if ($edge && $mapping % $edge !== 0) {
+                $newMatrix[$index] = $cell;
+                continue;
+            }
+
+            $newCell = self::getMatrixCell($mapping + $edge, $apartment);
+            $newMatrix[$newCell['index']] = $newCell['value'];
+        }
+
+        return $newMatrix;
+    }
+
     /**
      * Set CMS range based on apartment numbers.
      *
@@ -629,6 +697,27 @@ abstract class ufanet extends domophone
         }
 
         $this->apiCall('/api/v1/configuration', 'PATCH', ['commutator' => $params]);
+    }
+
+    /**
+     * Upload and set display image.
+     *
+     * @param string|null $pathToImage (Optional) Path to the image which will be uploaded.
+     * If null, the default path will be used.
+     * @return void
+     */
+    protected function setDisplayImage(?string $pathToImage = null): void
+    {
+        if ($pathToImage === null) {
+            $pathToImage = __DIR__ . '/assets/display_image.jpg';
+        }
+
+        if (!file_exists($pathToImage) || !is_file($pathToImage)) {
+            return;
+        }
+
+        sleep(15); // Yes...
+        $this->apiCall('/api/v1/file', 'POST', ['IMAGE' => new CURLFile($pathToImage)]);
     }
 
     /**
@@ -682,27 +771,6 @@ abstract class ufanet extends domophone
     }
 
     /**
-     * Upload and set display image.
-     *
-     * @param string|null $pathToImage (Optional) Path to the image which will be uploaded.
-     * If null, the default path will be used.
-     * @return void
-     */
-    protected function setDisplayImage(?string $pathToImage = null): void
-    {
-        if ($pathToImage === null) {
-            $pathToImage = __DIR__ . '/assets/display_image.jpg';
-        }
-
-        if (!file_exists($pathToImage) || !is_file($pathToImage)) {
-            return;
-        }
-
-        sleep(15); // Yes...
-        $this->apiCall('/api/v1/file', 'POST', ['IMAGE' => new CURLFile($pathToImage)]);
-    }
-
-    /**
      * Set network params.
      *
      * @return void
@@ -748,65 +816,5 @@ abstract class ufanet extends domophone
         if ($this->rfids !== null) {
             $this->apiCall('/api/v1/rfids', 'PUT', $this->rfids);
         }
-    }
-
-    protected function getMatrixEdge(): ?int
-    {
-        return self::CMS_PARAMS[$this->cmsModelName]['edge'] ?? null;
-    }
-
-    /** @return Generator<int, array> */
-    protected function getApartmentsDialplans(bool $unmapped = false): Generator
-    {
-        foreach ($this->dialplans as $apartment => $dialplan) {
-            if (ctype_digit((string)$apartment) && ($dialplan['map'] != 0 || $unmapped)) {
-                yield (int)$apartment => $dialplan;
-            }
-        }
-    }
-
-    protected function remapMatrix(array $matrix, array $configApartments = []): array
-    {
-        $this->loadDialplans();
-
-        $newMatrix = [];
-        $edge = $this->getMatrixEdge();
-        foreach ($matrix as $index => $cell) {
-            $apartment = $cell['apartment'];
-            if (!isset($this->dialplans[$apartment]) && !isset($configApartments[$apartment])) {
-                continue;
-            }
-
-            $mapping = $cell['hundreds'] * 100 + $cell['tens'] * 10 + $cell['units'];
-            if ($edge && $mapping % $edge !== 0) {
-                $newMatrix[$index] = $cell;
-                continue;
-            }
-
-            $newCell = self::getMatrixCell($mapping + $edge, $apartment);
-            $newMatrix[$newCell['index']] = $newCell['value'];
-        }
-
-        return $newMatrix;
-    }
-
-    /** @return array{index:string,value:array} */
-    protected static function getMatrixCell(int $mapping, int $apartment): array
-    {
-        $hundreds = floor($mapping / 100);
-        $tens = floor(($mapping - $hundreds * 100) / 10);
-        $units = $mapping - ($hundreds * 100 + $tens * 10);
-
-        $index = "$hundreds$tens$units";
-
-        return [
-            'index' => $index,
-            'value' => [
-                'hundreds' => $hundreds,
-                'tens' => $tens,
-                'units' => $units,
-                'apartment' => $apartment,
-            ]
-        ];
     }
 }

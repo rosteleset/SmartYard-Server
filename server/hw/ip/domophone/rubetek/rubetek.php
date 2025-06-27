@@ -2,15 +2,14 @@
 
 namespace hw\ip\domophone\rubetek;
 
-use hw\Interfaces\DbConfigUpdaterInterface;
+use hw\Interfaces\{DbConfigUpdaterInterface, DisplayTextInterface};
 use hw\ip\domophone\domophone;
 
 /**
  * Abstract class representing a Rubetek domophone.
  */
-abstract class rubetek extends domophone implements DbConfigUpdaterInterface
+abstract class rubetek extends domophone implements DbConfigUpdaterInterface, DisplayTextInterface
 {
-
     use \hw\ip\common\rubetek\rubetek {
         transformDbConfig as protected commonTransformDbConfig;
     }
@@ -294,6 +293,11 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface
         ];
     }
 
+    public function getDisplayText(): array
+    {
+        return [trim($this->getConfig()['display']['text'])];
+    }
+
     public function getLineDiagnostics(int $apartment): float
     {
         $handsetStatus = $this->apiCall("/analog_handset_status/$apartment") ?? [];
@@ -394,6 +398,19 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface
         ]);
     }
 
+    public function setDisplayText(array $textLines): void
+    {
+        $text = $textLines[0] ?? '';
+
+        $displaySettings = $this->getConfig()['display'];
+        $displaySettings['welcome_display'] = 1;
+        $displaySettings['text'] = $text . ' '; // Space is needed, otherwise the text will stick together
+        $displaySettings['changeLineTimeout'] = 5; // Seconds
+        $displaySettings['changeSymbolTimeout'] = 5; // Milliseconds
+
+        $this->apiCall('/settings/display', 'PATCH', $displaySettings);
+    }
+
     public function setDtmfCodes(
         string $code1 = '1',
         string $code2 = '2',
@@ -439,16 +456,6 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface
         $callSettings = $this->getConfig()['call'];
         $callSettings['max_call_time'] = $timeout;
         $this->apiCall('/settings/call', 'PATCH', $callSettings);
-    }
-
-    public function setTickerText(string $text = ''): void
-    {
-        $displaySettings = $this->getConfig()['display'];
-        $displaySettings['welcome_display'] = 1;
-        $displaySettings['text'] = $text . ' '; // Space is needed, otherwise the text will stick together
-        $displaySettings['changeLineTimeout'] = 5; // Seconds
-        $displaySettings['changeSymbolTimeout'] = 5; // Milliseconds
-        $this->apiCall('/settings/display', 'PATCH', $displaySettings);
     }
 
     public function setUnlockTime(int $time = 3): void
@@ -822,11 +829,6 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface
             'stunServer' => $stunServer,
             'stunPort' => $stunPort,
         ];
-    }
-
-    protected function getTickerText(): string
-    {
-        return trim($this->getConfig()['display']['text']) ?? '';
     }
 
     protected function getUnlocked(): bool

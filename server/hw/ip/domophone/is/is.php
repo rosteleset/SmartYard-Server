@@ -9,7 +9,6 @@ use hw\ip\domophone\domophone;
  */
 abstract class is extends domophone
 {
-
     use \hw\ip\common\is\is;
 
     protected const CMS_PARAMS = [
@@ -647,11 +646,6 @@ abstract class is extends domophone
             'stunServer' => '',
             'stunPort' => 3478,
         ];
-    }
-
-    protected function getTickerText(): string
-    {
-        return $this->apiCall('/panelDisplay/settings')['imgStr'] ?? '';
     }
 
     protected function getUnlocked(): bool
