@@ -3214,7 +3214,7 @@
                         let cmsi = 0;
 
                         for (let i in cms.cms) {
-                            h += `<hr class="hr-text ml-3" data-content="${i}">`;
+                            h += `<hr class="hr-text-white ml-3" data-content="${i}">`;
                             h += `<table class="table table-hover ml-3" style="width: 0%;">`;
 
                             let maxX = 0;
