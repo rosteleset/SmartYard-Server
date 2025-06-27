@@ -1669,7 +1669,6 @@
                     $success = true;
 
                     foreach ($issue2 as $is2) {
-                        error_log($is2);
                         $success = $success && $this->linkIssues($issue1, $is2);
                     }
 
