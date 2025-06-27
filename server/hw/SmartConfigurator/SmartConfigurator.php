@@ -47,7 +47,7 @@ class SmartConfigurator
         $sectionMethodMapping = [
             'cmsLevels' => 'setCmsLevels',
             'cmsModel' => 'setCmsModel',
-            'tickerText' => 'setTickerText',
+            'displayText' => 'setDisplayText',
             'osdText' => 'setOsdText',
             'unlocked' => 'setUnlocked',
             'dtmf' => 'setDtmfCodes',

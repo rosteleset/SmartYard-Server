@@ -2,6 +2,7 @@
 
 namespace hw\ip\domophone;
 
+use hw\Interfaces\DisplayTextInterface;
 use hw\ip\ip;
 use hw\SmartConfigurator\ConfigurationBuilder\DomophoneConfigurationBuilder;
 
@@ -30,6 +31,10 @@ abstract class domophone extends ip
             ->addCmsModel($this->getCmsModel())
             ->addNtp(...$this->getNtpConfig())
         ;
+
+        if ($this instanceof DisplayTextInterface) {
+            $builder->addDisplayText($this->getDisplayText());
+        }
 
         foreach ($this->getApartments() as $apartment) {
             $builder->addApartment(...$apartment);
