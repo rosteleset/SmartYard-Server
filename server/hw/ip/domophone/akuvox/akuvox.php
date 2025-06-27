@@ -9,7 +9,6 @@ use hw\ip\domophone\domophone;
  */
 abstract class akuvox extends domophone
 {
-
     use \hw\ip\common\akuvox\akuvox;
 
     public function addRfid(string $code, int $apartment = 0): void
@@ -303,11 +302,6 @@ abstract class akuvox extends domophone
         $this->setConfigParams(['Config.Features.DOORPHONE.MaxCallTime' => "$timeout"]);
     }
 
-    public function setTickerText(string $text = ''): void
-    {
-        // Empty implementation
-    }
-
     public function setUnlockTime(int $time = 3): void
     {
         $this->apiCall('', 'POST', [
@@ -324,7 +318,6 @@ abstract class akuvox extends domophone
 
     public function transformDbConfig(array $dbConfig): array
     {
-        $dbConfig['tickerText'] = '';
         $dbConfig['unlocked'] = false;
         unset($dbConfig['apartments'][9999]);
 
@@ -525,7 +518,7 @@ abstract class akuvox extends domophone
         foreach ($items as $item) {
             $codes = explode(';', $item['CardCode']);
             $fullCode = $codes[1] ?? $codes[0];
-            if (strpos($code, $fullCode) !== false) {
+            if (str_contains($code, $fullCode)) {
                 return $item['ID'];
             }
         }
@@ -560,11 +553,6 @@ abstract class akuvox extends domophone
             'stunServer' => $stunServer,
             'stunPort' => $stunPort,
         ];
-    }
-
-    protected function getTickerText(): string
-    {
-        return '';
     }
 
     protected function getUnlocked(): bool

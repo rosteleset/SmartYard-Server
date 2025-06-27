@@ -12,7 +12,7 @@ use hw\SmartConfigurator\ConfigurationBuilder\CameraConfigurationBuilder;
 abstract class camera extends ip
 {
 
-    final public function getCurrentConfig(): array
+    final public function getConfig(): array
     {
         $builder = new CameraConfigurationBuilder();
 

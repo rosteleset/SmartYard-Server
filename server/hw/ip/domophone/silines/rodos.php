@@ -10,7 +10,6 @@ use hw\ip\domophone\domophone;
  */
 class rodos extends domophone
 {
-
     public function addRfid(string $code, int $apartment = 0): void
     {
         // Empty implementation
@@ -182,11 +181,6 @@ class rodos extends domophone
         // Empty implementation
     }
 
-    public function setTickerText(string $text = ''): void
-    {
-        // Empty implementation
-    }
-
     public function setUnlockTime(int $time = 3): void
     {
         // Empty implementation
@@ -348,11 +342,6 @@ class rodos extends domophone
             'stunServer' => '',
             'stunPort' => 3478,
         ];
-    }
-
-    protected function getTickerText(): string
-    {
-        return '';
     }
 
     protected function getUnlocked(): bool

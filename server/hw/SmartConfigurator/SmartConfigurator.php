@@ -156,7 +156,7 @@ class SmartConfigurator
 
     private function loadDeviceConfig(): void
     {
-        $this->deviceConfig = $this->device->getCurrentConfig();
+        $this->deviceConfig = $this->device->getConfig();
     }
 
     private function removeEmptySections(&$difference): void

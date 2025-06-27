@@ -12,7 +12,6 @@ use hw\ip\domophone\domophone;
  */
 class sputnik extends domophone
 {
-
     use \hw\ip\common\sputnik\sputnik;
 
     protected array $rfidKeysToBeDeleted = [];
@@ -310,11 +309,6 @@ class sputnik extends domophone
         ]);
     }
 
-    public function setTickerText(string $text = ''): void
-    {
-        // Empty implementation
-    }
-
     public function setUnlockTime(int $time = 3): void
     {
         $this->apiCall('mutation', 'updateIntercomOpenDoorConfig', [
@@ -342,7 +336,6 @@ class sputnik extends domophone
 
     public function transformDbConfig(array $dbConfig): array
     {
-        $dbConfig['tickerText'] = '';
         $dbConfig['unlocked'] = false;
         $dbConfig['cmsModel'] = $this->cmsModelType[$dbConfig['cmsModel']];
 
@@ -638,11 +631,6 @@ class sputnik extends domophone
             'stunServer' => '',
             'stunPort' => 3478,
         ];
-    }
-
-    protected function getTickerText(): string
-    {
-        return '';
     }
 
     protected function getUnlocked(): bool

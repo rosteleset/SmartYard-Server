@@ -17,7 +17,7 @@ abstract class domophone extends ip
      */
     public const DEFAULT_PUBLIC_ACCESS_CODE = 10000;
 
-    final public function getCurrentConfig(): array
+    final public function getConfig(): array
     {
         $builder = new DomophoneConfigurationBuilder();
 
@@ -29,7 +29,6 @@ abstract class domophone extends ip
             ->addCmsLevels($this->getCmsLevels())
             ->addCmsModel($this->getCmsModel())
             ->addNtp(...$this->getNtpConfig())
-            ->addTickerText($this->getTickerText())
         ;
 
         foreach ($this->getApartments() as $apartment) {
@@ -127,13 +126,6 @@ abstract class domophone extends ip
      * @return array An array containing SIP account params configured on the device.
      */
     abstract protected function getSipConfig(): array;
-
-    /**
-     * Get the text of the ticker.
-     *
-     * @return string Ticker text configured on the device.
-     */
-    abstract protected function getTickerText(): string;
 
     /**
      * Get lock state.
@@ -402,16 +394,6 @@ abstract class domophone extends ip
      * @return void
      */
     abstract public function setTalkTimeout(int $timeout): void;
-
-    /**
-     * Set ticker text.
-     *
-     * @param string $text (Optional) Text displayed on device ticker.
-     * Default is an empty string.
-     *
-     * @return void
-     */
-    abstract public function setTickerText(string $text = ''): void;
 
     /**
      * Set opening times for locks.

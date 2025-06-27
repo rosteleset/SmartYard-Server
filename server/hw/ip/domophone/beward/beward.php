@@ -11,7 +11,6 @@ use hw\ip\domophone\domophone;
  */
 abstract class beward extends domophone
 {
-
     use \hw\ip\common\beward\beward;
 
     /**
@@ -392,7 +391,7 @@ abstract class beward extends domophone
 
         $rfids = [];
         foreach ($rawRfids as $key => $value) {
-            if (strpos($key, $sign) !== false) {
+            if (str_contains($key, $sign)) {
                 $rfids[$value] = $value;
             }
         }
@@ -513,14 +512,10 @@ abstract class beward extends domophone
 
     public function setLanguage(string $language = 'ru'): void
     {
-        switch ($language) {
-            case 'ru':
-                $webLang = 1;
-                break;
-            default:
-                $webLang = 0;
-                break;
-        }
+        $webLang = match ($language) {
+            'ru' => 1,
+            default => 0,
+        };
 
         $this->apiCall('webs/sysInfoCfgEx', ['sys_pal' => 0, 'sys_language' => $webLang]);
     }
@@ -544,21 +539,6 @@ abstract class beward extends domophone
     public function setTalkTimeout(int $timeout): void
     {
         $this->setIntercom('TalkTimeout', $timeout);
-    }
-
-    public function setTickerText(string $text = ''): void
-    {
-        $this->apiCall('cgi-bin/display_cgi', [
-            'action' => 'set',
-            'TickerEnable' => $text ? 'on' : 'off',
-            'TickerText' => $text,
-            'TickerTimeout' => 125,
-            'LineEnable1' => 'off',
-            'LineEnable2' => 'off',
-            'LineEnable3' => 'off',
-            'LineEnable4' => 'off',
-            'LineEnable5' => 'off',
-        ]);
     }
 
     public function setUnlockTime(int $time = 3): void
@@ -780,11 +760,6 @@ abstract class beward extends domophone
             'stunServer' => $sip['StunUrl1'],
             'stunPort' => $sip['StunPort1'],
         ];
-    }
-
-    protected function getTickerText(): string
-    {
-        return $this->getParams('display_cgi')['TickerText'];
     }
 
     protected function getUnlocked(): bool

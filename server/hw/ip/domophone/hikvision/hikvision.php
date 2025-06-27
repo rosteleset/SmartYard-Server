@@ -11,7 +11,6 @@ use hw\ip\domophone\domophone;
  */
 abstract class hikvision extends domophone
 {
-
     use \hw\ip\common\hikvision\hikvision;
 
     public function addRfid(string $code, int $apartment = 0): void
@@ -458,11 +457,6 @@ abstract class hikvision extends domophone
         );
     }
 
-    public function setTickerText(string $text = ''): void
-    {
-        // Empty implementation
-    }
-
     public function setUnlockTime(int $time = 3): void
     {
         $this->apiCall(
@@ -616,12 +610,6 @@ abstract class hikvision extends domophone
     {
         // TODO: Implement getSipConfig() method.
         return [];
-    }
-
-    protected function getTickerText(): string
-    {
-        // TODO: Implement getTickerText() method.
-        return '';
     }
 
     protected function getUnlocked(): bool
