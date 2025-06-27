@@ -3,14 +3,10 @@
 namespace hw\SmartConfigurator\ConfigurationBuilder;
 
 /**
- * This class is responsible for building domophone configuration.
+ * The class responsible for building the intercom configuration.
  */
 class DomophoneConfigurationBuilder extends ConfigurationBuilder
 {
-
-    /**
-     * Construct a new DomophoneConfigurationBuilder instance.
-     */
     public function __construct()
     {
         $this->config = [
@@ -25,7 +21,6 @@ class DomophoneConfigurationBuilder extends ConfigurationBuilder
             'cmsModel' => '',
             'matrix' => [],
             'ntp' => [],
-            'tickerText' => '',
         ];
     }
 
@@ -37,7 +32,6 @@ class DomophoneConfigurationBuilder extends ConfigurationBuilder
      * @param array $sipNumbers An array of SIP numbers associated with the apartment.
      * @param bool $cmsEnabled Whether CMS is enabled for the apartment.
      * @param array $cmsLevels An array of individual CMS levels for the apartment.
-     *
      * @return self
      */
     public function addApartment(
@@ -45,7 +39,7 @@ class DomophoneConfigurationBuilder extends ConfigurationBuilder
         int   $code,
         array $sipNumbers,
         bool  $cmsEnabled,
-        array $cmsLevels
+        array $cmsLevels,
     ): self
     {
         // Filter empty elements and cast to int
@@ -66,13 +60,11 @@ class DomophoneConfigurationBuilder extends ConfigurationBuilder
      * Add global CMS levels to the domophone configuration.
      *
      * @param array $levels An array of CMS levels.
-     *
      * @return self
      */
     public function addCmsLevels(array $levels): self
     {
         $this->config['cmsLevels'] = $levels;
-
         return $this;
     }
 
@@ -80,13 +72,23 @@ class DomophoneConfigurationBuilder extends ConfigurationBuilder
      * Add the CMS model to the domophone configuration.
      *
      * @param string $cmsModel The CMS model.
-     *
      * @return self
      */
     public function addCmsModel(string $cmsModel): self
     {
         $this->config['cmsModel'] = $cmsModel;
+        return $this;
+    }
 
+    /**
+     * Adds display text lines to the intercom configuration.
+     *
+     * @param string[] $textLines Array of strings, each representing a line to display.
+     * @return self
+     */
+    public function addDisplayText(array $textLines): self
+    {
+        $this->config['displayText'] = $textLines;
         return $this;
     }
 
@@ -97,13 +99,11 @@ class DomophoneConfigurationBuilder extends ConfigurationBuilder
      * @param string $code2 The second DTMF code (second lock).
      * @param string $code3 The third DTMF code (third lock).
      * @param string $codeCms The CMS-DTMF code.
-     *
      * @return self
      */
     public function addDtmf(string $code1, string $code2, string $code3, string $codeCms): self
     {
         $this->config['dtmf'] = compact('code1', 'code2', 'code3', 'codeCms');
-
         return $this;
     }
 
@@ -114,13 +114,11 @@ class DomophoneConfigurationBuilder extends ConfigurationBuilder
      * @param string $address The entrance address.
      * @param int $firstFlat The first flat of the entrance.
      * @param int $lastFlat The last flat of the entrance.
-     *
      * @return self
      */
     public function addGateLink(int $prefix, string $address, int $firstFlat, int $lastFlat): self
     {
         $this->config['gateLinks'][$prefix] = compact('prefix', 'address', 'firstFlat', 'lastFlat');
-
         return $this;
     }
 
@@ -131,13 +129,11 @@ class DomophoneConfigurationBuilder extends ConfigurationBuilder
      * @param int $tens The tens.
      * @param int $units The units.
      * @param int $apartment The apartment associated with the matrix cell.
-     *
      * @return self
      */
     public function addMatrix(int $hundreds, int $tens, int $units, int $apartment): self
     {
         $this->config['matrix'][$hundreds . $tens . $units] = compact('hundreds', 'tens', 'units', 'apartment');
-
         return $this;
     }
 
@@ -145,13 +141,11 @@ class DomophoneConfigurationBuilder extends ConfigurationBuilder
      * Add RFID code to the domophone configuration.
      *
      * @param string $rfidCode The RFID code.
-     *
      * @return self
      */
     public function addRfid(string $rfidCode): self
     {
         $this->config['rfids'][$rfidCode] = $rfidCode;
-
         return $this;
     }
 
@@ -165,7 +159,6 @@ class DomophoneConfigurationBuilder extends ConfigurationBuilder
      * @param bool $stunEnabled Whether STUN is enabled.
      * @param string $stunServer The STUN server's address.
      * @param int $stunPort The STUN server's port number.
-     *
      * @return self
      */
     public function addSip(
@@ -192,30 +185,14 @@ class DomophoneConfigurationBuilder extends ConfigurationBuilder
     }
 
     /**
-     * Add ticker text to the domophone configuration.
-     *
-     * @param array $textLines The ticker text lines to display.
-     *
-     * @return self
-     */
-    public function addTickerText(array $textLines): self
-    {
-        $this->config['tickerText'] = $textLines;
-
-        return $this;
-    }
-
-    /**
      * Add unlocked status to the domophone configuration.
      *
      * @param bool $unlocked Whether the domophone is unlocked.
-     *
      * @return self
      */
     public function addUnlocked(bool $unlocked): self
     {
         $this->config['unlocked'] = $unlocked;
-
         return $this;
     }
 }

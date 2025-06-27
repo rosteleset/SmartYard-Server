@@ -8,9 +8,11 @@ use backends\households\households;
 use backends\sip\sip;
 use hw\SmartConfigurator\ConfigurationBuilder\DomophoneConfigurationBuilder;
 
+/**
+ * Class responsible for collecting intercom configuration data from the database.
+ */
 class DomophoneDbConfigCollector implements IDbConfigCollector
 {
-
     /**
      * @var array The application configuration.
      */
@@ -71,6 +73,7 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
             ->addNtp()
             ->addSip()
             ->addUnlocked()
+            ->addDisplayText() // TODO: instanceof check
         ;
 
         if ($this->mainEntrance) { // If the domophone is linked to the entrance
@@ -80,7 +83,6 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
                 ->addCmsModel()
                 ->addMatrix()
                 ->addRfids()
-                ->addTickerText()
             ;
         }
 
@@ -213,6 +215,25 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
     }
 
     /**
+     * Adds display text lines to the intercom configuration.
+     *
+     * @return void
+     */
+    private function addDisplayText(): void
+    {
+        $display = $this->domophoneData['display'] ?? '';
+        $callerId = $this->mainEntrance['callerId'] ?? '';
+
+        $lines = match (true) {
+            trim($display) !== '' => explode("\n", $display),
+            trim($callerId) !== '' => [$callerId],
+            default => [],
+        };
+
+        $this->builder->addDisplayText($lines);
+    }
+
+    /**
      * Add DTMF codes to the domophone configuration.
      *
      * @return self
@@ -274,9 +295,9 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
     /**
      * Add RFID keys to the domophone configuration.
      *
-     * @return self
+     * @return void
      */
-    private function addRfids(): self
+    private function addRfids(): void
     {
         /** @var households $households */
         $households = loadBackend('households');
@@ -285,8 +306,6 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
         foreach ($keys as $key) {
             $this->builder->addRfid($key['rfId']);
         }
-
-        return $this;
     }
 
     /**
@@ -327,24 +346,14 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
     }
 
     /**
-     * Add the ticker text to the domophone configuration.
-     *
-     * @return void
-     */
-    private function addTickerText(): void
-    {
-        $tickerText = $this->domophoneData['display'] ?? [$this->mainEntrance['callerId']];
-        $this->builder->addTickerText($tickerText);
-    }
-
-    /**
      * Add unlocked status to the domophone configuration.
      *
-     * @return void
+     * @return self
      */
-    private function addUnlocked(): void
+    private function addUnlocked(): self
     {
         $this->builder->addUnlocked($this->domophoneData['locksAreOpen']);
+        return $this;
     }
 
     /**
