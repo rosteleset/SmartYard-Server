@@ -1106,7 +1106,7 @@
                     type: "text",
                     title: i18n("addresses.openCode"),
                     tab: i18n("addresses.primary"),
-                    placeholder: i18n("addresses.openCode"),
+                    placeholder: i18n("addresses.openCodeTemplate"),
                     validate: v => {
                         return (parseInt(v) >= 10001 && parseInt(v) <= 99999) || v === '';
                     },
@@ -2383,7 +2383,7 @@
                         id: "openCode",
                         type: "text",
                         title: i18n("addresses.openCode"),
-                        placeholder: i18n("addresses.openCode"),
+                        placeholder: i18n("addresses.openCodeTemplate"),
                         value: flat.openCode,
                         validate: v => {
                             return (parseInt(v) >= 10001 && parseInt(v) <= 99999) || v === '';

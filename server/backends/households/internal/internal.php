@@ -410,8 +410,6 @@
                     ":path" => (int)$path ? : null,
                 ]);
 
-                error_log("\n\n$prefix\n\n");
-
                 if (!$entranceId) {
                     return false;
                 }
