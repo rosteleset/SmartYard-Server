@@ -600,6 +600,10 @@ body.dark-mode .hr-text::after .hr-text-white::after .hr-text-pointer::after hr-
   background-color: deepskyblue;
 }
 
+.common-search {
+  width: 300px;
+}
+
 .common-search:focus {
   width: 300px;
 }
