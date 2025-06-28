@@ -601,7 +601,7 @@ body.dark-mode .hr-text::after .hr-text-white::after .hr-text-pointer::after hr-
 }
 
 .common-search {
-  width: 300px;
+  width: 300px!important;
 }
 
 .common-search:focus {
