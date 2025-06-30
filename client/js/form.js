@@ -953,8 +953,9 @@ function cardForm(params) {
     } else {
         target = modal(h);
 
+        $('#modal').attr("data-prefix", _prefix);
+
         if (params.timeout) {
-            $('#modal').attr("data-prefix", _prefix);
             setTimeout(() => {
                 if ($('#modal').attr("data-prefix") == _prefix) {
                     $('#modal').modal('hide');
