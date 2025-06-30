@@ -262,7 +262,7 @@
     "workflowLibSave": "Сохранить",
     "workflowLibWasSaved": "Библиотека сохранена",
     "workflowLibs": "Библиотеки",
-    "confirmWorkflowLibDelete": "Удалить Библиотеку \"%s\"?",
+    "confirmWorkflowLibDelete": "Удалить библиотеку \"%s\"?",
     "addWorkflowLib": "Добавить библиотеку",
     "workflowLib": "Библиотека",
     "deleteWorkflowLib": "Удалить библиотеку?",

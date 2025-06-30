@@ -158,7 +158,7 @@
     "carsNumbers": "Номера машин (по одному в строке)",
     "ext": "Расширенные",
     "domophoneOutputPrimary": "Основной",
-    "domophoneOutputSecondary":  "Дополнительный \"#%s\"",
+    "domophoneOutputSecondary": "Дополнительный \"#%s\"",
     "cmsLevels": "Уровни",
     "cmsLevelsOrder": "Снятия трубки, открытия двери",
     "cms": "КМС",
@@ -366,6 +366,7 @@
     "broadcast": "Оповещение",
     "messagesSent": "Отправлено сообщений: %s",
     "openCodeTemplate": "#####",
+    "openCodeError": "Код открытия должен быть числом в диапазоне 10001-99999. Для удаления кода оставьте поле пустым",
     "errors": {
         "UNIQUE constraint failed: addresses_houses.address_settlement_id, addresses_houses.address_street_id, addresses_houses.house": "Такой дом уже существует",
         "UNIQUE constraint failed: houses_houses_entrances.house_entrance_id, houses_houses_entrances.prefix": "Такой префикс уже используется",

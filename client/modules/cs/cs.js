@@ -1292,8 +1292,8 @@
 
                 let rtd = "";
 
-                rtd += `<form autocomplete="off"><div class="form-inline ml-3 mr-3"><div class="input-group input-group-sm mt-1"><select id="csSheet" class="form-control select-arrow right-top-select">${sheetsOptions}</select></div></div></form>`;
-                rtd += `<form autocomplete="off"><div class="form-inline ml-3 mr-3"><div class="input-group input-group-sm mt-1"><select id="csDate" class="form-control select-arrow right-top-select">${datesOptions}</select></div></div></form>`;
+                rtd += `<form autocomplete="off"><div class="form-inline ml-3 mr-3"><div class="input-group input-group-sm mt-1"><select id="csSheet" class="form-control select-arrow right-top-select top-input">${sheetsOptions}</select></div></div></form>`;
+                rtd += `<form autocomplete="off"><div class="form-inline ml-3 mr-3"><div class="input-group input-group-sm mt-1"><select id="csDate" class="form-control select-arrow right-top-select top-input">${datesOptions}</select></div></div></form>`;
 
                 if (AVAIL("cs", "sheet", "PUT")) {
                     rtd += `<li class="nav-item nav-item-back-hover"><span id="cloneCSsheet" class="nav-link pointer" role="button" title="${i18n("cs.cloneSheet")}"><i class="fas fa-lg fa-fw fa-clone"></i></span></li>`;

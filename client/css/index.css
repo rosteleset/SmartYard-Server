@@ -427,8 +427,7 @@ body.dark-mode .hr-text::after .hr-text-white::after .hr-text-pointer::after hr-
   border-color: #dc3435 !important;
 }
 
-.select2-results__option.loading-results,
-.select2-results__option.select2-results__option--load-more {
+.select2-results__option.loading-results, .select2-results__option.select2-results__option--load-more {
   background-image: url('../img/spinnerSmall.svg');
   background-repeat: no-repeat;
   padding-left: 35px;
@@ -492,8 +491,7 @@ body.dark-mode .hr-text::after .hr-text-white::after .hr-text-pointer::after hr-
   color: transparent;
 }
 
-.dropdown-item:hover + .dropdown-menu,
-.dropdown-menu:hover {
+.dropdown-item:hover + .dropdown-menu, .dropdown-menu:hover {
 	display: block;
 }
 
@@ -600,16 +598,8 @@ body.dark-mode .hr-text::after .hr-text-white::after .hr-text-pointer::after hr-
   background-color: deepskyblue;
 }
 
-.common-search {
-  width: 300px!important;
-}
-
-.common-search:focus {
-  width: 300px;
-}
-
-.common-search:hover {
-  width: 300px;
+.top-input {
+  width: 200px!important;
 }
 
 .drag {
@@ -718,18 +708,13 @@ body.dark-mode .hr-text::after .hr-text-white::after .hr-text-pointer::after hr-
   border-radius: 0.25rem;
 }
 
-.fa.disabled, .fa[disabled], .disabled > .fa, [disabled] > .fa,
-.fab.disabled, .fab[disabled], .disabled > .fab, [disabled] > .fab,
-.fas.disabled, .fas[disabled], .disabled > .fas, [disabled] > .fas,
-.far.disabled, .far[disabled], .disabled > .far, [disabled] > .far
-{
+.fa.disabled, .fa[disabled], .disabled > .fa, [disabled] > .fa, .fab.disabled, .fab[disabled], .disabled > .fab, [disabled] > .fab, .fas.disabled, .fas[disabled], .disabled > .fas, [disabled] > .fas, .far.disabled, .far[disabled], .disabled > .far, [disabled] > .far {
   opacity: 0.5;
   cursor: not-allowed;
   pointer-events: none;
 }
 
 .right-top-select {
-  width: 250px!important;
   background-color: white;
 }
 
@@ -761,4 +746,17 @@ body.dark-mode .hr-text::after .hr-text-white::after .hr-text-pointer::after hr-
   overflow-x: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.nopicker::-webkit-calendar-picker-indicator {
+  background: transparent;
+  bottom: 0;
+  color: transparent;
+  cursor: pointer;
+  height: auto;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: auto;
 }

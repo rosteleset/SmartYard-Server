@@ -131,7 +131,7 @@
     "deleteEntranceLink": "Only for This House",
     "apartment": "Intercom Number",
     "apartmentLevels": "Intercom Levels",
-    "manualBlock": "Intercom Disabled",
+    "manualBlock": "Intercom disabled",
     "adminBlock": "Disabled by Administrator",
     "openCode": "Door Opening Code",
     "autoOpen": "Auto-Open Until",
@@ -357,6 +357,7 @@
     "broadcast": "Broadcast",
     "messagesSent": "Messages sent: %s",
     "openCodeTemplate": "#####",
+    "openCodeError": "The opening code must be a number in the range 10001-99999. To remove the code, leave the field blank",
     "errors": {
         "UNIQUE constraint failed: addresses_houses.address_settlement_id, addresses_houses.address_street_id, addresses_houses.house": "This house already exists",
         "UNIQUE constraint failed: houses_houses_entrances.house_entrance_id, houses_houses_entrances.prefix": "This prefix is already in use",

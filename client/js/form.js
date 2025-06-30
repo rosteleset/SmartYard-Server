@@ -385,7 +385,50 @@ function cardForm(params) {
                 if (params.fields[i].readonly) {
                     h += `<span class="input-group-text disabled" disabled="disabled"><i class="fas fa-fw fa-angle-double-right"></i></span>`;
                 } else {
-                    h += `<span class="input-group-text pointer cardFormSelectWithRotate"><i class="fas fa-fw fa-angle-double-right"></i></span>`;
+                    h += `<span class="input-group-text pointer cardFormSelectWithRotate" data-for="${_prefix}${params.fields[i].id}"><i class="fas fa-fw fa-angle-double-right"></i></span>`;
+                }
+                h += `</div>`;
+                h += `</div>`;
+                break;
+
+            case "time":
+                h += `<div class="input-group">`;
+                h += `<input name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" type="${params.fields[i].type}" class="form-control modalFormField nopicker" style="cursor: text;" autocomplete="off" placeholder="${escapeHTML(params.fields[i].placeholder ? params.fields[i].placeholder : "")}"`;
+                if (params.fields[i].readonly) {
+                    h += ` readonly="readonly"`;
+                    h += ` disabled="disabled"`;
+                }
+                if (params.fields[i].pattern) {
+                    h += ` pattern="${params.fields[i].pattern}"`;
+                }
+                h += ` />`;
+                h += `<div class="input-group-append">`;
+                if (params.fields[i].readonly) {
+                    h += `<span class="input-group-text disabled" disabled="disabled"><i class="far fa-fw fa-clock"></i></span>`;
+                } else {
+                    h += `<span class="input-group-text pointer cardFormPicker" data-for="${_prefix}${params.fields[i].id}"><i class="far fa-fw fa-clock"></i></span>`;
+                }
+                h += `</div>`;
+                h += `</div>`;
+                break;
+
+            case "date":
+            case "datetime-local":
+                h += `<div class="input-group">`;
+                h += `<input name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" type="${params.fields[i].type}" class="form-control modalFormField nopicker" style="cursor: text;" autocomplete="off" placeholder="${escapeHTML(params.fields[i].placeholder ? params.fields[i].placeholder : "")}"`;
+                if (params.fields[i].readonly) {
+                    h += ` readonly="readonly"`;
+                    h += ` disabled="disabled"`;
+                }
+                if (params.fields[i].pattern) {
+                    h += ` pattern="${params.fields[i].pattern}"`;
+                }
+                h += ` />`;
+                h += `<div class="input-group-append">`;
+                if (params.fields[i].readonly) {
+                    h += `<span class="input-group-text disabled" disabled="disabled"><i class="far fa-fw fa-calendar"></i></span>`;
+                } else {
+                    h += `<span class="input-group-text pointer cardFormPicker" data-for="${_prefix}${params.fields[i].id}"><i class="far fa-fw fa-calendar"></i></span>`;
                 }
                 h += `</div>`;
                 h += `</div>`;
@@ -511,9 +554,6 @@ function cardForm(params) {
             case "email":
             case "number":
             case "tel":
-            case "date":
-            case "time":
-            case "datetime-local":
             case "password":
             case "color":
                 if (params.fields[i].button) {
@@ -841,8 +881,12 @@ function cardForm(params) {
                 if (params.fields[i].id === "-") continue;
                 if (params.fields[i].hidden && $(`#${_prefix}${params.fields[i].id}-container`).attr("data-form-runtime-hide") !== "0") continue;
                 if (params.fields[i].validate && typeof params.fields[i].validate === "function") {
-                    if (!params.fields[i].validate(getVal(i), _prefix)) {
+                    let v = params.fields[i].validate(getVal(i), _prefix);
+                    if (v !== true) {
                         invalid.push(i);
+                        if (typeof v == "string") {
+                            error(v, i18n("invalidFieldValue"));
+                        }
                     }
                 }
             }
@@ -950,7 +994,7 @@ function cardForm(params) {
     $(".modalFormCancel").off("click").on("click", cancel);
 
     $(".cardFormSelectWithRotate").off("click").on("click", function () {
-        let select = $(this).parent().parent().children().first();
+        let select = $("#" + $(this).attr("data-for"));
         let i = parseInt(select.attr("data-field-index"));
         let val = select.val();
         let first = select.children().first();
@@ -973,6 +1017,11 @@ function cardForm(params) {
         if (typeof params.fields[i].select === "function") {
             params.fields[i].select(select, params.fields[i].id, _prefix);
         }
+    });
+
+    $(".cardFormPicker").off("click").on("click", function () {
+        let input = $(this).attr("data-for");
+        document.querySelector("#" + input).showPicker();
     });
 
     for (let i in params.fields) {
