@@ -6,6 +6,8 @@ use backends\addresses\addresses;
 use backends\configs\configs;
 use backends\households\households;
 use backends\sip\sip;
+use hw\hw;
+use hw\Interfaces\DisplayTextInterface;
 use hw\SmartConfigurator\ConfigurationBuilder\DomophoneConfigurationBuilder;
 
 /**
@@ -44,16 +46,23 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
     private $entranceIsShared;
 
     /**
+     * @var hw
+     */
+    private hw $device;
+
+    /**
      * Construct a new DomophoneDbConfigCollector instance.
      *
      * @param array $appConfig The application configuration.
      * @param array $domophoneData The domophone data.
-     * @param households|false $householdsBackend Households backend object.
+     * @param households $householdsBackend Households backend object.
+     * @param hw $device Device instance.
      */
-    public function __construct(array $appConfig, array $domophoneData, households $householdsBackend)
+    public function __construct(array $appConfig, array $domophoneData, households $householdsBackend, hw $device)
     {
         $this->appConfig = $appConfig;
         $this->domophoneData = $domophoneData;
+        $this->device = $device;
 
         $this->entrances = $householdsBackend->getEntrances('domophoneId', [
             'domophoneId' => $domophoneData['domophoneId'],
@@ -67,13 +76,16 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
 
     public function collectConfig(): array
     {
+        if ($this->device instanceof DisplayTextInterface) {
+            $this->addDisplayText();
+        }
+
         $this
             ->addDtmf()
             ->addEventServer()
             ->addNtp()
             ->addSip()
             ->addUnlocked()
-            ->addDisplayText() // TODO: instanceof check
         ;
 
         if ($this->mainEntrance) { // If the domophone is linked to the entrance
@@ -348,12 +360,11 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
     /**
      * Add unlocked status to the domophone configuration.
      *
-     * @return self
+     * @return void
      */
-    private function addUnlocked(): self
+    private function addUnlocked(): void
     {
         $this->builder->addUnlocked($this->domophoneData['locksAreOpen']);
-        return $this;
     }
 
     /**
