@@ -298,6 +298,11 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface, Di
         return [trim($this->getConfig()['display']['text'])];
     }
 
+    public function getDisplayTextLinesCount(): int
+    {
+        return 1;
+    }
+
     public function getLineDiagnostics(int $apartment): float
     {
         $handsetStatus = $this->apiCall("/analog_handset_status/$apartment") ?? [];

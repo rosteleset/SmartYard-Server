@@ -2,7 +2,7 @@
 
 namespace hw\SmartConfigurator;
 
-use hw\Interfaces\DbConfigUpdaterInterface;
+use hw\Interfaces\{DbConfigUpdaterInterface, DisplayTextInterface};
 use hw\SmartConfigurator\DbConfigCollector\IDbConfigCollector;
 
 class SmartConfigurator
@@ -23,6 +23,7 @@ class SmartConfigurator
 
     public function getDifference(): array
     {
+        $this->normalizeDbConfig();
         $transformedDbConfig = $this->device->transformDbConfig($this->dbConfig);
 
         $difference = array_replace_recursive(
@@ -157,6 +158,17 @@ class SmartConfigurator
     private function loadDeviceConfig(): void
     {
         $this->deviceConfig = $this->device->getConfig();
+    }
+
+    private function normalizeDbConfig(): void
+    {
+        if ($this->device instanceof DisplayTextInterface && isset($this->dbConfig['displayText'])) {
+            $this->dbConfig['displayText'] = array_slice(
+                $this->dbConfig['displayText'],
+                0,
+                $this->device->getDisplayTextLinesCount(),
+            );
+        }
     }
 
     private function removeEmptySections(&$difference): void

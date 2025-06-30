@@ -14,6 +14,11 @@ class iscomx1plus extends is implements DisplayTextInterface
         return [$this->apiCall('/panelDisplay/settings')['imgStr']];
     }
 
+    public function getDisplayTextLinesCount(): int
+    {
+        return 1;
+    }
+
     public function prepare(): void
     {
         parent::prepare();

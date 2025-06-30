@@ -280,6 +280,11 @@ abstract class qtech extends domophone implements DisplayTextInterface
         return [$this->getParam('Config.Settings.OTHERS.GreetMsg')];
     }
 
+    public function getDisplayTextLinesCount(): int
+    {
+        return 1;
+    }
+
     public function getLineDiagnostics(int $apartment): string
     {
         $this->loadDialplans();

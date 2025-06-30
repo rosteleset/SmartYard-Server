@@ -241,6 +241,11 @@ abstract class ufanet extends domophone implements DisplayTextInterface
         return array_filter($this->apiCall('/api/v1/configuration')['display']['labels'] ?? []);
     }
 
+    public function getDisplayTextLinesCount(): int
+    {
+        return 3;
+    }
+
     public function getLineDiagnostics(int $apartment): string|int|float
     {
         $url = "/api/v1/apartments/$apartment/test";

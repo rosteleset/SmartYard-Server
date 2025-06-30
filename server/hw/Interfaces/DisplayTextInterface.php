@@ -15,6 +15,13 @@ interface DisplayTextInterface
     public function getDisplayText(): array;
 
     /**
+     * Returns the maximum number of display lines supported by the device.
+     *
+     * @return int Maximum number of lines the device can display.
+     */
+    public function getDisplayTextLinesCount(): int;
+
+    /**
      * Sets the lines of text to be shown on the device's display. Each element in the array
      * represents one line of text. Existing display content will be replaced.
      *
