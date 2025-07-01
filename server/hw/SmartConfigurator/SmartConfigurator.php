@@ -21,20 +21,6 @@ class SmartConfigurator
         $this->loadDeviceConfig();
     }
 
-    public function getDifference(): array
-    {
-        $this->normalizeDbConfig();
-        $transformedDbConfig = $this->device->transformDbConfig($this->dbConfig);
-
-        $difference = array_replace_recursive(
-            array_diff_assoc_recursive($transformedDbConfig, $this->deviceConfig, strict: false),
-            array_diff_assoc_recursive($this->deviceConfig, $transformedDbConfig, strict: false),
-        );
-
-        $this->removeEmptySections($difference);
-        return $difference;
-    }
-
     public function makeConfiguration($retryCount = 0): void
     {
         $maxRetries = 0;
@@ -139,6 +125,20 @@ class SmartConfigurator
                 call_user_func([$this->device, $method], $args);
             }
         }
+    }
+
+    private function getDifference(): array
+    {
+        $this->normalizeDbConfig();
+        $transformedDbConfig = $this->device->transformDbConfig($this->dbConfig);
+
+        $difference = array_replace_recursive(
+            array_diff_assoc_recursive($transformedDbConfig, $this->deviceConfig, strict: false),
+            array_diff_assoc_recursive($this->deviceConfig, $transformedDbConfig, strict: false),
+        );
+
+        $this->removeEmptySections($difference);
+        return $difference;
     }
 
     private function hasStringKeys($array): bool

@@ -13,10 +13,9 @@ function autoconfigure_device(string $deviceType, int $deviceId, bool $firstTime
 {
     global $config;
 
-    $householdsBackend = loadBackend('households');
-
     switch ($deviceType) {
         case 'domophone':
+            $householdsBackend = loadBackend('households');
             $deviceData = getDeviceData($householdsBackend, 'getDomophone', 'domophone', $deviceId);
 
             $device = loadDevice(
@@ -28,6 +27,9 @@ function autoconfigure_device(string $deviceType, int $deviceId, bool $firstTime
             );
 
             $dbConfigCollector = new DomophoneDbConfigCollector($config, $deviceData, $householdsBackend, $device);
+            $configurator = new SmartConfigurator($device, $dbConfigCollector);
+            $configurator->makeConfiguration();
+            $householdsBackend->autoconfigDone($deviceId);
             break;
 
         case 'camera':
@@ -39,19 +41,16 @@ function autoconfigure_device(string $deviceType, int $deviceId, bool $firstTime
                 $deviceData['model'],
                 $deviceData['url'],
                 $deviceData['credentials'],
-                $firstTime,
             );
 
-            $dbConfigCollector = new CameraDbConfigCollector($config, $deviceData, $device);
+            $dbConfigCollector = new CameraDbConfigCollector($config, $deviceData);
+            $configurator = new SmartConfigurator($device, $dbConfigCollector);
+            $configurator->makeConfiguration();
             break;
 
         default:
             throw new Exception("Unsupported device type '$deviceType'");
     }
-
-    $configurator = new SmartConfigurator($device, $dbConfigCollector);
-    $configurator->makeConfiguration();
-    $householdsBackend->autoconfigDone($deviceId);
 }
 
 /**
