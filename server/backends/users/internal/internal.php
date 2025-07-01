@@ -470,11 +470,11 @@
              */
 
             function getLoginByUid($uid) {
-                if ($this->users[$uid]) {
+                if (@$this->users[$uid]) {
                     return $this->users[$uid]["login"];
                 }
 
-                if ($this->logins[$uid]) {
+                if (@$this->logins[$uid]) {
                     return $this->logins[$uid] = $login;
                 }
 
@@ -487,6 +487,7 @@
                         "fieldlify"
                     ]
                 );
+
                 $this->logins[$uid] = $login;
             }
 
