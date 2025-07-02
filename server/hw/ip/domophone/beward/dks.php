@@ -11,7 +11,8 @@ class dks extends beward implements DisplayTextInterface
 {
     public function getDisplayText(): array
     {
-        return [$this->getParams('display_cgi')['TickerText']];
+        $text = $this->getParams('display_cgi')['TickerText'] ?? '';
+        return $text === '' ? [] : [$text];
     }
 
     public function getDisplayTextLinesCount(): int
