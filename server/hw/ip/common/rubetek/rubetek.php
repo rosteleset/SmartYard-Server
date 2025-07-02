@@ -11,7 +11,6 @@ use Exception;
  */
 trait rubetek
 {
-
     /**
      * @var string Default WEB interface password.
      */
@@ -41,7 +40,7 @@ trait rubetek
 
     public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow'): void
     {
-        $timeSettings = $this->getConfig()['time'];
+        $timeSettings = $this->getConfiguration()['time'];
         $timeSettings['ntp_pool'] = "$server:$port";
         $timeSettings['timezone'] = $this->getOffsetByTimezone($timezone);
         $this->apiCall('/configuration', 'PATCH', ['time' => $timeSettings]);
@@ -148,14 +147,14 @@ trait rubetek
      *
      * @return array Device configuration.
      */
-    protected function getConfig(): array
+    protected function getConfiguration(): array
     {
         return $this->apiCall('/configuration');
     }
 
     protected function getEventServer(): string
     {
-        $syslogUrl = $this->getConfig()['syslog']['address'];
+        $syslogUrl = $this->getConfiguration()['syslog']['address'];
         [$server, $port] = array_pad(explode(':', $syslogUrl), 2, 514);
 
         return 'syslog.udp' . ':' . $server . ':' . $port;
@@ -166,7 +165,7 @@ trait rubetek
         [
             'timezone' => $offset,
             'ntp_pool' => $ntpPool,
-        ] = $this->getConfig()['time'];
+        ] = $this->getConfiguration()['time'];
 
         [$server, $port] = array_pad(explode(':', $ntpPool), 2, 0);
 

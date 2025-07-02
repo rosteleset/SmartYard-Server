@@ -264,7 +264,7 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface, Di
 
     public function getAudioLevels(): array
     {
-        $audioSettings = $this->getConfig()['audio'];
+        $audioSettings = $this->getConfiguration()['audio'];
 
         return [
             $audioSettings['system']['volume'] ?? 15,
@@ -295,7 +295,8 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface, Di
 
     public function getDisplayText(): array
     {
-        return [trim($this->getConfig()['display']['text'])];
+        $text = trim($this->getConfiguration()['display']['text'] ?? '');
+        return $text === '' ? [] : [$text];
     }
 
     public function getDisplayTextLinesCount(): int
@@ -332,7 +333,7 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface, Di
 
     public function setAudioLevels(array $levels = []): void
     {
-        $audioSettings = $this->getConfig()['audio'];
+        $audioSettings = $this->getConfiguration()['audio'];
 
         $audioSettings['system']['volume'] = $levels[0] ?? 15;
         $audioSettings['system']['mic_sensitivity'] = $levels[1] ?? 10;
@@ -351,7 +352,7 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface, Di
 
     public function setCallTimeout(int $timeout): void
     {
-        $callSettings = $this->getConfig()['call'];
+        $callSettings = $this->getConfiguration()['call'];
         $callSettings['dial_out_time'] = $timeout;
         $this->apiCall('/settings/call', 'PATCH', $callSettings);
     }
@@ -407,7 +408,7 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface, Di
     {
         $text = $textLines[0] ?? '';
 
-        $displaySettings = $this->getConfig()['display'];
+        $displaySettings = $this->getConfiguration()['display'];
         $displaySettings['welcome_display'] = 1;
         $displaySettings['text'] = $text . ' '; // Space is needed, otherwise the text will stick together
         $displaySettings['changeLineTimeout'] = 5; // Seconds
@@ -458,7 +459,7 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface, Di
 
     public function setTalkTimeout(int $timeout): void
     {
-        $callSettings = $this->getConfig()['call'];
+        $callSettings = $this->getConfiguration()['call'];
         $callSettings['max_call_time'] = $timeout;
         $this->apiCall('/settings/call', 'PATCH', $callSettings);
     }
@@ -750,7 +751,7 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface, Di
             'code2' => $code2,
             'code3' => $code3,
             'out_code' => $codeCms
-        ] = $this->getConfig()['dtmf'];
+        ] = $this->getConfiguration()['dtmf'];
 
         return [
             'code1' => $code1,
@@ -898,7 +899,7 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface, Di
             $pin = '';
         }
 
-        $displaySettings = $this->getConfig()['display'];
+        $displaySettings = $this->getConfiguration()['display'];
         $displaySettings['admin_password'] = $pin;
         $this->apiCall('/configuration', 'PATCH', ['display' => $displaySettings]);
     }
