@@ -306,8 +306,15 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface, Di
 
     public function getLineDiagnostics(int $apartment): float
     {
-        $handsetStatus = $this->apiCall("/analog_handset_status/$apartment") ?? [];
-        $voltageRaw = $handsetStatus['voltage'] ?? '';
+        $this->loadDialplans();
+        $analogNumber = $this->dialplans[$apartment]['analog_number'] ?? null;
+
+        if ($analogNumber === null) {
+            return 0;
+        }
+
+        $lineVoltage = $this->apiCall("/settings/analog/line_voltage/start/$analogNumber") ?? [];
+        $voltageRaw = $lineVoltage['voltage'] ?? '';
         return (float)filter_var($voltageRaw, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
     }
 
