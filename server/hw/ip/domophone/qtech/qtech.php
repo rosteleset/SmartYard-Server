@@ -2,13 +2,13 @@
 
 namespace hw\ip\domophone\qtech;
 
-use hw\Interfaces\DisplayTextInterface;
+use hw\Interfaces\{DisplayTextInterface, LanguageInterface};
 use hw\ip\domophone\domophone;
 
 /**
  * Abstract class representing a Qtech domophone.
  */
-abstract class qtech extends domophone implements DisplayTextInterface
+abstract class qtech extends domophone implements DisplayTextInterface, LanguageInterface
 {
     use \hw\ip\common\qtech\qtech;
 
@@ -424,7 +424,7 @@ abstract class qtech extends domophone implements DisplayTextInterface
         ]);
     }
 
-    public function setLanguage(string $language = 'ru'): void
+    public function setLanguage(string $language): void
     {
         $this->setParams(['Config.Settings.LANGUAGE.WebLang' => ($language === 'ru') ? 3 : 0]);
     }
