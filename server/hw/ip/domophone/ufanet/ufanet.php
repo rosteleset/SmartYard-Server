@@ -4,13 +4,13 @@ namespace hw\ip\domophone\ufanet;
 
 use CURLFile;
 use Generator;
-use hw\Interfaces\DisplayTextInterface;
+use hw\Interfaces\{DisplayTextInterface, LanguageInterface};
 use hw\ip\domophone\domophone;
 
 /**
  * Abstract class representing an Ufanet intercom.
  */
-abstract class ufanet extends domophone implements DisplayTextInterface
+abstract class ufanet extends domophone implements DisplayTextInterface, LanguageInterface
 {
     use \hw\ip\common\ufanet\ufanet {
         transformDbConfig as protected commonTransformDbConfig;
@@ -339,9 +339,9 @@ abstract class ufanet extends domophone implements DisplayTextInterface
         ]);
     }
 
-    public function setLanguage(string $language = 'ru'): void
+    public function setLanguage(string $language): void
     {
-        // Empty implementation
+        // TODO: Implement setLanguage() method.
     }
 
     public function setPublicCode(int $code = 0): void

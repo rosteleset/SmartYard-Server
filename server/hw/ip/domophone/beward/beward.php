@@ -512,16 +512,6 @@ abstract class beward extends domophone
         ]);
     }
 
-    public function setLanguage(string $language = 'ru'): void
-    {
-        $webLang = match ($language) {
-            'ru' => 1,
-            default => 0,
-        };
-
-        $this->apiCall('webs/sysInfoCfgEx', ['sys_pal' => 0, 'sys_language' => $webLang]);
-    }
-
     public function setPublicCode(int $code = 0): void
     {
         if ($code) {

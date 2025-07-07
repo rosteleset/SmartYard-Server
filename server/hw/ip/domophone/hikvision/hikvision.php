@@ -4,12 +4,13 @@ namespace hw\ip\domophone\hikvision;
 
 use DateInterval;
 use DateTime;
+use hw\Interfaces\LanguageInterface;
 use hw\ip\domophone\domophone;
 
 /**
  * Abstract class representing a Hikvision domophone.
  */
-abstract class hikvision extends domophone
+abstract class hikvision extends domophone implements LanguageInterface
 {
     use \hw\ip\common\hikvision\hikvision;
 
@@ -417,16 +418,13 @@ abstract class hikvision extends domophone
         // Empty implementation
     }
 
-    public function setLanguage(string $language = 'ru'): void
+    public function setLanguage(string $language): void
     {
-        switch ($language) {
-            case 'ru':
-                $language = 'Russian';
-                break;
-            default:
-                $language = 'English';
-                break;
-        }
+        $language = match ($language) {
+            'ru' => 'Russian',
+            default => 'English',
+        };
+
         $this->apiCall(
             '/System/DeviceLanguage',
             'PUT',
