@@ -2,13 +2,13 @@
 
 namespace hw\ip\domophone\rubetek;
 
-use hw\Interfaces\{DbConfigUpdaterInterface, DisplayTextInterface};
+use hw\Interfaces\{DbConfigUpdaterInterface, DisplayTextInterface, LanguageInterface};
 use hw\ip\domophone\domophone;
 
 /**
  * Abstract class representing a Rubetek domophone.
  */
-abstract class rubetek extends domophone implements DbConfigUpdaterInterface, DisplayTextInterface
+abstract class rubetek extends domophone implements DbConfigUpdaterInterface, DisplayTextInterface, LanguageInterface
 {
     use \hw\ip\common\rubetek\rubetek {
         transformDbConfig as protected commonTransformDbConfig;
@@ -464,9 +464,9 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface, Di
         ]);
     }
 
-    public function setLanguage(string $language = 'ru'): void
+    public function setLanguage(string $language): void
     {
-        // Empty implementation
+        // TODO: Implement setLanguage() method.
     }
 
     public function setPublicCode(int $code = 0): void

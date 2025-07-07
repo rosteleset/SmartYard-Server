@@ -2,12 +2,12 @@
 
 namespace hw\ip\domophone\beward;
 
-use hw\Interfaces\DisplayTextInterface;
+use hw\Interfaces\{DisplayTextInterface, LanguageInterface};
 
 /**
  * Class representing a Beward DKS series domophone.
  */
-class dks extends beward implements DisplayTextInterface
+class dks extends beward implements DisplayTextInterface, LanguageInterface
 {
     public function getDisplayText(): array
     {
@@ -37,5 +37,16 @@ class dks extends beward implements DisplayTextInterface
             'LineEnable4' => 'off',
             'LineEnable5' => 'off',
         ]);
+    }
+
+    public function setLanguage(string $language): void
+    {
+        $webLang = match ($language) {
+            'ru' => 1,
+            default => 0,
+        };
+
+        // TODO: PAL setting here??? Find out
+        $this->apiCall('webs/sysInfoCfgEx', ['sys_pal' => 0, 'sys_language' => $webLang]);
     }
 }

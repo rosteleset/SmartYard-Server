@@ -6,7 +6,6 @@ use hw\ip\domophone\domophone;
 
 /**
  * Abstract class representing a RODOS IP relay.
- * @todo REFACTOR THIS!!!! REFACTOR ALL HW!!! PLS!!
  */
 class rodos extends domophone
 {
@@ -157,11 +156,6 @@ class rodos extends domophone
     }
 
     public function setDtmfCodes(string $code1 = '1', string $code2 = '2', string $code3 = '3', string $codeCms = '1'): void
-    {
-        // Empty implementation
-    }
-
-    public function setLanguage(string $language = 'ru'): void
     {
         // Empty implementation
     }

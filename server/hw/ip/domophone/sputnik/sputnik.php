@@ -280,11 +280,6 @@ class sputnik extends domophone
         ]);
     }
 
-    public function setLanguage(string $language = 'ru'): void
-    {
-        // Empty implementation
-    }
-
     public function setPublicCode(int $code = 0): void
     {
         // Empty implementation

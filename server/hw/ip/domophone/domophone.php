@@ -2,7 +2,7 @@
 
 namespace hw\ip\domophone;
 
-use hw\Interfaces\DisplayTextInterface;
+use hw\Interfaces\{DisplayTextInterface, LanguageInterface};
 use hw\ip\ip;
 use hw\SmartConfigurator\ConfigurationBuilder\DomophoneConfigurationBuilder;
 
@@ -64,6 +64,10 @@ abstract class domophone extends ip
         $this->setTalkTimeout(90);
         $this->setUnlockTime(5);
         $this->setPublicCode();
+
+        if ($this instanceof LanguageInterface) {
+            $this->setLanguage('ru');
+        }
     }
 
     /**
@@ -359,17 +363,6 @@ abstract class domophone extends ip
         string $code3 = '3',
         string $codeCms = '1',
     ): void;
-
-    /**
-     * Set the language used on the device.
-     *
-     * @param string $language (Optional) The language used by the device in the ISO 639-1 format.
-     * The language will be applied to the WEB interface text, sound files, etc.
-     * Default is "ru".
-     *
-     * @return void
-     */
-    abstract public function setLanguage(string $language = 'ru'): void;
 
     /**
      * Set a public access code.
