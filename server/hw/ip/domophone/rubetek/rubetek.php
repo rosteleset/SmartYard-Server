@@ -295,13 +295,24 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface, Di
 
     public function getDisplayText(): array
     {
-        $text = trim($this->getConfiguration()['display']['text'] ?? '');
+        $displaySettings = $this->getConfiguration()['display'];
+
+        // Three line text
+        if (isset($displaySettings['text1'])) {
+            return array_filter([
+                $displaySettings['text1'],
+                $displaySettings['text2'],
+                $displaySettings['text3'],
+            ]);
+        }
+
+        $text = trim($displaySettings['text'] ?? '');
         return $text === '' ? [] : [$text];
     }
 
     public function getDisplayTextLinesCount(): int
     {
-        return 1;
+        return 3;
     }
 
     public function getLineDiagnostics(int $apartment): float
@@ -413,13 +424,24 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface, Di
 
     public function setDisplayText(array $textLines): void
     {
-        $text = $textLines[0] ?? '';
-
         $displaySettings = $this->getConfiguration()['display'];
-        $displaySettings['welcome_display'] = 1;
-        $displaySettings['text'] = $text . ' '; // Space is needed, otherwise the text will stick together
-        $displaySettings['changeLineTimeout'] = 5; // Seconds
-        $displaySettings['changeSymbolTimeout'] = 5; // Milliseconds
+        $textLinesCount = count($textLines);
+
+        if ($textLinesCount === 0) {
+            $displaySettings['welcome_display'] = 4; // Current date and time
+            $displaySettings['text'] = '';
+        } elseif ($textLinesCount === 1) {
+            $text = $textLines[0] ?? '';
+            $displaySettings['welcome_display'] = 1; // Long text in one line
+            $displaySettings['text'] = $text . ' '; // Space is needed, otherwise the text will stick together
+            $displaySettings['changeLineTimeout'] = 5; // Seconds
+            $displaySettings['changeSymbolTimeout'] = 5; // Milliseconds
+        } else {
+            $displaySettings['welcome_display'] = 6; // Three line text
+            $displaySettings['text1'] = $textLines[0];
+            $displaySettings['text2'] = $textLines[1];
+            $displaySettings['text3'] = $textLines[2] ?? '';
+        }
 
         $this->apiCall('/settings/display', 'PATCH', $displaySettings);
     }
