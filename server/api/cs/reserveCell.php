@@ -62,7 +62,7 @@
                 $success = false;
 
                 if ($cs) {
-                    if (@$row["col"] && @$row["row"]) {
+                    if (@$params["col"] && @$params["row"]) {
                         $success = $cs->setCell("reserve", $params["sheet"], $params["date"], $params["col"], $params["row"], $params["uid"], (int)@$params["expire"], @$params["sid"], 0, @$params["comment"]);
                     }
                 }
@@ -76,7 +76,7 @@
                 $success = false;
 
                 if ($cs) {
-                    if (@$row["col"] && @$row["row"]) {
+                    if (@$params["col"] && @$params["row"]) {
                         $success = $cs->setCell("release-force", $params["sheet"], $params["date"], $params["col"], $params["row"], $params["uid"], 0, @$params["sid"]);
                     }
                 }
