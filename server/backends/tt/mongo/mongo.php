@@ -1251,25 +1251,27 @@
 
             public function journal($issueId, $action, $old, $new, $workflowAction) {
 
-                function arrayRecursiveDiff($array1, $array2) {
-                    $aReturn = [];
+                if (!function_exists("arrayRecursiveDiff")) {
+                    function arrayRecursiveDiff($array1, $array2) {
+                        $aReturn = [];
 
-                    foreach ($array1 as $index => $value) {
-                        if (array_key_exists($index, $array2)) {
-                            if (is_array($value) && is_array($array2[$index])) {
-                                $recursiveDiff = arrayRecursiveDiff($value, $array2[$index]);
-                                if ($recursiveDiff !== []) {
-                                    $aReturn[$index] = $recursiveDiff;
+                        foreach ($array1 as $index => $value) {
+                            if (array_key_exists($index, $array2)) {
+                                if (is_array($value) && is_array($array2[$index])) {
+                                    $recursiveDiff = arrayRecursiveDiff($value, $array2[$index]);
+                                    if ($recursiveDiff !== []) {
+                                        $aReturn[$index] = $recursiveDiff;
+                                    }
+                                } elseif ($value !== $array2[$index]) {
+                                    $aReturn[$index] = $value;
                                 }
-                            } elseif ($value !== $array2[$index]) {
+                            } else {
                                 $aReturn[$index] = $value;
                             }
-                        } else {
-                            $aReturn[$index] = $value;
                         }
-                    }
 
-                    return $aReturn;
+                        return $aReturn;
+                    }
                 }
 
                 if ($old && $new) {
