@@ -927,6 +927,7 @@
                     }
 
                     if (col_name) {
+                        loadingStart();
                         let bulk = {
                             project: modules.cs.currentSheet.sheet.project,
                             query: { },
@@ -942,6 +943,7 @@
                         PUT("tt", "bulkAction", false, bulk).
                         fail(FAIL).
                         done(() => {
+                            loadingDone();
                             message(i18n("cs.done"));
                         });
                     } else {
