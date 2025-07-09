@@ -1251,7 +1251,7 @@
 
             public function journal($issueId, $action, $old, $new, $workflowAction) {
 
-                if (!function_exists("arrayRecursiveDiff")) {
+                if (!function_exists('backends\tt\arrayRecursiveDiff')) {
                     function arrayRecursiveDiff($array1, $array2) {
                         $aReturn = [];
 
