@@ -371,7 +371,7 @@
                         id: "display",
                         type: "area",
                         title: i18n("addresses.display"),
-                        placeholder: i18n("addresses.display"),
+                        placeholder: i18n("addresses.displayPlaceholder"),
                         value: domophone.display,
                         tab: i18n("addresses.primary"),
                     },

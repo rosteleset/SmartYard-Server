@@ -350,6 +350,7 @@
     "newNode": "New node",
     "map": "On map",
     "display": "Display",
+    "displayPlaceholder": "Line 1\nLine 2\nLine 3",
     "bundle": "bundle",
     "paranoidFlats": "\"Paranoid\" (by flats)",
     "watch": "Watch",
