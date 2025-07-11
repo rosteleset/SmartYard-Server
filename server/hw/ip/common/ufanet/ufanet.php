@@ -104,7 +104,8 @@ trait ufanet
     ): array|string|null
     {
         if ($payload !== null && $method === 'GET') {
-            $payload = array_map(fn($value) => str_replace(' ', '%20', $value), $payload); // Replace spaces with %20
+            // Replace spaces with "%20" and "+" with "%2B"
+            $payload = array_map(fn($value) => str_replace([' ', '+'], ['%20', '%2B'], $value), $payload);
             $queryString = urldecode(http_build_query($payload));
             $resource .= '?' . preg_replace('/=(&|$)/', '$1', $queryString); // Delete '=' if the key is without value
         }
