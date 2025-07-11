@@ -796,12 +796,13 @@
 
         if (issue.issue.attachments && Object.keys(issue.issue.attachments).length) {
             h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.attachments")}' /></td></tr>`;
+            h += '<tbody class="gallery">';
             for (let i in issue.issue.attachments) {
                 h += "<tr>";
                 h += "<td colspan='2' class='pl-1'>";
                 h += "<div>";
                 h += "<span class='text-bold'>";
-                h += members[issue.issue.attachments[i].metadata.attachman]?members[issue.issue.attachments[i].metadata.attachman]:issue.issue.attachments[i].metadata.attachman;
+                h += members[issue.issue.attachments[i].metadata.attachman] ? members[issue.issue.attachments[i].metadata.attachman] : issue.issue.attachments[i].metadata.attachman;
                 h += "</span>";
                 h += "&nbsp;" + i18n("tt.wasAttached") + "&nbsp;";
                 h += ttDate(issue.issue.attachments[i].metadata.added);
@@ -812,19 +813,23 @@
                 }
                 h += "</div>";
                 h += "<div class='ml-2 mb-2 mt-1'>";
-                h += "<a class='hoverable' href='" + lStore("_server") + "/tt/file?issueId=" + encodeURIComponent(issue.issue["issueId"]) + "&filename=" + encodeURIComponent(issue.issue.attachments[i].filename) + "&_token=" + encodeURIComponent(lStore("_token")) + "' target='_blank'>";
+                let ref = lStore("_server") + "/tt/file?issueId=" + encodeURIComponent(issue.issue["issueId"]) + "&filename=" + encodeURIComponent(issue.issue.attachments[i].filename) + "&_token=" + encodeURIComponent(lStore("_token"));
                 if (issue.issue.attachments[i].metadata.type.indexOf("image/") == 0) {
-                    h += $.trim(issue.issue.attachments[i].filename) + "<br />";
-                    h += `<img src="${lStore("_server") + "/tt/file?issueId=" + encodeURIComponent(issue.issue["issueId"]) + "&filename=" + encodeURIComponent(issue.issue.attachments[i].filename) + "&_token=" + encodeURIComponent(lStore("_token"))}" style="height: 200px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;"></img>`;
+                    h += `<span>${$.trim(issue.issue.attachments[i].filename)}</span>`;
+                    h += "<br />";
+                    h += `<a class='gallery-link' href='${ref}'>`;
+                    h += `<img class='gallery-image' src="${ref}" style="height: 200px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;"></img>`;
+                    h += '</a>'
                 } else {
+                    h += `<a class='hoverable' href='${ref}' target='_blank'>`;
                     h += $.trim(issue.issue.attachments[i].filename);
+                    h += "</a>";
                 }
-                h += "</a>";
-//                h += " [" + formatBytes(issue.issue.attachments[i].length) + "]";
                 h += "</div>";
                 h += "</td>";
                 h += "</tr>";
             }
+            h += "</tbody>";
         }
 
         if (issue.issue.childrens && issue.issue.childrens.issues && Object.keys(issue.issue.childrens.issues).length) {
@@ -853,6 +858,8 @@
                 h += `<td class='pl-2 pr-2'>${issue.issue.childrens.issues[i].subject}</td>`;
                 h += "</tr>";
             }
+            h += '</tbody>';
+
             h += "</table>";
             h += "</td>";
             h += "</tr>";
@@ -888,6 +895,8 @@
                 h += `<td class='pl-2 pr-2'><i class='fas fa-fw fa-unlink pointer text-danger unlinkIssue' data-issueId='${issue.issue.linkedIssues.issues[i].issueId}' title='${i18n("tt.unlinkIssuesTitle")}'></i></td>`;
                 h += "</tr>";
             }
+
+            h += '</tbody>';
             h += "</table>";
             h += "</td>";
             h += "</tr>";
@@ -1628,6 +1637,53 @@
             loadingStart();
             modules.tt.selectFilter(filter, Math.floor((index - 1) / modules.tt.defaultIssuesPerPage) * modules.tt.defaultIssuesPerPage, modules.tt.defaultIssuesPerPage, search);
         });
+
+        $(".gallery-image").off("load").on("load", function () {
+            let img = $(this);
+            img.parent().attr("data-pswp-width", img.get(0).naturalWidth);
+            img.parent().attr("data-pswp-height", img.get(0).naturalHeight);
+        });
+
+        let lightbox = new PhotoSwipeLightbox({
+            gallery: '.gallery',
+            children: 'a.gallery-link',
+            pswpModule: PhotoSwipe,
+            showHideAnimationType: 'none',
+        });
+
+        lightbox.on('uiRegister', function() {
+            lightbox.pswp.ui.registerElement({
+                name: 'download-button',
+                order: 8,
+                isButton: true,
+                tagName: 'a',
+
+                // SVG with outline
+                html: {
+                    isCustomSVG: true,
+                    inner: '<path d="M20.5 14.3 17.1 18V10h-2.2v7.9l-3.4-3.6L10 16l6 6.1 6-6.1ZM23 23H9v2h14Z" id="pswp__icn-download"/>',
+                    outlineID: 'pswp__icn-download'
+                },
+
+                // Or provide full svg:
+                // html: '<svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" class="pswp__icn"><path d="M20.5 14.3 17.1 18V10h-2.2v7.9l-3.4-3.6L10 16l6 6.1 6-6.1ZM23 23H9v2h14Z" /></svg>',
+
+                // Or provide any other markup:
+                // html: '<i class="fa-solid fa-download"></i>'
+
+                onInit: (el, pswp) => {
+                    el.setAttribute('download', '');
+                    el.setAttribute('target', '_blank');
+                    el.setAttribute('rel', 'noopener');
+
+                    pswp.on('change', () => {
+                        el.href = pswp.currSlide.data.src;
+                    });
+                }
+            });
+        });
+
+        lightbox.init();
 
         (new ClipboardJS('.cc', {
             text: function(trigger) {
