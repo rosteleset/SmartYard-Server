@@ -219,7 +219,7 @@ function telify(input) {
         l = "ru";
     }
 
-    return newText = input.replaceAll(new RegExp(config.regExp.phone, 'g'), function(match) {
+    return input.replaceAll(new RegExp(config.regExp.phone, 'g'), function(match) {
         let phoneObject = phoneUtil.parse(match, l);
 
         return '<a href="tel:' + phoneUtil.format(phoneObject, libphonenumber.PhoneNumberFormat.E164) + '">' + phoneUtil.format(phoneObject, libphonenumber.PhoneNumberFormat.NATIONAL) + '</a>';
