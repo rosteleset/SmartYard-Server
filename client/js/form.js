@@ -392,46 +392,98 @@ function cardForm(params) {
                 break;
 
             case "time":
-                h += `<div class="input-group">`;
-                h += `<input name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" type="${params.fields[i].type}" class="form-control modalFormField nopicker" style="cursor: text;" autocomplete="off" placeholder="${escapeHTML(params.fields[i].placeholder ? params.fields[i].placeholder : "")}"`;
-                if (params.fields[i].readonly) {
-                    h += ` readonly="readonly"`;
-                    h += ` disabled="disabled"`;
-                }
-                if (params.fields[i].pattern) {
-                    h += ` pattern="${params.fields[i].pattern}"`;
-                }
-                h += ` />`;
-                h += `<div class="input-group-append">`;
-                if (params.fields[i].readonly) {
-                    h += `<span class="input-group-text disabled" disabled="disabled"><i class="far fa-fw fa-clock"></i></span>`;
+                if ($.browser.mozilla) {
+                    if (params.fields[i].button) {
+                        h += `<div class="input-group">`;
+                    }
+                    if (params.fields[i].type == "number") {
+                        let float = params.fields[i].float ? params.fields[i].float : "any";
+                        h += `<input name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" type="${params.fields[i].type}" class="form-control modalFormField" style="cursor: text;" autocomplete="off" placeholder="${escapeHTML(params.fields[i].placeholder ? params.fields[i].placeholder : "")}" step="${float}"`;
+                    } else {
+                        h += `<input name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" type="${params.fields[i].type}" class="form-control modalFormField" style="cursor: text;" autocomplete="off" placeholder="${escapeHTML(params.fields[i].placeholder ? params.fields[i].placeholder : "")}"`;
+                    }
+                    if (params.fields[i].readonly) {
+                        h += ` readonly="readonly"`;
+                        h += ` disabled="disabled"`;
+                    }
+                    if (params.fields[i].pattern) {
+                        h += ` pattern="${params.fields[i].pattern}"`;
+                    }
+                    h += ` />`;
+                    if (params.fields[i].button) {
+                        h += `<div class="input-group-append">`;
+                        h += `<span id="${_prefix}${params.fields[i].id}-button" title="${params.fields[i].button.hint ? params.fields[i].button.hint : ''}" class="input-group-text pointer"><i class="fa-fw ${params.fields[i].button.class}"></i></span>`;
+                        h += `</div>`;
+                        h += `</div>`;
+                    }
                 } else {
-                    h += `<span class="input-group-text pointer cardFormPicker" data-for="${_prefix}${params.fields[i].id}"><i class="far fa-fw fa-clock"></i></span>`;
+                    h += `<div class="input-group">`;
+                    h += `<input name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" type="${params.fields[i].type}" class="form-control modalFormField nopicker" style="cursor: text;" autocomplete="off" placeholder="${escapeHTML(params.fields[i].placeholder ? params.fields[i].placeholder : "")}"`;
+                    if (params.fields[i].readonly) {
+                        h += ` readonly="readonly"`;
+                        h += ` disabled="disabled"`;
+                    }
+                    if (params.fields[i].pattern) {
+                        h += ` pattern="${params.fields[i].pattern}"`;
+                    }
+                    h += ` />`;
+                    h += `<div class="input-group-append">`;
+                    if (params.fields[i].readonly) {
+                        h += `<span class="input-group-text disabled" disabled="disabled"><i class="far fa-fw fa-clock"></i></span>`;
+                    } else {
+                        h += `<span class="input-group-text pointer cardFormPicker" data-for="${_prefix}${params.fields[i].id}"><i class="far fa-fw fa-clock"></i></span>`;
+                    }
+                    h += `</div>`;
+                    h += `</div>`;
                 }
-                h += `</div>`;
-                h += `</div>`;
                 break;
 
             case "date":
             case "datetime-local":
-                h += `<div class="input-group">`;
-                h += `<input name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" type="${params.fields[i].type}" class="form-control modalFormField nopicker" style="cursor: text;" autocomplete="off" placeholder="${escapeHTML(params.fields[i].placeholder ? params.fields[i].placeholder : "")}"`;
-                if (params.fields[i].readonly) {
-                    h += ` readonly="readonly"`;
-                    h += ` disabled="disabled"`;
-                }
-                if (params.fields[i].pattern) {
-                    h += ` pattern="${params.fields[i].pattern}"`;
-                }
-                h += ` />`;
-                h += `<div class="input-group-append">`;
-                if (params.fields[i].readonly) {
-                    h += `<span class="input-group-text disabled" disabled="disabled"><i class="far fa-fw fa-calendar"></i></span>`;
+                if ($.browser.mozilla) {
+                    if (params.fields[i].button) {
+                        h += `<div class="input-group">`;
+                    }
+                    if (params.fields[i].type == "number") {
+                        let float = params.fields[i].float ? params.fields[i].float : "any";
+                        h += `<input name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" type="${params.fields[i].type}" class="form-control modalFormField" style="cursor: text;" autocomplete="off" placeholder="${escapeHTML(params.fields[i].placeholder ? params.fields[i].placeholder : "")}" step="${float}"`;
+                    } else {
+                        h += `<input name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" type="${params.fields[i].type}" class="form-control modalFormField" style="cursor: text;" autocomplete="off" placeholder="${escapeHTML(params.fields[i].placeholder ? params.fields[i].placeholder : "")}"`;
+                    }
+                    if (params.fields[i].readonly) {
+                        h += ` readonly="readonly"`;
+                        h += ` disabled="disabled"`;
+                    }
+                    if (params.fields[i].pattern) {
+                        h += ` pattern="${params.fields[i].pattern}"`;
+                    }
+                    h += ` />`;
+                    if (params.fields[i].button) {
+                        h += `<div class="input-group-append">`;
+                        h += `<span id="${_prefix}${params.fields[i].id}-button" title="${params.fields[i].button.hint ? params.fields[i].button.hint : ''}" class="input-group-text pointer"><i class="fa-fw ${params.fields[i].button.class}"></i></span>`;
+                        h += `</div>`;
+                        h += `</div>`;
+                    }
                 } else {
-                    h += `<span class="input-group-text pointer cardFormPicker" data-for="${_prefix}${params.fields[i].id}"><i class="far fa-fw fa-calendar"></i></span>`;
+                    h += `<div class="input-group">`;
+                    h += `<input name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" type="${params.fields[i].type}" class="form-control modalFormField nopicker" style="cursor: text;" autocomplete="off" placeholder="${escapeHTML(params.fields[i].placeholder ? params.fields[i].placeholder : "")}"`;
+                    if (params.fields[i].readonly) {
+                        h += ` readonly="readonly"`;
+                        h += ` disabled="disabled"`;
+                    }
+                    if (params.fields[i].pattern) {
+                        h += ` pattern="${params.fields[i].pattern}"`;
+                    }
+                    h += ` />`;
+                    h += `<div class="input-group-append">`;
+                    if (params.fields[i].readonly) {
+                        h += `<span class="input-group-text disabled" disabled="disabled"><i class="far fa-fw fa-calendar"></i></span>`;
+                    } else {
+                        h += `<span class="input-group-text pointer cardFormPicker" data-for="${_prefix}${params.fields[i].id}"><i class="far fa-fw fa-calendar"></i></span>`;
+                    }
+                    h += `</div>`;
+                    h += `</div>`;
                 }
-                h += `</div>`;
-                h += `</div>`;
                 break;
 
             case "select2":

@@ -750,14 +750,10 @@ body.dark-mode .hr-text::after .hr-text-white::after .hr-text-pointer::after hr-
 
 .nopicker::-webkit-calendar-picker-indicator {
   background: transparent;
-/*  bottom: 0; */
   color: transparent;
-  cursor: pointer;
-  height: 0px;
-/*  left: 0; */
   position: absolute;
   right: 0px;
-/*  top: 0; */
+  height: 0px;
   width: 0px;
 }
 
