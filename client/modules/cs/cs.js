@@ -115,7 +115,7 @@
                                                 type: "text",
                                                 title: i18n("cs.comment"),
                                                 placeholder: i18n("cs.comment"),
-                                                validate: (v) => {
+                                                validate: v => {
                                                     return $.trim(v) !== "";
                                                 }
                                             },
@@ -1319,7 +1319,7 @@
                                 title: i18n("cs.date"),
                                 return: "asis",
                                 placeholder: i18n("cs.date"),
-                                validate: (v) => {
+                                validate: v => {
                                     return $.trim(v) !== "";
                                 }
                             },
@@ -1369,7 +1369,7 @@
                                 tags: true,
                                 createTags: true,
                                 options: sheetsOptions,
-                                validate: (v) => {
+                                validate: v => {
                                     return $.trim(v) !== "";
                                 }
                             },
@@ -1379,7 +1379,7 @@
                                 title: i18n("cs.date"),
                                 return: "asis",
                                 placeholder: i18n("cs.date"),
-                                validate: (v) => {
+                                validate: v => {
                                     return $.trim(v) !== "";
                                 }
                             },

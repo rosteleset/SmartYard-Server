@@ -114,8 +114,8 @@
                     type: "text",
                     title: i18n("addresses.key"),
                     placeholder: "00000000ABCDEF",
-                    validate: (v) => {
-                        return new RegExp(config.regExp.rfid).test(v);
+                    validate: v => {
+                        return new RegExp("^" + config.regExp.rfid + "$").test(v);
                     }
                 },
                 {

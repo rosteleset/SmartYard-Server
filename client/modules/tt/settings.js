@@ -25,7 +25,7 @@
                     type: "text",
                     title: i18n("tt.projectProject"),
                     placeholder: i18n("tt.projectProject"),
-                    validate: (v) => {
+                    validate: v => {
                         return $.trim(v) !== "";
                     }
                 },
@@ -57,7 +57,7 @@
                     type: "text",
                     title: i18n("tt.status"),
                     placeholder: i18n("tt.status"),
-                    validate: (v) => {
+                    validate: v => {
                         return $.trim(v) !== "";
                     },
                 },
@@ -94,7 +94,7 @@
                     type: "text",
                     title: i18n("tt.resolution"),
                     placeholder: i18n("tt.resolution"),
-                    validate: (v) => {
+                    validate: v => {
                         return $.trim(v) !== "";
                     }
                 },
@@ -193,7 +193,7 @@
                     type: "text",
                     title: i18n("tt.customFieldDisplay"),
                     placeholder: i18n("tt.customFieldDisplay"),
-                    validate: (v) => {
+                    validate: v => {
                         return $.trim(v) !== "";
                     }
                 },
@@ -363,7 +363,7 @@
                             text: "pdf",
                         },
                     ],
-                    validate: (v) => {
+                    validate: v => {
                         return $.trim(v) !== "";
                     }
                 },
@@ -372,7 +372,7 @@
                     type: "text",
                     title: i18n("tt.printDescription"),
                     placeholder: i18n("tt.printDescription"),
-                    validate: (v) => {
+                    validate: v => {
                         return $.trim(v) !== "";
                     }
                 },
@@ -427,7 +427,7 @@
                     value: project.project,
                     title: i18n("tt.projectProject"),
                     placeholder: i18n("tt.projectProject"),
-                    validate: (v) => {
+                    validate: v => {
                         return $.trim(v) !== "";
                     }
                 },
@@ -466,7 +466,7 @@
                             text: "64Mb"
                         },
                     ],
-                    validate: (v) => {
+                    validate: v => {
                         return parseInt(v) >= 0 && parseInt(v) <= 64 * 1024 * 1024;
                     }
                 },
@@ -1068,7 +1068,7 @@
                             text: "pdf",
                         },
                     ],
-                validate: (v) => {
+                validate: v => {
                         return $.trim(v) !== "";
                     },
                 },
@@ -1078,7 +1078,7 @@
                     title: i18n("tt.printDescription"),
                     placeholder: i18n("tt.printDescription"),
                     value: print.description,
-                    validate: (v) => {
+                    validate: v => {
                         return $.trim(v) !== "";
                     },
                 },
@@ -2371,7 +2371,7 @@
                     type: "text",
                     title: i18n("tt.workflow"),
                     placeholder: i18n("tt.workflow"),
-                    validate: (v) => {
+                    validate: v => {
                         return !!v.match(/^[a-z_A-Z]\w*$/g);
                     }
                 },
@@ -2557,7 +2557,7 @@
                     type: "text",
                     title: i18n("tt.workflowLib"),
                     placeholder: i18n("tt.workflowLib"),
-                    validate: (v) => {
+                    validate: v => {
                         return $.trim(v) !== "";
                     }
                 },
@@ -3100,7 +3100,7 @@
                     type: "text",
                     title: i18n("tt.filter"),
                     placeholder: i18n("tt.filter"),
-                    validate: (v) => {
+                    validate: v => {
                         return !!v.match(/^[a-z_A-Z]\w*$/g);
                     }
                 },
@@ -3301,7 +3301,7 @@
                             title: i18n("tt.crontab"),
                             placeholder: i18n("tt.crontab"),
                             options: crontabs,
-                            validate: (v) => {
+                            validate: v => {
                                 return $.trim(v) !== "" && $.trim(v) !== "-";
                             },
                         },
@@ -3550,7 +3550,7 @@
                         title: i18n("tt.viewerField"),
                         placeholder: i18n("tt.viewerField"),
                         options: fields,
-                        validate: (v) => {
+                        validate: v => {
                             return $.trim(v) !== "";
                         }
                     },
@@ -3559,7 +3559,7 @@
                         type: "text",
                         title: i18n("tt.viewerName"),
                         placeholder: i18n("tt.viewerName"),
-                        validate: (v) => {
+                        validate: v => {
                             return $.trim(v) !== "";
                         }
                     },

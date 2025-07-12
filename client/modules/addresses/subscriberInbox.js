@@ -27,7 +27,7 @@
                     type: "text",
                     title: i18n("addresses.messageTitle"),
                     placeholder: i18n("addresses.messageTitle"),
-                    validate: (v) => {
+                    validate: v => {
                         return $.trim(v) !== "";
                     }
                 },
@@ -36,7 +36,7 @@
                     type: "area",
                     title: i18n("addresses.messageBody"),
                     placeholder: i18n("addresses.messageBody"),
-                    validate: (v) => {
+                    validate: v => {
                         return $.trim(v) !== "";
                     }
                 },

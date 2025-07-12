@@ -130,8 +130,8 @@
                     type: "text",
                     title: i18n("addresses.mobile"),
                     placeholder: config.phonePattern?config.phonePattern:i18n("addresses.mobile"),
-                    validate: (v) => {
-                        return new RegExp(config.regExp.phone).test(v);
+                    validate: v => {
+                        return new RegExp("^" + config.regExp.phone + "$").test(v);
                     }
                 },
                 {
@@ -178,8 +178,8 @@
                     type: "text",
                     title: i18n("addresses.key"),
                     placeholder: "00000000ABCDEF",
-                    validate: (v) => {
-                        return new RegExp(config.regExp.rfid).test(v);
+                    validate: v => {
+                        return new RegExp("^" + config.regExp.rfid + "$").test(v);
                     }
                 },
                 {
@@ -274,8 +274,8 @@
                         type: "text",
                         title: i18n("addresses.mobile"),
                         placeholder: config.phonePattern?config.phonePattern:i18n("addresses.mobile"),
-                        validate: (v) => {
-                            return new RegExp(config.regExp.phone).test(v);
+                        validate: v => {
+                            return new RegExp("^" + config.regExp.phone + "$").test(v);
                         },
                         value: subscriber.mobile,
                     },
@@ -381,8 +381,8 @@
                     type: "text",
                     title: i18n("addresses.mobile"),
                     placeholder: config.phonePattern?config.phonePattern:i18n("addresses.mobile"),
-                    validate: (v) => {
-                        return new RegExp(config.regExp.phone).test(v);
+                    validate: v => {
+                        return new RegExp("^" + config.regExp.phone + "$").test(v);
                     },
                     value: subscriber.mobile,
                 },

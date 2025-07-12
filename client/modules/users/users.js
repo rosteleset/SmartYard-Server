@@ -145,7 +145,7 @@
                     type: "text",
                     title: i18n("users.login"),
                     placeholder: i18n("users.login"),
-                    validate: (v) => {
+                    validate: v => {
                         return $.trim(v) !== "";
                     }
                 },
@@ -154,7 +154,7 @@
                     type: "text",
                     title: i18n("users.realName"),
                     placeholder: i18n("users.realName"),
-                    validate: (v) => {
+                    validate: v => {
                         return $.trim(v) !== "";
                     }
                 },
@@ -267,7 +267,7 @@
                             value: response.user.realName,
                             title: i18n("users.realName"),
                             placeholder: i18n("users.realName"),
-                            validate: (v) => {
+                            validate: v => {
                                 return $.trim(v) !== "";
                             },
                             tab: i18n("users.contacts"),
@@ -337,7 +337,7 @@
                                     text: i18n("users.notificationEmail"),
                                 },
                             ],
-                            validate: (v) => {
+                            validate: v => {
                                 return $.trim(v) !== "";
                             },
                             tab: i18n("users.contacts"),
@@ -402,7 +402,7 @@
                                     $(`#${prefix}defaultRoute`).val("#" + window.location.href.split("#")[1]);
                                 },
                             },
-                            validate: (v) => {
+                            validate: v => {
                                 return $.trim(v) === "" || $.trim(v)[0] === "#";
                             },
                             tab: i18n("users.primary"),
@@ -421,7 +421,7 @@
                                     $(`#${prefix}persistentToken`).val(md5(Math.random() + (new Date())));
                                 },
                             },
-                            validate: (v) => {
+                            validate: v => {
                                 return $.trim(v) === "" || $.trim(v).length === 32;
                             },
                             tab: i18n("users.primary"),

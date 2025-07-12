@@ -105,7 +105,7 @@
                     type: "text",
                     title: i18n("groups.acronym"),
                     placeholder: i18n("groups.acronym"),
-                    validate: (v) => {
+                    validate: v => {
                         return $.trim(v) !== "";
                     }
                 },
@@ -114,7 +114,7 @@
                     type: "text",
                     title: i18n("groups.name"),
                     placeholder: i18n("groups.name"),
-                    validate: (v) => {
+                    validate: v => {
                         return $.trim(v) !== "";
                     }
                 },
@@ -165,7 +165,7 @@
                             placeholder: i18n("groups.acronym"),
                             title: i18n("groups.acronym"),
                             readonly: true,
-                            validate: (v) => {
+                            validate: v => {
                                 return $.trim(v) !== "";
                             }
                         },
@@ -175,7 +175,7 @@
                             value: response.group.name,
                             title: i18n("groups.name"),
                             placeholder: i18n("groups.name"),
-                            validate: (v) => {
+                            validate: v => {
                                 return $.trim(v) !== "";
                             }
                         },

@@ -185,7 +185,7 @@
                     title: i18n("addresses.timezone"),
                     placeholder: i18n("addresses.timezone"),
                     options: timezonesOptions(),
-                    validate: (v) => {
+                    validate: v => {
                         return $.trim(v) !== "";
                     },
                     value: "-",
@@ -608,7 +608,7 @@
                         title: i18n("addresses.timezone"),
                         placeholder: i18n("addresses.timezone"),
                         options: timezonesOptions(),
-                        validate: (v) => {
+                        validate: v => {
                             return $.trim(v) !== "";
                         },
                         value: camera.timezone,
