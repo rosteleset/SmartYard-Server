@@ -210,15 +210,6 @@ function parseFloatEx(f, r) {
     }
 }
 
-function convertLinks(input) {
-    // https://linkify.js.org/
-    let options = {
-        defaultProtocol: "https",
-        target: "_blank",
-    };
-    return linkifyHtml(input, options);
-}
-
 function telify(input) {
     let l = lStore("_lang");
     if (!l) {
@@ -233,6 +224,15 @@ function telify(input) {
 
         return '<a href="tel:' + phoneUtil.format(phoneObject, libphonenumber.PhoneNumberFormat.E164) + '">' + phoneUtil.format(phoneObject, libphonenumber.PhoneNumberFormat.NATIONAL) + '</a>';
     });
+}
+
+function convertLinks(input) {
+    // https://linkify.js.org/
+    let options = {
+        defaultProtocol: "https",
+        target: "_blank",
+    };
+    return linkifyHtml(telify(input), options);
 }
 
 function getMonthDifference(startDate, endDate) {
