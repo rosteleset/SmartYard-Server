@@ -126,7 +126,7 @@ zabbix_export:
               priority: WARNING
               description: 'HTTP Check unavailable but ICMP available'
               dependencies:
-                - name: 'ICMP Ping: Unavailable by ICMP ping'
+                - name: 'ICMP: Unavailable by ICMP ping'
                   expression: 'max(/Intercom_BEWARD_DS/icmpping,#3)=0'
       tags:
         - tag: class

@@ -106,7 +106,7 @@ zabbix_export:
               priority: WARNING
               description: 'HTTP Check unavailable but ICMP available'
               dependencies:
-                - name: 'ICMP Ping: Unavailable by ICMP ping'
+                - name: 'ICMP: Unavailable by ICMP ping'
                   expression: 'max(/Intercom_IS_ISCOM_X1_REV.2/icmpping,#3)=0'
         - uuid: a6049607ab5d48b0b5d85c2871cf594e
           name: 'Sokol Intercom: system versions'

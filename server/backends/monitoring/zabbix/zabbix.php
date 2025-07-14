@@ -23,6 +23,7 @@ class zabbix extends monitoring
     protected $pluggedTemplateNames = [];
     protected $templatesDir;
     protected $cameraVendor = 'FAKE';
+    private bool $enableLogging = false;
 
     /**
      * @throws Exception
@@ -244,6 +245,7 @@ class zabbix extends monitoring
             throw new Exception("Error: template directory does not exist: $templatePath");
         }
         $this->templatesDir = realpath($templatePath);
+        $this->enableLogging = $zbxConfig['logging'] ?? false;
     }
 
     /**
@@ -889,11 +891,11 @@ class zabbix extends monitoring
         return $this->apiCall($body);
     }
 
-    private function updateHost(int $zbxHostId, array $changes)
+    private function updateHost(array $zbxDevice, array $changes)
     {
-        $this->log("Updating host with ID: $zbxHostId");
+        $this->log("Updating host with ID:" .  $zbxDevice['zbx_hostid']);
         $updateParams = [
-            'hostid' => $zbxHostId,
+            'hostid' => $zbxDevice['zbx_hostid'],
         ];
         if (isset($changes['status'])) {
             $updateParams['status'] = $changes['status'] ? 0 : 1; // Assuming Zabbix uses 0 for enabled and 1 for disabled
@@ -909,19 +911,20 @@ class zabbix extends monitoring
                 ]
             ];
         }
-
-//        if (isset($changes['interface'])) {
-//            $updateParams['interfaces'] = [
-//                [
-//                    'type' => 1, // Assuming '1' is the type for 'interface'
-//                    'main' => 1,
-//                    'useip' => 1,
-//                    'ip' => $changes['interface'],
-//                    'dns' => '',
-//                    'port' => '10050'
-//                ]
-//            ];
-//        }
+        if (isset($changes['template'])){
+            $currentTemplateID = $this->zbxData['templates'][$zbxDevice['template']] ?? null;
+            $newTemplateID = $this->zbxData['templates'][$changes['template']] ?? null;
+            if ($currentTemplateID && $newTemplateID) {
+                $updateParams = array_merge($updateParams, [
+                    'templates_clear' => [
+                        ['templateid' => $currentTemplateID],
+                    ],
+                    'templates' => [
+                        ['templateid' => $newTemplateID],
+                    ],
+                ]);
+            }
+        }
 
         $body = [
             'jsonrpc' => '2.0',
@@ -1195,6 +1198,7 @@ class zabbix extends monitoring
     /**
      * Handle sync intercoms with Zabbix server
      * @return void
+     * @throws Exception
      */
     public function handleIntercoms(): void
     {
@@ -1278,7 +1282,7 @@ class zabbix extends monitoring
 
         $changes = $this->compareDevices($rbtDevice, $zbxDevice);
         if (!empty($changes)){
-            $this->updateHost($zbxDevice['zbx_hostid'], $changes);
+            $this->updateHost($zbxDevice, $changes);
         }
     }
 
@@ -1508,6 +1512,10 @@ class zabbix extends monitoring
 
     private function log(string $text): void
     {
+        if (!$this->enableLogging) {
+            return;
+        }
+
         $dateTime = date('Y-m-d H:i:s');
         $message = "[$dateTime] || ZBX || " . $text;
         error_log($message);

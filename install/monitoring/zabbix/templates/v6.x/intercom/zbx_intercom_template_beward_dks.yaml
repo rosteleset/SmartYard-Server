@@ -135,7 +135,7 @@ zabbix_export:
               priority: WARNING
               description: 'HTTP Check unavailable but ICMP available'
 #              dependencies:
-#                - name: 'ICMP Ping: Unavailable by ICMP ping'
+#                - name: 'ICMP: Unavailable by ICMP ping'
 #                  expression: 'min(/Intercom_BEWARD_DKS/icmppingloss,5m)>{$ICMP_LOSS_WARN} and min(/Intercom_BEWARD_DKS/icmppingloss,5m)<100'
         - uuid: 08c81ea3a8fb4540a626cea86d095531
           name: 'BEWARD Intercom: uptime'

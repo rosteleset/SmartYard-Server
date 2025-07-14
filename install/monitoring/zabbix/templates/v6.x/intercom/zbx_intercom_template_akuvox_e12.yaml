@@ -95,7 +95,7 @@ zabbix_export:
               priority: WARNING
               description: 'HTTP Check unavailable but ICMP available'
               dependencies:
-                - name: 'ICMP Ping: Unavailable by ICMP ping'
+                - name: 'ICMP: Unavailable by ICMP ping'
                   expression: 'max(/Intercom_AKUVOX_E12/icmpping,#3)=0'
         - uuid: 5c3dca9642e34e50b5751b7d11876936
           name: 'AKUVOX Intercom: system status'
