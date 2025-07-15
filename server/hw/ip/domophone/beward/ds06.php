@@ -140,11 +140,6 @@ class ds06 extends beward
         ];
     }
 
-    public function getCmsLevels(): array
-    {
-        return [];
-    }
-
     public function getLineDiagnostics(int $apartment): int
     {
         return 0;
@@ -204,11 +199,6 @@ class ds06 extends beward
     }
 
     public function setCallTimeout(int $timeout): void
-    {
-        // Empty implementation
-    }
-
-    public function setCmsLevels(array $levels): void
     {
         // Empty implementation
     }

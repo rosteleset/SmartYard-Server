@@ -5,12 +5,13 @@ namespace hw\ip\domophone\sputnik;
 use DateTime;
 use DateTimeZone;
 use Exception;
+use hw\Interfaces\CmsLevelsInterface;
 use hw\ip\domophone\domophone;
 
 /**
  * Class representing a Sputnik domophone.
  */
-class sputnik extends domophone
+class sputnik extends domophone implements CmsLevelsInterface
 {
     use \hw\ip\common\sputnik\sputnik;
 
@@ -196,6 +197,20 @@ class sputnik extends domophone
     public function deleteRfid(string $code = ''): void
     {
         $this->rfidKeysToBeDeleted[] = $this->flipRfid($code);
+    }
+
+    public function getCmsLevels(): array
+    {
+        $rawCmsLevels = $this->apiCall('query', 'intercom', ['uuid' => $this->uuid], [
+            'configShadow' => ['flats' => ['defaultThresholdCall', 'defaultThresholdDoor']]
+        ]);
+
+        [
+            'defaultThresholdCall' => $thresholdCall,
+            'defaultThresholdDoor' => $thresholdDoor,
+        ] = $rawCmsLevels['data']['intercom']['configShadow']['flats'];
+
+        return [$thresholdCall, $thresholdDoor];
     }
 
     public function getLineDiagnostics(int $apartment): float
@@ -448,20 +463,6 @@ class sputnik extends domophone
         ] = $rawAudioLevels['data']['intercom']['configShadow']['soundVolumes'];
 
         return [$general, $speakHandsetTx, $speakLoudspeaker, $speakSIP];
-    }
-
-    protected function getCmsLevels(): array
-    {
-        $rawCmsLevels = $this->apiCall('query', 'intercom', ['uuid' => $this->uuid], [
-            'configShadow' => ['flats' => ['defaultThresholdCall', 'defaultThresholdDoor']]
-        ]);
-
-        [
-            'defaultThresholdCall' => $thresholdCall,
-            'defaultThresholdDoor' => $thresholdDoor,
-        ] = $rawCmsLevels['data']['intercom']['configShadow']['flats'];
-
-        return [$thresholdCall, $thresholdDoor];
     }
 
     protected function getCmsModel(): string

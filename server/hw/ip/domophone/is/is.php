@@ -2,12 +2,13 @@
 
 namespace hw\ip\domophone\is;
 
+use hw\Interfaces\CmsLevelsInterface;
 use hw\ip\domophone\domophone;
 
 /**
  * Abstract class representing an Intersvyaz (IS) domophone.
  */
-abstract class is extends domophone
+abstract class is extends domophone implements CmsLevelsInterface
 {
     use \hw\ip\common\is\is;
 
@@ -202,6 +203,11 @@ abstract class is extends domophone
         } else {
             $this->apiCall('/key/store/clear', 'DELETE');
         }
+    }
+
+    public function getCmsLevels(): array
+    {
+        return array_map('intval', array_values($this->apiCall('/levels')['resistances']));
     }
 
     public function getLineDiagnostics(int $apartment): int
@@ -503,11 +509,6 @@ abstract class is extends domophone
     protected function getAudioLevels(): array
     {
         return array_values($this->apiCall('/levels')['volumes']);
-    }
-
-    protected function getCmsLevels(): array
-    {
-        return array_map('intval', array_values($this->apiCall('/levels')['resistances']));
     }
 
     protected function getCmsModel(): string

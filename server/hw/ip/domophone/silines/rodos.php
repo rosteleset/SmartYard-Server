@@ -140,11 +140,6 @@ class rodos extends domophone
         // Empty implementation
     }
 
-    public function setCmsLevels(array $levels): void
-    {
-        // Empty implementation
-    }
-
     public function setCmsModel(string $model = ''): void
     {
         // Empty implementation
@@ -272,11 +267,6 @@ class rodos extends domophone
     }
 
     protected function getAudioLevels(): array
-    {
-        return [];
-    }
-
-    protected function getCmsLevels(): array
     {
         return [];
     }

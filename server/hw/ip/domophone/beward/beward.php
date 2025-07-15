@@ -363,15 +363,6 @@ abstract class beward extends domophone
         return $result;
     }
 
-    public function getCmsLevels(): array
-    {
-        $params = $this->parseParamValue($this->apiCall('cgi-bin/intercom_cgi', ['action' => 'get']));
-        return [
-            (int)$params['HandsetUpLevel'],
-            (int)$params['DoorOpenLevel'],
-        ];
-    }
-
     public function getLineDiagnostics(int $apartment): int
     {
         return (int)trim($this->apiCall('cgi-bin/intercom_cgi', [
@@ -455,19 +446,6 @@ abstract class beward extends domophone
     public function setCallTimeout(int $timeout): void
     {
         $this->setIntercom('CallTimeout', $timeout);
-    }
-
-    public function setCmsLevels(array $levels): void
-    {
-        if (count($levels) == 2) {
-            $this->setIntercom('HandsetUpLevel', $levels[0]);
-            $this->setIntercom('DoorOpenLevel', $levels[1]);
-            $this->apiCall('cgi-bin/apartment_cgi', [
-                'action' => 'levels',
-                'HandsetUpLevel' => $levels[0],
-                'DoorOpenLevel' => $levels[1],
-            ]);
-        }
     }
 
     public function setCmsModel(string $model = ''): void

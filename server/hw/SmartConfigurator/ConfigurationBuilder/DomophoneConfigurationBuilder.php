@@ -17,7 +17,6 @@ class DomophoneConfigurationBuilder extends ConfigurationBuilder
             'apartments' => [],
             'rfids' => [],
             'gateLinks' => [],
-            'cmsLevels' => [],
             'cmsModel' => '',
             'matrix' => [],
             'ntp' => [],
