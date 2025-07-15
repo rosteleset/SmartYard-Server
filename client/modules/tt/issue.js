@@ -1658,18 +1658,7 @@
                 isButton: true,
                 tagName: 'a',
 
-                // SVG with outline
-                html: {
-                    isCustomSVG: true,
-                    inner: '<path d="M20.5 14.3 17.1 18V10h-2.2v7.9l-3.4-3.6L10 16l6 6.1 6-6.1ZM23 23H9v2h14Z" id="pswp__icn-download"/>',
-                    outlineID: 'pswp__icn-download'
-                },
-
-                // Or provide full svg:
-                // html: '<svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true" class="pswp__icn"><path d="M20.5 14.3 17.1 18V10h-2.2v7.9l-3.4-3.6L10 16l6 6.1 6-6.1ZM23 23H9v2h14Z" /></svg>',
-
-                // Or provide any other markup:
-                // html: '<i class="fa-solid fa-download"></i>'
+                html: '<i class="fas fa-fw fa-save" data-fa-transform="grow-3" style="margin-top: 23px; margin-left: 18px; color: white;"></i>',
 
                 onInit: (el, pswp) => {
                     el.setAttribute('download', '');
@@ -1679,6 +1668,44 @@
                     pswp.on('change', () => {
                         el.href = pswp.currSlide.data.src;
                     });
+                }
+            });
+
+            lightbox.pswp.ui.registerElement({
+                name: 'rotate-right',
+                order: 8,
+                isButton: true,
+                tagName: 'div',
+
+                html: '<i class="fas fa-fw fa-undo" data-fa-transform="flip-h grow-3" style="margin-top: 23px; margin-left: 18px; color: white;"></i>',
+
+                onClick: () => {
+                    const rotations = [ '', 'rotate(90deg)', 'rotate(180deg)', 'rotate(270deg)' ];
+                    const currentSlide = lightbox.pswp.currSlide;
+                    const imageElement = currentSlide.container.querySelector('img');
+
+                    if (imageElement && rotations.indexOf(imageElement.style.transform) >= 0) {
+                        imageElement.style.transform = rotations[(rotations.indexOf(imageElement.style.transform) + 1) % 4];
+                    }
+                }
+            });
+
+            lightbox.pswp.ui.registerElement({
+                name: 'rotate-left',
+                order: 8,
+                isButton: true,
+                tagName: 'div',
+
+                html: '<i class="fas fa-fw fa-undo" data-fa-transform="grow-3" style="margin-top: 23px; margin-left: 18px; color: white;"></i>',
+
+                onClick: () => {
+                    const rotations = [ '', 'rotate(270deg)', 'rotate(180deg)', 'rotate(90deg)' ];
+                    const currentSlide = lightbox.pswp.currSlide;
+                    const imageElement = currentSlide.container.querySelector('img');
+
+                    if (imageElement && rotations.indexOf(imageElement.style.transform) >= 0) {
+                        imageElement.style.transform = rotations[(rotations.indexOf(imageElement.style.transform) + 1) % 4];
+                    }
                 }
             });
         });
