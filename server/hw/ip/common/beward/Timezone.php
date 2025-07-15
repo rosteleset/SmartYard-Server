@@ -58,8 +58,15 @@ final class Timezone
     {
         try {
             $now = new DateTimeImmutable('now', new DateTimeZone($timezone));
-            $gmtOffset = strval($now->getOffset() / 3600);
-            return self::TZ_ID_MAP[$gmtOffset] ?? self::TZ_ID_DEFAULT;
+
+            /*
+             * IANA timezone database that provides PHP's timezone support uses POSIX style signs,
+             * which results in the Etc/GMT+n and Etc/GMT-n time zones being reversed from common usage.
+             * https://www.php.net/manual/en/timezones.others.php
+             */
+            $offset = (string)($now->getOffset() / 3600 * (str_contains($timezone, 'GMT') ? -1 : 1));
+
+            return self::TZ_ID_MAP[$offset] ?? self::TZ_ID_DEFAULT;
         } catch (Exception) {
             return self::TZ_ID_DEFAULT;
         }
