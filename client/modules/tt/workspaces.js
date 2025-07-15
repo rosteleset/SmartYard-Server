@@ -230,4 +230,8 @@
             window.location.href = "?#tt.settings";
         }
     },
+
+    search: function (s) {
+        modules.tt.search(s);
+    },
 }).init();
