@@ -11,7 +11,9 @@ use hw\ip\domophone\domophone;
  */
 abstract class beward extends domophone
 {
-    use \hw\ip\common\beward\beward;
+    use \hw\ip\common\beward\beward {
+        transformDbConfig as protected commonTransformDbConfig;
+    }
 
     /**
      * @var array|string[] An array of device models affected by the black screen bug.

@@ -276,8 +276,8 @@ class ds06 extends beward
 
     public function transformDbConfig(array $dbConfig): array
     {
-        $timezone = $dbConfig['ntp']['timezone'];
-        $dbConfig['ntp']['timezone'] = "{$this->getIdByTimezone($timezone)}";
+        $dbConfig = $this->commonTransformDbConfig($dbConfig);
+
         $dbConfig['rfids'] = [];
         $dbConfig['unlocked'] = false;
 
