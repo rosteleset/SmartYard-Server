@@ -270,11 +270,6 @@ abstract class qtech extends domophone implements DisplayTextInterface, Language
         return [$micVol, $micVolMp, $spkVol, $kpdVol];
     }
 
-    public function getCmsLevels(): array
-    {
-        return [];
-    }
-
     public function getDisplayText(): array
     {
         $text = $this->getParam('Config.Settings.OTHERS.GreetMsg') ?? '';
@@ -367,11 +362,6 @@ abstract class qtech extends domophone implements DisplayTextInterface, Language
             'Config.Settings.CALLTIMEOUT.DialOut' => $timeout,
             'Config.Settings.CALLTIMEOUT.DialOut485' => $timeout,
         ]);
-    }
-
-    public function setCmsLevels(array $levels): void
-    {
-        // Empty implementation
     }
 
     public function setCmsModel(string $model = ''): void

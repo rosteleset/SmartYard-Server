@@ -173,11 +173,6 @@ abstract class akuvox extends domophone
         return array_map('intval', $this->getConfigParams($params));
     }
 
-    public function getCmsLevels(): array
-    {
-        return [];
-    }
-
     public function getLineDiagnostics(int $apartment): int
     {
         return 0;
@@ -245,11 +240,6 @@ abstract class akuvox extends domophone
             'Config.Settings.CALLTIMEOUT.DialOut' => "$timeout",
             'Config.Settings.CALLTIMEOUT.DialIn' => "$timeout",
         ]);
-    }
-
-    public function setCmsLevels(array $levels): void
-    {
-        // Empty implementation
     }
 
     public function setCmsModel(string $model = ''): void

@@ -2,7 +2,7 @@
 
 namespace hw\ip\domophone;
 
-use hw\Interfaces\{DisplayTextInterface, LanguageInterface};
+use hw\Interfaces\{CmsLevelsInterface, DisplayTextInterface, LanguageInterface};
 use hw\ip\ip;
 use hw\SmartConfigurator\ConfigurationBuilder\DomophoneConfigurationBuilder;
 
@@ -11,7 +11,6 @@ use hw\SmartConfigurator\ConfigurationBuilder\DomophoneConfigurationBuilder;
  */
 abstract class domophone extends ip
 {
-
     /**
      * @var int Default public access code.
      * Used for devices that require the code to exist even if it is disabled.
@@ -27,10 +26,13 @@ abstract class domophone extends ip
             ->addEventServer($this->getEventServer())
             ->addSip(...$this->getSipConfig())
             ->addUnlocked($this->getUnlocked())
-            ->addCmsLevels($this->getCmsLevels())
             ->addCmsModel($this->getCmsModel())
             ->addNtp(...$this->getNtpConfig())
         ;
+
+        if ($this instanceof CmsLevelsInterface) {
+            $builder->addCmsLevels($this->getCmsLevels());
+        }
 
         if ($this instanceof DisplayTextInterface) {
             $builder->addDisplayText($this->getDisplayText());
@@ -85,14 +87,6 @@ abstract class domophone extends ip
      * that are configured on the device.
      */
     abstract protected function getAudioLevels(): array;
-
-    /**
-     * Get global CMS levels.
-     *
-     * @return string[] All CMS levels configured on the device.
-     * Usually, here's off-hook and door open levels.
-     */
-    abstract protected function getCmsLevels(): array;
 
     /**
      * Get CMS model.
@@ -310,18 +304,6 @@ abstract class domophone extends ip
      * @return void
      */
     abstract public function setCallTimeout(int $timeout): void;
-
-    /**
-     * Set global CMS levels.
-     *
-     * @param string[] $levels An array containing global CMS levels.
-     * Array elements must be in the same order they were received from device.
-     *
-     * @return void
-     *
-     * @see getCmsLevels()
-     */
-    abstract public function setCmsLevels(array $levels): void;
 
     /**
      * Set CMS model.

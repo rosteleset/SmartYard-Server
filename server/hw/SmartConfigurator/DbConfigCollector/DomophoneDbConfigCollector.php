@@ -7,7 +7,7 @@ use backends\configs\configs;
 use backends\households\households;
 use backends\sip\sip;
 use hw\hw;
-use hw\Interfaces\DisplayTextInterface;
+use hw\Interfaces\{CmsLevelsInterface, DisplayTextInterface};
 use hw\SmartConfigurator\ConfigurationBuilder\DomophoneConfigurationBuilder;
 
 /**
@@ -88,10 +88,14 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
             ->addUnlocked()
         ;
 
-        if ($this->mainEntrance) { // If the domophone is linked to the entrance
+        // If the domophone is linked to the entrance
+        if ($this->mainEntrance) {
+            if ($this->device instanceof CmsLevelsInterface) {
+                $this->addCmsLevels();
+            }
+
             $this
                 ->addApartmentsAndGates()
-                ->addCmsLevels()
                 ->addCmsModel()
                 ->addMatrix()
                 ->addRfids()
@@ -197,9 +201,9 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
     /**
      * Add global CMS levels settings to the domophone configuration.
      *
-     * @return self
+     * @return void
      */
-    private function addCmsLevels(): self
+    private function addCmsLevels(): void
     {
         $rawCmsLevels = $this->mainEntrance['cmsLevels'];
         $cmsLevels = !empty($rawCmsLevels)
@@ -207,7 +211,6 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
             : [];
 
         $this->builder->addCmsLevels($cmsLevels);
-        return $this;
     }
 
     /**
