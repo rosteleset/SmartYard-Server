@@ -1277,7 +1277,7 @@
                 sheetsOptions = "";
                 for (let i in sheets) {
                     if (sheets[i] == lStore("_sheet_name")) {
-                        sheetsOptions += "<option selected='selected'>" + escapeHTML(sheets[i]) + "</option>";
+                        sheetsOptions += "<option selected='selected' style='font-weight: bold;'>" + escapeHTML(sheets[i]) + "</option>";
                     } else {
                         sheetsOptions += "<option>" + escapeHTML(sheets[i]) + "</option>";
                     }
@@ -1286,7 +1286,7 @@
                 datesOptions = "";
                 for (let i in dates) {
                     if (dates[i] == lStore("_sheet_date")) {
-                        datesOptions += "<option selected='selected'>" + escapeHTML(dates[i]) + "</option>";
+                        datesOptions += "<option selected='selected' style='font-weight: bold;'>" + escapeHTML(dates[i]) + "</option>";
                     } else {
                         datesOptions += "<option>" + escapeHTML(dates[i]) + "</option>";
                     }
