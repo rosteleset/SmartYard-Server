@@ -292,11 +292,6 @@ abstract class hikvision extends domophone implements LanguageInterface
         ];
     }
 
-    public function getCmsLevels(): array
-    {
-        return [];
-    }
-
     public function getLineDiagnostics(int $apartment): int
     {
         return 0;
@@ -391,11 +386,6 @@ abstract class hikvision extends domophone implements LanguageInterface
                 <maxRingTime>$timeout</maxRingTime>
             </OperationTime>"
         );
-    }
-
-    public function setCmsLevels(array $levels): void
-    {
-        // Empty implementation
     }
 
     public function setCmsModel(string $model = ''): void

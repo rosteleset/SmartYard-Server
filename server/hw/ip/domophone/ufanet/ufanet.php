@@ -289,11 +289,6 @@ abstract class ufanet extends domophone implements DisplayTextInterface, Languag
         $this->apiCall('/api/v1/configuration', 'PATCH', ['commutator' => ['calltime' => $timeout]]);
     }
 
-    public function setCmsLevels(array $levels): void
-    {
-        // Empty implementation
-    }
-
     public function setCmsModel(string $model = ''): void
     {
         $this->apiCall('/api/v1/configuration', 'PATCH', ['commutator' => self::CMS_PARAMS[$model] ?? []]);
@@ -486,11 +481,6 @@ abstract class ufanet extends domophone implements DisplayTextInterface, Languag
     {
         $volume = $this->apiCall('/api/v1/configuration')['volume'];
         return [$volume['speaker'], $volume['mic']];
-    }
-
-    protected function getCmsLevels(): array
-    {
-        return [];
     }
 
     protected function getCmsModel(): string

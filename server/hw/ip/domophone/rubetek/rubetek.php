@@ -2,13 +2,17 @@
 
 namespace hw\ip\domophone\rubetek;
 
-use hw\Interfaces\{DbConfigUpdaterInterface, DisplayTextInterface, LanguageInterface};
+use hw\Interfaces\{CmsLevelsInterface, DbConfigUpdaterInterface, DisplayTextInterface, LanguageInterface};
 use hw\ip\domophone\domophone;
 
 /**
  * Abstract class representing a Rubetek domophone.
  */
-abstract class rubetek extends domophone implements DbConfigUpdaterInterface, DisplayTextInterface, LanguageInterface
+abstract class rubetek extends domophone implements
+    CmsLevelsInterface,
+    DbConfigUpdaterInterface,
+    DisplayTextInterface,
+    LanguageInterface
 {
     use \hw\ip\common\rubetek\rubetek {
         transformDbConfig as protected commonTransformDbConfig;
@@ -375,7 +379,7 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface, Di
         $this->apiCall('/settings/call', 'PATCH', $callSettings);
     }
 
-    public function setCmsLevels(array $levels = []): void
+    public function setCmsLevels(array $levels): void
     {
         $analogSettings = $this->apiCall('/settings/analog');
 

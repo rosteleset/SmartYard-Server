@@ -2,13 +2,22 @@
 
 namespace hw\ip\domophone\beward;
 
-use hw\Interfaces\{DisplayTextInterface, LanguageInterface};
+use hw\Interfaces\{CmsLevelsInterface, DisplayTextInterface, LanguageInterface};
 
 /**
  * Class representing a Beward DKS series domophone.
  */
-class dks extends beward implements DisplayTextInterface, LanguageInterface
+class dks extends beward implements CmsLevelsInterface, DisplayTextInterface, LanguageInterface
 {
+    public function getCmsLevels(): array
+    {
+        $params = $this->parseParamValue($this->apiCall('cgi-bin/intercom_cgi', ['action' => 'get']));
+        return [
+            (int)$params['HandsetUpLevel'],
+            (int)$params['DoorOpenLevel'],
+        ];
+    }
+
     public function getDisplayText(): array
     {
         $text = $this->getParams('display_cgi')['TickerText'] ?? '';
@@ -22,6 +31,19 @@ class dks extends beward implements DisplayTextInterface, LanguageInterface
          * interval, but they only hold 8 characters, so I don't see any point in using them.
          */
         return 1;
+    }
+
+    public function setCmsLevels(array $levels): void
+    {
+        if (count($levels) == 2) {
+            $this->setIntercom('HandsetUpLevel', $levels[0]);
+            $this->setIntercom('DoorOpenLevel', $levels[1]);
+            $this->apiCall('cgi-bin/apartment_cgi', [
+                'action' => 'levels',
+                'HandsetUpLevel' => $levels[0],
+                'DoorOpenLevel' => $levels[1],
+            ]);
+        }
     }
 
     public function setDisplayText(array $textLines): void
