@@ -1658,7 +1658,7 @@
                 isButton: true,
                 tagName: 'a',
 
-                html: '<i class="fas fa-fw fa-save" data-fa-transform="grow-3" style="margin-top: 23px; margin-left: 18px; color: white;"></i>',
+                html: '<i class="fas fa-fw fa-save" style="margin-top: 23px; margin-left: 18px; color: white;"></i>',
 
                 onInit: (el, pswp) => {
                     el.setAttribute('download', '');
@@ -1677,7 +1677,7 @@
                 isButton: true,
                 tagName: 'div',
 
-                html: '<i class="fas fa-fw fa-undo" data-fa-transform="flip-h grow-3" style="margin-top: 23px; margin-left: 18px; color: white;"></i>',
+                html: '<i class="fas fa-fw fa-undo" data-fa-transform="flip-h" style="margin-top: 23px; margin-left: 18px; color: white;"></i>',
 
                 onClick: () => {
                     const rotations = [ '', 'rotate(90deg)', 'rotate(180deg)', 'rotate(270deg)' ];
@@ -1696,7 +1696,7 @@
                 isButton: true,
                 tagName: 'div',
 
-                html: '<i class="fas fa-fw fa-undo" data-fa-transform="grow-3" style="margin-top: 23px; margin-left: 18px; color: white;"></i>',
+                html: '<i class="fas fa-fw fa-undo" style="margin-top: 23px; margin-left: 18px; color: white;"></i>',
 
                 onClick: () => {
                     const rotations = [ '', 'rotate(270deg)', 'rotate(180deg)', 'rotate(90deg)' ];
