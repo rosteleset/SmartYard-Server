@@ -392,7 +392,7 @@
              * @inheritDoc
              */
 
-            public function getIssues($collection, $query, $fields = [], $sort = [ "created" => 1 ], $skip = 0, $limit = 100, $preprocess = [], $types = [], $byPipeline = false) {
+            public function getIssues($collection, $query, $fields = [], $sort = [], $skip = 0, $limit = 100, $preprocess = [], $types = [], $byPipeline = false) {
                 $db = $this->dbName;
 
                 $query = $this->getIssuesQuery($collection, $query, $fields, $sort, $skip, $limit, $preprocess, $types, $byPipeline);
@@ -414,8 +414,6 @@
                 if (!$sort) {
                     $sort = [];
                 }
-
-                $sort["_id"] = -1;
 
                 foreach ($sort as $s => &$d) {
                     $d = (int)$d;
