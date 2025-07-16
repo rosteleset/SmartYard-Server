@@ -1677,7 +1677,7 @@
                 isButton: true,
                 tagName: 'div',
 
-                html: '<i class="fas fa-fw fa-undo" data-fa-transform="flip-h" style="margin-top: 23px; margin-left: 18px; color: white;"></i>',
+                html: '<i class="fas fa-fw fa-undo" style="margin-top: 23px; margin-left: 18px; color: white; -moz-transform: scaleX(-1); -o-transform: scaleX(-1); -webkit-transform: scaleX(-1); transform: scaleX(-1); filter: FlipH; -ms-filter: "FlipH";"></i>',
 
                 onClick: () => {
                     const rotations = [ '', 'rotate(90deg)', 'rotate(180deg)', 'rotate(270deg)' ];
