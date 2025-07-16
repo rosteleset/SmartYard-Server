@@ -209,7 +209,7 @@
                             }
                         }
 
-                        if ($action == "claim") {
+                        if ($action == "claim" && $col && $row && $uid) {
                             $this->redis->setex("cell_{$sheet}_{$date}_{$col}_{$row}_{$uid}", $expire, json_encode([
                                 "login" => $this->login,
                                 "mode" => "claimed",
@@ -247,7 +247,7 @@
                             $cell = false;
                         }
 
-                        if ($cell && $cell["login"] == $this->login) {
+                        if ($cell && $cell["login"] == $this->login && $col && $row && $uid) {
                             $this->redis->setex("cell_{$sheet}_{$date}_{$col}_{$row}_{$uid}", $expire, json_encode([
                                 "login" => $this->login,
                                 "mode" => "reserved",
