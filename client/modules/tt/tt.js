@@ -1825,6 +1825,10 @@
                 sort = {};
             }
 
+            if (sort._id) {
+                delete sort._id;
+            }
+
             let virtuals = {};
             let links = {}
 
