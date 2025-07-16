@@ -1837,10 +1837,13 @@
                 }
             }
 
+            let sorted = false;
+
             for (let i = 0; i < pKeys.length; i++) {
                 if (virtuals[pKeys[i]]) continue;
 
                 if (sort[pKeys[i]]) {
+                    sorted = true;
                     sortMenuItems.push({
                         id: pKeys[i],
                         text: ((parseInt(sort[pKeys[i]]) == 1) ? '<i class="fas fa-fw fa-sort-alpha-down mr-2"></i>' : '<i class="fas fa-fw fa-sort-alpha-up-alt mr-2"></i>') + modules.tt.issueFieldTitle(pKeys[i]),
@@ -1883,6 +1886,10 @@
                     }
                 }
             });
+
+            if (!sorted) {
+                lStore("sortBy:" + x, {});
+            }
 
             let columns = [];
 
