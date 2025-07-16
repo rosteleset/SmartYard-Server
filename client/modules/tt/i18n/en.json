@@ -340,6 +340,7 @@
     "issueIdText": "Copy issueId to clipboard",
     "wasAttached": "attached",
     "readonly": "Readonly",
+    "noSort": "Without sorting",
     "methods": {
         "tt": {
             "_title": "Task manager",

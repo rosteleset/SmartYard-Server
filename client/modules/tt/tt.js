@@ -1861,22 +1861,34 @@
                 }
             };
 
+            sortMenuItems.push({
+                text: "-",
+            });
+
+            sortMenuItems.push({
+                text: i18n("tt.noSort"),
+            });
+
             let sortMenu = menu({
                 button: "<i class='fas fa-fw fa-sort pointer'></i>",
                 items: sortMenuItems,
                 click: id => {
-                    if (!sort || Object.keys(sort) === 0 || typeof sort.length != "undefined") {
+                    if (id == i18n("tt.noSort")) {
                         sort = {};
-                    }
-                    if (sort[id]) {
-                        if (sort[id] == 1) {
-                            sort[id] = -1;
-                        } else
-                        if (sort[id] == -1) {
-                            delete sort[id];
-                        }
                     } else {
-                        sort[id] = 1;
+                        if (!sort || Object.keys(sort) === 0 || typeof sort.length != "undefined") {
+                            sort = {};
+                        }
+                        if (sort[id]) {
+                            if (sort[id] == 1) {
+                                sort[id] = -1;
+                            } else
+                            if (sort[id] == -1) {
+                                delete sort[id];
+                            }
+                        } else {
+                            sort[id] = 1;
+                        }
                     }
                     lStore("sortBy:" + x, sort);
                     if (target) {
