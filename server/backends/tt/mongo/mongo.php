@@ -618,7 +618,7 @@
                     foreach ($indexes as $i) {
                         if (!in_array($i, $already)) {
                             try {
-                                $this->mongo->$db->$acr->createIndex([ $i => 1 ], [ "name" => "index_" . $i ]);
+                                $this->mongo->$db->$acr->createIndex([ $i => 1 ], [ "name" => "index_" . $i, "collation" => [ "locale" => @$this->config["language"] ? : "en", "strength" => 3 ] ]);
                                 $cnt++;
                             } catch (\Exception $e) {
                                 //
@@ -1599,7 +1599,7 @@
 
 
                     try {
-                        $this->mongo->$db->$acr->createIndex($index, [ "name" => "manual_index" . $indexName ]);
+                        $this->mongo->$db->$acr->createIndex($index, [ "name" => "manual_index" . $indexName, "collation" => [ "locale" => @$this->config["language"] ? : "en" ]  ]);
                         $c++;
                     } catch (\Exception $e) {
                         //
