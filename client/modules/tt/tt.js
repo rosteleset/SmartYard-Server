@@ -1593,6 +1593,9 @@
 
         if (lStore("sortBy:" + x)) {
             query.sort = lStore("sortBy:" + x);
+            if (query.sort._id) {
+                delete query.sort._id;
+            }
         }
 
         let t = lStore(`_filter_form_${x}`);
