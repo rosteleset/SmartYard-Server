@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {put} /api/cs/reserveCell reserver CS cell
+     * @api {put} /api/cs/reserveCell reserve or unreserve CS cell
      *
      * @apiVersion 1.0.0
      *
@@ -23,7 +23,7 @@
      */
 
     /**
-     * @api {delete} /api/cs/reserveCell reserver CS cell
+     * @api {delete} /api/cs/reserveCell force unreserve CS cell
      *
      * @apiVersion 1.0.0
      *

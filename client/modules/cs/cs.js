@@ -201,6 +201,7 @@
 
                                 modules.tt.issue.issueAction(modules.cs.preCoordinate.issueId, modules.cs.currentSheet.sheet.action, () => {
                                     message(i18n("cs.wasCoordinated"));
+                                    lStore("_coordinate_issue", null);
 /*
                                     PUT("cs", "cell", false, {
                                         action: "release",
