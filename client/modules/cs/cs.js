@@ -88,7 +88,62 @@
                     if (payload.login == lStore("_login") && payload.sid == modules.cs.sid) {
                         switch (parseInt(payload.step)) {
                             case 0:
-                                mYesNo(i18n("cs.coordinateOrReserve"), i18n("cs.action"), () => {
+                                if (AVAIL("cs", "reserveCell", "PUT")) {
+                                    mYesNo(i18n("cs.coordinateOrReserve"), i18n("cs.action"), () => {
+                                        cell.addClass("spinner-small");
+                                        PUT("cs", "cell", false, {
+                                            action: "claim",
+                                            step: 1,
+                                            sheet: md5($("#csSheet").val()),
+                                            date: md5($("#csDate").val()),
+                                            col: cell.attr("data-col"),
+                                            row: cell.attr("data-row"),
+                                            uid: cell.attr("data-uid"),
+                                            sid: modules.cs.sid,
+                                            expire: 300,
+                                        }).
+                                        fail(FAIL).
+                                        fail(() => {
+                                            cell.removeClass("spinner-small");
+                                        });
+                                    }, () => {
+                                        cardForm({
+                                            title: i18n("cs.reserve"),
+                                            footer: true,
+                                            borderless: true,
+                                            topApply: true,
+                                            fields: [
+                                                {
+                                                    id: "comment",
+                                                    type: "text",
+                                                    title: i18n("cs.comment"),
+                                                    placeholder: i18n("cs.comment"),
+                                                    validate: v => {
+                                                        return $.trim(v) !== "";
+                                                    }
+                                                },
+                                            ],
+                                            callback: result => {
+                                                cell.addClass("spinner-small");
+                                                PUT("cs", "reserveCell", false, {
+                                                    action: "reserve",
+                                                    sheet: md5($("#csSheet").val()),
+                                                    date: md5($("#csDate").val()),
+                                                    col: cell.attr("data-col"),
+                                                    row: cell.attr("data-row"),
+                                                    uid: cell.attr("data-uid"),
+                                                    sid: modules.cs.sid,
+                                                    expire: (modules.cs.currentSheet.sheet.reserveDays ? parseInt(modules.cs.currentSheet.sheet.reserveDays) : 21) * 24 * 60 * 60,
+                                                    comment: $.trim(result.comment),
+                                                }).
+                                                fail(FAIL).
+                                                fail(() => {
+                                                    cell.removeClass("spinner-small");
+                                                });
+                                            },
+                                        });
+                                    }, i18n("cs.coordinate"), i18n("cs.reserve"), 58 * 1000);
+                                } else {
                                     cell.addClass("spinner-small");
                                     PUT("cs", "cell", false, {
                                         action: "claim",
@@ -105,43 +160,7 @@
                                     fail(() => {
                                         cell.removeClass("spinner-small");
                                     });
-                                }, () => {
-                                    cardForm({
-                                        title: i18n("cs.reserve"),
-                                        footer: true,
-                                        borderless: true,
-                                        topApply: true,
-                                        fields: [
-                                            {
-                                                id: "comment",
-                                                type: "text",
-                                                title: i18n("cs.comment"),
-                                                placeholder: i18n("cs.comment"),
-                                                validate: v => {
-                                                    return $.trim(v) !== "";
-                                                }
-                                            },
-                                        ],
-                                        callback: result => {
-                                            cell.addClass("spinner-small");
-                                            PUT("cs", "reserveCell", false, {
-                                                action: "reserve",
-                                                sheet: md5($("#csSheet").val()),
-                                                date: md5($("#csDate").val()),
-                                                col: cell.attr("data-col"),
-                                                row: cell.attr("data-row"),
-                                                uid: cell.attr("data-uid"),
-                                                sid: modules.cs.sid,
-                                                expire: (modules.cs.currentSheet.sheet.reserveDays ? parseInt(modules.cs.currentSheet.sheet.reserveDays) : 21) * 24 * 60 * 60,
-                                                comment: $.trim(result.comment),
-                                            }).
-                                            fail(FAIL).
-                                            fail(() => {
-                                                cell.removeClass("spinner-small");
-                                            });
-                                        },
-                                    });
-                                }, i18n("cs.coordinate"), i18n("cs.reserve"), 58 * 1000);
+                                }
                                 break;
 
                             case 1:
