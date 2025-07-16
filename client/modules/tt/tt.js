@@ -1866,14 +1866,15 @@
             });
 
             sortMenuItems.push({
-                text: i18n("tt.noSort"),
+                id: "noSort",
+                text: '<i class="fas fa-fw mr-2"></i>' + i18n("tt.noSort"),
             });
 
             let sortMenu = menu({
                 button: "<i class='fas fa-fw fa-sort pointer'></i>",
                 items: sortMenuItems,
                 click: id => {
-                    if (id == i18n("tt.noSort")) {
+                    if (id == "noSort") {
                         sort = {};
                     } else {
                         if (!sort || Object.keys(sort) === 0 || typeof sort.length != "undefined") {
