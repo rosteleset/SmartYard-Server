@@ -1844,10 +1844,13 @@
                 }
             }
 
+            let sorted = false;
+
             for (let i = 0; i < pKeys.length; i++) {
                 if (virtuals[pKeys[i]]) continue;
 
                 if (sort[pKeys[i]]) {
+                    sorted = true;
                     sortMenuItems.push({
                         id: pKeys[i],
                         text: ((parseInt(sort[pKeys[i]]) == 1) ? '<i class="fas fa-fw fa-sort-alpha-down mr-2"></i>' : '<i class="fas fa-fw fa-sort-alpha-up-alt mr-2"></i>') + modules.tt.issueFieldTitle(pKeys[i]) + ' [' + (Object.keys(sort).indexOf(pKeys[i]) + 1) + ']',
@@ -1861,6 +1864,11 @@
                 }
             };
 
+            if (!sorted) {
+                sort = {};
+                lStore("sortBy:" + x, sort);
+            }
+
             sortMenuItems.push({
                 text: "-",
             });
@@ -1868,6 +1876,7 @@
             sortMenuItems.push({
                 id: "noSort",
                 text: '<i class="fas fa-fw mr-2"></i>' + i18n("tt.noSort"),
+                selected: !sorted,
             });
 
             let sortMenu = menu({

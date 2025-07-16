@@ -72,6 +72,8 @@
     },
 
     mqttCellMsg: function (topic, payload) {
+        if (!payload || !payload.uid) return;
+
         cell = $(".dataCell[data-uid=" + payload.uid + "]");
 
         if (cell && cell.length == 1) {
@@ -242,7 +244,7 @@
     },
 
     mqttRedisExpireMsg: function (topic, payload) {
-        if (payload.key.substring(0, 5) == "cell_") {
+        if (payload.key.substring(0, 5) == "cell_" && payload.key.split("_")[5]) {
             let cell = $(".dataCell[data-uid=" + payload.key.split("_")[5] + "]");
             if (cell && cell.length == 1) {
                 cell.removeClass("spinner-small");
