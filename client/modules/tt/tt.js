@@ -1850,7 +1850,7 @@
                 if (sort[pKeys[i]]) {
                     sortMenuItems.push({
                         id: pKeys[i],
-                        text: ((parseInt(sort[pKeys[i]]) == 1) ? '<i class="fas fa-fw fa-sort-alpha-down mr-2"></i>' : '<i class="fas fa-fw fa-sort-alpha-up-alt mr-2"></i>') + modules.tt.issueFieldTitle(pKeys[i]),
+                        text: ((parseInt(sort[pKeys[i]]) == 1) ? '<i class="fas fa-fw fa-sort-alpha-down mr-2"></i>' : '<i class="fas fa-fw fa-sort-alpha-up-alt mr-2"></i>') + modules.tt.issueFieldTitle(pKeys[i]) + ' [' + (Object.keys(sort).indexOf(pKeys[i]) + 1) + ']',
                         selected: true,
                     });
                 } else {
