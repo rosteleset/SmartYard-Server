@@ -31,7 +31,7 @@
 
                 require_once __DIR__ . '/../../../utils/clickhouse.php';
 
-                $this->dbName = @$config["backends"]["tt"]["db"]?:"tt";
+                $this->dbName = @$config["backends"]["tt"]["db"] ?: "tt";
 
                 if (@$config["mongo"]["uri"]) {
                     $this->mongo = new \MongoDB\Client($config["mongo"]["uri"]);
@@ -40,11 +40,11 @@
                 }
 
                 $this->clickhouse = new \clickhouse(
-                    @$config['clickhouse']['host']?:'127.0.0.1',
-                    @$config['clickhouse']['port']?:8123,
-                    @$config['clickhouse']['username']?:'default',
-                    @$config['clickhouse']['password']?:'qqq',
-                    @$config['clickhouse']['database']?:'default'
+                    @$config['clickhouse']['host'] ?: '127.0.0.1',
+                    @$config['clickhouse']['port'] ?: 8123,
+                    @$config['clickhouse']['username'] ?: 'default',
+                    @$config['clickhouse']['password'] ?: 'qqq',
+                    @$config['clickhouse']['database'] ?: 'default'
                 );
             }
 
@@ -237,7 +237,7 @@
                 }
 
                 if ($delete) {
-                    $childrens = $this->getIssues($acr, [ "parent" => $issueId ], [ "issueId" ], [ "created" => 1 ], 0, 32768);
+                    $childrens = $this->getIssues($acr, [ "parent" => $issueId ], [ "issueId" ], [], 0, 32768);
 
                     if ($childrens && count($childrens["issues"])) {
                         foreach ($childrens["issues"] as $children) {
@@ -335,7 +335,7 @@
                 return $types;
             }
 
-            private function getIssuesQuery($collection, $query, $fields = [], $sort = [ "created" => 1 ], $skip = 0, $limit = 100, $preprocess = [], $types = [], $byPipeline = false) {
+            private function getIssuesQuery($collection, $query, $fields = [], $sort = [], $skip = 0, $limit = 100, $preprocess = [], $types = [], $byPipeline = false) {
                 $me = $this->myRoles();
 
                 if (!@$me[$collection]) {
@@ -1423,7 +1423,7 @@
                     }
 
                     if (isset($filter["filter"])) {
-                        $query = json_decode(json_encode($this->getIssuesQuery($project, @$filter["filter"], [ "issueId" ], [ "created" => 1 ], 0, 1), true));
+                        $query = json_decode(json_encode($this->getIssuesQuery($project, @$filter["filter"], [ "issueId" ], [], 0, 1), true));
                     }
 
                     if ($query) {
