@@ -1857,17 +1857,18 @@
             let sortMenu = menu({
                 button: "<i class='fas fa-fw fa-sort pointer'></i>",
                 items: sortMenuItems,
-                click: function (id) {
-                    if (sort && sort[id]) {
+                click: id => {
+                    if (!sort) {
+                        sort = {};
+                    }
+                    if (sort[id]) {
                         if (sort[id] == 1) {
-                            sort = {};
                             sort[id] = -1;
                         } else
                         if (sort[id] == -1) {
-                            sort = null;
+                            delete sort[id];
                         }
                     } else {
-                        sort = {};
                         sort[id] = 1;
                     }
                     lStore("sortBy:" + x, sort);
