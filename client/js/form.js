@@ -685,6 +685,9 @@ function cardForm(params) {
             case "button":
                 h += `<input name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" type="${params.fields[i].type}" value="${params.fields[i].button.hint}" class="btn ${params.fields[i].button.class ? params.fields[i].button.class : 'btn-secondary'}" />`;
                 break;
+
+            case "none":
+                h += '<div style="height: 58px;">&nbsp;</div>';
         }
 
         if (params.fields[i].hint) {
