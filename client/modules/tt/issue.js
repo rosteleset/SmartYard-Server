@@ -447,17 +447,32 @@
                                 },
                             });
                         } else {
-                            mConfirm(modules.tt.displayAction(action) + "?", issueId, modules.tt.displayAction(action), () => {
-                                loadingStart();
-                                PUT("tt", "action", issue.issue.issueId, {
-                                    action: action,
-                                }).
-                                fail(FAIL).
-                                always(() => {
-                                    if (typeof callback === "function") {
-                                        callback();
+                            cardForm({
+                                title: issueId,
+                                apply: modules.tt.displayAction(action),
+                                fields: [
+                                    {
+                                        id: "confirm",
+                                        type: "none",
+                                        title: modules.tt.displayAction(action) + "?",
                                     }
-                                });
+                                ],
+                                footer: true,
+                                borderless: true,
+                                size: "lg",
+                                timeout: timeout,
+                                callback: () => {
+                                    loadingStart();
+                                    PUT("tt", "action", issue.issue.issueId, {
+                                        action: action,
+                                    }).
+                                    fail(FAIL).
+                                    always(() => {
+                                        if (typeof callback === "function") {
+                                            callback();
+                                        }
+                                    });
+                                },
                             });
                         }
                     }
