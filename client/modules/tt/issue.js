@@ -447,7 +447,7 @@
                                 },
                             });
                         } else {
-                            mConfirm(action + " \"" + issue.issue.issueId + "\"?", i18n("confirm"), modules.tt.displayAction(action), () => {
+                            mConfirm(modules.tt.displayAction(action) + "?", modules.tt.displayAction(action) + " [" + issueId + "]", modules.tt.displayAction(action), () => {
                                 loadingStart();
                                 PUT("tt", "action", issue.issue.issueId, {
                                     action: action,
