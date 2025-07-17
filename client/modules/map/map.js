@@ -4,6 +4,14 @@
     init: function () {
         leftSide("fas fa-fw fa-map-marked-alt", i18n("map.map"), "?#map", "map");
 
+        function trim(str) {
+            return str.trim ? str.trim() : str.replace(/^\s+|\s+$/g, '');
+        }
+
+        function splitWords(str) {
+            return trim(str).split(/\s+/);
+        }
+
         L.Util.isArray = Array.isArray || function (obj) {
             return (Object.prototype.toString.call(obj) === '[object Array]');
         };
@@ -30,6 +38,25 @@
             return className.length > 0 && new RegExp('(^|\\s)' + name + '(\\s|$)').test(className);
         };
 
+        L.DomUtil.addClass = function (el, name) {
+            if (el.classList !== undefined) {
+                let classes = splitWords(name);
+                for (let i = 0, len = classes.length; i < len; i++) {
+                    el.classList.add(classes[i]);
+                }
+            } else if (!hasClass(el, name)) {
+                let className = getClass(el);
+                setClass(el, (className ? className + ' ' : '') + name);
+            }
+        }
+        L.DomUtil.removeClass = function (el, name) {
+            if (el.classList !== undefined) {
+                el.classList.remove(name);
+            } else {
+                setClass(el, trim((' ' + getClass(el) + ' ').replace(' ' + name + ' ', ' ')));
+            }
+        }
+
         moduleLoaded("map", this);
     },
 
@@ -44,7 +71,7 @@
         $("#altForm").hide();
         $("#mainForm").html(`<div id='mapContainer' style='width: 100%; height: ${height}px; border: solid thin #dee2e6;' class='mt-2 resizable'></div>`);
 
-        modules.map.map = L.map('mapContainer');
+        modules.map.map = L.map('mapContainer', { editable: true });
 
         if (config.map && config.map.crs) {
             switch (config.map.crs) {
