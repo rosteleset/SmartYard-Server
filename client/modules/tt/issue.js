@@ -425,7 +425,7 @@
 
                         if (n) {
                             cardForm({
-                                title: modules.tt.displayAction(action) + " [" + issueId + "]",
+                                title: issueId,
                                 apply: modules.tt.displayAction(action),
                                 fields: fields,
                                 footer: true,
@@ -447,7 +447,7 @@
                                 },
                             });
                         } else {
-                            mConfirm(modules.tt.displayAction(action) + "?", modules.tt.displayAction(action) + " [" + issueId + "]", modules.tt.displayAction(action), () => {
+                            mConfirm(modules.tt.displayAction(action) + "?", issueId, modules.tt.displayAction(action), () => {
                                 loadingStart();
                                 PUT("tt", "action", issue.issue.issueId, {
                                     action: action,
