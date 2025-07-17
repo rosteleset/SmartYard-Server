@@ -49,12 +49,20 @@
                 setClass(el, (className ? className + ' ' : '') + name);
             }
         }
+
         L.DomUtil.removeClass = function (el, name) {
             if (el.classList !== undefined) {
                 el.classList.remove(name);
             } else {
                 setClass(el, trim((' ' + getClass(el) + ' ').replace(' ' + name + ' ', ' ')));
             }
+        }
+
+        L.Util.indexOf = function (array, el) {
+            for (var i = 0; i < array.length; i++) {
+                if (array[i] === el) { return i; }
+            }
+            return -1;
         }
 
         moduleLoaded("map", this);
