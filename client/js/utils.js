@@ -222,7 +222,7 @@ function telify(input) {
     return input.replaceAll(new RegExp(config.regExp.phone, 'g'), function(match) {
         try {
             let phoneObject = phoneUtil.parse(match, l);
-            return '<a href="tel:' + phoneUtil.format(phoneObject, libphonenumber.PhoneNumberFormat.E164) + '">' + phoneUtil.format(phoneObject, libphonenumber.PhoneNumberFormat.NATIONAL) + '</a>';
+            return '<a href="tel:' + phoneUtil.format(phoneObject, libphonenumber.PhoneNumberFormat.E164) + '" target="_blank">' + phoneUtil.format(phoneObject, libphonenumber.PhoneNumberFormat.NATIONAL) + '</a>';
         } catch (e) {
             return match;
         }
