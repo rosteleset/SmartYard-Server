@@ -461,6 +461,7 @@
                                 borderless: true,
                                 size: "lg",
                                 timeout: timeout,
+                                noHover: true,
                                 callback: () => {
                                     loadingStart();
                                     PUT("tt", "action", issue.issue.issueId, {
