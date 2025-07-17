@@ -425,7 +425,7 @@
 
                         if (n) {
                             cardForm({
-                                title: modules.tt.displayAction(action),
+                                title: modules.tt.displayAction(action) + " [" + issueId + "]",
                                 apply: modules.tt.displayAction(action),
                                 fields: fields,
                                 footer: true,
