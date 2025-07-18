@@ -221,8 +221,18 @@ function telify(input) {
 
     return input.replaceAll(new RegExp(config.regExp.phone, 'g'), function(match) {
         try {
-            let phoneObject = phoneUtil.parse(trim(match).replaceAll(/\D/g,''), l);
-            return '<a href="tel:' + phoneUtil.format(phoneObject, libphonenumber.PhoneNumberFormat.E164) + '" target="_blank">' + phoneUtil.format(phoneObject, libphonenumber.PhoneNumberFormat.NATIONAL) + '</a>';
+            let pre = '';
+            let post = '';
+            if (match[0] < '0' || match[0] > '9') {
+                pre = match[0];
+                match = match.substring(1);
+            }
+            if (match[match.length - 1] < '0' || match[match.length - 1] > '9') {
+                post = match[match.length - 1];
+                match = match.substring(0, match.length - 1);
+            }
+            let phoneObject = phoneUtil.parse(trim(match), l);
+            return pre + '<a href="tel:' + phoneUtil.format(phoneObject, libphonenumber.PhoneNumberFormat.E164) + '" target="_blank">' + phoneUtil.format(phoneObject, libphonenumber.PhoneNumberFormat.NATIONAL) + '</a>' + post;
         } catch (e) {
             return match;
         }
@@ -243,7 +253,7 @@ function getMonthDifference(startDate, endDate) {
 }
 
 function findBootstrapEnvironment() {
-    let envs = ['xs', 'sm', 'md', 'lg', 'xl'];
+    let envs = [ 'xs', 'sm', 'md', 'lg', 'xl' ];
 
     let el = document.createElement('div');
     document.body.appendChild(el);
