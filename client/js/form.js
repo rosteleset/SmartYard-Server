@@ -687,7 +687,7 @@ function cardForm(params) {
                 break;
 
             case "none":
-                h += '<div style="height: 34px;">&nbsp;</div>';
+                h += params.fields[i].value ? ('<div style="height: 34px;">' + params.fields[i].value + '</div>') : '<div style="height: 34px;">&nbsp;</div>';
                 break;
         }
 
