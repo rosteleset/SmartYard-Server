@@ -71,7 +71,7 @@ class sputnik extends domophone implements CmsLevelsInterface
         int   $code = 0,
         array $sipNumbers = [],
         bool  $cmsEnabled = true,
-        array $cmsLevels = []
+        array $cmsLevels = [],
     ): void
     {
         $this->loadFlats();
@@ -97,25 +97,6 @@ class sputnik extends domophone implements CmsLevelsInterface
         // Empty implementation
     }
 
-    public function configureGate(array $links = []): void
-    {
-//        $this->apiCall('mutation', 'removeAllClusterPrefix', ['uuid' => $this->uuid]);
-//
-//        $clusterPrefixes = array_map(function ($link) {
-//            return [
-//                'prefix' => $link['prefix'],
-//                'firstFlat' => $link['firstFlat'],
-//                'lastFlat' => $link['lastFlat'],
-//                'voiceText' => $link['address']
-//            ];
-//        }, $links);
-//
-//        $this->apiCall('mutation', 'addClusterPrefixesToIntercom', [
-//            'intercomID' => $this->uuid,
-//            'clusterPrefixes' => $clusterPrefixes,
-//        ]);
-    }
-
     public function configureMatrix(array $matrix): void
     {
         $this->loadFlats();
@@ -132,7 +113,7 @@ class sputnik extends domophone implements CmsLevelsInterface
                 'hundreds' => $hundreds,
                 'tens' => $tens,
                 'units' => $units,
-                'apartment' => $apartment
+                'apartment' => $apartment,
             ] = $cell;
 
             $alias = $hundreds * 100 + $tens * 10 + $units;
@@ -162,7 +143,7 @@ class sputnik extends domophone implements CmsLevelsInterface
         int    $port = 5060,
         bool   $stunEnabled = false,
         string $stunServer = '',
-        int    $stunPort = 3478
+        int    $stunPort = 3478,
     ): void
     {
         $this->apiCall('mutation', 'updateIntercomSipParameters', [
@@ -174,7 +155,7 @@ class sputnik extends domophone implements CmsLevelsInterface
                 'permanentSipConnection' => true,
                 'server' => "$server:$port",
                 'username' => $login,
-            ]
+            ],
         ]);
     }
 
@@ -202,7 +183,7 @@ class sputnik extends domophone implements CmsLevelsInterface
     public function getCmsLevels(): array
     {
         $rawCmsLevels = $this->apiCall('query', 'intercom', ['uuid' => $this->uuid], [
-            'configShadow' => ['flats' => ['defaultThresholdCall', 'defaultThresholdDoor']]
+            'configShadow' => ['flats' => ['defaultThresholdCall', 'defaultThresholdDoor']],
         ]);
 
         [
@@ -286,7 +267,7 @@ class sputnik extends domophone implements CmsLevelsInterface
         string $code1 = '1',
         string $code2 = '2',
         string $code3 = '3',
-        string $codeCms = '1'
+        string $codeCms = '1',
     ): void
     {
         $this->apiCall('mutation', 'updateIntercomSipParameters', [
@@ -442,7 +423,7 @@ class sputnik extends domophone implements CmsLevelsInterface
                 'code' => $codes[$apartment] ?? 0,
                 'sipNumbers' => [$sipNumber],
                 'cmsEnabled' => !$cmsBlocked,
-                'cmsLevels' => [$thresholdCall, $thresholdDoor]
+                'cmsLevels' => [$thresholdCall, $thresholdDoor],
             ];
         }
 
@@ -468,7 +449,7 @@ class sputnik extends domophone implements CmsLevelsInterface
     protected function getCmsModel(): string
     {
         $intercom = $this->apiCall('query', 'intercom', ['uuid' => $this->uuid], [
-            'configShadow' => ['commutator' => ['commutatorType']]
+            'configShadow' => ['commutator' => ['commutatorType']],
         ]);
 
         return $intercom['data']['intercom']['configShadow']['commutator']['commutatorType'];
@@ -477,7 +458,7 @@ class sputnik extends domophone implements CmsLevelsInterface
     protected function getDtmfConfig(): array
     {
         $intercom = $this->apiCall('query', 'intercom', ['uuid' => $this->uuid], [
-            'configShadow' => ['calls' => ['sipAccount' => ['dtmfOpenDoor']]]
+            'configShadow' => ['calls' => ['sipAccount' => ['dtmfOpenDoor']]],
         ]);
 
         $dtmfCode = $intercom['data']['intercom']['configShadow']['calls']['sipAccount']['dtmfOpenDoor'] ?? '';
@@ -502,11 +483,6 @@ class sputnik extends domophone implements CmsLevelsInterface
                 'thresholdDoor' => 9.99,
             ],
         ];
-    }
-
-    protected function getGateConfig(): array
-    {
-        return [];
     }
 
     protected function getMatrix(): array
@@ -599,7 +575,7 @@ class sputnik extends domophone implements CmsLevelsInterface
 
         $keys = array_map(
             fn($code) => strtoupper(str_pad(implode(array_reverse(str_split($code, 2))), 14, '0', STR_PAD_LEFT)),
-            array_column($rawKeys, 'node')
+            array_column($rawKeys, 'node'),
         );
 
         return array_combine($keys, $keys);
@@ -608,7 +584,7 @@ class sputnik extends domophone implements CmsLevelsInterface
     protected function getSipConfig(): array
     {
         $intercom = $this->apiCall('query', 'intercom', ['uuid' => $this->uuid], [
-            'configShadow' => ['calls' => ['sipAccount' => ['login', 'password', 'server', 'username']]]
+            'configShadow' => ['calls' => ['sipAccount' => ['login', 'password', 'server', 'username']]],
         ]);
 
         $rawSipConfig = $intercom['data']['intercom']['configShadow']['calls']['sipAccount'];
@@ -660,12 +636,12 @@ class sputnik extends domophone implements CmsLevelsInterface
                                     'blocked',          // CMS blocked
                                     'thresholdCall',    // Handset up level
                                     'thresholdDoor',    // Door opening level
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-            ]
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ]);
 
         $rawFlats = $intercom['data']['intercom']['configShadow']['flats']['flats']['edges'];
@@ -696,12 +672,12 @@ class sputnik extends domophone implements CmsLevelsInterface
                             'description',
                             'node' => [
                                 'uuid',
-                                'value'
-                            ]
-                        ]
-                    ]
-                ]
-            ]
+                                'value',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ]);
 
         $rawCodes = $intercom['data']['intercom']['configShadow']['keys']['digitalKeys']['edges'];
@@ -779,7 +755,7 @@ class sputnik extends domophone implements CmsLevelsInterface
         // Upload flats
         $this->apiCall('mutation', 'updateIntercomFlats', [
             'intercomID' => $this->uuid,
-            'flats' => $flats
+            'flats' => $flats,
         ]);
     }
 

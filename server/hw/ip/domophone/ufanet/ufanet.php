@@ -4,13 +4,17 @@ namespace hw\ip\domophone\ufanet;
 
 use CURLFile;
 use Generator;
-use hw\Interfaces\{DisplayTextInterface, LanguageInterface};
+use hw\Interfaces\{
+    DisplayTextInterface,
+    HousePrefixInterface,
+    LanguageInterface,};
 use hw\ip\domophone\domophone;
+use hw\ValueObjects\HousePrefix;
 
 /**
  * Abstract class representing an Ufanet intercom.
  */
-abstract class ufanet extends domophone implements DisplayTextInterface, LanguageInterface
+abstract class ufanet extends domophone implements DisplayTextInterface, HousePrefixInterface, LanguageInterface
 {
     use \hw\ip\common\ufanet\ufanet {
         transformDbConfig as protected commonTransformDbConfig;
@@ -63,7 +67,7 @@ abstract class ufanet extends domophone implements DisplayTextInterface, Languag
                 'tens' => $tens,
                 'units' => $units,
                 'apartment' => $apartment,
-            ]
+            ],
         ];
     }
 
@@ -94,7 +98,7 @@ abstract class ufanet extends domophone implements DisplayTextInterface, Languag
         int   $code = 0,
         array $sipNumbers = [],
         bool  $cmsEnabled = true,
-        array $cmsLevels = []
+        array $cmsLevels = [],
     ): void
     {
         $this->loadDialplans();
@@ -148,20 +152,6 @@ abstract class ufanet extends domophone implements DisplayTextInterface, Languag
         ]);
     }
 
-    public function configureGate(array $links = []): void
-    {
-        if (empty($links)) {
-            return;
-        }
-
-        $this->apiCall('/api/v1/configuration', 'PATCH', [
-            'commutator' => [
-                'type' => 'GATE',
-                'mode' => 1,
-            ],
-        ]);
-    }
-
     public function configureMatrix(array $matrix): void
     {
         $remappedMatrix = $this->remapMatrix($matrix);
@@ -187,7 +177,7 @@ abstract class ufanet extends domophone implements DisplayTextInterface, Languag
         int    $port = 5060,
         bool   $stunEnabled = false,
         string $stunServer = '',
-        int    $stunPort = 3478
+        int    $stunPort = 3478,
     ): void
     {
         $this->apiCall('/api/v1/configuration', 'PATCH', [
@@ -244,6 +234,17 @@ abstract class ufanet extends domophone implements DisplayTextInterface, Languag
     public function getDisplayTextLinesCount(): int
     {
         return 3;
+    }
+
+    public function getHousePrefixes(): array
+    {
+        ['type' => $type, 'mode' => $mode] = $this->apiCall('/api/v1/configuration')['commutator'];
+
+        if ($type === 'GATE' && $mode === 1) {
+            return [new HousePrefix(0, '', 1, 1)];
+        }
+
+        return [];
     }
 
     public function getLineDiagnostics(int $apartment): string|int|float
@@ -323,13 +324,27 @@ abstract class ufanet extends domophone implements DisplayTextInterface, Languag
         string $code1 = '1',
         string $code2 = '2',
         string $code3 = '3',
-        string $codeCms = '1'
+        string $codeCms = '1',
     ): void
     {
         $this->apiCall('/api/v1/configuration', 'PATCH', [
             'door' => [
                 'dtmf_open_local' => [$code1, $code2],
                 'dtmf_open_remote' => $codeCms,
+            ],
+        ]);
+    }
+
+    public function setHousePrefixes(array $prefixes): void
+    {
+        if (empty($prefixes)) {
+            return;
+        }
+
+        $this->apiCall('/api/v1/configuration', 'PATCH', [
+            'commutator' => [
+                'type' => 'GATE',
+                'mode' => 1,
             ],
         ]);
     }
@@ -404,17 +419,6 @@ abstract class ufanet extends domophone implements DisplayTextInterface, Languag
 
         foreach ($dbConfig['apartments'] as &$apartment) {
             $apartment['cmsLevels'] = [];
-        }
-
-        if (!empty($dbConfig['gateLinks'])) {
-            unset($dbConfig['gateLinks']);
-
-            $dbConfig['gateLinks'][] = [
-                'address' => '',
-                'prefix' => 0,
-                'firstFlat' => 1,
-                'lastFlat' => 1,
-            ];
         }
 
         return $dbConfig;
@@ -514,22 +518,6 @@ abstract class ufanet extends domophone implements DisplayTextInterface, Languag
             'code3' => '3',
             'codeCms' => $dtmfRemote,
         ];
-    }
-
-    protected function getGateConfig(): array
-    {
-        ['type' => $type, 'mode' => $mode] = $this->apiCall('/api/v1/configuration')['commutator'];
-
-        if ($type === 'GATE' && $mode === 1) {
-            return [[
-                'address' => '',
-                'prefix' => 0,
-                'firstFlat' => 1,
-                'lastFlat' => 1,
-            ]];
-        }
-
-        return [];
     }
 
     protected function getMatrix(): array
@@ -684,7 +672,7 @@ abstract class ufanet extends domophone implements DisplayTextInterface, Languag
         ];
 
         // Set cross numbering mode for CMS if device is not in gate mode
-        if (empty($this->getGateConfig()) && $this->getCmsModel() !== 'BK-400') {
+        if (empty($this->getHousePrefixes()) && $this->getCmsModel() !== 'BK-400') {
             $isCrossNumbering = $minApartmentNumber !== $maxApartmentNumber &&
                 intdiv($minApartmentNumber, 100) !== intdiv($maxApartmentNumber - 1, 100);
 
