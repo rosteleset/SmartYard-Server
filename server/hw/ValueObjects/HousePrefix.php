@@ -32,8 +32,8 @@ final class HousePrefix
             throw new InvalidArgumentException('lastFlat must be >= 1');
         }
 
-        if ($this->firstFlat > $this->lastFlat) {
-            throw new InvalidArgumentException('firstFlat must be <= lastFlat');
+        if ($this->lastFlat < $this->firstFlat) {
+            throw new InvalidArgumentException('lastFlat must be >= firstFlat');
         }
     }
 }

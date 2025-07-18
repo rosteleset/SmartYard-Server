@@ -2,7 +2,12 @@
 
 namespace hw\ip\domophone;
 
-use hw\Interfaces\{CmsLevelsInterface, DisplayTextInterface, LanguageInterface};
+use hw\Interfaces\{
+    CmsLevelsInterface,
+    DisplayTextInterface,
+    HousePrefixInterface,
+    LanguageInterface,
+};
 use hw\ip\ip;
 use hw\SmartConfigurator\ConfigurationBuilder\DomophoneConfigurationBuilder;
 
@@ -38,16 +43,16 @@ abstract class domophone extends ip
             $builder->addDisplayText($this->getDisplayText());
         }
 
+        if ($this instanceof HousePrefixInterface) {
+            $builder->addHousePrefixes($this->getHousePrefixes());
+        }
+
         foreach ($this->getApartments() as $apartment) {
             $builder->addApartment(...$apartment);
         }
 
         foreach ($this->getRfids() as $rfid) {
             $builder->addRfid($rfid);
-        }
-
-        foreach ($this->getGateConfig() as $link) {
-            $builder->addGateLink(...$link);
         }
 
         foreach ($this->getMatrix() as $matrixCell) {
@@ -101,13 +106,6 @@ abstract class domophone extends ip
      * @return array An array containing DTMF codes configured on the device.
      */
     abstract protected function getDtmfConfig(): array;
-
-    /**
-     * Get gate configuration.
-     *
-     * @return array[] An array with gate links configured on the device.
-     */
-    abstract protected function getGateConfig(): array;
 
     /**
      * Get CMS matrix.
@@ -188,16 +186,6 @@ abstract class domophone extends ip
      * @todo It should be in the camera class, but the camera doesn't have a "first time" field
      */
     abstract public function configureEncoding(): void;
-
-    /**
-     * Configure gate mode.
-     *
-     * @param array $links (Optional) An array containing necessary links for gate mode.
-     * If an array is empty, then gate mode is disabled. Default is empty.
-     *
-     * @return void
-     */
-    abstract public function configureGate(array $links = []): void;
 
     /**
      * Configure CMS matrix.

@@ -182,33 +182,6 @@ abstract class beward extends domophone
         $this->wait();
     }
 
-    public function configureGate(array $links = []): void
-    {
-        $params = [
-            'action' => 'set',
-            'Mode' => 1,
-            'Enable' => $links ? 'on' : 'off',
-            'MainDoor' => 'on',
-            'AltDoor' => 'on',
-            'PowerRely' => 'on',
-        ];
-
-        if ($links) {
-            $params['EntranceCount'] = count($links);
-
-            $i = 0;
-            foreach ($links as $link) {
-                $params['Address' . ($i + 1)] = $link['address'];
-                $params['Prefix' . ($i + 1)] = $link['prefix'];
-                $params['BegNumber' . ($i + 1)] = $link['firstFlat'];
-                $params['EndNumber' . ($i + 1)] = $link['lastFlat'];
-                $i++;
-            }
-        }
-
-        $this->apiCall('cgi-bin/gate_cgi', $params);
-    }
-
     public function configureMatrix(array $matrix): void
     {
         $params = [];
@@ -294,12 +267,12 @@ abstract class beward extends domophone
             $this->apiCall('cgi-bin/apartment_cgi', [
                 'action' => 'clear',
                 'FirstNumber' => 1,
-                'LastNumber' => 9999
+                'LastNumber' => 9999,
             ]);
         } else {
             $this->apiCall('cgi-bin/apartment_cgi', [
                 'action' => 'clear',
-                'FirstNumber' => $apartment
+                'FirstNumber' => $apartment,
             ]);
         }
     }
@@ -367,7 +340,7 @@ abstract class beward extends domophone
     {
         return (int)trim($this->apiCall('cgi-bin/intercom_cgi', [
             'action' => 'linelevel',
-            'Apartment' => $apartment
+            'Apartment' => $apartment,
         ]));
     }
 
@@ -379,7 +352,7 @@ abstract class beward extends domophone
         $sign = $this->hasExternalRfidTable ? 'Key' : 'KeyValue';
 
         $rawRfids = $this->parseParamValue(
-            $this->apiCall("cgi-bin/$resource", ['action' => 'list'])
+            $this->apiCall("cgi-bin/$resource", ['action' => 'list']),
         );
 
         $rfids = [];
@@ -402,19 +375,6 @@ abstract class beward extends domophone
             $action = $lockNumber === 1 ? 'altdoor' : 'maindoor';
             $this->apiCall('cgi-bin/intercom_cgi', ['action' => $action], false, 3);
         }
-    }
-
-    public function prepare(): void
-    {
-        parent::prepare();
-        $this->enableUpnp(false);
-        $this->enableServiceCodes(false);
-        $this->setAlarm('SOSCallActive', 'on');
-        $this->setIntercom('AlertNoUSBDisk', 'off');
-        $this->setIntercom('ExtReaderNotify', 'off');
-        $this->setIntercom('IndividualLevels', 'on');
-        $this->setIntercom('SosDelay', 0);
-        $this->configureGate(); // Set "Mode 2" for incoming calls to work correctly
     }
 
     public function setAudioLevels(array $levels): void
@@ -443,11 +403,6 @@ abstract class beward extends domophone
         }
     }
 
-    public function setCallTimeout(int $timeout): void
-    {
-        $this->setIntercom('CallTimeout', $timeout);
-    }
-
     public function setCmsModel(string $model = ''): void
     {
         if (!array_key_exists($model, self::CMS_MODEL_MAP)) {
@@ -470,12 +425,6 @@ abstract class beward extends domophone
         $this->configureMatrix($nowMatrix); // Restore saved matrix
     }
 
-    public function setConciergeNumber(int $sipNumber): void
-    {
-        $this->setIntercom('ConciergeApartment', $sipNumber);
-        $this->configureApartment($sipNumber, 0, [$sipNumber], false);
-    }
-
     public function setDtmfCodes(
         string $code1 = '1',
         string $code2 = '2',
@@ -490,93 +439,13 @@ abstract class beward extends domophone
         ]);
     }
 
-    public function setPublicCode(int $code = 0): void
-    {
-        if ($code) {
-            $this->setIntercom('DoorCode', $code);
-            $this->setIntercom('DoorCodeActive', 'on');
-        } else {
-            $this->setIntercom('DoorCode', self::DEFAULT_PUBLIC_ACCESS_CODE);
-            $this->setIntercom('DoorCodeActive', 'off');
-        }
-    }
-
-    public function setSosNumber(int $sipNumber): void
-    {
-        $this->setAlarm('SOSCallNumber', $sipNumber);
-    }
-
-    public function setTalkTimeout(int $timeout): void
-    {
-        $this->setIntercom('TalkTimeout', $timeout);
-    }
-
-    public function setUnlockTime(int $time = 3): void
-    {
-        $this->setIntercom('DoorOpenTime', $time);
-    }
-
-    public function setUnlocked(bool $unlocked = true): void
-    {
-        $this->apiCall('webs/btnSettingEx', [
-            'flag' => '4600',
-            'paramchannel' => '0',
-            'paramcmd' => '0',
-            'paramctrl' => (int)$unlocked,
-            'paramstep' => '0',
-            'paramreserved' => '0',
-        ]);
-
-        $this->setIntercom('DoorOpenMode', $unlocked ? 'on' : 'off');
-        $this->setIntercom('MainDoorOpenMode', $unlocked ? 'on' : 'off');
-        $this->setIntercom('AltDoorOpenMode', $unlocked ? 'on' : 'off');
-    }
-
-    /**
-     * Enable service codes.
-     * These codes are used to perform service operations from the front panel of the device.
-     *
-     * @param bool $enabled (Optional) True if enabled, false otherwise. Default is true.
-     *
-     * @return void
-     */
-    protected function enableServiceCodes(bool $enabled = true): void
-    {
-        $state = $enabled ? 'open' : 'close';
-
-        $this->apiCall('cgi-bin/srvcodes_cgi', [
-            'action' => 'set',
-            'RfidScanActive' => $state,
-            'NetInfoActive' => $state,
-            'StaticIpActive' => $state,
-            'NetResetActive' => $state,
-            'AdminResetActive' => $state,
-            'FullResetActive' => $state,
-            'SaveNetCfgActive' => $state,
-            'SaveAptCfgActive' => $state,
-            'DoorCodeAddActive' => $state,
-        ]);
-    }
-
-    /**
-     * Enable UPNP.
-     *
-     * @param bool $enabled (Optional) True if enabled, false otherwise. Default is true.
-     *
-     * @return void
-     */
-    protected function enableUpnp(bool $enabled = true): void
-    {
-        $this->apiCall('webs/netUPNPCfgEx', ['cksearch' => $enabled ? 1 : 0]);
-    }
-
     protected function getApartments(): array
     {
         $flatsParams = $this->parseParamValue(
             $this->apiCall('cgi-bin/apartment_cgi', [
                 'action' => 'list',
                 'LastNumber' => 9998,
-            ])
+            ]),
         );
 
         $flats = [];
@@ -660,27 +529,6 @@ abstract class beward extends domophone
             'code3' => $dtmf['DtmfSignal3'],
             'codeCms' => '1',
         ];
-    }
-
-    protected function getGateConfig(): array
-    {
-        $gate = $this->getParams('gate_cgi');
-        $links = [];
-
-        if ($gate['Enable'] === 'off') {
-            return $links;
-        }
-
-        for ($i = 1; $i <= $gate['EntranceCount']; $i++) {
-            $links[] = [
-                'address' => $gate["Address$i"],
-                'prefix' => $gate["Prefix$i"],
-                'firstFlat' => $gate["BegNumber$i"],
-                'lastFlat' => $gate["EndNumber$i"],
-            ];
-        }
-
-        return $links;
     }
 
     protected function getMatrix(): array

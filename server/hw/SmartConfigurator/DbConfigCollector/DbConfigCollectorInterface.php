@@ -5,7 +5,7 @@ namespace hw\SmartConfigurator\DbConfigCollector;
 /**
  * Interface responsible for collecting device configuration data from the database.
  */
-interface IDbConfigCollector
+interface DbConfigCollectorInterface
 {
     /**
      * Collects configuration data.

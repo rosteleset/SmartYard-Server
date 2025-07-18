@@ -2,13 +2,18 @@
 
 namespace hw\ip\domophone\qtech;
 
-use hw\Interfaces\{DisplayTextInterface, LanguageInterface};
+use hw\Interfaces\{
+    DisplayTextInterface,
+    HousePrefixInterface,
+    LanguageInterface,
+};
 use hw\ip\domophone\domophone;
+use hw\ValueObjects\HousePrefix;
 
 /**
  * Abstract class representing a Qtech domophone.
  */
-abstract class qtech extends domophone implements DisplayTextInterface, LanguageInterface
+abstract class qtech extends domophone implements DisplayTextInterface, HousePrefixInterface, LanguageInterface
 {
     use \hw\ip\common\qtech\qtech;
 
@@ -111,27 +116,6 @@ abstract class qtech extends domophone implements DisplayTextInterface, Language
             'Config.DoorSetting.RTSP.H264BitRate2' => 512, // Bitrate
             'Config.DoorSetting.RTSP.H264VideoProfile2' => 0, // Baseline profile
         ]);
-    }
-
-    public function configureGate(array $links = []): void
-    {
-        $this->clearGateDialplan();
-
-        if ($links) {
-            $this->setPanelMode('GATE');
-
-            foreach ($links as $link) {
-                $this->apiCall('dialreplacemp', 'add', [
-                    'prefix' => (string)$link['prefix'],
-                    'Start' => (string)$link['firstFlat'],
-                    'End' => (string)$link['lastFlat'], // there will be an error if lastFlat === firstFlat
-                    'Account' => 0,
-                    'Address' => '',
-                ]);
-            }
-        } else {
-            $this->setPanelMode('NORMAL');
-        }
     }
 
     public function configureMatrix(array $matrix): void
@@ -281,6 +265,29 @@ abstract class qtech extends domophone implements DisplayTextInterface, Language
         return 1;
     }
 
+    public function getHousePrefixes(): array
+    {
+        $gateDialplans = $this->apiCall('dialreplacemp', 'get')['data'] ?? [];
+        $prefixes = [];
+
+        if (!$gateDialplans || $gateDialplans['num'] === 0) {
+            return $prefixes;
+        }
+
+        unset($gateDialplans['num']);
+
+        foreach ($gateDialplans as $gateDialplan) {
+            $prefixes[] = new HousePrefix(
+                $gateDialplan['prefix'],
+                '',
+                $gateDialplan['start'],
+                $gateDialplan['end'],
+            );
+        }
+
+        return $prefixes;
+    }
+
     public function getLineDiagnostics(int $apartment): string
     {
         $this->loadDialplans();
@@ -414,6 +421,27 @@ abstract class qtech extends domophone implements DisplayTextInterface, Language
         ]);
     }
 
+    public function setHousePrefixes(array $prefixes): void
+    {
+        $this->clearGateDialplan();
+
+        if (!empty($prefixes)) {
+            $this->setPanelMode('GATE');
+
+            foreach ($prefixes as $prefix) {
+                $this->apiCall('dialreplacemp', 'add', [
+                    'prefix' => (string)$prefix->prefix,
+                    'Start' => (string)$prefix->firstFlat,
+                    'End' => (string)$prefix->lastFlat, // There will be an error if lastFlat === firstFlat
+                    'Account' => 0,
+                    'Address' => '', // There must be an empty string, otherwise the method will not work
+                ]);
+            }
+        } else {
+            $this->setPanelMode('NORMAL');
+        }
+    }
+
     public function setLanguage(string $language): void
     {
         $this->setParams(['Config.Settings.LANGUAGE.WebLang' => ($language === 'ru') ? 3 : 0]);
@@ -485,10 +513,6 @@ abstract class qtech extends domophone implements DisplayTextInterface, Language
             $apartment['cmsLevels'] = [];
         }
 
-        foreach ($dbConfig['gateLinks'] as &$gateLink) {
-            $gateLink['address'] = '';
-        }
-
         return $dbConfig;
     }
 
@@ -545,7 +569,7 @@ abstract class qtech extends domophone implements DisplayTextInterface, Language
                     $dialplan['prefix'],
                     self::EMPTY_ANALOG_REPLACE,
                     $dialplan['replace2'],
-                    $dialplan['tags']
+                    $dialplan['tags'],
                 );
             }
         }
@@ -779,29 +803,6 @@ abstract class qtech extends domophone implements DisplayTextInterface, Language
             'code3' => $this->getParam('Config.DoorSetting.DTMF.Code3'),
             'codeCms' => '0',
         ];
-    }
-
-    protected function getGateConfig(): array
-    {
-        $gateConfig = [];
-        $links = $this->apiCall('dialreplacemp', 'get')['data'] ?? [];
-
-        if (!$links || $links['num'] === 0) {
-            return $gateConfig;
-        }
-
-        unset($links['num']);
-
-        foreach ($links as $link) {
-            $gateConfig[] = [
-                'address' => '',
-                'prefix' => $link['prefix'],
-                'firstFlat' => $link['start'],
-                'lastFlat' => $link['end']
-            ];
-        }
-
-        return $gateConfig;
     }
 
     protected function getMatrix(): array

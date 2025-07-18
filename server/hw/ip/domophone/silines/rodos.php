@@ -24,7 +24,7 @@ class rodos extends domophone
         int   $code = 0,
         array $sipNumbers = [],
         bool  $cmsEnabled = true,
-        array $cmsLevels = []
+        array $cmsLevels = [],
     ): void
     {
         // Empty implementation
@@ -36,11 +36,6 @@ class rodos extends domophone
     }
 
     public function configureEventServer(string $url): void
-    {
-        // Empty implementation
-    }
-
-    public function configureGate(array $links = []): void
     {
         // Empty implementation
     }
@@ -62,7 +57,7 @@ class rodos extends domophone
         int    $port = 5060,
         bool   $stunEnabled = false,
         string $stunServer = '',
-        int    $stunPort = 3478
+        int    $stunPort = 3478,
     ): void
     {
         // Empty implementation
@@ -289,11 +284,6 @@ class rodos extends domophone
     protected function getEventServer(): string
     {
         return '';
-    }
-
-    protected function getGateConfig(): array
-    {
-        return [];
     }
 
     protected function getMatrix(): array
