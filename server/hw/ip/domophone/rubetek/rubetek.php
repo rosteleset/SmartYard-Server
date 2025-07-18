@@ -2,8 +2,15 @@
 
 namespace hw\ip\domophone\rubetek;
 
-use hw\Interfaces\{CmsLevelsInterface, DbConfigUpdaterInterface, DisplayTextInterface, LanguageInterface};
+use hw\Interfaces\{
+    CmsLevelsInterface,
+    DbConfigUpdaterInterface,
+    DisplayTextInterface,
+    HousePrefixInterface,
+    LanguageInterface,
+};
 use hw\ip\domophone\domophone;
+use hw\ValueObjects\HousePrefix;
 
 /**
  * Abstract class representing a Rubetek domophone.
@@ -12,6 +19,7 @@ abstract class rubetek extends domophone implements
     CmsLevelsInterface,
     DbConfigUpdaterInterface,
     DisplayTextInterface,
+    HousePrefixInterface,
     LanguageInterface
 {
     use \hw\ip\common\rubetek\rubetek {
@@ -45,7 +53,7 @@ abstract class rubetek extends domophone implements
                 'door_access' => [
                     RubetekConst::RELAY_1_INTERNAL,
                     RubetekConst::RELAY_2_EXTERNAL,
-                ]
+                ],
             ]);
         }
     }
@@ -55,7 +63,7 @@ abstract class rubetek extends domophone implements
         int   $code = 0,
         array $sipNumbers = [],
         bool  $cmsEnabled = true,
-        array $cmsLevels = []
+        array $cmsLevels = [],
     ): void
     {
         $this->loadDialplans();
@@ -109,23 +117,6 @@ abstract class rubetek extends domophone implements
         $videoSettings['snapshot_size'] = '1280x720';
 
         $this->apiCall('/settings/video', 'PATCH', $videoSettings);
-    }
-
-    public function configureGate(array $links = []): void
-    {
-        $this->apiCall('/apart_ranges', 'DELETE');
-
-        foreach ($links as $link) {
-            $this->apiCall('/apart_ranges', 'POST', [
-                'house' => "{$link['prefix']}",
-                'address' => $link['address'],
-                'start_number' => $link['firstFlat'],
-                'end_number' => $link['lastFlat'],
-                'call_number' => 'XXXXYYYY',
-                'call_type' => RubetekConst::SIP,
-                'door_access' => [RubetekConst::RELAY_1_INTERNAL],
-            ]);
-        }
     }
 
     public function configureMatrix(array $matrix): void
@@ -184,7 +175,7 @@ abstract class rubetek extends domophone implements
         int    $port = 5060,
         bool   $stunEnabled = false,
         string $stunServer = '',
-        int    $stunPort = 3478
+        int    $stunPort = 3478,
     ): void
     {
         $params = [
@@ -317,6 +308,23 @@ abstract class rubetek extends domophone implements
     public function getDisplayTextLinesCount(): int
     {
         return 3;
+    }
+
+    public function getHousePrefixes(): array
+    {
+        $apartRanges = $this->apiCall('/apart_ranges') ?? [];
+        $prefixes = [];
+
+        foreach ($apartRanges as $apartRange) {
+            $prefixes[] = new HousePrefix(
+                $apartRange['house'],
+                $apartRange['address'],
+                $apartRange['start_number'],
+                $apartRange['end_number'],
+            );
+        }
+
+        return $prefixes;
     }
 
     public function getLineDiagnostics(int $apartment): float
@@ -466,6 +474,23 @@ abstract class rubetek extends domophone implements
             'internal_dtmf_enabled' => false,
             'out_code' => $codeCms,
         ]);
+    }
+
+    public function setHousePrefixes(array $prefixes): void
+    {
+        $this->apiCall('/apart_ranges', 'DELETE');
+
+        foreach ($prefixes as $prefix) {
+            $this->apiCall('/apart_ranges', 'POST', [
+                'house' => (string)$prefix->prefix,
+                'address' => $prefix->address,
+                'start_number' => $prefix->firstFlat,
+                'end_number' => $prefix->lastFlat,
+                'call_number' => 'XXXXYYYY',
+                'call_type' => RubetekConst::SIP,
+                'door_access' => [RubetekConst::RELAY_1_INTERNAL],
+            ]);
+        }
     }
 
     public function setLanguage(string $language): void
@@ -783,7 +808,7 @@ abstract class rubetek extends domophone implements
             'code1' => $code1,
             'code2' => $code2,
             'code3' => $code3,
-            'out_code' => $codeCms
+            'out_code' => $codeCms,
         ] = $this->getConfiguration()['dtmf'];
 
         return [
@@ -792,30 +817,6 @@ abstract class rubetek extends domophone implements
             'code3' => $code3,
             'codeCms' => $codeCms,
         ];
-    }
-
-    protected function getGateConfig(): array
-    {
-        $links = [];
-        $apartRanges = $this->apiCall('/apart_ranges');
-
-        foreach ($apartRanges as $link) {
-            [
-                'house' => $prefix,
-                'address' => $address,
-                'start_number' => $firstFlat,
-                'end_number' => $lastFlat,
-            ] = $link;
-
-            $links[] = [
-                'address' => $address,
-                'prefix' => $prefix,
-                'firstFlat' => $firstFlat,
-                'lastFlat' => $lastFlat,
-            ];
-        }
-
-        return $links;
     }
 
     protected function getMatrix(): array
@@ -957,7 +958,7 @@ abstract class rubetek extends domophone implements
         string $analogNumber,
         string $callType,
         array  $doorAccess,
-        array  $accessCodes
+        array  $accessCodes,
     ): void
     {
         $this->loadDialplans();

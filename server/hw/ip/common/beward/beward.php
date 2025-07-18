@@ -139,7 +139,7 @@ trait beward
         curl_setopt(
             $ch,
             CURLOPT_USERAGENT,
-            'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.96 Safari/537.36'
+            'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.96 Safari/537.36',
         );
         curl_setopt($ch, CURLOPT_VERBOSE, false);
         curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
@@ -212,29 +212,5 @@ trait beward
         }
 
         return $ret;
-    }
-
-    /**
-     * Set parameter in the "alarm" section.
-     *
-     * @param string $name Parameter name.
-     * @param string $value Parameter value.
-     * @return void
-     */
-    protected function setAlarm(string $name, string $value): void
-    {
-        $this->apiCall('cgi-bin/intercom_alarm_cgi', ['action' => 'set', $name => $value]);
-    }
-
-    /**
-     * Set parameter in the "intercom" section.
-     *
-     * @param string $name Parameter name.
-     * @param string $value Parameter value.
-     * @return void
-     */
-    protected function setIntercom(string $name, string $value): void
-    {
-        $this->apiCall('cgi-bin/intercom_cgi', ['action' => 'set', $name => $value]);
     }
 }

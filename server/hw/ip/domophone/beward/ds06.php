@@ -2,8 +2,6 @@
 
 namespace hw\ip\domophone\beward;
 
-use hw\ip\domophone\domophone;
-
 /**
  * Class representing a Beward DS06* domophone.
  */
@@ -42,11 +40,6 @@ class ds06 extends beward
         }
 
         $this->apiCall('cgi-bin/sip_cgi', $params);
-    }
-
-    public function configureGate(array $links = []): void
-    {
-        // Empty implementation
     }
 
     public function configureMatrix(array $matrix): void
@@ -161,7 +154,7 @@ class ds06 extends beward
 
     public function prepare(): void
     {
-        domophone::prepare();
+        parent::prepare();
         $this->enableBonjour(false);
         $this->enableCloud(false);
         $this->enableUpnp(false);
@@ -371,11 +364,6 @@ class ds06 extends beward
     protected function getCmsModel(): string
     {
         return '';
-    }
-
-    protected function getGateConfig(): array
-    {
-        return [];
     }
 
     protected function getMatrix(): array

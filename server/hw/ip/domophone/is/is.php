@@ -2,13 +2,17 @@
 
 namespace hw\ip\domophone\is;
 
-use hw\Interfaces\CmsLevelsInterface;
+use hw\Interfaces\{
+    CmsLevelsInterface,
+    HousePrefixInterface,
+};
 use hw\ip\domophone\domophone;
+use hw\ValueObjects\HousePrefix;
 
 /**
  * Abstract class representing an Intersvyaz (IS) domophone.
  */
-abstract class is extends domophone implements CmsLevelsInterface
+abstract class is extends domophone implements CmsLevelsInterface, HousePrefixInterface
 {
     use \hw\ip\common\is\is;
 
@@ -119,14 +123,6 @@ abstract class is extends domophone implements CmsLevelsInterface
         ]);
     }
 
-    public function configureGate(array $links = []): void
-    {
-        $this->apiCall('/gate/settings', 'PUT', [
-            'gateMode' => (bool)$links,
-            'prefixHouse' => (bool)$links,
-        ]);
-    }
-
     public function configureMatrix(array $matrix): void
     {
         $params = [];
@@ -138,7 +134,7 @@ abstract class is extends domophone implements CmsLevelsInterface
                 // 'hundreds' => $hundreds,
                 'tens' => $tens,
                 'units' => $units,
-                'apartment' => $apartment
+                'apartment' => $apartment,
             ] = $matrixCell;
 
             $params[$tens][$units] = $apartment;
@@ -208,6 +204,17 @@ abstract class is extends domophone implements CmsLevelsInterface
     public function getCmsLevels(): array
     {
         return array_map('intval', array_values($this->apiCall('/levels')['resistances']));
+    }
+
+    public function getHousePrefixes(): array
+    {
+        ['gateMode' => $gateModeEnabled] = $this->apiCall('/gate/settings');
+
+        if (!$gateModeEnabled) {
+            return [];
+        }
+
+        return [new HousePrefix(0, '', 1, 1)];
     }
 
     public function getLineDiagnostics(int $apartment): int
@@ -283,7 +290,17 @@ abstract class is extends domophone implements CmsLevelsInterface
                 '1' => $code1,
                 '2' => $code2,
                 '3' => $code3,
-            ]
+            ],
+        ]);
+    }
+
+    public function setHousePrefixes(array $prefixes): void
+    {
+        $isEnabled = !empty($prefixes);
+
+        $this->apiCall('/gate/settings', 'PUT', [
+            'gateMode' => $isEnabled,
+            'prefixHouse' => $isEnabled,
         ]);
     }
 
@@ -339,17 +356,6 @@ abstract class is extends domophone implements CmsLevelsInterface
             }
         }
 
-        if ($dbConfig['gateLinks']) {
-            unset($dbConfig['gateLinks']);
-
-            $dbConfig['gateLinks'][] = [
-                'address' => '',
-                'prefix' => 0,
-                'firstFlat' => 1,
-                'lastFlat' => 1,
-            ];
-        }
-
         return $dbConfig;
     }
 
@@ -365,7 +371,7 @@ abstract class is extends domophone implements CmsLevelsInterface
     {
         $this->apiCall('/openCode', 'POST', [
             'code' => $code,
-            'panelCode' => $apartment
+            'panelCode' => $apartment,
         ]);
     }
 
@@ -515,20 +521,20 @@ abstract class is extends domophone implements CmsLevelsInterface
     {
         $idModelMap = [
             'FACTORIAL' => [
-                64 => 'FACTORIAL 8x8'
+                64 => 'FACTORIAL 8x8',
             ],
             'CYFRAL' => [
-                100 => 'KMG-100'
+                100 => 'KMG-100',
             ],
             'VIZIT' => [
-                100 => 'BK-100'
+                100 => 'BK-100',
             ],
             'METAKOM' => [
                 100 => 'COM-100U',
                 220 => 'COM-220U',
             ],
             'ELTIS' => [
-                100 => 'KM100-7.1'
+                100 => 'KM100-7.1',
             ],
         ];
 
@@ -547,22 +553,6 @@ abstract class is extends domophone implements CmsLevelsInterface
             'code3' => '3',
             'codeCms' => '1',
         ];
-    }
-
-    protected function getGateConfig(): array
-    {
-        ['gateMode' => $gateModeEnabled] = $this->apiCall('/gate/settings');
-
-        if (!$gateModeEnabled) {
-            return [];
-        }
-
-        return [[
-            'address' => '',
-            'prefix' => 0,
-            'firstFlat' => 1,
-            'lastFlat' => 1,
-        ]];
     }
 
     protected function getMatrix(): array
@@ -630,7 +620,7 @@ abstract class is extends domophone implements CmsLevelsInterface
             'port' => $port,
             'domain' => $server,
             'username' => $login,
-            'password' => $password
+            'password' => $password,
         ] = $this->apiCall('/sip/settings')['remote'];
 
         return [

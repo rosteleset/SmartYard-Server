@@ -23,7 +23,7 @@ abstract class akuvox extends domophone
         foreach ($rfids as $rfid) {
             $keys[] = [
                 'CardCode' => ltrim($rfid, '0'),
-                'ScheduleRelay' => '1001-1;'
+                'ScheduleRelay' => '1001-1;',
             ];
         }
 
@@ -74,11 +74,6 @@ abstract class akuvox extends domophone
             'Config.DoorSetting.RTSP.H264FrameRate2' => '30',
             'Config.DoorSetting.RTSP.H264BitRate2' => '512',
         ]);
-    }
-
-    public function configureGate(array $links = []): void
-    {
-        // Empty implementation
     }
 
     public function configureMatrix(array $matrix): void
@@ -400,9 +395,7 @@ abstract class akuvox extends domophone
      */
     protected function configureRfidReaders(): void
     {
-        $this->setConfigParams([
-            'Config.DoorSetting.RFCARDDISPLAY.RfidDisplayMode' => '4'
-        ]);
+        $this->setConfigParams(['Config.DoorSetting.RFCARDDISPLAY.RfidDisplayMode' => '4']);
     }
 
     /**
@@ -474,11 +467,6 @@ abstract class akuvox extends domophone
         ];
     }
 
-    protected function getGateConfig(): array
-    {
-        return [];
-    }
-
     protected function getMatrix(): array
     {
         return [];
@@ -514,7 +502,7 @@ abstract class akuvox extends domophone
             $server,
             $stunEnabled,
             $stunServer,
-            $stunPort
+            $stunPort,
         ] = $this->getConfigParams([
             'Config.Account1.GENERAL.AuthName',
             'Config.Account1.SIP.Port',

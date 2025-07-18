@@ -8,7 +8,7 @@ use hw\SmartConfigurator\ConfigurationBuilder\CameraConfigurationBuilder;
 /**
  * Class responsible for collecting camera configuration data from the database.
  */
-class CameraDbConfigCollector implements IDbConfigCollector
+class CameraDbConfigCollector implements DbConfigCollectorInterface
 {
     /**
      * @var array The application configuration.

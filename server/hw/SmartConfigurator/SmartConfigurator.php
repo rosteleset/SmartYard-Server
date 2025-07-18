@@ -2,17 +2,20 @@
 
 namespace hw\SmartConfigurator;
 
-use hw\Interfaces\{DbConfigUpdaterInterface, DisplayTextInterface};
-use hw\SmartConfigurator\DbConfigCollector\IDbConfigCollector;
+use hw\Interfaces\{
+    DbConfigUpdaterInterface,
+    DisplayTextInterface,
+};
+use hw\SmartConfigurator\DbConfigCollector\DbConfigCollectorInterface;
 
 class SmartConfigurator
 {
     private object $device;
-    private IDbConfigCollector $dbConfigCollector;
+    private DbConfigCollectorInterface $dbConfigCollector;
     private array $dbConfig;
     private array $deviceConfig;
 
-    public function __construct(object $device, IDbConfigCollector $dbConfigCollector)
+    public function __construct(object $device, DbConfigCollectorInterface $dbConfigCollector)
     {
         $this->device = $device;
         $this->dbConfigCollector = $dbConfigCollector;
@@ -42,6 +45,7 @@ class SmartConfigurator
             'ntp' => 'configureNtp',
             'sip' => 'configureSip',
             'eventServer' => 'configureEventServer',
+            'housePrefixes' => 'setHousePrefixes',
         ];
 
         foreach ($difference as $sectionName => $items) {
@@ -55,8 +59,6 @@ class SmartConfigurator
                 $this->configureMatrix();
             } elseif ($sectionName === 'rfids') {
                 $this->configureRfids($items);
-            } elseif ($sectionName === 'gateLinks') {
-                $this->device->configureGate($this->dbConfig['gateLinks']);
             }
 
             echo 'Done!' . PHP_EOL;

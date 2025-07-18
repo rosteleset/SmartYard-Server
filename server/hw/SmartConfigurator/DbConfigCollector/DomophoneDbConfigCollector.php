@@ -7,13 +7,17 @@ use backends\configs\configs;
 use backends\households\households;
 use backends\sip\sip;
 use hw\hw;
-use hw\Interfaces\{CmsLevelsInterface, DisplayTextInterface};
+use hw\Interfaces\{
+    CmsLevelsInterface,
+    DisplayTextInterface,
+    HousePrefixInterface,};
 use hw\SmartConfigurator\ConfigurationBuilder\DomophoneConfigurationBuilder;
+use hw\ValueObjects\HousePrefix;
 
 /**
  * Class responsible for collecting intercom configuration data from the database.
  */
-class DomophoneDbConfigCollector implements IDbConfigCollector
+class DomophoneDbConfigCollector implements DbConfigCollectorInterface
 {
     /**
      * @var array The application configuration.
@@ -81,6 +85,7 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
         }
 
         $this
+            ->addApartmentsAndHousePrefixes()
             ->addDtmf()
             ->addEventServer()
             ->addNtp()
@@ -95,7 +100,6 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
             }
 
             $this
-                ->addApartmentsAndGates()
                 ->addCmsModel()
                 ->addMatrix()
                 ->addRfids()
@@ -106,12 +110,12 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
     }
 
     /**
-     * Add apartments and gate links to the domophone configuration.
+     * Add apartments and house prefixes to the domophone configuration.
      *
      * @return self
      * @todo: ugly but it works
      */
-    private function addApartmentsAndGates(): self
+    private function addApartmentsAndHousePrefixes(): self
     {
         /** @var addresses $addresses */
         $addresses = loadBackend('addresses');
@@ -121,7 +125,7 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
 
         $domophoneId = $this->domophoneData['domophoneId'];
         $offset = 0; // For shared domophones that must contain apartments from several houses
-        $gateLinks = [];
+        $housePrefixes = [];
 
         foreach ($this->entrances as $entrance) {
             $flatsRaw = $households->getFlats('houseId', $entrance['houseId']);
@@ -137,13 +141,16 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
             $firstFlat = min($flatNumbers);
             $lastFlat = max($flatNumbers);
 
-            // Collect gate link
-            $gateLinks[$entrance['prefix']] = [
-                'prefix' => $entrance['prefix'],
-                'address' => $addresses->getHouse($entrance['houseId'])['houseFull'],
-                'firstFlat' => $firstFlat,
-                'lastFlat' => $lastFlat,
-            ];
+            // Collect house prefixes
+            $prefix = $entrance['prefix'] ?? 0;
+            if ($prefix > 0) {
+                $housePrefixes[] = new HousePrefix(
+                    $prefix,
+                    $addresses->getHouse($entrance['houseId'])['houseFull'],
+                    $firstFlat,
+                    $lastFlat,
+                );
+            }
 
             foreach ($flats as $flat) {
                 $flatEntrances = array_filter($flat['entrances'], function ($entrance) use ($domophoneId) {
@@ -188,11 +195,9 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
             }
         }
 
-        // Add gate links if the entrance is shared
-        if ($this->entranceIsShared) {
-            foreach ($gateLinks as $gateLink) {
-                $this->builder->addGateLink(...$gateLink);
-            }
+        // TODO: move to a separate method
+        if ($this->device instanceof HousePrefixInterface) {
+            $this->builder->addHousePrefixes($housePrefixes);
         }
 
         return $this;
@@ -337,7 +342,7 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
             'server' => $server,
             'domophoneId' => $domophoneId,
             'credentials' => $password,
-            'nat' => $natEnabled
+            'nat' => $natEnabled,
         ] = $this->domophoneData;
 
         $port = $sip->server('ip', $server)['sip_udp_port'] ?? 5060;
@@ -354,7 +359,7 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
             $password,
             $natEnabled,
             $stunServer,
-            $stunPort
+            $stunPort,
         );
 
         return $this;

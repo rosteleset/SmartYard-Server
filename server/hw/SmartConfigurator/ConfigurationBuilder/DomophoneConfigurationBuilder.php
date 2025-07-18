@@ -2,6 +2,8 @@
 
 namespace hw\SmartConfigurator\ConfigurationBuilder;
 
+use hw\ValueObjects\HousePrefix;
+
 /**
  * The class responsible for building the intercom configuration.
  */
@@ -16,7 +18,6 @@ class DomophoneConfigurationBuilder extends ConfigurationBuilder
             'unlocked' => true,
             'apartments' => [],
             'rfids' => [],
-            'gateLinks' => [],
             'cmsModel' => '',
             'matrix' => [],
             'ntp' => [],
@@ -49,7 +50,7 @@ class DomophoneConfigurationBuilder extends ConfigurationBuilder
             'code',
             'sipNumbers',
             'cmsEnabled',
-            'cmsLevels'
+            'cmsLevels',
         );
 
         return $this;
@@ -107,17 +108,14 @@ class DomophoneConfigurationBuilder extends ConfigurationBuilder
     }
 
     /**
-     * Add a gate link to the domophone configuration.
+     * Add house prefixes to the domophone configuration.
      *
-     * @param int $prefix The entrance prefix.
-     * @param string $address The entrance address.
-     * @param int $firstFlat The first flat of the entrance.
-     * @param int $lastFlat The last flat of the entrance.
+     * @param HousePrefix[] $prefixes List of house prefixes.
      * @return self
      */
-    public function addGateLink(int $prefix, string $address, int $firstFlat, int $lastFlat): self
+    public function addHousePrefixes(array $prefixes): self
     {
-        $this->config['gateLinks'][$prefix] = compact('prefix', 'address', 'firstFlat', 'lastFlat');
+        $this->config['housePrefixes'] = $prefixes;
         return $this;
     }
 
@@ -167,7 +165,7 @@ class DomophoneConfigurationBuilder extends ConfigurationBuilder
         string $password,
         bool   $stunEnabled,
         string $stunServer,
-        int    $stunPort
+        int    $stunPort,
     ): self
     {
         $this->config['sip'] = compact(
@@ -177,7 +175,7 @@ class DomophoneConfigurationBuilder extends ConfigurationBuilder
             'password',
             'stunEnabled',
             'stunServer',
-            'stunPort'
+            'stunPort',
         );
 
         return $this;
