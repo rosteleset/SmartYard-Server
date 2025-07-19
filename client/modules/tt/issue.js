@@ -167,7 +167,7 @@
                     title: i18n("tt.catalog"),
                     minimumResultsForSearch: Infinity,
                     validate: (v, prefix) => {
-                        return $(`#${prefix}catalog`).attr("disabled") || (v && v !== '-' && v !== 'undefined');
+                        return !!$(`#${prefix}catalog`).attr("disabled") || (!!v && v !== '-' && v !== 'undefined');
                     },
                 },
             ],
