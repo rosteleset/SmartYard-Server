@@ -2288,7 +2288,7 @@
             }
         }).
         fail(FAIL).
-        fail((response) => {
+        fail(response => {
             if (typeof fail == "function") {
                 fail(response);
             } else {
@@ -2309,11 +2309,13 @@
                         callback();
                     }
                 } else {
-                    lStore("ttIssueFilter:" + $("#ttProjectSelect").val(), null);
-                    lStore("ttIssueFilter:" + lStore("ttProject"), null);
-                    lStore("ttProject", null);
-                    if (params["_"] != _) {
-                        window.location.href = `?#tt&_=${_}`;
+                    if (response.responseJSON.error != "tokenNotFound") {
+                        lStore("ttIssueFilter:" + $("#ttProjectSelect").val(), null);
+                        lStore("ttIssueFilter:" + lStore("ttProject"), null);
+                        lStore("ttProject", null);
+                        if (params["_"] != _) {
+                            window.location.href = `?#tt&_=${_}`;
+                        }
                     }
                 }
             }

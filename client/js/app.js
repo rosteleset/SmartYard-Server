@@ -395,7 +395,7 @@ function doLogout(all) {
         all = "no";
     }
     POST("authentication", "logout", false, {
-        mode: "all",
+        mode: all,
     }).always(() => {
         lStore("_token", null);
         window.location.reload();

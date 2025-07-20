@@ -204,6 +204,7 @@ function FAIL(response) {
             setTimeout(() => {
                 window.location.reload();
             }, 5000);
+            return $.Deferred().reject(response.responseJSON.error);
         }
     } else {
         if (response && response.getResponseHeader("x-last-error")) {
