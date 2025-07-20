@@ -680,7 +680,7 @@
 
         let rtd = '';
 
-        rtd += '<form autocomplete="off"><div class="form-inline ml-3 mr-3"><div class="input-group input-group-sm mt-1"><select id="notesCategories" class="form-control select-arrow right-top-select"></select></div></div></form>';
+        rtd += '<form autocomplete="off"><div class="form-inline ml-3 mr-3"><div class="input-group input-group-sm mt-1"><select id="notesCategories" class="form-control select-arrow right-top-select top-input"></select></div></div></form>';
 
         $("#rightTopDynamic").html(rtd);
 
