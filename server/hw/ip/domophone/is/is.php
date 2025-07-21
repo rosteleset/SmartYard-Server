@@ -4,15 +4,14 @@ namespace hw\ip\domophone\is;
 
 use hw\Interfaces\{
     CmsLevelsInterface,
-    HousePrefixInterface,
+    GateModeInterface,
 };
 use hw\ip\domophone\domophone;
-use hw\ValueObjects\HousePrefix;
 
 /**
  * Abstract class representing an Intersvyaz (IS) domophone.
  */
-abstract class is extends domophone implements CmsLevelsInterface, HousePrefixInterface
+abstract class is extends domophone implements CmsLevelsInterface, GateModeInterface
 {
     use \hw\ip\common\is\is;
 
@@ -206,17 +205,6 @@ abstract class is extends domophone implements CmsLevelsInterface, HousePrefixIn
         return array_map('intval', array_values($this->apiCall('/levels')['resistances']));
     }
 
-    public function getHousePrefixes(): array
-    {
-        ['gateMode' => $gateModeEnabled] = $this->apiCall('/gate/settings');
-
-        if (!$gateModeEnabled) {
-            return [];
-        }
-
-        return [new HousePrefix(0, '', 1, 1)];
-    }
-
     public function getLineDiagnostics(int $apartment): int
     {
         $res = $this->apiCall("/panelCode/$apartment/resist");
@@ -226,6 +214,11 @@ abstract class is extends domophone implements CmsLevelsInterface, HousePrefixIn
         }
 
         return $res['resist'];
+    }
+
+    public function isGateModeEnabled(): bool
+    {
+        return $this->apiCall('/gate/settings')['gateMode'] ?? false;
     }
 
     public function openLock(int $lockNumber = 0): void
@@ -294,13 +287,11 @@ abstract class is extends domophone implements CmsLevelsInterface, HousePrefixIn
         ]);
     }
 
-    public function setHousePrefixes(array $prefixes): void
+    public function setGateModeEnabled(bool $enabled): void
     {
-        $isEnabled = !empty($prefixes);
-
         $this->apiCall('/gate/settings', 'PUT', [
-            'gateMode' => $isEnabled,
-            'prefixHouse' => $isEnabled,
+            'gateMode' => $enabled,
+            'prefixHouse' => $enabled,
         ]);
     }
 
