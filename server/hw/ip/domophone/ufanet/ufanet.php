@@ -6,15 +6,15 @@ use CURLFile;
 use Generator;
 use hw\Interfaces\{
     DisplayTextInterface,
-    HousePrefixInterface,
-    LanguageInterface,};
+    GateModeInterface,
+    LanguageInterface
+};
 use hw\ip\domophone\domophone;
-use hw\ValueObjects\HousePrefix;
 
 /**
  * Abstract class representing an Ufanet intercom.
  */
-abstract class ufanet extends domophone implements DisplayTextInterface, HousePrefixInterface, LanguageInterface
+abstract class ufanet extends domophone implements DisplayTextInterface, GateModeInterface, LanguageInterface
 {
     use \hw\ip\common\ufanet\ufanet {
         transformDbConfig as protected commonTransformDbConfig;
@@ -236,17 +236,6 @@ abstract class ufanet extends domophone implements DisplayTextInterface, HousePr
         return 3;
     }
 
-    public function getHousePrefixes(): array
-    {
-        ['type' => $type, 'mode' => $mode] = $this->apiCall('/api/v1/configuration')['commutator'];
-
-        if ($type === 'GATE' && $mode === 1) {
-            return [new HousePrefix(0, '', 1, 1)];
-        }
-
-        return [];
-    }
-
     public function getLineDiagnostics(int $apartment): string|int|float
     {
         $url = "/api/v1/apartments/$apartment/test";
@@ -256,6 +245,12 @@ abstract class ufanet extends domophone implements DisplayTextInterface, HousePr
         $resultRaw = $this->apiCall($url); // Get result
 
         return $resultRaw['result'] ?? '';
+    }
+
+    public function isGateModeEnabled(): bool
+    {
+        ['type' => $type, 'mode' => $mode] = $this->apiCall('/api/v1/configuration')['commutator'];
+        return $type === 'GATE' && $mode === 1;
     }
 
     public function openLock(int $lockNumber = 0): void
@@ -335,9 +330,9 @@ abstract class ufanet extends domophone implements DisplayTextInterface, HousePr
         ]);
     }
 
-    public function setHousePrefixes(array $prefixes): void
+    public function setGateModeEnabled(bool $enabled): void
     {
-        if (empty($prefixes)) {
+        if ($enabled === false) {
             return;
         }
 
@@ -672,7 +667,7 @@ abstract class ufanet extends domophone implements DisplayTextInterface, HousePr
         ];
 
         // Set cross numbering mode for CMS if device is not in gate mode
-        if (empty($this->getHousePrefixes()) && $this->getCmsModel() !== 'BK-400') {
+        if ($this->isGateModeEnabled() === false && $this->getCmsModel() !== 'BK-400') {
             $isCrossNumbering = $minApartmentNumber !== $maxApartmentNumber &&
                 intdiv($minApartmentNumber, 100) !== intdiv($maxApartmentNumber - 1, 100);
 
