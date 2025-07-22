@@ -21,14 +21,8 @@ abstract class akuvox extends domophone
         $keys = [];
 
         foreach ($rfids as $rfid) {
-            $internalRfid = substr($rfid, 6);
-            $externalRfid = '00' . substr($rfid, 8);
-            $codeToPanel = ($internalRfid === $externalRfid)
-                ? $internalRfid
-                : $internalRfid . ';' . $externalRfid;
-
             $keys[] = [
-                'CardCode' => $codeToPanel,
+                'CardCode' => ltrim($rfid, '0'),
                 'ScheduleRelay' => '1001-1;'
             ];
         }
@@ -192,13 +186,14 @@ abstract class akuvox extends domophone
     public function getRfids(): array
     {
         $items = $this->apiCall('/user/get')['data']['item'];
+        $rfids = [];
 
-        return array_reduce($items, function ($result, $item) {
-            $codes = explode(';', $item['CardCode']);
-            $rfid = '000000' . ($codes[1] ?? $codes[0]);
-            $result[$rfid] = $rfid;
-            return $result;
-        }, []);
+        foreach ($items as $item) {
+            $code = str_pad($item['CardCode'], 14, '0', STR_PAD_LEFT);
+            $rfids[$code] = $code;
+        }
+
+        return $rfids;
     }
 
     public function openLock(int $lockNumber = 0): void
