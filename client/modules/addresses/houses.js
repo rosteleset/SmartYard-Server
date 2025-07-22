@@ -3352,7 +3352,7 @@
                                 ],
                                 callback: result => {
                                     if (parseInt(result.clearFirst)) {
-                                        $(".cmsa").val("");
+                                        $(`.cmsa[data-cms='${cms}']`).val("");
                                     }
                                     let d = result.dozenFirst;
                                     let u = result.unitFirst;
