@@ -3,7 +3,10 @@
 namespace hw\Interfaces;
 
 /**
- * Interface for enabling or disabling "gate mode" on supported intercom devices.
+ * Interface for enabling or disabling the gate mode.
+ *
+ * This is a simple option for setting up the gate mode.
+ * For devices that support setting prefixes, addresses and apartment ranges, use the {@see HousePrefixInterface}.
  */
 interface GateModeInterface
 {

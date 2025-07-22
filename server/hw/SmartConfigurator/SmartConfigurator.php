@@ -45,6 +45,7 @@ class SmartConfigurator
             'ntp' => 'configureNtp',
             'sip' => 'configureSip',
             'eventServer' => 'configureEventServer',
+            'gateModeEnabled' => 'setGateModeEnabled',
             'housePrefixes' => 'setHousePrefixes',
         ];
 

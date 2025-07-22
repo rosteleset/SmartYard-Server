@@ -7,7 +7,7 @@ use Generator;
 use hw\Interfaces\{
     DisplayTextInterface,
     GateModeInterface,
-    LanguageInterface
+    LanguageInterface,
 };
 use hw\ip\domophone\domophone;
 
@@ -330,6 +330,7 @@ abstract class ufanet extends domophone implements DisplayTextInterface, GateMod
         ]);
     }
 
+    // TODO: need to set some CMS as default, otherwise there will be difference after disabling gate mode
     public function setGateModeEnabled(bool $enabled): void
     {
         if ($enabled === false) {

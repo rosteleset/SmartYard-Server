@@ -5,6 +5,7 @@ namespace hw\ip\domophone;
 use hw\Interfaces\{
     CmsLevelsInterface,
     DisplayTextInterface,
+    GateModeInterface,
     HousePrefixInterface,
     LanguageInterface,
 };
@@ -41,6 +42,10 @@ abstract class domophone extends ip
 
         if ($this instanceof DisplayTextInterface) {
             $builder->addDisplayText($this->getDisplayText());
+        }
+
+        if ($this instanceof GateModeInterface) {
+            $builder->addGateModeEnabled($this->isGateModeEnabled());
         }
 
         if ($this instanceof HousePrefixInterface) {

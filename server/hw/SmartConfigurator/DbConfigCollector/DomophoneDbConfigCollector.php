@@ -2,15 +2,19 @@
 
 namespace hw\SmartConfigurator\DbConfigCollector;
 
-use backends\addresses\addresses;
-use backends\configs\configs;
-use backends\households\households;
-use backends\sip\sip;
+use backends\{
+    addresses\addresses,
+    configs\configs,
+    households\households,
+    sip\sip,
+};
 use hw\hw;
 use hw\Interfaces\{
     CmsLevelsInterface,
     DisplayTextInterface,
-    HousePrefixInterface,};
+    GateModeInterface,
+    HousePrefixInterface,
+};
 use hw\SmartConfigurator\ConfigurationBuilder\DomophoneConfigurationBuilder;
 use hw\ValueObjects\HousePrefix;
 
@@ -193,6 +197,11 @@ class DomophoneDbConfigCollector implements DbConfigCollectorInterface
                     $offset += $flat['flat'];
                 }
             }
+        }
+
+        // TODO: move to a separate method
+        if ($this->device instanceof GateModeInterface) {
+            $this->builder->addGateModeEnabled(!empty($housePrefixes));
         }
 
         // TODO: move to a separate method
