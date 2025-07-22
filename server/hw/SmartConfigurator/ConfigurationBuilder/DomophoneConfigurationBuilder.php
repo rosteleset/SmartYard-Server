@@ -108,6 +108,18 @@ class DomophoneConfigurationBuilder extends ConfigurationBuilder
     }
 
     /**
+     * Adds the gate mode enabled flag to the configuration.
+     *
+     * @param bool $enabled True to enable gate mode, false to disable.
+     * @return self
+     */
+    public function addGateModeEnabled(bool $enabled): self
+    {
+        $this->config['gateModeEnabled'] = $enabled;
+        return $this;
+    }
+
+    /**
      * Add house prefixes to the domophone configuration.
      *
      * @param HousePrefix[] $prefixes List of house prefixes.

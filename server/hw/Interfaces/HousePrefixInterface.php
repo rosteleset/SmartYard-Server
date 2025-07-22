@@ -5,7 +5,10 @@ namespace hw\Interfaces;
 use hw\ValueObjects\HousePrefix;
 
 /**
- * Interface for managing house prefixes when the intercom operates in "gate mode" supporting multiple houses.
+ * Interface for managing the gate mode with prefixes, addresses and apartment ranges.
+ *
+ * This is a complicated option for setting up the gate mode.
+ * For devices that support only enabling and disabling the gate mode, use the {@see GateModeInterface}.
  */
 interface HousePrefixInterface
 {
