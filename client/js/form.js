@@ -161,6 +161,24 @@ function cardForm(params) {
             ];
         }
 
+        if (params.fields[i].type == "tristate") {
+            params.fields[i].type = "select";
+            params.fields[i].options = [
+                {
+                    id: "0",
+                    text: params.fields[i].state0,
+                },
+                {
+                    id: "1",
+                    text: params.fields[i].state1,
+                },
+                {
+                    id: "2",
+                    text: params.fields[i].state2,
+                },
+            ];
+        }
+
         if (params.fields[i].type == "font") {
             let fonts = [
                 {

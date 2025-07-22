@@ -3347,12 +3347,19 @@
                                     {
                                         id: "clearFirst",
                                         title: i18n("addresses.cmsClearFirst"),
-                                        type: "noyes",
+                                        type: "tristate",
+                                        state0: i18n("no"),
+                                        state1: i18n("addresses.thisMatrix"),
+                                        state2: i18n("addresses.allMatrix"),
                                     }
                                 ],
                                 callback: result => {
                                     if (parseInt(result.clearFirst)) {
-                                        $(`.cmsa[data-cms='${cms}']`).val("");
+                                        if (parseInt(result.clearFirst) == 1) {
+                                            $(`.cmsa[data-cms='${cms}']`).val("");
+                                        } else {
+                                            $(`.cmsa`).val("");
+                                        }
                                     }
                                     let d = result.dozenFirst;
                                     let u = result.unitFirst;
