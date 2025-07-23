@@ -44,8 +44,6 @@ class zabbix extends monitoring
             $this->checkApiConnection();
         } catch (Exception $e) {
             error_log("Zabbix Error: " . $e->getMessage());
-//            return;
-////            exit(1);
         }
     }
 

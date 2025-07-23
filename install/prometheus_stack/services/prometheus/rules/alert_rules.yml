@@ -49,7 +49,8 @@ groups:
   - name: flussonic_stream_bad_health
     rules:
       - alert: DvrStreamErr
-        expr: max_over_time(stream_retry_count[5m]) > 0
+        expr: stream_bitrate == 0
+        for: 5m
         labels:
           severity: info
         annotations:

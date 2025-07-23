@@ -983,7 +983,7 @@
             case 'Disabled':
                 statusClass = 'status-disabled';
                 break;
-            case 'DVRerr':
+            case 'DVR error':
                 statusClass = 'status-dvr-err';
                 break;
             case 'Other':
