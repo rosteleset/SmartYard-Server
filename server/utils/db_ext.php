@@ -89,6 +89,7 @@
                     setLastError($e->errorInfo[2] ?: $e->getMessage());
                     if ($cli && $cli_error) {
                         error_log(print_r($e, true));
+                        error_log($query);
                     }
                 }
                 return false;
@@ -96,6 +97,7 @@
                 setLastError($e->getMessage());
                 if ($cli && $cli_error) {
                     error_log(print_r($e, true));
+                    error_log($query);
                 }
                 return false;
             }
@@ -113,11 +115,13 @@
                 if (!in_array("silent", $options)) {
                     setLastError($e->errorInfo[2] ?: $e->getMessage());
                     error_log(print_r($e, true));
+                    error_log($query);
                 }
                 return false;
             } catch (\Exception $e) {
                 setLastError($e->getMessage());
                 error_log(print_r($e, true));
+                error_log($query);
                 return false;
             }
         }
@@ -142,11 +146,13 @@
                 if (!in_array("silent", $options)) {
                     setLastError($e->errorInfo[2] ?: $e->getMessage());
                     error_log(print_r($e, true));
+                    error_log($query);
                 }
                 return false;
             } catch (\Exception $e) {
                 setLastError($e->getMessage());
                 error_log(print_r($e, true));
+                error_log($query);
                 return false;
             }
         }
@@ -209,11 +215,13 @@
                 if (!in_array("silent", $options)) {
                     setLastError($e->errorInfo[2] ?: $e->getMessage());
                     error_log(print_r($e, true));
+                    error_log($query);
                 }
                 return false;
             } catch (\Exception $e) {
                 setLastError($e->getMessage());
                 error_log(print_r($e, true));
+                error_log($query);
                 return false;
             }
         }
