@@ -405,7 +405,7 @@ body.dark-mode .hr-text::after .hr-text-white::after .hr-text-pointer::after hr-
   white-space: nowrap !important;
 }
 
-.bg-lightgray, .bg-lightgray>a {
+.bg-lightgray, .bg-lightgray > a {
   color: #0000 !important;
 }
 

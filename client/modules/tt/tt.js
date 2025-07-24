@@ -61,7 +61,7 @@
             let h = "";
             for (let i in modules.tt.meta.favoriteFilters) {
                 if (parseInt(modules.tt.meta.favoriteFilters[i].leftSide)) {
-                    let title = modules.tt.meta.filtersExt[modules.tt.meta.favoriteFilters[i].filter].shortName ? modules.tt.meta.filtersExt[modules.tt.meta.favoriteFilters[i].filter].shortName : modules.tt.meta.filtersExt[modules.tt.meta.favoriteFilters[i].filter].name;
+                    let title = modules.tt.meta.filters[modules.tt.meta.favoriteFilters[i].filter].shortName ? modules.tt.meta.filters[modules.tt.meta.favoriteFilters[i].filter].shortName : modules.tt.meta.filters[modules.tt.meta.favoriteFilters[i].filter].name;
                     h += `
                         <li class="nav-item" title="${escapeHTML(title)}" style="margin-top: 3px;">
                             <a href="?#tt&project=${modules.tt.meta.favoriteFilters[i].project}&filter=${modules.tt.meta.favoriteFilters[i].filter}" class="nav-link" onclick="xblur(); lStore('ttIssueFilter:${modules.tt.meta.favoriteFilters[i].project}', '${modules.tt.meta.favoriteFilters[i].filter}'); return true;">
@@ -1411,13 +1411,13 @@
         let filters = '';
 
         if (target || $.trim(x)[0] == "#") {
-            filters = `<span class="text-bold ${params.class ? params.class : ''}">${params.caption ? params.caption : ((modules.tt.meta.filters[x] ? modules.tt.meta.filters[x] : i18n("tt.filter")).replaceAll("/", "<i class='fas fa-fw fa-xs fa-angle-double-right'></i>"))}</span>`;
+            filters = `<span class="text-bold ${params.class ? params.class : ''}">${params.caption ? params.caption : ((modules.tt.meta.filters[x] ? modules.tt.meta.filters[x].name : i18n("tt.filter")).replaceAll("/", "<i class='fas fa-fw fa-xs fa-angle-double-right'></i>"))}</span>`;
         } else {
             let fcount = 0;
 
             let filtersTree = {};
             for (let i in project.filters) {
-                let tree = (project.filters[i].filter ? modules.tt.meta.filters[project.filters[i].filter] : project.filters[i].filter).split("/");
+                let tree = (project.filters[i].filter ? modules.tt.meta.filters[project.filters[i].filter].name : project.filters[i].filter).split("/");
                 let f = filtersTree;
                 for (let j = 0; j < tree.length - 1; j++) {
                     tree[j] = tree[j].trim();
@@ -1429,7 +1429,7 @@
                 f[tree[tree.length - 1].trim()] = project.filters[i];
             }
 
-            let filterName = modules.tt.meta.filters[x] ? modules.tt.meta.filters[x] : i18n("tt.filter");
+            let filterName = modules.tt.meta.filters[x] ? modules.tt.meta.filters[x].name : i18n("tt.filter");
             document.title = i18n("windowTitle") + " :: " + filterName;
 
             let alreadyFavorite = false;
@@ -1483,7 +1483,11 @@
                             filters += '<i class="fas fa-fw fa-users mr-2"></i>';
                         } else
                         if (parseInt(t[i].personal)) {
-                            filters += '<i class="fas fa-fw fa-user mr-2"></i>';
+                            if (t[i].filter, modules.tt.meta.filters[t[i].filter].owner == myself.login) {
+                                filters += '<i class="fas fa-fw fa-user-graduate mr-2"></i>';
+                        } else {
+                                filters += '<i class="fas fa-fw fa-user mr-2"></i>';
+                            }
                         } else {
                             filters += '<i class="fas fa-fw fa-globe-americas mr-2"></i>';
                         }
@@ -1524,7 +1528,7 @@
                             filters += `<li class="dropdown-item nomenu pointer tt_issues_filter mr-3" data-filter-name="${modules.tt.meta.favoriteFilters[ff].filter}">`;
                         }
                         filters += `<i class="fa-fw mr-2 ${modules.tt.meta.favoriteFilters[ff].icon} ${modules.tt.meta.favoriteFilters[ff].color}"></i>`;
-                        filters += "<span>" + $.trim(modules.tt.meta.filtersExt[modules.tt.meta.favoriteFilters[ff].filter].shortName ? modules.tt.meta.filtersExt[modules.tt.meta.favoriteFilters[ff].filter].shortName : modules.tt.meta.filtersExt[modules.tt.meta.favoriteFilters[ff].filter].name) + "&nbsp;</span>";
+                        filters += "<span>" + $.trim(modules.tt.meta.filters[modules.tt.meta.favoriteFilters[ff].filter].shortName ? modules.tt.meta.filters[modules.tt.meta.favoriteFilters[ff].filter].shortName : modules.tt.meta.filters[modules.tt.meta.favoriteFilters[ff].filter].name) + "&nbsp;</span>";
                         filters += "</li>";
                     }
                     filters += '</ul>';
@@ -1556,9 +1560,9 @@
                     window.location.href = '?#tt&filter=' + x + '&customSearch=yes&_=' + Math.random();
                 }).parent().show();
 
-                if (md5(md5($.trim(modules.tt.meta.filters[x])) + "-" + md5(lStore("_login"))) == x && fp == myself.uid) {
+                if (md5(md5($.trim(modules.tt.meta.filters[x].name)) + "-" + md5(lStore("_login"))) == x && fp == myself.uid) {
                     $("#customFilterDelete").off("click").on("click", function () {
-                        mConfirm(i18n("tt.filterDelete", modules.tt.meta.filters[x]), i18n("confirm"), i18n("delete"), () => {
+                        mConfirm(i18n("tt.filterDelete", modules.tt.meta.filters[x].name), i18n("confirm"), i18n("delete"), () => {
                             loadingStart();
                             DELETE("tt", "customFilter", x, { "project": current_project }).
                             done(() => {
@@ -1707,7 +1711,15 @@
                     $(`.pager[data-target="${issuesListId}"]`).html(pager(issuesListId));
                 }
             } else {
-                $("#mainForm").html(`${cs}<table class="mt-2" style="width: 100%;"><tr><td style="width: 100%;">${cs ? '' : (filters + '<br/>')}<span id='${issuesListId + '-count'}'></span></td><td>${pager(issuesListId)}</td></tr></table><div id="${issuesListId}"></div>`);
+                let o = `
+                    ${cs}
+                    <table class="mt-2" style="width: 100%;"><tr><td style="width: 100%;">${cs ? '' : (filters + '<br/>')}<span id='${issuesListId + '-count'}'></span></td><td>${pager(issuesListId)}</td></tr></table>
+                    <div id="${issuesListId}"></div>
+                `;
+                o += `
+                    <table class="mb-2 issuesBottomPager" style="width: 100%; display: none;"><tr><td style="width: 100%;">&nbsp;</td><td>${pager(issuesListId)}</td></tr></table>
+                `;
+                $("#mainForm").html(o);
             }
 
             $(".tt_issues_filter").off("click").on("click", function () {
@@ -1801,10 +1813,10 @@
                 pKeys = Object.keys(issues.projection);
             }
 
-            if (pKeys && modules.tt.meta.filtersExt && x && modules.tt.meta.filtersExt[x] && modules.tt.meta.filtersExt[x].hide) {
+            if (pKeys && modules.tt.meta.filtersExt && x && modules.tt.meta.filters[x] && modules.tt.meta.filters[x].hide) {
                 let t = [];
                 for (let i in pKeys) {
-                    if (modules.tt.meta.filtersExt[x].hide.indexOf(pKeys[i]) < 0) {
+                    if (modules.tt.meta.filters[x].hide.indexOf(pKeys[i]) < 0) {
                         t.push(pKeys[i]);
                     }
                 }
@@ -1853,13 +1865,15 @@
                     sorted = true;
                     sortMenuItems.push({
                         id: pKeys[i],
-                        text: ((parseInt(sort[pKeys[i]]) == 1) ? '<i class="fas fa-fw fa-sort-alpha-down mr-2"></i>' : '<i class="fas fa-fw fa-sort-alpha-up-alt mr-2"></i>') + modules.tt.issueFieldTitle(pKeys[i]) + ' [' + (Object.keys(sort).indexOf(pKeys[i]) + 1) + ']',
+                        icon: (parseInt(sort[pKeys[i]]) == 1) ? 'fas fa-sort-alpha-down' : 'fas fa-fw fa-sort-alpha-up-alt',
+                        text: modules.tt.issueFieldTitle(pKeys[i]) + ' [' + (Object.keys(sort).indexOf(pKeys[i]) + 1) + ']',
                         selected: true,
                     });
                 } else {
                     sortMenuItems.push({
                         id: pKeys[i],
-                        text: '<i class="fas fa-fw mr-2"></i>' + modules.tt.issueFieldTitle(pKeys[i]),
+                        icon: 'fas',
+                        text: modules.tt.issueFieldTitle(pKeys[i]),
                     });
                 }
             };
@@ -1875,12 +1889,12 @@
 
             sortMenuItems.push({
                 id: "noSort",
-                text: '<i class="fas fa-fw mr-2"></i>' + i18n("tt.noSort"),
+                text: i18n("tt.noSort"),
                 selected: !sorted,
             });
 
             let sortMenu = menu({
-                button: "<i class='fas fa-fw fa-sort pointer'></i>",
+                icon: 'fas fa-sort',
                 items: sortMenuItems,
                 click: id => {
                     if (id == "noSort") {
@@ -1915,7 +1929,7 @@
 
             let columns = [];
 
-            if (modules && modules.tt && modules.tt.meta && modules.tt.meta.filtersExt && modules.tt.meta.filtersExt[x] && modules.tt.meta.filtersExt[x].disableCustomSort) {
+            if (modules && modules.tt && modules.tt.meta && modules.tt.meta.filtersExt && modules.tt.meta.filters[x] && modules.tt.meta.filters[x].disableCustomSort) {
                 columns.push({
                     title: i18n("tt.issueIndx"),
                     nowrap: true,
@@ -2038,10 +2052,16 @@
                             "body": JSON.stringify(f, true, 4),
                         }).
                         done(() => {
-                            message(i18n("tt.filterWasSaved"));
-                            lStore("ttIssueFilter:" + current_project, n);
-                            window.onbeforeunload = null;
-                            window.location.href = '?#tt&filter=' + n + '&customSearch=yes&_=' + Math.random();
+                            GET("tt", "tt", false, true).
+                            done(modules.tt.tt).
+                            done(() => {
+                                message(i18n("tt.filterWasSaved"));
+                                lStore("ttIssueFilter:" + current_project, n);
+                                window.onbeforeunload = null;
+                                window.location.href = '?#tt&filter=' + n + '&customSearch=yes&owner=' + myself.login + '&_=' + Math.random();
+                            }).
+                            fail(FAIL).
+                            fail(loadingDone);
                         }).
                         fail(FAIL).
                         fail(loadingDone);
@@ -2050,7 +2070,7 @@
                     }
                 });
                 if (params.filter && params.filter !== true && params.filter != "empty") {
-                    if (modules.tt.meta.filtersExt[params.filter].owner) {
+                    if (params.owner || (modules.tt.meta.filters[params.filter] && modules.tt.meta.filters[params.filter].owner)) {
                         GET("tt", "customFilter", params.filter).
                         done(response => {
                             editor.setValue(response.body, -1);
@@ -2077,116 +2097,144 @@
                 }
             }
 
-            if (issues.issues && issues.issues.length) {
-                $("#" + issuesListId + "-count").text("[" + x + "]: " + i18n("tt.showCounts", parseInt(issues.skip) + 1, parseInt(issues.skip) + issues.issues.length, issues.count)).addClass("small");
+            if (issues.issues) {
+                $("#" + issuesListId + "-count").text("[" + x + "]: " + i18n("tt.showCounts", parseInt(issues.skip) ? (parseInt(issues.skip) + 1) : '0', parseInt(issues.skip) + issues.issues.length, issues.count)).addClass("small");
+
+                let menuItems = [];
+
+                if (x && x[0] != '#') {
+                    menuItems.push({
+                        id: "favorite",
+                        icon: (bookmarked ? "fas" : "far") + " text-primary fa-bookmark",
+                        text: bookmarked ? i18n("tt.removeFavoriteFilter") : i18n("tt.addFavoriteFilter"),
+                        data: x,
+                    });
+                }
+
+                menuItems.push({
+                    text: "-",
+                });
+
+                menuItems.push({
+                    icon: "fas fa-file-csv",
+                    id: "export",
+                    text: i18n("tt.exportToCSV"),
+                });
+
                 cardTable({
                     target: "#" + issuesListId,
                     columns: columns,
-                    dropDownHeader: (x && x[0] != '#') ? {
-                        icon: (bookmarked ? "fas" : "far") + " text-primary fa-bookmark",
-                        title: bookmarked ? i18n("tt.removeFavoriteFilter") : i18n("tt.addFavoriteFilter"),
-                        click: () => {
-                            if (!bookmarked) {
-                                let icons = [];
-                                for (let i in faIcons) {
-                                    icons.push({
-                                        icon: faIcons[i].title + " fa-fw",
-                                        text: faIcons[i].title.split(" fa-")[1] + (faIcons[i].searchTerms.length ? (", " + faIcons[i].searchTerms.join(", ")) : ""),
-                                        value: faIcons[i].title,
-                                    });
-                                }
-                                cardForm({
-                                    title: i18n("tt.addFavoriteFilter"),
-                                    footer: true,
-                                    borderless: true,
-                                    topApply: true,
-                                    apply: i18n("add"),
-                                    size: "lg",
-                                    fields: [
-                                        {
-                                            id: "icon",
-                                            title: i18n("tt.filterIcon"),
-                                            type: "select2",
-                                            options: icons,
-                                            value: "far fa-bookmark",
-                                        },
-                                        {
-                                            id: "color",
-                                            title: i18n("tt.filterColor"),
-                                            type: "select2",
-                                            options: [
+                    dropDownHeader: {
+                        menu: menu({
+                            icon: "fas fa-bars",
+                            right: true,
+                            items: menuItems,
+                            click: (id, data) => {
+                                console.log(id, data);
+                                if (id == "favorite") {
+                                    if (!bookmarked) {
+                                        let icons = [];
+                                        for (let i in faIcons) {
+                                            icons.push({
+                                                icon: faIcons[i].title + " fa-fw",
+                                                text: faIcons[i].title.split(" fa-")[1] + (faIcons[i].searchTerms.length ? (", " + faIcons[i].searchTerms.join(", ")) : ""),
+                                                value: faIcons[i].title,
+                                            });
+                                        }
+                                        cardForm({
+                                            title: i18n("tt.addFavoriteFilter"),
+                                            footer: true,
+                                            borderless: true,
+                                            topApply: true,
+                                            apply: i18n("add"),
+                                            size: "lg",
+                                            fields: [
                                                 {
-                                                    text: "По умолчанию",
-                                                    value: "",
-                                                    class: "",
+                                                    id: "icon",
+                                                    title: i18n("tt.filterIcon"),
+                                                    type: "select2",
+                                                    options: icons,
+                                                    value: "far fa-bookmark",
                                                 },
                                                 {
-                                                    text: "Primary",
-                                                    value: "text-primary",
-                                                    class: "text-primary",
+                                                    id: "color",
+                                                    title: i18n("tt.filterColor"),
+                                                    type: "select2",
+                                                    options: [
+                                                        {
+                                                            text: "По умолчанию",
+                                                            value: "",
+                                                            class: "",
+                                                        },
+                                                        {
+                                                            text: "Primary",
+                                                            value: "text-primary",
+                                                            class: "text-primary",
+                                                        },
+                                                        {
+                                                            text: "Secondary",
+                                                            value: "text-secondary",
+                                                            class: "text-secondary",
+                                                        },
+                                                        {
+                                                            text: "Success",
+                                                            value: "text-success",
+                                                            class: "text-success",
+                                                        },
+                                                        {
+                                                            text: "Danger",
+                                                            value: "text-danger",
+                                                            class: "text-danger",
+                                                        },
+                                                        {
+                                                            text: "Warning",
+                                                            value: "text-warning",
+                                                            class: "text-warning",
+                                                        },
+                                                        {
+                                                            text: "Info",
+                                                            value: "text-info",
+                                                            class: "text-info",
+                                                        },
+                                                    ],
+                                                    value: ""
                                                 },
                                                 {
-                                                    text: "Secondary",
-                                                    value: "text-secondary",
-                                                    class: "text-secondary",
-                                                },
-                                                {
-                                                    text: "Success",
-                                                    value: "text-success",
-                                                    class: "text-success",
-                                                },
-                                                {
-                                                    text: "Danger",
-                                                    value: "text-danger",
-                                                    class: "text-danger",
-                                                },
-                                                {
-                                                    text: "Warning",
-                                                    value: "text-warning",
-                                                    class: "text-warning",
-                                                },
-                                                {
-                                                    text: "Info",
-                                                    value: "text-info",
-                                                    class: "text-info",
+                                                    id: "leftSide",
+                                                    title: i18n("tt.filterLeftSide"),
+                                                    type: "noyes",
                                                 },
                                             ],
-                                            value: ""
-                                        },
-                                        {
-                                            id: "leftSide",
-                                            title: i18n("tt.filterLeftSide"),
-                                            type: "noyes",
-                                        },
-                                    ],
-                                    callback: r => {
-                                        loadingStart();
-                                        POST("tt", "favoriteFilter", x, {
-                                            project: lStore("ttProject"),
-                                            icon: r.icon,
-                                            color: r.color,
-                                            leftSide: r.leftSide,
-                                        }).
-                                        done(() => {
-                                            window.location.reload();
-                                        }).
-                                        fail(FAIL).
-                                        fail(loadingDone);
-                                    },
-                                });
-                            } else {
-                                mConfirm(i18n("tt.removeFavoriteFilter") + "?", modules.tt.meta.filtersExt[x].shortName ? modules.tt.meta.filtersExt[x].shortName : modules.tt.meta.filtersExt[x].name, i18n("remove"), () => {
-                                    loadingStart();
-                                    DELETE("tt", "favoriteFilter", x).
-                                    done(() => {
-                                        window.location.reload();
-                                    }).
-                                    fail(FAIL).
-                                    fail(loadingDone);
-                                });
+                                            callback: r => {
+                                                loadingStart();
+                                                POST("tt", "favoriteFilter", x, {
+                                                    project: lStore("ttProject"),
+                                                    icon: r.icon,
+                                                    color: r.color,
+                                                    leftSide: r.leftSide,
+                                                }).
+                                                done(() => {
+                                                    window.location.reload();
+                                                }).
+                                                fail(FAIL).
+                                                fail(loadingDone);
+                                            },
+                                        });
+                                    } else {
+                                        mConfirm(i18n("tt.removeFavoriteFilter") + "?", modules.tt.meta.filters[x].shortName ? modules.tt.meta.filters[x].shortName : modules.tt.meta.filters[x].name, i18n("remove"), () => {
+                                            loadingStart();
+                                            DELETE("tt", "favoriteFilter", x).
+                                            done(() => {
+                                                window.location.reload();
+                                            }).
+                                            fail(FAIL).
+                                            fail(loadingDone);
+                                        });
+                                    }
+                                }
                             }
-                        },
-                    } : false,
+                        }),
+                    },
                     rows: () => {
                         let rows = [];
 
@@ -2254,29 +2302,18 @@
                                     search: ($.trim(params.search) && params.search !== true) ? $.trim(params.search) : "",
                                 })),
                                 cols: cols,
-                                dropDown: {
-                                    items: [
-                                        {
-                                            icon: "fas fa-external-link-alt text-primary",
-                                            title: i18n("tt.openIssueNewWindow"),
-                                            click: uid => {
-                                                let i = JSON.parse(b64_to_utf8(uid));
-                                                window.open(navigateUrl("tt", { issue: i.id }), '_blank');
-                                            }
-                                        },
-                                    ],
-                                },
                             });
                         }
 
                         return rows;
                     },
+                    append: (!issues.issues || !issues.issues.length) ? i18n("tt.noIssuesAvailable") : '',
                 });
-            } else {
-                if (x) {
-                    $("#" + issuesListId + "-count").text("[" + x + "]: " + i18n("tt.noIssuesAvailable")).addClass("small");
-                }  else {
-                    $("#" + issuesListId + "-count").text(i18n("tt.noIssuesAvailable")).addClass("small");
+                if ($("#" + issuesListId).height() > $(window).height()) {
+                    $(".issuesBottomPager").show();
+                }
+                if (!target) {
+                    $('html').scrollTop(0);
                 }
             }
             if (!params.customSearch || params.customSearch === true || !params.filter || params.filter === true || params.filter == "empty") {

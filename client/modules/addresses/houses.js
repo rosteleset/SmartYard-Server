@@ -159,12 +159,10 @@
 
         let o = modules.addresses.houses.outputs(modules.addresses.houses.meta.domophoneModelsById[el.val()]);
         for (let i in o) {
-            h += `<option value="${o[i].id}" ${o[i].selected?"selected":""}>${o[i].text}</option>`;
+            h += `<option value="${o[i].id}" ${o[i].selected ? "selected" : ""}>${o[i].text}</option>`;
         }
 
         $("#" + prefix + "domophoneOutput").html(h);
-
-        modules.addresses.houses.outputsSelect(el, id, prefix);
     },
 
     outputsSelect: function (el, id, prefix) {
@@ -185,25 +183,13 @@
             $("#" + prefix + "cmsType-container").attr("data-form-runtime-hide", "1").hide();
             $("#" + prefix + "cmsLevels-container").attr("data-form-runtime-hide", "1").hide();
         }
-
-        modules.addresses.houses.sharedSelect(el, id, prefix, true);
     },
 
     sharedSelect: (el, id, prefix, cascade) => {
         if (parseInt($("#" + prefix + "shared").val()) && $("#" + prefix + "shared:visible").length) {
-            $("#" + prefix + "cms-container").attr("data-form-runtime-hide", "1").hide();
             $("#" + prefix + "prefix-container").attr("data-form-runtime-hide", "0").show();
         } else {
-            if (parseInt($("#" + prefix + "domophoneOutput").val())) {
-                $("#" + prefix + "cms-container").attr("data-form-runtime-hide", "1").hide();
-            } else {
-                $("#" + prefix + "cms-container").attr("data-form-runtime-hide", "0").show();
-            }
             $("#" + prefix + "prefix-container").attr("data-form-runtime-hide", "1").hide();
-        }
-
-        if (!cascade) {
-            modules.addresses.houses.cmsSelect(el, id, prefix);
         }
     },
 
@@ -599,7 +585,6 @@
                                 title: i18n("addresses.domophoneOutput"),
                                 placeholder: i18n("addresses.domophoneOutput"),
                                 options: modules.addresses.houses.outputs(modules.addresses.houses.meta.domophoneModelsById[first]),
-                                select: modules.addresses.houses.outputsSelect,
                                 tab: i18n("addresses.primary"),
                             },
                             {
@@ -899,11 +884,8 @@
                             let g = result.geo.split(",");
                             result.lat = g[0];
                             result.lon = g[1];
-                            if (parseInt(result.domophoneOutput) > 0) {
-                                result.cms = 0;
-                            }
-                            if (parseInt(result.shared) !== 0) {
-                                result.cms = 0;
+                            if (!parseInt(result.shared)) {
+                                result.prefix = 0;
                             }
                             result.houseId = houseId;
                             result.altCamerasIds = [];
@@ -1209,9 +1191,9 @@
                     ],
                     select: (el, id, prefix) => {
                         if (parseInt(el.val()) > 0) {
-                            $("#" + prefix + "sipPassword").parent().parent().parent().show();
+                            $("#" + prefix + "sipPassword-container").attr("data-form-runtime-hide", "0").show();
                         } else {
-                            $("#" + prefix + "sipPassword").parent().parent().parent().hide();
+                            $("#" + prefix + "sipPassword-container").attr("data-form-runtime-hide", "1").hide();
                         }
                     },
                 },
@@ -1614,7 +1596,6 @@
                                 tab: i18n("addresses.primary"),
                                 placeholder: i18n("addresses.domophoneOutput"),
                                 options: modules.addresses.houses.outputs(modules.addresses.houses.meta.domophoneModelsById[entrance.domophoneId], entrance.domophoneOutput),
-                                select: modules.addresses.houses.outputsSelect,
                             },
                             {
                                 id: "cms",
@@ -1623,7 +1604,6 @@
                                 tab: i18n("addresses.primary"),
                                 placeholder: i18n("addresses.cms"),
                                 options: modules.addresses.houses.cmses(modules.addresses.houses.meta.domophoneModelsById[entrance.domophoneId]),
-                                hidden: parseInt(entrance.domophoneOutput) > 0,
                                 value: entrance.cms,
                                 select: modules.addresses.houses.cmsSelect,
                             },
@@ -1633,7 +1613,7 @@
                                 title: i18n("addresses.cmsType"),
                                 tab: i18n("addresses.primary"),
                                 value: entrance.cmsType,
-                                hidden: parseInt(entrance.domophoneOutput) > 0 || parseInt(entrance.cms) === 0,
+                                hidden: parseInt(entrance.cms) === 0,
                                 options: [
                                     {
                                         id: "1",
@@ -1652,15 +1632,16 @@
                                 tab: i18n("addresses.primary"),
                                 placeholder: i18n("addresses.cmsLevelsOrder"),
                                 value: entrance.cmsLevels,
-                                hidden: parseInt(entrance.domophoneOutput) > 0 || parseInt(entrance.cms) === 0,
+                                hidden: parseInt(entrance.cms) === 0,
                             },
                             {
                                 id: "shared",
                                 type: "select",
                                 title: i18n("addresses.shared"),
                                 tab: i18n("addresses.primary"),
-                                hidden: parseInt(entrance.domophoneOutput) > 0 || parseInt(entrance.cms) !== 0,
+                                hidden: parseInt(entrance.cms) !== 0,
                                 value: entrance.shared.toString(),
+                                readonly: parseInt(entrance.installed) > 1,
                                 options: [
                                     {
                                         id: "0",
@@ -1673,9 +1654,9 @@
                                 ],
                                 select: (el, id, prefix) => {
                                     if (parseInt(el.val())) {
-                                        $("#" + prefix + "prefix").parent().parent().show();
+                                        $("#" + prefix + "prefix-container").attr("data-form-runtime-hide", "0").show();
                                     } else {
-                                        $("#" + prefix + "prefix").parent().parent().hide();
+                                        $("#" + prefix + "prefix-container").attr("data-form-runtime-hide", "1").hide();
                                     }
                                 },
                             },
@@ -1703,7 +1684,7 @@
                                 tab: i18n("addresses.primary"),
                                 placeholder: i18n("addresses.prefix"),
                                 value: entrance.prefix ? entrance.prefix.toString() : "0",
-                                hidden: !parseInt(entrance.shared) || parseInt(entrance.domophoneOutput) > 0 || parseInt(entrance.cms) !== 0,
+                                hidden: !parseInt(entrance.shared),
                                 validate: (v, prefix) => {
                                     return !parseInt($("#" + prefix + "shared").val()) || parseInt(v) >= 1;
                                 },
@@ -1940,20 +1921,13 @@
                         },
                         callback: result => {
                             if (result.delete === "yes") {
-                                modules.addresses.houses.deleteEntrance(entranceId, parseInt(entrance.shared), houseId);
+                                modules.addresses.houses.deleteEntrance(entranceId, parseInt(entrance.shared) && parseInt(entrance.installed) > 1, houseId);
                             } else {
                                 let g = result.geo.split(",");
                                 result.lat = g[0];
                                 result.lon = g[1];
-                                if (parseInt(result.domophoneOutput) > 0) {
-                                    result.cms = 0;
-                                    result.shared = 0;
-                                }
-                                if (parseInt(result.cms) !== 0) {
-                                    result.shared = 0;
-                                }
-                                if (parseInt(result.shared) !== 0) {
-                                    result.cms = 0;
+                                if (!parseInt(result.shared)) {
+                                    result.prefix = 0;
                                 }
                                 result.entranceId = entranceId;
                                 result.houseId = houseId;
@@ -2487,9 +2461,9 @@
                         ],
                         select: (el, id, prefix) => {
                             if (parseInt(el.val()) > 0) {
-                                $("#" + prefix + "sipPassword").parent().parent().parent().show();
+                                $("#" + prefix + "sipPassword-container").attr("data-form-runtime-hide", "0").show();
                             } else {
-                                $("#" + prefix + "sipPassword").parent().parent().parent().hide();
+                                $("#" + prefix + "sipPassword-container").attr("data-form-runtime-hide", "1").hide();
                             }
                         },
                     },

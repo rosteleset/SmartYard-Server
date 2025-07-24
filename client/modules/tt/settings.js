@@ -1228,11 +1228,11 @@
 
         let f = [];
 
-        for (let i in modules.tt.meta.filtersExt) {
-            if (i.charAt(0) !== "#" && !modules.tt.meta.filtersExt[i].owner) {
+        for (let i in modules.tt.meta.filters) {
+            if (i.charAt(0) !== "#" && !modules.tt.meta.filters[i].owner) {
                 f.push({
                     id: i,
-                    text: modules.tt.meta.filtersExt[i].name ? (modules.tt.meta.filtersExt[i].name + " [" + i + "]") : i,
+                    text: modules.tt.meta.filters[i].name ? (modules.tt.meta.filters[i].name + " [" + i + "]") : i,
                 });
             }
         }
@@ -1318,8 +1318,8 @@
                     }
                 }
 
-                for (let i in modules.tt.meta.filtersExt) {
-                    if (!modules.tt.meta.filtersExt[i].owner) {
+                for (let i in modules.tt.meta.filters) {
+                    if (!modules.tt.meta.filters[i].owner) {
                         filters[i] = true;
                     }
                 }
@@ -1372,7 +1372,7 @@
                                             data: project.filters[i].projectFilterId,
                                         },
                                         {
-                                            data: trimStr(project.filters[i].filter?modules.tt.meta.filters[project.filters[i].filter]:project.filters[i].filter, 33, true),
+                                            data: trimStr(project.filters[i].filter ? modules.tt.meta.filters[project.filters[i].filter].name : project.filters[i].filter, 33, true),
                                             nowrap: true,
                                         },
                                         {
@@ -2952,7 +2952,7 @@
             done(f => {
                 let readOnly = false;
                 try {
-                    readOnly = modules.tt.meta.filtersExt[filter].owner ? true : false;
+                    readOnly = modules.tt.meta.filters[filter].owner ? true : false;
                 } catch (_) {
                     //
                 }
@@ -3153,7 +3153,7 @@
                     rows: () => {
                         let rows = [];
 
-                        for (let i in modules.tt.meta.filtersExt) {
+                        for (let i in modules.tt.meta.filters) {
                             rows.push({
                                 uid: i,
                                 cols: [
@@ -3162,15 +3162,15 @@
                                         nowrap: true,
                                     },
                                     {
-                                        data: trimStr(modules.tt.meta.filtersExt[i].owner?(users[modules.tt.meta.filtersExt[i].owner]?users[modules.tt.meta.filtersExt[i].owner]:modules.tt.meta.filtersExt[i].owner):i18n("tt.commonFilter"), 33, true),
+                                        data: trimStr(modules.tt.meta.filters[i].owner ? (users[modules.tt.meta.filters[i].owner] ? users[modules.tt.meta.filters[i].owner] : modules.tt.meta.filters[i].owner):i18n("tt.commonFilter"), 33, true),
                                         nowrap: true,
                                     },
                                     {
-                                        data: trimStr(modules.tt.meta.filtersExt[i].name?modules.tt.meta.filtersExt[i].name:i, 128, true),
+                                        data: trimStr(modules.tt.meta.filters[i].name ? modules.tt.meta.filters[i].name : i, 128, true),
                                         nowrap: true,
                                     },
                                 ],
-                                class: modules.tt.meta.filtersExt[i].pipeline ? 'text-info' : '',
+                                class: modules.tt.meta.filters[i].pipeline ? 'text-info' : '',
                                 dropDown: {
                                     items: [
                                         {
@@ -3264,7 +3264,7 @@
                     for (let k in modules.tt.meta.filters) {
                         f.push({
                             id: k,
-                            text: modules.tt.meta.filters[k],
+                            text: modules.tt.meta.filters[k].name,
                         });
                     }
 
@@ -3406,7 +3406,7 @@
 
                 let filters = {};
                 for (let i in modules.tt.meta.filters) {
-                    filters[i] = modules.tt.meta.filters[i] + " [" + i + "]";
+                    filters[i] = modules.tt.meta.filters[i].name + " [" + i + "]";
                 }
 
                 cardTable({

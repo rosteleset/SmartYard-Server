@@ -172,6 +172,8 @@ function hashChange() {
 
         loadingStart();
 
+        cleanupContextMenusGlobalList();
+
         setTimeout(() => {
             currentPage = route;
 

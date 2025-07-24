@@ -828,38 +828,6 @@
                 $files = loadBackend("files");
 
                 if (!$files) {
-                    $this->unCache("FILTERS");
-                    return false;
-                }
-
-                $cache = $this->cacheGet("FILTERS");
-                if ($cache) {
-                    return $cache;
-                }
-
-                $filters = $files->searchFiles([ "metadata.type" => "filter" ]);
-
-                $_list = [];
-                foreach ($filters as $filter) {
-                    try {
-                        $_list[$filter["metadata"]["filter"]] = @json_decode($this->getFilter($filter["metadata"]["filter"]), true)["name"] ? : $filter["metadata"]["filter"];
-                    } catch (\Exception $e) {
-                        $_list[$filter["metadata"]["filter"]] = $filter["metadata"]["filter"];
-                    }
-                }
-
-                $this->cacheSet("FILTERS", $_list);
-                return $_list;
-            }
-
-            /**
-             * @return false|array
-             */
-
-            public function getFiltersExt() {
-                $files = loadBackend("files");
-
-                if (!$files) {
                     $this->unCache("FILTERS-EXT");
                     return false;
                 }

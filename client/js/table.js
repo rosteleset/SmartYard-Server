@@ -112,10 +112,23 @@ function cardTable(params) {
 
     if (hasDropDowns) {
         if (params.dropDownHeader) {
-            params.dropDownHeader.id = md5(guid());
-            h += `<th><i id="${params.dropDownHeader.id}" class="fa-fw ${params.dropDownHeader.icon} hoverable pointer" title="${params.dropDownHeader.title ? params.dropDownHeader.title : ''}"></i></th>`;
+            if (params.dropDownHeader.menu) {
+                h += `<th nowrap>${params.dropDownHeader.menu}</th>`;
+            } else {
+                params.dropDownHeader.id = md5(guid());
+                h += `<th><i id="${params.dropDownHeader.id}" class="fa-fw ${params.dropDownHeader.icon} hoverable pointer" title="${params.dropDownHeader.title ? params.dropDownHeader.title : ''}"></i></th>`;
+            }
         } else {
             h += `<th><i class="fa fa-fw"></i></th>`;
+        }
+    } else {
+        if (params.dropDownHeader) {
+            if (params.dropDownHeader.menu) {
+                h += `<th nowrap>${params.dropDownHeader.menu}</th>`;
+            } else {
+                params.dropDownHeader.id = md5(guid());
+                h += `<th><i id="${params.dropDownHeader.id}" class="fa-fw ${params.dropDownHeader.icon} hoverable pointer" title="${params.dropDownHeader.title ? params.dropDownHeader.title : ''}"></i></th>`;
+            }
         }
     }
 
@@ -148,6 +161,9 @@ function cardTable(params) {
                     continue;
                 }
                 h += `<td rowId="${i}" colId="${j}" uid="${rows[i].uid}"`;
+                if (j == params.columns.length - 1 && !hasDropDowns && params.dropDownHeader) {
+                    h += ' colspan="2"';
+                }
                 let clss = '';
                 if (typeof rows[i].cols[j].click === "function") {
                     clss = `hoverable ${clickableClass} `;
@@ -409,12 +425,16 @@ function cardTable(params) {
             params.edit($(this).attr("uid"))
         });
 
-        if (params.dropDownHeader) {
+        if (params.dropDownHeader && typeof params.dropDownHeader.click == "function") {
             $("#" + params.dropDownHeader.id).off("click").on("click", params.dropDownHeader.click);
         }
     }
 
     if (params.target) {
+        if (params.append) {
+            h += `<span class="ml-2">${params.append}</span>`;
+        }
+
         if (params.mode === "append") {
             $(params.target).append(h);
         } else {

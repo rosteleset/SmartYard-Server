@@ -341,6 +341,7 @@
     "wasAttached": "attached",
     "readonly": "Readonly",
     "noSort": "Without sorting",
+    "exportToCSV": "Export to CSV file",
     "methods": {
         "tt": {
             "_title": "Task manager",
