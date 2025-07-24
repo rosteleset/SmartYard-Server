@@ -2179,7 +2179,7 @@
                             path,
                             (select count(*) from houses_houses_entrances h2 where h1.house_entrance_id = h2.house_entrance_id) installed
                         from
-                            houses_houses_entrances h1
+                            houses_entrances h1
                         left join
                             houses_houses_entrances using (house_entrance_id)
                         where
