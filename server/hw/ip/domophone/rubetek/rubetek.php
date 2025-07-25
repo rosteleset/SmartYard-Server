@@ -2,7 +2,8 @@
 
 namespace hw\ip\domophone\rubetek;
 
-use hw\Interfaces\{
+use hw\Enum\HousePrefixField;
+use hw\Interface\{
     CmsLevelsInterface,
     DbConfigUpdaterInterface,
     DisplayTextInterface,
@@ -10,7 +11,10 @@ use hw\Interfaces\{
     LanguageInterface,
 };
 use hw\ip\domophone\domophone;
-use hw\ValueObjects\HousePrefix;
+use hw\ValueObject\{
+    FlatNumber,
+    HousePrefix,
+};
 
 /**
  * Abstract class representing a Rubetek domophone.
@@ -310,6 +314,11 @@ abstract class rubetek extends domophone implements
         return 3;
     }
 
+    public function getHousePrefixSupportedFields(): array
+    {
+        return [HousePrefixField::Address, HousePrefixField::FirstFlat, HousePrefixField::LastFlat];
+    }
+
     public function getHousePrefixes(): array
     {
         $apartRanges = $this->apiCall('/apart_ranges') ?? [];
@@ -317,10 +326,10 @@ abstract class rubetek extends domophone implements
 
         foreach ($apartRanges as $apartRange) {
             $prefixes[] = new HousePrefix(
-                $apartRange['house'],
-                $apartRange['address'],
-                $apartRange['start_number'],
-                $apartRange['end_number'],
+                number: $apartRange['house'],
+                address: $apartRange['address'],
+                firstFlat: new FlatNumber($apartRange['start_number']),
+                lastFlat: new FlatNumber($apartRange['end_number']),
             );
         }
 
@@ -482,10 +491,10 @@ abstract class rubetek extends domophone implements
 
         foreach ($prefixes as $prefix) {
             $this->apiCall('/apart_ranges', 'POST', [
-                'house' => (string)$prefix->prefix,
+                'house' => (string)$prefix->number,
                 'address' => $prefix->address,
-                'start_number' => $prefix->firstFlat,
-                'end_number' => $prefix->lastFlat,
+                'start_number' => $prefix->firstFlat->number,
+                'end_number' => $prefix->lastFlat->number,
                 'call_number' => 'XXXXYYYY',
                 'call_type' => RubetekConst::SIP,
                 'door_access' => [RubetekConst::RELAY_1_INTERNAL],

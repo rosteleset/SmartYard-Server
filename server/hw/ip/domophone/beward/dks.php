@@ -2,13 +2,17 @@
 
 namespace hw\ip\domophone\beward;
 
-use hw\Interfaces\{
+use hw\Enum\HousePrefixField;
+use hw\Interface\{
     CmsLevelsInterface,
     DisplayTextInterface,
     HousePrefixInterface,
     LanguageInterface,
 };
-use hw\ValueObjects\HousePrefix;
+use hw\ValueObject\{
+    FlatNumber,
+    HousePrefix,
+};
 
 /**
  * Class representing a Beward DKS series domophone.
@@ -39,6 +43,11 @@ class dks extends beward implements CmsLevelsInterface, DisplayTextInterface, Ho
         return 1;
     }
 
+    public function getHousePrefixSupportedFields(): array
+    {
+        return [HousePrefixField::Address, HousePrefixField::FirstFlat, HousePrefixField::LastFlat];
+    }
+
     public function getHousePrefixes(): array
     {
         $gateSettings = $this->getParams('gate_cgi');
@@ -50,10 +59,10 @@ class dks extends beward implements CmsLevelsInterface, DisplayTextInterface, Ho
 
         for ($i = 1; $i <= $gateSettings['EntranceCount']; $i++) {
             $prefixes[] = new HousePrefix(
-                $gateSettings["Prefix$i"],
-                $gateSettings["Address$i"],
-                $gateSettings["BegNumber$i"],
-                $gateSettings["EndNumber$i"],
+                number: $gateSettings["Prefix$i"],
+                address: $gateSettings["Address$i"],
+                firstFlat: new FlatNumber($gateSettings["BegNumber$i"]),
+                lastFlat: new FlatNumber($gateSettings["EndNumber$i"]),
             );
         }
 
@@ -129,9 +138,9 @@ class dks extends beward implements CmsLevelsInterface, DisplayTextInterface, Ho
             foreach ($prefixes as $i => $prefix) {
                 $index = $i + 1;
                 $params['Address' . $index] = $prefix->address;
-                $params['Prefix' . $index] = $prefix->prefix;
-                $params['BegNumber' . $index] = $prefix->firstFlat;
-                $params['EndNumber' . $index] = $prefix->lastFlat;
+                $params['Prefix' . $index] = $prefix->number;
+                $params['BegNumber' . $index] = $prefix->firstFlat->number;
+                $params['EndNumber' . $index] = $prefix->lastFlat->number;
             }
         }
 

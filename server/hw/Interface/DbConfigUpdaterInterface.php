@@ -1,10 +1,9 @@
 <?php
 
-namespace hw\Interfaces;
+namespace hw\Interface;
 
 interface DbConfigUpdaterInterface
 {
-
     /**
      * Updates the configuration retrieved from the database for use with a specific device.
      * This method is intended to modify and return the configuration before it is applied to the device.

@@ -35,7 +35,7 @@
                         autoconfigure_device($device_type, $device_id, $first_time);
                     } catch (\Exception $e) {
                         $script_result = 'fail';
-                        die("!!! FAILED: " . $e->getMessage() . " !!!\n\n");
+                        die("AUTOCONFIGURATION FAILED!\n\n$e\n\n");
                     }
                 }
 

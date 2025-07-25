@@ -4,7 +4,7 @@ namespace hw\ip\domophone\hikvision;
 
 use DateInterval;
 use DateTime;
-use hw\Interfaces\LanguageInterface;
+use hw\Interface\LanguageInterface;
 use hw\ip\domophone\domophone;
 
 /**

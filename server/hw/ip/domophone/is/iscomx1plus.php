@@ -2,7 +2,7 @@
 
 namespace hw\ip\domophone\is;
 
-use hw\Interfaces\DisplayTextInterface;
+use hw\Interface\DisplayTextInterface;
 
 /**
  * Class representing a Sokol ISCom X1 Plus (rev.5) intercom.

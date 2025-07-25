@@ -2,13 +2,17 @@
 
 namespace hw\ip\domophone\qtech;
 
-use hw\Interfaces\{
+use hw\Enum\HousePrefixField;
+use hw\Interface\{
     DisplayTextInterface,
     HousePrefixInterface,
     LanguageInterface,
 };
 use hw\ip\domophone\domophone;
-use hw\ValueObjects\HousePrefix;
+use hw\ValueObject\{
+    FlatNumber,
+    HousePrefix,
+};
 
 /**
  * Abstract class representing a Qtech domophone.
@@ -265,6 +269,11 @@ abstract class qtech extends domophone implements DisplayTextInterface, HousePre
         return 1;
     }
 
+    public function getHousePrefixSupportedFields(): array
+    {
+        return [HousePrefixField::FirstFlat, HousePrefixField::LastFlat];
+    }
+
     public function getHousePrefixes(): array
     {
         $gateDialplans = $this->apiCall('dialreplacemp', 'get')['data'] ?? [];
@@ -278,10 +287,9 @@ abstract class qtech extends domophone implements DisplayTextInterface, HousePre
 
         foreach ($gateDialplans as $gateDialplan) {
             $prefixes[] = new HousePrefix(
-                $gateDialplan['prefix'],
-                '',
-                $gateDialplan['start'],
-                $gateDialplan['end'],
+                number: $gateDialplan['prefix'],
+                firstFlat: new FlatNumber($gateDialplan['start']),
+                lastFlat: new FlatNumber($gateDialplan['end']),
             );
         }
 
@@ -430,9 +438,9 @@ abstract class qtech extends domophone implements DisplayTextInterface, HousePre
 
             foreach ($prefixes as $prefix) {
                 $this->apiCall('dialreplacemp', 'add', [
-                    'prefix' => (string)$prefix->prefix,
-                    'Start' => (string)$prefix->firstFlat,
-                    'End' => (string)$prefix->lastFlat, // There will be an error if lastFlat === firstFlat
+                    'prefix' => (string)$prefix->number,
+                    'Start' => (string)$prefix->firstFlat->number,
+                    'End' => (string)$prefix->lastFlat->number, // There will be an error if lastFlat === firstFlat
                     'Account' => 0,
                     'Address' => '', // There must be an empty string, otherwise the method will not work
                 ]);

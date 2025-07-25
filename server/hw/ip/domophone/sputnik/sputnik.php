@@ -5,7 +5,7 @@ namespace hw\ip\domophone\sputnik;
 use DateTime;
 use DateTimeZone;
 use Exception;
-use hw\Interfaces\CmsLevelsInterface;
+use hw\Interface\CmsLevelsInterface;
 use hw\ip\domophone\domophone;
 
 /**

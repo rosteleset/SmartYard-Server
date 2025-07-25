@@ -2,11 +2,15 @@
 
 namespace hw\SmartConfigurator;
 
-use hw\Interfaces\{
+use hw\Enum\HousePrefixField;
+use hw\Interface\{
     DbConfigUpdaterInterface,
     DisplayTextInterface,
+    HousePrefixInterface,
 };
 use hw\SmartConfigurator\DbConfigCollector\DbConfigCollectorInterface;
+use hw\ValueObject\HousePrefix;
+use UnexpectedValueException;
 
 class SmartConfigurator
 {
@@ -171,6 +175,26 @@ class SmartConfigurator
                 0,
                 $this->device->getDisplayTextLinesCount(),
             );
+        }
+
+        if ($this->device instanceof HousePrefixInterface && isset($this->dbConfig['housePrefixes'])) {
+            $supported = $this->device->getHousePrefixSupportedFields();
+
+            $normalizedPrefixes = [];
+            foreach ($this->dbConfig['housePrefixes'] as $prefix) {
+                if (!$prefix instanceof HousePrefix) {
+                    throw new UnexpectedValueException('Expected instance of HousePrefix');
+                }
+
+                $normalizedPrefixes[] = new HousePrefix(
+                    number: $prefix->number,
+                    address: in_array(HousePrefixField::Address, $supported, true) ? $prefix->address : null,
+                    firstFlat: in_array(HousePrefixField::FirstFlat, $supported, true) ? $prefix->firstFlat : null,
+                    lastFlat: in_array(HousePrefixField::LastFlat, $supported, true) ? $prefix->lastFlat : null,
+                );
+            }
+
+            $this->dbConfig['housePrefixes'] = $normalizedPrefixes;
         }
     }
 
