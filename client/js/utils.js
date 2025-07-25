@@ -1,3 +1,11 @@
+const additionalLinks = [
+    "fb",
+    "vless",
+    "vmess",
+    "ss",
+    "tg",
+];
+
 var phoneUtil = libphonenumber.PhoneNumberUtil.getInstance();
 
 function isEmpty(v) {
@@ -454,9 +462,8 @@ jQuery.fn.click2 = function(single_click_callback, double_click_callback, timeou
     });
 }
 
-linkify.registerCustomProtocol("fb");
-linkify.registerCustomProtocol("vless");
-linkify.registerCustomProtocol("vmess");
-linkify.registerCustomProtocol("ss");
+for (let i in additionalLinks) {
+    linkify.registerCustomProtocol(additionalLinks[i]);
+}
 
 linkify.init();
