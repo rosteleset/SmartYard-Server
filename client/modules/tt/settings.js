@@ -1372,11 +1372,11 @@
                                             data: project.filters[i].projectFilterId,
                                         },
                                         {
-                                            data: trimStr(project.filters[i].filter ? modules.tt.meta.filters[project.filters[i].filter].name : project.filters[i].filter, 33, true),
+                                            data: trimStr(project.filters[i].filter ? modules.tt.meta.filters[project.filters[i].filter].name : project.filters[i].filter),
                                             nowrap: true,
                                         },
                                         {
-                                            data: trimStr(project.filters[i].filter, 33, true),
+                                            data: trimStr(project.filters[i].filter),
                                             nowrap: true,
                                         },
                                         {
@@ -3158,15 +3158,15 @@
                                 uid: i,
                                 cols: [
                                     {
-                                        data: trimStr(i, 33, true),
+                                        data: trimStr(i),
                                         nowrap: true,
                                     },
                                     {
-                                        data: trimStr(modules.tt.meta.filters[i].owner ? (users[modules.tt.meta.filters[i].owner] ? users[modules.tt.meta.filters[i].owner] : modules.tt.meta.filters[i].owner):i18n("tt.commonFilter"), 33, true),
+                                        data: trimStr(modules.tt.meta.filters[i].owner ? (users[modules.tt.meta.filters[i].owner] ? users[modules.tt.meta.filters[i].owner] : modules.tt.meta.filters[i].owner):i18n("tt.commonFilter")),
                                         nowrap: true,
                                     },
                                     {
-                                        data: trimStr(modules.tt.meta.filters[i].name ? modules.tt.meta.filters[i].name : i, 128, true),
+                                        data: trimStr(modules.tt.meta.filters[i].name ? modules.tt.meta.filters[i].name : i, 128),
                                         nowrap: true,
                                     },
                                 ],

@@ -65,13 +65,13 @@
 
                     voipFlats.push({
                         "id": r.subscribers[0].flats[i].flatId,
-                        "text": trimStr($.trim(r.subscribers[0].flats[i].house.houseFull + ", " + r.subscribers[0].flats[i].flat), 64, true) + " " + link,
+                        "text": trimStr($.trim(r.subscribers[0].flats[i].house.houseFull + ", " + r.subscribers[0].flats[i].flat), 64) + " " + link,
                         "checked": !!voip,
                     });
 
                     paranoidFlats.push({
                         "id": r.subscribers[0].flats[i].flatId,
-                        "text": trimStr($.trim(r.subscribers[0].flats[i].house.houseFull + ", " + r.subscribers[0].flats[i].flat), 64, true) + " " + link,
+                        "text": trimStr($.trim(r.subscribers[0].flats[i].house.houseFull + ", " + r.subscribers[0].flats[i].flat), 64) + " " + link,
                         "checked": !!paranoid,
                     });
                 }

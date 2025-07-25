@@ -248,7 +248,7 @@
 
                 flats.push({
                     "id": subscriber.flats[i].flatId,
-                    "text": trimStr($.trim(subscriber.flats[i].house.houseFull + ", " + subscriber.flats[i].flat), 64, true) + " " + link,
+                    "text": trimStr($.trim(subscriber.flats[i].house.houseFull + ", " + subscriber.flats[i].flat), 64) + " " + link,
                     "checked": true,
                     "append": flat,
                 });
