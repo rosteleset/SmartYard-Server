@@ -827,7 +827,7 @@
                                 multiple: true,
                                 tags: true,
                                 createTags: true,
-                                value: (typeof prefferredValue !== "undefined")?prefferredValue:(ax?ax:[]),
+                                value: (typeof prefferredValue !== "undefined") ? prefferredValue : (ax ? ax : []),
                                 validate: validate,
                             }
 
@@ -851,7 +851,7 @@
                                 placeholder: modules.tt.issueFieldTitle(field),
                                 hint: cf.fieldDescription?cf.fieldDescription:false,
                                 options: select2Filter(options, filter),
-                                value: (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue["_cf_" + fieldId])?issue["_cf_" + fieldId]:[]),
+                                value: (typeof prefferredValue !== "undefined") ? prefferredValue : ((issue && issue["_cf_" + fieldId]) ? issue["_cf_" + fieldId] : []),
                                 validate: validate,
                                 ajax: {
                                     delay: 1000,
@@ -1324,12 +1324,12 @@
             issuesListId = md5(guid());
         }
 
-        let current_project;
+        let currentProject;
 
         if (target) {
-            current_project = params.project;
+            currentProject = params.project;
         } else {
-            current_project = params.project ? params.project : lStore("ttProject");
+            currentProject = params.project ? params.project : lStore("ttProject");
         }
 
         let pn = {};
@@ -1350,7 +1350,7 @@
             }
 
             for (let j in modules.tt.meta.myRoles) {
-                if (j == current_project) {
+                if (j == currentProject) {
                     rtd += `<option selected="selected" value="${j}">${pn[j]} [${j}]</option>`;
                 } else {
                     rtd += `<option value="${j}">${pn[j]} [${j}]</option>`;
@@ -1376,8 +1376,8 @@
 
         if (!target) {
             $("#rightTopDynamic").html(rtd);
-            current_project = $("#ttProjectSelect").val();
-            lStore("ttProject", current_project);
+            currentProject = $("#ttProjectSelect").val();
+            lStore("ttProject", currentProject);
         }
 
         $("#ttProjectSelect").off("change").on("change", () => {
@@ -1387,7 +1387,7 @@
         let project = false;
 
         for (let i in modules.tt.meta.projects) {
-            if (modules.tt.meta.projects[i].acronym == current_project) {
+            if (modules.tt.meta.projects[i].acronym == currentProject) {
                 project = modules.tt.meta.projects[i];
             }
         }
@@ -1402,7 +1402,7 @@
             }
         } else {
             try {
-                filterName = params["filter"] ? params["filter"] : lStore("ttIssueFilter:" + current_project);
+                filterName = params["filter"] ? params["filter"] : lStore("ttIssueFilter:" + currentProject);
             } catch (_) {
                 //
             }
@@ -1574,10 +1574,10 @@
                         $("#customFilterDelete").off("click").on("click", function () {
                             mConfirm(i18n("tt.filterDelete", modules.tt.meta.filters[filterName].name), i18n("confirm"), i18n("delete"), () => {
                                 loadingStart();
-                                DELETE("tt", "customFilter", filterName, { "project": current_project }).
+                                DELETE("tt", "customFilter", filterName, { "project": currentProject }).
                                 done(() => {
                                     message(i18n("tt.filterWasDeleted"));
-                                    lStore("ttIssueFilter:" + current_project, null);
+                                    lStore("ttIssueFilter:" + currentProject, null);
                                     window.location.href = '?#tt&_=' + Math.random();
                                 }).
                                 fail(FAIL).
@@ -1598,7 +1598,7 @@
             let _ = Math.random();
 
             let query = {
-                "project": current_project,
+                "project": currentProject,
                 "filter": filterName ? filterName : '',
                 "skip": skip,
                 "limit": limit,
@@ -2060,7 +2060,7 @@
                             f.fileName = n;
                             loadingStart();
                             PUT("tt", "customFilter", n, {
-                                "project": current_project,
+                                "project": currentProject,
                                 "body": JSON.stringify(f, true, 4),
                             }).
                             done(() => {
@@ -2068,7 +2068,7 @@
                                 done(modules.tt.tt).
                                 done(() => {
                                     message(i18n("tt.filterWasSaved"));
-                                    lStore("ttIssueFilter:" + current_project, n);
+                                    lStore("ttIssueFilter:" + currentProject, n);
                                     window.onbeforeunload = null;
                                     window.location.href = '?#tt&filter=' + n + '&customSearch=yes&owner=' + myself.login + '&_=' + Math.random();
                                 }).
@@ -2222,10 +2222,10 @@
                                         }
                                     }
                                     if (id == "export") {
-                                        modules.tt.exportCSV(filterName);
+                                        modules.tt.exportCSV(currentProject, filterName);
                                     }
                                     if (id.substring(0, 7) == "action-") {
-                                        modules.tt.bulkAction(filterName, realFilter.bulkWorkflow, data);
+                                        modules.tt.bulkAction(currentProject, filterName, realFilter.bulkWorkflow, data);
                                     }
                                 }
                             }),
@@ -2388,7 +2388,7 @@
         });
     },
 
-    bulkAction: function (filterName, workflow, action) {
+    bulkAction: function (project, filterName, workflow, action) {
         loadingStart();
         QUERYID("tt", "bulkAction", filterName, {
             workflow,
@@ -2401,8 +2401,35 @@
         always(loadingDone);
     },
 
-    exportCSV: function (filterName) {
-        //
+    exportCSV: function (project, filterName) {
+        loadingStart();
+        QUERY("tt", "issues", {
+            project,
+            filter: filterName,
+            skip: 0,
+            limit: 65535,
+        }, true).
+        done(r => {
+            console.log(r);
+            if (r && r.issues && r.issues.issues && r.issues.issues.length) {
+                let csv = '';
+                let p = Object.keys(r.issues.projection);
+                for (let i in p) {
+                    csv += p[i] + ';';
+                }
+                csv += '\n';
+                for (let i in r.issues.issues) {
+                    for (let j in p) {
+                        csv += r.issues.issues[i][p[j]] + ';';
+                    }
+                    csv += '\n';
+                }
+                saveAs(new Blob([ csv ], { type: "text/plain;charset=utf-8" }), filterName + ".csv");
+            }
+            loadingDone();
+        }).
+        fail(FAIL).
+        fail(loadingDone);
     },
 
     route: function (params) {

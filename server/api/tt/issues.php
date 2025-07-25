@@ -11,8 +11,8 @@
      * @apiHeader {String} authorization authentication token
      *
      * @apiQuery {String} filter
-     * @apiQuery {String} search
-     * @apiQuery {String} parent
+     * @apiQuery {String} [search]
+     * @apiQuery {String} [parent]
      *
      * @apiSuccess {Object[]} issues
      */
