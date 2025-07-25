@@ -453,3 +453,10 @@ jQuery.fn.click2 = function(single_click_callback, double_click_callback, timeou
         });
     });
 }
+
+linkify.registerCustomProtocol("fb");
+linkify.registerCustomProtocol("vless");
+linkify.registerCustomProtocol("vmess");
+linkify.registerCustomProtocol("ss");
+
+linkify.init();
