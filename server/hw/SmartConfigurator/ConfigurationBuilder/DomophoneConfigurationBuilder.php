@@ -2,7 +2,7 @@
 
 namespace hw\SmartConfigurator\ConfigurationBuilder;
 
-use hw\ValueObjects\HousePrefix;
+use hw\ValueObject\HousePrefix;
 
 /**
  * The class responsible for building the intercom configuration.

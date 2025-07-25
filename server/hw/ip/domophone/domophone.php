@@ -2,7 +2,7 @@
 
 namespace hw\ip\domophone;
 
-use hw\Interfaces\{
+use hw\Interface\{
     CmsLevelsInterface,
     DisplayTextInterface,
     GateModeInterface,

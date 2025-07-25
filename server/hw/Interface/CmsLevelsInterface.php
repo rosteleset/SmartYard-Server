@@ -1,6 +1,6 @@
 <?php
 
-namespace hw\Interfaces;
+namespace hw\Interface;
 
 /**
  * Interface for managing CMS (coordinate matrix system) levels on a device.

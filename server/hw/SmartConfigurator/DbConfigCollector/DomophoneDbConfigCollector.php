@@ -9,14 +9,17 @@ use backends\{
     sip\sip,
 };
 use hw\hw;
-use hw\Interfaces\{
+use hw\Interface\{
     CmsLevelsInterface,
     DisplayTextInterface,
     GateModeInterface,
     HousePrefixInterface,
 };
 use hw\SmartConfigurator\ConfigurationBuilder\DomophoneConfigurationBuilder;
-use hw\ValueObjects\HousePrefix;
+use hw\ValueObject\{
+    FlatNumber,
+    HousePrefix,
+};
 
 /**
  * Class responsible for collecting intercom configuration data from the database.
@@ -146,13 +149,13 @@ class DomophoneDbConfigCollector implements DbConfigCollectorInterface
             $lastFlat = max($flatNumbers);
 
             // Collect house prefixes
-            $prefix = $entrance['prefix'] ?? 0;
-            if ($prefix > 0) {
+            $prefixNumber = $entrance['prefix'] ?? 0;
+            if ($prefixNumber > 0) {
                 $housePrefixes[] = new HousePrefix(
-                    $prefix,
-                    $addresses->getHouse($entrance['houseId'])['houseFull'],
-                    $firstFlat,
-                    $lastFlat,
+                    number: $prefixNumber,
+                    address: $addresses->getHouse($entrance['houseId'])['houseFull'],
+                    firstFlat: new FlatNumber($firstFlat),
+                    lastFlat: new FlatNumber($lastFlat),
                 );
             }
 

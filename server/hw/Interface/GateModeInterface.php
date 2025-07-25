@@ -1,6 +1,6 @@
 <?php
 
-namespace hw\Interfaces;
+namespace hw\Interface;
 
 /**
  * Interface for enabling or disabling the gate mode.

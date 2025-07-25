@@ -1,6 +1,6 @@
 <?php
 
-namespace hw\Interfaces;
+namespace hw\Interface;
 
 /**
  * Interface for managing the language settings on a device.

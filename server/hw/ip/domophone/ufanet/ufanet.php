@@ -4,7 +4,7 @@ namespace hw\ip\domophone\ufanet;
 
 use CURLFile;
 use Generator;
-use hw\Interfaces\{
+use hw\Interface\{
     DisplayTextInterface,
     GateModeInterface,
     LanguageInterface,

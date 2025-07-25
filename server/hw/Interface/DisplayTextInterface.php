@@ -1,6 +1,6 @@
 <?php
 
-namespace hw\Interfaces;
+namespace hw\Interface;
 
 /**
  * Interface for managing display text on a device.

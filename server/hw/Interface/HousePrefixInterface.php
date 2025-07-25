@@ -1,8 +1,9 @@
 <?php
 
-namespace hw\Interfaces;
+namespace hw\Interface;
 
-use hw\ValueObjects\HousePrefix;
+use hw\Enum\HousePrefixField;
+use hw\ValueObject\HousePrefix;
 
 /**
  * Interface for managing the gate mode with prefixes, addresses and apartment ranges.
@@ -12,6 +13,13 @@ use hw\ValueObjects\HousePrefix;
  */
 interface HousePrefixInterface
 {
+    /**
+     * Returns the list of supported {@see HousePrefix} fields by the device.
+     *
+     * @return HousePrefixField[] Array of supported {@see HousePrefixField} enum cases.
+     */
+    public function getHousePrefixSupportedFields(): array;
+
     /**
      * Returns a list of configured house prefixes with apartment ranges.
      *
