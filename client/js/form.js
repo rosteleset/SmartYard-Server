@@ -203,63 +203,68 @@ function cardForm(params) {
             params.fields[i].type = "select2";
             params.fields[i].options = [
                 {
-                    text: "Warning",
-                    value: "bg-warning",
+                    text: i18n("byDefault"),
+                    value: "",
+                    icon: "p-1 fas fa-palette",
+                },
+                {
+                    text: i18n("colorWarning"),
+                    value: "warning",
                     icon: "p-1 fas fa-palette bg-warning",
                 },
                 {
-                    text: "Primary",
-                    value: "bg-primary",
+                    text: i18n("colorPrimary"),
+                    value: "primary",
                     icon: "p-1 fas fa-palette bg-primary",
                 },
                 {
-                    text: "Secondary",
-                    value: "bg-secondary",
+                    text: i18n("colorSecondary"),
+                    value: "secondary",
                     icon: "p-1 fas fa-palette bg-secondary",
                 },
                 {
-                    text: "Success",
-                    value: "bg-success",
+                    text: i18n("Success"),
+                    value: "success",
                     icon: "p-1 fas fa-palette bg-success",
                 },
                 {
-                    text: "Danger",
-                    value: "bg-danger",
+                    text: i18n("Danger"),
+                    value: "danger",
                     icon: "p-1 fas fa-palette bg-danger",
                 },
                 {
-                    text: "Info",
-                    value: "bg-info",
+                    text: i18n("Info"),
+                    value: "info",
                     icon: "p-1 fas fa-palette bg-info",
                 },
                 {
-                    text: "Purple",
-                    value: "bg-purple",
+                    text: i18n("Purple"),
+                    value: "purple",
                     icon: "p-1 fas fa-palette bg-purple",
                 },
                 {
-                    text: "Orange",
-                    value: "bg-orange",
+                    text: i18n("Orange"),
+                    value: "orange",
                     icon: "p-1 fas fa-palette bg-orange",
                 },
                 {
-                    text: "Lightblue",
-                    value: "bg-lightblue",
+                    text: i18n("Lightblue"),
+                    value: "lightblue",
                     icon: "p-1 fas fa-palette bg-lightblue",
                 },
                 {
-                    text: "Fuchsia",
-                    value: "bg-fuchsia",
+                    text: i18n("Fuchsia"),
+                    value: "fuchsia",
                     icon: "p-1 fas fa-palette bg-fuchsia",
                 },
                 {
-                    text: "Black",
-                    value: "bg-black",
+                    text: i18n("Black"),
+                    value: "black",
                     icon: "p-1 fas fa-palette bg-black",
                 },
                 {
-                    text: "Lime",
-                    value: "bg-lime",
+                    text: i18n("Lime"),
+                    value: "lime",
                     icon: "p-1 fas fa-palette bg-lime",
                 },
             ];
@@ -615,7 +620,7 @@ function cardForm(params) {
             case "json":
                 height = params.fields[i].height ? params.fields[i].height : 400;
                 h += `<div id="${_prefix}${params.fields[i].id}-div" style="height: ${height}px;">`;
-                h += `<pre class="ace-editor form-control modalFormField" id="${_prefix}${params.fields[i].id}" rows="5" style="border: 1px solid #ced4da; border-radius: 0.25rem;">`;
+                h += `<pre class="ace-editor form-control modalFormField" id="${_prefix}${params.fields[i].id}">`;
                 h += `</pre>`;
                 h += `</div>`;
                 break;

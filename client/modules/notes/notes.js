@@ -303,7 +303,7 @@
                     id,
                     r.subject,
                     r.body,
-                    r.color,
+                    r.color ? ("text-" + r.color) : "",
                     r.icon,
                     r.font,
                     r.checks,
@@ -521,7 +521,8 @@
                     modules.notes.notes[id].remind = r.remind;
                     modules.notes.notes[id].icon = r.icon;
                     modules.notes.notes[id].font = r.font;
-                    modules.notes.notes[id].color = r.color;
+                    modules.notes.notes[id].color = r.color ? ("text-" + r.color) : "";
+
                     modules.notes.notes[id].x = parseFloat(x);
                     modules.notes.notes[id].y = parseFloat(y);
                     modules.notes.notes[id].z = parseInt(z);

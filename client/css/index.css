@@ -380,6 +380,8 @@ body.dark-mode .hr-text::after .hr-text-white::after .hr-text-pointer::after hr-
   top: 0;
   width: 100%;
   height: 100%;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
 }
 
 .back-to-top {

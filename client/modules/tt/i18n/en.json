@@ -342,6 +342,7 @@
     "readonly": "Readonly",
     "noSort": "Without sorting",
     "exportToCSV": "Export to CSV file",
+    "bulkActions": "Bulk actions",
     "methods": {
         "tt": {
             "_title": "Task manager",
