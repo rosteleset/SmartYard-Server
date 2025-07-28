@@ -12,6 +12,7 @@ use hw\hw;
 use hw\Interface\{
     CmsLevelsInterface,
     DisplayTextInterface,
+    FreePassInterface,
     GateModeInterface,
     HousePrefixInterface,
 };
@@ -91,13 +92,16 @@ class DomophoneDbConfigCollector implements DbConfigCollectorInterface
             $this->addDisplayText();
         }
 
+        if ($this->device instanceof FreePassInterface) {
+            $this->addFreePassEnabled();
+        }
+
         $this
             ->addApartmentsAndHousePrefixes()
             ->addDtmf()
             ->addEventServer()
             ->addNtp()
             ->addSip()
-            ->addUnlocked()
         ;
 
         // If the domophone is linked to the entrance
@@ -289,6 +293,16 @@ class DomophoneDbConfigCollector implements DbConfigCollectorInterface
     }
 
     /**
+     * Add the free pass mode status to the intercom configuration.
+     *
+     * @return void
+     */
+    private function addFreePassEnabled(): void
+    {
+        $this->builder->addFreePassEnabled($this->domophoneData['locksAreOpen']);
+    }
+
+    /**
      * Add the CMS matrix to the domophone configuration.
      *
      * @return self
@@ -343,9 +357,9 @@ class DomophoneDbConfigCollector implements DbConfigCollectorInterface
     /**
      * Add SIP parameters to the domophone configuration.
      *
-     * @return self
+     * @return void
      */
-    private function addSip(): self
+    private function addSip(): void
     {
         /** @var sip $sip */
         $sip = loadBackend("sip");
@@ -373,18 +387,6 @@ class DomophoneDbConfigCollector implements DbConfigCollectorInterface
             $stunServer,
             $stunPort,
         );
-
-        return $this;
-    }
-
-    /**
-     * Add unlocked status to the domophone configuration.
-     *
-     * @return void
-     */
-    private function addUnlocked(): void
-    {
-        $this->builder->addUnlocked($this->domophoneData['locksAreOpen']);
     }
 
     /**

@@ -6,6 +6,7 @@ use hw\Enum\HousePrefixField;
 use hw\Interface\{
     CmsLevelsInterface,
     DisplayTextInterface,
+    FreePassInterface,
     HousePrefixInterface,
     LanguageInterface,
 };
@@ -17,7 +18,12 @@ use hw\ValueObject\{
 /**
  * Class representing a Beward DKS series domophone.
  */
-class dks extends beward implements CmsLevelsInterface, DisplayTextInterface, HousePrefixInterface, LanguageInterface
+class dks extends beward implements
+    CmsLevelsInterface,
+    DisplayTextInterface,
+    FreePassInterface,
+    HousePrefixInterface,
+    LanguageInterface
 {
     public function getCmsLevels(): array
     {
@@ -67,6 +73,12 @@ class dks extends beward implements CmsLevelsInterface, DisplayTextInterface, Ho
         }
 
         return $prefixes;
+    }
+
+    public function isFreePassEnabled(): bool
+    {
+        // Returns true if the door is currently open using the openLock() method
+        return !intval($this->apiCall('cgi-bin/intercom_cgi', ['action' => 'locked']));
     }
 
     public function prepare(): void
@@ -119,6 +131,22 @@ class dks extends beward implements CmsLevelsInterface, DisplayTextInterface, Ho
             'LineEnable4' => 'off',
             'LineEnable5' => 'off',
         ]);
+    }
+
+    public function setFreePassEnabled(bool $enabled): void
+    {
+        $this->apiCall('webs/btnSettingEx', [
+            'flag' => '4600',
+            'paramchannel' => '0',
+            'paramcmd' => '0',
+            'paramctrl' => (int)$enabled,
+            'paramstep' => '0',
+            'paramreserved' => '0',
+        ]);
+
+        $this->setIntercom('DoorOpenMode', $enabled ? 'on' : 'off');
+        $this->setIntercom('MainDoorOpenMode', $enabled ? 'on' : 'off');
+        $this->setIntercom('AltDoorOpenMode', $enabled ? 'on' : 'off');
     }
 
     public function setHousePrefixes(array $prefixes): void
@@ -182,22 +210,6 @@ class dks extends beward implements CmsLevelsInterface, DisplayTextInterface, Ho
     public function setUnlockTime(int $time = 3): void
     {
         $this->setIntercom('DoorOpenTime', $time);
-    }
-
-    public function setUnlocked(bool $unlocked = true): void
-    {
-        $this->apiCall('webs/btnSettingEx', [
-            'flag' => '4600',
-            'paramchannel' => '0',
-            'paramcmd' => '0',
-            'paramctrl' => (int)$unlocked,
-            'paramstep' => '0',
-            'paramreserved' => '0',
-        ]);
-
-        $this->setIntercom('DoorOpenMode', $unlocked ? 'on' : 'off');
-        $this->setIntercom('MainDoorOpenMode', $unlocked ? 'on' : 'off');
-        $this->setIntercom('AltDoorOpenMode', $unlocked ? 'on' : 'off');
     }
 
     /**

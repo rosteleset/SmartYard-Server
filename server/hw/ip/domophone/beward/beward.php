@@ -580,12 +580,6 @@ abstract class beward extends domophone
         ];
     }
 
-    protected function getUnlocked(): bool
-    {
-        // Returns true if the door is currently open using the openLock() method
-        return !intval($this->apiCall('cgi-bin/intercom_cgi', ['action' => 'locked']));
-    }
-
     /**
      * Get zero-CMS matrix template in Beward format.
      *

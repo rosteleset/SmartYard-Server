@@ -310,11 +310,6 @@ class sputnik extends domophone implements CmsLevelsInterface
         ]);
     }
 
-    public function setUnlocked(bool $unlocked = true): void
-    {
-        // Empty implementation
-    }
-
     public function syncData(): void
     {
         $this->uploadFlats();
@@ -327,7 +322,6 @@ class sputnik extends domophone implements CmsLevelsInterface
 
     public function transformDbConfig(array $dbConfig): array
     {
-        $dbConfig['unlocked'] = false;
         $dbConfig['cmsModel'] = $this->cmsModelType[$dbConfig['cmsModel']];
 
         $dbConfig['sip']['stunServer'] = '';
@@ -603,11 +597,6 @@ class sputnik extends domophone implements CmsLevelsInterface
             'stunServer' => '',
             'stunPort' => 3478,
         ];
-    }
-
-    protected function getUnlocked(): bool
-    {
-        return false;
     }
 
     /**

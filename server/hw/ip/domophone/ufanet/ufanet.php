@@ -6,6 +6,7 @@ use CURLFile;
 use Generator;
 use hw\Interface\{
     DisplayTextInterface,
+    FreePassInterface,
     GateModeInterface,
     LanguageInterface,
 };
@@ -14,7 +15,11 @@ use hw\ip\domophone\domophone;
 /**
  * Abstract class representing an Ufanet intercom.
  */
-abstract class ufanet extends domophone implements DisplayTextInterface, GateModeInterface, LanguageInterface
+abstract class ufanet extends domophone implements
+    DisplayTextInterface,
+    FreePassInterface,
+    GateModeInterface,
+    LanguageInterface
 {
     use \hw\ip\common\ufanet\ufanet {
         transformDbConfig as protected commonTransformDbConfig;
@@ -247,6 +252,11 @@ abstract class ufanet extends domophone implements DisplayTextInterface, GateMod
         return $resultRaw['result'] ?? '';
     }
 
+    public function isFreePassEnabled(): bool
+    {
+        return $this->apiCall('/api/v1/configuration')['door']['unlock'] !== '';
+    }
+
     public function isGateModeEnabled(): bool
     {
         ['type' => $type, 'mode' => $mode] = $this->apiCall('/api/v1/configuration')['commutator'];
@@ -330,6 +340,15 @@ abstract class ufanet extends domophone implements DisplayTextInterface, GateMod
         ]);
     }
 
+    public function setFreePassEnabled(bool $enabled): void
+    {
+        $this->apiCall('/api/v1/configuration', 'PATCH', [
+            'door' => [
+                'unlock' => $enabled ? '3000-01-01 00:00:00' : '',
+            ],
+        ]);
+    }
+
     // TODO: need to set some CMS as default, otherwise there will be difference after disabling gate mode
     public function setGateModeEnabled(bool $enabled): void
     {
@@ -375,15 +394,6 @@ abstract class ufanet extends domophone implements DisplayTextInterface, GateMod
     public function setUnlockTime(int $time = 3): void
     {
         $this->apiCall('/api/v1/configuration', 'PATCH', ['door' => ['open_time' => $time]]);
-    }
-
-    public function setUnlocked(bool $unlocked = true): void
-    {
-        $this->apiCall('/api/v1/configuration', 'PATCH', [
-            'door' => [
-                'unlock' => $unlocked ? '3000-01-01 00:00:00' : '',
-            ],
-        ]);
     }
 
     public function syncData(): void
@@ -594,11 +604,6 @@ abstract class ufanet extends domophone implements DisplayTextInterface, GateMod
             'stunServer' => '',
             'stunPort' => 3478,
         ];
-    }
-
-    protected function getUnlocked(): bool
-    {
-        return $this->apiCall('/api/v1/configuration')['door']['unlock'] !== '';
     }
 
     /**

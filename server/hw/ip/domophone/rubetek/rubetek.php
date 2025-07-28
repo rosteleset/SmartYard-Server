@@ -7,6 +7,7 @@ use hw\Interface\{
     CmsLevelsInterface,
     DbConfigUpdaterInterface,
     DisplayTextInterface,
+    FreePassInterface,
     HousePrefixInterface,
     LanguageInterface,
 };
@@ -23,6 +24,7 @@ abstract class rubetek extends domophone implements
     CmsLevelsInterface,
     DbConfigUpdaterInterface,
     DisplayTextInterface,
+    FreePassInterface,
     HousePrefixInterface,
     LanguageInterface
 {
@@ -355,6 +357,11 @@ abstract class rubetek extends domophone implements
         return array_column($this->apiCall('/rfids'), 'rfid', 'rfid');
     }
 
+    public function isFreePassEnabled(): bool
+    {
+        return $this->apiCall('/operating_mode')['free_passage_mode'] ?? true;
+    }
+
     public function openLock(int $lockNumber = 0): void
     {
         $lockNumber += 1;
@@ -485,6 +492,33 @@ abstract class rubetek extends domophone implements
         ]);
     }
 
+    public function setFreePassEnabled(bool $enabled): void
+    {
+        if ($enabled) {
+            $this->apiCall('/free_passage/start', 'POST', [
+                'door_access' => [1, 2],
+                'mon' => true,
+                'tue' => true,
+                'wed' => true,
+                'thu' => true,
+                'fri' => true,
+                'sat' => true,
+                'sun' => true,
+                'selectDate' => false,
+                'selectTime' => false,
+                'startDate' => '04.10.2024',
+                'endDate' => '04.10.2025',
+                'startTime' => '00:00',
+                'endTime' => '23:59',
+                'showMessageText' => true, // Display message about free passage
+            ]);
+        } else {
+            $this->apiCall('/free_passage/stop', 'POST');
+        }
+
+        sleep(3); // Wait for the relay to switch
+    }
+
     public function setHousePrefixes(array $prefixes): void
     {
         $this->apiCall('/apart_ranges', 'DELETE');
@@ -546,33 +580,6 @@ abstract class rubetek extends domophone implements
                 'inverted' => $inverted,
             ]);
         }
-    }
-
-    public function setUnlocked(bool $unlocked = true): void
-    {
-        if ($unlocked) {
-            $this->apiCall('/free_passage/start', 'POST', [
-                'door_access' => [1, 2],
-                'mon' => true,
-                'tue' => true,
-                'wed' => true,
-                'thu' => true,
-                'fri' => true,
-                'sat' => true,
-                'sun' => true,
-                'selectDate' => false,
-                'selectTime' => false,
-                'startDate' => '04.10.2024',
-                'endDate' => '04.10.2025',
-                'startTime' => '00:00',
-                'endTime' => '23:59',
-                'showMessageText' => true, // Display message about free passage
-            ]);
-        } else {
-            $this->apiCall('/free_passage/stop', 'POST');
-        }
-
-        sleep(3); // Wait for the relay to switch
     }
 
     public function transformDbConfig(array $dbConfig): array
@@ -878,11 +885,6 @@ abstract class rubetek extends domophone implements
             'stunServer' => $stunServer,
             'stunPort' => $stunPort,
         ];
-    }
-
-    protected function getUnlocked(): bool
-    {
-        return $this->apiCall('/operating_mode')['free_passage_mode'] ?? true;
     }
 
     /**

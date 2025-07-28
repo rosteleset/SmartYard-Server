@@ -170,11 +170,6 @@ class rodos extends domophone
         // Empty implementation
     }
 
-    public function setUnlocked(bool $unlocked = true): void
-    {
-        // Empty implementation
-    }
-
     public function syncData(): void
     {
         // Empty implementation
@@ -182,8 +177,6 @@ class rodos extends domophone
 
     public function transformDbConfig(array $dbConfig): array
     {
-        $dbConfig['unlocked'] = false;
-
         $dbConfig['dtmf'] = [
             'code1' => '1',
             'code2' => '2',
@@ -316,11 +309,6 @@ class rodos extends domophone
             'stunServer' => '',
             'stunPort' => 3478,
         ];
-    }
-
-    protected function getUnlocked(): bool
-    {
-        return false;
     }
 
     protected function initializeProperties(): void

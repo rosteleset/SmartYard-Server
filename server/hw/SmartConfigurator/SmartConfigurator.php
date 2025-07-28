@@ -43,7 +43,7 @@ class SmartConfigurator
             'cmsModel' => 'setCmsModel',
             'displayText' => 'setDisplayText',
             'osdText' => 'setOsdText',
-            'unlocked' => 'setUnlocked',
+            'freePassEnabled' => 'setFreePassEnabled',
             'dtmf' => 'setDtmfCodes',
             'motionDetection' => 'configureMotionDetection',
             'ntp' => 'configureNtp',

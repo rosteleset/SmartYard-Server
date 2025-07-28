@@ -247,17 +247,11 @@ class ds06 extends beward
         $this->wait();
     }
 
-    public function setUnlocked(bool $unlocked = true): void
-    {
-        // Empty implementation
-    }
-
     public function transformDbConfig(array $dbConfig): array
     {
         $dbConfig = $this->commonTransformDbConfig($dbConfig);
 
         $dbConfig['rfids'] = [];
-        $dbConfig['unlocked'] = false;
 
         foreach ($dbConfig['apartments'] as &$apartment) {
             $apartment['code'] = 0;
@@ -369,11 +363,6 @@ class ds06 extends beward
     protected function getMatrix(): array
     {
         return [];
-    }
-
-    protected function getUnlocked(): bool
-    {
-        return false;
     }
 
     protected function setHostname(string $hostname): void

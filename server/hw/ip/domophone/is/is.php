@@ -4,6 +4,7 @@ namespace hw\ip\domophone\is;
 
 use hw\Interface\{
     CmsLevelsInterface,
+    FreePassInterface,
     GateModeInterface,
 };
 use hw\ip\domophone\domophone;
@@ -11,7 +12,7 @@ use hw\ip\domophone\domophone;
 /**
  * Abstract class representing an Intersvyaz (IS) domophone.
  */
-abstract class is extends domophone implements CmsLevelsInterface, GateModeInterface
+abstract class is extends domophone implements CmsLevelsInterface, FreePassInterface, GateModeInterface
 {
     use \hw\ip\common\is\is;
 
@@ -216,6 +217,11 @@ abstract class is extends domophone implements CmsLevelsInterface, GateModeInter
         return $res['resist'];
     }
 
+    public function isFreePassEnabled(): bool
+    {
+        return $this->apiCall('/relay/1/settings')['alwaysOpen'];
+    }
+
     public function isGateModeEnabled(): bool
     {
         return $this->apiCall('/gate/settings')['gateMode'] ?? false;
@@ -287,6 +293,15 @@ abstract class is extends domophone implements CmsLevelsInterface, GateModeInter
         ]);
     }
 
+    public function setFreePassEnabled(bool $enabled): void
+    {
+        $relays = $this->apiCall('/relay/info');
+
+        foreach ($relays as $relay) {
+            $this->apiCall("/relay/$relay/settings", 'PUT', ['alwaysOpen' => $enabled]);
+        }
+    }
+
     public function setGateModeEnabled(bool $enabled): void
     {
         $this->apiCall('/gate/settings', 'PUT', [
@@ -321,15 +336,6 @@ abstract class is extends domophone implements CmsLevelsInterface, GateModeInter
 
         foreach ($relays as $relay) {
             $this->apiCall("/relay/$relay/settings", 'PUT', ['switchTime' => $time]);
-        }
-    }
-
-    public function setUnlocked(bool $unlocked = true): void
-    {
-        $relays = $this->apiCall('/relay/info');
-
-        foreach ($relays as $relay) {
-            $this->apiCall("/relay/$relay/settings", 'PUT', ['alwaysOpen' => $unlocked]);
         }
     }
 
@@ -623,11 +629,6 @@ abstract class is extends domophone implements CmsLevelsInterface, GateModeInter
             'stunServer' => '',
             'stunPort' => 3478,
         ];
-    }
-
-    protected function getUnlocked(): bool
-    {
-        return $this->apiCall('/relay/1/settings')['alwaysOpen'];
     }
 
     /**

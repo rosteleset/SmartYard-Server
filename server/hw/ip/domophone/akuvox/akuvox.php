@@ -286,14 +286,8 @@ abstract class akuvox extends domophone
         ]);
     }
 
-    public function setUnlocked(bool $unlocked = true): void
-    {
-        // Empty implementation
-    }
-
     public function transformDbConfig(array $dbConfig): array
     {
-        $dbConfig['unlocked'] = false;
         unset($dbConfig['apartments'][9999]);
 
         foreach ($dbConfig['apartments'] as &$apartment) {
@@ -521,10 +515,5 @@ abstract class akuvox extends domophone
             'stunServer' => $stunServer,
             'stunPort' => $stunPort,
         ];
-    }
-
-    protected function getUnlocked(): bool
-    {
-        return false;
     }
 }

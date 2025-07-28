@@ -5,6 +5,7 @@ namespace hw\ip\domophone\qtech;
 use hw\Enum\HousePrefixField;
 use hw\Interface\{
     DisplayTextInterface,
+    FreePassInterface,
     HousePrefixInterface,
     LanguageInterface,
 };
@@ -17,7 +18,11 @@ use hw\ValueObject\{
 /**
  * Abstract class representing a Qtech domophone.
  */
-abstract class qtech extends domophone implements DisplayTextInterface, HousePrefixInterface, LanguageInterface
+abstract class qtech extends domophone implements
+    DisplayTextInterface,
+    FreePassInterface,
+    HousePrefixInterface,
+    LanguageInterface
 {
     use \hw\ip\common\qtech\qtech;
 
@@ -333,6 +338,15 @@ abstract class qtech extends domophone implements DisplayTextInterface, HousePre
         return $rfidKeys;
     }
 
+    public function isFreePassEnabled(): bool
+    {
+        $relayA = $this->getParam('Config.DoorSetting.RELAY.RelayATrigAlways');
+        $relayB = $this->getParam('Config.DoorSetting.RELAY.RelayBTrigAlways');
+        $relayC = $this->getParam('Config.DoorSetting.RELAY.RelayCTrigAlways');
+
+        return $relayA && $relayB && $relayC;
+    }
+
     public function openLock(int $lockNumber = 0): void
     {
         $data = [
@@ -429,6 +443,25 @@ abstract class qtech extends domophone implements DisplayTextInterface, HousePre
         ]);
     }
 
+    public function setFreePassEnabled(bool $enabled): void
+    {
+        // Skip if the locks are currently already in the required state
+        if ($enabled === $this->isFreePassEnabled()) {
+            return;
+        }
+
+        $this->setParams([
+            'Config.DoorSetting.RELAY.RelayATrigAlways' => (int)$enabled,
+            'Config.DoorSetting.RELAY.RelayBTrigAlways' => (int)$enabled,
+            'Config.DoorSetting.RELAY.RelayCTrigAlways' => (int)$enabled,
+        ]);
+
+        // Pull relays immediately
+        $this->openLock();
+        $this->openLock(1);
+        $this->openLock(2);
+    }
+
     public function setHousePrefixes(array $prefixes): void
     {
         $this->clearGateDialplan();
@@ -489,25 +522,6 @@ abstract class qtech extends domophone implements DisplayTextInterface, HousePre
             'Config.DoorSetting.RELAY.RelayBDelay' => $time,
             'Config.DoorSetting.RELAY.RelayCDelay' => $time,
         ]);
-    }
-
-    public function setUnlocked(bool $unlocked = true): void
-    {
-        // Skip if the locks are currently already in the required state
-        if ($unlocked === $this->getUnlocked()) {
-            return;
-        }
-
-        $this->setParams([
-            'Config.DoorSetting.RELAY.RelayATrigAlways' => (int)$unlocked,
-            'Config.DoorSetting.RELAY.RelayBTrigAlways' => (int)$unlocked,
-            'Config.DoorSetting.RELAY.RelayCTrigAlways' => (int)$unlocked,
-        ]);
-
-        // Pull relays immediately
-        $this->openLock();
-        $this->openLock(1);
-        $this->openLock(2);
     }
 
     public function transformDbConfig(array $dbConfig): array
@@ -889,15 +903,6 @@ abstract class qtech extends domophone implements DisplayTextInterface, HousePre
             'stunServer' => $this->getParam('Config.Account1.STUN.Server'),
             'stunPort' => $this->getParam('Config.Account1.STUN.Port'),
         ];
-    }
-
-    protected function getUnlocked(): bool
-    {
-        $relayA = $this->getParam('Config.DoorSetting.RELAY.RelayATrigAlways');
-        $relayB = $this->getParam('Config.DoorSetting.RELAY.RelayBTrigAlways');
-        $relayC = $this->getParam('Config.DoorSetting.RELAY.RelayCTrigAlways');
-
-        return $relayA && $relayB && $relayC;
     }
 
     /**

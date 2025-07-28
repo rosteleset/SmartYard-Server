@@ -4,13 +4,16 @@ namespace hw\ip\domophone\hikvision;
 
 use DateInterval;
 use DateTime;
-use hw\Interface\LanguageInterface;
+use hw\Interface\{
+    FreePassInterface,
+    LanguageInterface,
+};
 use hw\ip\domophone\domophone;
 
 /**
  * Abstract class representing a Hikvision domophone.
  */
-abstract class hikvision extends domophone implements LanguageInterface
+abstract class hikvision extends domophone implements FreePassInterface, LanguageInterface
 {
     use \hw\ip\common\hikvision\hikvision;
 
@@ -319,6 +322,12 @@ abstract class hikvision extends domophone implements LanguageInterface
         return $rfids;
     }
 
+    public function isFreePassEnabled(): bool
+    {
+        // TODO: Implement isFreePassEnabled() method.
+        return false;
+    }
+
     public function openLock(int $lockNumber = 0): void
     {
         $this->apiCall(
@@ -403,6 +412,16 @@ abstract class hikvision extends domophone implements LanguageInterface
         // Empty implementation
     }
 
+    public function setFreePassEnabled(bool $enabled): void
+    {
+        $this->apiCall(
+            '/AccessControl/RemoteControl/door/1',
+            'PUT',
+            [],
+            $enabled ? '<cmd>alwaysOpen</cmd>' : '<cmd>resume</cmd>',
+        );
+    }
+
     public function setLanguage(string $language): void
     {
         $language = match ($language) {
@@ -450,16 +469,6 @@ abstract class hikvision extends domophone implements LanguageInterface
                 <doorName>Door1</doorName>
                 <openDuration>$time</openDuration>
             </DoorParam>",
-        );
-    }
-
-    public function setUnlocked(bool $unlocked = true): void
-    {
-        $this->apiCall(
-            '/AccessControl/RemoteControl/door/1',
-            'PUT',
-            [],
-            $unlocked ? '<cmd>alwaysOpen</cmd>' : '<cmd>resume</cmd>',
         );
     }
 
@@ -587,11 +596,5 @@ abstract class hikvision extends domophone implements LanguageInterface
     {
         // TODO: Implement getSipConfig() method.
         return [];
-    }
-
-    protected function getUnlocked(): bool
-    {
-        // TODO: Implement getUnlocked() method.
-        return false;
     }
 }

@@ -5,6 +5,7 @@ namespace hw\ip\domophone;
 use hw\Interface\{
     CmsLevelsInterface,
     DisplayTextInterface,
+    FreePassInterface,
     GateModeInterface,
     HousePrefixInterface,
     LanguageInterface,
@@ -31,7 +32,6 @@ abstract class domophone extends ip
             ->addDtmf(...$this->getDtmfConfig())
             ->addEventServer($this->getEventServer())
             ->addSip(...$this->getSipConfig())
-            ->addUnlocked($this->getUnlocked())
             ->addCmsModel($this->getCmsModel())
             ->addNtp(...$this->getNtpConfig())
         ;
@@ -42,6 +42,10 @@ abstract class domophone extends ip
 
         if ($this instanceof DisplayTextInterface) {
             $builder->addDisplayText($this->getDisplayText());
+        }
+
+        if ($this instanceof FreePassInterface) {
+            $builder->addFreePassEnabled($this->isFreePassEnabled());
         }
 
         if ($this instanceof GateModeInterface) {
@@ -132,13 +136,6 @@ abstract class domophone extends ip
      * @return array An array containing SIP account params configured on the device.
      */
     abstract protected function getSipConfig(): array;
-
-    /**
-     * Get lock state.
-     *
-     * @return bool True if the domophone locks are now unlocked, false otherwise.
-     */
-    abstract protected function getUnlocked(): bool;
 
     /**
      * Add the RFID key.
@@ -378,13 +375,4 @@ abstract class domophone extends ip
      * @see openLock()
      */
     abstract public function setUnlockTime(int $time = 3): void;
-
-    /**
-     * Set the lock state to always locked/unlocked.
-     *
-     * @param bool $unlocked (Optional) If true, then the locks will be in the open state. Closed if false.
-     *
-     * @return void
-     */
-    abstract public function setUnlocked(bool $unlocked = true): void;
 }

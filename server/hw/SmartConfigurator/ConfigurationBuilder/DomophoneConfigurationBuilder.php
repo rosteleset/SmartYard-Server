@@ -108,6 +108,18 @@ class DomophoneConfigurationBuilder extends ConfigurationBuilder
     }
 
     /**
+     * Add the free pass mode status to the intercom configuration.
+     *
+     * @param bool $enabled True to enable free pass mode, false to disable.
+     * @return self
+     */
+    public function addFreePassEnabled(bool $enabled): self
+    {
+        $this->config['freePassEnabled'] = $enabled;
+        return $this;
+    }
+
+    /**
      * Adds the gate mode enabled flag to the configuration.
      *
      * @param bool $enabled True to enable gate mode, false to disable.
@@ -190,18 +202,6 @@ class DomophoneConfigurationBuilder extends ConfigurationBuilder
             'stunPort',
         );
 
-        return $this;
-    }
-
-    /**
-     * Add unlocked status to the domophone configuration.
-     *
-     * @param bool $unlocked Whether the domophone is unlocked.
-     * @return self
-     */
-    public function addUnlocked(bool $unlocked): self
-    {
-        $this->config['unlocked'] = $unlocked;
         return $this;
     }
 }
