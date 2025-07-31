@@ -28,10 +28,10 @@ function menu(config) {
     h += `<span class="dropdown">`;
     h += `<span id="${xid}" class="contextMenusGlobalList pointer dropdown-toggle dropdown-toggle-no-icon" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" data-flip="false">`;
     if (config.icon) {
-        h += `<i class="fa-fw mr-2 ${config.icon}"></i>`
+        h += `<i class="mr-1 fa-fw ${config.icon}"></i>`
     }
     if (config.text) {
-        h += `<span class="hoverable">${config.text}</span>`;
+        h += `<span class="hoverable ml-1">${config.text}</span>`;
     }
     h += '</span>';
 

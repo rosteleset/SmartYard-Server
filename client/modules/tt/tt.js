@@ -2527,6 +2527,7 @@
                         }).
                         done(r => {
                             message(i18n("tt.bulkActionDone", r));
+                            window.location.href = '?#tt&_=' + Math.random();
                         }).
                         fail(FAIL).
                         always(loadingDone);
