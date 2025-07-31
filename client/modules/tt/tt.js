@@ -2463,6 +2463,7 @@
                     always(loadingDone);
                 });
             }
+
             if (r && r.template && r.template != "!") {
                 let fields = [];
 
