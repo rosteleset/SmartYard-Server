@@ -1903,6 +1903,7 @@
                     id: "noSort",
                     text: i18n("tt.noSort"),
                     selected: !sorted,
+                    icon: !sorted ? 'fas fa-check' : '',
                 });
 
                 let sortMenu = menu({
@@ -2142,33 +2143,17 @@
                             hint: i18n("tt.issuesPerPage"),
                         });
 
-                        menuItems.push({
-                            id: "items-10",
-                            text: i18n("tt.10Items"),
-                            selected: limit == 10,
-                            data: 10,
-                        });
+                        let ipp = [ 10, 25, 50, 100 ];
 
-                        menuItems.push({
-                            id: "items-25",
-                            text: i18n("tt.25Items"),
-                            selected: limit == 25,
-                            data: 25,
-                        });
-
-                        menuItems.push({
-                            id: "items-50",
-                            text: i18n("tt.50Items"),
-                            selected: limit == 50,
-                            data: 50,
-                        });
-
-                        menuItems.push({
-                            id: "items-100",
-                            text: i18n("tt.100Items"),
-                            selected: limit == 100,
-                            data: 100,
-                        });
+                        for (let i in ipp) {
+                            menuItems.push({
+                                id: "items-" + ipp[i],
+                                text: i18n("tt." + ipp[i] + "Items"),
+                                selected: limit == ipp[i],
+                                icon: (limit == ipp[i]) ? 'fas fa-check' : '',
+                                data: ipp[i],
+                            });
+                        }
                     }
 
                     if (realFilter && realFilter.bulkWorkflow && realFilter.bulkActions && realFilter.bulkActions.length) {
