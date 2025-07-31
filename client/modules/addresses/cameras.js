@@ -367,6 +367,13 @@
                 modules.addresses.cameras.map.setView([lat, lon], zoom);
                 modules.addresses.cameras.marker = L.marker([lat, lon], { draggable: true }).addTo(modules.addresses.cameras.map);
 
+                modules.addresses.cameras.map.addControl(new L.Control.Fullscreen({
+                    title: {
+                        'false': i18n("fullscreen"),
+                        'true': i18n("exitFullscreen"),
+                    }
+                }));
+
                 modules.addresses.cameras.marker.on('dragend', () => {
                     $("#" + prefix + "geo").val(modules.addresses.cameras.marker.getLatLng().lat + "," + modules.addresses.cameras.marker.getLatLng().lng);
                 });
@@ -763,6 +770,13 @@
 
                     modules.addresses.cameras.map.setView([lat, lon], zoom);
                     modules.addresses.cameras.marker = L.marker([lat, lon], { draggable: true }).addTo(modules.addresses.cameras.map);
+
+                    modules.addresses.cameras.map.addControl(new L.Control.Fullscreen({
+                        title: {
+                            'false': i18n("fullscreen"),
+                            'true': i18n("exitFullscreen"),
+                        }
+                    }));
 
                     modules.addresses.cameras.marker.on('dragend', () => {
                         $("#" + prefix + "geo").val(modules.addresses.cameras.marker.getLatLng().lat + "," + modules.addresses.cameras.marker.getLatLng().lng);

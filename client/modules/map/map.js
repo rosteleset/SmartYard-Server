@@ -116,6 +116,13 @@
             }
         }
 
+        modules.map.map.addControl(new L.Control.Fullscreen({
+            title: {
+                'false': i18n("fullscreen"),
+                'true': i18n("exitFullscreen"),
+            }
+        }));
+
 //        let layer_markers = new L.markerClusterGroup({ spiderfyOnMaxZoom: false, disableClusteringAtZoom: 15, });
 
         if (typeof lon != "undefined" && typeof lat != "undefined") {

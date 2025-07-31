@@ -870,6 +870,13 @@
                             modules.addresses.houses.map.setView([lat, lon], zoom);
                             modules.addresses.houses.marker = L.marker([lat, lon], { draggable: true }).addTo(modules.addresses.houses.map);
 
+                            modules.addresses.houses.map.addControl(new L.Control.Fullscreen({
+                                title: {
+                                    'false': i18n("fullscreen"),
+                                    'true': i18n("exitFullscreen"),
+                                }
+                            }));
+
                             modules.addresses.houses.marker.on('dragend', () => {
                                 $("#" + prefix + "geo").val(modules.addresses.houses.marker.getLatLng().lat + "," + modules.addresses.houses.marker.getLatLng().lng);
                             });
@@ -1909,6 +1916,13 @@
 
                             modules.addresses.houses.map.setView([lat, lon], zoom);
                             modules.addresses.houses.marker = L.marker([lat, lon], { draggable: true }).addTo(modules.addresses.houses.map);
+
+                            modules.addresses.houses.map.addControl(new L.Control.Fullscreen({
+                                title: {
+                                    'false': i18n("fullscreen"),
+                                    'true': i18n("exitFullscreen"),
+                                }
+                            }));
 
                             modules.addresses.houses.marker.on('dragend', () => {
                                 $("#" + prefix + "geo").val(modules.addresses.houses.marker.getLatLng().lat + "," + modules.addresses.houses.marker.getLatLng().lng);

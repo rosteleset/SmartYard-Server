@@ -78,6 +78,8 @@
     "unsavedChanges": "Изменения могут не сохраниться, продолжить?",
     "customFields": "Доп. атрибуты",
     "invalidFieldValue": "Неверное значение поля",
+    "fullscreen": "На весь экран",
+    "exitFullscreen": "Выйти из полноэкранного режима",
     "tz": {
         "Europe/Moscow": "Европа/Москва"
     },
