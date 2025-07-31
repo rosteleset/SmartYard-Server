@@ -1,3 +1,77 @@
+/**
+ * Generates and renders a dynamic modal or inline form with various field types, validation, and callbacks.
+ *
+ * @function
+ * @param {Object} params - Configuration object for the form.
+ * @param {string} [params.target] - Selector or DOM element to render the form into. If not provided, renders as a modal.
+ * @param {string} [params.size] - Modal size ('sm', 'lg', 'xl').
+ * @param {string} [params.title] - Title of the form/modal.
+ * @param {string} [params.apply] - Label for the apply/submit button.
+ * @param {boolean} [params.topApply] - If true, shows the apply button at the top.
+ * @param {boolean} [params.borderless] - If true, renders the table without borders.
+ * @param {boolean} [params.noHover] - If true, disables hover effect on table rows.
+ * @param {boolean} [params.singleColumn] - If true, renders the form in a single column layout.
+ * @param {boolean} [params.footer] - If true, renders a footer with action buttons.
+ * @param {boolean} [params.noFocus] - If true, disables autofocus on the first field.
+ * @param {number} [params.timeout] - Timeout in milliseconds to auto-close the modal.
+ * @param {string} [params.delete] - If provided, adds a delete confirmation select field.
+ * @param {string} [params.deleteTab] - Tab name for the delete field.
+ * @param {Function} [params.callback] - Callback function to be called with form values on successful submit.
+ * @param {Function} [params.cancel] - Callback function to be called on cancel.
+ * @param {Function} [params.tabActivate] - Callback function called when a tab is activated.
+ * @param {Function} [params.done] - Callback function called after the form is rendered.
+ * @param {Array<Object>} params.fields - Array of field configuration objects. Each field can have:
+ *   @param {string} fields[].id - Unique identifier for the field.
+ *   @param {string} [fields[].type] - Field type ('text', 'select', 'area', 'multiselect', 'sortable', 'files', 'jstree', etc.).
+ *   @param {string} [fields[].title] - Field label.
+ *   @param {string} [fields[].hint] - Hint or help text for the field.
+ *   @param {string} [fields[].tab] - Tab name for grouping fields.
+ *   @param {boolean} [fields[].hidden] - If true, hides the field.
+ *   @param {boolean} [fields[].readonly] - If true, makes the field read-only.
+ *   @param {boolean} [fields[].disabled] - If true, disables the field.
+ *   @param {boolean} [fields[].focus] - If true, autofocuses this field.
+ *   @param {any} [fields[].value] - Initial value for the field.
+ *   @param {Array<Object>} [fields[].options] - Options for select/multiselect fields.
+ *   @param {Function} [fields[].validate] - Validation function for the field. Should return true or an error string.
+ *   @param {Function} [fields[].select] - Callback for select field change.
+ *   @param {Object} [fields[].button] - Button configuration for fields with an attached button.
+ *   @param {Function} [fields[].add] - Callback for adding items (for jstree, etc.).
+ *   @param {Function} [fields[].rename] - Callback for renaming items (for jstree, etc.).
+ *   @param {Function} [fields[].delete] - Callback for deleting items (for jstree, etc.).
+ *   @param {Function} [fields[].search] - Callback for searching (for jstree, multiselect, etc.).
+ *   @param {Function} [fields[].renamed] - Callback for renamed event (for jstree).
+ *   @param {boolean} [fields[].autoload] - If true, auto-triggers file input (for files field).
+ *   @param {string} [fields[].placeholder] - Placeholder text for input fields.
+ *   @param {string} [fields[].pattern] - Regex pattern for input validation.
+ *   @param {number} [fields[].float] - Step value for number fields.
+ *   @param {string} [fields[].language] - Language for code editor fields.
+ *   @param {number} [fields[].height] - Height for code/json editor fields.
+ *   @param {boolean} [fields[].multiple] - If true, enables multiple selection (for select2).
+ *   @param {boolean} [fields[].tags] - If true, enables tag creation (for select2).
+ *   @param {Object} [fields[].ajax] - AJAX configuration for select2.
+ *   @param {number} [fields[].minimumResultsForSearch] - Minimum results to show search box (for select2).
+ *   @param {string} [fields[].color] - Color class for select2.
+ *   @param {string} [fields[].class] - Additional CSS class for the field.
+ *   @param {string} [fields[].icon] - Icon class for select2/icon fields.
+ *   @param {string} [fields[].font] - Font family for font fields.
+ *   @param {string} [fields[].state0] - Label for tristate option 0.
+ *   @param {string} [fields[].state1] - Label for tristate option 1.
+ *   @param {string} [fields[].state2] - Label for tristate option 2.
+ *   @param {Array<string>} [fields[].mimeTypes] - Allowed MIME types for files field.
+ *   @param {number} [fields[].maxSize] - Maximum file size for files field.
+ *   @param {boolean} [fields[].allButtons] - If false, hides check all/uncheck all buttons (for multiselect).
+ *   @param {boolean} [fields[].filter] - If true, enables filter input (for multiselect).
+ *   @param {boolean} [fields[].search] - If true, enables search input (for jstree).
+ *   @param {boolean} [fields[].addRoot] - If true, enables add root button (for jstree).
+ *   @param {boolean} [fields[].tabHidden] - If true, hides the field in the current tab.
+ *   @param {string} [fields[].return] - Return mode for date fields ('asis' or default).
+ *   @param {boolean} [fields[].sec] - If true, returns date as seconds, otherwise as milliseconds.
+ *   @param {boolean} [fields[].noHover] - If true, disables hover effect for the field row.
+ *   @param {boolean} [fields[].append] - Additional HTML to append to the field.
+ *
+ * @returns {jQuery|HTMLElement} The jQuery object or DOM element containing the rendered form.
+ */
+
 function cardForm(params) {
     try {
         queryLocalFonts().then(array => {

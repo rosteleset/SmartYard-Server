@@ -1,3 +1,42 @@
+/**
+ * Generates a dynamic, interactive HTML table inside a Bootstrap card, supporting features like filtering, pagination, custom buttons, editable rows, and dropdown menus.
+ *
+ * @function
+ * @param {Object} params - Configuration object for the table.
+ * @param {string} [params.id] - Optional ID for the table element.
+ * @param {string|HTMLElement|jQuery} [params.target] - Selector or element where the table will be rendered.
+ * @param {string} [params.mode] - If "append", appends the table to the target; otherwise replaces content.
+ * @param {Object} [params.title] - Card header configuration.
+ * @param {Object} [params.title.button] - Main button in the header.
+ * @param {string} [params.title.button.caption] - Button tooltip/caption.
+ * @param {string} [params.title.button.icon] - FontAwesome icon class for the button.
+ * @param {Function} [params.title.button.click] - Click handler for the button.
+ * @param {string} [params.title.caption] - Title text for the card.
+ * @param {boolean|string} [params.title.filter] - Enables filter input; if string, sets initial filter value.
+ * @param {Object} [params.title.altButton] - Alternative button in the header.
+ * @param {string} [params.title.altButton.caption] - Alt button tooltip/caption.
+ * @param {string} [params.title.altButton.icon] - FontAwesome icon class for the alt button.
+ * @param {Function} [params.title.altButton.click] - Click handler for the alt button.
+ * @param {Array<Object>} params.columns - Array of column definitions.
+ * @param {string} params.columns[].title - Column header text.
+ * @param {boolean} [params.columns[].hidden] - If true, column is hidden.
+ * @param {boolean} [params.columns[].fullWidth] - If true, column takes full width.
+ * @param {Function} params.rows - Function returning an array of row objects.
+ * @param {number} [params.itemsPerPage] - Number of rows per page (default: all).
+ * @param {number} [params.pagerItemsCount] - Number of pager buttons to show (default: 10).
+ * @param {number} [params.startPage] - Initial page number (default: 1).
+ * @param {Function} [params.edit] - If provided, enables edit icon per row; function called with row UID.
+ * @param {Object} [params.dropDownHeader] - Dropdown menu header configuration.
+ * @param {string} [params.dropDownHeader.icon] - FontAwesome icon class for the dropdown header.
+ * @param {string} [params.dropDownHeader.title] - Tooltip for the dropdown header.
+ * @param {string} [params.dropDownHeader.menu] - Custom HTML for dropdown header.
+ * @param {Function} [params.dropDownHeader.click] - Click handler for the dropdown header.
+ * @param {Function} [params.pageChange] - Callback when page changes; receives new page number.
+ * @param {Function} [params.filterChange] - Callback when filter changes; receives filter string.
+ * @param {string|HTMLElement|jQuery} [params.append] - Content to append after the table.
+ * @returns {jQuery|string} - If `params.target` is provided, returns the jQuery object for the rendered table; otherwise returns the table's HTML or ID.
+ */
+
 function cardTable(params) {
     let h = `<div class="card mt-2">`;
     let filterInput = '';
