@@ -333,7 +333,7 @@ function leftSide(button, title, target, group, wisibleOnlyWhenActive) {
 
     let route = hashParse("route");
 
-    let id = md5(guid());
+    let id = "id-" + md5(guid());
 
     let style;
 
@@ -369,7 +369,7 @@ function leftSideClick(button, title, group, click) {
         `);
     }
 
-    let id = md5(guid());
+    let id = "id-" + md5(guid());
 
     let style;
 

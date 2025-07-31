@@ -8,7 +8,7 @@ function cardTable(params) {
         h += '<div class="card-header">';
         h += '<table cellpadding="0" cellspacing="0"><tr>';
         if (params.title.button) {
-            titleButton = md5(guid());
+            titleButton = "button-" + md5(guid());
             let icon = params.title.button.icon ? params.title.button.icon : "fas fa-plus-circle";
             h += '<td>';
             h += `<button id="${titleButton}" type="button" class="btn btn-primary btn-sm mr-2" title="${params.title.button.caption}"><i class="fa-fw ${icon}"></i></button>`;
@@ -24,7 +24,7 @@ function cardTable(params) {
         }
         h += '</td>';
         if (params.title.filter) {
-            filterInput = md5(guid());
+            filterInput = "filter-" + md5(guid());
             h += '<td>';
             h += `<div class="card-tools d-none d-md-block">`;
             h += `<form id="${filterInput}-form" autocomplete="off" onsubmit="return false;" action="">`;
@@ -40,7 +40,7 @@ function cardTable(params) {
             h += '</td>';
         }
         if (params.title.altButton) {
-            altButton = md5(guid());
+            altButton = "altButton-" + md5(guid());
             h += '<td>';
             let icon = params.title.altButton.icon?params.title.altButton.icon:"far fa-fw fa-times-circle";
             h += `<button id="${altButton}" type="button" class="btn btn-info btn-sm ml-2" title="${params.title.altButton.caption}"><i class="fa-fw ${icon}"></i></button>`;
@@ -55,7 +55,11 @@ function cardTable(params) {
     let currentPage = params.startPage ? params.startPage : 1;
 
     h += `<div class="card-body table-responsive p-0">`;
-    h += `<table class="table table-hover">`;
+    if (params.id) {
+        h += `<table id= "${params.id}" class="table table-hover">`;
+    } else {
+        h += `<table class="table table-hover">`;
+    }
     h += `<thead>`;
 
     let rows = [];
@@ -115,7 +119,7 @@ function cardTable(params) {
             if (params.dropDownHeader.menu) {
                 h += `<th nowrap>${params.dropDownHeader.menu}</th>`;
             } else {
-                params.dropDownHeader.id = md5(guid());
+                params.dropDownHeader.id = "dropDownHeader" + md5(guid());
                 h += `<th><i id="${params.dropDownHeader.id}" class="fa-fw ${params.dropDownHeader.icon} hoverable pointer" title="${params.dropDownHeader.title ? params.dropDownHeader.title : ''}"></i></th>`;
             }
         } else {
@@ -126,7 +130,7 @@ function cardTable(params) {
             if (params.dropDownHeader.menu) {
                 h += `<th nowrap>${params.dropDownHeader.menu}</th>`;
             } else {
-                params.dropDownHeader.id = md5(guid());
+                params.dropDownHeader.id = "dropDownHeader" + md5(guid());
                 h += `<th><i id="${params.dropDownHeader.id}" class="fa-fw ${params.dropDownHeader.icon} hoverable pointer" title="${params.dropDownHeader.title ? params.dropDownHeader.title : ''}"></i></th>`;
             }
         }
@@ -135,9 +139,9 @@ function cardTable(params) {
     h += `</tr>`;
     h += `</thead>`;
 
-    let tableClass = md5(guid());
-    let clickableClass = md5(guid());
-    let editClass = md5(guid());
+    let tableClass = "tableClass-" + md5(guid());
+    let clickableClass = "clickableClass-" + md5(guid());
+    let editClass = "editClass-" + md5(guid());
 
     h += `<tbody id="${tableClass}">`;
 
@@ -213,7 +217,7 @@ function cardTable(params) {
                     t += `<i class="${rows[i].dropDown.items[0].icon} fa-fw"></i>`;
                     t += `</span>`;
                 } else {
-                    let ddId = md5(guid());
+                    let ddId = "ddId-" + md5(guid());
                     t += `<div class="dropdown">`;
                     t += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon" id="${ddId}" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">`;
                     if (rows[i].dropDown.icon) {
@@ -324,7 +328,7 @@ function cardTable(params) {
         return h;
     }
 
-    let tfoot = md5(guid());
+    let tfoot = "tfoot-" + md5(guid());
     h += `<tfoot id="${tfoot}">`;
     h += `<tr>`;
 
@@ -491,6 +495,6 @@ function cardTable(params) {
 
         return $(params.target);
     } else {
-        return h;
+        return params.id ? params.id : h;
     }
 }

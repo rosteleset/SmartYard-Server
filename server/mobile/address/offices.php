@@ -16,5 +16,13 @@
     * @apiSuccess {String} -.opening время работы
     */
 
-    auth();
-    response(200, [['address' => 'Test', 'lat' => 50.730641, 'lon' => 43.452340], 'opening' => 'без выходных']);
+   auth();
+
+   response(200, [
+      [
+         'lat' => 50.730641,
+         'lon' => 43.452340,
+         'address' => 'Test',
+         'opening' => 'без выходных'
+      ],
+   ]);

@@ -2109,6 +2109,8 @@
                     }
                 }
 
+                let currentIssuesList = [];
+
                 if (issues.issues) {
                     $("#" + issuesListId + "-count").text("[" + filterName + "]: " + i18n("tt.showCounts", parseInt(issues.skip) ? (parseInt(issues.skip) + 1) : '0', parseInt(issues.skip) + issues.issues.length, issues.count)).addClass("small");
 
@@ -2186,6 +2188,7 @@
 
                     cardTable({
                         target: "#" + issuesListId,
+                        id: "table-" + issuesListId,
                         columns: columns,
                         dropDownHeader: {
                             menu: menu({
@@ -2258,10 +2261,10 @@
                                         }
                                     }
                                     if (id == "export") {
-                                        modules.tt.exportCSV(currentProject, filterName);
+                                        modules.tt.exportCSV(currentProject, filterName, "table-" + issuesListId);
                                     }
                                     if (id.substring(0, 7) == "action-") {
-                                        modules.tt.bulkAction(currentProject, filterName, realFilter.bulkWorkflow, data);
+                                        modules.tt.bulkAction(currentProject, filterName, realFilter.bulkWorkflow, currentIssuesList, data);
                                     }
                                     if (id.substring(0, 6) == "items-") {
                                         modules.tt.defaultIssuesPerPage = parseInt(data);
@@ -2275,16 +2278,19 @@
                             let rows = [];
 
                             for (let i = 0; i < issues.issues.length; i++) {
+                                currentIssuesList.push(issues.issues[i]["issueId"]);
 
-                                let cols = [ {
-                                    data: i + skip + 1,
-                                    nowrap: true,
-                                    click: navigateUrl("tt", {
-                                        issue: issues.issues[i]["issueId"],
-                                        filter: filterName ? filterName : "",
-                                        search: ($.trim(params.search) && params.search !== true) ? $.trim(params.search) : "",
-                                    }),
-                                } ];
+                                let cols = [
+                                    {
+                                        data: i + skip + 1,
+                                        nowrap: true,
+                                        click: navigateUrl("tt", {
+                                            issue: issues.issues[i]["issueId"],
+                                            filter: filterName ? filterName : "",
+                                            search: ($.trim(params.search) && params.search !== true) ? $.trim(params.search) : "",
+                                        }),
+                                    }
+                                ];
 
                                 for (let j = 0; j < pKeys.length; j++) {
                                     if (links[pKeys[j]]) {
@@ -2429,7 +2435,8 @@
         });
     },
 
-    bulkAction: function (project, filterName, workflow, action) {
+    bulkAction: function (project, filterName, workflow, currentIssuesList, action) {
+        console.log("Bulk action", project, filterName, workflow, currentIssuesList, action);
         loadingStart();
         QUERYID("tt", "bulkAction", filterName, {
             workflow,
@@ -2442,7 +2449,18 @@
         always(loadingDone);
     },
 
-    exportCSV: function (project, filterName) {
+    exportCSV: function (project, filterName, issuesTableId) {
+        console.log(issuesTableId);
+        let tableToCSV = new TableToCSV("#" + issuesTableId, {
+            filename: filterName + ".csv",
+            delimiter: ",",
+            ignoreColumns: [
+                0,
+                $("#" + issuesTableId + " > thead > tr > th").length - 1,
+            ],
+        });
+        tableToCSV.download();
+/*
         loadingStart();
         QUERY("tt", "issues", {
             project,
@@ -2451,7 +2469,7 @@
             limit: 65535,
         }, true).
         done(r => {
-            console.log(r);
+            console.log(issuesTableId);
             if (r && r.issues && r.issues.issues && r.issues.issues.length) {
                 let csv = '';
                 let p = Object.keys(r.issues.projection);
@@ -2471,6 +2489,7 @@
         }).
         fail(FAIL).
         fail(loadingDone);
+*/
     },
 
     route: function (params) {
