@@ -343,6 +343,12 @@
     "noSort": "Without sorting",
     "exportToCSV": "Export to CSV file",
     "bulkActions": "Bulk actions",
+    "10Items": "10 issues",
+    "25Items": "25 issues",
+    "50Items": "50 issues",
+    "100Items": "100 issues",
+    "export": "Export",
+    "issuesPerPage": "Issues per page",
     "methods": {
         "tt": {
             "_title": "Task manager",

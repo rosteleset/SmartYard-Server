@@ -1,7 +1,7 @@
 ({
     meta: {},
 
-    defaultIssuesPerPage: 50,
+    defaultIssuesPerPage: lStore("defaultIssuesPerPage") ? lStore("defaultIssuesPerPage") : 50,
     defaultPagerItemsCount: 10,
     menuItem: false,
 
@@ -2125,6 +2125,7 @@
 
                     menuItems.push({
                         text: "-",
+                        hint: i18n("tt.export"),
                     });
 
                     menuItems.push({
@@ -2132,6 +2133,41 @@
                         id: "export",
                         text: i18n("tt.exportToCSV"),
                     });
+
+                    if (!target && !(params.customSearch && params.customSearch !== true)) {
+                        menuItems.push({
+                            text: "-",
+                            hint: i18n("tt.issuesPerPage"),
+                        });
+
+                        menuItems.push({
+                            id: "items-10",
+                            text: i18n("tt.10Items"),
+                            selected: limit == 10,
+                            data: 10,
+                        });
+
+                        menuItems.push({
+                            id: "items-25",
+                            text: i18n("tt.25Items"),
+                            selected: limit == 25,
+                            data: 25,
+                        });
+
+                        menuItems.push({
+                            id: "items-50",
+                            text: i18n("tt.50Items"),
+                            selected: limit == 50,
+                            data: 50,
+                        });
+
+                        menuItems.push({
+                            id: "items-100",
+                            text: i18n("tt.100Items"),
+                            selected: limit == 100,
+                            data: 100,
+                        });
+                    }
 
                     if (realFilter && realFilter.bulkWorkflow && realFilter.bulkActions && realFilter.bulkActions.length) {
                         menuItems.push({
@@ -2162,7 +2198,7 @@
                                             let icons = [];
                                             for (let i in faIcons) {
                                                 icons.push({
-                                                    icon: faIcons[i].title + " fa-fw",
+                                                    icon: faIcons[i].title,
                                                     text: faIcons[i].title.split(" fa-")[1] + (faIcons[i].searchTerms.length ? (", " + faIcons[i].searchTerms.join(", ")) : ""),
                                                     value: faIcons[i].title,
                                                 });
@@ -2226,6 +2262,11 @@
                                     }
                                     if (id.substring(0, 7) == "action-") {
                                         modules.tt.bulkAction(currentProject, filterName, realFilter.bulkWorkflow, data);
+                                    }
+                                    if (id.substring(0, 6) == "items-") {
+                                        modules.tt.defaultIssuesPerPage = parseInt(data);
+                                        lStore("defaultIssuesPerPage", parseInt(data));
+                                        window.location.href = '?#tt&_=' + Math.random();
                                     }
                                 }
                             }),
