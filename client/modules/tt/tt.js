@@ -2261,7 +2261,7 @@
                                         }
                                     }
                                     if (id == "export") {
-                                        modules.tt.exportCSV(currentProject, filterName, "table-" + issuesListId);
+                                        modules.tt.exportCSV("table-" + issuesListId, filterName);
                                     }
                                     if (id.substring(0, 7) == "action-") {
                                         modules.tt.bulkAction(currentProject, filterName, realFilter.bulkWorkflow, currentIssuesList, data);
@@ -2436,21 +2436,109 @@
     },
 
     bulkAction: function (project, filterName, workflow, currentIssuesList, action) {
-        console.log("Bulk action", project, filterName, workflow, currentIssuesList, action);
         loadingStart();
         QUERYID("tt", "bulkAction", filterName, {
             workflow,
             action
         }, true).
         done(r => {
-            console.log(r);
+            if (r && r.template && r.template == "!") {
+                loadingDone();
+                mConfirm(modules.tt.displayAction(action) + "?", i18n("tt.bulkActionConfirm"), modules.tt.displayAction(action), () => {
+                    loadingStart();
+                    PUT("tt", "bulkAction", false, {
+                        project,
+                        query: {
+                            "issueId": {
+                                "$in": currentIssuesList,
+                            }
+                        },
+                        set: {},
+                        action,
+                    }).
+                    done(r => {
+                        message(i18n("tt.bulkActionDone", r));
+                    }).
+                    fail(FAIL).
+                    always(loadingDone);
+                });
+            }
+            if (r && r.template && r.template != "!") {
+                let fields = [];
+
+                let kx = [];
+                let ky = {};
+
+                for (let i in r.template) {
+                    let fx = ((typeof r.template[i] == "string") ? r.template[i] : i).toString();
+                    if (fx.charAt(0) == '%') {
+                        fx = fx.split('%');
+                        kx[fx[1]] = fx[2];
+                        ky[fx[2]] = (typeof r.template[i] == "string") ? false : r.template[i];
+                    } else {
+                        kx.push(fx);
+                        ky[fx] = (typeof r.template[i] == "string") ? false : r.template[i];
+                    }
+                }
+
+                let projectId = -1;
+                for (let i in modules.tt.meta.projects) {
+                    if (modules.tt.meta.projects[i].acronym == project) {
+                        projectId = modules.tt.meta.projects[i].projectId;
+                        break;
+                    }
+                }
+
+                for (let i in kx) {
+                    let fi = modules.tt.issueField2FormFieldEditor(null, kx[i], projectId, ky[kx[i]]);
+                    if (fi) {
+                        fields.push(fi);
+                        if (kx[i] == "comment" || kx[i] == "optionalComment") {
+                            fields.push({
+                                id: "commentPrivate",
+                                type: "yesno",
+                                title: i18n("tt.commentPrivate"),
+                                value: "1",
+                            });
+                        }
+                    }
+                }
+
+                loadingDone();
+
+                cardForm({
+                    title: i18n("tt.bulkActionConfirm"),
+                    apply: modules.tt.displayAction(action),
+                    fields: fields,
+                    footer: true,
+                    borderless: true,
+                    size: "lg",
+                    callback: r => {
+                        loadingStart();
+                        PUT("tt", "bulkAction", false, {
+                            project,
+                            query: {
+                                "issueId": {
+                                    "$in": currentIssuesList,
+                                }
+                            },
+                            set: r,
+                            action,
+                        }).
+                        done(r => {
+                            message(i18n("tt.bulkActionDone", r));
+                        }).
+                        fail(FAIL).
+                        always(loadingDone);
+                    },
+                });
+            }
         }).
         fail(FAIL).
-        always(loadingDone);
+        fail(loadingDone);
     },
 
-    exportCSV: function (project, filterName, issuesTableId) {
-        console.log(issuesTableId);
+    exportCSV: function (issuesTableId, filterName) {
         let tableToCSV = new TableToCSV("#" + issuesTableId, {
             filename: filterName + ".csv",
             delimiter: ",",
@@ -2460,36 +2548,6 @@
             ],
         });
         tableToCSV.download();
-/*
-        loadingStart();
-        QUERY("tt", "issues", {
-            project,
-            filter: filterName,
-            skip: 0,
-            limit: 65535,
-        }, true).
-        done(r => {
-            console.log(issuesTableId);
-            if (r && r.issues && r.issues.issues && r.issues.issues.length) {
-                let csv = '';
-                let p = Object.keys(r.issues.projection);
-                for (let i in p) {
-                    csv += p[i] + ';';
-                }
-                csv += '\n';
-                for (let i in r.issues.issues) {
-                    for (let j in p) {
-                        csv += r.issues.issues[i][p[j]] + ';';
-                    }
-                    csv += '\n';
-                }
-                saveAs(new Blob([ csv ], { type: "text/plain;charset=utf-8" }), filterName + ".csv");
-            }
-            loadingDone();
-        }).
-        fail(FAIL).
-        fail(loadingDone);
-*/
     },
 
     route: function (params) {

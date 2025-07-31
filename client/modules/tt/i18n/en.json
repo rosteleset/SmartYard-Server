@@ -349,6 +349,8 @@
     "100Items": "100 issues",
     "export": "Export",
     "issuesPerPage": "Issues per page",
+    "bulkActionDone": "Issues processed: %s",
+    "bulkActionConfirm": "Perform a bulk action?",
     "methods": {
         "tt": {
             "_title": "Task manager",

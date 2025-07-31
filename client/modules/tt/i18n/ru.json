@@ -351,6 +351,8 @@
     "100Items": "100 задач",
     "export": "Экспорт",
     "issuesPerPage": "Задач на странице",
+    "bulkActionDone": "Задач обработано: %s",
+    "bulkActionConfirm": "Выполнить массовое действие?",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",
