@@ -789,3 +789,9 @@ code {
   background-color: #f9f2f4;
   border-radius: 4px;
 }
+
+.dots {
+  background-image: radial-gradient(lightgray 1px, transparent 0);
+  background-size: 10px 10px;
+  background-position: -4px -4px;
+}

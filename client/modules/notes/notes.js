@@ -75,9 +75,17 @@
             if (modules.notes.isDragging == 1) {
                 let off = cont.offset();
 
+                let gridSize = 10;
+
+                let newX = Math.max(-off.left + e.clientX - modules.notes.lastOffsetX, 0);
+                let newY = Math.max($("html").scrollTop() - off.top + e.clientY - modules.notes.lastOffsetY, 0);
+
+                newX = Math.round(newX / gridSize) * gridSize;
+                newY = Math.round(newY / gridSize) * gridSize;
+
                 modules.notes.dragTarget.css({
-                    left: -off.left + e.clientX - modules.notes.lastOffsetX + 'px',
-                    top: $("html").scrollTop() - off.top + e.clientY - modules.notes.lastOffsetY + 'px',
+                    left: newX + 'px',
+                    top: newY + 'px',
                 });
             }
 
@@ -666,7 +674,7 @@
             modules.notes.createNote();
         });
 
-        $("#mainForm").html(`<div style="overflow-x: scroll; overflow-y: hidden;" class="p-0 m-0 mt-3"><div id="stickiesContainer" style="position: relative;" class="p-0 m-0 resizable mouseEvents"></div></div>`);
+        $("#mainForm").html(`<div style="overflow-x: scroll; overflow-y: hidden;" class="p-0 m-0 mt-3"><div id="stickiesContainer" style="position: relative;" class="p-0 m-0 resizable mouseEvents dots"></div></div>`);
 
         let s = $("#stickiesContainer");
 
