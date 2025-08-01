@@ -2,12 +2,13 @@
 
 namespace hw\ip\domophone\akuvox;
 
+use hw\Interface\NtpServerInterface;
 use hw\ip\domophone\domophone;
 
 /**
  * Abstract class representing an Akuvox domophone.
  */
-abstract class akuvox extends domophone
+abstract class akuvox extends domophone implements NtpServerInterface
 {
     use \hw\ip\common\akuvox\akuvox;
 

@@ -7,7 +7,6 @@ namespace hw\ip\common\sputnik;
  */
 trait sputnik
 {
-
     public string $motherboardID;
     public string $uuid;
 

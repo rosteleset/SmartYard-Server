@@ -9,18 +9,12 @@ use hw\ip\camera\camera;
  */
 class fake extends camera
 {
-
     public function configureEventServer(string $url): void
     {
         // Empty implementation
     }
 
     public function configureMotionDetection(array $detectionZones): void
-    {
-        // Empty implementation
-    }
-
-    public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow'): void
     {
         // Empty implementation
     }
@@ -76,11 +70,6 @@ class fake extends camera
     }
 
     protected function getMotionDetectionConfig(): array
-    {
-        return [];
-    }
-
-    protected function getNtpConfig(): array
     {
         return [];
     }

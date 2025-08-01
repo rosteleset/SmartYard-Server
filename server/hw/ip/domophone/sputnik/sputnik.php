@@ -5,13 +5,21 @@ namespace hw\ip\domophone\sputnik;
 use DateTime;
 use DateTimeZone;
 use Exception;
-use hw\Interface\CmsLevelsInterface;
+use hw\Interface\{
+    CmsLevelsInterface,
+    NtpServerInterface,
+};
 use hw\ip\domophone\domophone;
+use hw\ValueObject\{
+    NtpServer,
+    Port,
+    ServerAddress,
+};
 
 /**
  * Class representing a Sputnik domophone.
  */
-class sputnik extends domophone implements CmsLevelsInterface
+class sputnik extends domophone implements CmsLevelsInterface, NtpServerInterface
 {
     use \hw\ip\common\sputnik\sputnik;
 
@@ -128,14 +136,6 @@ class sputnik extends domophone implements CmsLevelsInterface
         }
     }
 
-    public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow'): void
-    {
-        $this->apiCall('mutation', 'updateIntercomTimeZone', [
-            'intercomID' => $this->uuid,
-            'timeZone' => $this->getOffsetByTimezone($timezone),
-        ]);
-    }
-
     public function configureSip(
         string $login,
         string $password,
@@ -202,6 +202,21 @@ class sputnik extends domophone implements CmsLevelsInterface
         ], ['data']);
 
         return $lineData['data']['lineTest']['data']['com_line_voltage'];
+    }
+
+    public function getNtpServer(): NtpServer
+    {
+        $intercom = $this->apiCall('query', 'intercom', ['uuid' => $this->uuid], [
+            'configShadow' => ['timeZone'],
+        ]);
+
+        $timezone = $intercom['data']['intercom']['configShadow']['timeZone'];
+
+        return new NtpServer(
+            address: ServerAddress::fromString(''),
+            port: new Port(123),
+            timezone: $timezone,
+        );
     }
 
     public function openLock(int $lockNumber = 0): void
@@ -273,6 +288,14 @@ class sputnik extends domophone implements CmsLevelsInterface
         $this->apiCall('mutation', 'updateIntercomSipParameters', [
             'intercomID' => $this->uuid,
             'sipParameters' => ['dtmfOpenDoor' => $code1],
+        ]);
+    }
+
+    public function setNtpServer(NtpServer $server): void
+    {
+        $this->apiCall('mutation', 'updateIntercomTimeZone', [
+            'intercomID' => $this->uuid,
+            'timeZone' => $this->getOffsetByTimezone($server->timezone),
         ]);
     }
 
@@ -524,21 +547,6 @@ class sputnik extends domophone implements CmsLevelsInterface
         }
 
         return $matrix;
-    }
-
-    protected function getNtpConfig(): array
-    {
-        $intercom = $this->apiCall('query', 'intercom', ['uuid' => $this->uuid], [
-            'configShadow' => ['timeZone'],
-        ]);
-
-        $timezone = $intercom['data']['intercom']['configShadow']['timeZone'];
-
-        return [
-            'server' => '',
-            'port' => 123,
-            'timezone' => $timezone,
-        ];
     }
 
     /**

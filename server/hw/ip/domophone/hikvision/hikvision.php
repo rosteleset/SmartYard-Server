@@ -7,13 +7,14 @@ use DateTime;
 use hw\Interface\{
     FreePassInterface,
     LanguageInterface,
+    NtpServerInterface,
 };
 use hw\ip\domophone\domophone;
 
 /**
  * Abstract class representing a Hikvision domophone.
  */
-abstract class hikvision extends domophone implements FreePassInterface, LanguageInterface
+abstract class hikvision extends domophone implements FreePassInterface, LanguageInterface, NtpServerInterface
 {
     use \hw\ip\common\hikvision\hikvision;
 

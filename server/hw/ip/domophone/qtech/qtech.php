@@ -8,6 +8,7 @@ use hw\Interface\{
     FreePassInterface,
     HousePrefixInterface,
     LanguageInterface,
+    NtpServerInterface,
 };
 use hw\ip\domophone\domophone;
 use hw\ValueObject\{
@@ -22,7 +23,8 @@ abstract class qtech extends domophone implements
     DisplayTextInterface,
     FreePassInterface,
     HousePrefixInterface,
-    LanguageInterface
+    LanguageInterface,
+    NtpServerInterface
 {
     use \hw\ip\common\qtech\qtech;
 

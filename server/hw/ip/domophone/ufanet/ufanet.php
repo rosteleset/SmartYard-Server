@@ -9,6 +9,7 @@ use hw\Interface\{
     FreePassInterface,
     GateModeInterface,
     LanguageInterface,
+    NtpServerInterface,
 };
 use hw\ip\domophone\domophone;
 
@@ -19,7 +20,8 @@ abstract class ufanet extends domophone implements
     DisplayTextInterface,
     FreePassInterface,
     GateModeInterface,
-    LanguageInterface
+    LanguageInterface,
+    NtpServerInterface
 {
     use \hw\ip\common\ufanet\ufanet {
         transformDbConfig as protected commonTransformDbConfig;

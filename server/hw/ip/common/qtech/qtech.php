@@ -5,13 +5,17 @@ namespace hw\ip\common\qtech;
 use DateTime;
 use DateTimeZone;
 use Exception;
+use hw\ValueObject\{
+    NtpServer,
+    Port,
+    ServerAddress,
+};
 
 /**
  * Trait providing common functionality related to Qtech devices.
  */
 trait qtech
 {
-
     public function configureEventServer(string $url): void
     {
         ['host' => $server, 'port' => $port] = parse_url_ext($url);
@@ -26,16 +30,13 @@ trait qtech
         // $this->configureDebugServer($server, $port);
     }
 
-    public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow'): void
+    public function getNtpServer(): NtpServer
     {
-        $this->setParams([
-            'Config.Settings.SNTP.TimeZone' => $this->getOffsetByTimezone($timezone),
-            // 'Config.Settings.SNTP.Name' => 'Russia(Moscow)',
-            'Config.Settings.SNTP.NTPServer1' => $server,
-            'Config.Settings.SNTP.NTPServer2' => null,
-            'Config.Settings.SNTP.Interval' => 3600,
-            'Config.Settings.SNTP.Port' => $port,
-        ]);
+        return new NtpServer(
+            address: ServerAddress::fromString($this->getParam('Config.Settings.SNTP.NTPServer1')),
+            port: new Port($this->getParam('Config.Settings.SNTP.Port')),
+            timezone: $this->getParam('Config.Settings.SNTP.Timezone'),
+        );
     }
 
     public function getSysinfo(): array
@@ -67,6 +68,18 @@ trait qtech
             'Config.Settings.WEB_LOGIN.Password' => $password, // WEB
             'Config.DoorSetting.APIFCGI.Password' => $password, // API
             'Config.DoorSetting.RTSP.Password' => $password, // RTSP
+        ]);
+    }
+
+    public function setNtpServer(NtpServer $server): void
+    {
+        $this->setParams([
+            'Config.Settings.SNTP.TimeZone' => $this->getOffsetByTimezone($server->timezone),
+            // 'Config.Settings.SNTP.Name' => 'Russia(Moscow)',
+            'Config.Settings.SNTP.NTPServer1' => $server->address,
+            'Config.Settings.SNTP.NTPServer2' => null,
+            'Config.Settings.SNTP.Interval' => 3600,
+            'Config.Settings.SNTP.Port' => $server->port,
         ]);
     }
 
@@ -139,15 +152,6 @@ trait qtech
         $port = $this->getParam('Config.DoorSetting.SysLog.SysLogServerPort');
 
         return 'syslog.udp' . ':' . $server . ':' . $port;
-    }
-
-    protected function getNtpConfig(): array
-    {
-        return [
-            'server' => $this->getParam('Config.Settings.SNTP.NTPServer1'),
-            'port' => $this->getParam('Config.Settings.SNTP.Port'),
-            'timezone' => $this->getParam('Config.Settings.SNTP.Timezone'),
-        ];
     }
 
     /**

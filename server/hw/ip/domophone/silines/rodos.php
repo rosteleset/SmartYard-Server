@@ -45,11 +45,6 @@ class rodos extends domophone
         // Empty implementation
     }
 
-    public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow'): void
-    {
-        // Empty implementation
-    }
-
     public function configureSip(
         string $login,
         string $password,
@@ -282,15 +277,6 @@ class rodos extends domophone
     protected function getMatrix(): array
     {
         return [];
-    }
-
-    protected function getNtpConfig(): array
-    {
-        return [
-            'server' => '',
-            'port' => 123,
-            'timezone' => '',
-        ];
     }
 
     protected function getRfids(): array

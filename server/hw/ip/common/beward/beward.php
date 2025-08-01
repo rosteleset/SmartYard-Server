@@ -2,6 +2,12 @@
 
 namespace hw\ip\common\beward;
 
+use hw\ValueObject\{
+    NtpServer,
+    Port,
+    ServerAddress,
+};
+
 /**
  * Trait providing common functionality related to Beward devices.
  */
@@ -21,25 +27,6 @@ trait beward
         ]);
     }
 
-    public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow'): void
-    {
-        /*
-         * Depending on the device model, the auto mode can be 'on'/'off' or '1'/'0'.
-         * This must be determined before calling the NTP configuration, otherwise the call will fail.
-         */
-        $automode = $this->getParams('ntp_cgi')['AutoMode'] ?? null;
-        $automodeIsNumeric = is_numeric($automode);
-
-        $this->apiCall('cgi-bin/ntp_cgi', [
-            'action' => 'set',
-            'Enable' => 'on',
-            'ServerAddress' => $server,
-            'ServerPort' => $port,
-            'Timezone' => Timezone::getIdByTimezone($timezone),
-            'AutoMode' => $automodeIsNumeric ? '0' : 'off',
-        ]);
-    }
-
     /**
      * Force save the settings to the flash memory of the device.
      *
@@ -48,6 +35,17 @@ trait beward
     public function forceSave(): void
     {
         $this->apiCall('cgi-bin/config_cgi', ['action' => 'forcesave']);
+    }
+
+    public function getNtpServer(): NtpServer
+    {
+        $ntp = $this->getParams('ntp_cgi');
+
+        return new NtpServer(
+            address: ServerAddress::fromString($ntp['ServerAddress']),
+            port: new Port($ntp['ServerPort']),
+            timezone: $ntp['Timezone'],
+        );
     }
 
     public function getSysinfo(): array
@@ -80,6 +78,25 @@ trait beward
             'username' => 'admin',
             'password' => $password,
             'blockdoors' => 1,
+        ]);
+    }
+
+    public function setNtpServer(NtpServer $server): void
+    {
+        /*
+         * Depending on the device model, the auto mode can be 'on'/'off' or '1'/'0'.
+         * This must be determined before calling the NTP configuration, otherwise the call will fail.
+         */
+        $automode = $this->getParams('ntp_cgi')['AutoMode'] ?? null;
+        $automodeIsNumeric = is_numeric($automode);
+
+        $this->apiCall('cgi-bin/ntp_cgi', [
+            'action' => 'set',
+            'Enable' => 'on',
+            'ServerAddress' => $server->address,
+            'ServerPort' => $server->port,
+            'Timezone' => Timezone::getIdByTimezone($server->timezone),
+            'AutoMode' => $automodeIsNumeric ? '0' : 'off',
         ]);
     }
 
@@ -165,17 +182,6 @@ trait beward
     {
         ['ServerAddress' => $server, 'ServerPort' => $port] = $this->getParams('rsyslog_cgi');
         return 'syslog.udp' . ':' . $server . ':' . $port;
-    }
-
-    protected function getNtpConfig(): array
-    {
-        $ntp = $this->getParams('ntp_cgi');
-
-        return [
-            'server' => $ntp['ServerAddress'],
-            'port' => $ntp['ServerPort'],
-            'timezone' => $ntp['Timezone'],
-        ];
     }
 
     /**

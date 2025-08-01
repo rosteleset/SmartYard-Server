@@ -5,15 +5,20 @@ namespace hw\ip\camera\sputnik;
 use DateTime;
 use DateTimeZone;
 use Exception;
+use hw\Interface\NtpServerInterface;
 use hw\ip\camera\camera;
 use hw\ip\camera\entities\DetectionZone;
+use hw\ValueObject\{
+    NtpServer,
+    Port,
+    ServerAddress,
+};
 
 /**
  * Class representing a Sputnik camera.
  */
-class sputnik extends camera
+class sputnik extends camera implements NtpServerInterface
 {
-
     use \hw\ip\common\sputnik\sputnik;
 
     /**
@@ -31,20 +36,31 @@ class sputnik extends camera
         // Empty implementation
     }
 
-    public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow'): void
-    {
-        $this->apiCall('mutation', 'updateCameraNtpConfig', [
-            'camera' => ['uuid' => $this->getCameraUUID()],
-            'ntpPort' => $port,
-            'ntpServer' => $server,
-            'timezone' => $this->getOffsetByTimezone($timezone),
-        ]);
-    }
-
     public function getCamshot(): string
     {
         // TODO: Implement getCamshot() method.
         return '';
+    }
+
+    public function getNtpServer(): NtpServer
+    {
+        $camera = $this->apiCall('query', 'camera', ['uuid' => $this->getCameraUUID()], [
+            'configShadow' => [
+                'ntp' => [
+                    'ntpPort',
+                    'ntpServer',
+                    'timezone',
+                ],
+            ],
+        ]);
+
+        $ntpConfig = $camera['data']['camera']['configShadow']['ntp'] ?? [];
+
+        return new NtpServer(
+            address: ServerAddress::fromString($ntpConfig['ntpServer'] ?? ''),
+            port: new Port($ntpConfig['ntpPort'] ?? 123),
+            timezone: $ntpConfig['timezone'] ?? 'Europe/Moscow',
+        );
     }
 
     public function reboot(): void
@@ -55,6 +71,16 @@ class sputnik extends camera
     public function reset(): void
     {
         $this->apiCall('mutation', 'restoreDefaultCameraConfig', ['cameraID' => $this->getCameraUUID()]);
+    }
+
+    public function setNtpServer(NtpServer $server): void
+    {
+        $this->apiCall('mutation', 'updateCameraNtpConfig', [
+            'camera' => ['uuid' => $this->getCameraUUID()],
+            'ntpPort' => $server->port,
+            'ntpServer' => $server->address,
+            'timezone' => $this->getOffsetByTimezone($server->timezone),
+        ]);
     }
 
     public function setOsdText(string $text = ''): void
@@ -98,27 +124,6 @@ class sputnik extends camera
     protected function getMotionDetectionConfig(): array
     {
         return [new DetectionZone(0, 0, 100, 100)];
-    }
-
-    protected function getNtpConfig(): array
-    {
-        $camera = $this->apiCall('query', 'camera', ['uuid' => $this->getCameraUUID()], [
-            'configShadow' => [
-                'ntp' => [
-                    'ntpPort',
-                    'ntpServer',
-                    'timezone',
-                ],
-            ],
-        ]);
-
-        $ntpConfig = $camera['data']['camera']['configShadow']['ntp'] ?? [];
-
-        return [
-            'server' => $ntpConfig['ntpServer'] ?? '',
-            'port' => $ntpConfig['ntpPort'] ?? 123,
-            'timezone' => $ntpConfig['timezone'] ?? 'Europe/Moscow',
-        ];
     }
 
     /**

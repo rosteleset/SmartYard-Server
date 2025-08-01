@@ -5,119 +5,22 @@ namespace hw\ip\camera\brovotech;
 use DateTime;
 use DateTimeZone;
 use Exception;
-
+use hw\Interface\NtpServerInterface;
 use hw\ip\camera\camera;
 use hw\ip\camera\entities\DetectionZone;
 use hw\ip\camera\utils\DetectionZoneUtils;
+use hw\ValueObject\{
+    NtpServer,
+    Port,
+    ServerAddress,
+};
 
 /**
  * Class representing a fake camera with a static image.
  */
-class brovotech extends camera
+class brovotech extends camera implements NtpServerInterface
 {
     protected const DETECTION_ZONE_COUNT = 4;
-
-    protected function apiCall(string $resource, string $method = 'GET', array $params = [], $payload = null, int $timeout = 0)
-    {
-        $req = $this->url . $resource;
-        if ($params) {
-            $req .= '?' . http_build_query($params);
-        }
-
-        $ch = curl_init($req);
-        curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-        curl_setopt($ch, CURLOPT_USERPWD, "$this->login:$this->password");
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_VERBOSE, false);
-        curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
-
-        if (isset($payload)) {
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
-        }
-
-        $res = curl_exec($ch);
-        curl_close($ch);
-
-        if (str_starts_with(curl_getinfo($ch, CURLINFO_CONTENT_TYPE), 'image')) {
-            return (string)$res;
-        }
-
-        if (curl_getinfo($ch, CURLINFO_CONTENT_TYPE) == 'application/xml' || curl_getinfo($ch, CURLINFO_CONTENT_TYPE) == 'text/xml') {
-            return json_decode(json_encode(simplexml_load_string($res)), true);
-        }
-
-        return $res;
-    }
-
-    /**
-     * Get timezone representation for Brovotech.
-     *
-     * @param string $timezone Timezone identifier.
-     *
-     * @return string GMT offset (MSK-3 for example).
-     */
-    protected function getOffsetByTimezone(string $timezone): string
-    {
-        $offset_to_zone = [
-            -50400 => 'GMT+14',       // GMT-14
-            -46800 => 'GMT+13',       // GMT-13
-            -43200 => 'GMT+12',       // GMT-12
-            -39600 => 'SST11',        // GMT-11
-            -36000 => 'HAST10',       // GMT-10
-            -32400 => 'AKST9',        // GMT-09
-            -28800 => 'PST8',         // GMT-08
-            -25200 => 'MST7',         // GMT-07
-            -21600 => 'CSTA6',        // GMT-06
-            -18000 => 'CST5',         // GMT-05
-            -16200 => 'VET4:30',      // GMT-04:30
-            -14400 => 'PYT4',         // GMT-04
-            -12600 => 'NST3:30',      // GMT-03:30
-            -10800 => 'BRT3',         // GMT-03
-             -7200 => 'FNT2',         // GMT-02
-             -3600 => 'AZOT1',        // GMT-01
-                 0 => 'GMT0',         // GMT
-              3600 => 'CET-1',        // GMT+01
-              7200 => 'EETB-2',       // GMT+02
-             10800 => 'MSK-3',        // GMT+03
-             14400 => 'AZT-4',        // GMT+04
-             18000 => 'PKT-5',        // GMT+05
-             19800 => 'IST-5:30',     // GMT+05:30
-             20700 => 'NPT-5:45',     // GMT+05:45
-             21600 => 'OMST-6',       // GMT+06
-             23400 => 'MMT-6:30',     // GMT+06:30
-             25200 => 'WIT-7',        // GMT+07
-             28800 => 'CST-8',        // GMT+08
-             32400 => 'JST-9',        // GMT+09
-             34200 => 'CSTA-9:30',    // GMT+09:30
-             36000 => 'EST-10',       // GMT+10
-             39600 => 'SBT-11',       // GMT+11
-             43200 => 'NZST-12',      // GMT+12
-             45900 => 'CHAST-12:45',  // GMT+12:45
-             46800 => 'TOT-13',       // GMT+13
-        ];
-        try {
-            $zone = new DateTimeZone($timezone);
-            $time = new DateTime("now", $zone);
-            $time_offset =$zone->getOffset($time);
-            return $offset_to_zone[$time_offset];
-        } catch (Exception) {
-            return $offset_to_zone[10800];
-        }
-    }
-
-    protected function getResolution(): string
-    {
-        $motion = $this->apiCall('/action/get', 'GET', ['subject' => 'motion']);
-        $resolution = '640x360';
-        if (is_array($motion)) {
-            if (isset($motion['motion']['resolution'])) {
-                $resolution = $motion['motion']['resolution'];
-            }
-        }
-
-        return $resolution;
-    }
 
     public function configureEventServer(string $url): void
     {
@@ -162,7 +65,7 @@ class brovotech extends camera
                 maxX: $x_max,
                 maxY: $y_max,
                 direction: 'toPixel',
-                roundToEven: true
+                roundToEven: true,
             );
         }
 
@@ -247,30 +150,20 @@ class brovotech extends camera
         $this->apiCall('/action/set', 'POST', ['subject' => 'snap'], $xml_request);
     }
 
-    public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow'): void
-    {
-        $tz = $this->getOffsetByTimezone($timezone);
-
-        $xml_request = "
-            <request>
-              <systime ver=\"2.0\">
-                <mode>1</mode>
-                <tz>$tz</tz>
-                <ntp>
-                  <host>$server</host>
-                  <port>$port</port>
-                  <interval>1</interval>
-                </ntp>
-              </systime>
-            </request>
-        ";
-
-        $this->apiCall('/action/set', 'POST', ['subject' => 'systime'], $xml_request);
-    }
-
     public function getCamshot(): string
     {
         return $this->apiCall('/action/snap', 'GET', [], null, 2);
+    }
+
+    public function getNtpServer(): NtpServer
+    {
+        $ntp = $this->apiCall('/action/get', 'GET', ['subject' => 'systime']);
+
+        return new NtpServer(
+            address: ServerAddress::fromString($ntp['systime']['ntp']['host']),
+            port: new Port($ntp['systime']['ntp']['port']),
+            timezone: $ntp['systime']['tz'],
+        );
     }
 
     public function getSysinfo(): array
@@ -306,6 +199,27 @@ class brovotech extends camera
         ";
 
         $this->apiCall("/action/set", 'POST', ['subject' => 'user', 'do' => 'modify'], $xml_request);
+    }
+
+    public function setNtpServer(NtpServer $server): void
+    {
+        $tz = $this->getOffsetByTimezone($server->timezone);
+
+        $xml_request = "
+            <request>
+              <systime ver=\"2.0\">
+                <mode>1</mode>
+                <tz>$tz</tz>
+                <ntp>
+                  <host>$server->address</host>
+                  <port>$server->port</port>
+                  <interval>1</interval>
+                </ntp>
+              </systime>
+            </request>
+        ";
+
+        $this->apiCall('/action/set', 'POST', ['subject' => 'systime'], $xml_request);
     }
 
     public function setOsdText(string $text = ''): void
@@ -375,6 +289,39 @@ class brovotech extends camera
         return $dbConfig;
     }
 
+    protected function apiCall(string $resource, string $method = 'GET', array $params = [], $payload = null, int $timeout = 0)
+    {
+        $req = $this->url . $resource;
+        if ($params) {
+            $req .= '?' . http_build_query($params);
+        }
+
+        $ch = curl_init($req);
+        curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+        curl_setopt($ch, CURLOPT_USERPWD, "$this->login:$this->password");
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_VERBOSE, false);
+        curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
+
+        if (isset($payload)) {
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+        }
+
+        $res = curl_exec($ch);
+        curl_close($ch);
+
+        if (str_starts_with(curl_getinfo($ch, CURLINFO_CONTENT_TYPE), 'image')) {
+            return (string)$res;
+        }
+
+        if (curl_getinfo($ch, CURLINFO_CONTENT_TYPE) == 'application/xml' || curl_getinfo($ch, CURLINFO_CONTENT_TYPE) == 'text/xml') {
+            return json_decode(json_encode(simplexml_load_string($res)), true);
+        }
+
+        return $res;
+    }
+
     protected function getEventServer(): string
     {
         $event_server = $this->apiCall('/action/get', 'GET', ['subject' => 'evtserver']);
@@ -419,18 +366,60 @@ class brovotech extends camera
         return $pixel_zones;
     }
 
-    protected function getNtpConfig(): array
+    /**
+     * Get timezone representation for Brovotech.
+     *
+     * @param string $timezone Timezone identifier.
+     *
+     * @return string GMT offset (MSK-3 for example).
+     */
+    protected function getOffsetByTimezone(string $timezone): string
     {
-        $ntp = $this->apiCall('/action/get', 'GET', ['subject' => 'systime']);
-        if (is_array($ntp)) {
-            return [
-                'server' => $ntp['systime']['ntp']['host'],
-                'port' => $ntp['systime']['ntp']['port'],
-                'timezone' => $ntp['systime']['tz'],
-            ];
+        $offset_to_zone = [
+            -50400 => 'GMT+14',       // GMT-14
+            -46800 => 'GMT+13',       // GMT-13
+            -43200 => 'GMT+12',       // GMT-12
+            -39600 => 'SST11',        // GMT-11
+            -36000 => 'HAST10',       // GMT-10
+            -32400 => 'AKST9',        // GMT-09
+            -28800 => 'PST8',         // GMT-08
+            -25200 => 'MST7',         // GMT-07
+            -21600 => 'CSTA6',        // GMT-06
+            -18000 => 'CST5',         // GMT-05
+            -16200 => 'VET4:30',      // GMT-04:30
+            -14400 => 'PYT4',         // GMT-04
+            -12600 => 'NST3:30',      // GMT-03:30
+            -10800 => 'BRT3',         // GMT-03
+            -7200 => 'FNT2',         // GMT-02
+            -3600 => 'AZOT1',        // GMT-01
+            0 => 'GMT0',         // GMT
+            3600 => 'CET-1',        // GMT+01
+            7200 => 'EETB-2',       // GMT+02
+            10800 => 'MSK-3',        // GMT+03
+            14400 => 'AZT-4',        // GMT+04
+            18000 => 'PKT-5',        // GMT+05
+            19800 => 'IST-5:30',     // GMT+05:30
+            20700 => 'NPT-5:45',     // GMT+05:45
+            21600 => 'OMST-6',       // GMT+06
+            23400 => 'MMT-6:30',     // GMT+06:30
+            25200 => 'WIT-7',        // GMT+07
+            28800 => 'CST-8',        // GMT+08
+            32400 => 'JST-9',        // GMT+09
+            34200 => 'CSTA-9:30',    // GMT+09:30
+            36000 => 'EST-10',       // GMT+10
+            39600 => 'SBT-11',       // GMT+11
+            43200 => 'NZST-12',      // GMT+12
+            45900 => 'CHAST-12:45',  // GMT+12:45
+            46800 => 'TOT-13',       // GMT+13
+        ];
+        try {
+            $zone = new DateTimeZone($timezone);
+            $time = new DateTime("now", $zone);
+            $time_offset = $zone->getOffset($time);
+            return $offset_to_zone[$time_offset];
+        } catch (Exception) {
+            return $offset_to_zone[10800];
         }
-
-        return [];
     }
 
     protected function getOsdText(): string
@@ -440,6 +429,19 @@ class brovotech extends camera
             return $osd['osd']['custom']['ctext'] ?? '';
         }
         return '';
+    }
+
+    protected function getResolution(): string
+    {
+        $motion = $this->apiCall('/action/get', 'GET', ['subject' => 'motion']);
+        $resolution = '640x360';
+        if (is_array($motion)) {
+            if (isset($motion['motion']['resolution'])) {
+                $resolution = $motion['motion']['resolution'];
+            }
+        }
+
+        return $resolution;
     }
 
     protected function initializeProperties(): void

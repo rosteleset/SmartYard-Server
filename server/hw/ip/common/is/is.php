@@ -2,22 +2,19 @@
 
 namespace hw\ip\common\is;
 
+use hw\ValueObject\{
+    NtpServer,
+    Port,
+    ServerAddress,
+};
+
 /**
  * Trait providing common functionality related to Intersvyaz (IS) devices.
  */
 trait is
 {
-
     public function configureEventServer(string $url): void
     {
-        // Until better times...
-//        ['host' => $server, 'port' => $port] = parse_url_ext($url);
-//
-//        $this->apiCall('/v1/network/syslog', 'PUT', [
-//            'addr' => $server,
-//            'port' => (int)$port,
-//        ]);
-
         ['host' => $server, 'port' => $port] = parse_url_ext($url);
 
         $template = file_get_contents(__DIR__ . '/templates/custom.conf');
@@ -26,12 +23,15 @@ trait is
         exec(__DIR__ . "/scripts/upload_syslog_conf $host $this->login $this->password '$template'");
     }
 
-    public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow'): void
+    public function getNtpServer(): NtpServer
     {
-        $this->apiCall('/system/settings', 'PUT', [
-            'tz' => $timezone,
-            'ntp' => [$server],
-        ]);
+        $settings = $this->apiCall('/system/settings');
+
+        return new NtpServer(
+            address: ServerAddress::fromString($settings['ntp'][0]),
+            port: new Port(123),
+            timezone: $settings['tz'],
+        );
     }
 
     public function getSysinfo(): array
@@ -63,6 +63,14 @@ trait is
     public function setAdminPassword(string $password): void
     {
         $this->apiCall('/user/change_password', 'PUT', ['newPassword' => $password]);
+    }
+
+    public function setNtpServer(NtpServer $server): void
+    {
+        $this->apiCall('/system/settings', 'PUT', [
+            'tz' => $server->timezone,
+            'ntp' => [$server->address],
+        ]);
     }
 
     public function syncData(): void
@@ -117,26 +125,11 @@ trait is
 
     protected function getEventServer(): string
     {
-        // Until better times...
-//        ['addr' => $server, 'port' => $port] = $this->apiCall('/v1/network/syslog');
-//        return 'syslog.udp' . ':' . $server . ':' . $port;
-
         $host = parse_url($this->url)['host'];
         exec(__DIR__ . "/scripts/get_syslog_conf $host $this->login $this->password", $output);
         [$server, $port] = explode(':', explode(';', explode('@', $output[7])[1])[0]);
 
         return 'syslog.udp' . ':' . $server . ':' . $port;
-    }
-
-    protected function getNtpConfig(): array
-    {
-        $settings = $this->apiCall('/system/settings');
-
-        return [
-            'server' => $settings['ntp'][0],
-            'port' => 123,
-            'timezone' => $settings['tz'],
-        ];
     }
 
     protected function initializeProperties(): void

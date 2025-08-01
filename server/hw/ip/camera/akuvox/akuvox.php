@@ -2,15 +2,15 @@
 
 namespace hw\ip\camera\akuvox;
 
+use hw\Interface\NtpServerInterface;
 use hw\ip\camera\camera;
 use hw\ip\camera\entities\DetectionZone;
 
 /**
  * Class representing an Akuvox camera.
  */
-class akuvox extends camera
+class akuvox extends camera implements NtpServerInterface
 {
-
     use \hw\ip\common\akuvox\akuvox;
 
     public function configureMotionDetection(array $detectionZones): void
@@ -65,7 +65,7 @@ class akuvox extends camera
         // Round off detection zone coordinates
         if ($dbConfig['motionDetection']) {
             $dbConfig['motionDetection'] = [
-                new DetectionZone(...array_map('round', (array)$dbConfig['motionDetection'][0]))
+                new DetectionZone(...array_map('round', (array)$dbConfig['motionDetection'][0])),
             ];
         }
 
@@ -81,7 +81,7 @@ class akuvox extends camera
                 'Config.DoorSetting.MOTION_DETECT.AreaEndWidth',
                 'Config.DoorSetting.MOTION_DETECT.AreaStartHeight',
                 'Config.DoorSetting.MOTION_DETECT.AreaEndHeight',
-            ])
+            ]),
         );
 
         if ($areaStartWidth == 0 && $areaEndWidth == 0 && $areaStartHeight == 0 && $areaEndHeight == 0) {

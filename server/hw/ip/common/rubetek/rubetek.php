@@ -5,6 +5,11 @@ namespace hw\ip\common\rubetek;
 use DateTime;
 use DateTimeZone;
 use Exception;
+use hw\ValueObject\{
+    NtpServer,
+    Port,
+    ServerAddress,
+};
 
 /**
  * Trait providing common functionality related to Rubetek devices.
@@ -38,12 +43,20 @@ trait rubetek
         ]);
     }
 
-    public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow'): void
+    public function getNtpServer(): NtpServer
     {
-        $timeSettings = $this->getConfiguration()['time'];
-        $timeSettings['ntp_pool'] = "$server:$port";
-        $timeSettings['timezone'] = $this->getOffsetByTimezone($timezone);
-        $this->apiCall('/configuration', 'PATCH', ['time' => $timeSettings]);
+        [
+            'timezone' => $offset,
+            'ntp_pool' => $ntpPool,
+        ] = $this->getConfiguration()['time'];
+
+        [$server, $port] = array_pad(explode(':', $ntpPool), 2, 0);
+
+        return new NtpServer(
+            address: ServerAddress::fromString($server),
+            port: new Port($port),
+            timezone: $offset,
+        );
     }
 
     public function getSysinfo(): array
@@ -86,6 +99,14 @@ trait rubetek
             'new_password' => $password,
         ]);
         sleep(10);
+    }
+
+    public function setNtpServer(NtpServer $server): void
+    {
+        $timeSettings = $this->getConfiguration()['time'];
+        $timeSettings['ntp_pool'] = "$server->address:$server->port";
+        $timeSettings['timezone'] = $this->getOffsetByTimezone($server->timezone);
+        $this->apiCall('/configuration', 'PATCH', ['time' => $timeSettings]);
     }
 
     public function syncData(): void
@@ -158,22 +179,6 @@ trait rubetek
         [$server, $port] = array_pad(explode(':', $syslogUrl), 2, 514);
 
         return 'syslog.udp' . ':' . $server . ':' . $port;
-    }
-
-    protected function getNtpConfig(): array
-    {
-        [
-            'timezone' => $offset,
-            'ntp_pool' => $ntpPool,
-        ] = $this->getConfiguration()['time'];
-
-        [$server, $port] = array_pad(explode(':', $ntpPool), 2, 0);
-
-        return [
-            'server' => $server,
-            'port' => $port,
-            'timezone' => $offset,
-        ];
     }
 
     /**

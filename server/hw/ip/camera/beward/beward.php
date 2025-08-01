@@ -2,6 +2,7 @@
 
 namespace hw\ip\camera\beward;
 
+use hw\Interface\NtpServerInterface;
 use hw\ip\camera\camera;
 use hw\ip\camera\entities\DetectionZone;
 use hw\ip\camera\utils\DetectionZoneUtils;
@@ -9,9 +10,8 @@ use hw\ip\camera\utils\DetectionZoneUtils;
 /**
  * Class representing a Beward camera.
  */
-class beward extends camera
+class beward extends camera implements NtpServerInterface
 {
-
     use \hw\ip\common\beward\beward;
 
     protected const DETECTION_ZONE_MAX_X = 704;
@@ -24,7 +24,7 @@ class beward extends camera
                 zone: $detectionZones[0],
                 maxX: self::DETECTION_ZONE_MAX_X,
                 maxY: self::DETECTION_ZONE_MAX_Y,
-                direction: 'toPixel'
+                direction: 'toPixel',
             )
             : null;
 

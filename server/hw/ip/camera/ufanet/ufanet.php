@@ -2,6 +2,7 @@
 
 namespace hw\ip\camera\ufanet;
 
+use hw\Interface\NtpServerInterface;
 use hw\ip\camera\camera;
 use hw\ip\camera\entities\DetectionZone;
 use hw\ip\camera\utils\DetectionZoneUtils;
@@ -9,7 +10,7 @@ use hw\ip\camera\utils\DetectionZoneUtils;
 /**
  * Class representing an Ufanet camera.
  */
-class ufanet extends camera
+class ufanet extends camera implements NtpServerInterface
 {
     use \hw\ip\common\ufanet\ufanet {
         transformDbConfig as protected commonTransformDbConfig;
@@ -25,7 +26,7 @@ class ufanet extends camera
                 zone: $detectionZones[0],
                 maxX: $maxX,
                 maxY: $maxY,
-                direction: 'toPixel'
+                direction: 'toPixel',
             )
             : null;
 
@@ -98,7 +99,7 @@ class ufanet extends camera
                     zone: $dbConfig['motionDetection'][0],
                     maxX: $maxX,
                     maxY: $maxY,
-                    direction: 'toPixel')
+                    direction: 'toPixel'),
             ];
         }
 

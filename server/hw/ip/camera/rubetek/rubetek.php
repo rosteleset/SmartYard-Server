@@ -2,13 +2,14 @@
 
 namespace hw\ip\camera\rubetek;
 
+use hw\Interface\NtpServerInterface;
 use hw\ip\camera\camera;
 use hw\ip\camera\entities\DetectionZone;
 
 /**
  * Class representing a Rubetek camera.
  */
-class rubetek extends camera
+class rubetek extends camera implements NtpServerInterface
 {
     use \hw\ip\common\rubetek\rubetek {
         transformDbConfig as protected commonTransformDbConfig;

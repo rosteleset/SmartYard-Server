@@ -2,15 +2,15 @@
 
 namespace hw\ip\camera\qtech;
 
+use hw\Interface\NtpServerInterface;
 use hw\ip\camera\camera;
 use hw\ip\camera\entities\DetectionZone;
 
 /**
  * Class representing a Qtech camera.
  */
-class qtech extends camera
+class qtech extends camera implements NtpServerInterface
 {
-
     use \hw\ip\common\qtech\qtech;
 
     public function configureMotionDetection(array $detectionZones): void

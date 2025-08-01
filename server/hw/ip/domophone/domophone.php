@@ -9,6 +9,7 @@ use hw\Interface\{
     GateModeInterface,
     HousePrefixInterface,
     LanguageInterface,
+    NtpServerInterface,
 };
 use hw\ip\ip;
 use hw\SmartConfigurator\ConfigurationBuilder\DomophoneConfigurationBuilder;
@@ -33,7 +34,6 @@ abstract class domophone extends ip
             ->addEventServer($this->getEventServer())
             ->addSip(...$this->getSipConfig())
             ->addCmsModel($this->getCmsModel())
-            ->addNtp(...$this->getNtpConfig())
         ;
 
         if ($this instanceof CmsLevelsInterface) {
@@ -54,6 +54,10 @@ abstract class domophone extends ip
 
         if ($this instanceof HousePrefixInterface) {
             $builder->addHousePrefixes($this->getHousePrefixes());
+        }
+
+        if ($this instanceof NtpServerInterface) {
+            # TODO
         }
 
         foreach ($this->getApartments() as $apartment) {

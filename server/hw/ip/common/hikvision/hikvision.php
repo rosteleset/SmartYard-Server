@@ -2,12 +2,17 @@
 
 namespace hw\ip\common\hikvision;
 
+use hw\ValueObject\{
+    NtpServer,
+    Port,
+    ServerAddress,
+};
+
 /**
  * Trait providing common functionality related to Hikvision devices.
  */
 trait hikvision
 {
-
     public function configureEventServer(string $url): void
     {
         ['host' => $server, 'port' => $port] = parse_url_ext($url);
@@ -27,32 +32,17 @@ trait hikvision
                     <portNo>$port</portNo>
                     <httpAuthenticationMethod>none</httpAuthenticationMethod>
                 </HttpHostNotification>
-            </HttpHostNotificationList>"
+            </HttpHostNotificationList>",
         );
     }
 
-    public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow'): void
+    public function getNtpServer(): NtpServer
     {
-        $this->apiCall(
-            '/System/time',
-            'PUT',
-            [],
-            '<Time>
-                <timeMode>NTP</timeMode>
-                <timeZone>CST-3:00:00</timeZone>
-             </Time>'
-        );
-        $this->apiCall(
-            '/System/time/ntpServers/1',
-            'PUT',
-            [],
-            "<NTPServer>
-                <id>1</id>
-                <addressingFormatType>ipaddress</addressingFormatType>
-                <ipAddress>$server</ipAddress>
-                <portNo>$port</portNo>
-                <synchronizeInterval>60</synchronizeInterval>
-            </NTPServer>"
+        // TODO: Implement getNtpConfig() method.
+        return new NtpServer(
+            address: ServerAddress::fromString('127.0.0.1'),
+            port: new Port(123),
+            timezone: 'Europe/Moscow',
         );
     }
 
@@ -90,7 +80,32 @@ trait hikvision
                 <password>$password</password>
                 <userLevel>Administrator</userLevel>
                 <loginPassword>$this->password</loginPassword>
-            </User>"
+            </User>",
+        );
+    }
+
+    public function setNtpServer(NtpServer $server): void
+    {
+        $this->apiCall(
+            '/System/time',
+            'PUT',
+            [],
+            '<Time>
+                <timeMode>NTP</timeMode>
+                <timeZone>CST-3:00:00</timeZone>
+             </Time>',
+        );
+        $this->apiCall(
+            '/System/time/ntpServers/1',
+            'PUT',
+            [],
+            "<NTPServer>
+                <id>1</id>
+                <addressingFormatType>ipaddress</addressingFormatType>
+                <ipAddress>$server->address</ipAddress>
+                <portNo>$server->port</portNo>
+                <synchronizeInterval>60</synchronizeInterval>
+            </NTPServer>",
         );
     }
 
@@ -145,12 +160,6 @@ trait hikvision
     {
         // TODO: Implement getSyslogConfig() method.
         return '';
-    }
-
-    protected function getNtpConfig(): array
-    {
-        // TODO: Implement getNtpConfig() method.
-        return [];
     }
 
     protected function initializeProperties(): void

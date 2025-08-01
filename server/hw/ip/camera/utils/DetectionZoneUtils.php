@@ -7,7 +7,6 @@ use InvalidArgumentException;
 
 final class DetectionZoneUtils
 {
-
     /**
      * Convert the coordinates of a `DetectionZone` object between percentage and pixels.
      *
@@ -24,7 +23,7 @@ final class DetectionZoneUtils
         int           $maxX,
         int           $maxY,
         string        $direction,
-        bool          $roundToEven = false
+        bool          $roundToEven = false,
     ): DetectionZone
     {
         if ($direction === 'toPixel') {

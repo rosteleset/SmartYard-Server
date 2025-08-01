@@ -2,15 +2,15 @@
 
 namespace hw\ip\camera\is;
 
+use hw\Interface\NtpServerInterface;
 use hw\ip\camera\camera;
 use hw\ip\camera\entities\DetectionZone;
 
 /**
  * Class representing an Intersvyaz (IS) camera.
  */
-class is extends camera
+class is extends camera implements NtpServerInterface
 {
-
     use \hw\ip\common\is\is;
 
     public function configureMotionDetection(array $detectionZones): void

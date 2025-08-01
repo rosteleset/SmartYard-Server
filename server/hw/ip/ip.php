@@ -141,13 +141,6 @@ abstract class ip extends hw
     abstract protected function getEventServer(): string;
 
     /**
-     * Get NTP configuration.
-     *
-     * @return array An array containing NTP params configured on the device.
-     */
-    abstract protected function getNtpConfig(): array;
-
-    /**
      * Initializes properties for the implementing class.
      *
      * @return void
@@ -162,17 +155,6 @@ abstract class ip extends hw
      * @return void
      */
     abstract public function configureEventServer(string $url): void;
-
-    /**
-     * Configure NTP.
-     *
-     * @param string $server NTP server address.
-     * @param int $port (Optional) NTP server port. Default is 123.
-     * @param string $timezone (Optional) Timezone to set for NTP synchronization. Default is Europe/Moscow.
-     *
-     * @return void
-     */
-    abstract public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow'): void;
 
     /**
      * Get system information.

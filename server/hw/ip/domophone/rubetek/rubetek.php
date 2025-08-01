@@ -10,6 +10,7 @@ use hw\Interface\{
     FreePassInterface,
     HousePrefixInterface,
     LanguageInterface,
+    NtpServerInterface,
 };
 use hw\ip\domophone\domophone;
 use hw\ValueObject\{
@@ -26,7 +27,8 @@ abstract class rubetek extends domophone implements
     DisplayTextInterface,
     FreePassInterface,
     HousePrefixInterface,
-    LanguageInterface
+    LanguageInterface,
+    NtpServerInterface
 {
     use \hw\ip\common\rubetek\rubetek {
         transformDbConfig as protected commonTransformDbConfig;

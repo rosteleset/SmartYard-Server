@@ -2,14 +2,14 @@
 
 namespace hw\ip\camera\hikvision;
 
+use hw\Interface\NtpServerInterface;
 use hw\ip\camera\camera;
 
 /**
  * Class representing a Hikvision camera.
  */
-class hikvision extends camera
+class hikvision extends camera implements NtpServerInterface
 {
-
     use \hw\ip\common\hikvision\hikvision;
 
     public function configureMotionDetection(array $detectionZones): void
@@ -32,7 +32,7 @@ class hikvision extends camera
                 <id>1</id>
                 <inputPort>1</inputPort>
                 <name>$text</name>
-            </VideoInputChannel>"
+            </VideoInputChannel>",
         );
         $this->apiCall(
             '/System/Video/inputs/channels/1/overlays',
@@ -52,7 +52,7 @@ class hikvision extends camera
                     <positionY>700</positionY>
                     <positionX>0</positionX>
                 </channelNameOverlay>
-            </VideoOverlay>'
+            </VideoOverlay>',
         );
     }
 

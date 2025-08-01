@@ -6,13 +6,18 @@ use hw\Interface\{
     CmsLevelsInterface,
     FreePassInterface,
     GateModeInterface,
+    NtpServerInterface,
 };
 use hw\ip\domophone\domophone;
 
 /**
  * Abstract class representing an Intersvyaz (IS) domophone.
  */
-abstract class is extends domophone implements CmsLevelsInterface, FreePassInterface, GateModeInterface
+abstract class is extends domophone implements
+    CmsLevelsInterface,
+    FreePassInterface,
+    GateModeInterface,
+    NtpServerInterface
 {
     use \hw\ip\common\is\is;
 

@@ -4,12 +4,13 @@ namespace hw\ip\domophone\beward;
 
 use DOMDocument;
 use DOMXPath;
+use hw\Interface\NtpServerInterface;
 use hw\ip\domophone\domophone;
 
 /**
  * Abstract class representing a Beward domophone.
  */
-abstract class beward extends domophone
+abstract class beward extends domophone implements NtpServerInterface
 {
     use \hw\ip\common\beward\beward {
         transformDbConfig as protected commonTransformDbConfig;

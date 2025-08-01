@@ -5,13 +5,17 @@ namespace hw\ip\common\akuvox;
 use DateTime;
 use DateTimeZone;
 use Exception;
+use hw\ValueObject\{
+    NtpServer,
+    Port,
+    ServerAddress,
+};
 
 /**
  * Trait providing common functionality related to Akuvox devices.
  */
 trait akuvox
 {
-
     public function configureEventServer(string $url): void // Need to reboot after that
     {
         ['host' => $server, 'port' => $port] = parse_url_ext($url);
@@ -26,16 +30,21 @@ trait akuvox
         $this->wait();
     }
 
-    public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow'): void
+    public function getNtpServer(): NtpServer
     {
-        ['offset' => $offset, 'name' => $name] = $this->getTzOffsetAndName($timezone);
-
-        $this->setConfigParams([
-            'Config.Settings.SNTP.Enable' => '1',
-            'Config.Settings.SNTP.TimeZone' => $offset,
-            'Config.Settings.SNTP.Name' => $name,
-            'Config.Settings.SNTP.NTPServer1' => $server,
+        [$name, $server] = $this->getConfigParams([
+            'Config.Settings.SNTP.Name',
+            'Config.Settings.SNTP.NTPServer1',
         ]);
+
+        $timezone = current(array_filter(timezone_identifiers_list(), fn($tz) => stripos($tz, $name) !== false));
+        $server = explode(':', $server)[0];
+
+        return new ntpServer(
+            address: ServerAddress::fromString($server),
+            port: new Port(123),
+            timezone: $timezone,
+        );
     }
 
     public function getSysinfo(): array
@@ -69,6 +78,18 @@ trait akuvox
         ]);
 
         sleep(1);
+    }
+
+    public function setNtpServer(NtpServer $server): void
+    {
+        ['offset' => $offset, 'name' => $name] = $this->getOffsetAndNameByTz($server->timezone);
+
+        $this->setConfigParams([
+            'Config.Settings.SNTP.Enable' => '1',
+            'Config.Settings.SNTP.TimeZone' => $offset,
+            'Config.Settings.SNTP.Name' => $name,
+            'Config.Settings.SNTP.NTPServer1' => $server->address,
+        ]);
     }
 
     public function syncData(): void
@@ -141,23 +162,6 @@ trait akuvox
         return 'syslog.udp' . ':' . $server . ':' . $port;
     }
 
-    protected function getNtpConfig(): array
-    {
-        [$name, $server] = $this->getConfigParams([
-            'Config.Settings.SNTP.Name',
-            'Config.Settings.SNTP.NTPServer1',
-        ]);
-
-        $timezone = current(array_filter(timezone_identifiers_list(), fn($tz) => stripos($tz, $name) !== false));
-        $server = explode(':', $server)[0];
-
-        return [
-            'server' => $server,
-            'port' => 123, // TODO: ???
-            'timezone' => $timezone,
-        ];
-    }
-
     /**
      * Get timezone representation for Akuvox.
      *
@@ -165,7 +169,7 @@ trait akuvox
      *
      * @return array An array with GMT offset and city name.
      */
-    protected function getTzOffsetAndName(string $timezone): array
+    protected function getOffsetAndNameByTz(string $timezone): array
     {
         try {
             $now = new DateTime('now', new DateTimeZone($timezone));

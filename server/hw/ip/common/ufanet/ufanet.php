@@ -3,6 +3,11 @@
 namespace hw\ip\common\ufanet;
 
 use CURLFile;
+use hw\ValueObject\{
+    NtpServer,
+    Port,
+    ServerAddress,
+};
 
 /**
  * Trait providing common functionality related to Ufanet devices.
@@ -21,26 +26,17 @@ trait ufanet
         ]);
     }
 
-    public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow'): void
+    public function getNtpServer(): NtpServer
     {
-        if (!Timezone::isSupported($timezone)) {
-            return;
-        }
+        $rawParams = $this->apiCall('/cgi-bin/configManager.cgi', 'GET', ['action' => 'getConfig', 'name' => 'NTP']);
+        ['Address' => $address, 'TimeZone' => $timezone] = $this->convertResponseToArray($rawParams);
+        $addressParts = explode(':', $address, 2);
 
-        $this->apiCall('/cgi-bin/configManager.cgi', 'GET', [
-            'action' => 'setConfig',
-            'NTP.Address' => "$server:$port",
-            'NTP.TimeZone' => $timezone,
-        ]);
-
-        $this->reboot();
-        $this->wait();
-
-        // After rebooting, the intercom functions remain unavailable for some time
-        sleep(10);
-
-        // Sync time now
-        $this->apiCall('/cgi-bin/j/sync-time.cgi');
+        return new NtpServer(
+            address: ServerAddress::fromString($addressParts[0]),
+            port: new Port($addressParts[1] ?? 123),
+            timezone: $timezone,
+        );
     }
 
     public function getSysinfo(): array
@@ -76,11 +72,33 @@ trait ufanet
         sleep(5);
     }
 
+    public function setNtpServer(NtpServer $server): void
+    {
+        if (!Timezone::isSupported($server->timezone)) {
+            return;
+        }
+
+        $this->apiCall('/cgi-bin/configManager.cgi', 'GET', [
+            'action' => 'setConfig',
+            'NTP.Address' => "$server->address:$server->port",
+            'NTP.TimeZone' => $server->timezone,
+        ]);
+
+        $this->reboot();
+        $this->wait();
+
+        // After rebooting, the intercom functions remain unavailable for some time
+        sleep(10);
+
+        // Sync time now
+        $this->apiCall('/cgi-bin/j/sync-time.cgi');
+    }
+
     public function transformDbConfig(array $dbConfig): array
     {
         // Set DB timezone to device timezone for unsupported items
         if (!Timezone::isSupported($dbConfig['ntp']['timezone'])) {
-            $dbConfig['ntp']['timezone'] = $this->getNtpConfig()['timezone'] ?? 'Europe/Moscow';
+            $dbConfig['ntp']['timezone'] = $this->getNtpServer()->timezone ?? 'Europe/Moscow';
         }
 
         return $dbConfig;
@@ -169,19 +187,6 @@ trait ufanet
         $rawParams = $this->apiCall('/cgi-bin/configManager.cgi', 'GET', ['action' => 'getConfig', 'name' => 'Syslog']);
         $address = $this->convertResponseToArray($rawParams)['Address'];
         return "syslog.udp:$address";
-    }
-
-    protected function getNtpConfig(): array
-    {
-        $rawParams = $this->apiCall('/cgi-bin/configManager.cgi', 'GET', ['action' => 'getConfig', 'name' => 'NTP']);
-        ['Address' => $address, 'TimeZone' => $timezone] = $this->convertResponseToArray($rawParams);
-        $addressParts = explode(':', $address, 2);
-
-        return [
-            'server' => $addressParts[0],
-            'port' => $addressParts[1] ?? 123,
-            'timezone' => $timezone,
-        ];
     }
 
     protected function initializeProperties(): void
