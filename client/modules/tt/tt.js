@@ -1399,12 +1399,10 @@
 
             if (AVAIL("tt", "customFilter")) {
                 rtd += `<li class="nav-item nav-item-back-hover"><a href="?#tt&filter=empty&customSearch=yes&_=${Math.random()}" class="nav-link pointer" role="button" title="${i18n("tt.customSearch")}"><i class="fab fa-lg fa-fw fa-searchengin"></i></a></li>`;
-                rtd += `<li class="nav-item nav-item-back-hover" style="display: none;"><span id="customFilterEdit" class="nav-link pointer" role="button" title="${i18n("tt.customFilterEdit")}"><i class="fas fa-lg fa-fw fa-pen-square"></i></span></li>`;
-                rtd += `<li class="nav-item nav-item-back-hover" style="display: none;"><span id="customFilterDelete" class="nav-link pointer" role="button" title="${i18n("tt.customFilterDelete")}"><i class="fas fa-lg fa-fw fa-minus-square"></i></span></li>`;
             }
         }
 
-        if (!AVAIL("tt", "project", "POST")) {
+        if (AVAIL("tt", "project", "POST")) {
             rtd += `<li class="nav-item nav-item-back-hover"><a href="?#tt.settings" class="nav-link pointer" role="button" title="${i18n("tt.settings")}"><i class="fas fa-lg fa-fw fa-cog"></i></a></li>`;
         }
 
@@ -1453,6 +1451,7 @@
             }
 
             let filters = '';
+            let fp = -1;
 
             if (target || $.trim(filterName)[0] == "#") {
                 filters = `<span class="text-bold ${params.class ? params.class : ''}">${params.caption ? params.caption : ((modules.tt.meta.filters[filterName] ? modules.tt.meta.filters[filterName].name : i18n("tt.filter")).replaceAll("/", "<i class='fas fa-fw fa-xs fa-angle-double-right'></i>"))}</span>`;
@@ -1591,33 +1590,10 @@
                     }
                 }
 
-                let fp = -1;
                 for (let i in project.filters) {
                     if (project.filters[i].filter == filterName) {
                         fp = project.filters[i].personal;
                         break;
-                    }
-                }
-
-                if (AVAIL("tt", "customFilter") && filterName && filterName != "#search") {
-                    $("#customFilterEdit").off("click").on("click", function () {
-                        window.location.href = '?#tt&filter=' + filterName + '&customSearch=yes&_=' + Math.random();
-                    }).parent().show();
-
-                    if (modules.tt.meta.filters[filterName] && md5(md5($.trim(modules.tt.meta.filters[filterName].name)) + "-" + md5(lStore("_login"))) == filterName && fp == myself.uid) {
-                        $("#customFilterDelete").off("click").on("click", function () {
-                            mConfirm(i18n("tt.filterDelete", modules.tt.meta.filters[filterName].name), i18n("confirm"), i18n("delete"), () => {
-                                loadingStart();
-                                DELETE("tt", "customFilter", filterName, { "project": currentProject }).
-                                done(() => {
-                                    message(i18n("tt.filterWasDeleted"));
-                                    lStore("ttIssueFilter:" + currentProject, null);
-                                    window.location.href = '?#tt&_=' + Math.random();
-                                }).
-                                fail(FAIL).
-                                fail(loadingDone);
-                            });
-                        }).parent().show();
                     }
                 }
 
@@ -2160,6 +2136,26 @@
                         });
                     }
 
+                    if (pc) {
+                        if (AVAIL("tt", "customFilter")) {
+                            if (filterName && filterName != "#search") {
+                                menuItems.push({
+                                    id: "customFilterEdit",
+                                    icon: "fas fa-pen",
+                                    text: i18n("tt.customFilterEdit"),
+                                });
+
+                                if (modules.tt.meta.filters[filterName] && md5(md5($.trim(modules.tt.meta.filters[filterName].name)) + "-" + md5(lStore("_login"))) == filterName && fp == myself.uid) {
+                                    menuItems.push({
+                                        id: "customFilterDelete",
+                                        icon: "fas fa-trash-alt text-danger",
+                                        text: i18n("tt.customFilterDelete"),
+                                    });
+                                }
+                            }
+                        }
+                    }
+
                     menuItems.push({
                         text: "-",
                         hint: i18n("tt.export"),
@@ -2289,6 +2285,22 @@
                                         modules.tt.defaultIssuesPerPage = parseInt(data);
                                         lStore("defaultIssuesPerPage", parseInt(data));
                                         window.location.href = '?#tt&_=' + Math.random();
+                                    }
+                                    if (id == "customFilterEdit") {
+                                        window.location.href = '?#tt&filter=' + filterName + '&customSearch=yes&_=' + Math.random();
+                                    }
+                                    if (id == "customFilterDelete") {
+                                        mConfirm(i18n("tt.filterDelete", modules.tt.meta.filters[filterName].name), i18n("confirm"), i18n("delete"), () => {
+                                            loadingStart();
+                                            DELETE("tt", "customFilter", filterName, { "project": currentProject }).
+                                            done(() => {
+                                                message(i18n("tt.filterWasDeleted"));
+                                                lStore("ttIssueFilter:" + currentProject, null);
+                                                window.location.href = '?#tt&_=' + Math.random();
+                                            }).
+                                            fail(FAIL).
+                                            fail(loadingDone);
+                                        });
                                     }
                                 }
                             }),
