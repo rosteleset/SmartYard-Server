@@ -86,39 +86,35 @@
                     $("#sheetSave").click();
                 }),
             });
-/*
-            editor.getSession().on("changeAnnotation", function () {
-                let annot = editor.getSession().getAnnotations();
 
-                for (let key in annot) {
-                    if (annot.hasOwnProperty(key))
-                        console.log('"' + annot[key].text + '" on line: ' + annot[key].row);
-                    }
-            });
-*/
             $("#sheetSave").off("click").on("click", () => {
-                loadingStart();
                 let json;
+                let err;
                 try {
                     json = JSON.parse(editor.getValue());
-                } catch (_) {
-                    json = false;
+                } catch (e) {
+                    err = e.message;
                 }
-                let sheet = (json && json.sheet) ? json.sheet : params.sheet;
-                let date = (json && json.date) ? json.date : params.date;
-                PUT("cs", "sheet", false, {
-                    "sheet": sheet,
-                    "date": date,
-                    "data": $.trim(editor.getValue()),
-                }).
-                fail(FAIL).
-                done(() => {
-                    message(i18n("cs.sheetWasSaved"));
-                    currentAceEditorOriginalValue = currentAceEditor.getValue();
-                }).
-                always(() => {
-                    loadingDone();
-                });
+                if (!err) {
+                    loadingStart();
+                    let sheet = (json && json.sheet) ? json.sheet : params.sheet;
+                    let date = (json && json.date) ? json.date : params.date;
+                    PUT("cs", "sheet", false, {
+                        "sheet": sheet,
+                        "date": date,
+                        "data": $.trim(editor.getValue()),
+                    }).
+                    fail(FAIL).
+                    done(() => {
+                        message(i18n("cs.sheetWasSaved"));
+                        currentAceEditorOriginalValue = currentAceEditor.getValue();
+                    }).
+                    always(() => {
+                        loadingDone();
+                    });
+                } else {
+                    error(err, i18n("error"), 30);
+                }
             });
             loadingDone();
         });

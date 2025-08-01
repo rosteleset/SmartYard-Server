@@ -392,7 +392,7 @@
         "viewerAlreadyExists": "Функция уже существует",
         "insufficentRights": "Недостаточно прав для выполнения операции",
         "filterNotFound": "Фильтр не найден",
-        "invalidFilter": "Фильтр содержит ошибки, сохранение невозможно",
+        "invalidFilter": "Фильтр содержит ошибки",
         "functionNotFound": "Функция %s не найдена",
         "errorInFunction": "Ошибка вызова функции данных",
         "cantGenerateForm": "Ошибка при генерации документа (%s)",

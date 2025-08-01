@@ -3043,10 +3043,12 @@
                 });
                 $("#filterSave").off("click").on("click", () => {
                     let f = false;
+                    let err;
                     try {
                         f = JSON.parse($.trim(editor.getValue()));
                     } catch (e) {
                         f = false;
+                        err = e.message;
                     }
                     if (f && $.trim(f.name) && f.fields) {
                         f.fileName = filter;
@@ -3061,7 +3063,11 @@
                         fail(FAIL).
                         fail(loadingDone);
                     } else {
-                        error(i18n("errors.invalidFilter"), i18n("error"), 30);
+                        if (err) {
+                            error(err, i18n("errors.invalidFilter"), 30);
+                        } else {
+                            error(i18n("errors.invalidFilter"), i18n("error"), 30);
+                        }
                     }
                 });
             }).

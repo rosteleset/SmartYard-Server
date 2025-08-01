@@ -88,7 +88,7 @@
                             i.issueId = r.issue.issueId;
                         } catch (e) {
                             loadingDone();
-                            error(e.message);
+                            error(e.message, i18n("error"), 30);
                             return;
                         }
                         delete i._id;
