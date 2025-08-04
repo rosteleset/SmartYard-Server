@@ -7,6 +7,7 @@ use hw\Interface\{
     DbConfigUpdaterInterface,
     DisplayTextInterface,
     HousePrefixInterface,
+    NtpServerInterface,
 };
 use hw\SmartConfigurator\DbConfigCollector\DbConfigCollectorInterface;
 use hw\ValueObject\HousePrefix;
@@ -46,7 +47,7 @@ class SmartConfigurator
             'freePassEnabled' => 'setFreePassEnabled',
             'dtmf' => 'setDtmfCodes',
             'motionDetection' => 'configureMotionDetection',
-            'ntp' => 'configureNtp',
+            'ntpServer' => 'setNtpServer',
             'sip' => 'configureSip',
             'eventServer' => 'configureEventServer',
             'gateModeEnabled' => 'setGateModeEnabled',
@@ -167,6 +168,7 @@ class SmartConfigurator
         $this->deviceConfig = $this->device->getConfig();
     }
 
+    // TODO: split into different classes
     private function normalizeDbConfig(): void
     {
         if ($this->device instanceof DisplayTextInterface && isset($this->dbConfig['displayText'])) {
@@ -195,6 +197,10 @@ class SmartConfigurator
             }
 
             $this->dbConfig['housePrefixes'] = $normalizedPrefixes;
+        }
+
+        if ($this->device instanceof NtpServerInterface && isset($this->dbConfig['ntpServer'])) {
+            echo 'Normalize me!' . PHP_EOL; // TODO
         }
     }
 

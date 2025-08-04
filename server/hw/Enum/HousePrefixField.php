@@ -3,7 +3,7 @@
 namespace hw\Enum;
 
 /**
- * Enum representing supported fields of a HousePrefix.
+ * Enum representing supported fields of a {@see HousePrefix}.
  * Used to define which HousePrefix fields a device supports.
  */
 enum HousePrefixField

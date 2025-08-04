@@ -46,7 +46,7 @@ function autoconfigure_device(string $deviceType, int $deviceId, bool $firstTime
                 $deviceData['credentials'],
             );
 
-            $dbConfigCollector = new CameraDbConfigCollector($config, $deviceData);
+            $dbConfigCollector = new CameraDbConfigCollector($config, $deviceData, $device);
             $configurator = new SmartConfigurator($device, $dbConfigCollector);
             $configurator->makeConfiguration();
             break;

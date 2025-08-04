@@ -14,7 +14,6 @@ class CameraConfigurationBuilder extends ConfigurationBuilder
         $this->config = [
             'eventServer' => [],
             'motionDetection' => [],
-            'ntp' => [],
             'osdText' => '',
         ];
     }

@@ -15,12 +15,10 @@ class DomophoneConfigurationBuilder extends ConfigurationBuilder
             'dtmf' => [],
             'eventServer' => [],
             'sip' => [],
-            'unlocked' => true,
             'apartments' => [],
             'rfids' => [],
             'cmsModel' => '',
             'matrix' => [],
-            'ntp' => [],
         ];
     }
 

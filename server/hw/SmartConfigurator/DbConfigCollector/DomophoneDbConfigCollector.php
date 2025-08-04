@@ -15,11 +15,15 @@ use hw\Interface\{
     FreePassInterface,
     GateModeInterface,
     HousePrefixInterface,
+    NtpServerInterface,
 };
 use hw\SmartConfigurator\ConfigurationBuilder\DomophoneConfigurationBuilder;
 use hw\ValueObject\{
     FlatNumber,
     HousePrefix,
+    NtpServer,
+    Port,
+    ServerAddress,
 };
 
 /**
@@ -96,11 +100,14 @@ class DomophoneDbConfigCollector implements DbConfigCollectorInterface
             $this->addFreePassEnabled();
         }
 
+        if ($this->device instanceof NtpServerInterface) {
+            $this->addNtpServer();
+        }
+
         $this
             ->addApartmentsAndHousePrefixes()
             ->addDtmf()
             ->addEventServer()
-            ->addNtp()
             ->addSip()
         ;
 
@@ -323,19 +330,24 @@ class DomophoneDbConfigCollector implements DbConfigCollectorInterface
     }
 
     /**
-     * Add NTP settings to the domophone configuration.
+     * Add NTP server settings to the intercom configuration.
      *
-     * @return self
+     * @return void
      */
-    private function addNtp(): self
+    private function addNtpServer(): void
     {
         $ntp = parse_url_ext($this->appConfig['ntp_servers'][0]);
         $server = $ntp['host'];
         $port = $ntp['port'] ?? 123;
         $timezone = $this->findTimezone();
 
-        $this->builder->addNtp($server, $port, $timezone);
-        return $this;
+        $ntpServer = new NtpServer(
+            address: ServerAddress::fromString($server),
+            port: new Port($port),
+            timezone: $timezone,
+        );
+
+        $this->builder->addNtpServer($ntpServer);
     }
 
     /**
@@ -390,12 +402,11 @@ class DomophoneDbConfigCollector implements DbConfigCollectorInterface
     }
 
     /**
-     * Find and return the timezone for the current configuration.
+     * Returns the timezone for the current configuration.
      *
      * This method attempts to find the timezone from various levels of the address hierarchy,
      * starting from the city and falling back to the area and region if necessary.
-     * If the timezone is not set, then "Europe/Moscow" will be used.
-     *
+     * If the timezone is not set, then `Europe/Moscow` will be used.
      * @return string The timezone identifier.
      */
     private function findTimezone(): string

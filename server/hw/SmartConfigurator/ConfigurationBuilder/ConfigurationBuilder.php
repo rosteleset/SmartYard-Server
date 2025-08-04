@@ -2,6 +2,8 @@
 
 namespace hw\SmartConfigurator\ConfigurationBuilder;
 
+use hw\ValueObject\NtpServer;
+
 /**
  * The abstract class responsible for building the device configuration.
  */
@@ -27,14 +29,12 @@ abstract class ConfigurationBuilder
     /**
      * Add an NTP configuration to the configuration.
      *
-     * @param string $server The NTP server's address.
-     * @param int $port The NTP server's port number.
-     * @param string $timezone The timezone identifier.
+     * @param NtpServer $server The NTP server object.
      * @return self
      */
-    public function addNtp(string $server, int $port, string $timezone): self
+    public function addNtpServer(NtpServer $server): self
     {
-        $this->config['ntp'] = compact('server', 'port', 'timezone');
+        $this->config['ntpServer'] = $server;
         return $this;
     }
 

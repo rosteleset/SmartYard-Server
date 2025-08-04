@@ -57,7 +57,7 @@ abstract class domophone extends ip
         }
 
         if ($this instanceof NtpServerInterface) {
-            # TODO
+            $builder->addNtpServer($this->getNtpServer());
         }
 
         foreach ($this->getApartments() as $apartment) {

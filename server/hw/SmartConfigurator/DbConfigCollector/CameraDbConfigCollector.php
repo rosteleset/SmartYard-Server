@@ -2,8 +2,15 @@
 
 namespace hw\SmartConfigurator\DbConfigCollector;
 
+use hw\hw;
+use hw\Interface\NtpServerInterface;
 use hw\ip\camera\entities\DetectionZone;
 use hw\SmartConfigurator\ConfigurationBuilder\CameraConfigurationBuilder;
+use hw\ValueObject\{
+    NtpServer,
+    Port,
+    ServerAddress,
+};
 
 /**
  * Class responsible for collecting camera configuration data from the database.
@@ -26,24 +33,34 @@ class CameraDbConfigCollector implements DbConfigCollectorInterface
     private CameraConfigurationBuilder $builder;
 
     /**
+     * @var hw
+     */
+    private hw $device;
+
+    /**
      * Construct a new CameraDbConfigCollector instance.
      *
      * @param array $appConfig The application configuration.
      * @param array $cameraData The camera data.
+     * @param hw $device Device instance.
      */
-    public function __construct(array $appConfig, array $cameraData)
+    public function __construct(array $appConfig, array $cameraData, hw $device)
     {
         $this->appConfig = $appConfig;
         $this->cameraData = $cameraData;
+        $this->device = $device;
         $this->builder = new CameraConfigurationBuilder();
     }
 
     public function collectConfig(): array
     {
+        if ($this->device instanceof NtpServerInterface) {
+            $this->addNtpServer();
+        }
+
         $this
             ->addEventServer()
             ->addMotionDetection()
-            ->addNtp()
             ->addOsdText()
         ;
 
@@ -79,11 +96,11 @@ class CameraDbConfigCollector implements DbConfigCollectorInterface
     }
 
     /**
-     * Add NTP settings to the camera configuration.
+     * Add NTP server settings to the camera configuration.
      *
-     * @return self
+     * @return void
      */
-    private function addNtp(): self
+    private function addNtpServer(): void
     {
         $url = $this->appConfig['ntp_servers'][0];
         $urlParts = parse_url_ext($url);
@@ -93,8 +110,13 @@ class CameraDbConfigCollector implements DbConfigCollectorInterface
             $timezone = 'Europe/Moscow';
         }
 
-        $this->builder->addNtp($urlParts['host'], $urlParts['port'], $timezone);
-        return $this;
+        $ntpServer = new NtpServer(
+            address: ServerAddress::fromString($urlParts['host']),
+            port: new Port($urlParts['port']),
+            timezone: $timezone,
+        );
+
+        $this->builder->addNtpServer($ntpServer);
     }
 
     /**
