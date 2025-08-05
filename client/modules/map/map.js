@@ -127,14 +127,14 @@
             }
         }));
 
-//        let layer_markers = new L.markerClusterGroup({ spiderfyOnMaxZoom: false, disableClusteringAtZoom: 15, });
-
         if (typeof lon != "undefined" && typeof lat != "undefined") {
             modules.map.map.setView([lat, lon], zoom);
             if (!(params.markersLine)) {
                 L.marker([lat, lon]).addTo(modules.map.map);
             }
 /*
+            let layer_markers = new L.markerClusterGroup({ spiderfyOnMaxZoom: false, disableClusteringAtZoom: 15, });
+
             let homeMarker = L.AwesomeMarkers.icon({
                 icon: 'home fas fa-fw fa-home',
                 color: 'green'
