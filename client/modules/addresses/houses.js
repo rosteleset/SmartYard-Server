@@ -880,6 +880,10 @@
                             modules.addresses.houses.marker.on('dragend', () => {
                                 $("#" + prefix + "geo").val(modules.addresses.houses.marker.getLatLng().lat + "," + modules.addresses.houses.marker.getLatLng().lng);
                             });
+
+                            if (config.map && config.map.hideAttribution) {
+                                $(".leaflet-control-attribution").hide();
+                            }
                         },
                         tabActivate: function (prefix, tab) {
                             if (tab == i18n("addresses.map")) {
@@ -1927,6 +1931,10 @@
                             modules.addresses.houses.marker.on('dragend', () => {
                                 $("#" + prefix + "geo").val(modules.addresses.houses.marker.getLatLng().lat + "," + modules.addresses.houses.marker.getLatLng().lng);
                             });
+
+                            if (config.map && config.map.hideAttribution) {
+                                $(".leaflet-control-attribution").hide();
+                            }
                         },
                         tabActivate: function (prefix, tab) {
                             if (tab == i18n("addresses.map")) {

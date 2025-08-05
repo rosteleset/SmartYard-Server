@@ -147,7 +147,10 @@
 
             // polygon editor
             let pl = modules.map.map.editTools.startPolygon(); // start polygon editor
+
             pl.getLatLngs(); // get polygon points
+
+            modules.map.map.removeLayer(pl);
 */
         } else {
             if (!navigator.geolocation) {
