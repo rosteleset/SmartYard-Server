@@ -140,6 +140,10 @@
             }
             layer_markers.addTo(modules.map.map);
             modules.map.map.fitBounds(layer_markers.getBounds());
+
+            // polygon editor
+            let pl = modules.map.map.editTools.startPolygon(); // start polygon editor
+            pl.getLatLngs(); // get polygon points
 */
         } else {
             if (!navigator.geolocation) {
