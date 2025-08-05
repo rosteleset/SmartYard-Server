@@ -81,6 +81,10 @@
 
         modules.map.map = L.map('mapContainer', { editable: true });
 
+        if (config.map && config.map.hideAttribution) {
+            $(".leaflet-control-attribution").hide();
+        }
+
         if (config.map && config.map.crs) {
             switch (config.map.crs) {
                 case "EPSG3395":

@@ -36,7 +36,8 @@
         },
         // minimal and maximum zoom levels
         "min": 4,
-        "max": 18
+        "max": 18,
+        "hideAttribution": false,
     },
     "regExp": {
         // phone number validation regexp
