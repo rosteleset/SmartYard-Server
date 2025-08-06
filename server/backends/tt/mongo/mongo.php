@@ -860,8 +860,11 @@
 
                 foreach ($attachments as $i => $attachment) {
                     $list = $files->searchFiles([ "metadata.issue" => true, "metadata.issueId" => $issueId, "filename" => $attachment["name"] ]);
+
                     if (count($list)) {
-                        return false;
+                        $f = pathinfo($attachment["name"]);
+                        $incr = $this->redis->incr("filedup");
+                        $attachments[$i]["name"] = $f["filename"] . "-dup-" . sprintf("%06d", $incr) . "." . $f["extension"];
                     }
 
                     if (@$attachment["body"]) {
