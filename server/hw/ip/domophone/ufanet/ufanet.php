@@ -749,6 +749,9 @@ abstract class ufanet extends domophone implements
                     'FRSI_CONNECT' => 'FRSI: ГОВОРИТЕ',
                     'FRSI_CALL_COMPLETE' => 'FRSI: ВЫЗОВ ЗАВЕРШЁН',
                     'FRSI_ERROR' => 'FRSI: ОШИБКА',
+                    'ALARM_TEXT_1' => 'ТРЕВОГА 1',
+                    'ALARM_TEXT_2' => 'ТРЕВОГА 2',
+                    'ALARM_TEXT_3' => 'ТРЕВОГА 3',
                 ],
             ],
         ]);
