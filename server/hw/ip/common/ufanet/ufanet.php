@@ -45,13 +45,36 @@ trait ufanet
 
     public function getSysinfo(): array
     {
-        $serialNumber = $this->apiCall('/cgi-bin/magicBox.cgi', 'GET', ['action' => 'getSerialNo'], 3);
+        $serialNumberRaw = $this->apiCall('/cgi-bin/magicBox.cgi', 'GET', ['action' => 'getSerialNo'], 3);
+        $machineNameRaw = $this->apiCall('/cgi-bin/magicBox.cgi', 'GET', ['action' => 'getMachineName'], 3);
+        $softwareVersionRaw = $this->apiCall('/cgi-bin/magicBox.cgi', 'GET', ['action' => 'getSoftwareVersion'], 3);
 
-        if ($serialNumber !== null) {
-            return ['DeviceID' => $serialNumber];
+        if ($serialNumberRaw === null || $machineNameRaw === null || $softwareVersionRaw === null) {
+            return [];
         }
 
-        return [];
+        $serialNumberData = parse_ini_string($serialNumberRaw);
+        $machineNameData = parse_ini_string($machineNameRaw);
+        $softwareVersionData = parse_ini_string($softwareVersionRaw);
+
+        if ($serialNumberData === false || $machineNameData === false || $softwareVersionData === false) {
+            return [];
+        }
+
+        $serialNumber = $serialNumberData['sn'] ?? null;
+        $machineName = $machineNameData['name'] ?? null;
+        $version = $softwareVersionData['version'] ?? null;
+        $kernel = $softwareVersionData['kernel'] ?? null;
+
+        if ($serialNumber === null || $machineName === null || $version === null || $kernel === null) {
+            return [];
+        }
+
+        return [
+            'DeviceID' => $serialNumber,
+            'SoftwareVersion' => $version . '_' . $kernel,
+            'DeviceModel' => $machineName,
+        ];
     }
 
     public function reboot(): void
