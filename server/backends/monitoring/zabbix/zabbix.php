@@ -1412,7 +1412,7 @@ class zabbix extends monitoring
         /**
          * 1    Getting status of device triggers
          */
-        $triggers = $this->getTriggers($hostname);
+        $triggers = $this->getTriggers([$hostname]);
         if (!$triggers) {
             return $this->createStatusResponse("Unknown", "monitoring.unknown");
         }
@@ -1435,7 +1435,7 @@ class zabbix extends monitoring
             }
         }
 
-        return $this->createStatusResponse("Ok", "monitoring.online");
+        return $this->createStatusResponse("OK", "monitoring.online");
     }
 
     /**
@@ -1491,7 +1491,7 @@ class zabbix extends monitoring
                 // Triggers found, check
                 if (empty($hostTriggers[$ip])) {
                     $host['status'] =
-                        $this->createStatusResponse("Ok", "monitoring.Online");
+                        $this->createStatusResponse("OK", "monitoring.online");
                 } else {
                     foreach ($hostTriggers[$ip] as $trigger) {
                         $host['status'] = match ($trigger['description']) {
