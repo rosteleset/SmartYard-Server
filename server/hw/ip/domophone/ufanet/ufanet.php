@@ -561,37 +561,14 @@ abstract class ufanet extends domophone implements
     {
         $this->loadKeys();
 
-        $uniqueRfids = [];
+        $rfidsRaw = array_keys(
+            KeyFilter::byType($this->keys, KeyType::RfidPersonal),
+        );
 
-        // Get RFIDs and remove leading zeros
-        $normalizedRfids = [];
-        foreach ($this->keys as $rfid => $data) {
-            $normalizedRfids[ltrim($rfid, '0')] = $data;
-        }
-
-        // Identify unique RFIDs
-        foreach ($normalizedRfids as $rfid => $data) {
-            // Skip personal codes
-            if (preg_match(self::PERSONAL_CODE_RFID_DATA_REGEXP, $data)) {
-                continue;
-            }
-
-            $isUnique = true;
-
-            foreach ($normalizedRfids as $compareRfid) {
-                if ($rfid !== $compareRfid && str_contains($compareRfid, $rfid)) {
-                    $isUnique = false;
-                    break;
-                }
-            }
-
-            if ($isUnique) {
-                $uniqueRfids[] = $rfid;
-            }
-        }
-
-        // Convert RFIDs to uppercase and pad them with leading zeros
-        return array_map(fn($rfid) => str_pad(strtoupper($rfid), 14, '0', STR_PAD_LEFT), $uniqueRfids);
+        return array_map(
+            fn(string $rfid) => str_pad(strtoupper($rfid), 14, '0', STR_PAD_LEFT),
+            $rfidsRaw,
+        );
     }
 
     protected function getSipConfig(): array
