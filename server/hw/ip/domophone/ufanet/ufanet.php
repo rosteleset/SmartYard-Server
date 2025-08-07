@@ -25,7 +25,9 @@ abstract class ufanet extends domophone implements
         transformDbConfig as protected commonTransformDbConfig;
     }
 
-    /** @var array Set of parameters sent to the intercom for different CMS models. */
+    /**
+     * @var array Set of parameters sent to the intercom for different CMS models.
+     */
     protected const CMS_PARAMS = [
         'BK-100' => ['type' => 'VIZIT', 'mode' => 2], // TODO: check mode 1 and mode 2
         'BK-400' => ['type' => 'VIZIT', 'mode' => 3],
@@ -48,15 +50,22 @@ abstract class ufanet extends domophone implements
     protected const PERSONAL_CODE_RFID_DATA_REGEXP = '/^(\d+);3$/';
     protected const LINE_TEST_DURATION = 2;
 
-    /** @var array|null $dialplans An array that holds dialplan information, which may be null if not loaded. */
+    /**
+     * @var array|null $dialplans An array that holds dialplan information, which may be null if not loaded.
+     */
     protected ?array $dialplans = null;
 
-    /** @var array|null $rfids An array that holds RFID codes information, which may be null if not loaded. */
-    protected ?array $rfids = null;
+    /**
+     * @var array|null $keys An array that holds keys (RFID, personal code, BLE) information,
+     * which may be null if not loaded.
+     */
+    protected ?array $keys = null;
 
     protected ?string $cmsModelName = null;
 
-    /** @return array{index:string,value:array} */
+    /**
+     * @return array{index:string,value:array}
+     */
     protected static function getMatrixCell(int $mapping, int $apartment): array
     {
         $hundreds = floor($mapping / 100);
@@ -78,17 +87,17 @@ abstract class ufanet extends domophone implements
 
     public function addRfid(string $code, int $apartment = 0, int $type = 1): void
     {
-        $this->loadRfids();
+        $this->loadKeys();
 
         $rfidData = "$apartment;$type";
 
         if ($type === 3) {
-            $this->rfids[substr($code, -5)] = $rfidData;
+            $this->keys[substr($code, -5)] = $rfidData;
             return;
         }
 
         $normalizedRfid = substr(strtolower($code), 6);
-        $this->rfids[$normalizedRfid] = $rfidData;
+        $this->keys[$normalizedRfid] = $rfidData;
     }
 
     public function addRfids(array $rfids): void
@@ -219,15 +228,15 @@ abstract class ufanet extends domophone implements
 
     public function deleteRfid(string $code = ''): void
     {
-        $this->loadRfids();
+        $this->loadKeys();
 
         if ($code === '') {
-            $this->rfids = [];
+            $this->keys = [];
         } else {
             $lowercaseCode = strtolower($code);
             $normalizedRfid = substr($lowercaseCode, 6);
             $personalEntryCode = substr($lowercaseCode, -5);
-            unset($this->rfids[$normalizedRfid], $this->rfids[$personalEntryCode]);
+            unset($this->keys[$normalizedRfid], $this->keys[$personalEntryCode]);
         }
     }
 
@@ -432,7 +441,7 @@ abstract class ufanet extends domophone implements
 
     protected function cleanupApartmentPersonalCodes(int $apartment): void
     {
-        $this->rfids = array_filter($this->rfids, function (string $data) use ($apartment) {
+        $this->keys = array_filter($this->keys, function (string $data) use ($apartment) {
             return "$apartment;3" != $data;
         });
     }
@@ -440,7 +449,7 @@ abstract class ufanet extends domophone implements
     protected function getApartments(): array
     {
         $this->loadDialplans();
-        $this->loadRfids();
+        $this->loadKeys();
 
         $apartments = [];
 
@@ -451,7 +460,7 @@ abstract class ufanet extends domophone implements
 
             // The Ufanet intercom stores personal entry codes as keys. Restore structure that configurator expects
             $currentCode = 0;
-            foreach ($this->rfids as $code => $data) {
+            foreach ($this->keys as $code => $data) {
                 if (preg_match(self::PERSONAL_CODE_RFID_DATA_REGEXP, $data, $matches)) {
                     if ($matches[1] == $apartmentNumber) {
                         // Force SmartConfigurator to reconfigure apartment if somehow multiple personal codes exists
@@ -550,13 +559,13 @@ abstract class ufanet extends domophone implements
 
     protected function getRfids(): array
     {
-        $this->loadRfids();
+        $this->loadKeys();
 
         $uniqueRfids = [];
 
         // Get RFIDs and remove leading zeros
         $normalizedRfids = [];
-        foreach ($this->rfids as $rfid => $data) {
+        foreach ($this->keys as $rfid => $data) {
             $normalizedRfids[ltrim($rfid, '0')] = $data;
         }
 
@@ -619,14 +628,14 @@ abstract class ufanet extends domophone implements
     }
 
     /**
-     * Load and cache RFID codes from the API if they haven't been loaded already.
+     * Load and cache keys (RFID, personal code, BLE) from the API if they haven't been loaded already.
      *
      * @return void
      */
-    protected function loadRfids(): void
+    protected function loadKeys(): void
     {
-        if ($this->rfids === null) {
-            $this->rfids = $this->apiCall('/api/v1/rfids') ?? [];
+        if ($this->keys === null) {
+            $this->keys = $this->apiCall('/api/v1/rfids') ?? [];
         }
     }
 
@@ -800,8 +809,8 @@ abstract class ufanet extends domophone implements
      */
     protected function uploadRfids(): void
     {
-        if ($this->rfids !== null) {
-            $this->apiCall('/api/v1/rfids', 'PUT', $this->rfids);
+        if ($this->keys !== null) {
+            $this->apiCall('/api/v1/rfids', 'PUT', $this->keys);
         }
     }
 }
