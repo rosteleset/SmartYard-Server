@@ -3107,7 +3107,7 @@
                     title: i18n("tt.filter"),
                     placeholder: i18n("tt.filter"),
                     validate: v => {
-                        return !!v.match(/^[a-z_A-Z]\w*$/g);
+                        return !!v.match(/^[#a-z_A-Z]\w*$/g);
                     }
                 },
             ],

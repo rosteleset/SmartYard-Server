@@ -57,45 +57,47 @@
 
                 $tt = loadBackend("tt");
 
-                if ($tt && @$params["filter"] && $params["filter"] != "empty") {
-                    try {
-                        $filter = @json_decode($tt->getFilter($params["filter"]), true);
-                        if ($filter) {
-                            $preprocess = [];
+                if ($tt) {
+                    if (@$params["filter"] && $params["filter"] != "empty") {
+                        try {
+                            $filter = @json_decode($tt->getFilter($params["filter"]), true);
+                            if ($filter) {
+                                $preprocess = [];
 
-                            if (@$params["preprocess"]) {
-                                $preprocess = $params["preprocess"];
+                                if (@$params["preprocess"]) {
+                                    $preprocess = $params["preprocess"];
+                                }
+
+                                $types = [];
+
+                                if (@$params["types"]) {
+                                    $types = $params["types"];
+                                }
+
+                                if ($params && array_key_exists("search", $params) && trim($params["search"])) {
+                                    $preprocess["%%search"] = trim($params["search"]);
+                                }
+
+                                if ($params && array_key_exists("parent", $params) && trim($params["parent"])) {
+                                    $preprocess["%%parent"] = trim($params["parent"]);
+                                }
+
+                                if (isset($filter["pipeline"])) {
+                                    $issues = $tt->getIssues(@$params["project"] ? : "TT", @$filter["pipeline"], @$filter["fields"], [], @$params["skip"] ? : 0, @$params["limit"] ? : 5, $preprocess, $types, true);
+                                }
+
+                                if (isset($filter["filter"])) {
+                                    $issues = $tt->getIssues(@$params["project"] ? : "TT", @$filter["filter"], @$filter["fields"], @$params["sort"] ? : (array_key_exists("sort", $filter) ? $filter["sort"] : []), @$params["skip"] ? : 0, @$params["limit"] ? : 5, $preprocess, $types);
+                                }
+                            } else {
+                                setLastError("filterNotFound");
+                                return api::ERROR();
                             }
-
-                            $types = [];
-
-                            if (@$params["types"]) {
-                                $types = $params["types"];
-                            }
-
-                            if ($params && array_key_exists("search", $params) && trim($params["search"])) {
-                                $preprocess["%%search"] = trim($params["search"]);
-                            }
-
-                            if ($params && array_key_exists("parent", $params) && trim($params["parent"])) {
-                                $preprocess["%%parent"] = trim($params["parent"]);
-                            }
-
-                            if (isset($filter["pipeline"])) {
-                                $issues = $tt->getIssues(@$params["project"] ? : "TT", @$filter["pipeline"], @$filter["fields"], [], @$params["skip"] ? : 0, @$params["limit"] ? : 5, $preprocess, $types, true);
-                            }
-
-                            if (isset($filter["filter"])) {
-                                $issues = $tt->getIssues(@$params["project"] ? : "TT", @$filter["filter"], @$filter["fields"], @$params["sort"] ? : (array_key_exists("sort", $filter) ? $filter["sort"] : []), @$params["skip"] ? : 0, @$params["limit"] ? : 5, $preprocess, $types);
-                            }
-                        } else {
-                            setLastError("filterNotFound");
-                            return api::ERROR();
+                        } catch (\Exception $e) {
+                            setLastError($e->getMessage());
+                            $issues["exception"] = $e->getMessage();
+                            return api::ANSWER($issues, "issues");
                         }
-                    } catch (\Exception $e) {
-                        setLastError($e->getMessage());
-                        $issues["exception"] = $e->getMessage();
-                        return api::ANSWER($issues, "issues");
                     }
                 }
 
@@ -123,6 +125,48 @@
                         } catch (\Exception $e) {
                             setLastError($e->getMessage());
                             return api::ERROR();
+                        }
+                    }
+
+                    if (@$params["filter"] && $params["filter"] != "empty") {
+                        try {
+                            $filter = @json_decode($tt->getFilter($params["filter"]), true);
+                            if ($filter) {
+                                $preprocess = [];
+
+                                if (@$params["preprocess"]) {
+                                    $preprocess = $params["preprocess"];
+                                }
+
+                                $types = [];
+
+                                if (@$params["types"]) {
+                                    $types = $params["types"];
+                                }
+
+                                if ($params && array_key_exists("search", $params) && trim($params["search"])) {
+                                    $preprocess["%%search"] = trim($params["search"]);
+                                }
+
+                                if ($params && array_key_exists("parent", $params) && trim($params["parent"])) {
+                                    $preprocess["%%parent"] = trim($params["parent"]);
+                                }
+
+                                if (isset($filter["pipeline"])) {
+                                    $issues = $tt->getIssues(@$params["project"] ? : "TT", @$filter["pipeline"], @$filter["fields"], [], @$params["skip"] ? : 0, @$params["limit"] ? : 5, $preprocess, $types, true);
+                                }
+
+                                if (isset($filter["filter"])) {
+                                    $issues = $tt->getIssues(@$params["project"] ? : "TT", @$filter["filter"], @$filter["fields"], @$params["sort"] ? : (array_key_exists("sort", $filter) ? $filter["sort"] : []), @$params["skip"] ? : 0, @$params["limit"] ? : 5, $preprocess, $types);
+                                }
+                            } else {
+                                setLastError("filterNotFound");
+                                return api::ERROR();
+                            }
+                        } catch (\Exception $e) {
+                            setLastError($e->getMessage());
+                            $issues["exception"] = $e->getMessage();
+                            return api::ANSWER($issues, "issues");
                         }
                     }
                 }

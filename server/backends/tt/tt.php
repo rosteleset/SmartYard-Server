@@ -1616,7 +1616,12 @@
                                     if ($cast == "date") {
                                         $item = date("Y-m-d", (int)$item);
                                     } else
-                                    settype($item, $cast);
+                                    if ($cast == "json") {
+                                        $item = json_decode($item);
+                                    }
+                                    else {
+                                        settype($item, $cast);
+                                    }
                                 }
                             }
                         }, $params);

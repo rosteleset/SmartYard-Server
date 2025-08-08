@@ -1639,7 +1639,7 @@
                 query.types = types;
             }
 
-            QUERY("tt", "issues", query, true).
+            POST("tt", "issues", false, query).
             done(response => {
                 if (response && response.issues && response.issues.all) {
                     lStore("ttIssueFilterList:" + filterName, response.issues.all);
@@ -2129,7 +2129,7 @@
                 let currentIssuesList = [];
 
                 if (issues.issues) {
-                    $("#" + issuesListId + "-count").text("[" + filterName + "]: " + i18n("tt.showCounts", parseInt(issues.skip) ? (parseInt(issues.skip) + 1) : '0', parseInt(issues.skip) + issues.issues.length, issues.count)).addClass("small");
+                    $("#" + issuesListId + "-count").text("[" + filterName + "]: " + i18n("tt.showCounts", parseInt(issues.skip) ? (parseInt(issues.skip) + 1) : (issues.count ? '1' : '0'), parseInt(issues.skip) + issues.issues.length, issues.count)).addClass("small");
 
                     let menuItems = [];
 
