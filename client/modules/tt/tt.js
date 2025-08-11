@@ -2164,6 +2164,21 @@
 
                     menuItems.push({
                         text: "-",
+                        hint: i18n("tt.select"),
+                    });
+
+                    menuItems.push({
+                        id: "selectAll",
+                        text: i18n("tt.selectAll"),
+                    });
+
+                    menuItems.push({
+                        id: "unselectAll",
+                        text: i18n("tt.unselectAll"),
+                    });
+
+                    menuItems.push({
+                        text: "-",
                         hint: i18n("tt.export"),
                     });
 
@@ -2307,6 +2322,12 @@
                                             fail(FAIL).
                                             fail(loadingDone);
                                         });
+                                    }
+                                    if (id == "selectAll") {
+                                        $("table[id='table-" + issuesListId + "'] > tbody > tr > td[colid=0]").html("<input type='checkbox' class='ml-1 tableRowCheckbox' checked='checked'>");
+                                    }
+                                    if (id == "unselectAll") {
+                                        $("table[id='table-" + issuesListId + "'] > tbody > tr > td[colid=0] > input").attr("checked", false);
                                     }
                                 }
                             }),
