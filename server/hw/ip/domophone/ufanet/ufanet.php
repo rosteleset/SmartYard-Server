@@ -85,19 +85,24 @@ abstract class ufanet extends domophone implements
         ];
     }
 
-    public function addRfid(string $code, int $apartment = 0, int $type = 1): void
+    /**
+     * Converts an RFID code to the device's standard format.
+     *
+     * @param string $code The raw RFID code.
+     * @return string The normalized RFID code.
+     */
+    protected static function getNormalizedRfid(string $code): string
     {
-        $this->loadKeys();
+        return strtolower(ltrim($code, '0'));
+    }
 
-        $rfidData = "$apartment;$type";
-
-        if ($type === 3) {
-            $this->keys[substr($code, -5)] = $rfidData;
-            return;
-        }
-
-        $normalizedRfid = substr(strtolower($code), 6);
-        $this->keys[$normalizedRfid] = $rfidData;
+    public function addRfid(string $code, int $apartment = 0): void
+    {
+        $this->addKey(
+            value: self::getNormalizedRfid($code),
+            apartment: 0,
+            type: KeyType::RfidPersonal,
+        );
     }
 
     public function addRfids(array $rfids): void
@@ -116,14 +121,10 @@ abstract class ufanet extends domophone implements
     ): void
     {
         $this->loadDialplans();
-
         $this->cleanupApartmentPersonalCodes($apartment);
+
         if ($code !== 0) {
-            $this->addRfid(
-                code: (string)$code,
-                apartment: $apartment,
-                type: 3,
-            );
+            $this->addKey($code, $apartment, KeyType::CodePersonal);
         }
 
         $this->dialplans[$apartment] = [
@@ -231,12 +232,20 @@ abstract class ufanet extends domophone implements
         $this->loadKeys();
 
         if ($code === '') {
-            $this->keys = [];
+            $this->keys = array_diff_assoc(
+                $this->keys,
+                Key::filterByType($this->keys, KeyType::RfidPersonal),
+            );
         } else {
-            $lowercaseCode = strtolower($code);
-            $normalizedRfid = substr($lowercaseCode, 6);
-            $personalEntryCode = substr($lowercaseCode, -5);
-            unset($this->keys[$normalizedRfid], $this->keys[$personalEntryCode]);
+            $normalizedRfid = self::getNormalizedRfid($code);
+
+            if (!isset($this->keys[$normalizedRfid])) {
+                return;
+            }
+
+            if (Key::getType($this->keys[$normalizedRfid]) === KeyType::RfidPersonal) {
+                unset($this->keys[$normalizedRfid]);
+            }
         }
     }
 
@@ -358,9 +367,9 @@ abstract class ufanet extends domophone implements
         ]);
     }
 
-    // TODO: need to set some CMS as default, otherwise there will be difference after disabling gate mode
     public function setGateModeEnabled(bool $enabled): void
     {
+        // TODO: need to set some CMS as default, otherwise there will be difference after disabling gate mode
         if ($enabled === false) {
             return;
         }
@@ -437,6 +446,20 @@ abstract class ufanet extends domophone implements
         }
 
         return $dbConfig;
+    }
+
+    /**
+     * Adds or updates a key (RFID, personal code, BLE).
+     *
+     * @param string $value Normalized key value.
+     * @param int $apartment Apartment number associated with the key.
+     * @param KeyType $type Enum representing the key type.
+     * @return void
+     */
+    protected function addKey(string $value, int $apartment, KeyType $type): void
+    {
+        $this->loadKeys();
+        $this->keys[$value] = "$apartment;$type->value";
     }
 
     protected function cleanupApartmentPersonalCodes(int $apartment): void
@@ -562,7 +585,7 @@ abstract class ufanet extends domophone implements
         $this->loadKeys();
 
         $rfidsRaw = array_keys(
-            KeyFilter::byType($this->keys, KeyType::RfidPersonal),
+            Key::filterByType($this->keys, KeyType::RfidPersonal),
         );
 
         return array_map(
