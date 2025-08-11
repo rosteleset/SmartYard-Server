@@ -849,6 +849,8 @@
                     if ($queue) {
                         $queue->changed("flat", $flatId);
                     }
+
+                    return true;
                 } else {
                     setLastError("cantModifyFlat");
                     return false;
