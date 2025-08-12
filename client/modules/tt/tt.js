@@ -2170,7 +2170,7 @@
                     menuItems.push({
                         id: "selectAll",
                         text: i18n("tt.selectAll"),
-                        icon: "fas fa-check-double"
+                        icon: "far fa-check-square"
                     });
 
                     menuItems.push({
