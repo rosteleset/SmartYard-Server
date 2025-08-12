@@ -351,6 +351,9 @@
     "issuesPerPage": "Issues per page",
     "bulkActionDone": "Issues processed: %s",
     "bulkActionConfirm": "Perform a bulk action?",
+    "select": "Select",
+    "selectAll": "All",
+    "unselectAll": "Nothing",
     "methods": {
         "tt": {
             "_title": "Task manager",

@@ -353,6 +353,9 @@
     "issuesPerPage": "Задач на странице",
     "bulkActionDone": "Задач обработано: %s",
     "bulkActionConfirm": "Выполнить массовое действие?",
+    "select": "Выбрать",
+    "selectAll": "Все",
+    "unselectAll": "Ничего",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",
