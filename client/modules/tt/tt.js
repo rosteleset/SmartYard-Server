@@ -2320,7 +2320,6 @@
                                         } else {
                                             issues = currentIssuesList;
                                         }
-                                        console.log(issues);
                                         modules.tt.bulkAction(currentProject, filterName, realFilter.bulkWorkflow, issues, data);
                                     }
                                     if (id.substring(0, 6) == "items-") {
