@@ -2170,11 +2170,13 @@
                     menuItems.push({
                         id: "selectAll",
                         text: i18n("tt.selectAll"),
+                        icon: "fas fa-check-double"
                     });
 
                     menuItems.push({
                         id: "unselectAll",
                         text: i18n("tt.unselectAll"),
+                        icon: "far fa-square"
                     });
 
                     menuItems.push({
@@ -2297,10 +2299,29 @@
                                         }
                                     }
                                     if (id == "export") {
-                                        modules.tt.exportCSV("table-" + issuesListId, filterName);
+                                        let ignoreRows = [];
+                                        let cbs = $("table[id='table-" + issuesListId + "'] > tbody > tr > td[colid=0] > input");
+                                        if (cbs.length) {
+                                            for (let i  = 0; i < cbs.length; i++) {
+                                                if (!$(cbs[i]).prop("checked")) ignoreRows.push(i);
+                                            }
+                                        }
+                                        modules.tt.exportCSV("table-" + issuesListId, filterName, ignoreRows);
                                     }
                                     if (id.substring(0, 7) == "action-") {
-                                        modules.tt.bulkAction(currentProject, filterName, realFilter.bulkWorkflow, currentIssuesList, data);
+                                        let issues = [];
+                                        let cbs = $("table[id='table-" + issuesListId + "'] > tbody > tr > td[colid=0] > input");
+                                        if (cbs.length) {
+                                            for (let i  = 0; i < cbs.length; i++) {
+                                                if ($(cbs[i]).prop("checked")) {
+                                                    issues.push($(cbs[i]).parent().next().text());
+                                                };
+                                            }
+                                        } else {
+                                            issues = currentIssuesList;
+                                        }
+                                        console.log(issues);
+                                        modules.tt.bulkAction(currentProject, filterName, realFilter.bulkWorkflow, issues, data);
                                     }
                                     if (id.substring(0, 6) == "items-") {
                                         modules.tt.defaultIssuesPerPage = parseInt(data);
@@ -2327,7 +2348,7 @@
                                         $("table[id='table-" + issuesListId + "'] > tbody > tr > td[colid=0]").html("<input type='checkbox' class='ml-1 tableRowCheckbox' checked='checked'>");
                                     }
                                     if (id == "unselectAll") {
-                                        $("table[id='table-" + issuesListId + "'] > tbody > tr > td[colid=0] > input").attr("checked", false);
+                                        $("table[id='table-" + issuesListId + "'] > tbody > tr > td[colid=0]").html("<input type='checkbox' class='ml-1 tableRowCheckbox'>");
                                     }
                                 }
                             }),
@@ -2598,7 +2619,7 @@
         fail(loadingDone);
     },
 
-    exportCSV: function (issuesTableId, filterName) {
+    exportCSV: function (issuesTableId, filterName, ignoreRows) {
         let tableToCSV = new TableToCSV("#" + issuesTableId, {
             filename: filterName + ".csv",
             delimiter: ",",
@@ -2606,6 +2627,7 @@
                 0,
                 $("#" + issuesTableId + " > thead > tr > th").length - 1,
             ],
+            ignoreRows,
         });
         tableToCSV.download();
     },
