@@ -53,6 +53,9 @@
      * @apiBody {Number} [whiteRabbit]
      * @apiBody {Boolean} [sipEnabled]
      * @apiBody {String} [sipPassword]
+     * @apiBody {String} [contract]
+     * @apiBody {String} [login]
+     * @apiBody {String} [password]
      * @apiBody {String} [cars]
      * @apiBody {Number} [subscribersLimit]
      *
