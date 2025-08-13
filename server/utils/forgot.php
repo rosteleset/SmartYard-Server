@@ -30,24 +30,24 @@
         if (@$params["eMail"]) {
             $uid = $params["_backends"]["users"]->getUidByEMail($params["eMail"]);
             if ($uid !== false) {
-                $keys = $params["_redis"]->keys("forgot_*_" . $uid);
+                $keys = $params["_redis"]->keys("FORGOT:*:" . $uid);
 
                 if (!count($keys)) {
                     $token = md5(GUIDv4());
-                    $params["_redis"]->setex("forgot_" . $token . "_" . $uid, 900, "1");
+                    $params["_redis"]->setex("FORGOT:" . $token . ":" . $uid, 900, "1");
                     eMail($params["_config"], $params["eMail"], "password restoration", "<a href='{$params['_config']['api']['frontend']}/accounts/forgot?token=$token'>{$params['_config']['api']['frontend']}/accounts/forgot?token=$token</a>");
                 }
             }
         }
 
         if (@$params["token"]) {
-            $keys = $params["_redis"]->keys("forgot_{$params["token"]}_*");
+            $keys = $params["_redis"]->keys("FORGOT:{$params["token"]}:*");
 
             $uid = false;
 
             foreach ($keys as $key) {
                 $params["_redis"]->del($key);
-                $uid = explode("_", $key)[2];
+                $uid = explode(":", $key)[2];
             }
 
             if ($uid !== false) {
@@ -55,7 +55,7 @@
                 $params["_backends"]["users"]->setPassword($uid, $pw);
                 $user = $params["_backends"]["users"]->getUser($uid);
                 eMail($params["_config"], $user["eMail"], "password restoration", "your new password is $pw");
-                $keys = $params["_redis"]->keys("auth_*_$uid");
+                $keys = $params["_redis"]->keys("AUTH:*:$uid");
                 foreach ($keys as $key) {
                     $params["_redis"]->del($key);
                 }

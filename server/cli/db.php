@@ -83,6 +83,20 @@
                     echo "\n";
                 }
 
+                $persistents = $redis->keys("persistent_*");
+                if ($persistents) {
+                    foreach ($persistents as $pid) {
+                        $new = explode(":", $pid);
+                        array_shift($new);
+                        $new = implode(":", $new);
+                        $redis->set("PERSISTENT:" . $new, $redis->get($pid));
+                        $redis->del($pid);
+
+                        echo "PERSISTENT migrate: ${new[0]}\n";
+                    }
+                    echo "\n";
+                }
+
                 backup_db(false);
                 echo "\n";
 

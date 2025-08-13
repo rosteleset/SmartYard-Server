@@ -127,7 +127,7 @@
                 if ($authorization[0] === "Bearer") {
                     $token = $authorization[1];
 
-                    $keys = $this->redis->keys("persistent_" . $token . "_*");
+                    $keys = $this->redis->keys("PERSISTENT:" . $token . ":*");
 
                     foreach ($keys as $key) {
                         $auth = json_decode($this->redis->get($key), true);
@@ -219,7 +219,7 @@
 
                 if ($all) {
                     foreach ($keys as $key) {
-                        $uid = (string)@explode("_", $key)[2];
+                        $uid = (string)@explode(":", $key)[2];
                         $_keys = $this->redis->keys("AUTH:*:" . $uid);
 
                         foreach ($_keys as $_key) {

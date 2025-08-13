@@ -78,11 +78,11 @@
                         ])) {
                             foreach ($_users as &$u) {
                                 $u["sessions"] = [];
-                                $lk = $this->redis->keys("auth_*_{$u["uid"]}");
+                                $lk = $this->redis->keys("AUTH:*:{$u["uid"]}");
                                 foreach ($lk as $k) {
                                     $u["sessions"][] = json_decode($this->redis->get($k), true);
                                 }
-                                $pk = $this->redis->keys("persistent_*_{$u["uid"]}");
+                                $pk = $this->redis->keys("PERSISTENT*:{$u["uid"]}");
                                 foreach ($pk as $k) {
                                     $s = json_decode($this->redis->get($k), true);
                                     $s["byPersistentToken"] = true;
@@ -165,9 +165,9 @@
                             }
 
                             $persistent = false;
-                            $_keys = $this->redis->keys("persistent_*_" . $user[0]["uid"]);
+                            $_keys = $this->redis->keys("PERSISTENT:*:" . $user[0]["uid"]);
                             foreach ($_keys as $_key) {
-                                $persistent = explode("_", $_key)[1];
+                                $persistent = explode(":", $_key)[1];
                                 break;
                             }
 
@@ -224,9 +224,9 @@
                             }
 
                             $persistent = false;
-                            $_keys = $this->redis->keys("persistent_*_" . $users[$i]["uid"]);
+                            $_keys = $this->redis->keys("PERSISTENT:*:" . $users[$i]["uid"]);
                             foreach ($_keys as $_key) {
-                                $persistent = explode("_", $_key)[1];
+                                $persistent = explode(":", $_key)[1];
                                 break;
                             }
 
@@ -344,7 +344,7 @@
                     try {
                         $this->db->exec("delete from core_users where uid = $uid");
 
-                        $_keys = $this->redis->keys("persistent_*_" . $uid);
+                        $_keys = $this->redis->keys("PERSISTENT:*:" . $uid);
                         foreach ($_keys as $_key) {
                             $this->redis->del($_key);
                         }
@@ -390,20 +390,20 @@
                     }
 
                     if ($persistentToken && strlen(trim($persistentToken)) === 32 && $uid && $enabled) {
-                        $this->redis->set("persistent_" . trim($persistentToken) . "_" . $uid, json_encode([
+                        $this->redis->set("PERSISTENT:" . trim($persistentToken) . ":" . $uid, json_encode([
                             "uid" => $uid,
                             "login" => $this->db->get("select login from core_users where uid = $uid", false, false, [ "fieldlify" ]),
                             "started" => time(),
                         ]));
                     } else {
-                        $_keys = $this->redis->keys("persistent_*_" . $uid);
+                        $_keys = $this->redis->keys("PERSISTENT:*:" . $uid);
                         foreach ($_keys as $_key) {
                             $this->redis->del($_key);
                         }
                     }
 
                     if (!$enabled) {
-                        $_keys = $this->redis->keys("auth_*_" . $uid);
+                        $_keys = $this->redis->keys("AUTH:*:" . $uid);
                         foreach ($_keys as $_key) {
                             $this->redis->del($_key);
                         }
@@ -713,7 +713,7 @@
                 ]);
 
                 if ($result) {
-                    $_keys = $this->redis->keys("persistent_*_" . $uid);
+                    $_keys = $this->redis->keys("PERSISTENT:*:" . $uid);
                     foreach ($_keys as $_key) {
                         $this->redis->del($_key);
                     }
