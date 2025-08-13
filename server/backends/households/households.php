@@ -588,22 +588,6 @@
              * @param mixed query [ id(s) ]
              */
 
-            public function broadcast($by, $query) {
-                if ($by == "house") {
-                    $by = "houses";
-                    $query = [ $query ];
-                }
-
-                switch ($by) {
-                    case "flat":
-                        break;
-
-                    case "entrance":
-                        break;
-
-                    case "houses":
-                        break;
-                }
-            }
+            abstract public function broadcast($by, $query, $title, $msg, $action = "inbox");
         }
     }

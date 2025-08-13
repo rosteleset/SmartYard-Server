@@ -247,7 +247,7 @@
         if ($extension[0] === "7" && strlen($extension) === 10) {
             switch ($section) {
                 case "aors":
-                    $cred = $redis->get("webrtc_" . md5($extension));
+                    $cred = $redis->get("WEBRTC:" . md5($extension));
 
                     if ($cred) {
                         return [
@@ -260,7 +260,7 @@
                     break;
 
                 case "auths":
-                    $cred = $redis->get("webrtc_" . md5($extension));
+                    $cred = $redis->get("WEBRTC:" . md5($extension));
 
                     if ($cred) {
                         return [
@@ -274,7 +274,7 @@
                     break;
 
                 case "endpoints":
-                    $cred = $redis->get("webrtc_" . md5($extension));
+                    $cred = $redis->get("WEBRTC:" . md5($extension));
 
                     $users = loadBackend("users");
                     $user = $users->getUser((int)substr($extension, 1));

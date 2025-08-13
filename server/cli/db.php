@@ -66,10 +66,19 @@
             }
 
             function init($args) {
-                global $db;
+                global $db, $redis;
 
                 maintenance(true);
                 wait_all();
+
+                $aiids = $redis->keys("aiid_*");
+                print_r($aiids);
+                foreach ($aiids as $id) {
+                    $id = explode("_", $id);
+                    $acr = $id[1];
+                    $redis->set("AIID:" . $acr, $redis->get("aiid_" . $acr));
+                    $redis->del("aiid_" . $acr);
+                }
 
                 backup_db(false);
                 echo "\n";

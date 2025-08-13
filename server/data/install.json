@@ -247,5 +247,8 @@
     ],
     "77": [
         "v77_custom_fields.sql"
+    ],
+    "78": [
+        "v78_bulk_messages.sql"
     ]
 }

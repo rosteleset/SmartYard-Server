@@ -33,8 +33,8 @@
                     if ($cache) {
                         if ($withLast) {
                             foreach ($cache as $i => $user) {
-                                $user["lastLogin"] = $this->redis->get("last_login_" . md5($user["login"]));
-                                $user["lastAction"] = $this->redis->get("last_action_" . md5($user["login"]));
+                                $user["lastLogin"] = $this->redis->get("LAST:LOGIN:" . md5($user["login"]));
+                                $user["lastAction"] = $this->redis->get("LAST:ACTION:" . md5($user["login"]));
 
                             }
                         }
@@ -56,8 +56,8 @@
                             "tg" => $user["tg"],
                             "notification" => $user["notification"],
                             "enabled" => $user["enabled"],
-                            "lastLogin" => $withLast ? $this->redis->get("last_login_" . md5($user["login"])) : null,
-                            "lastAction" => $withLast ? $this->redis->get("last_action_" . md5($user["login"])) : null,
+                            "lastLogin" => $withLast ? $this->redis->get("LAST:LOGIN:" . md5($user["login"])) : null,
+                            "lastAction" => $withLast ? $this->redis->get("LAST:ACTION:" . md5($user["login"])) : null,
                             "primaryGroup" => $user["primary_group"],
                             "primaryGroupAcronym" => $user["primary_group_acronym"],
                             "twoFA" => $user["secret"] ? 1 : 0,
@@ -338,8 +338,8 @@
                 if ($uid > 0) { // admin cannot be deleted
                     $user = $this->getUser($uid);
 
-                    $this->redis->del("last_login_" . md5($user["login"]));
-                    $this->redis->del("last_action_" . md5($user["login"]));
+                    $this->redis->del("LAST:LOGIN:" . md5($user["login"]));
+                    $this->redis->del("LAST:ACTION:" . md5($user["login"]));
 
                     try {
                         $this->db->exec("delete from core_users where uid = $uid");

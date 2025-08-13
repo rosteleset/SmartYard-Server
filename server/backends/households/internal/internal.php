@@ -1437,6 +1437,13 @@
                         ];
                         break;
 
+                    case "entranceId":
+                        $q = "select * from houses_subscribers_mobile where house_subscriber_id in (select house_subscriber_id from houses_flats_subscribers where house_flat_id in (select house_flat_id from houses_entrances_flats where house_entrance_id = :house_entrance_id)) order by id";
+                        $p = [
+                            "house_entrance_id" => (int)$query,
+                        ];
+                        break;
+
                     case "houseId":
                         $q = "select * from houses_subscribers_mobile where house_subscriber_id in (select house_subscriber_id from houses_flats_subscribers where house_flat_id in (select house_flat_id from houses_flats where address_house_id = :address_house_id)) order by id";
                         $p = [
@@ -1446,10 +1453,8 @@
 
                     case "houseIds":
                         $in = str_repeat('?, ', count($query) - 1) . '?';
-                        $q = "select * from houses_subscribers_mobile where house_subscriber_id in (select house_subscriber_id from houses_flats_subscribers where house_flat_id in (select house_flat_id from houses_flats where address_house_id in (:address_house_ids))) order by id";
-                        $p = [
-                            "address_house_ids" => $query,
-                        ];
+                        $q = "select * from houses_subscribers_mobile where house_subscriber_id in (select house_subscriber_id from houses_flats_subscribers where house_flat_id in (select house_flat_id from houses_flats where address_house_id in ($in))) order by id";
+                        $p = $query;
                         break;
 
                     case "mobile":
@@ -1477,32 +1482,34 @@
                     "subscriber_full" => "subscriberFull",
                 ]);
 
-                $addresses = loadBackend("addresses");
+                if (array_search("noDetail", $options) === false) {
+                    $addresses = loadBackend("addresses");
 
-                foreach ($subscribers as &$subscriber) {
-                    $flats = $this->db->get("select house_flat_id, role, flat, address_house_id from houses_flats_subscribers left join houses_flats using (house_flat_id) where house_subscriber_id = :house_subscriber_id",
-                        [
-                            "house_subscriber_id" => $subscriber["subscriberId"]
-                        ],
-                        [
-                            "house_flat_id" => "flatId",
-                            "role" => "role",
-                            "flat" => "flat",
-                            "address_house_id" => "addressHouseId",
-                        ]
-                    );
+                    foreach ($subscribers as &$subscriber) {
+                        $flats = $this->db->get("select house_flat_id, role, flat, address_house_id from houses_flats_subscribers left join houses_flats using (house_flat_id) where house_subscriber_id = :house_subscriber_id",
+                            [
+                                "house_subscriber_id" => $subscriber["subscriberId"]
+                            ],
+                            [
+                                "house_flat_id" => "flatId",
+                                "role" => "role",
+                                "flat" => "flat",
+                                "address_house_id" => "addressHouseId",
+                            ]
+                        );
 
-                    if (array_search("withoutHouses", $options) === false) {
-                        foreach ($flats as &$flat) {
-                            $flat["house"] = $addresses->getHouse($flat["addressHouseId"]);
+                        if (array_search("withoutHouses", $options) === false) {
+                            foreach ($flats as &$flat) {
+                                $flat["house"] = $addresses->getHouse($flat["addressHouseId"]);
+                            }
+                        } else {
+                            foreach ($flats as &$flat) {
+                                $flat["house"]["houseId"] = $flat["addressHouseId"];
+                            }
                         }
-                    } else {
-                        foreach ($flats as &$flat) {
-                            $flat["house"]["houseId"] = $flat["addressHouseId"];
-                        }
+
+                        $subscriber["flats"] = $flats;
                     }
-
-                    $subscriber["flats"] = $flats;
                 }
 
                 return $subscribers;
@@ -2549,6 +2556,27 @@
 
                 if ($part === "5min") {
                     $this->cleanup();
+                }
+
+                if ($part === "minutely") {
+                    $messages = $this->db->get("select * from houses_subscribers_messages limit 1024", false, [
+                        "bulk_message_id" => "bulkMessageId",
+                        "house_subscriber_id" => "subscriberId",
+                        "title" => "title",
+                        "msg" => "msg",
+                        "action" => "action",
+                    ]);
+
+                    if ($messages && count($messages)) {
+                        $inbox = loadBackend("inbox");
+
+                        foreach ($messages as $message) {
+                            $inbox->sendMessage($message["subscriberId"], $message["title"], $message["msg"], $message["action"]);
+                            $this->db->modify("delete from houses_subscribers_messages where bulk_message_id = :bulk_message_id", [
+                                "bulk_message_id" => $message["bulkMessageId"],
+                            ]);
+                        }
+                    }
                 }
 
                 return true;
@@ -3646,6 +3674,32 @@
                         }
                     }
                 }
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+            public function broadcast($by, $query, $title, $msg, $action = "inbox") {
+                if ($by == "houseId") {
+                    $by = "houseIds";
+                    $query = [ $query ];
+                }
+
+                $subscribers = $this->getSubscribers($by, $query, [ "noDetail" ]);
+
+                foreach ($subscribers as $subscriber) {
+                    $this->db->insert("insert into houses_subscribers_messages (house_subscriber_id, title, msg, action) values (:house_subscriber_id, :title, :msg, :action)", [
+                        "house_subscriber_id" => $subscriber["subscriberId"],
+                        "title" => $title,
+                        "msg" => $msg,
+                        "action" => $action,
+                    ], [
+                        "silent"
+                    ]);
+                }
+
+                return true;
             }
         }
     }

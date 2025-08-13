@@ -1135,8 +1135,8 @@
             /**
              * @inheritDoc
              */
-            function addFavorite($object, $id, $title, $icon, $color)
-            {
+
+            function addFavorite($object, $id, $title, $icon, $color) {
                 return $this->db->modify("insert into addresses_favorites (login, object, id, title, icon, color) values (:login, :object, :id, :title, :icon, :color)", [
                     "login" => $this->login,
                     "object" => $object,
@@ -1150,8 +1150,8 @@
             /**
              * @inheritDoc
              */
-            function deleteFavorite($object, $id, $all = false)
-            {
+
+            function deleteFavorite($object, $id, $all = false) {
                 if ($all) {
                     return $this->db->modify("delete from addresses_favorites where object = :object and id = :id", [
                         "object" => $object,
@@ -1169,16 +1169,16 @@
             /**
              * @inheritDoc
              */
-            public function searchAddress($search)
-            {
+
+            public function searchAddress($search) {
                 return [];
             }
 
             /**
              * @inheritDoc
              */
-            public function searchHouse($search)
-            {
+
+            public function searchHouse($search) {
                 $search = trim(preg_replace('/\s+/', ' ', $search));
                 $text_search_config = $this->config["db"]["text_search_config"] ?? "simple";
 

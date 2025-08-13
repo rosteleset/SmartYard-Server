@@ -67,7 +67,7 @@
                 if (@$me[$acr] >= 30) { // 30, 'participant.senior' - can create issues
                     $db = $this->dbName;
 
-                    $aiid = $this->redis->incr("aiid_" . $acr);
+                    $aiid = $this->redis->incr("AIID:" . $acr);
                     $issue["issueId"] = $acr . "-" . $aiid;
 
                     $attachments = @$issue["attachments"] ? : [];
@@ -863,7 +863,7 @@
 
                     if (count($list)) {
                         $f = pathinfo($attachment["name"]);
-                        $incr = $this->redis->incr("filedup");
+                        $incr = $this->redis->incr("FILEDUP:$acr");
                         $attachments[$i]["name"] = $f["filename"] . "-dup-" . sprintf("%06d", $incr) . "." . $f["extension"];
                     }
 
