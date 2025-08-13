@@ -72,12 +72,15 @@
                 wait_all();
 
                 $aiids = $redis->keys("aiid_*");
-                print_r($aiids);
-                foreach ($aiids as $id) {
-                    $id = explode("_", $id);
-                    $acr = $id[1];
-                    $redis->set("AIID:" . $acr, $redis->get("aiid_" . $acr));
-                    $redis->del("aiid_" . $acr);
+                if ($aiids) {
+                    foreach ($aiids as $id) {
+                        $acr = explode("_", $id)[1];
+                        $redis->set("AIID:" . $acr, $redis->get("aiid_" . $acr));
+                        $redis->del("aiid_" . $acr);
+
+                        echo "AIID migrate: $acr\n";
+                    }
+                    echo "\n";
                 }
 
                 backup_db(false);
