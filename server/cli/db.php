@@ -86,13 +86,14 @@
                 $persistents = $redis->keys("persistent_*");
                 if ($persistents) {
                     foreach ($persistents as $pid) {
-                        $new = explode(":", $pid);
+                        $new = explode("_", $pid);
                         array_shift($new);
+                        $uid = $new[0];
                         $new = implode(":", $new);
                         $redis->set("PERSISTENT:" . $new, $redis->get($pid));
                         $redis->del($pid);
 
-                        echo "PERSISTENT migrate: ${new[0]}\n";
+                        echo "PERSISTENT migrate: $uid\n";
                     }
                     echo "\n";
                 }
