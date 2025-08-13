@@ -243,12 +243,14 @@
              * @param $domophoneId
              * @return boolean
              */
+
             abstract public function deleteDomophone($domophoneId);
 
             /**
              * @param $domophoneId
              * @return false|array
              */
+
             abstract public function getDomophone($domophoneId);
 
             /**
@@ -278,12 +280,14 @@
              * @param $params
              * @return boolean
              */
+
             abstract public function modifySubscriber($subscriberId, $params = []);
 
             /**
              * @param $subscriberId
              * @return boolean
              */
+
             abstract public function deleteSubscriber($subscriberId);
 
             /**
@@ -291,6 +295,7 @@
              * @param $subscriberId
              * @return mixed
              */
+
             abstract public function removeSubscriberFromFlat($flatId, $subscriberId);
 
             /**
@@ -351,6 +356,7 @@
              * @param $token
              * @return boolean
              */
+
             abstract public function dismissToken($token);
 
             /**
@@ -358,6 +364,7 @@
              * @param $params
              * @return array|false
              */
+
             abstract public function getCameras($by, $params);
 
             /**
@@ -366,6 +373,7 @@
              * @param $cameraId
              * @return mixed
              */
+
             abstract public function addCamera($to, $id, $cameraId);
 
             /**
@@ -374,6 +382,7 @@
              * @param $cameraId
              * @return mixed
              */
+
             abstract public function unlinkCamera($from, $id, $cameraId);
 
             /**
@@ -392,6 +401,7 @@
              * @param $query
              * @return false|array
              */
+
             abstract public function getDevices($by, $query);
 
             /**
@@ -572,5 +582,28 @@
              */
 
             abstract function paranoidEvent();
+
+            /**
+             * @param string by [ flat, entrance, house, houses ]
+             * @param mixed query [ id(s) ]
+             */
+
+            public function broadcast($by, $query) {
+                if ($by == "house") {
+                    $by = "houses";
+                    $query = [ $query ];
+                }
+
+                switch ($by) {
+                    case "flat":
+                        break;
+
+                    case "entrance":
+                        break;
+
+                    case "houses":
+                        break;
+                }
+            }
         }
     }

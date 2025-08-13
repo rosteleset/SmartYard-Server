@@ -1444,6 +1444,14 @@
                         ];
                         break;
 
+                    case "houseIds":
+                        $query = implode(", ", $query);
+                        $q = "select * from houses_subscribers_mobile where house_subscriber_id in (select house_subscriber_id from houses_flats_subscribers where house_flat_id in (select house_flat_id from houses_flats where address_house_id = :address_house_id)) order by id";
+                        $p = [
+                            "address_house_id" => (int)$query,
+                        ];
+                        break;
+
                     case "mobile":
                         $q = "select * from houses_subscribers_mobile where id = :id";
                         $p = [
@@ -1578,7 +1586,9 @@
                     ])) {
                         return false;
                     }
+
                     $devices = $this->getDevices("subscriber", $subscriberId);
+
                     foreach($devices as $device) {
                         $this->setDeviceFlat($device["deviceId"], $flatId, 1);
                     }

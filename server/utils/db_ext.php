@@ -58,11 +58,21 @@
             $remap = [];
 
             if ($map) {
-                foreach ($map as $key => $value) {
-                    if (is_null($value)) {
-                        $remap[$key] = $value;
-                    } else {
-                        $remap[$key] = trim($value);
+                if (array_is_list($map)) {
+                    foreach ($map as $value) {
+                        if (is_null($value)) {
+                            $remap[] = $value;
+                        } else {
+                            $remap[] = trim($value);
+                        }
+                    }
+                } else {
+                    foreach ($map as $key => $value) {
+                        if (is_null($value)) {
+                            $remap[$key] = $value;
+                        } else {
+                            $remap[$key] = trim($value);
+                        }
                     }
                 }
             }

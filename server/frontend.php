@@ -38,6 +38,7 @@
     require_once "utils/i18n.php";
     require_once "utils/mime_content_type.php";
     require_once "utils/mb_levenshtein.php";
+    require_once "utils/array_is_list.php";
 
     require_once "backends/backend.php";
 
