@@ -4,6 +4,28 @@
 
         class init {
 
+            private function latest($pre = false) {
+                $versions = @json_decode(file_get_contents("https://api.github.com/repos/rosteleset/SmartYard-Server/releases", false, stream_context_create([ 'http' => [ 'method' => 'GET', 'header' => [ 'User-Agent: PHP', 'Content-type: application/x-www-form-urlencoded' ] ] ])), true);
+
+                if (!$versions || !count($versions)) {
+                    return false;
+                }
+
+                $latest_tag_name = false;
+                $latest_updated_at = "";
+
+                foreach ($versions as $v) {
+                    if ($pre && $v["prerelease"] || (!$pre && !$v["prerelease"])) {
+                        if ($v["updated_at"] > $latest_updated_at) {
+                            $latest_updated_at = $v["updated_at"];
+                            $latest_tag_name = $v["tag_name"];
+                        }
+                    }
+                }
+
+                return $latest_tag_name;
+            }
+
             function __construct(&$global_cli) {
                 $global_cli["#"]["initialization and update"]["admin-password"] = [
                     "value" => "string",
@@ -49,6 +71,14 @@
                         ],
                         [
                             "devel" => [
+                                "optional" => true,
+                            ],
+                            "force" => [
+                                "optional" => true,
+                            ],
+                        ],
+                        [
+                            "pre" => [
                                 "optional" => true,
                             ],
                             "force" => [
@@ -129,17 +159,18 @@
             function update($args) {
                 global $config;
 
+                $pre = array_key_exists("--pre", $args);
                 $devel = array_key_exists("--devel", $args);
                 $force = array_key_exists("--force", $args);
 
-                if ($devel && @$args["--version"]) {
+                if (($devel && @$args["--version"]) || ($devel && $pre) || ($pre && @$args["--version"])) {
                     \cliUsage();
                 }
 
                 if (@$args["--version"]) {
                     $version = $args["--version"];
                 } else {
-                    $version = @json_decode(file_get_contents("https://api.github.com/repos/rosteleset/SmartYard-Server/releases/latest", false, stream_context_create([ 'http' => [ 'method' => 'GET', 'header' => [ 'User-Agent: PHP', 'Content-type: application/x-www-form-urlencoded' ] ] ])), true)["tag_name"];
+                    $version = $this->latest($pre);
                 }
 
                 if (!$version) {
