@@ -49,25 +49,25 @@
     $confirmMethod = @$config["backends"]["isdn"]["confirm_method"] ?: "outgoingCall";
 
     if (strlen($pin) == 4) {
-        $pinreq = $redis->get("userpin_" . $user_phone);
+        $pinreq = $redis->get("USERPIN:" . $user_phone);
 
-        $redis->setex("userpin.attempts_" . $user_phone, 3600, (int)$redis->get("userpin.attempts_" . $user_phone) + 1);
+        $redis->setex("USERPIN:ATTEMPTS:" . $user_phone, 3600, (int)$redis->get("USERPIN:ATTEMPTS:" . $user_phone) + 1);
 
         if (!$pinreq) {
             response(404);
         } else {
             if ($pinreq != $pin) {
-                $attempts = $redis->get("userpin.attempts_" . $user_phone);
+                $attempts = $redis->get("USERPIN:ATTEMPTS:" . $user_phone);
                 if ($attempts > 5) {
-                    $redis->del("userpin_" . $user_phone);
-                    $redis->del("userpin.attempts_" . $user_phone);
+                    $redis->del("USERPIN:" . $user_phone);
+                    $redis->del("USERPIN:ATTEMPTS:" . $user_phone);
                     response(403, false, i18n("mobile.maxAttempts"), i18n("mobile.maxAttempts"));
                 } else {
                     response(403, false, i18n("mobile.pinError"), i18n("mobile.pinError"));
                 }
             } else {
-                $redis->del("userpin_" . $user_phone);
-                $redis->del("userpin.attempts_" . $user_phone);
+                $redis->del("USERPIN:" . $user_phone);
+                $redis->del("USERPIN:ATTEMPTS:" . $user_phone);
                 $token = GUIDv4();
                 $subscribers = $households->getSubscribers("mobile", $user_phone);
                 $devices = false;

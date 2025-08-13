@@ -44,7 +44,7 @@
         // fake accounts - always confirmation by pin
         if (in_array($user_phone, @$config["backends"]["households"]["test_numbers"] ? : [])) {
             $pin = 1001 + array_search($user_phone, $config["backends"]["households"]["test_numbers"]);
-            $redis->setex("userpin_" . $user_phone, 60, $pin);
+            $redis->setex("USERPIN:" . $user_phone, 60, $pin);
             response(200, [ "method" => "sms" ]);
         }
 
@@ -58,12 +58,12 @@
 
             default:
                 // smsCode - default
-                $already = $redis->get("userpin_" . $user_phone);
+                $already = $redis->get("USERPIN:" . $user_phone);
                 if ($already){
                     response(429);
                 } else {
                     $pin = explode(":", $isdn->sendCode($user_phone))[0];
-                    $redis->setex("userpin_".$user_phone, 60, $pin);
+                    $redis->setex("USERPIN:" . $user_phone, 60, $pin);
                     response(200, [ "method" => $confirmMethod ]);
                 }
                 break;
