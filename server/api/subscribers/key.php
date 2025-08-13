@@ -68,7 +68,7 @@
             public static function POST($params) {
                 $households = loadBackend("households");
 
-                $keyId = $households->addKey($params["rfId"], $params["accessType"], $params["accessTo"], $params["comments"], @$params["watch"] ? $params["watch"] : 0);
+                $keyId = $households->addKey($params["rfId"], $params["accessType"], $params["accessTo"], @$params["comments"], @$params["watch"] ?: 0);
 
                 return api::ANSWER($keyId, ($keyId !== false) ? "key" : false);
             }
@@ -76,7 +76,7 @@
             public static function PUT($params) {
                 $households = loadBackend("households");
 
-                $success = $households->modifyKey($params["_id"], $params["comments"], @$params["watch"] ? $params["watch"] : 0);
+                $success = $households->modifyKey($params["_id"], @$params["comments"], @$params["watch"] ?: 0);
 
                 return api::ANSWER($success);
             }

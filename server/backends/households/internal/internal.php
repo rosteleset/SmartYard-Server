@@ -1614,8 +1614,8 @@
             /**
              * @inheritDoc
              */
-            public function deleteSubscriber($subscriberId)
-            {
+
+            public function deleteSubscriber($subscriberId) {
                 if (!checkInt($subscriberId)) {
                     return false;
                 }
@@ -1675,8 +1675,8 @@
             /**
              * @inheritDoc
              */
-            public function modifySubscriber($subscriberId, $params = [])
-            {
+
+            public function modifySubscriber($subscriberId, $params = []) {
                 if (!checkInt($subscriberId)) {
                     return false;
                 }
@@ -1903,7 +1903,7 @@
              */
 
             public function addKey($rfId, $accessType, $accessTo, $comments, $watch = 0) {
-                if (!checkInt($accessTo) || !checkInt($watch) || !checkInt($accessType) || !checkStr($rfId, [ "minLength" => 6, "maxLength" => 32 ]) || !checkStr($rfId, [ "minLength" => 6, "maxLength" => 32 ]) || !checkStr($comments, [ "maxLength" => 128 ])) {
+                if (!checkInt($accessTo) || !checkInt($watch) || !checkInt($accessType) || !checkStr($rfId, [ "minLength" => 6, "maxLength" => 32 ]) || !checkStr($comments, [ "maxLength" => 128 ])) {
                     setLastError("invalidParams");
                     return false;
                 }
