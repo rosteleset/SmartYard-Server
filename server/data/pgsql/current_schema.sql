@@ -1400,6 +1400,43 @@ ALTER SEQUENCE public.houses_subscribers_devices_subscriber_device_id_seq OWNED 
 
 
 --
+-- Name: houses_subscribers_messages; Type: TABLE; Schema: public; Owner: rbt
+--
+
+CREATE TABLE public.houses_subscribers_messages (
+    bulk_message_id integer NOT NULL,
+    house_subscriber_id integer,
+    title character varying,
+    msg character varying,
+    action character varying
+);
+
+
+ALTER TABLE public.houses_subscribers_messages OWNER TO rbt;
+
+--
+-- Name: houses_subscribers_messages_bulk_message_id_seq; Type: SEQUENCE; Schema: public; Owner: rbt
+--
+
+CREATE SEQUENCE public.houses_subscribers_messages_bulk_message_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.houses_subscribers_messages_bulk_message_id_seq OWNER TO rbt;
+
+--
+-- Name: houses_subscribers_messages_bulk_message_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: rbt
+--
+
+ALTER SEQUENCE public.houses_subscribers_messages_bulk_message_id_seq OWNED BY public.houses_subscribers_messages.bulk_message_id;
+
+
+--
 -- Name: houses_subscribers_mobile; Type: TABLE; Schema: public; Owner: rbt
 --
 
@@ -2473,6 +2510,13 @@ ALTER TABLE ONLY public.houses_subscribers_devices ALTER COLUMN subscriber_devic
 
 
 --
+-- Name: houses_subscribers_messages bulk_message_id; Type: DEFAULT; Schema: public; Owner: rbt
+--
+
+ALTER TABLE ONLY public.houses_subscribers_messages ALTER COLUMN bulk_message_id SET DEFAULT nextval('public.houses_subscribers_messages_bulk_message_id_seq'::regclass);
+
+
+--
 -- Name: houses_subscribers_mobile house_subscriber_id; Type: DEFAULT; Schema: public; Owner: rbt
 --
 
@@ -2879,6 +2923,14 @@ ALTER TABLE ONLY public.houses_rfids
 
 ALTER TABLE ONLY public.houses_subscribers_devices
     ADD CONSTRAINT houses_subscribers_devices_pkey PRIMARY KEY (subscriber_device_id);
+
+
+--
+-- Name: houses_subscribers_messages houses_subscribers_messages_pkey; Type: CONSTRAINT; Schema: public; Owner: rbt
+--
+
+ALTER TABLE ONLY public.houses_subscribers_messages
+    ADD CONSTRAINT houses_subscribers_messages_pkey PRIMARY KEY (bulk_message_id);
 
 
 --
@@ -3854,6 +3906,20 @@ CREATE UNIQUE INDEX houses_subscribers_devices_uniq_2 ON public.houses_subscribe
 --
 
 CREATE UNIQUE INDEX houses_subscribers_devices_uniq_3 ON public.houses_subscribers_devices USING btree (push_token);
+
+
+--
+-- Name: houses_subscribers_messages_house_subscriber_id; Type: INDEX; Schema: public; Owner: rbt
+--
+
+CREATE INDEX houses_subscribers_messages_house_subscriber_id ON public.houses_subscribers_messages USING btree (house_subscriber_id);
+
+
+--
+-- Name: houses_subscribers_messages_uniq; Type: INDEX; Schema: public; Owner: rbt
+--
+
+CREATE UNIQUE INDEX houses_subscribers_messages_uniq ON public.houses_subscribers_messages USING btree (house_subscriber_id, title, msg, action);
 
 
 --
