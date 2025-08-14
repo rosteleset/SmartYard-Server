@@ -420,7 +420,12 @@ abstract class ufanet extends domophone implements
 
     public function setUnlockTime(int $time = 3): void
     {
-        $this->apiCall('/api/v1/configuration', 'PATCH', ['door' => ['open_time' => $time]]);
+        $this->apiCall('/api/v1/configuration', 'PATCH', [
+            'door' => [
+                'open_time' => $time,
+                'open_2_time' => $time,
+            ],
+        ]);
     }
 
     public function syncData(): void
