@@ -218,10 +218,8 @@
                             value: key.watch,
                         },
                     ],
-                    callback: function (result) {
-                        PUT("subscribers", "key", result.keyId, {
-                            comments: result.comments,
-                        }).
+                    callback: result => {
+                        PUT("subscribers", "key", result.keyId, result).
                         fail(FAIL).
                         fail(loadingDone).
                         done(() => {

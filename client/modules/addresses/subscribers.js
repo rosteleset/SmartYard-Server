@@ -482,7 +482,7 @@
                         value: key.watch,
                     },
                 ],
-                callback: function (result) {
+                callback: result => {
                     if (result.delete === "yes") {
                         modules.addresses.subscribers.deleteKey(keyId);
                     } else {
