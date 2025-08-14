@@ -1,3 +1,13 @@
+# 2025-08-14
+
+Do
+
+```bash
+rm /opt/rbt/version
+```
+
+ONCE before updating to versions 0.011+ to avoid git conflicts
+
 # 2025-04-11
 
 You will need to update mongodb php library and driver
