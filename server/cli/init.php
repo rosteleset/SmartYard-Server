@@ -207,9 +207,12 @@
                 $code = false;
                 $out = [];
 
+                $version_date = '';
+
                 if ($devel) {
                     exec("git pull https://github.com/rosteleset/SmartYard-Server main 2>&1 && git checkout main 2>&1 && git pull 2>&1", $out, $code);
                     $version = substr(explode(" ", explode("\n", `git log -1`)[0])[1], 0, 7);
+                    $version_date = " (" . date("Y-m-d") . ")";
                 } else {
                     exec("git pull https://github.com/rosteleset/SmartYard-Server main 2>&1 && git checkout main 2>&1 && git pull 2>&1 && git -c advice.detachedHead=false checkout $version 2>&1", $out, $code);
                 }
@@ -220,7 +223,7 @@
                     exit($code);
                 }
 
-                file_put_contents("version", $version . " (" . date("Y-m-d") . ")");
+                file_put_contents("version", $version . $version_date);
 
                 initDB();
                 echo "\n";
