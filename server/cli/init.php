@@ -257,8 +257,8 @@
             function local() {
                 $dir = __DIR__;
 
-                $currentVersion = @explode(" ", file_get_contents("$dir../../version"))[0];
-                $version = trim(`git -C $dir rev-parse --short HEAD`);
+                $currentVersion = @explode(" ", file_get_contents("$dir/../../version"))[0];
+                $version = substr(trim(`git -C $dir rev-parse --short HEAD`), 0, 7);
 
                 file_put_contents("$dir/../../version", $version . " (" . date("Y-m-d") . ")");
 
