@@ -6,7 +6,12 @@ Do
 rm /opt/rbt/version
 ```
 
-ONCE before updating to versions 0.0.11+ to avoid git conflicts
+ONCE before updating to versions 0.0.11+ to avoid git conflicts,
+and
+```
+php cli.php --init-db
+```
+ONCE after updating
 
 # 2025-04-11
 
