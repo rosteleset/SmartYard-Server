@@ -98,6 +98,11 @@
                     ],
                     "exec" => [ $this, "update" ],
                 ];
+
+                $global_cli["#"]["initialization and update"]["version-local"] = [
+                    "description" => "Update version to local",
+                    "exec" => [ $this, "local" ],
+                ];
             }
 
             function password($args) {
@@ -159,6 +164,8 @@
             function update($args) {
                 global $config;
 
+                $dir = __DIR__;
+
                 $pre = array_key_exists("--pre", $args);
                 $devel = array_key_exists("--devel", $args);
                 $force = array_key_exists("--force", $args);
@@ -178,7 +185,7 @@
                     exit(2);
                 }
 
-                chdir(__DIR__ . "/../..");
+                chdir("$dir/../..");
 
                 if ($devel) {
                     $version = @substr(json_decode(file_get_contents("https://api.github.com/repos/rosteleset/SmartYard-Server/commits/main", false, stream_context_create([ 'http' => [ 'method' => 'GET', 'header' => [ 'User-Agent: PHP', 'Content-type: application/x-www-form-urlencoded' ] ] ])), true)["sha"], 0, 7);
@@ -238,6 +245,19 @@
                 echo "\n";
 
                 maintenance(false);
+
+                echo "SmartYard: $currentVersion -> $version\n\n";
+
+                exit(0);
+            }
+
+            function local() {
+                $dir = __DIR__;
+
+                $currentVersion = @explode(" ", file_get_contents("$dir../../version"))[0];
+                $version = trim(`git -C $dir rev-parse --short HEAD`);
+
+                file_put_contents("$dir/../../version", $version . " (" . date("Y-m-d") . ")");
 
                 echo "SmartYard: $currentVersion -> $version\n\n";
 

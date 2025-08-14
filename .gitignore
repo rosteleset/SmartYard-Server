@@ -112,4 +112,4 @@ asterisk/http.conf
 asterisk/pjsip.conf
 asterisk/logger.conf
 
-./version
+version
