@@ -39,6 +39,7 @@ client/modules/**/custom/*
 client/custom.html
 client/config/config.json
 client/config/config.yml
+client/version.app
 
 !server/services/push/package.json
 !server/services/ami/package.json
