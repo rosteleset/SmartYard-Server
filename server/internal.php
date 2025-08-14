@@ -18,6 +18,9 @@
     require_once "utils/mb_levenshtein.php";
     require_once "utils/array_is_list.php";
 
+    require_once "utils/checkint.php";
+    require_once "utils/guidv4.php";
+
     // load configuration
     try {
         $config = loadConfiguration();
