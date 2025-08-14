@@ -6,7 +6,7 @@ Do
 rm /opt/rbt/version
 ```
 
-ONCE before updating to versions 0.011+ to avoid git conflicts
+ONCE before updating to versions 0.0.11+ to avoid git conflicts
 
 # 2025-04-11
 
