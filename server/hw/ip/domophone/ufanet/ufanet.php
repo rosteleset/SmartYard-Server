@@ -299,14 +299,19 @@ abstract class ufanet extends domophone implements
 
     public function setAudioLevels(array $levels): void
     {
-        if (count($levels) === 2) {
-            $this->apiCall('/api/v1/configuration', 'PATCH', [
-                'volume' => [
-                    'speaker' => $levels[0],
-                    'mic' => $levels[1],
-                ],
-            ]);
+        if (count($levels) !== 5) {
+            return;
         }
+
+        $this->apiCall('/api/v1/configuration', 'PATCH', [
+            'volume' => [
+                'speaker' => $levels[0],
+                'mic' => $levels[1],
+                'sys' => $levels[2],
+                'analog_speaker' => $levels[3],
+                'analog_mic' => $levels[4],
+            ],
+        ]);
     }
 
     public function setCallTimeout(int $timeout): void
@@ -515,8 +520,13 @@ abstract class ufanet extends domophone implements
 
     protected function getAudioLevels(): array
     {
-        $volume = $this->apiCall('/api/v1/configuration')['volume'];
-        return [$volume['speaker'], $volume['mic']];
+        $volume = $this->apiCall('/api/v1/configuration')['volume'] ?? null;
+
+        if (!is_array($volume)) {
+            return [];
+        }
+
+        return array_values($volume);
     }
 
     protected function getCmsModel(): string
