@@ -7,7 +7,7 @@ rm /opt/rbt/version
 rm /opt/rbt/client/version.app
 ```
 
-ONCE before updating to versions 0.0.11+ to avoid git conflicts,
+ONCE before updating to versions 0.0.11+ (to avoid git conflicts),
 and
 ```
 php /opt/rbt/server/cli.php --init-db
