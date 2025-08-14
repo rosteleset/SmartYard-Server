@@ -161,6 +161,8 @@
             "bg-lime": "",
         };
 
+        // TODO: box-shadow: 2px 2px 7px {shadow-color};
+
         subject = $.trim(subject);
         if (subject) {
             newSticky += `<h5 class="caption">`;
