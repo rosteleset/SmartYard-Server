@@ -23,6 +23,7 @@ package-lock.json
 .templates
 .templates/*
 .templates/**
+version
 
 client/lib/
 client/lib/AdminLTE/
@@ -112,5 +113,3 @@ asterisk/extconfig.conf
 asterisk/http.conf
 asterisk/pjsip.conf
 asterisk/logger.conf
-
-version
