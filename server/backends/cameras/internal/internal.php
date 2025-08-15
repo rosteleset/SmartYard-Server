@@ -59,6 +59,7 @@ namespace backends\cameras {
                 "comments" => "comments",
                 "sound" => "sound",
                 "ip" => "ip",
+                "monitoring" => "monitoring",
                 "ext" => "ext",
             ]);
 
@@ -120,7 +121,7 @@ namespace backends\cameras {
          * @inheritDoc
          */
 
-        public function addCamera($enabled, $model, $url,  $stream, $credentials, $name, $dvrStream, $timezone, $lat, $lon, $direction, $angle, $distance, $frs, $frsMode, $mdArea, $rcArea, $common, $comments, $sound, $ext) {
+        public function addCamera($enabled, $model, $url,  $stream, $credentials, $name, $dvrStream, $timezone, $lat, $lon, $direction, $angle, $distance, $frs, $frsMode, $mdArea, $rcArea, $common, $comments, $sound, $monitoring, $ext) {
             if (!$model) {
                 return false;
             }
@@ -140,7 +141,7 @@ namespace backends\cameras {
                 return false;
             }
 
-            $cameraId = $this->db->insert("insert into cameras (enabled, model, url, stream, credentials, name, dvr_stream, timezone, lat, lon, direction, angle, distance, frs, frs_mode, md_area, rc_area, common, comments, sound, ext) values (:enabled, :model, :url, :stream, :credentials, :name, :dvr_stream, :timezone, :lat, :lon, :direction, :angle, :distance, :frs, :frs_mode, :md_area, :rc_area, :common, :comments, :sound, :ext)", [
+            $cameraId = $this->db->insert("insert into cameras (enabled, model, url, stream, credentials, name, dvr_stream, timezone, lat, lon, direction, angle, distance, frs, frs_mode, md_area, rc_area, common, comments, sound, monitoring, ext) values (:enabled, :model, :url, :stream, :credentials, :name, :dvr_stream, :timezone, :lat, :lon, :direction, :angle, :distance, :frs, :frs_mode, :md_area, :rc_area, :common, :comments, :sound, :ext, :monitoring)", [
                 "enabled" => (int)$enabled,
                 "model" => $model,
                 "url" => $url,
@@ -160,7 +161,8 @@ namespace backends\cameras {
                 "rc_area" => json_encode($rcArea),
                 "common" => $common,
                 "comments" => $comments,
-                "sound" => $sound,
+                "sound" => (int)$sound,
+                "monitoring" => (int)$monitoring,
                 "ext" => json_encode($ext),
             ]);
 
@@ -178,7 +180,7 @@ namespace backends\cameras {
          * @inheritDoc
          */
 
-        public function modifyCamera($cameraId, $enabled, $model, $url, $stream, $credentials, $name, $dvrStream, $timezone, $lat, $lon, $direction, $angle, $distance, $frs, $frsMode, $mdArea, $rcArea, $common, $comments, $sound, $ext) {
+        public function modifyCamera($cameraId, $enabled, $model, $url, $stream, $credentials, $name, $dvrStream, $timezone, $lat, $lon, $direction, $angle, $distance, $frs, $frsMode, $mdArea, $rcArea, $common, $comments, $sound, $monitoring, $ext) {
             if (!checkInt($cameraId)) {
                 setLastError("noId");
                 return false;
@@ -205,7 +207,7 @@ namespace backends\cameras {
                 return false;
             }
 
-            $r = $this->db->modify("update cameras set enabled = :enabled, model = :model, url = :url, stream = :stream, credentials = :credentials, name = :name, dvr_stream = :dvr_stream, timezone = :timezone, lat = :lat, lon = :lon, direction = :direction, angle = :angle, distance = :distance, frs = :frs, frs_mode = :frs_mode, md_area = :md_area, rc_area = :rc_area, common = :common, comments = :comments, sound = :sound, ext = :ext where camera_id = $cameraId", [
+            $r = $this->db->modify("update cameras set enabled = :enabled, model = :model, url = :url, stream = :stream, credentials = :credentials, name = :name, dvr_stream = :dvr_stream, timezone = :timezone, lat = :lat, lon = :lon, direction = :direction, angle = :angle, distance = :distance, frs = :frs, frs_mode = :frs_mode, md_area = :md_area, rc_area = :rc_area, common = :common, comments = :comments, sound = :sound, monitoring = :monitoring, ext = :ext where camera_id = $cameraId", [
                 "enabled" => (int)$enabled,
                 "model" => $model,
                 "url" => $url,
@@ -226,6 +228,7 @@ namespace backends\cameras {
                 "common" => $common,
                 "comments" => $comments,
                 "sound" => (int)$sound,
+                "monitoring" => (int)$monitoring,
                 "ext" => json_encode($ext),
             ]);
 

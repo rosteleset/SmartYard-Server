@@ -196,12 +196,13 @@
              * @param $name
              * @param $display
              * @param $video
+             * @param $monitoring
              * @param $ext
              *
              * @return false|integer
              */
 
-            abstract public function addDomophone($enabled, $model, $server, $url, $credentials, $dtmf, $nat, $comments, $name, $display, $video, $ext);
+            abstract public function addDomophone($enabled, $model, $server, $url, $credentials, $dtmf, $nat, $comments, $name, $display, $video, $monitoring, $ext);
 
             /**
              * @param $domophoneId
@@ -218,12 +219,13 @@
              * @param $name
              * @param $display
              * @param $video
+             * @param $monitoring
              * @param $ext
              *
              * @return boolean
              */
 
-            abstract public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $dtmf, $firstTime, $nat, $locksAreOpen, $comments, $name, $display, $video, $ext);
+            abstract public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $dtmf, $firstTime, $nat, $locksAreOpen, $comments, $name, $display, $video, $monitoring, $ext);
 
             /**
              * @param $domophoneId

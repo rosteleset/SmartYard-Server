@@ -1,0 +1,2 @@
+ALTER TABLE houses_domophones ADD IF NOT EXISTS monitoring INTEGER DEFAULT 1;
+ALTER TABLE cameras ADD IF NOT EXISTS monitoring INTEGER DEFAULT 1;

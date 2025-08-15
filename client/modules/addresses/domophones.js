@@ -176,6 +176,13 @@
                     tab: i18n("addresses.primary"),
                 },
                 {
+                    id: "monitoring",
+                    type: "yesno",
+                    title: i18n("addresses.monitoring"),
+                    placeholder: i18n("addresses.monitoring"),
+                    tab: i18n("addresses.primary"),
+                },
+                {
                     id: "display",
                     type: "area",
                     title: i18n("addresses.display"),
@@ -376,6 +383,14 @@
                         tab: i18n("addresses.primary"),
                     },
                     {
+                        id: "monitoring",
+                        type: "yesno",
+                        title: i18n("addresses.monitoring"),
+                        placeholder: i18n("addresses.monitoring"),
+                        tab: i18n("addresses.primary"),
+                        value: domophone.monitoring,
+                    },
+                    {
                         id: "ext",
                         type: "json",
                         title: false,
@@ -405,6 +420,7 @@
 
     handleDeviceStatus: function (status) {
         let statusClass;
+
         switch (status) {
             case 'OK':
                 statusClass = 'status-ok';
@@ -422,16 +438,19 @@
                 statusClass = 'status-other-error';
                 break;
             default:
-                statusClass = 'status-unknown';
-                status = 'unknown'
+                if (status == i18n("addresses.disabled")) {
+                    statusClass = 'status-disabled';
+                    status = i18n("addresses.disabled")
+                } else {
+                    statusClass = 'status-unknown';
+                    status = i18n("addresses.unknown")
+                }
         }
         return `
-        <div class="status-container">
-            <span class="status-indicator ${statusClass}">
-                <div class="status-tooltip">${status}</div>
-            </span>
-        </div>
-    `;
+            <div class="status-container">
+                <span class="status-indicator ${statusClass}" title="${status}"></span>
+            </div>
+        `;
     },
 
     route: function (params) {
@@ -488,6 +507,8 @@
 
                     for (let i in modules.addresses.domophones.meta.domophones) {
 
+                        console.log(modules.addresses.domophones.meta.domophones[i].enabled && modules.addresses.domophones.meta.domophones[i].monitoring);
+
                         rows.push({
                             uid: modules.addresses.domophones.meta.domophones[i].domophoneId,
                             cols: [
@@ -495,11 +516,11 @@
                                     data: modules.addresses.domophones.meta.domophones[i].domophoneId,
                                 },
                                 {
-                                    data: modules.addresses.domophones.meta.domophones[i].enabled
+                                    data: (modules.addresses.domophones.meta.domophones[i].enabled && modules.addresses.domophones.meta.domophones[i].monitoring)
                                         ? modules.addresses.domophones.handleDeviceStatus(
                                             modules.addresses.domophones.meta.domophones[i].status
-                                                ? modules.addresses.domophones.meta.domophones[i].status.status : "Unknown")
-                                        : modules.addresses.domophones.handleDeviceStatus("Disabled"),
+                                                ? modules.addresses.domophones.meta.domophones[i].status.status : i18n("addresses.unknown"))
+                                        : modules.addresses.domophones.handleDeviceStatus(i18n("addresses.disabled")),
                                     nowrap: true,
                                 },
                                 {

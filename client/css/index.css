@@ -567,11 +567,6 @@ body.dark-mode .hr-text::after .hr-text-white::after .hr-text-pointer::after hr-
   top: -50%;
 }
 
-.status-indicator:hover .status-tooltip {
-  visibility: visible;
-  opacity: 1;
-}
-
 .status-ok {
   background-color: green;
 }
@@ -590,6 +585,10 @@ body.dark-mode .hr-text::after .hr-text-white::after .hr-text-pointer::after hr-
 
 .status-unknown {
   background-color: darkgrey;
+}
+
+.status-disabled {
+  background-color: black;
 }
 
 .status-dvr-err {

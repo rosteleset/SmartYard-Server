@@ -250,5 +250,8 @@
     ],
     "78": [
         "v78_bulk_messages.sql"
+    ],
+    "79": [
+        "v79_monitoring.sql"
     ]
 }

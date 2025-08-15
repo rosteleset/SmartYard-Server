@@ -1023,6 +1023,7 @@
                     "sub_id" => "sub_id",
                     "display" => "display",
                     "video" => "video",
+                    "monitoring" => "monitoring",
                     "ext" => "ext",
                 ];
 
@@ -1136,7 +1137,7 @@
              * @inheritDoc
              */
 
-            public function addDomophone($enabled, $model, $server, $url,  $credentials, $dtmf, $nat, $comments, $name, $display, $video, $ext) {
+            public function addDomophone($enabled, $model, $server, $url,  $credentials, $dtmf, $nat, $comments, $name, $display, $video, $monitoring, $ext) {
                 if (!$model) {
                     setLastError("moModel");
                     return false;
@@ -1169,6 +1170,11 @@
                     return false;
                 }
 
+                if (!checkInt($monitoring)) {
+                    setLastError("monitoring");
+                    return false;
+                }
+
                 if (!checkStr($video)) {
                     return false;
                 }
@@ -1183,7 +1189,7 @@
                 }
                 $display = trim(implode("\n", $t));
 
-                $domophoneId = $this->db->insert("insert into houses_domophones (enabled, model, server, url, credentials, dtmf, nat, comments, name, display, video, ext) values (:enabled, :model, :server, :url, :credentials, :dtmf, :nat, :comments, :name, :display, :video, :ext)", [
+                $domophoneId = $this->db->insert("insert into houses_domophones (enabled, model, server, url, credentials, dtmf, nat, comments, name, display, video, monitoring, ext) values (:enabled, :model, :server, :url, :credentials, :dtmf, :nat, :comments, :name, :display, :video, :monitoring, :ext)", [
                     "enabled" => (int)$enabled,
                     "model" => $model,
                     "server" => $server,
@@ -1195,6 +1201,7 @@
                     "name" => $name,
                     "display" => $display ? : null,
                     "video" => $video,
+                    "monitoring" => $monitoring,
                     "ext" => json_encode($ext),
                 ]);
 
@@ -1215,7 +1222,7 @@
              * @inheritDoc
              */
 
-            public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $dtmf, $firstTime, $nat, $locksAreOpen, $comments, $name, $display, $video, $ext) {
+            public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $dtmf, $firstTime, $nat, $locksAreOpen, $comments, $name, $display, $video, $monitoring, $ext) {
                 if (!checkInt($domophoneId)) {
                     setLastError("noId");
                     return false;
@@ -1259,8 +1266,13 @@
                     return false;
                 }
 
+                if (!checkInt($monitoring)) {
+                    setLastError("monitoring");
+                    return false;
+                }
+
                 if (!checkInt($locksAreOpen)) {
-                    setLastError("nat");
+                    setLastError("locksAreOpen");
                     return false;
                 }
 
@@ -1278,7 +1290,7 @@
                 }
                 $display = trim(implode("\n", $t));
 
-                $r = $this->db->modify("update houses_domophones set enabled = :enabled, model = :model, server = :server, url = :url, credentials = :credentials, dtmf = :dtmf, first_time = :first_time, nat = :nat, locks_are_open = :locks_are_open, comments = :comments, name = :name, display = :display, video = :video, ext = :ext where house_domophone_id = $domophoneId", [
+                $r = $this->db->modify("update houses_domophones set enabled = :enabled, model = :model, server = :server, url = :url, credentials = :credentials, dtmf = :dtmf, first_time = :first_time, nat = :nat, locks_are_open = :locks_are_open, comments = :comments, name = :name, display = :display, video = :video, monitoring = :monitoring, ext = :ext where house_domophone_id = $domophoneId", [
                     "enabled" => (int)$enabled,
                     "model" => $model,
                     "server" => $server,
@@ -1292,6 +1304,7 @@
                     "name" => $name,
                     "display" => $display ? : null,
                     "video" => $video,
+                    "monitoring" => $monitoring,
                     "ext" => json_encode($ext),
                 ]);
 
@@ -1395,6 +1408,7 @@
                     "sub_id" => "sub_id",
                     "display" => "display",
                     "video" => "video",
+                    "monitoring" => "monitoring",
                     "ext" => "ext",
                 ], [
                     "singlify"

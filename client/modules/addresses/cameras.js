@@ -259,6 +259,13 @@
                     tab: i18n("addresses.secondary"),
                 },
                 {
+                    id: "monitoring",
+                    type: "yesno",
+                    title: i18n("addresses.monitoring"),
+                    placeholder: i18n("addresses.monitoring"),
+                    tab: i18n("addresses.secondary"),
+                },
+                {
                     id: "comments",
                     type: "text",
                     title: i18n("addresses.comments"),
@@ -653,10 +660,18 @@
                     },
                     {
                         id: "common",
-                        type: "yesno",
+                        type: "noyes",
                         title: i18n("addresses.common"),
                         placeholder: i18n("addresses.common"),
                         value: camera.common,
+                        tab: i18n("addresses.secondary"),
+                    },
+                    {
+                        id: "monitoring",
+                        type: "yesno",
+                        title: i18n("addresses.monitoring"),
+                        placeholder: i18n("addresses.monitoring"),
+                        value: camera.monitoring,
                         tab: i18n("addresses.secondary"),
                     },
                     {
@@ -1012,16 +1027,19 @@
                 statusClass = 'status-other-error';
                 break;
             default:
-                statusClass = 'status-unknown';
-                status = 'unknown'
+                if (status == i18n("addresses.disabled")) {
+                    statusClass = 'status-disabled';
+                    status = i18n("addresses.disabled")
+                } else {
+                    statusClass = 'status-unknown';
+                    status = i18n("addresses.unknown")
+                }
         }
         return `
-        <div class="status-container">
-            <span class="status-indicator ${statusClass}">
-                <div class="status-tooltip">${status}</div>
-            </span>
-        </div>
-    `;
+            <div class="status-container">
+                <span class="status-indicator ${statusClass}" title="${status}"></span>
+            </div>
+        `;
     },
 
     route: function (params) {
@@ -1082,11 +1100,11 @@
                                     data: modules.addresses.cameras.meta.cameras[i].cameraId,
                                 },
                                 {
-                                    data: modules.addresses.cameras.meta.cameras[i].enabled
+                                    data: (modules.addresses.cameras.meta.cameras[i].enabled && modules.addresses.cameras.meta.cameras[i].monitoring)
                                         ? modules.addresses.cameras.handleDeviceStatus(
                                             modules.addresses.cameras.meta.cameras[i].status
-                                                ? modules.addresses.cameras.meta.cameras[i].status.status : "Unknown")
-                                        : modules.addresses.cameras.handleDeviceStatus("Disabled"),
+                                                ? modules.addresses.cameras.meta.cameras[i].status.status : i18n("addresses.unknown"))
+                                        : modules.addresses.cameras.handleDeviceStatus(i18n("addresses.disabled")),
                                     nowrap: true,
                                 },
                                 {
