@@ -756,56 +756,14 @@ abstract class ufanet extends domophone implements
     }
 
     /**
-     * Set the display text for service messages.
+     * Sets the text for display messages.
      *
      * @return void
      */
     protected function setDisplayLocalization(): void
     {
-        $this->apiCall('/api/v1/configuration', 'PATCH', [
-            'display' => [
-                'localization' => [
-                    'ENTER_APARTMENT' => 'НАБЕРИТЕ НОМЕР КВАРТИРЫ',
-                    'ENTER_PREFIX' => 'НАБЕРИТЕ ПРЕФИКС',
-                    'CALL' => 'ИДЁТ ВЫЗОВ',
-                    'CALL_GATE' => 'ЗАНЯТО',
-                    'CALL_COMPLETE' => 'ВЫЗОВ ЗАВЕРШЁН',
-                    'CONNECT' => 'ГОВОРИТЕ',
-                    'OPEN' => 'ОТКРЫТО',
-                    'FAIL_NO_CLIENT' => 'НЕВЕРНЫЙ НОМЕР КВАРТИРЫ',
-                    'FAIL_NO_APP_AND_FLAT' => 'АБОНЕНТ НЕДОСТУПЕН',
-                    'FAIL_LONG_SPEAK' => 'ВРЕМЯ ВЫШЛО',
-                    'FAIL_NO_ANSWER' => 'НЕ ОТВЕЧАЕТ',
-                    'FAIL_UNKNOWN' => 'ОШИБКА',
-                    'FAIL_BLACK_LIST' => 'АБОНЕНТ ЗАБЛОКИРОВАН',
-                    'FAIL_LINE_BUSY' => 'ЛИНИЯ ЗАНЯТА',
-                    'KEY_DUPLICATE_ERROR' => 'ДУБЛИКАТ КЛЮЧА ЗАБЛОКИРОВАН',
-                    'KEY_READ_ERROR' => 'ОШИБКА ЧТЕНИЯ КЛЮЧА',
-                    'KEY_BROKEN_ERROR' => 'КЛЮЧ ВЫШЕЛ ИЗ СТРОЯ',
-                    'KEY_UNSUPPORTED_ERROR' => 'КЛЮЧ НЕ ПОДДЕРЖИВАЕТСЯ',
-                    'ALWAYS_OPEN' => 'ДВЕРИ ОТКРЫТЫ',
-                    'SOS_CALL' => 'SOS: ИДЁТ ВЫЗОВ',
-                    'SOS_CONNECT' => 'SOS: ГОВОРИТЕ',
-                    'SOS_CALL_COMPLETE' => 'SOS: ВЫЗОВ ЗАВЕРШЁН',
-                    'SOS_ERROR' => 'SOS: ОШИБКА',
-                    'CONS_CALL' => 'КОНСЬЕРЖ: ИДЁТ ВЫЗОВ',
-                    'CONS_CONNECT' => 'КОНСЬЕРЖ: ГОВОРИТЕ',
-                    'CONS_CALL_COMPLETE' => 'КОНСЬЕРЖ: ВЫЗОВ ЗАВЕРШЁН',
-                    'CONS_ERROR' => 'КОНСЬЕРЖ: ОШИБКА',
-                    'KALITKA_CALL' => 'КАЛИТКА: ИДЁТ ВЫЗОВ',
-                    'KALITKA_CONNECT' => 'КАЛИТА: ГОВОРИТЕ',
-                    'KALITKA_CALL_COMPLETE' => 'КАЛИТКА: ВЫЗОВ ЗАВЕРШЁН',
-                    'KALITKA_ERROR' => 'КАЛИТКА: ОШИБКА',
-                    'FRSI_CALL' => 'FRSI: ИДЁТ ВЫЗОВ',
-                    'FRSI_CONNECT' => 'FRSI: ГОВОРИТЕ',
-                    'FRSI_CALL_COMPLETE' => 'FRSI: ВЫЗОВ ЗАВЕРШЁН',
-                    'FRSI_ERROR' => 'FRSI: ОШИБКА',
-                    'ALARM_TEXT_1' => 'ТРЕВОГА 1',
-                    'ALARM_TEXT_2' => 'ТРЕВОГА 2',
-                    'ALARM_TEXT_3' => 'ТРЕВОГА 3',
-                ],
-            ],
-        ]);
+        $localization = require __DIR__ . '/config/display_localization.php';
+        $this->apiCall('/api/v1/configuration', 'PATCH', ['display' => ['localization' => $localization]]);
     }
 
     /**
