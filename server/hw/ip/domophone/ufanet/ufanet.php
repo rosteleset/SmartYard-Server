@@ -48,6 +48,7 @@ abstract class ufanet extends domophone implements
     ];
 
     protected const LINE_TEST_DURATION = 2;
+    protected const UNLOCK_DATE = '3000-01-01 00:00:00';
 
     /**
      * @var array|null $dialplans An array that holds dialplan information, which may be null if not loaded.
@@ -273,7 +274,8 @@ abstract class ufanet extends domophone implements
 
     public function isFreePassEnabled(): bool
     {
-        return $this->apiCall('/api/v1/configuration')['door']['unlock'] !== '';
+        $doorSettings = $this->apiCall('/api/v1/configuration')['door'];
+        return $doorSettings['unlock'] !== '' || $doorSettings['unlock2'] !== '';
     }
 
     public function isGateModeEnabled(): bool
@@ -368,7 +370,8 @@ abstract class ufanet extends domophone implements
     {
         $this->apiCall('/api/v1/configuration', 'PATCH', [
             'door' => [
-                'unlock' => $enabled ? '3000-01-01 00:00:00' : '',
+                'unlock' => $enabled ? self::UNLOCK_DATE : '',
+                'unlock2' => $enabled ? self::UNLOCK_DATE : '',
             ],
         ]);
     }
@@ -417,7 +420,12 @@ abstract class ufanet extends domophone implements
 
     public function setUnlockTime(int $time = 3): void
     {
-        $this->apiCall('/api/v1/configuration', 'PATCH', ['door' => ['open_time' => $time]]);
+        $this->apiCall('/api/v1/configuration', 'PATCH', [
+            'door' => [
+                'open_time' => $time,
+                'open_2_time' => $time,
+            ],
+        ]);
     }
 
     public function syncData(): void
