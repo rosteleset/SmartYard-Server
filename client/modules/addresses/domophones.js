@@ -506,9 +506,6 @@
                     let rows = [];
 
                     for (let i in modules.addresses.domophones.meta.domophones) {
-
-                        console.log(modules.addresses.domophones.meta.domophones[i].enabled && modules.addresses.domophones.meta.domophones[i].monitoring);
-
                         rows.push({
                             uid: modules.addresses.domophones.meta.domophones[i].domophoneId,
                             cols: [
