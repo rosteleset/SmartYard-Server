@@ -412,7 +412,7 @@ class zabbix extends monitoring
 
         foreach ($domophones as $domophone) {
             $subset [] = [
-                "enabled" => $domophone["enabled"],
+                "monitoring" => $domophone["monitoring"],
                 "domophoneId" => $domophone["domophoneId"],
                 "vendor" => rtrim(
                     $domophonesModels[$domophone["model"]]["vendor"]
@@ -444,7 +444,7 @@ class zabbix extends monitoring
         foreach ($allCameras as $camera) {
             $subset[] = [
                 "cameraId" => $camera["cameraId"],
-                "enabled" => $camera["enabled"],
+                "monitoring" => $camera["monitoring"],
                 "name" => $camera["name"],
                 "vendor" => $camerasModels[$camera["model"]]["vendor"],
                 "credentials" => $camera["credentials"],
@@ -929,7 +929,7 @@ class zabbix extends monitoring
      */
     private function updateHost(array $zbxDevice, array $changes): void
     {
-        $this->log("Updating host with ID:" .  $zbxDevice['zbx_hostid']);
+        $this->log("Updating host with ID: " .  $zbxDevice['zbx_hostid']);
         $updateParams = [
             'hostid' => $zbxDevice['zbx_hostid'],
         ];
@@ -1102,7 +1102,7 @@ class zabbix extends monitoring
             if ($item['vendor'] === $this->cameraVendor && $this->isAllKeysNotEmpty($item)){
                 $mapped_item = [
                     'rbt_cameraId' => $item['cameraId'],
-                    'status' => $item['enabled'] === 1,
+                    'status' => $item['monitoring'] === 1,
                     'host' => $item['ip'],
                     'name' => $item['ip'] . ' | ' . $item['name'],
                     'template' => $this->cameraTemplateNames[0],
@@ -1127,7 +1127,7 @@ class zabbix extends monitoring
             if ($this->isAllKeysNotEmpty($item)){
                 $mapped_item = [
                     'rbt_domophoneId' => $item['domophoneId'],
-                    'status' => $item['enabled'] === 1,
+                    'status' => $item['monitoring'] === 1,
                     'host' => $item['ip'],
                     'name' => $item['ip'] . ' | ' . $item['name'],
                     'template' => 'Intercom_' . strtoupper(str_replace(' ', '_', $item['vendor'])),
@@ -1258,7 +1258,9 @@ class zabbix extends monitoring
         } elseif (!empty($rbtDevices) && empty($zbxDevices)) {
             $this->log("First start, creating {$type} items");
             foreach ($rbtDevices as $device) {
-                $this->createHost($device, $type);
+                if ($device['status'] === true) {
+                    $this->createHost($device, $type);
+                }
             }
         }
     }
