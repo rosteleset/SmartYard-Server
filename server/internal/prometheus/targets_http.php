@@ -21,7 +21,7 @@
     $allCameras = $cameras->getCameras();
 
     foreach ($domophones as $device) {
-        if ($device['enabled'] == 1  && $device['model'] !== 'sputnik.json') {
+        if ($device['monitoring'] === 1  && $device['model'] !== 'sputnik.json') {
             $result[] = [
                 'targets' => [$device['url']],
                 'labels' => [
@@ -35,7 +35,7 @@
     }
 
     foreach ($allCameras as $camera) {
-        if ($camera['enabled'] == 1 && $camera['model'] === 'fake.json' && filter_var($camera['url'], FILTER_VALIDATE_URL)) {
+        if ($camera['monitoring'] === 1 && $camera['model'] === 'fake.json' && filter_var($camera['url'], FILTER_VALIDATE_URL)) {
             $result[] = [
                 'targets' => [$camera['url']],
                 'labels' => [
