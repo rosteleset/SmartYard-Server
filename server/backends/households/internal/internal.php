@@ -1848,9 +1848,23 @@
                             break;
 
                         case "keyId":
-                            $q = "select * from houses_rfids where house_rfid_id = :keyId";
+                            $q = "select * from houses_rfids where house_rfid_id = :house_rfid_id";
                             $p = [
-                                "keyId" => $query,
+                                "house_rfid_id" => $query,
+                            ];
+                            break;
+
+                        case "subscriberId":
+                            $q = "select * from houses_rfids where access_type = 1 and access_to = :house_subscriber_id";
+                            $p = [
+                                "house_subscriber_id" => $query,
+                            ];
+                            break;
+
+                        case "subscriberMobile":
+                            $q = "select * from houses_rfids where access_type = 1 and access_to in (select house_subscriber_id from houses_subscribers_mobile where id = :id)";
+                            $p = [
+                                "id" => $query,
                             ];
                             break;
 
