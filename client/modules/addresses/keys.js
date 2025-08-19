@@ -47,10 +47,6 @@
                         title: i18n("addresses.comments"),
                         fullWidth: true,
                     },
-                    {
-                        title: i18n("addresses.watch"),
-                        fullWidth: true,
-                    },
                 ],
                 rows: () => {
                     let rows = [];
@@ -73,9 +69,6 @@
                                 },
                                 {
                                     data: result.keys[i].comments,
-                                },
-                                {
-                                    data: parseInt(result.keys[i].watch) ? i18n("yes") : i18n("no"),
                                 },
                             ],
                             dropDown: {
@@ -123,12 +116,6 @@
                     type: "text",
                     title: i18n("addresses.comments"),
                     placeholder: i18n("addresses.comments"),
-                },
-                {
-                    id: "watch",
-                    type: "noyes",
-                    title: i18n("addresses.watch"),
-                    hidden: parseInt(params.by) != 1 && parseInt(params.by) != 2,
                 },
             ],
             callback: function (result) {
@@ -209,13 +196,6 @@
                             title: i18n("addresses.comments"),
                             placeholder: i18n("addresses.comments"),
                             value: key.comments,
-                        },
-                        {
-                            id: "watch",
-                            type: "noyes",
-                            title: i18n("addresses.watch"),
-                            hidden: parseInt(key.accessType) != 1,
-                            value: key.watch,
                         },
                     ],
                     callback: result => {

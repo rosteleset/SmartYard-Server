@@ -2,8 +2,10 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 17.5
--- Dumped by pg_dump version 17.5
+\restrict c7Est5YkK744eHBSALCcyMgI8a6FBihSJzvITncb1XaEJCBUy4RItNnDMFs2RCS
+
+-- Dumped from database version 17.6
+-- Dumped by pg_dump version 17.6
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -390,7 +392,8 @@ CREATE TABLE public.cameras (
     md_area character varying,
     rc_area character varying,
     frs_mode integer DEFAULT 1,
-    ext character varying
+    ext character varying,
+    monitoring integer DEFAULT 1
 );
 
 
@@ -1044,7 +1047,8 @@ CREATE TABLE public.houses_domophones (
     comments character varying,
     display character varying,
     video character varying,
-    ext character varying
+    ext character varying,
+    monitoring integer DEFAULT 1
 );
 
 
@@ -1196,8 +1200,7 @@ CREATE TABLE public.houses_flats_devices (
     house_flat_id integer NOT NULL,
     subscriber_device_id integer NOT NULL,
     voip_enabled integer,
-    houses_flat_device_id integer NOT NULL,
-    paranoid integer DEFAULT 0
+    houses_flat_device_id integer NOT NULL
 );
 
 
@@ -1321,8 +1324,7 @@ CREATE TABLE public.houses_rfids (
     access_type integer NOT NULL,
     access_to integer NOT NULL,
     last_seen integer,
-    comments character varying,
-    watch integer DEFAULT 0
+    comments character varying
 );
 
 
@@ -1473,6 +1475,44 @@ ALTER SEQUENCE public.houses_subscribers_mobile_house_subscriber_id_seq OWNER TO
 --
 
 ALTER SEQUENCE public.houses_subscribers_mobile_house_subscriber_id_seq OWNED BY public.houses_subscribers_mobile.house_subscriber_id;
+
+
+--
+-- Name: houses_watchers; Type: TABLE; Schema: public; Owner: rbt
+--
+
+CREATE TABLE public.houses_watchers (
+    house_watcher_id integer NOT NULL,
+    subscriber_device_id integer,
+    house_flat_id integer,
+    event_type character varying,
+    event_detail character varying,
+    comments character varying
+);
+
+
+ALTER TABLE public.houses_watchers OWNER TO rbt;
+
+--
+-- Name: houses_watchers_house_watcher_id_seq; Type: SEQUENCE; Schema: public; Owner: rbt
+--
+
+CREATE SEQUENCE public.houses_watchers_house_watcher_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.houses_watchers_house_watcher_id_seq OWNER TO rbt;
+
+--
+-- Name: houses_watchers_house_watcher_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: rbt
+--
+
+ALTER SEQUENCE public.houses_watchers_house_watcher_id_seq OWNED BY public.houses_watchers.house_watcher_id;
 
 
 --
@@ -2524,6 +2564,13 @@ ALTER TABLE ONLY public.houses_subscribers_mobile ALTER COLUMN house_subscriber_
 
 
 --
+-- Name: houses_watchers house_watcher_id; Type: DEFAULT; Schema: public; Owner: rbt
+--
+
+ALTER TABLE ONLY public.houses_watchers ALTER COLUMN house_watcher_id SET DEFAULT nextval('public.houses_watchers_house_watcher_id_seq'::regclass);
+
+
+--
 -- Name: inbox msg_id; Type: DEFAULT; Schema: public; Owner: rbt
 --
 
@@ -2939,6 +2986,14 @@ ALTER TABLE ONLY public.houses_subscribers_messages
 
 ALTER TABLE ONLY public.houses_subscribers_mobile
     ADD CONSTRAINT houses_subscribers_mobile_pkey PRIMARY KEY (house_subscriber_id);
+
+
+--
+-- Name: houses_watchers houses_watchers_pkey; Type: CONSTRAINT; Schema: public; Owner: rbt
+--
+
+ALTER TABLE ONLY public.houses_watchers
+    ADD CONSTRAINT houses_watchers_pkey PRIMARY KEY (house_watcher_id);
 
 
 --
@@ -3755,13 +3810,6 @@ CREATE INDEX houses_flats_cars_gin ON public.houses_flats USING gin (cars public
 
 
 --
--- Name: houses_flats_devices_paranoid; Type: INDEX; Schema: public; Owner: rbt
---
-
-CREATE INDEX houses_flats_devices_paranoid ON public.houses_flats_devices USING btree (paranoid);
-
-
---
 -- Name: houses_flats_devices_uniq; Type: INDEX; Schema: public; Owner: rbt
 --
 
@@ -3867,13 +3915,6 @@ CREATE UNIQUE INDEX houses_rfids_uniq ON public.houses_rfids USING btree (rfid, 
 
 
 --
--- Name: houses_rfids_watch; Type: INDEX; Schema: public; Owner: rbt
---
-
-CREATE INDEX houses_rfids_watch ON public.houses_rfids USING btree (watch);
-
-
---
 -- Name: houses_subscribers_devices_device_token; Type: INDEX; Schema: public; Owner: rbt
 --
 
@@ -3941,6 +3982,27 @@ CREATE INDEX houses_subscribers_mobile_subscriber_full_fts ON public.houses_subs
 --
 
 CREATE INDEX houses_subscribers_mobile_subscriber_full_trgm ON public.houses_subscribers_mobile USING gist (subscriber_full public.gist_trgm_ops);
+
+
+--
+-- Name: houses_watchers_house_flat_id; Type: INDEX; Schema: public; Owner: rbt
+--
+
+CREATE INDEX houses_watchers_house_flat_id ON public.houses_watchers USING btree (house_flat_id);
+
+
+--
+-- Name: houses_watchers_subscriber_device_id; Type: INDEX; Schema: public; Owner: rbt
+--
+
+CREATE INDEX houses_watchers_subscriber_device_id ON public.houses_watchers USING btree (subscriber_device_id);
+
+
+--
+-- Name: houses_watchers_uniq; Type: INDEX; Schema: public; Owner: rbt
+--
+
+CREATE UNIQUE INDEX houses_watchers_uniq ON public.houses_watchers USING btree (subscriber_device_id, house_flat_id, event_type, event_detail);
 
 
 --
@@ -4226,4 +4288,6 @@ GRANT ALL ON SCHEMA public TO rbt;
 --
 -- PostgreSQL database dump complete
 --
+
+\unrestrict c7Est5YkK744eHBSALCcyMgI8a6FBihSJzvITncb1XaEJCBUy4RItNnDMFs2RCS
 

@@ -253,5 +253,8 @@
     ],
     "79": [
         "v79_monitoring.sql"
+    ],
+    "80": [
+        "v80_watchers.sql"
     ]
 }

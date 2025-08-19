@@ -361,8 +361,6 @@
     "display": "Дисплей",
     "displayPlaceholder": "Строка 1\nСтрока 2\nСтрока 3",
     "bundle": "Бандл",
-    "paranoidFlats": "\"Параноик\" (поквартирно)",
-    "watch": "Наблюдать",
     "subscribersLimit": "Ограничение по пользователям",
     "broadcast": "Оповещение",
     "messagesSent": "Отправлено сообщений: %s",

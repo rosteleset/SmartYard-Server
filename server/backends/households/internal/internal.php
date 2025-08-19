@@ -1922,7 +1922,6 @@
                     "access_to" => "accessTo",
                     "last_seen" => "lastSeen",
                     "comments" => "comments",
-                    "watch" => "watch",
                 ]);
             }
 
@@ -1930,18 +1929,17 @@
              * @inheritDoc
              */
 
-            public function addKey($rfId, $accessType, $accessTo, $comments, $watch = 0) {
-                if (!checkInt($accessTo) || !checkInt($watch) || !checkInt($accessType) || !checkStr($rfId, [ "minLength" => 6, "maxLength" => 32 ]) || !checkStr($comments, [ "maxLength" => 128 ])) {
+            public function addKey($rfId, $accessType, $accessTo, $comments) {
+                if (!checkInt($accessTo) || !checkInt($accessType) || !checkStr($rfId, [ "minLength" => 6, "maxLength" => 32 ]) || !checkStr($comments, [ "maxLength" => 128 ])) {
                     setLastError("invalidParams");
                     return false;
                 }
 
-                $r = $this->db->insert("insert into houses_rfids (rfid, access_type, access_to, comments, watch) values (:rfid, :access_type, :access_to, :comments, :watch)", [
+                $r = $this->db->insert("insert into houses_rfids (rfid, access_type, access_to, comments) values (:rfid, :access_type, :access_to, :comments)", [
                     "rfid" => $rfId,
                     "access_type" => $accessType,
                     "access_to" => $accessTo,
                     "comments" => $comments,
-                    "watch" => $watch,
                 ]);
 
                 if ($r) {
@@ -1976,15 +1974,9 @@
              * @inheritDoc
              */
 
-            public function modifyKey($keyId, $comments, $watch = 0) {
-                if (!checkInt($keyId) || !checkInt($watch)) {
-                    setLastError("invalidParams");
-                    return false;
-                }
-
-                return $this->db->modify("update houses_rfids set comments = :comments, watch = :watch where house_rfid_id = $keyId", [
+            public function modifyKey($keyId, $comments) {
+                return $this->db->modify("update houses_rfids set comments = :comments where house_rfid_id = $keyId", [
                     "comments" => $comments,
-                    "watch" => $watch,
                 ]);
             }
 
@@ -2566,7 +2558,7 @@
                 }
 
                 // TODO: paranoidEvent (pushes)
-                // clear paranoid (if flat owner/plog settings changes)
+                // clear paranoid / watchers (if flat owner/plog/watcher/rfid... settings changes)
 
                 $n += $this->db->modify("delete from houses_flats_devices where houses_flat_device_id in (select houses_flat_device_id from houses_flats_devices left join houses_subscribers_devices using (subscriber_device_id) left join houses_flats_subscribers on houses_subscribers_devices.house_subscriber_id = houses_flats_subscribers.house_subscriber_id and houses_flats_devices.house_flat_id = houses_flats_subscribers.house_flat_id where houses_flats_subscribers.house_flat_id is null)");
 
@@ -2820,7 +2812,7 @@
                             "singlify"
                         ]
                     );
-                    $flats = $this->db->get("select house_flat_id, voip_enabled, flat, address_house_id, paranoid from houses_flats_devices left join houses_flats using (house_flat_id) where subscriber_device_id = :subscriber_device_id",
+                    $flats = $this->db->get("select house_flat_id, voip_enabled, flat, address_house_id from houses_flats_devices left join houses_flats using (house_flat_id) where subscriber_device_id = :subscriber_device_id",
                         [
                             "subscriber_device_id" => $device["deviceId"]
                         ],
@@ -2829,7 +2821,6 @@
                             "voip_enabled" => "voipEnabled",
                             "flat" => "flat",
                             "address_house_id" => "addressHouseId",
-                            "paranoid" => "paranoid",
                         ]
                     );
                     $device["subscriber"] = $subscriber;
@@ -3007,11 +2998,11 @@
 
                 if (array_key_exists("flats", $params)) {
                     foreach ($params["flats"] as $flat) {
-                        if (!checkInt($flat["flatId"]) || !checkInt($flat["voipEnabled"]) || !checkInt($flat["paranoid"])) {
+                        if (!checkInt($flat["flatId"]) || !checkInt($flat["voipEnabled"])) {
                             setLastError("invalidParams");
                             return false;
                         }
-                        if ($this->setDeviceFlat($deviceId, $flat["flatId"], $flat["voipEnabled"], $flat["paranoid"])) {
+                        if ($this->setDeviceFlat($deviceId, $flat["flatId"], $flat["voipEnabled"])) {
                             $result++;
                         }
                     }
@@ -3074,22 +3065,21 @@
              * @inheritDoc
              */
 
-            public function setDeviceFlat($deviceId, $flatId, $voipEnabled, $paranoid = 0) {
+            public function setDeviceFlat($deviceId, $flatId, $voipEnabled) {
                 if (!checkInt($deviceId)) {
                     setLastError("invalidParams");
                     return false;
                 }
 
                 $r = $this->db->insert("
-                    INSERT INTO houses_flats_devices (subscriber_device_id, house_flat_id, voip_enabled, paranoid)
-                    VALUES (:subscriber_device_id, :house_flat_id, :voip_enabled, :paranoid)
+                    INSERT INTO houses_flats_devices (subscriber_device_id, house_flat_id, voip_enabled)
+                    VALUES (:subscriber_device_id, :house_flat_id, :voip_enabled)
                     ON CONFLICT (subscriber_device_id, house_flat_id)
-                    DO UPDATE SET voip_enabled = :voip_enabled, paranoid = :paranoid
+                    DO UPDATE SET voip_enabled = :voip_enabled
                 ", [
                     "subscriber_device_id" => $deviceId,
                     "house_flat_id" => $flatId,
                     "voip_enabled" => $voipEnabled ? 1 : 0,
-                    "paranoid" => $paranoid ? 1 : 0,
                 ]) !== false;
 
                 if (!$r) {
@@ -3569,7 +3559,7 @@
                 if (func_num_args() == 3) {
                     $entranceId = func_get_arg(0);
                     $by = func_get_arg(1);
-                    $details = func_get_arg(2);
+                    $detail = func_get_arg(2);
                     $entrance = $this->getEntrance($entranceId);
                 } else
                 if (func_num_args() == 5) {
@@ -3585,7 +3575,7 @@
                         return false;
                     }
                     $by = func_get_arg(3);
-                    $details = func_get_arg(4);
+                    $detail = func_get_arg(4);
                 }
 
                 $addresses = loadBackend("addresses");
@@ -3602,49 +3592,30 @@
                         $paranoids = $this->db->get("
                             select * from (
                                 select
-                                    address_house_id,
-                                    platform,
-                                    push_token,
-                                    push_token_type,
-                                    ua,
-                                    comments
+                                    houses_flats.address_house_id,
+                                    houses_subscribers_devices.platform,
+                                    houses_subscribers_devices.push_token,
+                                    houses_subscribers_devices.push_token_type,
+                                    houses_subscribers_devices.ua,
+                                    houses_watchers.comments
                                 from
-                                    houses_rfids
+                                    houses_watchers
                                 left join
-                                    houses_flats_subscribers on houses_flats_subscribers.house_subscriber_id = houses_rfids.access_to
+                                    houses_flats on houses_flats.house_flat_id = houses_watchers.house_flat_id
                                 left join
-                                    houses_flats on houses_flats.house_flat_id = houses_flats_subscribers.house_flat_id
-                                left join
-                                    houses_subscribers_devices using (house_subscriber_id)
-                                left join
-                                    houses_flats_devices on houses_flats_devices.house_flat_id = houses_flats.house_flat_id and houses_flats_devices.subscriber_device_id = houses_subscribers_devices.subscriber_device_id
+                                    houses_subscribers_devices on houses_subscribers_devices.subscriber_device_id = houses_watchers.subscriber_device_id
                                 where
-                                    access_type = 1 and paranoid = 1 and watch = 1 and rfid = :rfid
-                                union all
-                                    select
-                                        address_house_id,
-                                        platform,
-                                        push_token,
-                                        push_token_type,
-                                        ua,
-                                        comments
-                                    from
-                                        houses_rfids
-                                    left join
-                                        houses_flats_subscribers on houses_flats_subscribers.house_flat_id = houses_rfids.access_to
-                                    left join
-                                        houses_subscribers_devices using (house_subscriber_id)
-                                    left join
-                                        houses_flats_devices on houses_flats_devices.house_flat_id = houses_rfids.access_to and houses_flats_devices.subscriber_device_id = houses_subscribers_devices.subscriber_device_id
-                                    left join
-                                        houses_flats on houses_flats.house_flat_id = houses_flats_subscribers.house_flat_id
-                                    where
-                                        access_type = 2 and paranoid = 1 and watch = 1 and push_disable = 0 and rfid = :rfid
+                                    event_type = '3' and
+                                    event_detail = :rfid and
+                                    houses_watchers.house_flat_id in (
+                                        select house_flat_id from houses_entrances_flats where house_entrance_id = :house_entrance_id
+                                    )
                             ) as t
                             group by
                                 address_house_id, platform, push_token, push_token_type, ua, comments
                         ", [
-                            "rfid" => $details,
+                            "rfid" => $detail,
+                            "house_entrance_id" => $entrance["entranceId"]
                         ], [
                             "address_house_id" => "houseId",
                             "platform" => "platform",
@@ -3691,17 +3662,129 @@
                             "ttl" => 90,
                             "platform" => [ "android", "ios", "web" ][(int)$paranoid["platform"]],
                             "title" => i18nL($l, "mobile.paranoidTitleRf"),
-                            "msg" => i18nL($l, "mobile.paranoidMsgRf", $house["houseFull"], $entrance["callerId"], $paranoid["comments"] ? $paranoid["comments"] : $details),
+                            "msg" => i18nL($l, "mobile.paranoidMsgRf", $house["houseFull"], $entrance["callerId"], $paranoid["comments"] ?: $detail),
                             "houseId" => $paranoid["houseId"],
                             "hash" => $hash,
                             "sound" => "default",
-                            "pushAction" => @$this->config["backends"]["households"]["event_push_action"] ? $this->config["backends"]["households"]["event_push_action"] : "paranoid",
+                            "pushAction" => @$this->config["backends"]["households"]["event_push_action"] ?: "paranoid",
                         ])) {
                             setLastError("pushCantBeSent");
                             return false;
                         }
                     }
                 }
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+            function watch($deviceId, $flatId, $eventType, $eventDetail, $comments) {
+                if (!checkInt($deviceId) || !checkInt($flatId) || !checkStr($eventType)) {
+                    setLastError("invalidParams");
+                    return false;
+                }
+
+                if (!trim($eventDetail)) {
+                    $eventDetail = "";
+                }
+
+                if (!trim($comments)) {
+                    $comments = null;
+                }
+
+                // TODO: add validation check (subscriber_device_id must have permissions to house_flat_id + somehere (&)
+                // TODO: settings for watching owner\non owner
+                // TODO: can non owner watch for other subscribers or only owner can watch and set watchers?)
+
+                return $this->db->insert("insert into houses_watchers (subscriber_device_id, house_flat_id, event_type, event_detail, comments) values (:subscriber_device_id, :house_flat_id, :event_type, :event_detail, :comments)", [
+                    "subscriber_device_id" => $deviceId,
+                    "house_flat_id" => $flatId,
+                    "event_type" => $eventType,
+                    "event_detail" => $eventDetail,
+                    "comments" => $comments,
+                ]);
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+            function unwatch() {
+                if (func_num_args() == 1) {
+                    // this variant only for webadmin or service part, not for mobile ip
+                    return $this->db->modify("delete from houses_watchers where house_watcher_id = :house_watcher_id", [
+                        "house_watcher_id" => (int)func_get_arg(0),
+                    ]);
+
+                    $entranceId = func_get_arg(0);
+                    $by = func_get_arg(1);
+                    $details = func_get_arg(2);
+                    $entrance = $this->getEntrance($entranceId);
+                } else
+                if (func_num_args() == 3 || func_num_args() == 4) {
+                    // TODO: add validation check (subscriber_device_id must have permissions to house_flat_id)
+
+                    $eventDetail = trim((string)func_get_arg(0)) ?: "";
+
+                    return $this->db->modify("delete from houses_watchers where house_watcher_id = :house_watcher_id", [
+                        "subscriber_device_id" => (int)func_get_arg(0),
+                        "house_flat_id" => (int)func_get_arg(1),
+                        "event_type" => (int)func_get_arg(2),
+                        "event_detail" => $eventDetail,
+                    ]);
+                }
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+            function watchers($deviceId, $flatId) {
+                if ((int)$deviceId && !(int)flatId) {
+                    // this variant only for webadmin or service part, not for mobile ip
+                    return $this->db->get("select * from houses_watchers where subscriber_device_id = :subscriber_device_id", [
+                        "subscriber_device_id" => $deviceId,
+                    ], [
+                        "house_watcher_id" => "houseWatcherId",
+                        "subscriber_device_id" => "deviceId",
+                        "house_flat_id" => "flatId",
+                        "event_type" => "eventType",
+                        "event_detail" => "eventDetail",
+                        "comments" => "comments",
+                    ]);
+                }
+
+                if (!(int)$deviceId && (int)flatId) {
+                    // this variant only for webadmin or service part, not for mobile ip
+                    return $this->db->get("select * from houses_watchers where house_flat_id = :house_flat_id", [
+                        "house_flat_id" => $flatId,
+                    ], [
+                        "house_watcher_id" => "houseWatcherId",
+                        "subscriber_device_id" => "deviceId",
+                        "house_flat_id" => "flatId",
+                        "event_type" => "eventType",
+                        "event_detail" => "eventDetail",
+                        "comments" => "comments",
+                    ]);
+                }
+
+                if ((int)$deviceId && (int)flatId) {
+                    // TODO: add validation check (subscriber_device_id must have permissions to house_flat_id)
+                    return $this->db->get("select * from houses_watchers where subscriber_device_id = :subscriber_device_id and house_flat_id = :house_flat_id", [
+                        "subscriber_device_id" => $deviceId,
+                        "house_flat_id" => $flatId,
+                    ], [
+                        "house_watcher_id" => "houseWatcherId",
+                        "subscriber_device_id" => "deviceId",
+                        "house_flat_id" => "flatId",
+                        "event_type" => "eventType",
+                        "event_detail" => "eventDetail",
+                        "comments" => "comments",
+                    ]);
+                }
+
+                return false;
             }
 
             /**

@@ -123,7 +123,13 @@
 
                 $this->deleteFavorite('region', $regionId, true);
 
-                return $this->db->modify("delete from addresses_regions where address_region_id = $regionId") && $this->cleanup();
+                $res = $this->db->modify("delete from addresses_regions where address_region_id = $regionId");
+
+                if ($res) {
+                    $this->cleanup();
+                }
+
+                return $res;
             }
 
             /**
@@ -240,15 +246,21 @@
             /**
              * @inheritDoc
              */
-            function deleteArea($areaId)
-            {
+
+            function deleteArea($areaId) {
                 if (!checkInt($areaId)) {
                     return false;
                 }
 
                 $this->deleteFavorite('area', $areaId, true);
 
-                return $this->db->modify("delete from addresses_areas where address_area_id = $areaId") && $this->cleanup();
+                $res = $this->db->modify("delete from addresses_areas where address_area_id = $areaId");
+
+                if ($res) {
+                    $this->cleanup();
+                }
+
+                return $res;
             }
 
             /**
@@ -406,22 +418,28 @@
             /**
              * @inheritDoc
              */
-            function deleteCity($cityId)
-            {
+
+            function deleteCity($cityId) {
                 if (!checkInt($cityId)) {
                     return false;
                 }
 
                 $this->deleteFavorite('city', $cityId, true);
 
-                return $this->db->modify("delete from addresses_cities where address_city_id = $cityId") && $this->cleanup();
+                $res = $this->db->modify("delete from addresses_cities where address_city_id = $cityId");
+
+                if ($res) {
+                    $this->cleanup();
+                }
+
+                return $res;
             }
 
             /**
              * @inheritDoc
              */
-            function getSettlements($areaId = false, $cityId = false)
-            {
+
+            function getSettlements($areaId = false, $cityId = false) {
                 if ($areaId && $cityId) {
                     return false;
                 }
@@ -560,22 +578,28 @@
             /**
              * @inheritDoc
              */
-            function deleteSettlement($settlementId)
-            {
+
+            function deleteSettlement($settlementId) {
                 if (!checkInt($settlementId)) {
                     return false;
                 }
 
                 $this->deleteFavorite('settlement', $settlementId, true);
 
-                return $this->db->modify("delete from addresses_settlements where address_settlement_id = $settlementId") && $this->cleanup();
+                $res = $this->db->modify("delete from addresses_settlements where address_settlement_id = $settlementId");
+
+                if ($res) {
+                    $this->cleanup();
+                }
+
+                return $res;
             }
 
             /**
              * @inheritDoc
              */
-            function getStreets($cityId = false, $settlementId = false)
-            {
+
+            function getStreets($cityId = false, $settlementId = false) {
                 if ($cityId && $settlementId) {
                     return false;
                 }
@@ -713,6 +737,7 @@
             /**
              * @inheritDoc
              */
+
             function deleteStreet($streetId) {
                 if (!checkInt($streetId)) {
                     return false;
@@ -720,12 +745,19 @@
 
                 $this->deleteFavorite('street', $streetId, true);
 
-                return $this->db->modify("delete from addresses_streets where address_street_id = $streetId") && $this->cleanup();
+                $res = $this->db->modify("delete from addresses_streets where address_street_id = $streetId");
+
+                if ($res) {
+                    $this->cleanup();
+                }
+
+                return $res;
             }
 
             /**
              * @inheritDoc
              */
+
             function getHouses($settlementId = false, $streetId = false) {
                 if ($settlementId && $streetId) {
                     return false;
@@ -897,7 +929,13 @@
 
                 $this->houses = [];
 
-                return $this->db->modify("delete from addresses_houses where address_house_id = $houseId") && $this->cleanup();
+                $res = $this->db->modify("delete from addresses_houses where address_house_id = $houseId");
+
+                if ($res) {
+                    $this->cleanup();
+                }
+
+                return $res;
             }
 
             /**
@@ -1164,6 +1202,8 @@
                         "id" => $id,
                     ]);
                 }
+
+                return true;
             }
 
             /**

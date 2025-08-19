@@ -188,11 +188,6 @@
                     title: i18n("addresses.comments"),
                     placeholder: i18n("addresses.comments"),
                 },
-                {
-                    id: "watch",
-                    type: "noyes",
-                    title: i18n("addresses.watch"),
-                },
             ],
             callback: function (result) {
                 let params = hashParse("params");
@@ -474,13 +469,6 @@
                         placeholder: i18n("addresses.comments"),
                         value: key.comments,
                     },
-                    {
-                        id: "watch",
-                        type: "noyes",
-                        title: i18n("addresses.watch"),
-                        hidden: parseInt(key.accessType) != 2,
-                        value: key.watch,
-                    },
                 ],
                 callback: result => {
                     if (result.delete === "yes") {
@@ -638,10 +626,6 @@
                     title: i18n("addresses.comments"),
                     fullWidth: true,
                 },
-                {
-                    title: i18n("addresses.watch"),
-                    fullWidth: true,
-                },
             ],
             rows: () => {
                 let rows = [];
@@ -664,9 +648,6 @@
                             },
                             {
                                 data: list[i].comments,
-                            },
-                            {
-                                data: parseInt(list[i].watch) ? i18n("yes") : i18n("no"),
                             },
                         ],
                     });

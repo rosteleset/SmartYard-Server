@@ -323,22 +323,20 @@
              * @param $accessType
              * @param $accessTo
              * @param $comments
-             * @param @watch
              *
              * @return false|integer
              */
 
-            abstract public function addKey($rfId, $accessType, $accessTo, $comments, $watch = 0);
+            abstract public function addKey($rfId, $accessType, $accessTo, $comments);
 
             /**
              * @param $keyId
              * @param $comments
-             * @param @watch
              *
              * @return boolean
              */
 
-            abstract public function modifyKey($keyId, $comments, $watch);
+            abstract public function modifyKey($keyId, $comments);
 
             /**
              * @param $keyId
@@ -434,12 +432,11 @@
              * @param integer $deviceId
              * @param integer $flatId
              * @param integer $voipEnabled
-             * @param integer $paranoid
              *
              * @return boolean
              */
 
-            abstract public function setDeviceFlat($deviceId, $flatId, $voipEnabled, $paranoid = 0);
+            abstract public function setDeviceFlat($deviceId, $flatId, $voipEnabled);
 
             /**
              * @param string search
@@ -572,18 +569,54 @@
              * @param string subId
              * @param string output
              * @param string by
-             * @param mixed details
+             * @param mixed detail
              *
              * or
              *
              * @param integer entranceId
              * @param string by
-             * @param mixed details
+             * @param mixed detail
              *
              * @return boolean
              */
 
             abstract function paranoidEvent();
+
+            /**
+             * @param $deviceId
+             * @param $flatId
+             * @param $eventType
+             * @param $eventDetail
+             * @param $comments
+             *
+             * @return boolean
+             */
+
+            abstract function watch($deviceId, $flatId, $eventType, $eventDetail, $comments);
+
+            /**
+             * @param $deviceId
+             * @param $flatId
+             * @param $eventType
+             * @param $eventDetail
+             *
+             * or
+             *
+             * @param $houseWatcherId
+             *
+             * @return boolean
+             */
+
+            abstract function unwatch();
+
+            /**
+             * @param integer $deviceId
+             * @param integer $flatId
+             *
+             * @return mixed
+             */
+
+            abstract function watchers($deviceId, $flatId);
 
             /**
              * @param string by [ flat, entrance, house, houses ]

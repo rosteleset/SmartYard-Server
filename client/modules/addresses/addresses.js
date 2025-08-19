@@ -9,6 +9,7 @@
         "subscribers",
         "subscriberInbox",
         "subscriberDevices",
+        "watchers",
         "_search",
     ],
 
