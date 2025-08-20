@@ -10,9 +10,9 @@
      * @apiHeader {string} authorization токен авторизации
      *
      * @apiBody {integer} flatId идентификатор квартиры
-     * @apiBody {integer} eventType
-     * @apiBody {string} eventDetail
-     * @apiBody {string} comments
+     * @apiBody {integer="3 - открытие ключом","4 - открытие приложением","5 - открытие по морде лица","6 - открытие кодом открытия","9 - открытие по номеру машины"} -.eventType тип события
+     * @apiBody {string} eventDetail детали события (ключ, номер телефона, идентификатор лица, номер машины)
+     * @apiBody {string} comments комментарий наблюдения
      *
      * @apiErrorExample Ошибки
      * 403 требуется авторизация

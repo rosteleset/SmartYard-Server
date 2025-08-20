@@ -9,7 +9,7 @@
      *
      * @apiHeader {string} authorization токен авторизации
      *
-     * @apiBody {integer} watcherId
+     * @apiBody {integer} watcherId идентификатор наблюдения
      *
      * @apiErrorExample Ошибки
      * 403 требуется авторизация
