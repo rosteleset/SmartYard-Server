@@ -8,7 +8,7 @@
      * @apiName groupUsers
      * @apiGroup accounts
      *
-     * @apiHeader {String} authoAuthorizationrization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} gid gid
      *
