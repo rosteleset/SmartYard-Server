@@ -3760,21 +3760,7 @@
              * @inheritDoc
              */
 
-            function watchers($deviceId, $flatId) {
-                if ((int)$deviceId && !(int)$flatId) {
-                    // this variant only for webadmin or service part, not for mobile ip
-                    return $this->db->get("select * from houses_watchers where subscriber_device_id = :subscriber_device_id", [
-                        "subscriber_device_id" => $deviceId,
-                    ], [
-                        "house_watcher_id" => "houseWatcherId",
-                        "subscriber_device_id" => "deviceId",
-                        "house_flat_id" => "flatId",
-                        "event_type" => "eventType",
-                        "event_detail" => "eventDetail",
-                        "comments" => "comments",
-                    ]);
-                }
-
+            function watchers($deviceId, $flatId = false) {
                 if (!(int)$deviceId && (int)$flatId) {
                     // this variant only for webadmin or service part, not for mobile ip
                     return $this->db->get("select * from houses_watchers where house_flat_id = :house_flat_id", [
@@ -3789,24 +3775,31 @@
                     ]);
                 }
 
-                if ((int)$deviceId && (int)$flatId) {
-                    $flats = $this->getFlats("deviceId", $deviceId);
+                if ((int)$deviceId && !(int)$flatId) {
+                    return $this->db->get("select * from houses_watchers where subscriber_device_id = :subscriber_device_id", [
+                        "subscriber_device_id" => $deviceId,
+                    ], [
+                        "house_watcher_id" => "houseWatcherId",
+                        "subscriber_device_id" => "deviceId",
+                        "house_flat_id" => "flatId",
+                        "event_type" => "eventType",
+                        "event_detail" => "eventDetail",
+                        "comments" => "comments",
+                    ]);
+                }
 
-                    foreach ($flats as $flat) {
-                        if ($flat["flatId"] == $flatId) {
-                            return $this->db->get("select * from houses_watchers where subscriber_device_id = :subscriber_device_id and house_flat_id = :house_flat_id", [
-                                "subscriber_device_id" => $deviceId,
-                                "house_flat_id" => $flatId,
-                            ], [
-                                "house_watcher_id" => "houseWatcherId",
-                                "subscriber_device_id" => "deviceId",
-                                "house_flat_id" => "flatId",
-                                "event_type" => "eventType",
-                                "event_detail" => "eventDetail",
-                                "comments" => "comments",
-                            ]);
-                        }
-                    }
+                if ((int)$deviceId && (int)$flatId) {
+                    return $this->db->get("select * from houses_watchers where subscriber_device_id = :subscriber_device_id and house_flat_id = :house_flat_id", [
+                        "subscriber_device_id" => $deviceId,
+                        "house_flat_id" => $flatId,
+                    ], [
+                        "house_watcher_id" => "houseWatcherId",
+                        "subscriber_device_id" => "deviceId",
+                        "house_flat_id" => "flatId",
+                        "event_type" => "eventType",
+                        "event_detail" => "eventDetail",
+                        "comments" => "comments",
+                    ]);
                 }
 
                 return false;

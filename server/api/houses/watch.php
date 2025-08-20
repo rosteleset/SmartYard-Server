@@ -47,7 +47,7 @@
             public static function GET($params) {
                 $households = loadBackend("households");
 
-                $watchers = $households->watchers(null, $params["_id"]);
+                $watchers = $households->watchers(false, $params["_id"]);
 
                 return api::ANSWER($watchers, ($watchers !== false) ? "watchers" : "notAcceptable");
             }

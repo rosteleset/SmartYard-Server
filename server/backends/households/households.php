@@ -614,7 +614,7 @@
              * @return mixed
              */
 
-            abstract function watchers($deviceId, $flatId);
+            abstract function watchers($deviceId, $flatId = false);
 
             /**
              * @param string by [ flat, entrance, house, houses ]
