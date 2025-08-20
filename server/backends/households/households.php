@@ -595,10 +595,8 @@
             abstract function watch($deviceId, $flatId, $eventType, $eventDetail, $comments);
 
             /**
+             * @param $houseWatcherId
              * @param $deviceId
-             * @param $flatId
-             * @param $eventType
-             * @param $eventDetail
              *
              * or
              *

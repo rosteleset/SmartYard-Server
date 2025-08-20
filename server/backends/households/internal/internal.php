@@ -196,6 +196,7 @@
                                 house_flat_id
                         ";
                         $p = [
+                            // TODO: $params["code"] -> $params
                             "code" => $params["code"]
                         ];
                         break;
@@ -212,6 +213,7 @@
                                 house_flat_id
                         ";
                         $p = [
+                            // TODO: $params["openCode"] -> $params
                             "open_code" => $params["openCode"]
                         ];
                         break;
@@ -228,6 +230,7 @@
                                 house_flat_id
                         ";
                         $p = [
+                            // TODO: $params["rfId"] -> $params
                             "rfid" => $params["rfId"]
                         ];
                         break;
@@ -244,6 +247,7 @@
                                 house_flat_id
                         ";
                         $p = [
+                            // TODO: $params["rfId"] -> $params
                             "rfid" => $params["rfId"]
                         ];
                         break;
@@ -260,14 +264,30 @@
                                 house_flat_id
                         ";
                         $p = [
+                            // TODO: $params["id"] -> $params
                             "id" => $params["id"]
+                        ];
+                        break;
+
+                    case "deviceId":
+                        $q = "
+                            select
+                                house_flat_id
+                            from
+                                houses_flats
+                            where
+                                house_flat_id in (select house_flat_id from houses_flats_subscribers where house_subscriber_id in (select house_subscriber_id from houses_subscribers_devices where subscriber_device_id = :subscriber_device_id))
+                            group by
+                                house_flat_id
+                        ";
+                        $p = [
+                            "subscriber_device_id" => $params,
                         ];
                         break;
 
                     case "houseId":
                         $q = "select house_flat_id from houses_flats where address_house_id = :address_house_id  group by house_flat_id";
                         $p = [
-                        // TODO: must be $params["houseId"]
                             "address_house_id" => $params,
                         ];
                         break;
@@ -275,7 +295,6 @@
                     case "domophoneId":
                         $q = "select house_flat_id from houses_flats left join houses_entrances_flats using (house_flat_id) left join houses_entrances using (house_entrance_id) where house_domophone_id = :house_domophone_id group by house_flat_id";
                         $p = [
-                        // TODO: must be $params["domophoneId"]
                             "house_domophone_id" => $params,
                         ];
                         break;
@@ -291,6 +310,7 @@
                     case "login":
                         $q = "select house_flat_id from houses_flats where login = :login group by house_flat_id";
                         $p = [
+                            // TODO: $params["login"] -> $params
                             "login" => $params["login"],
                         ];
                         break;
@@ -298,6 +318,7 @@
                     case "contract":
                         $q = "select house_flat_id from houses_flats where contract = :contract group by house_flat_id";
                         $p = [
+                            // TODO: $params["contract"] -> $params
                             "contract" => $params["contract"],
                         ];
                         break;
@@ -305,6 +326,7 @@
                     case "car":
                         $q = "select house_flat_id from houses_flats where cars is not null and cars like concat('%', cast(:number as varchar), '%') group by house_flat_id";
                         $p = [
+                            // TODO: $params["number"] -> $params
                             "number" => $params["number"],
                         ];
                         break;
@@ -3695,17 +3717,24 @@
                     $comments = null;
                 }
 
-                // TODO: add validation check (subscriber_device_id must have permissions to house_flat_id + somehere (&)
-                // TODO: settings for watching owner\non owner
-                // TODO: can non owner watch for other subscribers or only owner can watch and set watchers?)
+                // TODO: need (?) settings for watching owner\non owner
+                // TODO: can non owner watch for other subscribers or only owner can watch and set watchers?
 
-                return $this->db->insert("insert into houses_watchers (subscriber_device_id, house_flat_id, event_type, event_detail, comments) values (:subscriber_device_id, :house_flat_id, :event_type, :event_detail, :comments)", [
-                    "subscriber_device_id" => $deviceId,
-                    "house_flat_id" => $flatId,
-                    "event_type" => $eventType,
-                    "event_detail" => $eventDetail,
-                    "comments" => $comments,
-                ]);
+                $flats = $this->getFlats("deviceId", $deviceId);
+
+                foreach ($flats as $flat) {
+                    if ($flat["flatId"] == $flatId) {
+                        return $this->db->insert("insert into houses_watchers (subscriber_device_id, house_flat_id, event_type, event_detail, comments) values (:subscriber_device_id, :house_flat_id, :event_type, :event_detail, :comments)", [
+                            "subscriber_device_id" => $deviceId,
+                            "house_flat_id" => $flatId,
+                            "event_type" => $eventType,
+                            "event_detail" => $eventDetail,
+                            "comments" => $comments,
+                        ]);
+                    }
+                }
+
+                return false;
             }
 
             /**
@@ -3718,22 +3747,11 @@
                     return $this->db->modify("delete from houses_watchers where house_watcher_id = :house_watcher_id", [
                         "house_watcher_id" => (int)func_get_arg(0),
                     ]);
-
-                    $entranceId = func_get_arg(0);
-                    $by = func_get_arg(1);
-                    $details = func_get_arg(2);
-                    $entrance = $this->getEntrance($entranceId);
                 } else
-                if (func_num_args() == 3 || func_num_args() == 4) {
-                    // TODO: add validation check (subscriber_device_id must have permissions to house_flat_id)
-
-                    $eventDetail = trim((string)func_get_arg(0)) ?: "";
-
-                    return $this->db->modify("delete from houses_watchers where house_watcher_id = :house_watcher_id", [
-                        "subscriber_device_id" => (int)func_get_arg(0),
-                        "house_flat_id" => (int)func_get_arg(1),
-                        "event_type" => (int)func_get_arg(2),
-                        "event_detail" => $eventDetail,
+                if (func_num_args() == 2) {
+                    return $this->db->modify("delete from houses_watchers where house_watcher_id = :house_watcher_id and subscriber_device_id = :subscriber_device_id", [
+                        "house_watcher_id" => (int)func_get_arg(0),
+                        "subscriber_device_id" => (int)func_get_arg(1),
                     ]);
                 }
             }
@@ -3772,18 +3790,23 @@
                 }
 
                 if ((int)$deviceId && (int)$flatId) {
-                    // TODO: add validation check (subscriber_device_id must have permissions to house_flat_id)
-                    return $this->db->get("select * from houses_watchers where subscriber_device_id = :subscriber_device_id and house_flat_id = :house_flat_id", [
-                        "subscriber_device_id" => $deviceId,
-                        "house_flat_id" => $flatId,
-                    ], [
-                        "house_watcher_id" => "houseWatcherId",
-                        "subscriber_device_id" => "deviceId",
-                        "house_flat_id" => "flatId",
-                        "event_type" => "eventType",
-                        "event_detail" => "eventDetail",
-                        "comments" => "comments",
-                    ]);
+                    $flats = $this->getFlats("deviceId", $deviceId);
+
+                    foreach ($flats as $flat) {
+                        if ($flat["flatId"] == $flatId) {
+                            return $this->db->get("select * from houses_watchers where subscriber_device_id = :subscriber_device_id and house_flat_id = :house_flat_id", [
+                                "subscriber_device_id" => $deviceId,
+                                "house_flat_id" => $flatId,
+                            ], [
+                                "house_watcher_id" => "houseWatcherId",
+                                "subscriber_device_id" => "deviceId",
+                                "house_flat_id" => "flatId",
+                                "event_type" => "eventType",
+                                "event_detail" => "eventDetail",
+                                "comments" => "comments",
+                            ]);
+                        }
+                    }
                 }
 
                 return false;
