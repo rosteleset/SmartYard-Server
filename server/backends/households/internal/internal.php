@@ -107,6 +107,7 @@
             /**
              * @inheritDoc
              */
+
             function getFlats($by, $params) {
                 $q = "";
                 $p = [];
@@ -206,12 +207,12 @@
                             from
                                 houses_flats
                             where
-                                open_code = :code
+                                open_code = :open_code
                             group by
                                 house_flat_id
                         ";
                         $p = [
-                            "code" => $params["openCode"]
+                            "open_code" => $params["openCode"]
                         ];
                         break;
 
@@ -222,12 +223,12 @@
                             from
                                 houses_flats
                             where
-                                house_flat_id in (select access_to from houses_rfids where access_type = 2 and rfid = :code)
+                                house_flat_id in (select access_to from houses_rfids where access_type = 2 and rfid = :rfid)
                             group by
                                 house_flat_id
                         ";
                         $p = [
-                            "code" => $params["rfId"]
+                            "rfid" => $params["rfId"]
                         ];
                         break;
 
@@ -238,12 +239,12 @@
                             from
                                 houses_flats
                             where
-                                house_flat_id in (select house_flat_id from houses_flats_subscribers where house_subscriber_id in (select access_to from houses_rfids where access_type = 1 and rfid = :code))
+                                house_flat_id in (select house_flat_id from houses_flats_subscribers where house_subscriber_id in (select access_to from houses_rfids where access_type = 1 and rfid = :rfid))
                             group by
                                 house_flat_id
                         ";
                         $p = [
-                            "code" => $params["rfId"]
+                            "rfid" => $params["rfId"]
                         ];
                         break;
 
