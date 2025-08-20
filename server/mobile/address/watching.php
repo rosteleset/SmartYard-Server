@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {post} /mobile/address/watching list wathings
+     * @api {post} /mobile/address/watching list watchings
      * @apiVersion 1.0.0
      * @apiDescription **должен работать**
      *
@@ -9,12 +9,12 @@
      *
      * @apiHeader {string} authorization токен авторизации
      *
-     * @apiSuccess {object[]} [-] массив объектов
+     * @apiSuccess {object[]} - массив объектов
      * @apiSuccess {integer} -.watcherId идентификатор наблюдения
      * @apiSuccess {integer} -.flatId идентификатор квартиры
      * @apiSuccess {integer="3 - открытие ключом","4 - открытие приложением","5 - открытие по морде лица","6 - открытие кодом открытия","9 - открытие по номеру машины"} -.eventType тип события
-     * @apiSuccess {string} eventDetail детали события (ключ, номер телефона, идентификатор лица, номер машины)
-     * @apiSuccess {string} comments комментарий наблюдения
+     * @apiSuccess {string} -.eventDetail детали события (ключ, номер телефона, идентификатор лица, номер машины)
+     * @apiSuccess {string} -.comments комментарий наблюдения
      *
      * @apiErrorExample Ошибки
      * 403 требуется авторизация
