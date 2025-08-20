@@ -92,7 +92,7 @@
                 global $redis_cache_ttl;
 
                 if ($data !== false) {
-                    if ($key === false) {
+                    if ($key === "__as-is__") {
                         $r = [
                             "200" => $data,
                         ];

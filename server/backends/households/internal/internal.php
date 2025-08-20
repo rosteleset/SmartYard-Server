@@ -2744,7 +2744,8 @@
 
                 switch ($by) {
                     case "flat":
-                        $q = "select *, (select id from houses_subscribers_mobile where houses_subscribers_mobile.house_subscriber_id = houses_subscribers_devices.house_subscriber_id) as id from houses_subscribers_devices where subscriber_device_id in (select subscriber_device_id from houses_flats_devices where house_flat_id = :house_flat_id) order by subscriber_device_id";
+                    case "flatId":
+                        $q = "select * from houses_subscribers_devices where subscriber_device_id in (select subscriber_device_id from houses_flats_devices where house_flat_id = :house_flat_id) order by subscriber_device_id";
                         $p = [
                             "house_flat_id" => (int)$query,
                         ];

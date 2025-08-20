@@ -7,25 +7,18 @@
     renderWatchers: function (params) {
         GET("houses", "watch", params.flatId).
         done(r1 => {
-            QUERY("subscribers", "subscribers", {
+            QUERY("subscribers", "devices", {
                 by: "flatId",
                 query: params.flatId,
             }).done(r2 => {
-                console.log(r1, r2);
-
                 for (let i in r1.watchers) {
-                    for (let j in r2.subscribers) {
-
+                    for (let j in r2.devices) {
+                        if (r1.watchers[i].deviceId == r2.devices[j].deviceId) {
+                            r1.watchers[i].subscriber = r2.devices[j].subscriber;
+                        }
                     }
                 }
-/*
-        "OPEN_BY_KEY" => 3,
-        "OPEN_BY_APP" => 4,
-        "OPEN_BY_FACE_ID" => 5,
-        "OPEN_BY_CODE" => 6,
-        "OPEN_BY_CALL" => 7,
-        "OPEN_BY_BUTTON" => 8
-*/
+
                 cardTable({
                     target: "#mainForm",
                     title: {
@@ -33,47 +26,47 @@
                     },
                     columns: [
                         {
-                            title: i18n("addresses.subscriberId"),
+                            title: i18n("addresses.houseWatcherId"),
                         },
                         {
                             title: i18n("addresses.mobile"),
                             nowrap: true,
-                            fullWidth: true,
                         },
                         {
-                            title: i18n("addresses.subscriberFlatOwner"),
+                            title: i18n("addresses.eventType"),
+                            nowrap: true,
+                        },
+                        {
+                            title: i18n("addresses.eventDetail"),
+                            nowrap: true,
+                        },
+                        {
+                            title: i18n("addresses.comments"),
+                            nowrap: true,
+                            fullWidth: true,
                         },
                     ],
                     rows: () => {
                         let rows = [];
-                        let subscribers = {};
 
-                        for (let i in list) {
-                            let owner;
-
-                            for (let j in list[i].flats) {
-                                if (list[i].flats[j].flatId == params.flatId) {
-                                    try {
-                                        owner = list[i].flats[j].role.toString() !== "1";
-                                    } catch (e) {
-                                        owner = true;
-                                    }
-                                }
-                            }
-
-                            subscribers[list[i].subscriberId] = list[i].mobile;
-
+                        for (let i in r1.watchers) {
                             rows.push({
-                                uid: list[i].subscriberId,
+                                uid: r1.watchers[i].houseWatcherId,
                                 cols: [
                                     {
-                                        data: list[i].subscriberId,
+                                        data: r1.watchers[i].houseWatcherId,
                                     },
                                     {
-                                        data: list[i].mobile,
+                                        data: r1.watchers[i].subscriber.mobile,
                                     },
                                     {
-                                        data: owner?i18n("yes"):i18n("no"),
+                                        data: i18n("addresses.eventType" + r1.watchers[i].eventType),
+                                    },
+                                    {
+                                        data: r1.watchers[i].eventDetail,
+                                    },
+                                    {
+                                        data: r1.watchers[i].comments,
                                     },
                                 ],
                                 dropDown: {
@@ -84,7 +77,12 @@
                                             class: "text-danger",
                                             click: houseWatcherId => {
                                                 mConfirm(i18n("addresses.confirmUnwatch", houseWatcherId), i18n("confirm"), `danger:${i18n("addresses.unwatch")}`, () => {
-                                                    modules.addresses.watchers.doUnwatch(houseWatcherId, params.flatId);
+                                                    loadingStart();
+                                                    DELETE("houses", "watch", houseWatcherId).
+                                                    fail(FAIL).
+                                                    always(() => {
+                                                        modules.addresses.watchers.renderWatchers(params);
+                                                    });
                                                 });
                                             },
                                         },
