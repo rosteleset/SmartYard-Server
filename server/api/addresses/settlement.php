@@ -8,7 +8,7 @@
      * @apiName updateSettlement
      * @apiGroup addresses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} settlementId settlementId
      * @apiBody {Number} areaId
@@ -30,7 +30,7 @@
      * @apiName createSettlement
      * @apiGroup addresses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {Number} areaId
      * @apiBody {Number} cityId
@@ -51,7 +51,7 @@
      * @apiName deleteSettlement
      * @apiGroup addresses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} settlementId settlementId
      *

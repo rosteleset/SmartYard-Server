@@ -8,7 +8,7 @@
      * @apiName getUser
      * @apiGroup accounts
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} uid user id
      */
@@ -21,7 +21,7 @@
      * @apiName createUser
      * @apiGroup accounts
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {String} login login
      * @apiBody {String} realName real name
@@ -37,7 +37,7 @@
      * @apiName updateUser
      * @apiGroup accounts
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} uid user id
      * @apiBody {String} password password
@@ -60,7 +60,7 @@
      * @apiName deleteUser
      * @apiGroup accounts
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} uid user id
      */

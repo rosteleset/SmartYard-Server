@@ -8,7 +8,7 @@
      * @apiName getCustom
      * @apiGroup custom
      *
-     * @apiHeader {String} token authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiSuccess {Object} operationResult
      */
@@ -21,7 +21,7 @@
      * @apiName postCustom
      * @apiGroup custom
      *
-     * @apiHeader {String} token authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiSuccess {Object} operationResult
      */
@@ -34,7 +34,7 @@
      * @apiName putCustom
      * @apiGroup custom
      *
-     * @apiHeader {String} token authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiSuccess {Object} operationResult
      */
@@ -47,7 +47,7 @@
      * @apiName deleteCustom
      * @apiGroup custom
      *
-     * @apiHeader {String} token authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiSuccess {Object} operationResult
      */

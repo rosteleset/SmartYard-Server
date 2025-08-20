@@ -8,7 +8,7 @@
      * @apiName getCMS
      * @apiGroup houses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} entranceId
      *
@@ -23,7 +23,7 @@
      * @apiName putCMS
      * @apiGroup houses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} entranceId
      * @apiBody {Object} cms

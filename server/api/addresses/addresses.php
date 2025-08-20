@@ -8,7 +8,7 @@
      * @apiName addresses
      * @apiGroup addresses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiQuery {Number} [regionId] regionId
      * @apiQuery {Number} [areaId] areaId

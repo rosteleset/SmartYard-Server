@@ -8,7 +8,7 @@
      * @apiName getIssueJSON
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {String} id issueId
      *
@@ -23,7 +23,7 @@
      * @apiName modifyIssueByJSON
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {Object} issue
      *

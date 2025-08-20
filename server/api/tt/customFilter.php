@@ -8,7 +8,7 @@
      * @apiName getCustomFilter
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {String} customFilterId
      *
@@ -23,7 +23,7 @@
      * @apiName putCustomFilter
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {String} customFilterId
      * @apiBody {String} project
@@ -40,7 +40,7 @@
      * @apiName deleteCustomFilter
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {String} customFilterId
      * @apiBody {String} project

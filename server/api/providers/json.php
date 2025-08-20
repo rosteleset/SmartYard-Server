@@ -8,7 +8,7 @@
      * @apiName getProvidersJson
      * @apiGroup providers
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiSuccess {Object} json
      */
@@ -21,7 +21,7 @@
      * @apiName putProvidersJson
      * @apiGroup providers
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {String} body
      *

@@ -8,7 +8,7 @@
      * @apiName getUsers
      * @apiGroup accounts
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiQuery {boolean} [withSessions]
      * @apiQuery {boolean} [withLast]

@@ -8,7 +8,7 @@
      * @apiName createRole
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {Number} projectId
      * @apiBody {Number} [uid]
@@ -26,7 +26,7 @@
      * @apiName modifyRole
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} roleId
      * @apiBody {String} display
@@ -42,7 +42,7 @@
      * @apiName deleteRole
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} roleId
      *

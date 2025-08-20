@@ -8,7 +8,7 @@
      * @apiName getKeysBy
      * @apiGroup subscribers
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiQuery {String="flatId,rfId,keyId,domophoneId"} by
      * @apiQuery {String} query
@@ -24,7 +24,7 @@
      * @apiName getKeys
      * @apiGroup subscribers
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiQuery {Number} by 0 - universal, 1 - subscriber, 2 - flat, 3 - entrance, 4 - house, 5 - company
      * @apiQuery {Number} query

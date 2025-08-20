@@ -8,7 +8,7 @@
      * @apiName getSheet
      * @apiGroup cs
      *
-     * @apiHeader {String} token authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiSuccess {Object[]} sheets
      */

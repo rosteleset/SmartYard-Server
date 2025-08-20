@@ -8,7 +8,7 @@
      * @apiName cameras
      * @apiGroup cameras
      *
-     * @apiHeader {String} token authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiSuccess {Object[]} cameras
      */

@@ -8,7 +8,7 @@
      * @apiName getFiles
      * @apiGroup files
      *
-     * @apiHeader {String} token authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiQuery {String} [type]
      * @apiQuery {Boolean} [withContent]

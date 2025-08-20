@@ -8,7 +8,7 @@
      * @apiName actionTemplate
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {String} issueId
      * @apiQuery {String} action
@@ -24,7 +24,7 @@
      * @apiName modifyIssue
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {String} issueId
      * @apiBody {String} action

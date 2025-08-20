@@ -8,7 +8,7 @@
      * @apiName getCamshot
      * @apiGroup cameras
      *
-     * @apiHeader {String} token authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam cameraId
      *

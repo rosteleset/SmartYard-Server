@@ -8,7 +8,7 @@
      * @apiName bulkActionTemplate
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {String} filterName
      * @apiQuery {String} workflow
@@ -25,7 +25,7 @@
      * @apiName modifyIssues
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {String} project
      * @apiBody {Object} query

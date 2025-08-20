@@ -8,7 +8,7 @@
      * @apiName getCompany
      * @apiGroup companies
      *
-     * @apiHeader {String} token authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} companyId
      *
@@ -23,7 +23,7 @@
      * @apiName addCompany
      * @apiGroup companies
      *
-     * @apiHeader {String} token authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {String} type
      * @apiBody {String} uid
@@ -42,7 +42,7 @@
      * @apiName modifyCompany
      * @apiGroup companies
      *
-     * @apiHeader {String} token authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} companyId
      * @apiBody {String} uid
@@ -61,7 +61,7 @@
      * @apiName deleteCompany
      * @apiGroup companies
      *
-     * @apiHeader {String} token authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} companyId
      *

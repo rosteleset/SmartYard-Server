@@ -8,7 +8,7 @@
      * @apiName subscribersBy
      * @apiGroup subscribers
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiQuery {String="flatId","houseId","subscriberId"} by
      * @apiQuery {Number} query
@@ -41,7 +41,7 @@
                             "keys" => $households->getKeys("flatId", @$params["query"]),
                         ];
 
-                        return api::ANSWER($flat, $flat ? "flat" : false);
+                        return api::ANSWER($flat, false);
 
                     case "houseId":
                         $subscribers = $households->getSubscribers("houseId", @$params["query"]);

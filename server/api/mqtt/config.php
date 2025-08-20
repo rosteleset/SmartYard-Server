@@ -8,7 +8,7 @@
      * @apiName config
      * @apiGroup mqtt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiSuccess {Object} config
      */

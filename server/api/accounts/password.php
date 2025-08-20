@@ -8,7 +8,7 @@
      * @apiName password
      * @apiGroup accounts
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} uid uid
      * @apiBody {String} password new password

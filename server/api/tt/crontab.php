@@ -8,7 +8,7 @@
      * @apiName addCrontab
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {String} crontab
      * @apiBody {Number} projectId
@@ -27,7 +27,7 @@
      * @apiName deleteCrontab
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} taskId
      *

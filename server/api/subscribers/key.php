@@ -8,7 +8,7 @@
      * @apiName addKey
      * @apiGroup subscribers
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {String} rfId
      * @apiBody {Number="0,1,2,3,4,5"} accessType 0 - universal, 1 - subscriber, 2 - flat, 3 - entrance, 4 - house, 5 - company
@@ -27,7 +27,7 @@
      * @apiName modifyKey
      * @apiGroup subscribers
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} keyId
      * @apiBody {String} comments
@@ -44,7 +44,7 @@
      * @apiName deleteKey
      * @apiGroup subscribers
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} keyId
      *

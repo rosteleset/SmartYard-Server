@@ -8,7 +8,7 @@
      * @apiName createStatus
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {String} status
      * @apiBody {Boolean} final
@@ -24,7 +24,7 @@
      * @apiName modifyStatus
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} statusId
      * @apiBody {String} status
@@ -41,7 +41,7 @@
      * @apiName deleteStatus
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} statusId
      *

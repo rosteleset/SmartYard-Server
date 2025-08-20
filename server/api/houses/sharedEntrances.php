@@ -8,7 +8,7 @@
      * @apiName getSharedEntrances
      * @apiGroup houses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} [houseId]
      *

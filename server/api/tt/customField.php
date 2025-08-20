@@ -8,7 +8,7 @@
      * @apiName addCustomField
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {String} catalog
      * @apiBody {String} type
@@ -27,7 +27,7 @@
      * @apiName modifyCustomField
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} customFieldId
      * @apiBody {String} catalog
@@ -56,7 +56,7 @@
      * @apiName deleteCustomField
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} customFieldId
      *

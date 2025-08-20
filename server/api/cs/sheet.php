@@ -8,7 +8,7 @@
      * @apiName getSheet
      * @apiGroup cs
      *
-     * @apiHeader {String} token authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiQuery {String} sheet
      * @apiQuery {Timestamp} date
@@ -25,7 +25,7 @@
      * @apiName putSheet
      * @apiGroup cs
      *
-     * @apiHeader {String} token authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {String} sheet
      * @apiBody {Timestamp} date
@@ -42,7 +42,7 @@
      * @apiName getSheet
      * @apiGroup cs
      *
-     * @apiHeader {String} token authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {String} sheet
      * @apiBody {Timestamp} date

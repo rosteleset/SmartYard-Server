@@ -8,7 +8,7 @@
      * @apiName updateStreet
      * @apiGroup addresses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} streetId streetId
      * @apiBody {Number} cityId
@@ -30,7 +30,7 @@
      * @apiName createStreet
      * @apiGroup addresses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiSuccess {Number} streetId
      */
@@ -43,7 +43,7 @@
      * @apiName deleteStreet
      * @apiGroup addresses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} streetId streettId
      *

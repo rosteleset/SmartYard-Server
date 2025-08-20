@@ -8,7 +8,7 @@
      * @apiName addFlatCamera
      * @apiGroup subscribers
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization
      *
      * @apiBody {Number} flatId
      * @apiBody {Number} cameraId
@@ -24,7 +24,7 @@
      * @apiName deleteFlatCamera
      * @apiGroup subscribers
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {Number} flatId
      * @apiBody {Number} cameraId

@@ -8,7 +8,7 @@
      * @apiName addIssuesLink
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {String} issueId1
      * @apiBody {String} issueId2
@@ -24,7 +24,7 @@
      * @apiName addIssuesLink
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {String} issueId1
      * @apiBody {String} issueId2

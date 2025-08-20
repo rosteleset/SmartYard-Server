@@ -8,7 +8,7 @@
      * @apiName version
      * @apiGroup server
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiSuccess {String} serverVersion server version
      */

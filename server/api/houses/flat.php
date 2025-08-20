@@ -8,7 +8,7 @@
      * @apiName addFlat
      * @apiGroup houses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {Number} houseId
      * @apiBody {Number} floor
@@ -36,7 +36,7 @@
      * @apiName modifyFlat
      * @apiGroup houses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} flatId
      * @apiBody {Number} [floor]
@@ -70,7 +70,7 @@
      * @apiName deleteFlat
      * @apiGroup houses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} flatId
      *

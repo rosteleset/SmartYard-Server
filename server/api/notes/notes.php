@@ -8,7 +8,7 @@
      * @apiName notes
      * @apiGroup notes
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiSuccess {Object[]} notes
      */

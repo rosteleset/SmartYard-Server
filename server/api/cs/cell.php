@@ -8,7 +8,7 @@
      * @apiName getCell
      * @apiGroup cs
      *
-     * @apiHeader {String} token authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiQuery {String} [uid]
      * @apiQuery {String} [sheet]
@@ -27,7 +27,7 @@
      * @apiName putCell
      * @apiGroup cs
      *
-     * @apiHeader {String} token authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {String="claim,release"} action
      * @apiBody {String} sheet

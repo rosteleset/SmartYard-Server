@@ -8,7 +8,7 @@
      * @apiName searchHouses
      * @apiGroup houses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiQuery {String} search
      *

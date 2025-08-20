@@ -8,7 +8,7 @@
      * @apiName createProject
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {String} [projectId]
      * @apiBody {String} [filter]
@@ -28,7 +28,7 @@
      * @apiName modifyProject
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {String} projectId
      * @apiBody {String} [acronym]
@@ -56,7 +56,7 @@
      * @apiName deleteProject
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {String} projectId
      *

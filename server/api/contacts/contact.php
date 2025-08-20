@@ -8,7 +8,7 @@
      * @apiName getContact
      * @apiGroup contacts
      *
-     * @apiHeader {String} token authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} contactId
      *

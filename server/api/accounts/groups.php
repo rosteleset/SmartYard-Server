@@ -8,7 +8,7 @@
      * @apiName getGroups
      * @apiGroup accounts
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiSuccess {Object[]} groups groups
      *

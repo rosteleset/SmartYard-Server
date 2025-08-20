@@ -8,7 +8,7 @@
      * @apiName autoconfigure
      * @apiGroup houses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} id
      * @apiBody {String} object

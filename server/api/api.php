@@ -92,11 +92,17 @@
                 global $redis_cache_ttl;
 
                 if ($data !== false) {
-                    $r = [
-                        "200" => [
-                            $key => $data,
-                        ],
-                    ];
+                    if ($key === false) {
+                        $r = [
+                            "200" => $data,
+                        ];
+                    } else {
+                        $r = [
+                            "200" => [
+                                $key => $data,
+                            ],
+                        ];
+                    }
                 } else {
                     $r = [
                         "204" => false,

@@ -8,7 +8,7 @@
      * @apiName whoAmI
      * @apiGroup user
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiSuccess {Object} user user info
      */

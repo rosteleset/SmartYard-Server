@@ -8,7 +8,7 @@
      * @apiName methods
      * @apiGroup authorization
      *
-     * @apiHeader {String} token authentication token
+     * @apiHeader {String} Authorization authentication token
      */
 
     /**

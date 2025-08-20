@@ -827,9 +827,9 @@
                         by: "flatId",
                         query: params.flatId,
                     }).done(response => {
-                        modules.addresses.subscribers.renderSubscribers(response.flat.subscribers);
-                        modules.addresses.subscribers.renderKeys(response.flat.keys);
-                        modules.addresses.subscribers.renderCameras(response.flat.cameras);
+                        modules.addresses.subscribers.renderSubscribers(response.subscribers);
+                        modules.addresses.subscribers.renderKeys(response.keys);
+                        modules.addresses.subscribers.renderCameras(response.cameras);
                     }).
                     fail(FAIL).
                     fail(() => {

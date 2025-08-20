@@ -8,7 +8,7 @@
      * @apiName getSettings
      * @apiGroup user
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiSuccess {Object} settings
      */
@@ -21,7 +21,7 @@
      * @apiName putSettings
      * @apiGroup user
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {Object} settings
      *

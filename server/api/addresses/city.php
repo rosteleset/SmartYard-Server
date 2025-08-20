@@ -8,7 +8,7 @@
      * @apiName updateCity
      * @apiGroup addresses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} cityId cityId
      * @apiBody {Number} regionId
@@ -31,7 +31,7 @@
      * @apiName createCity
      * @apiGroup addresses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {Number} regionId
      * @apiBody {Number} areaId
@@ -53,7 +53,7 @@
      * @apiName deleteCity
      * @apiGroup addresses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} cityId cityId
      *

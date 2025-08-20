@@ -8,7 +8,7 @@
      * @apiName suggestions
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiSuccess {Object} meta
      */

@@ -8,7 +8,7 @@
      * @apiName addCamera
      * @apiGroup houses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {Number} houseId
      * @apiBody {Number} cameraId
@@ -24,7 +24,7 @@
      * @apiName modifyCamera
      * @apiGroup houses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {Number} houseId
      * @apiBody {Number} cameraId
@@ -41,7 +41,7 @@
      * @apiName removeCamera
      * @apiGroup houses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {Number} houseId
      * @apiBody {Number} cameraId

@@ -8,7 +8,7 @@
      * @apiName getAvatar
      * @apiGroup user
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} id
      *
@@ -23,7 +23,7 @@
      * @apiName putAvatar
      * @apiGroup user
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} id
      * @apiBody {Object} avatar

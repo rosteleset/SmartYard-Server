@@ -8,7 +8,7 @@
      * @apiName getFile
      * @apiGroup files
      *
-     * @apiHeader {String} token authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiQuery {String} [type]
      * @apiQuery {String} [filename]
@@ -24,7 +24,7 @@
      * @apiName putFile
      * @apiGroup files
      *
-     * @apiHeader {String} token authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {String} type
      * @apiBody {String} [filename]
@@ -42,7 +42,7 @@
      * @apiName postFile
      * @apiGroup files
      *
-     * @apiHeader {String} token authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {String} [type]
      * @apiBody {String} [filename]
@@ -60,7 +60,7 @@
      * @apiName deleteFile
      * @apiGroup files
      *
-     * @apiHeader {String} token authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {String} [type]
      * @apiBody {String} [filename]

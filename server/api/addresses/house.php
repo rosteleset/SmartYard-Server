@@ -8,7 +8,7 @@
      * @apiName getHouse
      * @apiGroup addresses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} houseId houseId
      *
@@ -23,7 +23,7 @@
      * @apiName updateHouse
      * @apiGroup addresses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} houseId houseId
      * @apiBody {Number} settlementId
@@ -46,7 +46,7 @@
      * @apiName createHouse
      * @apiGroup addresses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {Number} settlementId
      * @apiBody {Number} streetId
@@ -68,7 +68,7 @@
      * @apiName deleteHouse
      * @apiGroup addresses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} houseId houseId
      *

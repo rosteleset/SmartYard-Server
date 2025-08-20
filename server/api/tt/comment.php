@@ -8,7 +8,7 @@
      * @apiName addComment
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {String} issueId
      * @apiBody {String} comment
@@ -26,7 +26,7 @@
      * @apiName modifyComment
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {String} issueId
      * @apiBody {Number} commentIndex
@@ -44,7 +44,7 @@
      * @apiName modifyComment
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {String} issueId
      * @apiBody {Number} commentIndex

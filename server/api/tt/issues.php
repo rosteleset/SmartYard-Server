@@ -8,7 +8,7 @@
      * @apiName getIssues
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiQuery {String} filter
      * @apiQuery {String} [search]
@@ -25,7 +25,7 @@
      * @apiName getIssues
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {String} project
      * @apiBody {Object} query

@@ -8,7 +8,7 @@
      * @apiName getPathPart
      * @apiGroup houses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {String} treeOrFrom tree or parent
      * @apiQuery {String} [search]
@@ -27,7 +27,7 @@
      * @apiName addTreeNode
      * @apiGroup houses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} parentId
      * @apiBody {String} text
@@ -44,7 +44,7 @@
      * @apiName modifyTreeNode
      * @apiGroup houses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} nodeId
      * @apiBody {String} text
@@ -61,7 +61,7 @@
      * @apiName deleteTreeNode
      * @apiGroup houses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} nodeId
      *

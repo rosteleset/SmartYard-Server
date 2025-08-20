@@ -8,7 +8,7 @@
      * @apiName createTag
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {Number} projectId
      * @apiBody {String} tag
@@ -26,7 +26,7 @@
      * @apiName modifyTag
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} tagId
      * @apiBody {String} tag
@@ -44,7 +44,7 @@
      * @apiName deleteTag
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} tagId
      *

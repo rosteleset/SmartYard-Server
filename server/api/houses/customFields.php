@@ -8,7 +8,7 @@
      * @apiName getCustomFields
      * @apiGroup houses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      * @apiParam {String="flat"} applyTo
      * @apiQuery {Number} id
      *
@@ -23,7 +23,7 @@
      * @apiName putCustomFields
      * @apiGroup houses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      * @apiParam {String="flat"} applyTo
      * @apiBody {Number} id
      * @apiBody {Object[]} customFields

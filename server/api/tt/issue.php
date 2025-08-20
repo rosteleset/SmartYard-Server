@@ -8,7 +8,7 @@
      * @apiName getIssue
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {String} issueId
      *
@@ -23,7 +23,7 @@
      * @apiName createIssue
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {Object} issue
      *
@@ -38,7 +38,7 @@
      * @apiName modifyIssue
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {String} issueId
      * @apiBody {String} action
@@ -54,7 +54,7 @@
      * @apiName modifyIssue
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {String} issueId
      *

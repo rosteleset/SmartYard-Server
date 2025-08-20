@@ -8,7 +8,7 @@
      * @apiName addDomophone
      * @apiGroup houses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {Boolean} enabled
      * @apiBody {String} model
@@ -35,7 +35,7 @@
      * @apiName modifyDomophone
      * @apiGroup houses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} domophoneId
      * @apiBody {Boolean} enabled
@@ -65,7 +65,7 @@
      * @apiName deleteDomophone
      * @apiGroup houses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} domophoneId
      *

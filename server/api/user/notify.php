@@ -8,7 +8,7 @@
      * @apiName putSettings
      * @apiGroup user
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} uid
      * @apiBody {String} subject

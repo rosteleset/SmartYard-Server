@@ -8,7 +8,7 @@
      * @apiName addCamera
      * @apiGroup cameras
      *
-     * @apiHeader {String} token authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {Boolean} enabled
      * @apiBody {String} model
@@ -46,7 +46,7 @@
      * @apiName modifyCamera
      * @apiGroup cameras
      *
-     * @apiHeader {String} token authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} cameraId
      * @apiBody {Boolean} enabled
@@ -83,7 +83,7 @@
      * @apiName deleteCamera
      * @apiGroup cameras
      *
-     * @apiHeader {String} token authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} cameraId
      *

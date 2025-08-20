@@ -8,7 +8,7 @@
      * @apiName createNote
      * @apiGroup notes
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {String} subject
      * @apiBody {String} body
@@ -33,7 +33,7 @@
      * @apiName createNote
      * @apiGroup notes
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} noteId
      * @apiBody {String} subject
@@ -58,7 +58,7 @@
      * @apiName deleteNote
      * @apiGroup notes
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} noteId
      *

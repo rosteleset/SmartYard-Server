@@ -8,7 +8,7 @@
      * @apiName updateRegion
      * @apiGroup addresses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} regionId regionId
      * @apiBody {String} regionUuid
@@ -30,7 +30,7 @@
      * @apiName createRegion
      * @apiGroup addresses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {String} regionUuid
      * @apiBody {String} regionIsoCode
@@ -51,7 +51,7 @@
      * @apiName deleteRegion
      * @apiGroup addresses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} regionId regionId
      *

@@ -8,7 +8,7 @@
      * @apiName cdr
      * @apiGroup cdr
      *
-     * @apiHeader {String} token authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {String[]} phones
      * @apiBody {Timestamp} [dateFrom]

@@ -8,7 +8,7 @@
      * @apiName getWatchers
      * @apiGroup houses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} flatId
      *
@@ -23,7 +23,7 @@
      * @apiName unwatch
      * @apiGroup houses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} houseWatcherId
      *

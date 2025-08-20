@@ -8,7 +8,7 @@
      * @apiName getIssueJournal
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {String} issueId
      * @apiQuery {Number} [limit]

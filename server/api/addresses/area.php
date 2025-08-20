@@ -8,7 +8,7 @@
      * @apiName updateArea
      * @apiGroup addresses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} areaId areaId
      * @apiBody {Number} regionId
@@ -30,7 +30,7 @@
      * @apiName createArea
      * @apiGroup addresses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {Number} regionId
      * @apiBody {String} areaUuid
@@ -51,7 +51,7 @@
      * @apiName deleteArea
      * @apiGroup addresses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} areaId areaId
      *
