@@ -41,7 +41,7 @@
                             "keys" => $households->getKeys("flatId", @$params["query"]),
                         ];
 
-                        return api::ANSWER($flat, "__as-is__");
+                        return api::ANSWER($flat, "__asis__");
 
                     case "houseId":
                         $subscribers = $households->getSubscribers("houseId", @$params["query"]);
