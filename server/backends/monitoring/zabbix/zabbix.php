@@ -4,17 +4,33 @@ namespace backends\monitoring;
 
 use Exception;
 
-enum Triggers: string
-{
-    case ICMP = 'ICMP: Unavailable by ICMP ping';
-    case SIP =  'SIP: Registration failure';
-    case HTTP = 'HTTP: port/service unreachable (ICMP OK)';
-}
-
+/**
+ * Device types supported by the monitoring backend.
+ */
 enum DeviceType: string
 {
     case INTERCOMS = 'Intercoms';
     case CAMERAS = 'Cameras';
+}
+
+/**
+ * Tags used in Zabbix for host identification.
+ */
+enum ZabbixTag: string
+{
+    case RBT_INSTANCE = 'RBT_INSTANCE';
+    case HOST_TYPE = 'HOST_TYPE';
+    case DISABLED = 'DISABLED';
+}
+
+/**
+ * Possible trigger types for Zabbix monitoring.
+ */
+enum Trigger: string
+{
+    case ICMP = 'ICMP: Unavailable by ICMP ping';
+    case SIP = 'SIP: Registration failure';
+    case HTTP = 'HTTP: port/service unreachable (ICMP OK)';
 }
 
 class zabbix extends monitoring
@@ -30,6 +46,7 @@ class zabbix extends monitoring
     protected array $pluggedTemplateNames = [];
     protected string $templatesDir;
     protected string $cameraVendor = 'FAKE';
+    protected string $instance;
 
     /**
      * @throws Exception
@@ -69,10 +86,10 @@ class zabbix extends monitoring
                 );
 
                 $result = true;
-                $this->log("Сron task finish");
+                $this->log("Cron task finished");
             }
         } catch (Exception $e) {
-            $this->log('Сron error: ' . $e->getMessage());
+            $this->log('Cron error: ' . $e->getMessage());
         }
         return $result;
     }
@@ -235,9 +252,6 @@ class zabbix extends monitoring
             'zbx_api_url',
             'zbx_token',
             'zbx_data_collection',
-//            'cron_sync_data_scheduler',
-//            'zbx_store_days',
-//            'use_cache',
         ];
 
         foreach ($requiredConfigKeys as $key) {
@@ -264,7 +278,11 @@ class zabbix extends monitoring
             throw new Exception("template directory does not exist: $templatePath");
         }
         $this->templatesDir = realpath($templatePath);
-    }
+
+        // instance name from server domain or instance from config
+        $this->instance = trim($zbxConfig['instance'] ?? '')
+                ?: parse_url($config['api']['mobile'] ?? '', PHP_URL_HOST)
+                ?: 'srv1';    }
 
     /**
      * Create host groups in Zabbix.
@@ -690,57 +708,74 @@ class zabbix extends monitoring
      */
     private function createHost(array $item, string $groupName): void
     {
-        $params = [
-            'host' => $item['host'],
-            'name' => $item['name'],
-            'interfaces' => [
-                [
-                    "type" => 1,
-                    "main" => 1,
-                    "useip" => 1,
-                    "ip" => $item['interface'],
-                    "dns" => "",
-                    "port" => "10050"
-                ]
-            ],
-            'groups' => [
-                [
-                    "groupid" => $this->zbxData['groups'][$groupName]
-                ]
-            ],
-            'tags' => [
-                [
-                    "tag" => "Host type",
-                    "value" => $groupName
-                ]
-            ],
-            'templates' => [
-                [
-                    "templateid" => $this->zbxData['templates'][$item['template']],
-                ]
-            ],
-            'macros' => [
-                [
-                    "macro" => '{$HOST_PASSWORD}',
-                    "value" => $item['credentials'],
-                ]
-            ]
-        ];
-        $body = [
-            'jsonrpc' => "2.0",
-            'method' => "host.create",
-            'params' => $params,
-            'id' => 1
-        ];
-
         try {
+            if (!isset($this->zbxData['groups'][$groupName])) {
+                throw new Exception("Host group '$groupName' not found in zbxData");
+            }
+
+            if (!isset($this->zbxData['templates'][$item['template']])) {
+                throw new Exception("Missing template ID for host [" . $item['name'] . "]");
+            }
+
+            $params = [
+                'host' => $item['host'],
+                'name' => $item['name'],
+                'interfaces' => [
+                    [
+                        "type" => 1,
+                        "main" => 1,
+                        "useip" => 1,
+                        "ip" => $item['interface'],
+                        "dns" => "",
+                        "port" => "10050"
+                    ]
+                ],
+                'groups' => [
+                    [
+                        "groupid" => $this->zbxData['groups'][$groupName]
+                    ]
+                ],
+                'tags' => [
+                    [
+                        "tag" => ZabbixTag::HOST_TYPE->value,
+                        "value" => $groupName,
+                    ],
+                    [
+                        "tag" => ZabbixTag::RBT_INSTANCE->value,
+                        "value" => $this->instance,
+                    ]
+                ],
+                'templates' => [
+                    [
+                        "templateid" => $this->zbxData['templates'][$item['template']],
+                    ]
+                ],
+                'macros' => [
+                    [
+                        "macro" => '{$HOST_PASSWORD}',
+                        "value" => $item['credentials'],
+                    ]
+                ]
+            ];
+
+            $body = [
+                'jsonrpc' => "2.0",
+                'method' => "host.create",
+                'params' => $params,
+                'id' => 1
+            ];
+
             $this->log("Create host: " . $item['name']);
             $this->apiCall($body);
         }catch (Exception $err) {
             $message = $err->getMessage();
             if (str_contains($message, 'already exists')) {
                 $this->log("Failed to create, host already exists. Group: " . $groupName . ". Item: " . $item['name']);
-            } else {
+            }
+            else if (str_contains($message, 'Missing template ID')) {
+                $this->log("Missing template ID for host [" . $item['name'] . "],  check Zabbix templates");
+            }
+            else {
                 throw $err;
             }
         }
@@ -929,7 +964,7 @@ class zabbix extends monitoring
      */
     private function updateHost(array $zbxDevice, array $changes): void
     {
-        $this->log("Updating host with ID: " .  $zbxDevice['zbx_hostid']);
+        $this->log("Updating host: " .  $zbxDevice['name']);
         $updateParams = [
             'hostid' => $zbxDevice['zbx_hostid'],
         ];
@@ -1143,10 +1178,13 @@ class zabbix extends monitoring
     }
 
     // TODO: check
-    private function getDomophonesFromZBX(): array
+    /**
+     * @throws Exception
+     */
+    private function getDevicesFromZBX(string $groupName): array
     {
         $mapped = [];
-        $raw = $this->getHostsByGroupId($this->zbxData['groups']['Intercoms']);
+        $raw = $this->getHostsByGroupId($this->zbxData['groups'][$groupName]);
         if (empty($raw)) {
             return [];
         }
@@ -1172,7 +1210,7 @@ class zabbix extends monitoring
             // mapping tags
             if (count($item['tags']) > 0) {
                 foreach ($item['tags'] as $tag) {
-                    $mapped_item["tags"][$tag['tag']] =  $tag['value'];
+                    $mapped_item["tags"][$tag['tag']] = $tag['value'];
                 }
             }
 
@@ -1184,41 +1222,17 @@ class zabbix extends monitoring
     /**
      * @throws Exception
      */
+    private function getDomophonesFromZBX(): array
+    {
+        return $this->getDevicesFromZBX(DeviceType::INTERCOMS->value);
+    }
+
+    /**
+     * @throws Exception
+     */
     private function getCamerasFromZBX(): array
     {
-        $mapped = [];
-        $raw = $this->getHostsByGroupId($this->zbxData['groups']['Cameras']);
-        if (!$raw) {
-            return [];
-        }
-
-        foreach ($raw as $item) {
-            $mapped_item = [
-                "zbx_hostid" => $item["hostid"],
-                "status" => $item["status"] === "0",
-                "host" => $item["host"],
-                "name" => $item["name"],
-                "template" => $item["parentTemplates"][0]["host"],
-                "interface" => $item["interfaces"][0]["ip"]
-            ];
-
-            foreach ($item['macros'] as $macros) {
-                if ($macros["macro"] === '{$HOST_PASSWORD}'){
-                    $mapped_item["credentials"] = $macros["value"];
-                    break;
-                }
-            }
-
-            if (count($item['tags']) > 0) {
-                foreach ($item['tags'] as $tag) {
-                    $mapped_item["tags"][$tag['tag']] =  $tag['value'];
-                }
-            }
-
-            $mapped[] = $mapped_item;
-        }
-
-        return $mapped;
+        return $this->getDevicesFromZBX(DeviceType::CAMERAS->value);
     }
 
     /**
@@ -1237,6 +1251,9 @@ class zabbix extends monitoring
         return null;
     }
 
+    /**
+     * @throws Exception
+     */
     private function deleteHostIfNeeded(array $item, int $deleteTimestamp): void
     {
         if ($deleteTimestamp < time()) {
@@ -1341,15 +1358,20 @@ class zabbix extends monitoring
         }
     }
 
+    /**
+     * @throws Exception
+     */
     private function handleUnmatchedZbxDevices(array $rbtDevices, array $zbxDevices): void
     {
         foreach ($zbxDevices as $zbxDevice) {
             $device = $this->findHostInArray($zbxDevice, $rbtDevices);
-            if (!$device) {
+            if (!$device &&
+                isset($zbxDevice['tags'][ZabbixTag::RBT_INSTANCE->value]) &&
+                $zbxDevice['tags'][ZabbixTag::RBT_INSTANCE->value] === $this->instance) {
                 if ($zbxDevice['status'] === true) {
                     $this->disableHost($zbxDevice);
-                } elseif ($zbxDevice['status'] === false && isset($zbxDevice['tags']['DISABLED'])) {
-                    $disableTimestamp = (int)explode(' || ', $zbxDevice['tags']['DISABLED'])[0];
+                } elseif ($zbxDevice['status'] === false && isset($zbxDevice['tags'][ZabbixTag::DISABLED->value])) {
+                    $disableTimestamp = (int)explode(' || ', $zbxDevice['tags'][ZabbixTag::DISABLED->value])[0];
                     $deleteAfter = $disableTimestamp + ($this->zbxStoreDays * 24 * 60 * 60);
                     $this->deleteHostIfNeeded($zbxDevice, $deleteAfter);
                 }
@@ -1428,9 +1450,9 @@ class zabbix extends monitoring
         foreach ($triggers[0]['triggers'] as $trigger) {
             if ($trigger['status'] !== '1' && $trigger['value'] === '1'){
                 switch ($trigger['description']) {
-                    case Triggers::ICMP->value:
+                    case Trigger::ICMP->value:
                         return $this->createStatusResponse("Offline", "monitoring.offline");
-                    case Triggers::SIP->value:
+                    case Trigger::SIP->value:
                         return $this->createStatusResponse("SIP error", "monitoring.sipRegistrationFail");
                     default: $this->createStatusResponse("Other", "monitoring.otherErr");
                 }
@@ -1497,8 +1519,8 @@ class zabbix extends monitoring
                 } else {
                     foreach ($hostTriggers[$ip] as $trigger) {
                         $host['status'] = match ($trigger['description']) {
-                            Triggers::ICMP->value => $this->createStatusResponse("Offline", "monitoring.offline"),
-                            Triggers::SIP->value => $this->createStatusResponse("SIP error", "monitoring.sipRegistrationFail"),
+                            Trigger::ICMP->value => $this->createStatusResponse("Offline", "monitoring.offline"),
+                            Trigger::SIP->value => $this->createStatusResponse("SIP error", "monitoring.sipRegistrationFail"),
                             default => $this->createStatusResponse("Other", "monitoring.otherErr"),
                         };
                         // Skip
