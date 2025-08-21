@@ -76,7 +76,7 @@
      */
 
     /**
-     * @api {post} /api/cameras/camera/:cameraId delete camera
+     * @api {delete} /api/cameras/camera/:cameraId delete camera
      *
      * @apiVersion 1.0.0
      *
@@ -109,7 +109,7 @@
 
                 $cameraId = $cameras->addCamera($params["enabled"], $params["model"], $params["url"], $params["stream"], $params["credentials"], $params["name"], $params["dvrStream"], $params["timezone"], $params["lat"], $params["lon"], $params["direction"], $params["angle"], $params["distance"], $params["frs"], $params["frsMode"], $params["mdArea"], $params["rcArea"], $params["common"], $params["comments"], $params["sound"], $params["monitoring"], $params["ext"]);
 
-                return api::ANSWER($cameraId, ($cameraId !== false)?"cameraId":false);
+                return api::ANSWER($cameraId, ($cameraId !== false) ? "cameraId" : false);
             }
 
             public static function PUT($params) {
@@ -117,7 +117,7 @@
 
                 $success = $cameras->modifyCamera($params["_id"], $params["enabled"], $params["model"], $params["url"], $params["stream"], $params["credentials"], $params["name"], $params["dvrStream"], $params["timezone"], $params["lat"], $params["lon"], $params["direction"], $params["angle"], $params["distance"], $params["frs"], $params["frsMode"], $params["mdArea"], $params["rcArea"], $params["common"], $params["comments"], $params['sound'], $params["monitoring"], $params["ext"]);
 
-                return api::ANSWER($success?:$params["_id"], $success?"cameraId":false);
+                return api::ANSWER($success);
             }
 
             public static function DELETE($params) {
