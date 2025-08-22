@@ -1835,7 +1835,7 @@
                     pKeys = Object.keys(issues.projection);
                 }
 
-                if (pKeys && modules.tt.meta.filtersExt && filterName && modules.tt.meta.filters[filterName] && modules.tt.meta.filters[filterName].hide) {
+                if (pKeys && filterName && modules.tt.meta.filters[filterName] && modules.tt.meta.filters[filterName].hide) {
                     let t = [];
                     for (let i in pKeys) {
                         if (modules.tt.meta.filters[filterName].hide.indexOf(pKeys[i]) < 0) {
@@ -1952,7 +1952,7 @@
 
                 let columns = [];
 
-                if ((modules && modules.tt && modules.tt.meta && modules.tt.meta.filtersExt && modules.tt.meta.filters[filterName] && modules.tt.meta.filters[filterName].disableCustomSort) || (params.customSearch && params.customSearch !== true)) {
+                if ((modules && modules.tt && modules.tt.meta && modules.tt.meta.filters[filterName] && modules.tt.meta.filters[filterName].disableCustomSort) || (params.customSearch && params.customSearch !== true)) {
                     columns.push({
                         title: i18n("tt.issueIndx"),
                         nowrap: true,
