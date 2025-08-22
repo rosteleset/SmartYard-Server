@@ -21,7 +21,7 @@
             public function __construct($config, $db, $redis, $login = false) {
                 parent::__construct($config, $db, $redis, $login);
 
-                $this->dbName = @$config["backends"]["files"]["db"]?:"rbt";
+                $this->dbName = @$config["backends"]["files"]["db"] ?: "rbt";
 
                 if (@$config["mongo"]["uri"]) {
                     $this->mongo = new \MongoDB\Client($config["mongo"]["uri"]);
