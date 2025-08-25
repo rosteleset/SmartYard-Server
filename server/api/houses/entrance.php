@@ -82,11 +82,11 @@
      */
 
     /**
-     * @api {delete} /api/houses/entrance/:entranceId modify entrance
+     * @api {delete} /api/houses/entrance/:entranceId delete or destroy entrance
      *
      * @apiVersion 1.0.0
      *
-     * @apiName modifyEntrance
+     * @apiName deleteEntrance
      * @apiGroup houses
      *
      * @apiHeader {String} Authorization authentication token
