@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {get} /api/houses/autoconfigure/:id autoconfigure device
+     * @api {post} /api/houses/autoconfigure/:id autoconfigure device
      *
      * @apiVersion 1.0.0
      *
