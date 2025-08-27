@@ -1277,7 +1277,7 @@
             }
         }
 
-        if (val === false || typeof val === "undefined") {
+        if (val === false || typeof val === "undefined" || val === null) {
             val = "";
         }
 

@@ -747,7 +747,7 @@
              */
 
             public function cli($args) {
-                if (array_key_exists($args["--disable-2fa"])) {
+                if (array_key_exists("--disable-2fa", $args)) {
                     $uid = $this->getUidByLogin($args["--disable-2fa"]);
 
                     if ($uid === false) {
