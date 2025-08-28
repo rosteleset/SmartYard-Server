@@ -446,11 +446,11 @@ Object.defineProperty(Array.prototype, "assoc", {
 
 jQuery.fn.click2 = function(single_click_callback, double_click_callback, timeout) {
     return this.each(function() {
-        var clicks = 0, self = this;
-        jQuery(this).click(function(event) {
+        let clicks = 0, self = this;
+        jQuery(this).click(event => {
             clicks++;
             if (clicks == 1) {
-                setTimeout(function() {
+                setTimeout(() => {
                     if (clicks == 1) {
                         single_click_callback.call(self, event);
                     } else {
