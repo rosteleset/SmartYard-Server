@@ -419,7 +419,7 @@ function ildc() {
     $(".ildc").each(function () {
         let w = parseInt($(this).css("width"), 10);
         if (w > mw) {
-            mw = w
+            mw = w;
         }
     });
 
@@ -463,12 +463,6 @@ jQuery.fn.click2 = function(single_click_callback, double_click_callback, timeou
     });
 }
 
-for (let i in additionalLinks) {
-    linkify.registerCustomProtocol(additionalLinks[i]);
-}
-
-linkify.init();
-
 String.prototype.escapedSplit = function (delimeter) {
     let str = this;
 
@@ -481,3 +475,9 @@ String.prototype.escapedSplit = function (delimeter) {
 
     return arr;
 }
+
+for (let i in additionalLinks) {
+    linkify.registerCustomProtocol(additionalLinks[i]);
+}
+
+linkify.init();
