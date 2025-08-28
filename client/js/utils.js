@@ -468,3 +468,16 @@ for (let i in additionalLinks) {
 }
 
 linkify.init();
+
+String.prototype.escapedSplit = function (delimeter) {
+    let str = this;
+
+    str = str.replaceAll(delimeter + delimeter, String.fromCharCode(27));
+    let arr = str.split(delimeter);
+
+    for (let i in arr) {
+        arr[i] = arr[i].replaceAll(String.fromCharCode(27), delimeter);
+    }
+
+    return arr;
+}

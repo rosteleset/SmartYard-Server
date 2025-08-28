@@ -1460,7 +1460,7 @@
 
                 let filtersTree = {};
                 for (let i in project.filters) {
-                    let tree = (project.filters[i].filter ? modules.tt.meta.filters[project.filters[i].filter].name : project.filters[i].filter).split("/");
+                    let tree = (project.filters[i].filter ? modules.tt.meta.filters[project.filters[i].filter].name : project.filters[i].filter).escapedSplit("/");
                     let f = filtersTree;
                     for (let j = 0; j < tree.length - 1; j++) {
                         tree[j] = tree[j].trim();
@@ -1488,7 +1488,7 @@
                     let ts = [];
 
                     for (let i in t) {
-                        if ($.trim(i.split("/")[0]) == myself.realName) {
+                        if ($.trim(i.escapedSplit("/")[0]) == myself.realName) {
                             fMy.push(i);
                         } else {
                             if (!t[i].filter) {
@@ -1549,7 +1549,7 @@
                     return filters;
                 }
 
-                let filterNames = realFilterName.split("/");
+                let filterNames = realFilterName.escapedSplit("/");
 
                 for (let o in filterNames) {
                     filters += `<span class="dropdown">`;
@@ -2065,7 +2065,7 @@
                             f = false;
                         }
                         if (f && $.trim(f.name) && f.fields) {
-                            let t = $.trim($.trim(f.name).split("/")[0]);
+                            let t = $.trim($.trim(f.name).escapedSplit("/")[0]);
                             if (t != myself.realName) {
                                 f.name = myself.realName + " / " + $.trim(f.name);
                             }
