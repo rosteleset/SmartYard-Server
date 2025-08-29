@@ -23,6 +23,14 @@
      * @apiSuccess {String} [timeZone = "Europe/Moscow"] Time Zone identifier
      * @apiSuccess {String="turnOnOnly","turnOnAndOff"} [guestAccess = "turnOnOnly"] Тип гостевого доступа.
      * @apiSuccess {Number} [version] Версия API
+     * @apiSuccess {String="list","tree","userDefined"} [cctvView="list"] How to show cameras in the mobile app. list(default) - cameras are shown on the map; tree - cameras are shown as a tree structure; userDefined - user has a switch in the common settings
+     * @apiSuccess {String="addresses", "notifications", "chat", "pay", "menu"} [activeTab="addresses"] Active app's tab at start.
+     * @apiSuccess {String} [validationNamePattern=""] Regex validation pattern for a name
+     * @apiSuccess {String} [validationPatronymicPattern=""] Regex validation pattern for a patronymic
+     * @apiSuccess {String} [validationLastPattern=""] Regex validation pattern for a surname
+     * @apiSuccess {String="t","f"} [addressVerificationTabLayoutVisible="t"] Address Verification UI: visibility of the tab layout
+     * @apiSuccess {String="t","f"} [addressVerificationTab1Visible="t"] Address Verification UI: visibility of the tab 1
+     * @apiSuccess {String="t","f"} [addressVerificationTab2Visible="t"] Address Verification UI: visibility of the tab 2
      *
      * @apiErrorExample Ошибки
      * 403 требуется авторизация
@@ -86,5 +94,23 @@
     if (@$config["mobile"]["issues_version"]) {
         $response["issuesVersion"] = $config["mobile"]["issues_version"];
     }
+
+    // Regex validation patterns
+    if (@$config["mobile"]["validation_name_pattern"]) {
+        $response["validationNamePattern"] = $config["mobile"]["validation_name_pattern"];
+    }
+
+    if (@$config["mobile"]["validation_patronymic_pattern"]) {
+        $response["validationPatronymicPattern"] = $config["mobile"]["validation_patronymic_pattern"];
+    }
+
+    if (@$config["mobile"]["validation_last_pattern"]) {
+        $response["validationLastPattern"] = $config["mobile"]["validation_last_pattern"];
+    }
+
+    // Address Verification UI
+    $response["addressVerificationTabLayoutVisible"] = ($config["mobile"]["address_verification_tab_layout_visible"] ?? true) ? "t" : "f";
+    $response["addressVerificationTab1Visible"] = ($config["mobile"]["address_verification_tab_1_visible"] ?? true) ? "t" : "f";
+    $response["addressVerificationTab2Visible"] = ($config["mobile"]["address_verification_tab_2_visible"] ?? true) ? "t" : "f";
 
     response(200, $response);

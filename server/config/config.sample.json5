@@ -29,6 +29,17 @@
         "cctv_view": "list",
         // Active app's tab at start. One of: addresses, notifications, chat, pay, menu. The default value is addresses
         "active_tab": "addresses",
+
+        // Regex validation patterns
+        "validation_name_pattern": "",
+        "validation_patronymic_pattern": "",
+        "validation_last_pattern": "",
+
+        // Address Verification UI
+        // Visibility of the tab layout and its tabs
+        "address_verification_tab_layout_visible": true,
+        "address_verification_tab_1_visible": true,
+        "address_verification_tab_2_visible": true,
     },
 
     "db": {
