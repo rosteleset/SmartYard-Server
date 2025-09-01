@@ -1380,7 +1380,7 @@
             if (pc == 1) {
                 rtd += `<select id="ttProjectSelect" style="display: none;">`;
             } else {
-                rtd += `<form autocomplete="off"><div class="form-inline ml-3 mr-3"><div class="input-group input-group-sm mt-1"><select id="ttProjectSelect" class="form-control select-arrow right-top-select" style="width: 231px;">`;
+                rtd += `<form autocomplete="off"><div class="form-inline ml-3 mr-3"><div class="input-group input-group-sm mt-1"><select id="ttProjectSelect" class="form-control select-arrow right-top-select top-input">`;
             }
 
             for (let j in modules.tt.meta.myRoles) {
