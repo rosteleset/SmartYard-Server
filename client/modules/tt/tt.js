@@ -1380,7 +1380,7 @@
             if (pc == 1) {
                 rtd += `<select id="ttProjectSelect" style="display: none;">`;
             } else {
-                rtd += `<form autocomplete="off"><div class="form-inline ml-3 mr-3"><div class="input-group input-group-sm mt-1"><select id="ttProjectSelect" class="form-control select-arrow right-top-select">`;
+                rtd += `<form autocomplete="off"><div class="form-inline ml-3 mr-3"><div class="input-group input-group-sm mt-1"><select id="ttProjectSelect" class="form-control select-arrow right-top-select" style="width: 231px;">`;
             }
 
             for (let j in modules.tt.meta.myRoles) {
@@ -1551,6 +1551,17 @@
 
                 let filterNames = realFilterName.escapedSplit("/");
 
+                let cpff = false;
+
+                if (modules.tt.meta.favoriteFilters.length) {
+                    for (let ff in modules.tt.meta.favoriteFilters) {
+                        if (modules.tt.meta.favoriteFilters[ff].project == currentProject) {
+                            cpff = true;
+                            break;
+                        }
+                    }
+                }
+
                 for (let o in filterNames) {
                     filters += `<span class="dropdown">`;
                     if (o == 0) {
@@ -1560,19 +1571,21 @@
                     }
                     filters += `<ul class="dropdown-menu" aria-labelledby="ttFilter-${o}">`;
 
-                    if (modules.tt.meta.favoriteFilters.length && !alreadyFavorite) {
+                    if (cpff && !alreadyFavorite) {
                         alreadyFavorite = true;
                         filters += `<li class="dropdown-item pointer submenu mr-4"><i class="far fa-fw fa-bookmark mr-2"></i><span>${i18n("tt.favoriteFilters")}&nbsp;</span></li>`;
                         filters += '<ul class="dropdown-menu">';
                         for (let ff in modules.tt.meta.favoriteFilters) {
-                            if (filterName == modules.tt.meta.favoriteFilters[ff].filter) {
-                                filters += `<li class="dropdown-item nomenu pointer tt_issues_filter font-weight-bold mr-3" data-filter-name="${modules.tt.meta.favoriteFilters[ff].filter}">`;
-                            } else {
-                                filters += `<li class="dropdown-item nomenu pointer tt_issues_filter mr-3" data-filter-name="${modules.tt.meta.favoriteFilters[ff].filter}">`;
+                            if (modules.tt.meta.favoriteFilters[ff].project == currentProject) {
+                                if (filterName == modules.tt.meta.favoriteFilters[ff].filter) {
+                                    filters += `<li class="dropdown-item nomenu pointer tt_issues_filter font-weight-bold mr-3" data-filter-name="${modules.tt.meta.favoriteFilters[ff].filter}">`;
+                                } else {
+                                    filters += `<li class="dropdown-item nomenu pointer tt_issues_filter mr-3" data-filter-name="${modules.tt.meta.favoriteFilters[ff].filter}">`;
+                                }
+                                filters += `<i class="fa-fw mr-2 ${modules.tt.meta.favoriteFilters[ff].icon} ${modules.tt.meta.favoriteFilters[ff].color}"></i>`;
+                                filters += "<span>" + $.trim(modules.tt.meta.filters[modules.tt.meta.favoriteFilters[ff].filter].shortName ? modules.tt.meta.filters[modules.tt.meta.favoriteFilters[ff].filter].shortName : modules.tt.meta.filters[modules.tt.meta.favoriteFilters[ff].filter].name) + "&nbsp;</span>";
+                                filters += "</li>";
                             }
-                            filters += `<i class="fa-fw mr-2 ${modules.tt.meta.favoriteFilters[ff].icon} ${modules.tt.meta.favoriteFilters[ff].color}"></i>`;
-                            filters += "<span>" + $.trim(modules.tt.meta.filters[modules.tt.meta.favoriteFilters[ff].filter].shortName ? modules.tt.meta.filters[modules.tt.meta.favoriteFilters[ff].filter].shortName : modules.tt.meta.filters[modules.tt.meta.favoriteFilters[ff].filter].name) + "&nbsp;</span>";
-                            filters += "</li>";
                         }
                         filters += '</ul>';
                         filters += `</li>`;
