@@ -306,7 +306,7 @@
                     fields: fields,
                     callback: modules.tt.issue.doCreateIssue,
                     cancel: () => {
-                        window.location.href = "?#tt&_=" + Math.random();
+                        window.location.reload();
                     },
                 }).show();
 
@@ -314,7 +314,7 @@
             }).
             fail(FAIL).
             fail(() => {
-                window.location.href = "?#tt&_=" + Math.random();
+                window.location.reload();
             });
         }
 
