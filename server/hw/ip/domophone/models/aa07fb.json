@@ -1,0 +1,11 @@
+{
+    "title": "BAS-IP AA-07FB",
+    "vendor": "BAS-IP",
+    "model": "AA-07FB",
+    "class": "aa07fb",
+    "eventServer": "basip",
+    "outputs": 3,
+    "camera": "basip",
+    "useSmartConfigurator": true,
+    "cmses": []
+}
