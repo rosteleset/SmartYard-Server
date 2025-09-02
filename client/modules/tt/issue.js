@@ -6,7 +6,7 @@
 
     callsLoaded: false,
 
-    createIssue: function (current_project, parent) {
+    createIssue: function (currentProject, parent, catalogByIssue) {
         let projects = [];
 
         projects.push({
@@ -18,13 +18,13 @@
             projects.push({
                 id: modules.tt.meta.projects[i].acronym,
                 text: $.trim(modules.tt.meta.projects[i].project ? modules.tt.meta.projects[i].project : modules.tt.meta.projects[i].acronym),
-                selected: current_project == modules.tt.meta.projects[i].acronym || lStore("ttProject") == modules.tt.meta.projects[i].acronym,
+                selected: currentProject == modules.tt.meta.projects[i].acronym || lStore("ttProject") == modules.tt.meta.projects[i].acronym,
             });
         }
 
         for (let i in projects) {
             if (projects[i].selected) {
-                current_project = projects[i].id;
+                currentProject = projects[i].id;
             }
         }
 
@@ -34,7 +34,7 @@
             workflows[i] = modules.tt.meta.workflows[i].name ? modules.tt.meta.workflows[i].name : i;
         }
 
-        function workflowsByProject(project) {
+        function workflowsByProject(project, catalogByIssue) {
             let w = [
                 {
                     id: "-",
@@ -48,10 +48,11 @@
                         for (let j in modules.tt.meta.projects[i].workflows) {
                             let wn = $.trim(workflows[modules.tt.meta.projects[i].workflows[j]] ? workflows[modules.tt.meta.projects[i].workflows[j]] : modules.tt.meta.projects[i].workflows[j]);
                             if (wn.charAt(0) != "#") {
+                                console.log(parent.workflow, modules.tt.meta.projects[i].workflows[j]);
                                 w.push({
                                     id: modules.tt.meta.projects[i].workflows[j],
                                     text: wn,
-                                    selected: lStore("ttWorkflow") == modules.tt.meta.projects[i].workflows[j],
+                                    selected: (catalogByIssue && parent && parent.workflow == modules.tt.meta.projects[i].workflows[j]) || (!catalogByIssue && !parent && lStore("ttWorkflow") == modules.tt.meta.projects[i].workflows[j]),
                                 });
                             }
                         }
@@ -63,7 +64,7 @@
             return w;
         }
 
-        function catalogByWorkflow(workflow, prefix) {
+        function catalogByWorkflow(workflow, prefix, catalogByIssue) {
             let catalog = [{
                 id: "-",
                 text: "-",
@@ -71,12 +72,16 @@
 
             let x = false;
 
-            for (let i in modules.tt.meta.workflows) {
-                if (i == workflow) {
-                    if (modules.tt.meta.workflows[i].catalog) {
-                        x = modules.tt.meta.workflows[i].catalog;
+            if (catalogByIssue) {
+                x = catalogByIssue;
+            } else {
+                for (let i in modules.tt.meta.workflows) {
+                    if (i == workflow) {
+                        if (modules.tt.meta.workflows[i].catalog) {
+                            x = modules.tt.meta.workflows[i].catalog;
+                        }
+                        break;
                     }
-                    break;
                 }
             }
 
@@ -129,11 +134,11 @@
                     minimumResultsForSearch: Infinity,
                     select: (el, id, prefix) => {
                         $(`#${prefix}workflow`).html("").select2({
-                            data: workflowsByProject(el.val()),
+                            data: workflowsByProject(el.val(), catalogByIssue),
                             minimumResultsForSearch: Infinity,
                             language: lang["_code"],
                         });
-                        if (catalogByWorkflow($(`#${prefix}workflow`).val(), prefix)) {
+                        if (catalogByWorkflow($(`#${prefix}workflow`).val(), prefix, catalogByIssue)) {
                             $(`#${prefix}catalog`).attr("disabled", false);
                         } else {
                             $(`#${prefix}catalog`).attr("disabled", true);
@@ -149,9 +154,9 @@
                     type: "select2",
                     title: i18n("tt.workflowName"),
                     minimumResultsForSearch: Infinity,
-                    options: workflowsByProject(current_project),
+                    options: workflowsByProject(currentProject, catalogByIssue),
                     select: (el, id, prefix) => {
-                        if (catalogByWorkflow(el.val(), prefix)) {
+                        if (catalogByWorkflow(el.val(), prefix, catalogByIssue)) {
                             $(`#${prefix}catalog`).attr("disabled", false);
                         } else {
                             $(`#${prefix}catalog`).attr("disabled", true);
@@ -160,6 +165,7 @@
                     validate: v => {
                         return v && v !== '-' && v !== 'undefined';
                     },
+                    readonly: !!catalogByIssue,
                 },
                 {
                     id: "catalog",
@@ -171,24 +177,24 @@
                     },
                 },
             ],
-            done: function (prefix) {
-                if (catalogByWorkflow($(`#${prefix}workflow`).val(), prefix)) {
+            done: prefix => {
+                if (catalogByWorkflow($(`#${prefix}workflow`).val(), prefix, catalogByIssue)) {
                     $(`#${prefix}catalog`).attr("disabled", false);
                 } else {
                     $(`#${prefix}catalog`).attr("disabled", true);
                 }
             },
-            callback: function (result) {
+            callback: result => {
                 if (result.project && result.workflow) {
                     lStore("ttProject", result.project);
                     lStore("ttWorkflow", result.workflow);
                 }
-                modules.tt.issue.createIssueForm(result.project, result.workflow, result.catalog, (!!parent) ? encodeURIComponent(parent) : "");
+                modules.tt.issue.createIssueForm(result.project, result.workflow, result.catalog, (!!parent) ? encodeURIComponent(parent["issueId"]) : "");
             },
         });
     },
 
-    createIssueForm: function (current_project, workflow, catalog, parent) {
+    createIssueForm: function (currentProject, workflow, catalog, parent) {
         subTop();
 
         $("#leftTopDynamic").html("");
@@ -196,7 +202,7 @@
 
         loadingStart();
 
-        function ciForm(current_project, workflow, catalog, parent) {
+        function ciForm(currentProject, workflow, catalog, parent) {
             QUERY("tt", "issueTemplate", {
                 _id: workflow,
                 catalog: catalog,
@@ -215,7 +221,7 @@
                 let projectId = -1;
 
                 for (let i in modules.tt.meta.projects) {
-                    if (modules.tt.meta.projects[i].acronym == current_project) {
+                    if (modules.tt.meta.projects[i].acronym == currentProject) {
                         project = modules.tt.meta.projects[i];
                         projectName = modules.tt.meta.projects[i].project?modules.tt.meta.projects[i].project:modules.tt.meta.projects[i].acronym;
                         projectId = modules.tt.meta.projects[i].projectId;
@@ -321,10 +327,10 @@
         modules.users.loadUsers(() => {
             if (modules.groups) {
                 modules.groups.loadGroups(() => {
-                    ciForm(current_project, workflow, catalog, parent);
+                    ciForm(currentProject, workflow, catalog, parent);
                 });
             } else {
-                ciForm(current_project, workflow, catalog, parent);
+                ciForm(currentProject, workflow, catalog, parent);
             }
         });
     },
@@ -1493,7 +1499,16 @@
         });
 
         $(".ttSaSubIssue").off("click").on("click", () => {
-            modules.tt.issue.createIssue(issue.issue["project"], issue.issue["issueId"]);
+            loadingStart();
+            POST("tt", "catalog", false, {
+                issue: issue.issue
+            }).
+            done(r => {
+                loadingDone();
+                modules.tt.issue.createIssue(issue.issue["project"], issue.issue, r.catalog);
+            }).
+            fail(loadingDone).
+            fail(FAIL);
         });
 
         $(".ttSaLink").off("click").on("click", () => {
