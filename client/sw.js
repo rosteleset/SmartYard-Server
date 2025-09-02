@@ -118,6 +118,19 @@ async function putInCache(request, response) {
 async function cacheFirst(request) {
     let responseFromCache = await caches.match(request);
     if (responseFromCache) {
+        let url = new URL(responseFromCache.url);
+        if (url.searchParams && url.searchParams.size > 0) {
+            for (let [key, value] of url.searchParams.entries()) {
+                if (key == "_force_cache" && value && parseInt(value) > 0) {
+                    let exp = Date.parse(responseFromCache.headers.get("date")) + parseInt(value);
+                    if (exp < Date.now()) {
+                        let responseFromNetwork = await fetch(request);
+                        putInCache(request, responseFromNetwork.clone());
+                        return responseFromNetwork;
+                    }
+                }
+            }
+        }
         return responseFromCache;
     }
     let responseFromNetwork = await fetch(request);
@@ -146,6 +159,14 @@ self.addEventListener('fetch', event => {
         } else {
             if (url.search && parseInt(deparam(url.search).ver) === parseInt(version) && endsWith(url.pathname, cacheFirstResources)) {
                 event.respondWith(cacheFirst(event.request));
+            } else {
+                if (url.searchParams && url.searchParams.size > 0) {
+                    for (let [key, value] of url.searchParams.entries()) {
+                        if (key == "_force_cache" && value && parseInt(value) > 0) {
+                            event.respondWith(cacheFirst(event.request));
+                        }
+                    }
+                }
             }
         }
     }
