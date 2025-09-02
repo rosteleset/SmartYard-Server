@@ -148,6 +148,7 @@ abstract class ufanet extends domophone implements
             // Video main stream
             'Encode[0].MainFormat[0].VideoEnable' => 'true',
             'Encode[0].MainFormat[0].Video.Compression' => 'h264',
+            'Encode[0].MainFormat[0].Video.Profile' => 'Baseline',
             'Encode[0].MainFormat[0].Video.resolution' => '1280x720',
             'Encode[0].MainFormat[0].Video.FPS' => 15,
             'Encode[0].MainFormat[0].Video.GOP' => 1,
@@ -159,11 +160,11 @@ abstract class ufanet extends domophone implements
             'Encode[0].ExtraFormat[0].VideoEnable' => 'false',
             'Encode[0].ExtraFormat[0].Video.Compression' => 'h264',
             'Encode[0].ExtraFormat[0].Video.resolution' => '640x352',
-            'Encode[0].ExtraFormat[0].Video.FPS' => 25,
-            'Encode[0].ExtraFormat[0].Video.GOP' => 0.5,
+            'Encode[0].ExtraFormat[0].Video.FPS' => 15,
+            'Encode[0].ExtraFormat[0].Video.GOP' => 1,
             'Encode[0].ExtraFormat[0].Video.GOPmode' => 'normal',
-            'Encode[0].ExtraFormat[0].Video.BitRate' => 348,
-            'Encode[0].ExtraFormat[0].Video.BitRateControl' => 'avbr',
+            'Encode[0].ExtraFormat[0].Video.BitRate' => 512,
+            'Encode[0].ExtraFormat[0].Video.BitRateControl' => 'vbr',
         ]);
     }
 
