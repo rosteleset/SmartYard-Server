@@ -48,7 +48,6 @@
                         for (let j in modules.tt.meta.projects[i].workflows) {
                             let wn = $.trim(workflows[modules.tt.meta.projects[i].workflows[j]] ? workflows[modules.tt.meta.projects[i].workflows[j]] : modules.tt.meta.projects[i].workflows[j]);
                             if (wn.charAt(0) != "#") {
-                                console.log(parent.workflow, modules.tt.meta.projects[i].workflows[j]);
                                 w.push({
                                     id: modules.tt.meta.projects[i].workflows[j],
                                     text: wn,
