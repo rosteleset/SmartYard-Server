@@ -1,0 +1,9 @@
+{
+    "title": "BAS-IP DOMOPHONE CAMERA",
+    "vendor": "BAS-IP",
+    "model": false,
+    "version": false,
+    "eventServer": "basip",
+    "class": "basip",
+    "useSmartConfigurator": true
+}
