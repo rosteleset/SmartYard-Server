@@ -7,13 +7,13 @@ rm /opt/rbt/version
 rm /opt/rbt/client/version.app
 ```
 
-ONCE before updating to versions 0.0.11+ (to avoid git conflicts),
+ONCE **before** updating to versions 0.0.11+ (to avoid git conflicts),
 and
 ```
 php /opt/rbt/server/cli.php --init-db
 ln -sf /opt/rbt/version /opt/rbt/client/version.app
 ```
-ONCE after updating
+ONCE **after** updating
 
 # 2025-04-11
 
