@@ -48,6 +48,7 @@ abstract class ufanet extends domophone implements
     ];
 
     protected const LINE_TEST_DURATION = 2;
+    protected const RELAY_SWITCHING_DURATION = 1;
     protected const UNLOCK_DATE = '3000-01-01 00:00:00';
 
     /**
@@ -287,8 +288,12 @@ abstract class ufanet extends domophone implements
 
     public function openLock(int $lockNumber = 0): void
     {
-        $lockNumber++;
-        $this->apiCall("/api/v1/doors/$lockNumber/open", 'POST', null, 3);
+        if ($lockNumber === 2) {
+            $this->switchRelay(true, self::RELAY_SWITCHING_DURATION);
+        } else {
+            $lockNumber++;
+            $this->apiCall("/api/v1/doors/$lockNumber/open", 'POST', null, 3);
+        }
     }
 
     public function prepare(): void
@@ -789,6 +794,19 @@ abstract class ufanet extends domophone implements
     protected function setRfidMode(): void
     {
         $this->apiCall('/api/v1/configuration', 'PATCH', ['door' => ['rfid_pass_en' => false]]);
+    }
+
+    /**
+     * Switches the internal relay.
+     *
+     * @param bool $isOn True to turn the relay on, false to turn it off.
+     * @param int $duration Duration in seconds the relay should stay on before switching off automatically.
+     * Use 0 to keep the state until explicitly changed.
+     * @return void
+     */
+    protected function switchRelay(bool $isOn, int $duration = 0): void
+    {
+        $this->apiCall('/api/v1/relay/' . ($isOn ? 'on' : 'off'), 'POST', ['duration' => $duration], 3);
     }
 
     /**
