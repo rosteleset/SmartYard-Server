@@ -2445,7 +2445,7 @@
                     if ($("#" + issuesListId).height() > $(window).height()) {
                         $(".issuesBottomPager").show();
                     }
-                    if (!target) {
+                    if (!target && !!!(params && params.noScroll && parseInt(params.noScroll) == 1)) {
                         $('html').scrollTop(0);
                     }
                 }
@@ -2685,8 +2685,11 @@
                 } else {
                     $("#" + modules.tt.menuItem).children().first().attr("href", refreshUrl({
                         exclude: [
-                            "customSearch"
-                        ]
+                            "customSearch",
+                        ],
+                        set: {
+                            "noScroll": 1,
+                        },
                     }));
                 }
             }

@@ -349,6 +349,12 @@ function refreshUrl(options) {
         }
     }
 
+    if (options && options.set) {
+        for (let i in options.set) {
+            params[i] = options.set[i];
+        }
+    }
+
     return "?#" + route + "&" + $.param(params);
 }
 
