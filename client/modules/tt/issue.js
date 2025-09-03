@@ -918,9 +918,9 @@
                 h += `<td class='pl-2 pr-2 ildc' nowrap>${ttDate(issue.issue.linkedIssues.issues[i].created, true)}</td>`;
                 h += `<td class='pl-2 pr-2 ildc' nowrap>${modules.tt.issueField2Html(issue.issue.linkedIssues.issues[i], "author", undefined, "list")}</td>`;
                 h += `<td class='pl-2 pr-2 ildc' nowrap>${modules.tt.issueField2Html(issue.issue.linkedIssues.issues[i], "status", undefined, "list")}</td>`;
-                h += `<td class='pl-2 pr-2 ildc' nowrap>${modules.tt.issueField2Html(issue.issue.childrens.issues[i], "catalog", undefined, "list")}</td>`;
-                h += `<td class='pl-2 pr-2 ildc' nowrap>${modules.tt.issueField2Html(issue.issue.childrens.issues[i], "resolution", undefined, "list")}</td>`;
-                h += `<td class='pl-2 pr-2'>${modules.tt.issueField2Html(issue.issue.childrens.issues[i], "subject", undefined, "list")}</td>`;
+                h += `<td class='pl-2 pr-2 ildc' nowrap>${modules.tt.issueField2Html(issue.issue.linkedIssues.issues[i], "catalog", undefined, "list")}</td>`;
+                h += `<td class='pl-2 pr-2 ildc' nowrap>${modules.tt.issueField2Html(issue.issue.linkedIssues.issues[i], "resolution", undefined, "list")}</td>`;
+                h += `<td class='pl-2 pr-2'>${modules.tt.issueField2Html(issue.issue.linkedIssues.issues[i], "subject", undefined, "list")}</td>`;
                 h += `<td class='pl-2 pr-2'><i class='fas fa-fw fa-unlink pointer text-danger unlinkIssue' data-issueId='${issue.issue.linkedIssues.issues[i].issueId}' title='${i18n("tt.unlinkIssuesTitle")}'></i></td>`;
                 h += "</tr>";
             }
