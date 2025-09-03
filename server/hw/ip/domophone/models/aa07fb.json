@@ -1,6 +1,6 @@
 {
-    "title": "BAS-IP AA-07FB",
-    "vendor": "BAS-IP",
+    "title": "BASIP AA-07FB",
+    "vendor": "BASIP",
     "model": "AA-07FB",
     "class": "aa07fb",
     "eventServer": "basip",
