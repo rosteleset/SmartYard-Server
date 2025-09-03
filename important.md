@@ -1,6 +1,6 @@
 # 2025-09-03
 
-Since 0.0.15 server configs "max_allowed_tokens" and "token_idle_ttl" moved from "redis" section to "backends->authentication" section
+Since version 0.0.15, server configs "max_allowed_tokens" and "token_idle_ttl" moved from "redis" section to "backends->authentication" section
 
 # 2025-08-14
 
