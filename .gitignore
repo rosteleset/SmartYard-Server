@@ -96,6 +96,7 @@ server/hw/**/custom
 server/hw/ip/domophone/ufanet/assets/display_image.jpg
 server/services/push/package.json
 server/services/push/package-lock.json
+server/wh/*.php
 
 install/kamailio/kamailio-local.cfg
 install/kamailio/kamctlrc
