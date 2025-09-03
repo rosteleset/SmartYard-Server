@@ -164,7 +164,7 @@
 
     $params = [];
 
-    if (count($m) >= 3) {
+    if (count($m) >= 3 && $m[2]) {
         $params["_id"] = urldecode($m[2]);
     }
 

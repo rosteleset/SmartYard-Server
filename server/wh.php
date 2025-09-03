@@ -60,7 +60,7 @@
 
         $params = [];
 
-        if (count($m) >= 2) {
+        if (count($m) >= 2 && $m[1]) {
             $params["_id"] = urldecode($m[1]);
         }
 
