@@ -7,6 +7,7 @@
         "asterisk": "http://127.0.0.1/asterisk",
         "internal": "http://127.0.0.1/internal",
         "mobile": "https://example.com/mobile",
+        "wh": "https://example.com/wh",
         "kamailio": "http://127.0.0.1/kamailio",
     },
 
