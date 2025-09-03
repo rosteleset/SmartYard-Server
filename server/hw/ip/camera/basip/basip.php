@@ -5,10 +5,12 @@ namespace hw\ip\camera\basip;
 use hw\ip\camera\camera;
 
 /**
- * Class representing a BAS-IP camera.
+ * Class representing a BASIP camera.
  */
 class basip extends camera
 {
+    use \hw\ip\common\basip\basip;
+
     public function configureEventServer(string $url): void
     {
         // TODO: Implement configureEventServer() method.
@@ -28,22 +30,6 @@ class basip extends camera
     {
         // TODO: Implement getCamshot() method.
         return '';
-    }
-
-    public function getSysinfo(): array
-    {
-        // TODO: Implement getSysinfo() method.
-        return [];
-    }
-
-    public function reboot(): void
-    {
-        // TODO: Implement reboot() method.
-    }
-
-    public function reset(): void
-    {
-        // TODO: Implement reset() method.
     }
 
     public function setAdminPassword(string $password): void
@@ -89,10 +75,5 @@ class basip extends camera
     {
         // TODO: Implement getOsdText() method.
         return '';
-    }
-
-    protected function initializeProperties(): void
-    {
-        // TODO: Implement initializeProperties() method.
     }
 }

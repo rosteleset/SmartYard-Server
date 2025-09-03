@@ -5,10 +5,12 @@ namespace hw\ip\domophone\basip;
 use hw\ip\domophone\domophone;
 
 /**
- * Abstract class representing an BAS-IP intercom.
+ * Abstract class representing an BASIP intercom.
  */
 abstract class basip extends domophone
 {
+    use \hw\ip\common\basip\basip;
+
     public function addRfid(string $code, int $apartment = 0): void
     {
         // TODO: Implement addRfid() method.
@@ -84,25 +86,9 @@ abstract class basip extends domophone
         return 0;
     }
 
-    public function getSysinfo(): array
-    {
-        // TODO: Implement getSysinfo() method.
-        return [];
-    }
-
     public function openLock(int $lockNumber = 0): void
     {
-        // TODO: Implement openLock() method.
-    }
-
-    public function reboot(): void
-    {
-        // TODO: Implement reboot() method.
-    }
-
-    public function reset(): void
-    {
-        // TODO: Implement reset() method.
+        $this->apiCall('/v1/access/general/lock/open/remote/accepted/' . $lockNumber + 1);
     }
 
     public function setAdminPassword(string $password): void
@@ -223,10 +209,5 @@ abstract class basip extends domophone
     {
         // TODO: Implement getSipConfig() method.
         return [];
-    }
-
-    protected function initializeProperties(): void
-    {
-        // TODO: Implement initializeProperties() method.
     }
 }
