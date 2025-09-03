@@ -128,14 +128,6 @@
             }
 
             $backends = [];
-            foreach ($required_backends as $backend) {
-                if (loadBackend($backend) === false) {
-                    error_log("noRequiredBackend");
-                    response(555, [
-                        "error" => "noRequiredBackend",
-                    ]);
-                }
-            }
 
             require_once __DIR__ . "/wh/{$method}.php";
 
