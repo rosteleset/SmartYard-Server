@@ -60,8 +60,6 @@
         "port": 6379,
         "frontend_cache_ttl": 600,
         "backends_cache_ttl": 604800,
-        "max_allowed_tokens": 15,
-        "token_idle_ttl": 3600,
     },
 
     "clickhouse": {
@@ -77,6 +75,8 @@
             "backend": "internal",
             "2faName": "SmartYard",
             "2faTitle": "RBT",
+            "max_allowed_tokens": 15,
+            "token_idle_ttl": 3600,
         },
 
         "authorization": {
