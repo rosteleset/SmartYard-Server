@@ -21,11 +21,6 @@ class basip extends camera
         // TODO: Implement configureMotionDetection() method.
     }
 
-    public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow'): void
-    {
-        // TODO: Implement configureNtp() method.
-    }
-
     public function getCamshot(): string
     {
         // TODO: Implement getCamshot() method.
@@ -47,12 +42,6 @@ class basip extends camera
         // TODO: Implement syncData() method.
     }
 
-    public function transformDbConfig(array $dbConfig): array
-    {
-        // TODO: Implement transformDbConfig() method.
-        return [];
-    }
-
     protected function getEventServer(): string
     {
         // TODO: Implement getEventServer() method.
@@ -62,12 +51,6 @@ class basip extends camera
     protected function getMotionDetectionConfig(): array
     {
         // TODO: Implement getMotionDetectionConfig() method.
-        return [];
-    }
-
-    protected function getNtpConfig(): array
-    {
-        // TODO: Implement getNtpConfig() method.
         return [];
     }
 
