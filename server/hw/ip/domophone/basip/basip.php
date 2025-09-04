@@ -48,11 +48,6 @@ abstract class basip extends domophone implements LanguageInterface
         // TODO: Implement configureMatrix() method.
     }
 
-    public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow'): void
-    {
-        // TODO: Implement configureNtp() method.
-    }
-
     public function configureSip(
         string $login,
         string $password,
@@ -171,12 +166,6 @@ abstract class basip extends domophone implements LanguageInterface
         // TODO: Implement syncData() method.
     }
 
-    public function transformDbConfig(array $dbConfig): array
-    {
-        // TODO: Implement transformDbConfig() method.
-        return $dbConfig;
-    }
-
     protected function getApartments(): array
     {
         // TODO: Implement getApartments() method.
@@ -210,12 +199,6 @@ abstract class basip extends domophone implements LanguageInterface
     protected function getMatrix(): array
     {
         // TODO: Implement getMatrix() method.
-        return [];
-    }
-
-    protected function getNtpConfig(): array
-    {
-        // TODO: Implement getNtpConfig() method.
         return [];
     }
 
