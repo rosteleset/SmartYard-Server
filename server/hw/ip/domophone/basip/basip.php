@@ -2,12 +2,13 @@
 
 namespace hw\ip\domophone\basip;
 
+use hw\Interface\LanguageInterface;
 use hw\ip\domophone\domophone;
 
 /**
  * Abstract class representing an BASIP intercom.
  */
-abstract class basip extends domophone
+abstract class basip extends domophone implements LanguageInterface
 {
     use \hw\ip\common\basip\basip;
 
@@ -124,6 +125,25 @@ abstract class basip extends domophone
     ): void
     {
         // TODO: Implement setDtmfCodes() method.
+    }
+
+    public function setLanguage(string $language): void
+    {
+        $lang = match ($language) {
+            'es' => 'Spanish',
+            'ru' => 'Russian',
+            'uk' => 'Ukrainian',
+            'pl' => 'Polish',
+            'nl' => 'Dutch',
+            'tr' => 'Turkish',
+            'fr' => 'French',
+            'da' => 'Danish',
+            'pt' => 'Portuguese',
+            'de' => 'Deutsch',
+            default => 'English',
+        };
+
+        $this->apiCall("/v1/device/language?language=$lang", 'POST');
     }
 
     public function setPublicCode(int $code = 0): void
