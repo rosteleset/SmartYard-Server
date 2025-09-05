@@ -35,7 +35,12 @@ abstract class basip extends domophone implements LanguageInterface
 
     public function configureEncoding(): void
     {
-        // TODO: Implement configureEncoding() method.
+        $this->apiCall('/v1/device/settings/video', 'POST', [
+            'fps' => 25, // No way to change this via WEB, so let it be the default value from the POST payload
+            'video_resolution' => '1280x720',
+        ]);
+
+        $this->apiCall('/v1/device/settings/payload', 'POST', ['payload_codec_h264' => 102]);
     }
 
     public function configureMatrix(array $matrix): void
@@ -84,7 +89,10 @@ abstract class basip extends domophone implements LanguageInterface
 
     public function setAudioLevels(array $levels): void
     {
-        // TODO: Implement setAudioLevels() method.
+        if (count($levels) === 2) {
+            $this->apiCall('/v1/device/settings/volume', 'POST', ['volume_level' => $levels[0]]);
+            $this->apiCall('/v1/device/settings/mic', 'POST', ['mic_gain_level' => $levels[1]]);
+        }
     }
 
     public function setCallTimeout(int $timeout): void
@@ -159,8 +167,10 @@ abstract class basip extends domophone implements LanguageInterface
 
     protected function getAudioLevels(): array
     {
-        // TODO: Implement getAudioLevels() method.
-        return [];
+        $volumeLevel = $this->apiCall('/v1/device/settings/volume')['volume_level'];
+        $micLevel = $this->apiCall('/v1/device/settings/mic')['mic_gain_level'];
+
+        return [$volumeLevel, $micLevel];
     }
 
     protected function getCmsModel(): string
