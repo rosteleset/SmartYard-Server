@@ -9,43 +9,43 @@ use hw\ip\camera\camera;
  */
 class basip extends camera
 {
-    use \hw\ip\common\basip\basip;
+    use \hw\ip\common\basip\basip {
+        transformDbConfig as protected commonTransformDbConfig;
+    }
 
     public function configureMotionDetection(array $detectionZones): void
     {
-        // TODO: Implement configureMotionDetection() method.
+        // Empty implementation
     }
 
     public function getCamshot(): string
     {
-        // TODO: Implement getCamshot() method.
-        return '';
-    }
-
-    public function setAdminPassword(string $password): void
-    {
-        // TODO: Implement setAdminPassword() method.
+        // TODO: too slow (~2 sec)
+        return $this->apiCall('/v1/photo/file', 'GET', [], 5);
     }
 
     public function setOsdText(string $text = ''): void
     {
-        // TODO: Implement setOsdText() method.
+        // Empty implementation
     }
 
-    public function syncData(): void
+    public function transformDbConfig(array $dbConfig): array
     {
-        // TODO: Implement syncData() method.
+        $dbConfig = $this->commonTransformDbConfig($dbConfig);
+        $dbConfig['osdText'] = '';
+        $dbConfig['motionDetection'] = [];
+        return $dbConfig;
     }
 
     protected function getMotionDetectionConfig(): array
     {
-        // TODO: Implement getMotionDetectionConfig() method.
+        // Empty implementation
         return [];
     }
 
     protected function getOsdText(): string
     {
-        // TODO: Implement getOsdText() method.
+        // Empty implementation
         return '';
     }
 }

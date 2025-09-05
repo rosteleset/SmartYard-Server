@@ -82,11 +82,6 @@ abstract class basip extends domophone implements LanguageInterface
         $this->apiCall('/v1/access/general/lock/open/remote/accepted/' . $lockNumber + 1);
     }
 
-    public function setAdminPassword(string $password): void
-    {
-        // TODO: Implement setAdminPassword() method.
-    }
-
     public function setAudioLevels(array $levels): void
     {
         // TODO: Implement setAudioLevels() method.
@@ -154,11 +149,6 @@ abstract class basip extends domophone implements LanguageInterface
     public function setUnlockTime(int $time = 3): void
     {
         // TODO: Implement setUnlockTime() method.
-    }
-
-    public function syncData(): void
-    {
-        // TODO: Implement syncData() method.
     }
 
     protected function getApartments(): array

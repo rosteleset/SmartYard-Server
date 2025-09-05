@@ -92,6 +92,16 @@ trait basip
         $this->apiCall('/v1/system/settings/default', 'POST');
     }
 
+    public function setAdminPassword(string $password): void
+    {
+        // TODO: Implement setAdminPassword() method.
+    }
+
+    public function syncData(): void
+    {
+        // Empty implementation
+    }
+
     public function transformDbConfig(array $dbConfig): array
     {
         $timezone = $dbConfig['ntp']['timezone'];
@@ -105,7 +115,7 @@ trait basip
         string $method = 'GET',
         array  $payload = [],
         int    $timeout = 0,
-    ): array
+    ): array|string
     {
         $req = $this->url . $this->apiPrefix . $resource;
 
@@ -131,7 +141,7 @@ trait basip
         $res = curl_exec($ch);
         curl_close($ch);
 
-        return json_decode($res, true) ?? [];
+        return json_decode($res, true) ?? $res;
     }
 
     protected function getEventServer(): string
