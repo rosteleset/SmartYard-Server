@@ -1089,6 +1089,7 @@
                     let rows = [];
 
                     for (let i in modules.addresses.cameras.meta.cameras) {
+                        console.log(typeof(params.filter));
                         if (params && typeof(params.filter) != "function" && params.filter != modules.addresses.cameras.meta.cameras[i].cameraId) continue;
 
                         rows.push({
