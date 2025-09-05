@@ -38,11 +38,6 @@ abstract class basip extends domophone implements LanguageInterface
         // TODO: Implement configureEncoding() method.
     }
 
-    public function configureEventServer(string $url): void
-    {
-        // TODO: Implement configureEventServer() method.
-    }
-
     public function configureMatrix(array $matrix): void
     {
         // TODO: Implement configureMatrix() method.
@@ -188,12 +183,6 @@ abstract class basip extends domophone implements LanguageInterface
     {
         // TODO: Implement getDtmfConfig() method.
         return [];
-    }
-
-    protected function getEventServer(): string
-    {
-        // TODO: Implement getEventServer() method.
-        return '';
     }
 
     protected function getMatrix(): array
