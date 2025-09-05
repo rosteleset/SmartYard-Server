@@ -11,11 +11,6 @@ class basip extends camera
 {
     use \hw\ip\common\basip\basip;
 
-    public function configureEventServer(string $url): void
-    {
-        // TODO: Implement configureEventServer() method.
-    }
-
     public function configureMotionDetection(array $detectionZones): void
     {
         // TODO: Implement configureMotionDetection() method.
@@ -40,12 +35,6 @@ class basip extends camera
     public function syncData(): void
     {
         // TODO: Implement syncData() method.
-    }
-
-    protected function getEventServer(): string
-    {
-        // TODO: Implement getEventServer() method.
-        return '';
     }
 
     protected function getMotionDetectionConfig(): array

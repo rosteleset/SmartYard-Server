@@ -33,6 +33,21 @@ trait basip
         }
     }
 
+    public function configureEventServer(string $url): void
+    {
+        ['host' => $server, 'port' => $port] = parse_url_ext($url);
+
+        $this->apiCall('/v1/syslog/settings', 'POST', [
+            'enabled' => $url !== '',
+            'server' => [
+                'port' => $port,
+                'server' => $server,
+                'severity' => 6,
+            ],
+            'tag' => '',
+        ]);
+    }
+
     public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow'): void
     {
         $this->apiCall('/v1/network/ntp', 'POST', [
@@ -117,6 +132,12 @@ trait basip
         curl_close($ch);
 
         return json_decode($res, true) ?? [];
+    }
+
+    protected function getEventServer(): string
+    {
+        $settings = $this->apiCall('/v1/syslog/settings')['server'];
+        return 'syslog.udp' . ':' . $settings['server'] . ':' . $settings['port'];
     }
 
     protected function getNtpConfig(): array
