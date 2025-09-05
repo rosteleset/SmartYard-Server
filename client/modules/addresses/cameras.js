@@ -1089,7 +1089,7 @@
                     let rows = [];
 
                     for (let i in modules.addresses.cameras.meta.cameras) {
-                        if (params && params.filter && params.filter != modules.addresses.cameras.meta.cameras[i].cameraId) continue;
+                        if (params && typeof(params.filter) != "function" && params.filter != modules.addresses.cameras.meta.cameras[i].cameraId) continue;
 
                         rows.push({
                             uid: modules.addresses.cameras.meta.cameras[i].cameraId,
@@ -1114,15 +1114,15 @@
                                     nowrap: true,
                                 },
                                 {
-                                    data: modules.addresses.cameras.meta.models[modules.addresses.cameras.meta.cameras[i].model]?.title,
+                                    data: modules.addresses.cameras.meta.models[modules.addresses.cameras.meta.cameras[i].model].title ? modules.addresses.cameras.meta.models[modules.addresses.cameras.meta.cameras[i].model].title : "&nbsp;",
                                     nowrap: true,
                                 },
                                 {
-                                    data: modules.addresses.cameras.meta.cameras[i].name,
+                                    data: modules.addresses.cameras.meta.cameras[i].name ? modules.addresses.cameras.meta.cameras[i].name : "&nbsp;",
                                     nowrap: true,
                                 },
                                 {
-                                    data: modules.addresses.cameras.meta.cameras[i].comments,
+                                    data: modules.addresses.cameras.meta.cameras[i].name ? modules.addresses.cameras.meta.cameras[i].name : "&nbsp;",
                                 },
                             ],
                         });
