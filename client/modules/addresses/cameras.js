@@ -28,9 +28,7 @@
         done(() => {
             message(i18n("addresses.cameraWasChanged"))
         }).
-        always(() => {
-            modules.addresses.cameras.route();
-        });
+        always(modules.addresses.cameras.route);
     },
 
     doDeleteCamera: function (cameraId) {
@@ -40,9 +38,7 @@
         done(() => {
             message(i18n("addresses.cameraWasDeleted"))
         }).
-        always(() => {
-            modules.addresses.cameras.route();
-        });
+        always(modules.addresses.cameras.route);
     },
 
     addCamera: function () {
