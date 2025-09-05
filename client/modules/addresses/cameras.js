@@ -1089,7 +1089,7 @@
                     let rows = [];
 
                     for (let i in modules.addresses.cameras.meta.cameras) {
-                        if (params && params.filter && params.filter != modules.addresses.cameras.meta.cameras[i].cameraId) continue;
+                        if (params && params.filter && typeof(params.filter) != "function" && params.filter != modules.addresses.cameras.meta.cameras[i].cameraId) continue;
 
                         rows.push({
                             uid: modules.addresses.cameras.meta.cameras[i].cameraId,
