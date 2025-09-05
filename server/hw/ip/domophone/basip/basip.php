@@ -10,7 +10,11 @@ use hw\ip\domophone\domophone;
  */
 abstract class basip extends domophone implements LanguageInterface
 {
-    use \hw\ip\common\basip\basip;
+    use \hw\ip\common\basip\basip {
+        transformDbConfig as protected commonTransformDbConfig;
+    }
+
+    protected const DISABLED_STUN_ADDRESS = '127.0.0.1';
 
     public function addRfid(string $code, int $apartment = 0): void
     {
@@ -58,7 +62,22 @@ abstract class basip extends domophone implements LanguageInterface
         int    $stunPort = 3478,
     ): void
     {
-        // TODO: Implement configureSip() method.
+        $this->apiCall('/v1/device/sip/settings', 'POST', [
+            'outbound' => '',
+            'password' => $password,
+            'proxy' => "sip:$server:$port",
+            'realm' => "$server:$port",
+            'registration_interval' => 900, // Max allowed value
+            'transport' => 'udp',
+            'user' => $login,
+            'user_id' => $password, // Use this field to store password. The password field always says "WebPass".
+            'stun' => [
+                'ip' => $stunEnabled ? $stunServer : self::DISABLED_STUN_ADDRESS,
+                'port' => $stunPort,
+            ],
+        ]);
+
+        $this->apiCall('/v1/device/sip/enable', 'POST', ['sip_enable' => $login !== '']);
     }
 
     public function configureUserAccount(string $password): void
@@ -159,6 +178,17 @@ abstract class basip extends domophone implements LanguageInterface
         // TODO: Implement setUnlockTime() method.
     }
 
+    public function transformDbConfig(array $dbConfig): array
+    {
+        $dbConfig = $this->commonTransformDbConfig($dbConfig);
+
+        if ($dbConfig['sip']['stunEnabled'] === false) {
+            $dbConfig['sip']['stunServer'] = self::DISABLED_STUN_ADDRESS;
+        }
+
+        return $dbConfig;
+    }
+
     protected function getApartments(): array
     {
         // TODO: Implement getApartments() method.
@@ -199,7 +229,18 @@ abstract class basip extends domophone implements LanguageInterface
 
     protected function getSipConfig(): array
     {
-        // TODO: Implement getSipConfig() method.
-        return [];
+        $sipSettings = $this->apiCall('/v1/device/sip/settings');
+
+        $realmParts = explode(':', $sipSettings['realm'], 2);
+
+        return [
+            'server' => $realmParts[0],
+            'port' => $realmParts[1] ?? 5060,
+            'login' => $sipSettings['user'],
+            'password' => $sipSettings['user_id'], // See the comment in the configureSip() method
+            'stunEnabled' => $sipSettings['stun']['ip'] !== self::DISABLED_STUN_ADDRESS,
+            'stunServer' => $sipSettings['stun']['ip'],
+            'stunPort' => $sipSettings['stun']['port'],
+        ];
     }
 }
