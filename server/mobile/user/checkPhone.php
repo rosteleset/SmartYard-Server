@@ -48,7 +48,7 @@
         $result = $result || $isdn->checkIncoming('8' . substr($user_phone, 1));
     }
 
-    if ($result || in_array($user_phone, @$config["backends"]["households"]["test_numbers"] ? : [])) {
+    if ($result || in_array($user_phone, @$config["backends"]["households"]["test_numbers"] ?: [])) {
         $token = GUIDv4();
         $subscribers = $households->getSubscribers("mobile", $user_phone);
         $devices = false;

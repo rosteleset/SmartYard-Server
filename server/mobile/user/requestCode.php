@@ -42,7 +42,7 @@
         $confirmMethod = @$postdata['method'] ?: @$config["backends"]["isdn"]["confirm_method"] ?: "outgoingCall";
 
         // fake accounts - always confirmation by pin
-        if (in_array($user_phone, @$config["backends"]["households"]["test_numbers"] ? : [])) {
+        if (in_array($user_phone, @$config["backends"]["households"]["test_numbers"] ?: [])) {
             $pin = 1001 + array_search($user_phone, $config["backends"]["households"]["test_numbers"]);
             $redis->setex("USERPIN:" . $user_phone, 60, $pin);
             response(200, [ "method" => "sms" ]);
