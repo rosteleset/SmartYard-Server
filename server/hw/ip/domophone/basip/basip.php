@@ -78,6 +78,7 @@ abstract class basip extends domophone implements LanguageInterface
         ]);
 
         $this->apiCall('/v1/device/sip/enable', 'POST', ['sip_enable' => $login !== '']);
+        $this->setConciergeNumber(9999); // Need to set a new concierge URL, the SIP server address may have changed
     }
 
     public function configureUserAccount(string $password): void
@@ -116,7 +117,10 @@ abstract class basip extends domophone implements LanguageInterface
 
     public function setCallTimeout(int $timeout): void
     {
-        // TODO: Implement setCallTimeout() method.
+        $this->apiCall('/v1/device/call/dial/timeout', 'POST', [
+            'dial_timeout' => $timeout,
+            'forwarding_timeout' => 25,
+        ]);
     }
 
     public function setCmsModel(string $model = ''): void
@@ -126,7 +130,12 @@ abstract class basip extends domophone implements LanguageInterface
 
     public function setConciergeNumber(int $sipNumber): void
     {
-        // TODO: Implement setConciergeNumber() method.
+        ['server' => $sipServer, 'port' => $sipPort] = $this->getSipConfig();
+
+        $this->apiCall('/v1/device/call/concierge', 'POST', [
+            'number_enable' => true,
+            'number_url' => "sip:$sipNumber@$sipServer:$sipPort",
+        ]);
     }
 
     public function setDtmfCodes(
@@ -161,22 +170,26 @@ abstract class basip extends domophone implements LanguageInterface
 
     public function setPublicCode(int $code = 0): void
     {
-        // TODO: Implement setPublicCode() method.
+        $this->apiCall('/v1/access/general/unlock/input/code', 'POST', [
+            'input_code_enable' => $code !== 0,
+            'input_code_number' => $code,
+        ]);
     }
 
     public function setSosNumber(int $sipNumber): void
     {
-        // TODO: Implement setSosNumber() method.
+        // Empty implementation
     }
 
     public function setTalkTimeout(int $timeout): void
     {
-        // TODO: Implement setTalkTimeout() method.
+        $this->apiCall('/v1/device/call/talk/timeout', 'POST', ['talk_timeout' => $timeout]);
     }
 
     public function setUnlockTime(int $time = 3): void
     {
-        // TODO: Implement setUnlockTime() method.
+        $this->apiCall('/v1/access/general/lock/timeout/1', 'POST', ['lock_timeout' => $time]);
+        $this->apiCall('/v1/access/general/lock/timeout/2', 'POST', ['lock_timeout' => $time]);
     }
 
     public function transformDbConfig(array $dbConfig): array
