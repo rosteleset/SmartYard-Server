@@ -2,13 +2,16 @@
 
 namespace hw\ip\domophone\basip;
 
-use hw\Interface\LanguageInterface;
+use hw\Interface\{
+    FreePassInterface,
+    LanguageInterface,
+};
 use hw\ip\domophone\domophone;
 
 /**
  * Abstract class representing an BASIP intercom.
  */
-abstract class basip extends domophone implements LanguageInterface
+abstract class basip extends domophone implements FreePassInterface, LanguageInterface
 {
     use \hw\ip\common\basip\basip {
         transformDbConfig as protected commonTransformDbConfig;
@@ -102,6 +105,11 @@ abstract class basip extends domophone implements LanguageInterface
         return 0;
     }
 
+    public function isFreePassEnabled(): bool
+    {
+        return $this->apiCall('/v1/access/freeaccess')['enable'] ?? true;
+    }
+
     public function openLock(int $lockNumber = 0): void
     {
         $this->apiCall('/v1/access/general/lock/open/remote/accepted/' . $lockNumber + 1);
@@ -147,6 +155,22 @@ abstract class basip extends domophone implements LanguageInterface
     {
         $this->apiCall('/v1/access/general/lock/dtmf/1', 'POST', ['dtmf_code' => $code1]);
         $this->apiCall('/v1/access/general/lock/dtmf/2', 'POST', ['dtmf_code' => $code2]);
+    }
+
+    public function setFreePassEnabled(bool $enabled): void
+    {
+        $days = array_map(fn($day) => [
+            'lock' => 'all',
+            'enable' => true,
+            'time_from' => 0,
+            'time_to' => 86340,
+            'day' => $day,
+        ], ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']);
+
+        $this->apiCall('/v1/access/freeaccess', 'POST', [
+            'enable' => $enabled,
+            'days' => $days,
+        ]);
     }
 
     public function setLanguage(string $language): void
