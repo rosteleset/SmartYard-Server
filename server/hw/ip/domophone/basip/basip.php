@@ -49,7 +49,7 @@ abstract class basip extends domophone implements LanguageInterface
 
     public function configureMatrix(array $matrix): void
     {
-        // TODO: Implement configureMatrix() method.
+        // Empty implementation
     }
 
     public function configureSip(
@@ -82,7 +82,7 @@ abstract class basip extends domophone implements LanguageInterface
 
     public function configureUserAccount(string $password): void
     {
-        // TODO: Implement configureUserAccount() method.
+        // Empty implementation
     }
 
     public function deleteApartment(int $apartment = 0): void
@@ -97,7 +97,7 @@ abstract class basip extends domophone implements LanguageInterface
 
     public function getLineDiagnostics(int $apartment): string|int|float
     {
-        // TODO: Implement getLineDiagnostics() method.
+        // Empty implementation
         return 0;
     }
 
@@ -121,7 +121,7 @@ abstract class basip extends domophone implements LanguageInterface
 
     public function setCmsModel(string $model = ''): void
     {
-        // TODO: Implement setCmsModel() method.
+        // Empty implementation
     }
 
     public function setConciergeNumber(int $sipNumber): void
@@ -136,7 +136,8 @@ abstract class basip extends domophone implements LanguageInterface
         string $codeCms = '1',
     ): void
     {
-        // TODO: Implement setDtmfCodes() method.
+        $this->apiCall('/v1/access/general/lock/dtmf/1', 'POST', ['dtmf_code' => $code1]);
+        $this->apiCall('/v1/access/general/lock/dtmf/2', 'POST', ['dtmf_code' => $code2]);
     }
 
     public function setLanguage(string $language): void
@@ -205,19 +206,26 @@ abstract class basip extends domophone implements LanguageInterface
 
     protected function getCmsModel(): string
     {
-        // TODO: Implement getCmsModel() method.
+        // Empty implementation
         return '';
     }
 
     protected function getDtmfConfig(): array
     {
-        // TODO: Implement getDtmfConfig() method.
-        return [];
+        $code1 = $this->apiCall('/v1/access/general/lock/dtmf/1')['dtmf_code'];
+        $code2 = $this->apiCall('/v1/access/general/lock/dtmf/2')['dtmf_code'];
+
+        return [
+            'code1' => $code1,
+            'code2' => $code2,
+            'code3' => '3',
+            'codeCms' => '1',
+        ];
     }
 
     protected function getMatrix(): array
     {
-        // TODO: Implement getMatrix() method.
+        // Empty implementation
         return [];
     }
 
