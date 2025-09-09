@@ -77,6 +77,7 @@
     "invalidFieldValue": "Ivalid field value",
     "fullscreen": "Fullscreen",
     "exitFullscreen": "Exit fullscreen",
+    "byDefault": "By default",
     "errors": {
         "404caption": "Oh! Page not found.",
         "404message": "It seems that we cannot find the page you need. <br /> Try to switch to <a href=\"?#\"> the initial page </a>.",

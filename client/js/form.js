@@ -282,17 +282,17 @@ function cardForm(params) {
                     icon: "p-1 fas fa-palette",
                 },
                 {
-                    text: i18n("colorWarning"),
+                    text: i18n("Warning"),
                     value: "warning",
                     icon: "p-1 fas fa-palette bg-warning",
                 },
                 {
-                    text: i18n("colorPrimary"),
+                    text: i18n("Primary"),
                     value: "primary",
                     icon: "p-1 fas fa-palette bg-primary",
                 },
                 {
-                    text: i18n("colorSecondary"),
+                    text: i18n("Secondary"),
                     value: "secondary",
                     icon: "p-1 fas fa-palette bg-secondary",
                 },
@@ -932,6 +932,7 @@ function cardForm(params) {
             case "password":
             case "text":
             case "color":
+            case "themeColor":
             case "area":
                 if (params.fields[i].type == "number") {
                     return parseFloatEx($(`#${_prefix}${params.fields[i].id}`).val());
