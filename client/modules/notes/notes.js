@@ -275,7 +275,7 @@
                     id: "color",
                     title: i18n("notes.color"),
                     type: "themeColor",
-                    value: "bg-warning",
+                    value: "warning",
                 },
             ],
             callback: r => {
