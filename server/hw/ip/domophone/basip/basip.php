@@ -21,12 +21,33 @@ abstract class basip extends domophone implements FreePassInterface, LanguageInt
 
     public function addRfid(string $code, int $apartment = 0): void
     {
-        // TODO: Implement addRfid() method.
+        $this->apiCall('/v1/access/identifier', 'POST', [
+            'identifier_number' => implode('-', str_split($code, 2)), // 0000001A2B3C4D => 00-00-00-1A-2B-3C-4D
+            'identifier_owner' => [
+                'name' => $code,
+                'type' => 'owner',
+            ],
+            'identifier_type' => 'card',
+            'lock' => 'first',
+            'valid' => [
+                'passes' => [
+                    'is_permanent' => true,
+                    'max_passes' => null,
+                    'time' => [
+                        'from' => null,
+                        'is_permanent' => true,
+                        'to' => null,
+                    ],
+                ],
+            ],
+        ]);
     }
 
     public function addRfids(array $rfids): void
     {
-        // TODO: Implement addRfids() method.
+        foreach ($rfids as $rfid) {
+            $this->addRfid($rfid);
+        }
     }
 
     public function configureApartment(
@@ -113,6 +134,12 @@ abstract class basip extends domophone implements FreePassInterface, LanguageInt
     public function openLock(int $lockNumber = 0): void
     {
         $this->apiCall('/v1/access/general/lock/open/remote/accepted/' . $lockNumber + 1);
+    }
+
+    public function prepare(): void
+    {
+        parent::prepare();
+        $this->configureInternalReader();
     }
 
     public function setAudioLevels(array $levels): void
@@ -225,6 +252,14 @@ abstract class basip extends domophone implements FreePassInterface, LanguageInt
         }
 
         return $dbConfig;
+    }
+
+    protected function configureInternalReader(): void
+    {
+        $this->apiCall('/v1/access/general/wiegand/type', 'POST', [
+            'identifier_representation' => 'hex',
+            'type' => 'wiegand_58', // Also need to reconfigure the reader mode using the "BAS-IP UKEY Config" app
+        ]);
     }
 
     protected function getApartments(): array
