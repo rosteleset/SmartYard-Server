@@ -1959,7 +1959,6 @@
                                     });
                                 });
                             } else {
-                                modules.tt.settings.doModifyTag(tagId, f.tag, f.foreground, f.background, projectId);
                                 loadingStart();
                                 PUT("tt", "tag", tagId, {
                                     tag: f.tag,
