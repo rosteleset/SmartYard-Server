@@ -303,8 +303,31 @@ abstract class basip extends domophone implements FreePassInterface, LanguageInt
 
     protected function getRfids(): array
     {
-        // TODO: Implement getRfids() method.
-        return [];
+        $rfids = [];
+        $pageNumber = 1;
+
+        while (true) {
+            $chunk = $this->apiCall("/v1/access/identifier/items?limit=50&page_number=$pageNumber");
+            $items = $chunk['list_items'] ?? [];
+
+            if (!$items) {
+                break;
+            }
+
+            foreach ($items as $item) {
+                $number = $item['identifier_owner']['name'] ?? null;
+
+                if ($number === null) {
+                    continue;
+                }
+
+                $rfids[$number] = $number;
+            }
+
+            $pageNumber++;
+        }
+
+        return $rfids;
     }
 
     protected function getSipConfig(): array
