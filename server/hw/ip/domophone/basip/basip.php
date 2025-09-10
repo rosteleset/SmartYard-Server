@@ -21,26 +21,8 @@ abstract class basip extends domophone implements FreePassInterface, LanguageInt
 
     public function addRfid(string $code, int $apartment = 0): void
     {
-        $this->apiCall('/v1/access/identifier', 'POST', [
-            'identifier_number' => implode('-', str_split($code, 2)), // 0000001A2B3C4D => 00-00-00-1A-2B-3C-4D
-            'identifier_owner' => [
-                'name' => $code,
-                'type' => 'owner',
-            ],
-            'identifier_type' => 'card',
-            'lock' => 'first',
-            'valid' => [
-                'passes' => [
-                    'is_permanent' => true,
-                    'max_passes' => null,
-                    'time' => [
-                        'from' => null,
-                        'is_permanent' => true,
-                        'to' => null,
-                    ],
-                ],
-            ],
-        ]);
+        $formattedCode = implode('-', str_split($code, 2)); // 0000001A2B3C4D => 00-00-00-1A-2B-3C-4D
+        $this->addIdentifier($code, $formattedCode);
     }
 
     public function addRfids(array $rfids): void
@@ -117,7 +99,19 @@ abstract class basip extends domophone implements FreePassInterface, LanguageInt
 
     public function deleteRfid(string $code = ''): void
     {
-        // TODO: Implement deleteRfid() method.
+        if ($code === '') {
+            $uids = $this->getUidByIdentifierName();
+        } else {
+            $uid = $this->getUidByIdentifierName($code);
+
+            if ($uid === null) {
+                return;
+            }
+
+            $uids = [$uid];
+        }
+
+        $this->deleteIdentifiers($uids);
     }
 
     public function getLineDiagnostics(int $apartment): string|int|float
@@ -254,12 +248,59 @@ abstract class basip extends domophone implements FreePassInterface, LanguageInt
         return $dbConfig;
     }
 
+    /**
+     * Adds a new identifier.
+     *
+     * @param string $name Identifier name.
+     * @param string $number Identifier number.
+     * @return void
+     */
+    protected function addIdentifier(string $name, string $number): void
+    {
+        $this->apiCall('/v1/access/identifier', 'POST', [
+            'identifier_number' => $number,
+            'identifier_owner' => [
+                'name' => $name,
+                'type' => 'owner',
+            ],
+            'identifier_type' => 'card',
+            'lock' => 'first',
+            'valid' => [
+                'passes' => [
+                    'is_permanent' => true,
+                    'max_passes' => null,
+                    'time' => [
+                        'from' => null,
+                        'is_permanent' => true,
+                        'to' => null,
+                    ],
+                ],
+            ],
+        ]);
+    }
+
+    /**
+     * Configures the internal reader.
+     *
+     * @return void
+     */
     protected function configureInternalReader(): void
     {
         $this->apiCall('/v1/access/general/wiegand/type', 'POST', [
             'identifier_representation' => 'hex',
             'type' => 'wiegand_58', // Also need to reconfigure the reader mode using the "BAS-IP UKEY Config" app
         ]);
+    }
+
+    /**
+     * Deletes identifiers by their UIDs.
+     *
+     * @param int[] $uids Array of identifier UIDs to delete.
+     * @return void
+     */
+    protected function deleteIdentifiers(array $uids): void
+    {
+        $this->apiCall('/v1/access/identifier/items', 'DELETE', ['uid_items' => $uids]);
     }
 
     protected function getApartments(): array
@@ -295,6 +336,29 @@ abstract class basip extends domophone implements FreePassInterface, LanguageInt
         ];
     }
 
+    /**
+     * Returns all identifiers.
+     *
+     * @return array List of identifier arrays.
+     */
+    protected function getIdentifiers(): array
+    {
+        $identifiers = [];
+
+        for ($pageNumber = 1; ; $pageNumber++) {
+            $items = $this->apiCall("/v1/access/identifier/items?limit=50&page_number=$pageNumber")['list_items'] ?? [];
+
+            // Check if the end of the pages has been reached
+            if (!is_array($items) || count($items) === 0) {
+                break;
+            }
+
+            $identifiers = [...$identifiers, ...$items];
+        }
+
+        return $identifiers;
+    }
+
     protected function getMatrix(): array
     {
         // Empty implementation
@@ -303,31 +367,8 @@ abstract class basip extends domophone implements FreePassInterface, LanguageInt
 
     protected function getRfids(): array
     {
-        $rfids = [];
-        $pageNumber = 1;
-
-        while (true) {
-            $chunk = $this->apiCall("/v1/access/identifier/items?limit=50&page_number=$pageNumber");
-            $items = $chunk['list_items'] ?? [];
-
-            if (!$items) {
-                break;
-            }
-
-            foreach ($items as $item) {
-                $number = $item['identifier_owner']['name'] ?? null;
-
-                if ($number === null) {
-                    continue;
-                }
-
-                $rfids[$number] = $number;
-            }
-
-            $pageNumber++;
-        }
-
-        return $rfids;
+        $identifiers = $this->getIdentifiers() ?? [];
+        return array_column(array_column($identifiers, 'identifier_owner'), 'name', 'name');
     }
 
     protected function getSipConfig(): array
@@ -345,5 +386,28 @@ abstract class basip extends domophone implements FreePassInterface, LanguageInt
             'stunServer' => $sipSettings['stun']['ip'],
             'stunPort' => $sipSettings['stun']['port'],
         ];
+    }
+
+    /**
+     * Returns UID by identifier name or all UIDs if name is null.
+     *
+     * @param string|null $identifierName The name of the identifier owner to search for.
+     * @return int|int[]|null A single UID, an array of all UIDs, or null if not found.
+     */
+    protected function getUidByIdentifierName(?string $identifierName = null): int|array|null
+    {
+        $identifiers = $this->getIdentifiers() ?? [];
+
+        if ($identifierName === null) {
+            return array_column($identifiers, 'identifier_uid');
+        }
+
+        foreach ($identifiers as $item) {
+            if (($item['identifier_owner']['name'] ?? null) === $identifierName) {
+                return $item['identifier_uid'];
+            }
+        }
+
+        return null;
     }
 }
