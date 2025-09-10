@@ -8,6 +8,7 @@
 
     isDragging: false,
     dragTarget: undefined,
+    gridSize: 10,
 
     lastOffsetX: 0,
     lastOffsetY: 0,
@@ -138,13 +139,11 @@
             if (modules.notes.isDragging == 1) {
                 let off = cont.offset();
 
-                let gridSize = 10;
-
                 let newX = Math.max(-off.left + e.clientX - modules.notes.lastOffsetX, 0);
                 let newY = Math.max($("html").scrollTop() - off.top + e.clientY - modules.notes.lastOffsetY, 0);
 
-                newX = Math.round(newX / gridSize) * gridSize;
-                newY = Math.round(newY / gridSize) * gridSize;
+                newX = Math.round(newX / modules.notes.gridSize) * modules.notes.gridSize;
+                newY = Math.round(newY / modules.notes.gridSize) * modules.notes.gridSize;
 
                 modules.notes.dragTarget.css({
                     left: newX + 'px',
@@ -354,10 +353,14 @@
 
                 let x = window.innerWidth / 2 - sticky.outerWidth(true) / 2 + (-100 + Math.round(Math.random() * 50));
                 let y = window.innerHeight / 2 - sticky.outerHeight(true) / 2 + (-100 + Math.round(Math.random() * 50));
+                let w = parseInt(window.getComputedStyle(document.getElementById(id)).getPropertyValue("width"))
+                let h = parseInt(window.getComputedStyle(document.getElementById(id)).getPropertyValue("height"))
 
                 sticky.css({
                     left: x + 'px',
                     top: y + 'px',
+                    width: ((Math.floor(w / modules.notes.gridSize) + 1) * modules.notes.gridSize) + 'px',
+                    height: ((Math.floor(h / modules.notes.gridSize) + 1) * modules.notes.gridSize) + 'px',
                 });
 
                 $(".editSticky").off("click").on("click", modules.notes.modifySticky);
@@ -583,9 +586,14 @@
 
                     let sticky = $("#" + id);
 
+                    let w = parseInt(window.getComputedStyle(document.getElementById(id)).getPropertyValue("width"))
+                    let h = parseInt(window.getComputedStyle(document.getElementById(id)).getPropertyValue("height"))
+
                     sticky.css({
                         left: x + 'px',
                         top: y + 'px',
+                        width: ((Math.floor(w / modules.notes.gridSize) + 1) * modules.notes.gridSize) + 'px',
+                        height: ((Math.floor(h / modules.notes.gridSize) + 1) * modules.notes.gridSize) + 'px',
                     });
 
                     $(".editSticky").off("click").on("click", modules.notes.modifySticky);
@@ -673,9 +681,14 @@
 
                 let sticky = $("#" + id);
 
+                let w = parseInt(window.getComputedStyle(document.getElementById(id)).getPropertyValue("width"))
+                let h = parseInt(window.getComputedStyle(document.getElementById(id)).getPropertyValue("height"))
+
                 sticky.css({
                     left: modules.notes.notes[id].x + 'px',
                     top: modules.notes.notes[id].y + 'px',
+                    width: ((Math.floor(w / modules.notes.gridSize) + 1) * modules.notes.gridSize) + 'px',
+                    height: ((Math.floor(h / modules.notes.gridSize) + 1) * modules.notes.gridSize) + 'px',
                 });
             }
         }
