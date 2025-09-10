@@ -2249,14 +2249,6 @@
                                 click: (id, data) => {
                                     if (id == "favorite") {
                                         if (!bookmarked) {
-                                            let icons = [];
-                                            for (let i in faIcons) {
-                                                icons.push({
-                                                    icon: faIcons[i].title,
-                                                    text: faIcons[i].title.split(" fa-")[1] + (faIcons[i].searchTerms.length ? (", " + faIcons[i].searchTerms.join(", ")) : ""),
-                                                    value: faIcons[i].title,
-                                                });
-                                            }
                                             cardForm({
                                                 title: i18n("tt.addFavoriteFilter"),
                                                 footer: true,
@@ -2268,20 +2260,18 @@
                                                     {
                                                         id: "icon",
                                                         title: i18n("tt.filterIcon"),
-                                                        type: "select2",
-                                                        options: icons,
+                                                        type: "icon",
                                                         value: "far fa-bookmark",
                                                     },
                                                     {
                                                         id: "leftSide",
                                                         title: i18n("tt.filterLeftSide"),
-                                                        type: "noyes",
+                                                        type: "yesno",
                                                     },
                                                     {
                                                         id: "color",
                                                         title: i18n("tt.filterColor"),
-                                                        type: "themeColor",
-                                                        value: ""
+                                                        type: "color",
                                                     },
                                                 ],
                                                 callback: r => {
@@ -2289,7 +2279,7 @@
                                                     POST("tt", "favoriteFilter", filterName, {
                                                         project: lStore("ttProject"),
                                                         icon: r.icon,
-                                                        color: r.color ? ("text-" + r.color) : "",
+                                                        color: r.color,
                                                         leftSide: r.leftSide,
                                                     }).
                                                     done(() => {

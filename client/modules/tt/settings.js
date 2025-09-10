@@ -1857,7 +1857,7 @@
                                     },
                                     {
                                         id: "color",
-                                        type: "themeColor",
+                                        type: "color",
                                         title: i18n("tt.color"),
                                         placeholder: i18n("tt.color"),
                                     },

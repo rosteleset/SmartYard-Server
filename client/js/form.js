@@ -273,7 +273,7 @@ function cardForm(params) {
             params.fields[i].options = fonts;
         }
 
-        if (params.fields[i].type == "themeColor" || params.fields[i].type == "color") {
+        if (params.fields[i].type == "color") {
             params.fields[i].type = "select2";
             params.fields[i].options = [
                 {
@@ -931,7 +931,6 @@ function cardForm(params) {
             case "password":
             case "text":
             case "color":
-            case "themeColor":
             case "area":
                 if (params.fields[i].type == "number") {
                     return parseFloatEx($(`#${_prefix}${params.fields[i].id}`).val());

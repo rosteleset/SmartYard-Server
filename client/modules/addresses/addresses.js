@@ -38,7 +38,7 @@
                         h += `
                             <li class="nav-item" title="${escapeHTML(r.favorites[i].title)}" style="margin-top: 3px;">
                                     <a href="${url}" class="nav-link" onclick="xblur(); return true;">
-                                    <i class="nav-icon fa-fw ${r.favorites[i].icon} ${r.favorites[i].color}"></i>
+                                    <i class="nav-icon fa-fw ${r.favorites[i].icon} text-${r.favorites[i].color}"></i>
                                     <p class="text-nowrap">${escapeHTML(r.favorites[i].title)}</p>
                                 </a>
                             </li>
@@ -117,15 +117,6 @@
         }
 
         if (!f) {
-            let icons = [];
-            for (let i in faIcons) {
-                icons.push({
-                    icon: faIcons[i].title + " fa-fw",
-                    text: faIcons[i].title.split(" fa-")[1] + (faIcons[i].searchTerms.length ? (", " + faIcons[i].searchTerms.join(", ")) : ""),
-                    value: faIcons[i].title,
-                });
-            }
-
             cardForm({
                 title: i18n("addresses.addFavorite"),
                 footer: true,
@@ -143,52 +134,13 @@
                     {
                         id: "icon",
                         title: i18n("addresses.favoriteIcon"),
-                        type: "select2",
-                        options: icons,
+                        type: "icon",
                         value: "far fa-bookmark",
                     },
                     {
                         id: "color",
                         title: i18n("addresses.favoriteColor"),
-                        type: "select2",
-                        options: [
-                            {
-                                text: "По умолчанию",
-                                value: "",
-                                class: "",
-                            },
-                            {
-                                text: "Primary",
-                                value: "text-primary",
-                                class: "text-primary",
-                            },
-                            {
-                                text: "Secondary",
-                                value: "text-secondary",
-                                class: "text-secondary",
-                            },
-                            {
-                                text: "Success",
-                                value: "text-success",
-                                class: "text-success",
-                            },
-                            {
-                                text: "Danger",
-                                value: "text-danger",
-                                class: "text-danger",
-                            },
-                            {
-                                text: "Warning",
-                                value: "text-warning",
-                                class: "text-warning",
-                            },
-                            {
-                                text: "Info",
-                                value: "text-info",
-                                class: "text-info",
-                            },
-                        ],
-                        value: ""
+                        type: "color",
                     },
                 ],
                 callback: r => {
