@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict c7Est5YkK744eHBSALCcyMgI8a6FBihSJzvITncb1XaEJCBUy4RItNnDMFs2RCS
+\restrict I2UiDmLpWiWmz5GNd4nKtlOeRlANMqXgEsQKtJ6TYY5sYoHzzuoeu6ikMpt4LX8
 
 -- Dumped from database version 17.6
 -- Dumped by pg_dump version 17.6
@@ -2338,8 +2338,7 @@ CREATE TABLE public.tt_tags (
     tag_id integer NOT NULL,
     project_id integer NOT NULL,
     tag character varying,
-    foreground text,
-    background text
+    color character varying
 );
 
 
@@ -4289,5 +4288,5 @@ GRANT ALL ON SCHEMA public TO rbt;
 -- PostgreSQL database dump complete
 --
 
-\unrestrict c7Est5YkK744eHBSALCcyMgI8a6FBihSJzvITncb1XaEJCBUy4RItNnDMFs2RCS
+\unrestrict I2UiDmLpWiWmz5GNd4nKtlOeRlANMqXgEsQKtJ6TYY5sYoHzzuoeu6ikMpt4LX8
 
