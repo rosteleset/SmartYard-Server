@@ -12,5 +12,17 @@
     "default": "By default",
     "checks": "Checkboxes",
     "deleteNote": "Delete note?",
-    "modifyNote": "Modify note"
+    "modifyNote": "Modify note",
+    "white": "White",
+    "coral": "Coral",
+    "peach": "Peach",
+    "sand": "Sand",
+    "mint": "Mint",
+    "grayGreen": "Gray-green",
+    "grayBlue": "Gray-blue",
+    "gray": "Gray",
+    "darkBlue": "Dark blue",
+    "pink": "Pink",
+    "terracotta": "Terracotta",
+    "lightGray": "Light gray"
 }

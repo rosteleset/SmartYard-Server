@@ -797,22 +797,22 @@
             /**
              * @param $projectId
              * @param $tag
-             * @param $foreground
-             * @param $background
+             * @param $color
+             *
              * @return false|integer
              */
 
-            abstract public function addTag($projectId, $tag, $foreground, $background);
+            abstract public function addTag($projectId, $tag, $fcolor);
 
             /**
              * @param $tagId
              * @param $tag
-             * @param $foreground
-             * @param $background
+             * @param $color
+             *
              * @return boolean
              */
 
-            abstract public function modifyTag($tagId, $tag, $foreground, $background);
+            abstract public function modifyTag($tagId, $tag, $color);
 
             /**
              * @return boolean

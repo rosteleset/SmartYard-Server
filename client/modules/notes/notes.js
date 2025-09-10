@@ -17,6 +17,69 @@
     notes: {},
     categories: [],
 
+    colors: [
+        {
+            text: i18n("notes.white"),
+            value: "white",
+            icon: "p-1 fas fa-palette sticky-bg-color-white",
+        },
+        {
+            text: i18n("notes.coral"),
+            value: "coral",
+            icon: "p-1 fas fa-palette sticky-bg-color-coral",
+        },
+        {
+            text: i18n("notes.peach"),
+            value: "peach",
+            icon: "p-1 fas fa-palette sticky-bg-color-peach",
+        },
+        {
+            text: i18n("notes.sand"),
+            value: "sand",
+            icon: "p-1 fas fa-palette sticky-bg-color-sand",
+        },
+        {
+            text: i18n("notes.mint"),
+            value: "mint",
+            icon: "p-1 fas fa-palette sticky-bg-color-mint",
+        },
+        {
+            text: i18n("notes.grayGreen"),
+            value: "grayGreen",
+            icon: "p-1 fas fa-palette sticky-bg-color-grayGreen",
+        },
+        {
+            text: i18n("notes.grayBlue"),
+            value: "grayBlue",
+            icon: "p-1 fas fa-palette sticky-bg-color-grayBlue",
+        },
+        {
+            text: i18n("notes.gray"),
+            value: "gray",
+            icon: "p-1 fas fa-palette sticky-bg-color-gray",
+        },
+        {
+            text: i18n("notes.darkBlue"),
+            value: "darkBlue",
+            icon: "p-1 fas fa-palette sticky-bg-color-darkBlue",
+        },
+        {
+            text: i18n("notes.pink"),
+            value: "pink",
+            icon: "p-1 fas fa-palette sticky-bg-color-pink",
+        },
+        {
+            text: i18n("notes.terracotta"),
+            value: "terracotta",
+            icon: "p-1 fas fa-palette sticky-bg-color-terracotta",
+        },
+        {
+            text: i18n("notes.lightGray"),
+            value: "lightGray",
+            icon: "p-1 fas fa-palette sticky-bg-color-lightGray",
+        },
+    ],
+
     init: function () {
         if (parseInt(myself.uid) > 0) {
             if (AVAIL("notes")) {
@@ -129,53 +192,19 @@
     },
 
     renderNote: function (id, subject, body, color, icon, font, checks, remind, z) {
-        let newSticky = `<div id='${id}' class='drag sticky ${color ? color : "bg-warning"}' style='z-index: ${z};'>`;
-
-        let ch = {
-            "warning": "background-color: #3498db;",
-            "primary": "background-color: white;",
-            "secondary": "background-color: black;",
-            "success": "background-color: white;",
-            "danger": "background-color: yellow;",
-            "info": "",
-            "purple": "background-color: yellow;",
-            "orange": "",
-            "lightblue": "",
-            "fuchsia": "",
-            "black": "background-color: yellow;",
-            "lime": "",
-        };
-
-        let cc = {
-            "warning": "color: black; background-color: white;",
-            "primary": "color: blue; background-color: white;",
-            "secondary": "color: white; background-color: black;",
-            "success": "color: green; background-color: white;",
-            "danger": "color: black; background-color: yellow;",
-            "info": "",
-            "purple": "color: black; background-color: yellow;",
-            "orange": "",
-            "lightblue": "",
-            "fuchsia": "",
-            "black": "color: black; background-color: yellow;",
-            "lime": "",
-        };
+        let newSticky = `<div id='${id}' class='drag sticky sticky-bg-color-${color}' style='z-index: ${z};'>`;
 
         // TODO: box-shadow: 2px 2px 7px {shadow-color};
 
         subject = $.trim(subject);
         if (subject) {
-            newSticky += `<h5 class="caption">`;
+            newSticky += `<h5 class="caption" style='opacity: 100%;'>`;
             if ($.trim(icon)) {
                 newSticky += `<i class="fa-fw ${icon} mr-2"></i>`;
             }
             newSticky += convertLinks(nl2br(escapeHTML(subject)));
             newSticky += "</h5>";
-            if (ch[color]) {
-                newSticky += `<hr style="${ch[color]}" />`;
-            } else {
-                newSticky += "<hr />";
-            }
+            newSticky += "<hr style='opacity: 50%;' />";
         }
 
         newSticky += "<p class='body'";
@@ -193,15 +222,12 @@
             newSticky += convertLinks(nl2br(escapeHTML(body)));
         }
 
-        if (cc[color]) {
-            newSticky += `</p><i class="far fa-fw fa-edit editSticky" style="${cc[color]}"></i>`;
-        } else {
-            newSticky += '</p><i class="far fa-fw fa-edit editSticky"></i>';
-        }
+        newSticky += '</p><i class="far fa-fw fa-edit editSticky"></i>';
 
         if (remind) {
             newSticky += '<i class="far fa-fw fa-clock text-small reminder"></i>';
         }
+
         newSticky += '</div>';
 
         return newSticky;
@@ -274,8 +300,9 @@
                 {
                     id: "color",
                     title: i18n("notes.color"),
-                    type: "themeColor",
-                    value: "warning",
+                    type: "select2",
+                    options: modules.notes.colors,
+                    value: "peach",
                 },
             ],
             callback: r => {
@@ -481,7 +508,8 @@
                 {
                     id: "color",
                     title: i18n("notes.color"),
-                    type: "themeColor",
+                    type: "select2",
+                    options: modules.notes.colors,
                     value: modules.notes.notes[id].color,
                 },
             ],

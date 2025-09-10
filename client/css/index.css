@@ -652,8 +652,6 @@ body.dark-mode .hr-text::after .hr-text-white::after .hr-text-pointer::after hr-
   position: absolute;
   right: 0.8rem;
   bottom: 0.8rem;
-  background: #3d9970;
-  color: white;
   border-radius: 50%;
   width: 32px;
   height: 32px;
@@ -667,6 +665,54 @@ body.dark-mode .hr-text::after .hr-text-white::after .hr-text-pointer::after hr-
   right: 0.25rem;
   top: 0.35rem;
   pointer-events: none;
+}
+
+.sticky-bg-color-white {
+  background-color: rgb(255, 255, 255);
+}
+
+.sticky-bg-color-coral {
+  background-color: rgb(250, 175, 168);
+}
+
+.sticky-bg-color-peach {
+  background-color: rgb(243, 159, 118);
+}
+
+.sticky-bg-color-sand {
+  background-color: rgb(255, 248, 184);
+}
+
+.sticky-bg-color-mint {
+  background-color: rgb(226, 246, 211);
+}
+
+.sticky-bg-color-grayGreen {
+  background-color: rgb(180, 221, 211);
+}
+
+.sticky-bg-color-grayBlue {
+  background-color: rgb(212, 228, 237);
+}
+
+.sticky-bg-color-gray {
+  background-color: rgb(174, 204, 220);
+}
+
+.sticky-bg-color-darkBlue {
+  background-color: rgb(211, 191, 219);
+}
+
+.sticky-bg-color-pink {
+  background-color: rgb(246, 226, 221);
+}
+
+.sticky-bg-color-terracotta {
+  background-color: rgb(233, 227, 212);
+}
+
+.sticky-bg-color-lightGray {
+  background-color: rgb(239, 239, 241);
 }
 
 .sortable-list-noborder-input {

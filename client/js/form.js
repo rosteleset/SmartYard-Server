@@ -273,71 +273,71 @@ function cardForm(params) {
             params.fields[i].options = fonts;
         }
 
-        if (params.fields[i].type == "themeColor") {
+        if (params.fields[i].type == "themeColor" || params.fields[i].type == "color") {
             params.fields[i].type = "select2";
             params.fields[i].options = [
                 {
-                    text: i18n("byDefault"),
+                    text: i18n("default"),
                     value: "",
                     icon: "p-1 fas fa-palette",
                 },
                 {
-                    text: i18n("Warning"),
+                    text: i18n("colorWarning"),
                     value: "warning",
                     icon: "p-1 fas fa-palette bg-warning",
                 },
                 {
-                    text: i18n("Primary"),
+                    text: i18n("colorPrimary"),
                     value: "primary",
                     icon: "p-1 fas fa-palette bg-primary",
                 },
                 {
-                    text: i18n("Secondary"),
+                    text: i18n("colorSecondary"),
                     value: "secondary",
                     icon: "p-1 fas fa-palette bg-secondary",
                 },
                 {
-                    text: i18n("Success"),
+                    text: i18n("colorSuccess"),
                     value: "success",
                     icon: "p-1 fas fa-palette bg-success",
                 },
                 {
-                    text: i18n("Danger"),
+                    text: i18n("colorDanger"),
                     value: "danger",
                     icon: "p-1 fas fa-palette bg-danger",
                 },
                 {
-                    text: i18n("Info"),
+                    text: i18n("colorInfo"),
                     value: "info",
                     icon: "p-1 fas fa-palette bg-info",
                 },
                 {
-                    text: i18n("Purple"),
+                    text: i18n("colorPurple"),
                     value: "purple",
                     icon: "p-1 fas fa-palette bg-purple",
                 },
                 {
-                    text: i18n("Orange"),
+                    text: i18n("colorOrange"),
                     value: "orange",
                     icon: "p-1 fas fa-palette bg-orange",
                 },
                 {
-                    text: i18n("Lightblue"),
+                    text: i18n("colorLightblue"),
                     value: "lightblue",
                     icon: "p-1 fas fa-palette bg-lightblue",
                 },
                 {
-                    text: i18n("Fuchsia"),
+                    text: i18n("colorFuchsia"),
                     value: "fuchsia",
                     icon: "p-1 fas fa-palette bg-fuchsia",
                 },
                 {
-                    text: i18n("Black"),
+                    text: i18n("colorBlack"),
                     value: "black",
                     icon: "p-1 fas fa-palette bg-black",
                 },
                 {
-                    text: i18n("Lime"),
+                    text: i18n("colorLime"),
                     value: "lime",
                     icon: "p-1 fas fa-palette bg-lime",
                 },
@@ -704,7 +704,6 @@ function cardForm(params) {
             case "number":
             case "tel":
             case "password":
-            case "color":
                 if (params.fields[i].button) {
                     h += `<div class="input-group">`;
                 }

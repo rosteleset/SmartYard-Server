@@ -1856,18 +1856,10 @@
                                         placeholder: i18n("tt.tag"),
                                     },
                                     {
-                                        id: "foreground",
-                                        type: "color",
-                                        title: i18n("tt.foreground"),
-                                        placeholder: i18n("tt.foreground"),
-                                        value: "#666666",
-                                    },
-                                    {
-                                        id: "background",
-                                        type: "color",
-                                        title: i18n("tt.background"),
-                                        placeholder: i18n("tt.background"),
-                                        value: "#ffffff",
+                                        id: "color",
+                                        type: "themeColor",
+                                        title: i18n("tt.color"),
+                                        placeholder: i18n("tt.color"),
                                     },
                                 ],
                                 callback: f => {
@@ -1875,8 +1867,7 @@
                                     POST("tt", "tag", false, {
                                         projectId: projectId,
                                         tag: f.tag,
-                                        foreground: f.foreground,
-                                        background: f.background,
+                                        color: f.color,
                                     }).
                                     fail(FAIL).
                                     done(() => {
@@ -1898,13 +1889,11 @@
                 },
                 edit: tagId => {
                     let tag = "";
-                    let foreground = "#666666";
-                    let background = "#ffffff";
+                    let color = "";
                     for (let i in modules.tt.meta.tags) {
                         if (modules.tt.meta.tags[i].projectId == projectId && modules.tt.meta.tags[i].tagId == tagId) {
                             tag = modules.tt.meta.tags[i].tag;
-                            foreground = modules.tt.meta.tags[i].foreground?modules.tt.meta.tags[i].foreground:foreground;
-                            background = modules.tt.meta.tags[i].background?modules.tt.meta.tags[i].background:background;
+                            color = modules.tt.meta.tags[i].color;
                         }
                     }
                     cardForm({
@@ -1930,18 +1919,11 @@
                                 value: tag,
                             },
                             {
-                                id: "foreground",
+                                id: "color",
                                 type: "color",
-                                title: i18n("tt.foreground"),
-                                placeholder: i18n("tt.foreground"),
-                                value: foreground,
-                            },
-                            {
-                                id: "background",
-                                type: "color",
-                                title: i18n("tt.background"),
-                                placeholder: i18n("tt.background"),
-                                value: background,
+                                title: i18n("tt.color"),
+                                placeholder: i18n("tt.color"),
+                                value: color,
                             },
                         ],
                         callback: f => {
@@ -1962,8 +1944,7 @@
                                 loadingStart();
                                 PUT("tt", "tag", tagId, {
                                     tag: f.tag,
-                                    foreground: f.foreground,
-                                    background: f.background,
+                                    color: f.color,
                                 }).
                                 fail(FAIL).
                                 fail(loadingDone).
@@ -1999,7 +1980,7 @@
                                         data: modules.tt.meta.tags[i].tagId,
                                     },
                                     {
-                                        data: `<span class="mr-1 text-bold" style='border: solid thin #cbccce; padding-left: 7px; padding-right: 7px; padding-top: 2px; padding-bottom: 2px; color: ${modules.tt.meta.tags[i].foreground}; border-radius: 4px; background: ${modules.tt.meta.tags[i].background};'><i class="fas fa-tag mr-2"></i>${modules.tt.meta.tags[i].tag}</span>`,
+                                        data: `<span class="mr-1 text-bold ${modules.tt.meta.tags[i].color ? ("bg-" + modules.tt.meta.tags[i].color) : ""}" style='border: solid thin #cbccce; padding-left: 7px; padding-right: 7px; padding-top: 2px; padding-bottom: 2px; border-radius: 8px;'><i class="fas fa-tag mr-2"></i>${modules.tt.meta.tags[i].tag}</span>`,
                                     },
                                 ],
                             });

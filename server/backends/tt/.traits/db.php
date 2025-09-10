@@ -1138,8 +1138,8 @@
             /**
              * @inheritDoc
              */
-            public function getTags($projectId = false)
-            {
+
+            public function getTags($projectId = false) {
                 $key = $projectId?"TAGS:$projectId":"TAGS";
 
                 $cache = $this->cacheGet($key);
@@ -1155,8 +1155,7 @@
                     $_tags = $this->db->get("select * from tt_tags where project_id = $projectId order by tag", false, [
                         "tag_id" => "tagId",
                         "tag" => "tag",
-                        "foreground" => "foreground",
-                        "background" => "background",
+                        "color" => "color",
                     ]);
 
                     $this->cacheSet($key, $_tags);
@@ -1166,8 +1165,7 @@
                         "tag_id" => "tagId",
                         "project_id" => "projectId",
                         "tag" => "tag",
-                        "foreground" => "foreground",
-                        "background" => "background",
+                        "color" => "color",
                     ]);
 
                     $this->cacheSet($key, $_tags);
@@ -1178,8 +1176,8 @@
             /**
              * @inheritDoc
              */
-            public function addTag($projectId, $tag, $foreground, $background)
-            {
+
+            public function addTag($projectId, $tag, $color) {
                 $this->clearCache();
 
                 if (!checkInt($projectId) || !checkStr($tag)) {
@@ -1187,12 +1185,11 @@
                 }
 
                 try {
-                    $sth = $this->db->prepare("insert into tt_tags (project_id, tag, foreground, background) values (:project_id, :tag, :foreground, :background)");
+                    $sth = $this->db->prepare("insert into tt_tags (project_id, tag, color) values (:project_id, :tag, :color)");
                     if (!$sth->execute([
                         "project_id" => $projectId,
                         "tag" => $tag,
-                        "foreground" => $foreground,
-                        "background" => $background,
+                        "color" => $color,
                     ])) {
                         return false;
                     }
@@ -1207,8 +1204,8 @@
             /**
              * @inheritDoc
              */
-            public function modifyTag($tagId, $tag, $foreground, $background)
-            {
+
+            public function modifyTag($tagId, $tag, $color) {
                 $this->clearCache();
 
                 if (!checkInt($tagId) || !checkStr($tag)) {
@@ -1216,11 +1213,10 @@
                 }
 
                 try {
-                    $sth = $this->db->prepare("update tt_tags set tag = :tag, foreground = :foreground, background = :background where tag_id = $tagId");
+                    $sth = $this->db->prepare("update tt_tags set tag = :tag, color = :color where tag_id = $tagId");
                     $sth->execute([
                         "tag" => $tag,
-                        "foreground" => $foreground,
-                        "background" => $background,
+                        "color" => $color,
                     ]);
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
