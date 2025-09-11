@@ -650,8 +650,8 @@ body.dark-mode .hr-text::after .hr-text-white::after .hr-text-pointer::after hr-
   cursor: pointer;
   font-size: 16px;
   position: absolute;
-  right: 0.8rem;
-  bottom: 0.8rem;
+  right: 0;
+  bottom: 0;
   border-radius: 50%;
   width: 32px;
   height: 32px;
