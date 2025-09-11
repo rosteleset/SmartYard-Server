@@ -221,7 +221,7 @@
             newSticky += convertLinks(nl2br(escapeHTML(body)));
         }
 
-        newSticky += '</p><i class="far fa-fw fa-edit editSticky"></i>';
+        newSticky += '</p><i class="far fa-fw fa-edit text-primary editSticky"></i>';
 
         if (remind) {
             newSticky += '<i class="far fa-fw fa-clock text-small reminder"></i>';
