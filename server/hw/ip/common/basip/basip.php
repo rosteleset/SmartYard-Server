@@ -94,7 +94,12 @@ trait basip
 
     public function setAdminPassword(string $password): void
     {
-        // TODO: Implement setAdminPassword() method.
+        $params = [
+            'oldPassword' => $this->defaultPassword,
+            'newPassword' => $password,
+        ];
+
+        $this->apiCall('/v1/security/password/admin?' . http_build_query($params), 'POST');
     }
 
     public function syncData(): void
@@ -156,7 +161,7 @@ trait basip
         $timezone = $this->apiCall('/v1/network/timezone');
 
         return [
-            'server' => $ntp['custom_server'],
+            'server' => $ntp['custom_server'] ?? '',
             'port' => 123,
             'timezone' => $timezone['timezone'],
         ];
