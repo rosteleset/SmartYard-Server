@@ -22,7 +22,7 @@ abstract class basip extends domophone implements FreePassInterface, LanguageInt
     public function addRfid(string $code, int $apartment = 0): void
     {
         $formattedCode = implode('-', str_split($code, 2)); // 0000001A2B3C4D => 00-00-00-1A-2B-3C-4D
-        $this->addIdentifier($code, $formattedCode);
+        $this->addIdentifier($code, $formattedCode, IdentifierType::Card);
     }
 
     public function addRfids(array $rfids): void
@@ -40,7 +40,19 @@ abstract class basip extends domophone implements FreePassInterface, LanguageInt
         array $cmsLevels = [],
     ): void
     {
-        // TODO: Implement configureApartment() method.
+        $this->apiCall("/v1/forward/item/$apartment", 'POST', [
+            'forward_entity_list' => [$sipNumbers[0] ?? ''],
+        ]);
+
+        $personalCodeUid = $this->getUidByIdentifierName($apartment);
+
+        if ($personalCodeUid !== null) {
+            $this->deleteIdentifiers([$personalCodeUid]);
+        }
+
+        if ($code !== 0) {
+            $this->addIdentifier($apartment, $code, IdentifierType::PersonalCode);
+        }
     }
 
     public function configureEncoding(): void
@@ -245,17 +257,22 @@ abstract class basip extends domophone implements FreePassInterface, LanguageInt
             $dbConfig['sip']['stunServer'] = self::DISABLED_STUN_ADDRESS;
         }
 
+        foreach ($dbConfig['apartments'] as &$apartment) {
+            $apartment['cmsEnabled'] = false;
+        }
+
         return $dbConfig;
     }
 
     /**
      * Adds a new identifier.
      *
-     * @param string $name Identifier name.
-     * @param string $number Identifier number.
+     * @param string $name The identifier name.
+     * @param string $number The identifier number.
+     * @param IdentifierType $identifierType The identifier type enum value.
      * @return void
      */
-    protected function addIdentifier(string $name, string $number): void
+    protected function addIdentifier(string $name, string $number, IdentifierType $identifierType): void
     {
         $this->apiCall('/v1/access/identifier', 'POST', [
             'identifier_number' => $number,
@@ -263,7 +280,7 @@ abstract class basip extends domophone implements FreePassInterface, LanguageInt
                 'name' => $name,
                 'type' => 'owner',
             ],
-            'identifier_type' => 'card',
+            'identifier_type' => $identifierType->value,
             'lock' => 'first',
             'valid' => [
                 'passes' => [
@@ -305,8 +322,31 @@ abstract class basip extends domophone implements FreePassInterface, LanguageInt
 
     protected function getApartments(): array
     {
-        // TODO: Implement getApartments() method.
-        return [];
+        $flats = [];
+
+        for ($pageNumber = 1; ; $pageNumber++) {
+            $items = $this->apiCall("/v1/forward/items?limit=100&page_number=$pageNumber")['list_items'] ?? [];
+
+            // Check if the end of the pages has been reached
+            if (!is_array($items) || count($items) === 0) {
+                break;
+            }
+
+            foreach ($items as $item) {
+                ['forward_entity_list' => $sipNumbers, 'forward_number' => $flatNumber] = $item;
+                $personalCode = $this->getPersonalCodeByFlatNumber($flatNumber) ?? 0;
+
+                $flats[$flatNumber] = [
+                    'apartment' => $flatNumber,
+                    'code' => $personalCode,
+                    'sipNumbers' => [$sipNumbers[0]],
+                    'cmsEnabled' => false,
+                    'cmsLevels' => [],
+                ];
+            }
+        }
+
+        return $flats;
     }
 
     protected function getAudioLevels(): array
@@ -365,10 +405,40 @@ abstract class basip extends domophone implements FreePassInterface, LanguageInt
         return [];
     }
 
+    /**
+     * Returns the personal code associated with a given flat number.
+     *
+     * @param string $flatNumber The flat number to search for.
+     * @return int|null The personal code if found, or null if no match exists.
+     */
+    protected function getPersonalCodeByFlatNumber(string $flatNumber): ?int
+    {
+        $identifiers = $this->getIdentifiers() ?? [];
+
+        $personalCodes = array_filter(
+            $identifiers,
+            static fn($identifier) => $identifier['identifier_type'] === IdentifierType::PersonalCode->value,
+        );
+
+        foreach ($personalCodes as $personalCode) {
+            if (($personalCode['identifier_owner']['name'] ?? null) === $flatNumber) {
+                return $personalCode['identifier_number'];
+            }
+        }
+
+        return null;
+    }
+
     protected function getRfids(): array
     {
         $identifiers = $this->getIdentifiers() ?? [];
-        return array_column(array_column($identifiers, 'identifier_owner'), 'name', 'name');
+
+        $rfids = array_filter(
+            $identifiers,
+            static fn($identifier) => $identifier['identifier_type'] === IdentifierType::Card->value,
+        );
+
+        return array_column(array_column($rfids, 'identifier_owner'), 'name', 'name');
     }
 
     protected function getSipConfig(): array
@@ -402,9 +472,9 @@ abstract class basip extends domophone implements FreePassInterface, LanguageInt
             return array_column($identifiers, 'identifier_uid');
         }
 
-        foreach ($identifiers as $item) {
-            if (($item['identifier_owner']['name'] ?? null) === $identifierName) {
-                return $item['identifier_uid'];
+        foreach ($identifiers as $identifier) {
+            if (($identifier['identifier_owner']['name'] ?? null) === $identifierName) {
+                return $identifier['identifier_uid'];
             }
         }
 
