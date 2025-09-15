@@ -106,7 +106,16 @@ abstract class basip extends domophone implements FreePassInterface, LanguageInt
 
     public function deleteApartment(int $apartment = 0): void
     {
-        // TODO: Implement deleteApartment() method.
+        if ($apartment === 0) {
+            return; // TODO, or not TODO
+        } else {
+            $this->deleteForwards([$apartment]);
+
+            $personalCodeUid = $this->getUidByIdentifierName($apartment);
+            if ($personalCodeUid !== null) {
+                $this->deleteIdentifiers([$personalCodeUid]);
+            }
+        }
     }
 
     public function deleteRfid(string $code = ''): void
@@ -310,6 +319,17 @@ abstract class basip extends domophone implements FreePassInterface, LanguageInt
     }
 
     /**
+     * Deletes forwards by their flat number.
+     *
+     * @param int[] $flatNumbers Array of flat numbers to delete.
+     * @return void
+     */
+    protected function deleteForwards(array $flatNumbers): void
+    {
+        $this->apiCall('/v1/forward/items', 'DELETE', ['uid_items' => $flatNumbers]);
+    }
+
+    /**
      * Deletes identifiers by their UIDs.
      *
      * @param int[] $uids Array of identifier UIDs to delete.
@@ -320,30 +340,47 @@ abstract class basip extends domophone implements FreePassInterface, LanguageInt
         $this->apiCall('/v1/access/identifier/items', 'DELETE', ['uid_items' => $uids]);
     }
 
-    protected function getApartments(): array
+    /**
+     * Fetches all items from a paginated API endpoint.
+     *
+     * @param string $endpoint API endpoint path.
+     * @param int $limit Items per page.
+     * @return array Merged list of all items.
+     */
+    protected function fetchAllPages(string $endpoint, int $limit = 50): array
     {
-        $flats = [];
+        $result = [];
 
         for ($pageNumber = 1; ; $pageNumber++) {
-            $items = $this->apiCall("/v1/forward/items?limit=100&page_number=$pageNumber")['list_items'] ?? [];
+            $url = "$endpoint?limit=$limit&page_number=$pageNumber";
+            $items = $this->apiCall($url)['list_items'] ?? [];
 
-            // Check if the end of the pages has been reached
-            if (!is_array($items) || count($items) === 0) {
+            if (!is_array($items) || $items === []) {
                 break;
             }
 
-            foreach ($items as $item) {
-                ['forward_entity_list' => $sipNumbers, 'forward_number' => $flatNumber] = $item;
-                $personalCode = $this->getPersonalCodeByFlatNumber($flatNumber) ?? 0;
+            $result = [...$result, ...$items];
+        }
 
-                $flats[$flatNumber] = [
-                    'apartment' => $flatNumber,
-                    'code' => $personalCode,
-                    'sipNumbers' => [$sipNumbers[0]],
-                    'cmsEnabled' => false,
-                    'cmsLevels' => [],
-                ];
-            }
+        return $result;
+    }
+
+    protected function getApartments(): array
+    {
+        $flats = [];
+        $forwards = $this->getForwards();
+
+        foreach ($forwards as $forward) {
+            ['forward_entity_list' => $sipNumbers, 'forward_number' => $flatNumber] = $forward;
+            $personalCode = $this->getPersonalCodeByFlatNumber($flatNumber) ?? 0;
+
+            $flats[$flatNumber] = [
+                'apartment' => $flatNumber,
+                'code' => $personalCode,
+                'sipNumbers' => [$sipNumbers[0]],
+                'cmsEnabled' => false,
+                'cmsLevels' => [],
+            ];
         }
 
         return $flats;
@@ -377,26 +414,23 @@ abstract class basip extends domophone implements FreePassInterface, LanguageInt
     }
 
     /**
+     * Returns all forward rules.
+     *
+     * @return array List of forward rule arrays.
+     */
+    protected function getForwards(): array
+    {
+        return $this->fetchAllPages('/v1/forward/items', 100);
+    }
+
+    /**
      * Returns all identifiers.
      *
      * @return array List of identifier arrays.
      */
     protected function getIdentifiers(): array
     {
-        $identifiers = [];
-
-        for ($pageNumber = 1; ; $pageNumber++) {
-            $items = $this->apiCall("/v1/access/identifier/items?limit=50&page_number=$pageNumber")['list_items'] ?? [];
-
-            // Check if the end of the pages has been reached
-            if (!is_array($items) || count($items) === 0) {
-                break;
-            }
-
-            $identifiers = [...$identifiers, ...$items];
-        }
-
-        return $identifiers;
+        return $this->fetchAllPages('/v1/access/identifier/items');
     }
 
     protected function getMatrix(): array
