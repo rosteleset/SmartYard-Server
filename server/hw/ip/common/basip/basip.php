@@ -102,7 +102,12 @@ trait basip
         $this->apiCall('/v1/device/settings/rtsp', 'POST', [
             'username' => $this->login,
             'password' => $password,
-            'is_audio_enabled' => true, // Perhaps this parameter should be removed from here
+
+            /*
+             * Perhaps this parameter should be removed from here.
+             * Bad audio in SIP if it's enabled.
+             */
+            'is_audio_enabled' => false,
         ]);
 
         $this->apiCall('/v1/security/password/admin?' . http_build_query($params), 'POST');
