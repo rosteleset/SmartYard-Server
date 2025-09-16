@@ -3,15 +3,21 @@
 namespace hw\ip\domophone\basip;
 
 use hw\Interface\{
+    DbConfigUpdaterInterface,
     FreePassInterface,
+    GateModeInterface,
     LanguageInterface,
 };
 use hw\ip\domophone\domophone;
 
 /**
- * Abstract class representing an BASIP intercom.
+ * Abstract class representing an BasIP intercom.
  */
-abstract class basip extends domophone implements FreePassInterface, LanguageInterface
+abstract class basip extends domophone implements
+    DbConfigUpdaterInterface,
+    FreePassInterface,
+    GateModeInterface,
+    LanguageInterface
 {
     use \hw\ip\common\basip\basip {
         transformDbConfig as protected commonTransformDbConfig;
@@ -146,6 +152,11 @@ abstract class basip extends domophone implements FreePassInterface, LanguageInt
         return $this->apiCall('/v1/access/freeaccess')['enable'] ?? true;
     }
 
+    public function isGateModeEnabled(): bool
+    {
+        return $this->apiCall('/v1/device/mode/current')['current_panel_mode'] === 'Wall' ?? false;
+    }
+
     public function openLock(int $lockNumber = 0): void
     {
         $this->apiCall('/v1/access/general/lock/open/remote/accepted/' . $lockNumber + 1);
@@ -215,6 +226,15 @@ abstract class basip extends domophone implements FreePassInterface, LanguageInt
         ]);
     }
 
+    public function setGateModeEnabled(bool $enabled): void
+    {
+        if ($enabled) {
+            $this->apiCall('/v1/device/mode/wall?noUnit=true&device=1', 'POST');
+        } else {
+            $this->apiCall('/v1/device/mode/unit?building=1&unit=1&device=1', 'POST');
+        }
+    }
+
     public function setLanguage(string $language): void
     {
         $lang = match ($language) {
@@ -270,6 +290,11 @@ abstract class basip extends domophone implements FreePassInterface, LanguageInt
             $apartment['cmsEnabled'] = false;
         }
 
+        return $dbConfig;
+    }
+
+    public function updateDbConfig(array $dbConfig): array
+    {
         return $dbConfig;
     }
 
