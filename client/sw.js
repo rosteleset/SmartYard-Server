@@ -35,9 +35,7 @@ const directProtocols = [
 
 if (location.search) {
     version = deparam(location.search).ver;
-    if (version) {
-        cache = await caches.open(version);
-    } else {
+    if (!version) {
         version = Math.random();
     }
 };
@@ -92,7 +90,7 @@ function deparam(query) {
     } else {
         return {};
     }
-};
+}
 
 function endsWith(str, ends) {
     let value = false;
@@ -100,24 +98,25 @@ function endsWith(str, ends) {
         return str.endsWith(element);
     });
     return value;
-};
+}
 
 async function deleteCache(key) {
     await caches.delete(key);
-};
+}
 
 async function deleteOldCaches() {
     let cacheKeepList = [ version ];
     let keyList = await caches.keys();
     let cachesToDelete = keyList.filter(key => !cacheKeepList.includes(key));
     await Promise.all(cachesToDelete.map(deleteCache));
-};
+}
 
 async function putInCache(request, response) {
-    if (cache) {
-        await cache.put(request, response);
+    if (!cache) {
+        cache = await caches.open(version);
     }
-};
+    await cache.put(request, response);
+}
 
 async function cacheFirst(request) {
     let responseFromCache = await caches.match(request);
@@ -140,11 +139,11 @@ async function cacheFirst(request) {
     let responseFromNetwork = await fetch(request);
     putInCache(request, responseFromNetwork.clone());
     return responseFromNetwork;
-};
+}
 
 self.addEventListener("activate", event => {
     event.waitUntil(deleteOldCaches());
-});
+})
 
 self.addEventListener('fetch', event => {
     let url = new URL(event.request.url);
@@ -165,10 +164,9 @@ self.addEventListener('fetch', event => {
                 event.respondWith(cacheFirst(event.request));
             } else {
                 if (url.search && deparam(location.search)._force_cache) {
-                        event.respondWith(cacheFirst(event.request));
-                    }
+                    event.respondWith(cacheFirst(event.request));
                 }
             }
         }
     }
-});
+})
