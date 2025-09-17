@@ -31,6 +31,7 @@ const cacheFirstResources = [
 
 const directProtocols = [
     "chrome-extension:",
+    "tg:",
 ];
 
 if (location.search) {
@@ -115,7 +116,8 @@ async function putInCache(request, response) {
     if (!cache) {
         cache = await caches.open(version);
     }
-    await cache.put(request, response);
+    await cache.put(request, response.clone());
+    return response;
 }
 
 async function cacheFirst(request) {
@@ -133,18 +135,14 @@ async function cacheFirst(request) {
                 if (search._force_cache) {
                     let ttl = parseInt(search._force_cache);
                     if (ttl > 0 && Date.parse(responseFromCache.headers.get("date")) + ttl < Date.now()) {
-                        let responseFromNetwork = await fetch(request);
-                        putInCache(request, responseFromNetwork.clone());
-                        return responseFromNetwork;
+                        return putInCache(request, await fetch(request));
                     }
                 }
             }
         }
         return responseFromCache;
     }
-    let responseFromNetwork = await fetch(request);
-    putInCache(request, responseFromNetwork.clone());
-    return responseFromNetwork;
+    return putInCache(request, await fetch(request));
 }
 
 self.addEventListener("activate", event => {
