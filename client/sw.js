@@ -1,4 +1,5 @@
 var version = false;
+var cache = false;
 
 const forceVersioningResources = [
     "index.css",
@@ -34,7 +35,9 @@ const directProtocols = [
 
 if (location.search) {
     version = deparam(location.search).ver;
-    if (!version) {
+    if (version) {
+        cache = await caches.open(version);
+    } else {
         version = Math.random();
     }
 };
@@ -111,8 +114,9 @@ async function deleteOldCaches() {
 };
 
 async function putInCache(request, response) {
-    let cache = await caches.open(version);
-    await cache.put(request, response);
+    if (cache) {
+        await cache.put(request, response);
+    }
 };
 
 async function cacheFirst(request) {
@@ -120,15 +124,14 @@ async function cacheFirst(request) {
     if (responseFromCache && responseFromCache.url) {
         console.log(responseFromCache.url);
         let url = new URL(responseFromCache.url);
-        if (url.searchParams && url.searchParams.size > 0) {
-            for (let [key, value] of url.searchParams.entries()) {
-                if (key == "_force_cache" && value && parseInt(value) > 0) {
-                    let exp = Date.parse(responseFromCache.headers.get("date")) + parseInt(value);
-                    if (exp < Date.now()) {
-                        let responseFromNetwork = await fetch(request);
-                        putInCache(request, responseFromNetwork.clone());
-                        return responseFromNetwork;
-                    }
+        if (url.search) {
+            let search = deparam(url.search);
+            if (search._force_cache) {
+                let ttl = parseInt(search._force_cache);
+                if (ttl > 0 && Date.parse(responseFromCache.headers.get("date")) + ttl < Date.now()) {
+                    let responseFromNetwork = await fetch(request);
+                    putInCache(request, responseFromNetwork.clone());
+                    return responseFromNetwork;
                 }
             }
         }
@@ -161,11 +164,8 @@ self.addEventListener('fetch', event => {
             if (url.search && parseInt(deparam(url.search).ver) === parseInt(version) && endsWith(url.pathname, cacheFirstResources)) {
                 event.respondWith(cacheFirst(event.request));
             } else {
-                if (url.searchParams && url.searchParams.size > 0) {
-                    for (let [key, value] of url.searchParams.entries()) {
-                        if (key == "_force_cache" && value && parseInt(value) > 0) {
-                            event.respondWith(cacheFirst(event.request));
-                        }
+                if (url.search && deparam(location.search)._force_cache) {
+                        event.respondWith(cacheFirst(event.request));
                     }
                 }
             }
