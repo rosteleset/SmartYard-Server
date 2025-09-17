@@ -117,8 +117,7 @@ async function putInCache(request, response) {
 
 async function cacheFirst(request) {
     let responseFromCache = await caches.match(request);
-    if (responseFromCache) {
-        console.log(responseFromCache, responseFromCache.url);
+    if (responseFromCache && responseFromCache.url) {
         let url = new URL(responseFromCache.url);
         if (url.searchParams && url.searchParams.size > 0) {
             for (let [key, value] of url.searchParams.entries()) {
