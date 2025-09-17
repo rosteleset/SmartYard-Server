@@ -604,7 +604,7 @@ abstract class rubetek extends domophone implements
          * if the prefixes and apartment numbers intersect (for example, 1, 2, 3).
          * TODO: need to check if we can use an empty array of SIP numbers in gate mode for all devices
          */
-        if (!empty($dbConfig['gateLinks'])) {
+        if (!empty($dbConfig['housePrefixes'])) {
             foreach ($dbConfig['apartments'] as &$apartment) {
                 $apartment['sipNumbers'] = [];
             }
