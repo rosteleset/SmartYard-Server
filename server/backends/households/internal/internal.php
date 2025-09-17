@@ -1451,8 +1451,7 @@
                     }
 
                     $domophone["json"] = json_decode(file_get_contents(__DIR__ . "/../../../hw/ip/domophone/models/" . $domophone["model"]), true);
-                    $domophone["ext"] = json_decode($domophone["ext"]);
-
+                    $domophone["ext"] = $domophone["ext"] ? json_decode($domophone["ext"]) : null;
                 }
 
                 return $domophone;
