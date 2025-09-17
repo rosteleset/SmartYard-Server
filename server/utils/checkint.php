@@ -12,7 +12,7 @@
             $int = 1;
             return true;
         }
-        if ($int === false) {
+        if ($int === false || $int == null) {
             $int = 0;
             return true;
         }
