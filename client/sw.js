@@ -120,17 +120,21 @@ async function putInCache(request, response) {
 
 async function cacheFirst(request) {
     let responseFromCache = await caches.match(request);
-    if (responseFromCache && responseFromCache.url) {
-        console.log(responseFromCache.url);
-        let url = new URL(responseFromCache.url);
-        if (url.search) {
-            let search = deparam(url.search);
-            if (search._force_cache) {
-                let ttl = parseInt(search._force_cache);
-                if (ttl > 0 && Date.parse(responseFromCache.headers.get("date")) + ttl < Date.now()) {
-                    let responseFromNetwork = await fetch(request);
-                    putInCache(request, responseFromNetwork.clone());
-                    return responseFromNetwork;
+    if (responseFromCache) {
+        console.log(1);
+        if (responseFromCache.url) {
+            console.log(2);
+            let url = new URL(responseFromCache.url);
+            if (url.search) {
+                let search = deparam(url.search);
+                if (search._force_cache) {
+                    console.log(3);
+                    let ttl = parseInt(search._force_cache);
+                    if (ttl > 0 && Date.parse(responseFromCache.headers.get("date")) + ttl < Date.now()) {
+                        let responseFromNetwork = await fetch(request);
+                        putInCache(request, responseFromNetwork.clone());
+                        return responseFromNetwork;
+                    }
                 }
             }
         }
