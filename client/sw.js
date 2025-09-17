@@ -124,11 +124,11 @@ async function cacheFirst(request) {
     let responseFromCache = await caches.match(request);
     if (responseFromCache) {
         if (responseFromCache.url) {
-            let url = false;
+            let url;
             try {
                 url = new URL(responseFromCache.url);
             } catch (e) {
-                console.log("oops...", e.message);
+                url = false;
             }
             if (url && url.search) {
                 let search = deparam(url.search);
