@@ -2,10 +2,11 @@
 
 namespace hw\ip\domophone\basip;
 
+use hw\Enum\HousePrefixField;
 use hw\Interface\{
     DbConfigUpdaterInterface,
     FreePassInterface,
-    GateModeInterface,
+    HousePrefixInterface,
     LanguageInterface,
 };
 use hw\ip\domophone\domophone;
@@ -16,7 +17,7 @@ use hw\ip\domophone\domophone;
 abstract class basip extends domophone implements
     DbConfigUpdaterInterface,
     FreePassInterface,
-    GateModeInterface,
+    HousePrefixInterface,
     LanguageInterface
 {
     use \hw\ip\common\basip\basip {
@@ -46,12 +47,9 @@ abstract class basip extends domophone implements
         array $cmsLevels = [],
     ): void
     {
-        $this->apiCall("/v1/forward/item/$apartment", 'POST', [
-            'forward_entity_list' => [$sipNumbers[0] ?? ''],
-        ]);
+        $this->addForward($apartment, $sipNumbers);
 
         $personalCodeUid = $this->getUidByIdentifierName($apartment);
-
         if ($personalCodeUid !== null) {
             $this->deleteIdentifiers([$personalCodeUid]);
         }
@@ -141,6 +139,17 @@ abstract class basip extends domophone implements
         $this->deleteIdentifiers($uids);
     }
 
+    public function getHousePrefixSupportedFields(): array
+    {
+        return [HousePrefixField::FirstFlat, HousePrefixField::LastFlat];
+    }
+
+    public function getHousePrefixes(): array
+    {
+        // TODO: Implement getHousePrefixes() method.
+        return [];
+    }
+
     public function getLineDiagnostics(int $apartment): string|int|float
     {
         // Empty implementation
@@ -150,11 +159,6 @@ abstract class basip extends domophone implements
     public function isFreePassEnabled(): bool
     {
         return $this->apiCall('/v1/access/freeaccess')['enable'] ?? true;
-    }
-
-    public function isGateModeEnabled(): bool
-    {
-        return $this->apiCall('/v1/device/mode/current')['current_panel_mode'] === 'Wall' ?? false;
     }
 
     public function openLock(int $lockNumber = 0): void
@@ -226,13 +230,10 @@ abstract class basip extends domophone implements
         ]);
     }
 
-    public function setGateModeEnabled(bool $enabled): void
+    public function setHousePrefixes(array $prefixes): void
     {
-        if ($enabled) {
-            $this->apiCall('/v1/device/mode/wall?noUnit=true&device=1', 'POST');
-        } else {
-            $this->apiCall('/v1/device/mode/unit?building=1&unit=1&device=1', 'POST');
-        }
+        // TODO: Implement setHousePrefixes() method.
+        $this->setWallModeEnabled(!empty($prefixes));
     }
 
     public function setLanguage(string $language): void
@@ -296,6 +297,18 @@ abstract class basip extends domophone implements
     public function updateDbConfig(array $dbConfig): array
     {
         return $dbConfig;
+    }
+
+    /**
+     * Adds a call forwarding rule for a specific apartment.
+     *
+     * @param int $apartmentNumber Apartment number for which the forwarding rule is set.
+     * @param string[] $sipNumbers List of SIP numbers where calls will be forwarded.
+     * @return void
+     */
+    protected function addForward(int $apartmentNumber, array $sipNumbers): void
+    {
+        $this->apiCall("/v1/forward/item/$apartmentNumber", 'POST', ['forward_entity_list' => $sipNumbers]);
     }
 
     /**
@@ -538,5 +551,31 @@ abstract class basip extends domophone implements
         }
 
         return null;
+    }
+
+    /**
+     * Checks whether the device is currently in "Wall" mode.
+     *
+     * @return bool True if the current panel mode is "Wall", false otherwise.
+     */
+    protected function isWallModeEnabled(): bool
+    {
+        $mode = $this->apiCall('/v1/device/mode/current');
+        return ($mode['current_panel_mode'] ?? null) === 'Wall';
+    }
+
+    /**
+     * Switches the device mode between "Wall" and "Unit".
+     *
+     * @param bool $enabled If true, sets the device mode to "Wall", otherwise sets it to "Unit".
+     * @return void
+     */
+    protected function setWallModeEnabled(bool $enabled): void
+    {
+        if ($enabled) {
+            $this->apiCall('/v1/device/mode/wall?noUnit=true&device=1', 'POST');
+        } else {
+            $this->apiCall('/v1/device/mode/unit?building=1&unit=1&device=1', 'POST');
+        }
     }
 }
