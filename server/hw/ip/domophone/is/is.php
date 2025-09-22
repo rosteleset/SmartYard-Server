@@ -16,6 +16,10 @@ abstract class is extends domophone implements CmsLevelsInterface, FreePassInter
 {
     use \hw\ip\common\is\is;
 
+    use legacy\is {
+        configureApartment as protected configureApartmentLegacy;
+    }
+
     protected const CMS_PARAMS = [
         'BK-100' => ['VIZIT', 100, 10, 10],
         'KMG-100' => ['CYFRAL', 100, 10, 10],
@@ -49,6 +53,11 @@ abstract class is extends domophone implements CmsLevelsInterface, FreePassInter
         array $cmsLevels = [],
     ): void
     {
+        if ($this->isLegacyVersion()) {
+            $this->configureApartmentLegacy($apartment, $code, $sipNumbers, $cmsEnabled, $cmsLevels);
+            return;
+        }
+
         $this->refreshApartmentList();
 
         if (in_array($apartment, $this->apartments)) {
@@ -68,7 +77,7 @@ abstract class is extends domophone implements CmsLevelsInterface, FreePassInter
             ],
             'soundOpenTh' => null, // inheritance from general settings
             'typeSound' => 3, // inheritance from general settings
-            // 'sipAccounts' => array_map('strval', $sipNumbers), FIXME: doesn't work well
+            'sipAccounts' => array_map('strval', $sipNumbers),
         ];
 
         $resistanceParams = $this->getApartmentResistanceParams($cmsLevels);

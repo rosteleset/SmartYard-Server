@@ -144,4 +144,14 @@ trait is
         $this->login = 'root';
         $this->defaultPassword = '123456';
     }
+
+    /**
+     * Determines if the software version is considered legacy.
+     *
+     * @return bool True if the software version is legacy, false otherwise.
+     */
+    protected function isLegacyVersion(): bool
+    {
+        return $this->getSoftwareVersion() !== null && $this->getSoftwareVersion() < '2.5.0.12.8';
+    }
 }
