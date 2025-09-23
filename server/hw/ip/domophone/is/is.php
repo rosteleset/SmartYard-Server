@@ -18,6 +18,10 @@ abstract class is extends domophone implements CmsLevelsInterface, FreePassInter
 
     use legacy\is {
         configureApartment as protected configureApartmentLegacy;
+        configureSip as protected configureSipLegacy;
+        deleteApartment as protected deleteApartmentLegacy;
+        getLineDiagnostics as protected getLineDiagnosticsLegacy;
+        getRawApartments as protected getRawApartmentsLegacy;
     }
 
     protected const CMS_PARAMS = [
@@ -75,8 +79,6 @@ abstract class is extends domophone implements CmsLevelsInterface, FreePassInter
                 'handset' => $cmsEnabled,
                 'sip' => (bool)$sipNumbers,
             ],
-            'soundOpenTh' => null, // inheritance from general settings
-            'typeSound' => 3, // inheritance from general settings
             'sipAccounts' => array_map('strval', $sipNumbers),
         ];
 
@@ -85,7 +87,7 @@ abstract class is extends domophone implements CmsLevelsInterface, FreePassInter
             $payload['resistances'] = $resistanceParams;
         }
 
-        $this->apiCall('/panelCode' . $endpoint, $method, $payload);
+        $this->apiCall('/v1/panelCode' . $endpoint, $method, $payload);
         $this->apartments[] = $apartment;
 
         if ($code) {
@@ -172,14 +174,32 @@ abstract class is extends domophone implements CmsLevelsInterface, FreePassInter
         int    $stunPort = 3478,
     ): void
     {
+        if ($this->isLegacyVersion()) {
+            $this->configureSipLegacy($login, $password, $server, $port, $stunEnabled, $stunServer);
+            return;
+        }
+
         $this->apiCall('/sip/settings', 'PUT', [
-            'videoEnable' => true,
             'remote' => [
+                'port' => $port,
+                'domain' => $server,
+                'portRegister' => $port,
+                'domainRegister' => $server,
                 'username' => $login,
                 'password' => $password,
-                'domain' => $server,
-                'port' => $port,
+                'proxy' => [
+                    'port' => $port,
+                    'domain' => '',
+                    'enable' => false,
+                ],
+                'transport' => [
+                    'udp' => true,
+                    'tcp' => false,
+                ],
+                'registerStatus' => false,
             ],
+            'videoEnable' => true,
+            'videoStreamId' => 1, // Second stream
         ]);
     }
 
@@ -190,12 +210,17 @@ abstract class is extends domophone implements CmsLevelsInterface, FreePassInter
 
     public function deleteApartment(int $apartment = 0): void
     {
+        if ($this->isLegacyVersion()) {
+            $this->deleteApartmentLegacy($apartment);
+            return;
+        }
+
         if ($apartment === 0) {
             $this->apiCall('/panelCode/clear', 'DELETE');
             $this->apiCall('/openCode/clear', 'DELETE');
             $this->apartments = [];
         } else {
-            $this->apiCall("/panelCode/$apartment", 'DELETE');
+            $this->apiCall("/v1/panelCode/$apartment", 'DELETE');
             $this->deleteOpenCode($apartment);
             $this->apartments = array_diff($this->apartments, [$apartment]);
         }
@@ -217,7 +242,11 @@ abstract class is extends domophone implements CmsLevelsInterface, FreePassInter
 
     public function getLineDiagnostics(int $apartment): int
     {
-        $res = $this->apiCall("/panelCode/$apartment/resist");
+        if ($this->isLegacyVersion()) {
+            return $this->getLineDiagnosticsLegacy($apartment);
+        }
+
+        $res = $this->apiCall("/v1/panelCode/$apartment/resist");
 
         if (!$res || isset($res['errors'])) {
             return 0;
@@ -592,7 +621,11 @@ abstract class is extends domophone implements CmsLevelsInterface, FreePassInter
      */
     protected function getRawApartments(): array
     {
-        return $this->apiCall('/panelCode');
+        if ($this->isLegacyVersion()) {
+            return $this->getRawApartmentsLegacy();
+        }
+
+        return $this->apiCall('/v1/panelCode');
     }
 
     /**
