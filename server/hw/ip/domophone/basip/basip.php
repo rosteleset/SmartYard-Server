@@ -26,6 +26,9 @@ abstract class basip extends domophone implements
 
     protected const DISABLED_STUN_ADDRESS = '127.0.0.1';
 
+    protected ?array $identifiers = null;
+    protected ?array $forwards = null;
+
     public function addRfid(string $code, int $apartment = 0): void
     {
         $formattedCode = implode('-', str_split($code, 2)); // 0000001A2B3C4D => 00-00-00-1A-2B-3C-4D
@@ -47,9 +50,7 @@ abstract class basip extends domophone implements
         array $cmsLevels = [],
     ): void
     {
-        $this->apiCall("/v1/forward/item/$apartment", 'POST', [
-            'forward_entity_list' => [$sipNumbers[0] ?? ''],
-        ]);
+        $this->addForward($apartment, $sipNumbers);
 
         // Delete the flat's personal code
         $uidByName = $this->getUidByIdentifierName($apartment);
@@ -385,6 +386,23 @@ abstract class basip extends domophone implements
     }
 
     /**
+     * Adds a call forwarding rule for a specific apartment.
+     *
+     * @param int $apartmentNumber Apartment number for which the forwarding rule is set.
+     * @param string[] $sipNumbers List of SIP numbers where calls will be forwarded.
+     * @return void
+     */
+    protected function addForward(int $apartmentNumber, array $sipNumbers): void
+    {
+        $forwardItem = [
+            'forward_entity_list' => $sipNumbers,
+        ];
+
+        $this->apiCall("/v1/forward/item/$apartmentNumber", 'POST', $forwardItem);
+        $this->forwards[] = $forwardItem + ['forward_number' => $apartmentNumber];
+    }
+
+    /**
      * Adds a new identifier.
      *
      * @param string $name The identifier name.
@@ -394,7 +412,7 @@ abstract class basip extends domophone implements
      */
     protected function addIdentifier(string $name, string $number, IdentifierType $identifierType): void
     {
-        $this->apiCall('/v1/access/identifier', 'POST', [
+        $identifierItem = [
             'identifier_number' => $number,
             'identifier_owner' => [
                 'name' => $name,
@@ -413,7 +431,10 @@ abstract class basip extends domophone implements
                     ],
                 ],
             ],
-        ]);
+        ];
+
+        $uid = $this->apiCall('/v1/access/identifier', 'POST', $identifierItem);
+        $this->identifiers[] = $identifierItem + ['identifier_uid' => $uid['uid']];
     }
 
     /**
@@ -438,6 +459,13 @@ abstract class basip extends domophone implements
     protected function deleteForwards(array $flatNumbers): void
     {
         $this->apiCall('/v1/forward/items', 'DELETE', ['uid_items' => $flatNumbers]);
+
+        $this->forwards = array_values(
+            array_filter(
+                $this->forwards,
+                fn(array $forward) => !in_array($forward['forward_number'], $flatNumbers, true),
+            ),
+        );
     }
 
     /**
@@ -449,6 +477,13 @@ abstract class basip extends domophone implements
     protected function deleteIdentifiers(array $uids): void
     {
         $this->apiCall('/v1/access/identifier/items', 'DELETE', ['uid_items' => $uids]);
+
+        $this->identifiers = array_values(
+            array_filter(
+                $this->identifiers,
+                fn(array $identifier) => !in_array($identifier['identifier_uid'], $uids, true),
+            ),
+        );
     }
 
     /**
@@ -531,7 +566,11 @@ abstract class basip extends domophone implements
      */
     protected function getForwards(): array
     {
-        return $this->fetchAllPages('/v1/forward/items', 100);
+        if ($this->forwards === null) {
+            $this->forwards = $this->fetchAllPages('/v1/forward/items', 100);
+        }
+
+        return $this->forwards;
     }
 
     /**
@@ -541,7 +580,11 @@ abstract class basip extends domophone implements
      */
     protected function getIdentifiers(): array
     {
-        return $this->fetchAllPages('/v1/access/identifier/items');
+        if ($this->identifiers === null) {
+            $this->identifiers = $this->fetchAllPages('/v1/access/identifier/items');
+        }
+
+        return $this->identifiers;
     }
 
     protected function getMatrix(): array
