@@ -3,15 +3,22 @@
 namespace hw\ip\domophone\basip;
 
 use hw\Interface\{
+    DbConfigUpdaterInterface,
     FreePassInterface,
+    HousePrefixInterface,
     LanguageInterface,
 };
 use hw\ip\domophone\domophone;
+use hw\ValueObject\HousePrefix;
 
 /**
- * Abstract class representing an BASIP intercom.
+ * Abstract class representing an BasIP intercom.
  */
-abstract class basip extends domophone implements FreePassInterface, LanguageInterface
+abstract class basip extends domophone implements
+    DbConfigUpdaterInterface,
+    FreePassInterface,
+    HousePrefixInterface,
+    LanguageInterface
 {
     use \hw\ip\common\basip\basip {
         transformDbConfig as protected commonTransformDbConfig;
@@ -44,15 +51,25 @@ abstract class basip extends domophone implements FreePassInterface, LanguageInt
             'forward_entity_list' => [$sipNumbers[0] ?? ''],
         ]);
 
-        $personalCodeUid = $this->getUidByIdentifierName($apartment);
-
-        if ($personalCodeUid !== null) {
-            $this->deleteIdentifiers([$personalCodeUid]);
+        // Delete the flat's personal code
+        $uidByName = $this->getUidByIdentifierName($apartment);
+        if ($uidByName !== null) {
+            $this->deleteIdentifiers([$uidByName]);
         }
 
-        if ($code !== 0) {
-            $this->addIdentifier($apartment, $code, IdentifierType::PersonalCode);
+        // There is no need to set a new personal code
+        if ($code === 0) {
+            return;
         }
+
+        // Let's assume that if this code already exists in the device, we want it to belong to the new flat
+        $uidByCode = $this->getUidByIdentifierNumber($code);
+        if ($uidByCode !== null) {
+            $this->deleteIdentifiers([$uidByCode]);
+        }
+
+        // Finally, add the personal code
+        $this->addIdentifier($apartment, $code, IdentifierType::PersonalCode);
     }
 
     public function configureEncoding(): void
@@ -135,6 +152,38 @@ abstract class basip extends domophone implements FreePassInterface, LanguageInt
         $this->deleteIdentifiers($uids);
     }
 
+    public function getHousePrefixSupportedFields(): array
+    {
+        return [];
+    }
+
+    public function getHousePrefixes(): array
+    {
+        // Let's assume that there are no prefixes when the wall mode is disabled
+        if (!$this->isWallModeEnabled()) {
+            return [];
+        }
+
+        $prefixes = [];
+
+        foreach ($this->getForwards() as $forward) {
+            $sipNumber = $forward['forward_entity_list'][0] ?? null;
+
+            // Make sure the number matches the prefix mode number (XXXXYYYY)
+            if ($sipNumber === null || strlen($sipNumber) !== 8) {
+                continue;
+            }
+
+            $currentPrefix = (int)substr($sipNumber, 0, 4);
+            $prefixes[$currentPrefix] = true;
+        }
+
+        return array_map(
+            fn(int $prefix) => new HousePrefix($prefix),
+            array_keys($prefixes),
+        );
+    }
+
     public function getLineDiagnostics(int $apartment): string|int|float
     {
         // Empty implementation
@@ -215,6 +264,11 @@ abstract class basip extends domophone implements FreePassInterface, LanguageInt
         ]);
     }
 
+    public function setHousePrefixes(array $prefixes): void
+    {
+        $this->setWallModeEnabled(!empty($prefixes));
+    }
+
     public function setLanguage(string $language): void
     {
         $lang = match ($language) {
@@ -266,8 +320,65 @@ abstract class basip extends domophone implements FreePassInterface, LanguageInt
             $dbConfig['sip']['stunServer'] = self::DISABLED_STUN_ADDRESS;
         }
 
-        foreach ($dbConfig['apartments'] as &$apartment) {
-            $apartment['cmsEnabled'] = false;
+        foreach ($dbConfig['apartments'] as &$flat) {
+            $flat['cmsEnabled'] = false;
+        }
+
+        /*
+         * Sort prefixes from the database to ensure consistent ordering,
+         * as the device always generates them in ascending order by number.
+         */
+        if (!empty($dbConfig['housePrefixes'])) {
+            usort($dbConfig['housePrefixes'], fn(HousePrefix $x, HousePrefix $y) => $x->number <=> $y->number);
+        }
+
+        return $dbConfig;
+    }
+
+    public function updateDbConfig(array $dbConfig): array
+    {
+        /*
+         * The device doesn't use standard prefixes for flats.
+         * Each flat requires a SIP number in the format XXXXYYYY (e.g., 00320345: 32 = prefix, 345 = flat).
+         * The flat number includes the prefix with leading zeros removed + '00' + flat number (e.g., 32000345).
+         * This code converts the full list of flats from the database according to these rules.
+         */
+        if (!empty($dbConfig['housePrefixes']) && !empty($dbConfig['apartments'])) {
+            $updatedFlats = [];
+
+            foreach ($dbConfig['apartments'] as $Key => $flat) {
+                $flatNumber = $flat['apartment'];
+                $prefix = null;
+
+                foreach ($dbConfig['housePrefixes'] as $housePrefix) {
+                    $firstFlat = $housePrefix->firstFlat->number;
+                    $lastFlat = $housePrefix->lastFlat->number;
+
+                    if ($flatNumber >= $firstFlat && $flatNumber <= $lastFlat) {
+                        $prefix = str_pad($housePrefix->number, 4, '0', STR_PAD_LEFT);
+                        break;
+                    }
+
+                    if ($flatNumber >= $lastFlat) {
+                        $flatNumber -= $lastFlat;
+                    }
+                }
+
+                if ($prefix === null) {
+                    $updatedFlats[$Key] = $flat;
+                    continue;
+                }
+
+                $newSipNumber = $prefix . str_pad($flatNumber, 4, '0', STR_PAD_LEFT);
+                $newFlatNumber = ltrim(substr_replace($newSipNumber, '00', 4, 0), '0');
+
+                $flat['apartment'] = $newFlatNumber;
+                $flat['sipNumbers'] = [$newSipNumber];
+
+                $updatedFlats[$newFlatNumber] = $flat;
+            }
+
+            $dbConfig['apartments'] = $updatedFlats;
         }
 
         return $dbConfig;
@@ -513,5 +624,50 @@ abstract class basip extends domophone implements FreePassInterface, LanguageInt
         }
 
         return null;
+    }
+
+    /**
+     * Returns UID by identifier number.
+     *
+     * @param string $identifierNumber The number of the identifier to search for.
+     * @return int|null The UID if found, or null if no match exists.
+     */
+    protected function getUidByIdentifierNumber(string $identifierNumber): int|null
+    {
+        $identifiers = $this->getIdentifiers() ?? [];
+
+        foreach ($identifiers as $identifier) {
+            if (($identifier['identifier_number'] ?? null) === $identifierNumber) {
+                return $identifier['identifier_uid'];
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Checks whether the device is currently in "Wall" mode.
+     *
+     * @return bool True if the current panel mode is "Wall", false otherwise.
+     */
+    protected function isWallModeEnabled(): bool
+    {
+        $mode = $this->apiCall('/v1/device/mode/current');
+        return ($mode['current_panel_mode'] ?? null) === 'Wall';
+    }
+
+    /**
+     * Switches the device mode between "Wall" and "Unit".
+     *
+     * @param bool $enabled If true, sets the device mode to "Wall", otherwise sets it to "Unit".
+     * @return void
+     */
+    protected function setWallModeEnabled(bool $enabled): void
+    {
+        if ($enabled) {
+            $this->apiCall('/v1/device/mode/wall?noUnit=true&device=1', 'POST');
+        } else {
+            $this->apiCall('/v1/device/mode/unit?building=1&unit=1&device=1', 'POST');
+        }
     }
 }
