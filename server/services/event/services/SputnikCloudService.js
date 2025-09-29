@@ -1,14 +1,14 @@
-import {WebHookService} from "./index.js";
-import {API, getTimestamp, mdTimer} from "../utils/index.js";
+import { WebHookService } from './index.js';
+import { API, getTimestamp, mdTimer } from '../utils/index.js';
 
 class SputnikCloudService extends WebHookService {
     constructor(unit, config) {
         super(unit, config);
     }
 
-    async postEventHandler(req, data) {
+    async handlePostRequest(req, data) {
         try {
-            const {device_id: deviceId, date_time: datetime, event, Data: rawPayload} = data;
+            const { device_id: deviceId, date_time: datetime, event, Data: rawPayload } = data;
             const payload = rawPayload ?? {};
             const now = getTimestamp(new Date(datetime));
 
@@ -22,7 +22,7 @@ class SputnikCloudService extends WebHookService {
                         case 'cancel': // The call ended by pressing the cancel button or by timeout
                         case 'finish_handset': // CMS call ended
                         case 'finish_cloud': // SIP call ended
-                            await API.callFinished({date: now, ip: null, subId: deviceId});
+                            await API.callFinished({ date: now, ip: null, subId: deviceId });
                             break;
 
                         case 'open_door_handset': // Opening the door by CMS handset
@@ -30,7 +30,7 @@ class SputnikCloudService extends WebHookService {
                                 date: now,
                                 ip: null,
                                 subId: deviceId,
-                                apartmentNumber: parseInt(payload?.flat)
+                                apartmentNumber: parseInt(payload?.flat),
                             });
 
                             break;
@@ -43,7 +43,7 @@ class SputnikCloudService extends WebHookService {
                             date: now,
                             ip: null,
                             subId: deviceId,
-                            apartmentNumber: parseInt(payload?.flat)
+                            apartmentNumber: parseInt(payload?.flat),
                         });
                     }
                     break;
@@ -68,24 +68,24 @@ class SputnikCloudService extends WebHookService {
                         subId: deviceId,
                         door: 0,
                         detail: 'main',
-                        by: 'button'
+                        by: 'button',
                     });
                     break;
 
                 default:
                     if (payload?.action === 'digital_key') { // Opening a door by personal code
-                        await API.openDoor({date: now, ip: null, subId: deviceId, detail: payload.num, by: 'code'});
+                        await API.openDoor({ date: now, ip: null, subId: deviceId, detail: payload.num, by: 'code' });
                     }
 
                     if (payload?.msg === 'C pressed') { // Start face recognition (by cancellation button)
-                        await API.motionDetection({date: now, subId: deviceId, motionActive: true});
-                        await mdTimer({subId: deviceId, ip: null, delay: 10000});
+                        await API.motionDetection({ date: now, subId: deviceId, motionActive: true });
+                        await mdTimer({ subId: deviceId, ip: null, delay: 10000 });
                     }
 
                     break;
             }
 
-            const logMessageData = event !== undefined ? {event, ...payload} : payload;
+            const logMessageData = event !== undefined ? { event, ...payload } : payload;
             const msg = this.createLogMessage(logMessageData, ['time', 'cid']);
 
             await this.sendToSyslogStorage(
@@ -93,13 +93,17 @@ class SputnikCloudService extends WebHookService {
                 null,
                 deviceId,
                 this.unit,
-                msg
+                msg,
             )
-                .then(() => this.logToConsole(now, null, deviceId, msg))
+                .then(() => this.logToConsole(now, null, deviceId, msg));
         } catch (err) {
-            console.error(err.message)
+            console.error(err.message);
         }
+    }
+
+    async handleGetRequest(request, response) {
+        return Promise.resolve(undefined);
     }
 }
 
-export {SputnikCloudService}
+export { SputnikCloudService };

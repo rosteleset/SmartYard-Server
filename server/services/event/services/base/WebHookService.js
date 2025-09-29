@@ -1,5 +1,5 @@
-import http from "http";
-import { API, getTimestamp } from "../../utils/index.js";
+import http from 'http';
+import { API, getTimestamp } from '../../utils/index.js';
 
 // TODO: create logging received messages
 class WebHookService {
@@ -10,11 +10,11 @@ class WebHookService {
     }
 
     async requestListener(request, response) {
-        if (request.url === this.config?.apiEndpoint && request.method === "GET") {
-            response.writeHead(202, { 'Content-Type': 'application/json' })
-            response.end(JSON.stringify({ message: "GET request received." }));
-            await this.getEventHandler(request, response)
-        } else if (request.url === this.config?.apiEndpoint && request.method === "POST") {
+        if (request.url === this.config?.apiEndpoint && request.method === 'GET') {
+            response.writeHead(202, { 'Content-Type': 'application/json' });
+            response.end(JSON.stringify({ message: 'GET request received.' }));
+            await this.handleGetRequest(request, response);
+        } else if (request.url === this.config?.apiEndpoint && request.method === 'POST') {
             try {
                 let data = '';
                 request.on('data', (chunk) => {
@@ -23,32 +23,59 @@ class WebHookService {
 
                 request.on('end', async () => {
                     if (!data) {
-                        response.writeHead(400, { 'Content-Type': 'application/json' })
-                        response.end(JSON.stringify({ message: "Request body is empty." }));
+                        response.writeHead(400, { 'Content-Type': 'application/json' });
+                        response.end(JSON.stringify({ message: 'Request body is empty.' }));
                         this.logToConsole(getTimestamp(new Date()), request.connection.remoteAddress, null, 'Request body is empty');
                         return;
                     }
-                    const jsonData = JSON.parse(data);
-                    await this.postEventHandler(request, jsonData);
 
-                    response.writeHead(202, { 'Content-Type': 'application/json' })
-                    response.end(JSON.stringify({ message: "Webhook received and processed." }));
-                })
+                    let payload;
+                    try {
+                        payload = JSON.parse(data);
+                    } catch {
+                        payload = data.toString();
+                    }
+
+                    await this.handlePostRequest(request, payload);
+
+                    response.writeHead(202, { 'Content-Type': 'application/json' });
+                    response.end(JSON.stringify({ message: 'Webhook received and processed.' }));
+                });
             } catch (error) {
-                console.error(error.message)
+                console.error(error.message);
             }
         } else {
             response.writeHead(405, { 'Content-Type': 'application/json' });
-            response.end(JSON.stringify({ message: "Method not allowed." }));
+            response.end(JSON.stringify({ message: 'Method not allowed.' }));
         }
     }
 
-    // handle POST request
-    async postEventHandler(request, data = null) {
+    /**
+     * Handles an incoming GET request.
+     *
+     * @param {object} request The raw HTTP request object.
+     * @param {object} response The raw HTTP response object.
+     * @returns {Promise<void>} - A promise that resolves when the message has been processed.
+     * @throws {Error} - Throws an error if the method is not implemented.
+     * @abstract
+     */
+    async handleGetRequest(request, response) {
+        throw new Error('Method "handleGetRequest()" must be implemented');
     }
 
-    // handle GET request
-    async getEventHandler(request, data = null) {
+    /**
+     * Handles an incoming POST request.
+     *
+     * @param {object} request The raw HTTP request object.
+     * @param {object|string|null} [data=null] The parsed request body.
+     * - If the content type is JSON, this will typically be an object.
+     * - If the body is plain text, this will be a string.
+     * @returns {Promise<void>} - A promise that resolves when the message has been processed.
+     * @throws {Error} - Throws an error if the method is not implemented.
+     * @abstract
+     */
+    async handlePostRequest(request, data = null) {
+        throw new Error('Method "handlePostRequest()" must be implemented');
     }
 
     /**
@@ -59,7 +86,7 @@ class WebHookService {
      * @param msg event message
      */
     logToConsole(now, host = null, subId = null, msg) {
-        console.log(`${ now } || ${ host ? host : subId } || ${ msg }`);
+        console.log(`${now} || ${host ? host : subId} || ${msg}`);
     }
 
     /**
@@ -90,9 +117,9 @@ class WebHookService {
 
     start() {
         this.server.listen(this.config.port, () => {
-            console.log(`${ this.unit.toUpperCase() } Webhook server is listening on port ${ this.config.port }`);
+            console.log(`${this.unit.toUpperCase()} Webhook server is listening on port ${this.config.port}`);
         });
     }
 }
 
-export { WebHookService }
+export { WebHookService };
