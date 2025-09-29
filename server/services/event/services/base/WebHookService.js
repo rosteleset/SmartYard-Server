@@ -38,7 +38,7 @@ class WebHookService {
 
                     await this.handlePostRequest(request, payload);
 
-                    response.writeHead(202, { 'Content-Type': 'application/json' });
+                    response.writeHead(200, { 'Content-Type': 'application/json', 'Connection': 'close' });
                     response.end(JSON.stringify({ message: 'Webhook received and processed.' }));
                 });
             } catch (error) {
