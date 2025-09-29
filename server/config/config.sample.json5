@@ -272,7 +272,7 @@
         "cs": {
             "backend": "internal",
             // ttl of CSs
-            "ttl": "3"
+            "ttl": "3",
         },
 
         "mqtt": {
