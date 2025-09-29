@@ -1,24 +1,20 @@
 // example webhook service
-import { WebHookService } from "./index.js";
+import { WebHookService } from './index.js';
 
 class NonameWebHookService extends WebHookService {
-    async postEventHandler(req, data) {
-        console.log("postEventHandler data >>>");
+    async handlePostRequest(req, data) {
+        console.log('handlePostRequest data >>>');
 
-        const sourceIPAddress = req.connection.remoteAddress
-        console.log(sourceIPAddress)
-
-
+        const sourceIPAddress = req.connection.remoteAddress;
+        console.log(sourceIPAddress);
     }
 
-    async getEventHandler(req, data) {
-        console.log("getEventHandler data >>>");
+    async handleGetRequest(req, res) {
+        console.log('handleGetRequest data >>>');
 
-        const sourceIPAddress = req.connection.remoteAddress
-        console.log(sourceIPAddress)
+        const sourceIPAddress = req.connection.remoteAddress;
+        console.log(sourceIPAddress);
     }
-
-
 }
 
-export { NonameWebHookService }
+export { NonameWebHookService };
