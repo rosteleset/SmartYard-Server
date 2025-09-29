@@ -16,7 +16,7 @@
         "payments": true,
         "payments_url": "https://example.com/static/payments/template.html",
         "city_cams": false,
-        "support_phone": "+7(4752)429999",
+        "support_phone": "+7(1234)567890",
         "chat": true,
         "chat_url": "<!-- your chat url or remove it and use talkMe by default with options below--!>",
         "talk_me_id": "<!-- put your talkMe chat id here --!>",
