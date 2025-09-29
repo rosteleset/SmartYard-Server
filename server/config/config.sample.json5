@@ -265,6 +265,10 @@
             ],
         },
 
+        "tt": {
+            "backend": "mongo",
+        },
+
         "cs": {
             "backend": "internal",
             // ttl of CSs
