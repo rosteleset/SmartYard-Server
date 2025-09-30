@@ -205,6 +205,7 @@ abstract class basip extends domophone implements
     {
         parent::prepare();
         $this->configureInternalReader();
+        $this->setDoorSensorEnabled(true);
     }
 
     public function setAudioLevels(array $levels): void
@@ -697,6 +698,25 @@ abstract class basip extends domophone implements
     {
         $mode = $this->apiCall('/v1/device/mode/current');
         return ($mode['current_panel_mode'] ?? null) === 'Wall';
+    }
+
+    /**
+     * Enables or disables the door sensor.
+     *
+     * @param bool $enabled Whether the door sensor should be enabled or disabled.
+     * @param int $openingDelay (Optional) The delay in seconds before a door is considered permanently open
+     * and a message about it is sent to the logs. Default value: 86400 (24 hours).
+     * @return void
+     */
+    protected function setDoorSensorEnabled(bool $enabled, int $openingDelay = 86400): void
+    {
+        $this->apiCall('/v1/access/door/sensor', 'POST', [
+            'enable' => $enabled,
+            'mode' => 'door_sensor',
+            'opening_delay' => $openingDelay,
+            'repeating_message_delay' => 60,
+            'repeating_message_enabled' => false,
+        ]);
     }
 
     /**
