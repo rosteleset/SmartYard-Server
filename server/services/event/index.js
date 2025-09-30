@@ -3,6 +3,7 @@ import spamWords from "./spamwords.json" with { type: "json" };
 
 import {
     AkuvoxService,
+    BasipService,
     BewardService,
     BewardServiceDS,
     IsService,
@@ -18,6 +19,7 @@ import {
 
 import {
     SERVICE_AKUVOX,
+    SERVICE_BASIP,
     SERVICE_BEWARD,
     SERVICE_BEWARD_DS,
     SERVICE_IS,
@@ -81,6 +83,11 @@ switch (serviceParam) {
     case SERVICE_UFANET:
         const ufanetService = new UfanetService(SERVICE_UFANET, serviceConfig, spamWords[SERVICE_UFANET]);
         ufanetService.createSyslogServer();
+        break;
+
+    case SERVICE_BASIP:
+        const basipService = new BasipService(SERVICE_BASIP, serviceConfig);
+        basipService.start();
         break;
 
     case SERVICE_NONAME_WEBHOOK:
