@@ -46,6 +46,7 @@
                 }
 
                 $this->cacheSet($key, $_groups);
+
                 return $_groups;
             }
 

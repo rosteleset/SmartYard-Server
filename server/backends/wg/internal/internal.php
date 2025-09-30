@@ -12,7 +12,7 @@
              * generate base64 public key from base64 private key
              */
 
-            private function pubkey($privateKeyBase64) {
+            private function pubKey($privateKeyBase64) {
                 // native support
 
                 if (extension_loaded('sodium')) {
@@ -37,14 +37,108 @@
 
             public function cron($part) {
                 if ($part == "5min") {
-                    // list peers for connection
-                    // curl --header "Content-Type: application/json" --header "wg-dashboard-apikey: YOUR API KEY" SERVER/api/downloadAllPeers/callcenter
+                    $groups = loadBackend("groups");
+                    $users = loadBackend("users");
 
-                    // add peer
-                    // curl --header "Content-Type: application/json" --header "wg-dashboard-apikey: YOUR API KEY" SERVER/api/addPeers/callcenter --data '{ "name": "name" }'
+                    if ($groups && $users) {
+                        $allUsers = $users->getUsers();
+                        $allGroups = $groups->getGroups();
 
-                    // remove peer
-                    // curl --header "Content-Type: application/json" --header "wg-dashboard-apikey: YOUR API KEY" SERVER/api/deletePeers/callcenter --data '{ "peers": [ "public key" ] }'
+                        $primaryGroups = [];
+                        $groupExists = [];
+                        foreach ($allUsers as $user) {
+                            $primaryGroups[$user["login"]] = $user["primaryGroupAcronym"];
+                            @$groupExists[$user["primaryGroupAcronym"]]++;
+                        }
+
+                        foreach ($allGroups as $g) {
+                            $peers = json_decode(file_get_contents($this->config["backends"]["wg"]["api"] . "/api/downloadAllPeers/" . $g["acronym"], false, stream_context_create([
+                                "http" => [
+                                    "method" => "GET",
+                                    "header" => [
+                                        "Content-Type: application/json; charset=utf-8",
+                                        "Accept: application/json; charset=utf-8",
+                                        "wg-dashboard-apikey: " . $this->config["backends"]["wg"]["key"],
+                                    ],
+                                ],
+                            ])), true);
+
+                            $counts = [];
+                            $logins = [];
+
+                            if ($peers["status"]) {
+                                foreach ($peers["data"] as $p) {
+                                    @$counts[$p["fileName"]]++;
+                                    $logins[$p["fileName"]] = $this->pubKey(parse_ini_string($p["file"], true, INI_SCANNER_RAW)["Interface"]["PrivateKey"]);
+                                }
+
+                                // remove doubles
+                                foreach ($counts as $l => $c) {
+                                    if ($c > 1) {
+                                        file_get_contents($this->config["backends"]["wg"]["api"] . "/api/deletePeers/" . $g["acronym"], false, stream_context_create([
+                                            "http" => [
+                                                "method" => "POST",
+                                                "header" => [
+                                                    "Content-Type: application/json; charset=utf-8",
+                                                    "Accept: application/json; charset=utf-8",
+                                                    "wg-dashboard-apikey: " . $this->config["backends"]["wg"]["key"],
+                                                ],
+                                                "content" => json_encode([
+                                                    "peers" => [
+                                                        $logins[$l],
+                                                    ],
+                                                ]),
+                                            ],
+                                        ]));
+                                    }
+                                }
+
+                                // remove if not in group
+                                foreach ($logins as $l => $k) {
+                                    if (@$primaryGroups[$l] != $g["acronym"]) {
+                                        file_get_contents($this->config["backends"]["wg"]["api"] . "/api/deletePeers/" . $g["acronym"], false, stream_context_create([
+                                            "http" => [
+                                                "method" => "POST",
+                                                "header" => [
+                                                    "Content-Type: application/json; charset=utf-8",
+                                                    "Accept: application/json; charset=utf-8",
+                                                    "wg-dashboard-apikey: " . $this->config["backends"]["wg"]["key"],
+                                                ],
+                                                "content" => json_encode([
+                                                    "peers" => [
+                                                        $logins[$l],
+                                                    ],
+                                                ]),
+                                            ],
+                                        ]));
+                                    }
+                                }
+
+                                // create peers
+                                foreach ($primaryGroups as $l => $p) {
+                                    if ($p == $g["acronym"] && !@$logins[$l]) {
+                                        file_get_contents($this->config["backends"]["wg"]["api"] . "/api/addPeers/" . $g["acronym"], false, stream_context_create([
+                                            "http" => [
+                                                "method" => "POST",
+                                                "header" => [
+                                                    "Content-Type: application/json; charset=utf-8",
+                                                    "Accept: application/json; charset=utf-8",
+                                                    "wg-dashboard-apikey: " . $this->config["backends"]["wg"]["key"],
+                                                ],
+                                                "content" => json_encode([
+                                                    "name" => $l,
+                                                ]),
+                                            ],
+                                        ]));
+                                    }
+                                }
+                            } else {
+                                if (@$groupExists[$g["acronym"]]) {
+                                    echo $g["acronym"] . ": " . $peers["message"] . "\n";
+                                }
+                            }
+                        }
+                    }
                 }
 
                 return true;

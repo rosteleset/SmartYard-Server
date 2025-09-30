@@ -297,6 +297,12 @@
         "customFields": {
             "backend": "internal",
         },
+
+        "wg": {
+            "backend": "internal",
+            "api": "<!-- WGDashboard URL -->",
+            "key": "<!-- API KEY -->",
+        }
     },
 
     "email": {
