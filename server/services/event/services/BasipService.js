@@ -1,5 +1,5 @@
 import { WebHookService } from './index.js';
-import { getTimestamp, isIpAddress, parseSyslogMessage } from '../utils/index.js';
+import { API, getTimestamp, isIpAddress, mdTimer, parseSyslogMessage } from '../utils/index.js';
 import config from '../config.json' with { type: 'json' };
 
 const { topology } = config;
@@ -26,7 +26,7 @@ class BasipService extends WebHookService {
         We keep only the latest one to avoid processing outdated data.
         */
         const messageRaw = data.trim().split('\n').at(-1);
-        const now = getTimestamp(new Date());
+        const date = getTimestamp(new Date());
 
         // Strip IPv4-mapped IPv6 prefix if present (::ffff:)
         let host = request.socket.remoteAddress?.replace(/^::ffff:/, '');
@@ -41,17 +41,43 @@ class BasipService extends WebHookService {
             host = addressFromMessageBody;
         }
 
-        await this.handleMessage(message);
-        await this.sendToSyslogStorage(now, host, null, this.unit, message)
-            .then(() => this.logToConsole(now, null, host, message));
+        await this.handleMessage(date, host, message);
+        await this.sendToSyslogStorage(date, host, null, this.unit, message)
+            .then(() => this.logToConsole(date, null, host, message));
     }
 
     /**
-     * @param message
+     * @param {number} date
+     * @param {string} host
+     * @param {string} message
      * @returns {Promise<void>}
      */
-    async handleMessage(message) {
+    async handleMessage(date, host, message) {
+        const messageParts = message.split(':').map(part => part.trim());
 
+        // The door sensor input has been triggered, used for motion detection
+        if (
+            messageParts[2] === 'Door was opened with door sensor' ||
+            messageParts[2] === 'Door was closed with door sensor'
+        ) {
+            await API.motionDetection({ date: date, ip: host, motionActive: true });
+            await mdTimer({ ip: host });
+        }
+
+        // Opening a door by RFID key
+        if (messageParts[6] === 'Door opened by card. Info') {
+            await API.openDoor({ date: date, ip: host, detail: messageParts[4], by: 'rfid' });
+        }
+
+        // Opening a door by personal code
+        if (messageParts[6] === 'Door opened by access code. Info') {
+            await API.openDoor({ date: date, ip: host, detail: messageParts[2], by: 'code' });
+        }
+
+        // Opening a door by button pressed
+        if (messageParts[2] === 'Door opened by exit button') {
+            await API.openDoor({ date: date, ip: host, detail: 'main', by: 'button' });
+        }
     }
 }
 
