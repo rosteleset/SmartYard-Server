@@ -641,7 +641,7 @@ function cardForm(params) {
                     let c = params.fields[i].options[j].checked || (typeof params.fields[i].value === "object" && Array.isArray(params.fields[i].value) && params.fields[i].value.indexOf(params.fields[i].options[j].id) >= 0);
                     h += `
                         <div class="custom-control custom-checkbox${(j !== params.fields[i].options.length - 1) ? " mb-3" : ""}">
-                        <input type="checkbox" class="ml-1 checkBoxOption-${_prefix}-${params.fields[i].id} custom-control-input multiselect-checkbox" id="${id}" data-id="${params.fields[i].options[j].id}"${c ? " checked" : ""}${params.fields[i].options[j].disabled ? " disabled" : ""}/>
+                        <input type="checkbox" class="ml-1 checkBoxOption-${_prefix}-${params.fields[i].id} custom-control-input multiselect-checkbox" id="${id}" data-id="${params.fields[i].options[j].id}"${c ? " checked" : ""}${(params.fields[i].options[j].disabled || params.fields[i].readonly) ? " disabled" : ""}/>
                         <label for="${id}" class="custom-control-label form-check-label" style="text-wrap: pretty;">${params.fields[i].options[j].text}</label>
                     `;
                     if (params.fields[i].options[j].append) {

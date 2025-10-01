@@ -161,6 +161,20 @@
 
                                 if ($groups !== false) {
                                     $_user["groups"] = $groups->getGroups($uid);
+
+                                    $wg = loadBackend("wg");
+                                    if ($wg) {
+                                        $primaryGroupAdmin = false;
+                                        foreach ($_user["groups"] as $g) {
+                                            if ($g["acronym"] == $_user["primaryGroupAcronym"]) {
+                                                $primaryGroupAdmin = $g["admin"];
+                                                break;
+                                            }
+                                        }
+                                        if ($this->uid <= 0 || $this->uid == $uid || $this->uid == $primaryGroupAdmin) {
+                                            $_user["wg"] = $wg->clientConfig($_user["login"],  $_user["primaryGroupAcronym"]);
+                                        }
+                                    }
                                 }
                             }
 
@@ -368,15 +382,19 @@
              */
 
             public function modifyUser($uid, $realName = '', $eMail = '', $phone = '', $tg = '', $notification = 'tgEmail', $enabled = true, $defaultRoute = '', $persistentToken = false, $primaryGroup = -1) {
-                $this->clearCache();
-
                 if (!checkInt($uid)) {
+                    return false;
+                }
+
+                if ($this->uid > 0 && $this->uid != $uid) {
                     return false;
                 }
 
                 if (!in_array($notification, [ "none", "tgEmail", "emailTg", "tg", "email" ])) {
                     return false;
                 }
+
+                $this->clearCache();
 
                 $user = $this->getUser($uid);
 
@@ -604,8 +622,8 @@
                     return false;
                 }
 
-                if ($this->uid != 0) {
-                    $uid = $this->uid;
+                if ($this->uid > 0 && $this->uid != $uid) {
+                    return false;
                 }
 
                 try {
@@ -623,10 +641,6 @@
               */
 
             public function getAvatar($uid) {
-                if ($this->uid != 0) {
-                    $uid = $this->uid;
-                }
-
                 if (!checkInt($uid)) {
                     return false;
                 }

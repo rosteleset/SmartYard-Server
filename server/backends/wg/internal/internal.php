@@ -35,6 +35,35 @@
              * @inheritDoc
              */
 
+            public function clientConfig($login, $group) {
+                if ($login && $group) {
+                    $peers = json_decode(file_get_contents($this->config["backends"]["wg"]["api"] . "/api/downloadAllPeers/" . $group, false, stream_context_create([
+                        "http" => [
+                            "method" => "GET",
+                            "header" => [
+                                "Content-Type: application/json; charset=utf-8",
+                                "Accept: application/json; charset=utf-8",
+                                "wg-dashboard-apikey: " . $this->config["backends"]["wg"]["key"],
+                            ],
+                        ],
+                    ])), true);
+
+                    if ($peers["status"]) {
+                        foreach ($peers["data"] as $p) {
+                            if ($p["fileName"] == $login) {
+                                return $p["file"];
+                            }
+                        }
+                    }
+                }
+
+                return false;
+            }
+
+            /**
+             * @inheritDoc
+             */
+
             public function cron($part) {
                 if ($part == "5min") {
                     $groups = loadBackend("groups");

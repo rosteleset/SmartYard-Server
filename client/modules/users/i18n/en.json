@@ -57,6 +57,7 @@
     "avatarDelete": "Delete avatar",
     "showPassword": "Show / hide password",
     "generatePassword": "Generate password",
+    "wg": "WG",
     "errors": {
         "invalid2FACredentials": "Invalid authentication code"
     },

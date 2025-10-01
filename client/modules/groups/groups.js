@@ -358,7 +358,7 @@
 
             for (let i in users.users) {
                 if (users.users[i].uid) {
-                    usersList[users.users[i].uid] = $.trim(users.users[i].realName?users.users[i].realName:users.users[i].login);
+                    usersList[users.users[i].uid] = $.trim(users.users[i].realName ? users.users[i].realName : users.users[i].login);
                 }
             }
 
@@ -367,10 +367,10 @@
                     target: "#mainForm",
                     title: {
                         caption: i18n("groups.groups"),
-                        button: {
+                        button: AVAIL("accounts", "group", "POST") ? {
                             caption: i18n("groups.addGroup"),
                             click: modules.groups.addGroup,
-                        },
+                        } : false,
                         filter: true,
                     },
                     edit: AVAIL("accounts", "group", "PUT") ? modules.groups.modifyGroup : false,

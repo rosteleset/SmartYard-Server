@@ -3,7 +3,7 @@
     meta: false,
 
     init: function () {
-        if (AVAIL("accounts", "user", "POST") || AVAIL("accounts", "user", "DELETE")) {
+        if (AVAIL("accounts", "user", "GET")) {
             leftSide("fas fa-fw fa-user", i18n("users.users"), "?#users", "accounts");
         }
         moduleLoaded("users", this);
@@ -237,9 +237,9 @@
 
                 cardForm({
                     title: i18n("users.edit"),
-                    footer: true,
+                    footer: AVAIL("accounts", "user", "PUT") && (parseInt(myself.uid) <= 0 || parseInt(myself.uid) === parseInt(uid)),
                     borderless: true,
-                    topApply: true,
+                    topApply: !(AVAIL("accounts", "user", "PUT") && (parseInt(myself.uid) <= 0 || parseInt(myself.uid) === parseInt(uid))),
                     size: "lg",
                     delete: (uid.toString() !== "0" && uid.toString() !== myself.uid.toString() && AVAIL("accounts", "user", "DELETE")) ? i18n("users.delete") : false,
                     deleteTab: (uid.toString() !== "0" && uid.toString() !== myself.uid.toString() && AVAIL("accounts", "user", "DELETE")) ? i18n("users.primary") : false,
@@ -263,7 +263,7 @@
                         {
                             id: "realName",
                             type: "text",
-                            readonly: false,
+                            readonly: !(AVAIL("accounts", "user", "PUT") && (parseInt(myself.uid) <= 0 || parseInt(myself.uid) === parseInt(uid))),
                             value: response.user.realName,
                             title: i18n("users.realName"),
                             placeholder: i18n("users.realName"),
@@ -275,7 +275,7 @@
                         {
                             id: "eMail",
                             type: "email",
-                            readonly: false,
+                            readonly: !(AVAIL("accounts", "user", "PUT") && (parseInt(myself.uid) <= 0 || parseInt(myself.uid) === parseInt(uid))),
                             value: response.user.eMail,
                             title: i18n("eMail"),
                             placeholder: i18n("eMail"),
@@ -285,6 +285,7 @@
                             id: "primaryGroup",
                             type: "select2",
                             value: response.user.primaryGroup,
+                            readonly: parseInt(myself.uid),
                             options: gs,
                             title: i18n("users.primaryGroup"),
                             hidden: (!parseInt(response.user.uid) || gs.length == 0) || !AVAIL("accounts", "groupUsers", "PUT"),
@@ -293,7 +294,7 @@
                         {
                             id: "phone",
                             type: "tel",
-                            readonly: false,
+                            readonly: !(AVAIL("accounts", "user", "PUT") && (parseInt(myself.uid) <= 0 || parseInt(myself.uid) === parseInt(uid))),
                             value: response.user.phone,
                             title: i18n("phone"),
                             placeholder: i18n("phone"),
@@ -302,7 +303,7 @@
                         {
                             id: "tg",
                             type: "number",
-                            readonly: false,
+                            readonly: !(AVAIL("accounts", "user", "PUT") && (parseInt(myself.uid) <= 0 || parseInt(myself.uid) === parseInt(uid))),
                             value: response.user.tg,
                             title: i18n("users.tg"),
                             placeholder: i18n("users.tg"),
@@ -311,7 +312,7 @@
                         {
                             id: "notification",
                             type: "select",
-                            readonly: false,
+                            readonly: !(AVAIL("accounts", "user", "PUT") && (parseInt(myself.uid) <= 0 || parseInt(myself.uid) === parseInt(uid))),
                             value: response.user.notification,
                             title: i18n("users.notification"),
                             placeholder: i18n("users.notification"),
@@ -347,12 +348,12 @@
                             type: "password",
                             title: i18n("password"),
                             placeholder: i18n("password"),
-                            readonly: uid.toString() === "0",
+                            readonly: uid.toString() === "0" || !(AVAIL("accounts", "user", "PUT") && (parseInt(myself.uid) <= 0 || parseInt(myself.uid) === parseInt(uid))),
                             hidden: uid.toString() === "0",
                             validate: (v, prefix) => {
                                 return ($.trim(v).length === 0) || ($.trim(v).length >= 8 && $(`#${prefix}password`).val() === $(`#${prefix}confirm`).val());
                             },
-                            button: {
+                            button: uid.toString() === "0" || !(AVAIL("accounts", "user", "PUT") && (parseInt(myself.uid) <= 0 || parseInt(myself.uid) === parseInt(uid))) ? {
                                 class: "fas fa-fw fa-magic",
                                 hint: i18n("users.generatePassword"),
                                 click: prefix => {
@@ -361,7 +362,7 @@
                                     $(`#${prefix}password`).val(p);
                                     $(`#${prefix}confirm`).val(p);
                                 },
-                            },
+                            } : undefined,
                             tab: i18n("users.primary"),
                         },
                         {
@@ -369,12 +370,12 @@
                             type: "password",
                             title: i18n("confirm"),
                             placeholder: i18n("confirm"),
-                            readonly: uid.toString() === "0",
+                            readonly: uid.toString() === "0" || !(AVAIL("accounts", "user", "PUT") && (parseInt(myself.uid) <= 0 || parseInt(myself.uid) === parseInt(uid))),
                             hidden: uid.toString() === "0",
                             validate: (v, prefix) => {
                                 return ($.trim(v).length === 0) || ($.trim(v).length >= 8 && $(`#${prefix}password`).val() === $(`#${prefix}confirm`).val());
                             },
-                            button: {
+                            button: uid.toString() === "0" || !(AVAIL("accounts", "user", "PUT") && (parseInt(myself.uid) <= 0 || parseInt(myself.uid) === parseInt(uid))) ? {
                                 class: "fas fa-fw fa-eye",
                                 hint: i18n("users.showPassword"),
                                 click: prefix => {
@@ -386,13 +387,13 @@
                                         $(`#${prefix}confirm`).attr("type", "password");
                                     }
                                 },
-                            },
+                            } : undefined,
                             tab: i18n("users.primary"),
                         },
                         {
                             id: "defaultRoute",
                             type: "text",
-                            readonly: false,
+                            readonly: !(AVAIL("accounts", "user", "PUT") && (parseInt(myself.uid) <= 0 || parseInt(myself.uid) === parseInt(uid))),
                             value: response.user.defaultRoute,
                             title: i18n("users.defaultRoute"),
                             placeholder: "#route",
@@ -410,7 +411,7 @@
                         {
                             id: "persistentToken",
                             type: "text",
-                            readonly: false,
+                            readonly: !(AVAIL("accounts", "user", "PUT") && (parseInt(myself.uid) <= 0 || parseInt(myself.uid) === parseInt(uid))),
                             value: parseInt(uid)?response.user.persistentToken:'',
                             title: i18n("users.persistentToken"),
                             placeholder: i18n("users.persistentToken"),
@@ -429,10 +430,9 @@
                         {
                             id: "disabled",
                             type: "select",
-                            value: response.user.enabled?"no":"yes",
+                            value: response.user.enabled ? "no" : "yes",
                             title: i18n("users.disabled"),
-                            readonly: uid.toString() === myself.uid.toString(),
-                            hidden: uid.toString() === myself.uid.toString() && !parseInt(response.user.uid),
+                            readonly: parseInt(myself.uid),
                             options: [
                                 {
                                     value: "yes",
@@ -450,7 +450,7 @@
                             type: "multiselect",
                             title: false,
                             tab: i18n("users.userGroups"),
-                            hidden: !parseInt(response.user.uid) || gu.length == 0 || !AVAIL("accounts", "userGroups", "PUT"),
+                            readonly: parseInt(myself.uid),
                             noHover: true,
                             allButtons: false,
                             options: gu,
@@ -507,7 +507,28 @@
                             tab: i18n("users.avatar"),
                             noHover: true,
                             singleColumn: true,
-                        }
+                            hidden: !(AVAIL("accounts", "user", "PUT") && (parseInt(myself.uid) <= 0 || parseInt(myself.uid) === parseInt(uid))),
+                        },
+                        {
+                            id: "wgQr",
+                            type: "empty",
+                            title: false,
+                            tab: i18n("users.wg"),
+                            noHover: true,
+                            singleColumn: true,
+                            hidden: !response.user.wg,
+                        },
+                        {
+                            id: "wgCfg",
+                            type: "area",
+                            title: false,
+                            readonly: true,
+                            tab: i18n("users.wg"),
+                            noHover: true,
+                            singleColumn: true,
+                            value: response.user.wg,
+                            hidden: !response.user.wg,
+                        },
                     ],
 
                     done: function (prefix) {
@@ -539,6 +560,14 @@
                                 <button id="${prefix}avatar-delete" type="button" class="btn btn-danger mr-2" title="${i18n("users.avatarDelete")}"><i class="fas fa-fw fa-recycle"></i></button>
                             </div>
                         `).css("width", "50%");
+
+                        if (response.user.wg) {
+                            (new QRCode(document.getElementById(prefix + "wgQr"), {
+                                width: 256,
+                                height: 256,
+                            })).makeCode(response.user.wg);
+                            $($("#" + prefix + "wgQr").children()[1]).css("width", "50%");
+                        }
 
                         function checkABtn() {
                             $("#" + prefix + "avatar-load").removeClass("disabled");
