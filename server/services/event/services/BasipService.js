@@ -78,6 +78,11 @@ class BasipService extends WebHookService {
         if (messageParts[2] === 'Door opened by exit button') {
             await API.openDoor({ date: date, ip: host, detail: 'main', by: 'button' });
         }
+
+        // Accepted incoming call
+        if (messageParts[5] === 'Outgoing call. call number') {
+            await API.callFinished({ date: date, ip: host });
+        }
     }
 }
 
