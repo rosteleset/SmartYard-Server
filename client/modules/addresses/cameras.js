@@ -1122,7 +1122,7 @@
                                     nowrap: true,
                                 },
                                 {
-                                    data: modules.addresses.cameras.meta.cameras[i].name ? modules.addresses.cameras.meta.cameras[i].name : "&nbsp;",
+                                    data: modules.addresses.cameras.meta.cameras[i].comments ? modules.addresses.cameras.meta.cameras[i].comments : "&nbsp;",
                                 },
                             ],
                         });
