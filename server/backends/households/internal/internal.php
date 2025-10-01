@@ -648,7 +648,7 @@
                         ":plog" => $plog,
                         ":manual_block" => $manualBlock,
                         ":admin_block" => $adminBlock,
-                        ":open_code" => $openCode,
+                        ":open_code" => $openCode ?: '',
                         ":auto_open" => $autoOpen,
                         ":white_rabbit" => $whiteRabbit,
                         ":sip_enabled" => $sipEnabled,
@@ -752,6 +752,8 @@
                         // TODO add unique check !!!
                         $params["openCode"] = 11000 + rand(0, 88999);
                     }
+
+                    $params["openCode"] = $params["openCode"] ?: '';
 
                     if (array_key_exists("contract", $params) && !checkStr($params["contract"])) {
                         setLastError("invalidParams");
