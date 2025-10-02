@@ -128,7 +128,7 @@ class BasipService extends WebHookService {
         }
 
         // Missed incoming call
-        if (messageParts[8] === 'call was no accepted') {
+        if (messageParts[8] === 'call was no accepted' || messageParts[10] === 'call was no accepted') {
             await this.finishCall(date, host); // Definitely the end of the call
         }
 
