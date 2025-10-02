@@ -13,7 +13,6 @@ const natEnabled = topology?.nat === true;
 class BasipService extends WebHookService {
     constructor(unit, config, spamWords = []) {
         super(unit, config, spamWords);
-        this.gateRabbits = {};
 
         /**
          * A set of IP addresses representing devices that are currently in an active call state.
@@ -109,6 +108,23 @@ class BasipService extends WebHookService {
         // Opening a door by DTMF
         if (messageParts[5] === 'Door 1 opened by call host') {
             await this.finishCall(date, host); // Definitely the end of the call
+
+            const sipNumber = messageParts[4].split('@')[0];
+
+            if (sipNumber.length === 10) {
+                await API.setRabbitGates({
+                    date: date,
+                    ip: host,
+                    apartmentId: parseInt(sipNumber.substring(1)),
+                });
+            } else if (sipNumber.length === 8) {
+                await API.setRabbitGates({
+                    date: date,
+                    ip: host,
+                    prefix: parseInt(sipNumber.substring(0, 4)),
+                    apartmentNumber: parseInt(sipNumber.substring(4)),
+                });
+            }
         }
 
         // Missed incoming call
