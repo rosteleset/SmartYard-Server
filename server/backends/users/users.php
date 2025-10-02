@@ -140,6 +140,23 @@
             abstract public function modifyUser($uid, $realName = '', $eMail = '', $phone = '', $tg = '', $notification = 'tgEmail', $enabled = true, $defaultRoute = '', $persistentToken = false, $primaryGroup = -1);
 
             /**
+             * modify user data
+             *
+             * @param integer $uid
+             * @param string $realName
+             * @param string $eMail
+             * @param string $phone
+             * @param string $tg
+             * @param string $notification
+             * @param string $defaultRoute
+             * @param mixed $persistentToken
+             *
+             * @return boolean
+             */
+
+            abstract public function userPersonal($uid, $realName = '', $eMail = '', $phone = '', $tg = '', $notification = 'tgEmail', $defaultRoute = '', $persistentToken = false);
+
+            /**
              * @param string $tg
              * @param string $subject
              * @param string $message

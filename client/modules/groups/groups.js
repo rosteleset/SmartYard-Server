@@ -3,7 +3,7 @@
     meta: false,
 
     init: function () {
-        if (AVAIL("accounts", "group", "POST") || AVAIL("accounts", "group", "PUT") || AVAIL("accounts", "group", "DELETE") || AVAIL("accounts", "groupUsers", "PUT")) {
+        if (AVAIL("accounts", "group", "GET")) {
             leftSide("fas fa-fw fa-users", i18n("groups.groups"), "?#groups", "accounts");
         }
         moduleLoaded("groups", this);

@@ -490,7 +490,7 @@ function whoAmI(force) {
             });
 
             $("#selfSettings").off("click").on("click", () => {
-                modules.users.modifyUser(myself.uid, true);
+                modules.users.modifyMyself();
             });
 
             let userCard = _me.user.login;

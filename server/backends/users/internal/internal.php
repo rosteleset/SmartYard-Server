@@ -458,6 +458,57 @@
             }
 
             /**
+             * @inheritDoc
+             */
+
+            public function userPersonal($uid, $realName = '', $eMail = '', $phone = '', $tg = '', $notification = 'tgEmail', $defaultRoute = '', $persistentToken = false) {
+                if (!checkInt($uid)) {
+                    return false;
+                }
+
+                if (!in_array($notification, [ "none", "tgEmail", "emailTg", "tg", "email" ])) {
+                    return false;
+                }
+
+                $this->clearCache();
+
+                $user = $this->getUser($uid);
+
+                try {
+                    $a = loadBackend("authorization");
+
+                    $sth = $this->db->prepare("update core_users set real_name = :real_name, e_mail = :e_mail, phone = :phone, tg = :tg, notification = :notification, default_route = :default_route where uid = $uid");
+
+                    if ($persistentToken && strlen(trim($persistentToken)) === 32 && $uid) {
+                        $this->redis->set("PERSISTENT:" . trim($persistentToken) . ":" . $uid, json_encode([
+                            "uid" => $uid,
+                            "login" => $this->db->get("select login from core_users where uid = $uid", false, false, [ "fieldlify" ]),
+                            "started" => time(),
+                        ]));
+                    } else {
+                        $_keys = $this->redis->keys("PERSISTENT:*:" . $uid);
+                        foreach ($_keys as $_key) {
+                            $this->redis->del($_key);
+                        }
+                    }
+
+                    return $sth->execute([
+                        ":real_name" => trim($realName),
+                        ":e_mail" => trim($eMail)?trim($eMail):null,
+                        ":phone" => trim($phone),
+                        ":tg" => trim($tg),
+                        ":notification" => trim($notification),
+                        ":default_route" => trim($defaultRoute),
+                    ]);
+                } catch (\Exception $e) {
+                    error_log(print_r($e, true));
+                    return false;
+                }
+
+                return true;
+            }
+
+            /**
              * get uid by e-mail
              *
              * @param string $eMail e-mail

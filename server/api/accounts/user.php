@@ -94,6 +94,15 @@
             public static function PUT($params) {
                 $success = $params["_backends"]["users"]->modifyUser($params["_id"], $params["realName"], $params["eMail"], $params["phone"], $params["tg"], $params["notification"], $params["enabled"], $params["defaultRoute"], $params["persistentToken"], @$params["primaryGroup"]);
 
+                if (@$params["avatar"]) {
+                    $success = $success && $params["_backends"]["users"]->putAvatar($params["_id"], $params["avatar"]);
+                }
+
+                if (@$params["userGroups"]) {
+                    $groups = loadBackend("groups");
+                    $success = $groups && $success && $groups->setGroups($params["_id"], $params["userGroups"]);
+                }
+
                 if (@$params["password"] && (int)$params["_id"]) {
                     $success = $success && $params["_backends"]["users"]->setPassword($params["_id"], $params["password"]);
                     return api::ANSWER($success, ($success !== false) ? false : "notAcceptable");
@@ -109,7 +118,7 @@
                     $success = $params["_backends"]["users"]->deleteUser($params["_id"]);
                 }
 
-                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
+                return api::ANSWER($success, ($success !== false) ? false : "notAcceptable");
             }
 
             public static function index() {
@@ -117,9 +126,9 @@
 
                 if ($users && $users->capabilities()["mode"] === "rw") {
                     return [
-                        "GET" => "#personal",
+                        "GET",
                         "POST",
-                        "PUT" => "#personal",
+                        "PUT",
                         "DELETE"
                     ];
                 } else {
