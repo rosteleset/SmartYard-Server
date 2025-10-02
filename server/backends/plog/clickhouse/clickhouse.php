@@ -1442,7 +1442,10 @@
                                 $messageParts = array_map('trim', explode(':', $msg));
                                 $sipNumber = null;
 
-                                if ($messageParts[5] === 'Outgoing call. call number') {
+                                if (
+                                    $messageParts[5] === 'Outgoing call. call number' ||
+                                    $messageParts[6] === 'Outgoing call. call number'
+                                ) {
                                     $sipNumber = explode('@', $messageParts[3])[0];
                                 } elseif ($messageParts[5] === 'Door 1 opened by call host') {
                                     $sipNumber = explode('@', $messageParts[4])[0];
