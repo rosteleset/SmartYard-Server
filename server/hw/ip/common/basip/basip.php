@@ -163,7 +163,7 @@ trait basip
     protected function getEventServer(): string
     {
         $settings = $this->apiCall('/v1/syslog/settings')['server'];
-        return 'syslog.udp' . ':' . $settings['server'] . ':' . $settings['port'];
+        return 'http://' . $settings['server'] . ':' . $settings['port'];
     }
 
     protected function getNtpConfig(): array
