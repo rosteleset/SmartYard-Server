@@ -1,17 +1,36 @@
 <?php
 
     /**
+     * @api {get} /user/personal get user personal data
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName getPersonal
+     * @apiGroup user
+     *
+     * @apiHeader {String} Authorization authentication token
+     */
+
+    /**
      * @api {put} /user/personal put user personal data
      *
      * @apiVersion 1.0.0
      *
-     * @apiName putAvatar
+     * @apiName putPersonal
      * @apiGroup user
      *
      * @apiHeader {String} Authorization authentication token
      *
-     * @apiParam {Number} id
+     * @apiBody {String} password password
+     * @apiBody {String} realName real name
+     * @apiBody {String} eMail e-mail
+     * @apiBody {String} phone phone number
+     * @apiBody {String} tg Telegram Id
+     * @apiBody {String="none", "tgEmail", "emailTg", "tg", "email"} notification notification type
+     * @apiBody {String} defaultRoute default hash route
+     * @apiBody {String} persistentToken persistent token
      * @apiBody {Object} avatar
+     * @apiBody {String} password password
      *
      * @apiSuccess {Boolean} true
      */

@@ -49,6 +49,9 @@
      * @apiBody {Boolean} enabled enabled or disabled
      * @apiBody {String} defaultRoute default hash route
      * @apiBody {String} persistentToken persistent token
+     * @apiBody {Object} avatar
+     * @apiBody {String} password password
+     * @apiBody {Number[]} userGroups gids
      * @apiBody {String} primaryGroup gid
      */
 
