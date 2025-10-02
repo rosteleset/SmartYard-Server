@@ -14,6 +14,18 @@ class BasipService extends WebHookService {
     constructor(unit, config, spamWords = []) {
         super(unit, config, spamWords);
         this.gateRabbits = {};
+
+        /**
+         * A set of IP addresses representing devices that are currently in an active call state.
+         * @type {Set<string>}
+         */
+        this.activeCallHosts = new Set();
+
+        /**
+         * Timeout in milliseconds for how long a device can remain in a call state.
+         * @type {number}
+         */
+        this.callTimeout = 90000;
     }
 
     async handleGetRequest(request, response) {
@@ -47,13 +59,28 @@ class BasipService extends WebHookService {
     }
 
     /**
-     * @param {number} date
-     * @param {string} host
-     * @param {string} message
+     * Calls the API method to mark a call as finished for a specific host
+     * and removes the host from the active call set.
+     *
+     * @param {number} date - Timestamp of when the call ended.
+     * @param {string} host - IP address of the device.
+     * @returns {Promise<void>}
+     */
+    async finishCall(date, host) {
+        await API.callFinished({ date: date, ip: host });
+        this.activeCallHosts.delete(host);
+    }
+
+    /**
+     * Handles incoming messages from a device and triggers the corresponding API actions.
+     *
+     * @param {number} date - Timestamp of when the message was received.
+     * @param {string} host - IP address of the device that sent the message.
+     * @param {string} message - Raw message string from the device.
      * @returns {Promise<void>}
      */
     async handleMessage(date, host, message) {
-        const messageParts = message.split(':').map(part => part.trim());
+        const messageParts = message.split(/[,:]/).map(part => part.trim());
 
         // The door sensor input has been triggered, used for motion detection
         if (
@@ -79,9 +106,33 @@ class BasipService extends WebHookService {
             await API.openDoor({ date: date, ip: host, detail: 'main', by: 'button' });
         }
 
+        // Opening a door by DTMF
+        if (messageParts[5] === 'Door 1 opened by call host') {
+            await this.finishCall(date, host); // Definitely the end of the call
+        }
+
+        // Missed incoming call
+        if (messageParts[8] === 'call was no accepted') {
+            await this.finishCall(date, host); // Definitely the end of the call
+        }
+
         // Accepted incoming call
-        if (messageParts[5] === 'Outgoing call. call number') {
-            await API.callFinished({ date: date, ip: host });
+        if (messageParts[8] === 'call was accepted') {
+            // If the host is already in an active call, finish the previous call first
+            if (this.activeCallHosts.has(host)) {
+                // End the previous call 1 sec earlier to avoid timestamp collision with this new call
+                await this.finishCall(date - 1, host);
+            }
+
+            // Add the call to the active calls
+            this.activeCallHosts.add(host);
+
+            // The timer finishes the call if no other events end it before the call timeout
+            setTimeout(async () => {
+                if (this.activeCallHosts.has(host)) {
+                    await this.finishCall(getTimestamp(new Date()), host);
+                }
+            }, this.callTimeout);
         }
     }
 }
