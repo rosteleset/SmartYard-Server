@@ -394,11 +394,19 @@ end
 function handleSOS()
     checkin()
 
-    logDebug(channel.CALLERID("num"):get() .. " >>> 112")
+    local from = channel.CALLERID("num"):get()
 
-    local sos = dm("sos", channel.CALLERID("num"):get())
+    logDebug(from .. " >>> sos")
+
+    local sos = dm("sos", from)
 
     if sos and sos ~= "" then
+        local entrance = dm("entrance", tonumber(from:sub(2)))
+
+        logDebug("entrance: " .. inspect(entrance))
+
+        channel.CALLERID("name"):set(entrance.callerId)
+
         app.Dial(sos, 120, "m")
     else
         app.Answer()
@@ -411,11 +419,19 @@ end
 function handleConcierge()
     checkin()
 
-    logDebug(channel.CALLERID("num"):get() .. " >>> 9999")
+    local from = channel.CALLERID("num"):get()
 
-    local concierge = dm("concierge", channel.CALLERID("num"):get())
+    logDebug(from .. " >>> concierge")
+
+    local concierge = dm("concierge", from)
 
     if concierge and concierge ~= "" then
+        local entrance = dm("entrance", tonumber(from:sub(2)))
+
+        logDebug("entrance: " .. inspect(entrance))
+
+        channel.CALLERID("name"):set(entrance.callerId)
+
         app.Dial(concierge, 120, "m")
     else
         app.Answer()
