@@ -386,10 +386,6 @@
                     return false;
                 }
 
-                if ($this->uid > 0 && $this->uid != $uid) {
-                    return false;
-                }
-
                 if (!in_array($notification, [ "none", "tgEmail", "emailTg", "tg", "email" ])) {
                     return false;
                 }
@@ -401,11 +397,7 @@
                 try {
                     $a = loadBackend("authorization");
 
-                    if ($a->mAllow("accounts", "groupUsers", "PUT")) {
-                        $sth = $this->db->prepare("update core_users set real_name = :real_name, e_mail = :e_mail, phone = :phone, tg = :tg, notification = :notification, enabled = :enabled, default_route = :default_route, primary_group = :primary_group where uid = $uid");
-                    } else {
-                        $sth = $this->db->prepare("update core_users set real_name = :real_name, e_mail = :e_mail, phone = :phone, tg = :tg, notification = :notification, enabled = :enabled, default_route = :default_route where uid = $uid");
-                    }
+                    $sth = $this->db->prepare("update core_users set real_name = :real_name, e_mail = :e_mail, phone = :phone, tg = :tg, notification = :notification, enabled = :enabled, default_route = :default_route, primary_group = :primary_group where uid = $uid");
 
                     if ($persistentToken && strlen(trim($persistentToken)) === 32 && $uid && $enabled) {
                         $this->redis->set("PERSISTENT:" . trim($persistentToken) . ":" . $uid, json_encode([
@@ -427,28 +419,16 @@
                         }
                     }
 
-                    if ($a->mAllow("accounts", "groupUsers", "PUT")) {
-                        return $sth->execute([
-                            ":real_name" => trim($realName),
-                            ":e_mail" => trim($eMail)?trim($eMail):null,
-                            ":phone" => trim($phone),
-                            ":tg" => trim($tg),
-                            ":notification" => trim($notification),
-                            ":enabled" => $enabled ? "1" : "0",
-                            ":default_route" => trim($defaultRoute),
-                            ":primary_group" => (int)$primaryGroup,
-                        ]);
-                    } else {
-                        return $sth->execute([
-                            ":real_name" => trim($realName),
-                            ":e_mail" => trim($eMail)?trim($eMail):null,
-                            ":phone" => trim($phone),
-                            ":tg" => trim($tg),
-                            ":notification" => trim($notification),
-                            ":enabled" => $enabled ? "1" : "0",
-                            ":default_route" => trim($defaultRoute),
-                        ]);
-                    }
+                    return $sth->execute([
+                        ":real_name" => trim($realName),
+                        ":e_mail" => trim($eMail)?trim($eMail):null,
+                        ":phone" => trim($phone),
+                        ":tg" => trim($tg),
+                        ":notification" => trim($notification),
+                        ":enabled" => $enabled ? "1" : "0",
+                        ":default_route" => trim($defaultRoute),
+                        ":primary_group" => (int)$primaryGroup,
+                    ]);
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
                     return false;
@@ -670,10 +650,6 @@
 
             public function putAvatar($uid, $avatar) {
                 if (!checkInt($uid)) {
-                    return false;
-                }
-
-                if ($this->uid > 0 && $this->uid != $uid) {
                     return false;
                 }
 
