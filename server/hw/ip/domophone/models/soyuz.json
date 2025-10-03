@@ -1,0 +1,14 @@
+{
+    "title": "SOYUZ S3",
+    "vendor": "SOYUZ",
+    "model": "S3",
+    "class": "soyuzs3",
+    "eventServer": "soyuz",
+    "outputs": 1,
+    "camera": "soyuz",
+    "useSmartConfigurator": true,
+    "cmses": [
+        "km100-7.1",
+        "factorial_8x8"
+    ]
+}
