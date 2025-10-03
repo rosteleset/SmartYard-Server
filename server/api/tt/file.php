@@ -138,9 +138,9 @@
                     $body = "";
                     $chunk = 0;
                     while (strlen($body) < $portion && !feof($file)) {
-                        $part = fread($file, $chunk ? : $portion);
+                        $part = fread($file, $chunk ?: $portion);
                         $body .= $part;
-                        $chunk = $chunk ? : strlen($part);
+                        $chunk = $chunk ?: strlen($part);
                     }
 
                     echo substr($body, 0, $portion);

@@ -37,7 +37,7 @@
                     return API::ERROR(500);
                 }
 
-                $journal = $tt->getJournal($params["_id"], (@$params["limit"] === false) ? false : (@(int)$params["limit"] ? : false));
+                $journal = $tt->getJournal($params["_id"], (@$params["limit"] === false) ? false : (@(int)$params["limit"] ?: false));
 
                 return api::ANSWER($journal, "journal");
             }

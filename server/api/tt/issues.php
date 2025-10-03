@@ -83,11 +83,11 @@
                                 }
 
                                 if (isset($filter["pipeline"])) {
-                                    $issues = $tt->getIssues(@$params["project"] ? : "TT", @$filter["pipeline"], @$filter["fields"], [], @$params["skip"] ? : 0, @$params["limit"] ? : 5, $preprocess, $types, true);
+                                    $issues = $tt->getIssues(@$params["project"] ?: "TT", @$filter["pipeline"], @$filter["fields"], [], @$params["skip"] ?: 0, @$params["limit"] ?: 5, $preprocess, $types, true);
                                 }
 
                                 if (isset($filter["filter"])) {
-                                    $issues = $tt->getIssues(@$params["project"] ? : "TT", @$filter["filter"], @$filter["fields"], @$params["sort"] ? : (array_key_exists("sort", $filter) ? $filter["sort"] : []), @$params["skip"] ? : 0, @$params["limit"] ? : 5, $preprocess, $types);
+                                    $issues = $tt->getIssues(@$params["project"] ?: "TT", @$filter["filter"], @$filter["fields"], @$params["sort"] ?: (array_key_exists("sort", $filter) ? $filter["sort"] : []), @$params["skip"] ?: 0, @$params["limit"] ?: 5, $preprocess, $types);
                                 }
                             } else {
                                 setLastError("filterNotFound");
@@ -112,7 +112,7 @@
                 if ($tt) {
                     if (@$params["query"]) {
                         try {
-                            $issues = $tt->getIssues(@$params["project"] ? : "TT", @$params["query"], @$params["fields"], @$params["sort"] ? : [], @$params["skip"] ? : 0, @$params["limit"] ? : 5, @$params["preprocess"] ? : []);
+                            $issues = $tt->getIssues(@$params["project"] ?: "TT", @$params["query"], @$params["fields"], @$params["sort"] ?: [], @$params["skip"] ?: 0, @$params["limit"] ?: 5, @$params["preprocess"] ?: []);
                         } catch (\Exception $e) {
                             setLastError($e->getMessage());
                             return api::ERROR();
@@ -121,7 +121,7 @@
 
                     if (@$params["pipeline"]) {
                         try {
-                            $issues = $tt->getIssues(@$params["project"] ? : "TT", @$params["pipeline"], @$params["fields"], [], @$params["skip"] ? : 0, @$params["limit"] ? : 5, @$params["preprocess"] ? : [], [], true);
+                            $issues = $tt->getIssues(@$params["project"] ?: "TT", @$params["pipeline"], @$params["fields"], [], @$params["skip"] ?: 0, @$params["limit"] ?: 5, @$params["preprocess"] ?: [], [], true);
                         } catch (\Exception $e) {
                             setLastError($e->getMessage());
                             return api::ERROR();
@@ -153,11 +153,11 @@
                                 }
 
                                 if (isset($filter["pipeline"])) {
-                                    $issues = $tt->getIssues(@$params["project"] ? : "TT", @$filter["pipeline"], @$filter["fields"], [], @$params["skip"] ? : 0, @$params["limit"] ? : 5, $preprocess, $types, true);
+                                    $issues = $tt->getIssues(@$params["project"] ?: "TT", @$filter["pipeline"], @$filter["fields"], [], @$params["skip"] ?: 0, @$params["limit"] ?: 5, $preprocess, $types, true);
                                 }
 
                                 if (isset($filter["filter"])) {
-                                    $issues = $tt->getIssues(@$params["project"] ? : "TT", @$filter["filter"], @$filter["fields"], @$params["sort"] ? : (array_key_exists("sort", $filter) ? $filter["sort"] : []), @$params["skip"] ? : 0, @$params["limit"] ? : 5, $preprocess, $types);
+                                    $issues = $tt->getIssues(@$params["project"] ?: "TT", @$filter["filter"], @$filter["fields"], @$params["sort"] ?: (array_key_exists("sort", $filter) ? $filter["sort"] : []), @$params["skip"] ?: 0, @$params["limit"] ?: 5, $preprocess, $types);
                                 }
                             } else {
                                 setLastError("filterNotFound");
