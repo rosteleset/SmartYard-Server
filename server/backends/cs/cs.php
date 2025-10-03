@@ -36,7 +36,7 @@
                 $cs = "{\n\t\"sheet\": \"$sheet\",\n\t\"date\": \"$date\"\n}";
 
                 foreach ($css as $s) {
-                    $cs = $files->streamToContents($files->getFileStream($s["id"])) ? : $cs;
+                    $cs = $files->streamToContents($files->getFileStream($s["id"])) ?: $cs;
                     break;
                 }
 
@@ -177,7 +177,7 @@
             public function setCell($action, $sheet, $date, $col, $row, $uid, $expire = 0, $sid = "", $step = 0, $comment = "") {
                 $mqtt = loadBackend("mqtt");
 
-                $expire = (int)($expire ? : 60);
+                $expire = (int)($expire ?: 60);
 
                 switch ($action) {
                     case "claim":

@@ -844,7 +844,7 @@
                     try {
                         $f = @json_decode($this->getFilter($filter["metadata"]["filter"]), true);
                         $_list[$filter["metadata"]["filter"]] = [
-                            "name" => @$f["name"] ? : $filter["metadata"]["filter"],
+                            "name" => @$f["name"] ?: $filter["metadata"]["filter"],
                             "shortName" => @$f["shortName"],
                             "sort" => @$f["sort"],
                             "hide" => @$f["hide"],
@@ -1086,7 +1086,7 @@
                         "filename" => $v["metadata"]["viewer"],
                         "name" => $v["metadata"]["name"],
                         "field" => $v["metadata"]["field"],
-                        "code" => $files->streamToContents($files->getFileStream($v["id"])) ? : "//function subject_v1 (value, field, issue, target) {\n\treturn val;\n//}\n",
+                        "code" => $files->streamToContents($files->getFileStream($v["id"])) ?: "//function subject_v1 (value, field, issue, target) {\n\treturn val;\n//}\n",
                     ];
                 }
 
@@ -1839,7 +1839,7 @@
                     ]);
 
                     if ($data) {
-                        return $files->streamToContents($files->getFileStream($data[0]["id"])) ? : "//function data (issue, callback) {\n\tcallback(issue);\n//}\n";
+                        return $files->streamToContents($files->getFileStream($data[0]["id"])) ?: "//function data (issue, callback) {\n\tcallback(issue);\n//}\n";
                     } else {
                         return "//function data (issue, callback) {\n\tcallback(issue);\n//}\n";
                     }
@@ -1895,7 +1895,7 @@
                     ]);
 
                     if ($formatter) {
-                        return $files->streamToContents($files->getFileStream($formatter[0]["id"])) ? : "";
+                        return $files->streamToContents($files->getFileStream($formatter[0]["id"])) ?: "";
                     } else {
                         return "";
                     }
@@ -2337,9 +2337,9 @@
 
                 try {
                     if ($part == "minutely") {
-                        $path = @$this->config["document_builder"]["tmp"] ? : "/tmp/print";
-                        $user = @$this->config["document_builder"]["www_user"] ? : "www-data";
-                        $group = @$this->config["document_builder"]["www_group"] ? : "www-data";
+                        $path = @$this->config["document_builder"]["tmp"] ?: "/tmp/print";
+                        $user = @$this->config["document_builder"]["www_user"] ?: "www-data";
+                        $group = @$this->config["document_builder"]["www_group"] ?: "www-data";
                         if (is_dir($path)) {
                             $fileSystemIterator = new \FilesystemIterator($path);
                             $threshold = strtotime('-15 min');

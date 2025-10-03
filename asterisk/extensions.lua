@@ -396,9 +396,15 @@ function handleSOS()
 
     logDebug(channel.CALLERID("num"):get() .. " >>> 112")
 
-    app.Answer()
-    app.StartMusicOnHold()
-    app.Wait(900)
+    local sos = dm("sos", channel.CALLERID("num"):get())
+
+    if sos and sos ~= "" then
+        app.Dial("PJSIP/" .. sos, 120, "m")
+    else
+        app.Answer()
+        app.StartMusicOnHold()
+        app.Wait(900)
+    end
 end
 
 -- concierge call
@@ -407,9 +413,15 @@ function handleConcierge()
 
     logDebug(channel.CALLERID("num"):get() .. " >>> 9999")
 
-    app.Answer()
-    app.StartMusicOnHold()
-    app.Wait(900)
+    local concierge = dm("concierge", channel.CALLERID("num"):get())
+
+    if concierge and concierge ~= "" then
+        app.Dial("PJSIP/" .. concierge, 120, "m")
+    else
+        app.Answer()
+        app.StartMusicOnHold()
+        app.Wait(900)
+    end
 end
 
 -- all others

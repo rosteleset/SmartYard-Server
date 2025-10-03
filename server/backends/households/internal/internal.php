@@ -421,16 +421,16 @@
                     ":domophone_output" => (int)$domophoneOutput,
                     ":cms" => $cms,
                     ":cms_type" => $cmsType,
-                    ":camera_id" => (int)$cameraId ? : null,
-                    ":alt_camera_id_1" => @(int)$altCamerasIds[1] ? : null,
-                    ":alt_camera_id_2" => @(int)$altCamerasIds[2] ? : null,
-                    ":alt_camera_id_3" => @(int)$altCamerasIds[3] ? : null,
-                    ":alt_camera_id_4" => @(int)$altCamerasIds[4] ? : null,
-                    ":alt_camera_id_5" => @(int)$altCamerasIds[5] ? : null,
-                    ":alt_camera_id_6" => @(int)$altCamerasIds[6] ? : null,
-                    ":alt_camera_id_7" => @(int)$altCamerasIds[7] ? : null,
+                    ":camera_id" => (int)$cameraId ?: null,
+                    ":alt_camera_id_1" => @(int)$altCamerasIds[1] ?: null,
+                    ":alt_camera_id_2" => @(int)$altCamerasIds[2] ?: null,
+                    ":alt_camera_id_3" => @(int)$altCamerasIds[3] ?: null,
+                    ":alt_camera_id_4" => @(int)$altCamerasIds[4] ?: null,
+                    ":alt_camera_id_5" => @(int)$altCamerasIds[5] ?: null,
+                    ":alt_camera_id_6" => @(int)$altCamerasIds[6] ?: null,
+                    ":alt_camera_id_7" => @(int)$altCamerasIds[7] ?: null,
                     ":cms_levels" => $cmsLevels,
-                    ":path" => (int)$path ? : null,
+                    ":path" => (int)$path ?: null,
                 ]);
 
                 if (!$entranceId) {
@@ -534,16 +534,16 @@
                     ":domophone_output" => (int)$domophoneOutput,
                     ":cms" => $cms,
                     ":cms_type" => $cmsType,
-                    ":camera_id" => (int)$cameraId ? : null,
-                    ":alt_camera_id_1" => @(int)$altCamerasIds[1] ? : null,
-                    ":alt_camera_id_2" => @(int)$altCamerasIds[2] ? : null,
-                    ":alt_camera_id_3" => @(int)$altCamerasIds[3] ? : null,
-                    ":alt_camera_id_4" => @(int)$altCamerasIds[4] ? : null,
-                    ":alt_camera_id_5" => @(int)$altCamerasIds[5] ? : null,
-                    ":alt_camera_id_6" => @(int)$altCamerasIds[6] ? : null,
-                    ":alt_camera_id_7" => @(int)$altCamerasIds[7] ? : null,
+                    ":camera_id" => (int)$cameraId ?: null,
+                    ":alt_camera_id_1" => @(int)$altCamerasIds[1] ?: null,
+                    ":alt_camera_id_2" => @(int)$altCamerasIds[2] ?: null,
+                    ":alt_camera_id_3" => @(int)$altCamerasIds[3] ?: null,
+                    ":alt_camera_id_4" => @(int)$altCamerasIds[4] ?: null,
+                    ":alt_camera_id_5" => @(int)$altCamerasIds[5] ?: null,
+                    ":alt_camera_id_6" => @(int)$altCamerasIds[6] ?: null,
+                    ":alt_camera_id_7" => @(int)$altCamerasIds[7] ?: null,
                     ":cms_levels" => $cmsLevels,
-                    ":path" => (int)$path ? : null,
+                    ":path" => (int)$path ?: null,
                 ]) !== false;
 
                 if (!$cms) { // Set CMS matrix to empty...
@@ -1050,6 +1050,8 @@
                     "video" => "video",
                     "monitoring" => "monitoring",
                     "ext" => "ext",
+                    "concierge" => "concierge",
+                    "sos" => "sos",
                 ];
 
                 switch ($by) {
@@ -1162,7 +1164,7 @@
              * @inheritDoc
              */
 
-            public function addDomophone($enabled, $model, $server, $url,  $credentials, $dtmf, $nat, $comments, $name, $display, $video, $monitoring, $ext) {
+            public function addDomophone($enabled, $model, $server, $url,  $credentials, $dtmf, $nat, $comments, $name, $display, $video, $monitoring, $ext, $concierge, $sos) {
                 if (!$model) {
                     setLastError("moModel");
                     return false;
@@ -1214,7 +1216,7 @@
                 }
                 $display = trim(implode("\n", $t));
 
-                $domophoneId = $this->db->insert("insert into houses_domophones (enabled, model, server, url, credentials, dtmf, nat, comments, name, display, video, monitoring, ext) values (:enabled, :model, :server, :url, :credentials, :dtmf, :nat, :comments, :name, :display, :video, :monitoring, :ext)", [
+                $domophoneId = $this->db->insert("insert into houses_domophones (enabled, model, server, url, credentials, dtmf, nat, comments, name, display, video, monitoring, ext, concierge, sos) values (:enabled, :model, :server, :url, :credentials, :dtmf, :nat, :comments, :name, :display, :video, :monitoring, :ext, :concierge, :sos)", [
                     "enabled" => (int)$enabled,
                     "model" => $model,
                     "server" => $server,
@@ -1224,10 +1226,12 @@
                     "nat" => $nat,
                     "comments" => $comments,
                     "name" => $name,
-                    "display" => $display ? : null,
+                    "display" => $display ?: null,
                     "video" => $video,
                     "monitoring" => $monitoring,
                     "ext" => json_encode($ext),
+                    "concierge" => $concierge ?: null,
+                    "sos" => $sos ?: null,
                 ]);
 
                 if ($domophoneId) {
@@ -1247,7 +1251,7 @@
              * @inheritDoc
              */
 
-            public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $dtmf, $firstTime, $nat, $locksAreOpen, $comments, $name, $display, $video, $monitoring, $ext) {
+            public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $dtmf, $firstTime, $nat, $locksAreOpen, $comments, $name, $display, $video, $monitoring, $ext, $concierge, $sos) {
                 if (!checkInt($domophoneId)) {
                     setLastError("noId");
                     return false;
@@ -1315,7 +1319,7 @@
                 }
                 $display = trim(implode("\n", $t));
 
-                $r = $this->db->modify("update houses_domophones set enabled = :enabled, model = :model, server = :server, url = :url, credentials = :credentials, dtmf = :dtmf, first_time = :first_time, nat = :nat, locks_are_open = :locks_are_open, comments = :comments, name = :name, display = :display, video = :video, monitoring = :monitoring, ext = :ext where house_domophone_id = $domophoneId", [
+                $r = $this->db->modify("update houses_domophones set enabled = :enabled, model = :model, server = :server, url = :url, credentials = :credentials, dtmf = :dtmf, first_time = :first_time, nat = :nat, locks_are_open = :locks_are_open, comments = :comments, name = :name, display = :display, video = :video, monitoring = :monitoring, ext = :ext, concierge = :concierge, sos = :sos where house_domophone_id = $domophoneId", [
                     "enabled" => (int)$enabled,
                     "model" => $model,
                     "server" => $server,
@@ -1327,10 +1331,12 @@
                     "locks_are_open" => $locksAreOpen,
                     "comments" => $comments,
                     "name" => $name,
-                    "display" => $display ? : null,
+                    "display" => $display ?: null,
                     "video" => $video,
                     "monitoring" => $monitoring,
                     "ext" => json_encode($ext),
+                    "concierge" => $concierge ?: null,
+                    "sos" => $sos ?: null,
                 ]);
 
                 if ($r) {
@@ -1435,6 +1441,8 @@
                     "video" => "video",
                     "monitoring" => "monitoring",
                     "ext" => "ext",
+                    "concierge" => "concierge",
+                    "sos" => "sos",
                 ], [
                     "singlify"
                 ]);
@@ -2414,7 +2422,7 @@
                     case "house":
                         if (checkInt($id) !== false && checkInt($cameraId) !== false) {
                             return $this->db->modify("update houses_cameras_houses set path = :path where camera_id = $cameraId and address_house_id = $id", [
-                                "path" => $path ? : null,
+                                "path" => $path ?: null,
                             ]);
                         } else {
                             return false;
@@ -2422,7 +2430,7 @@
                     case "flat":
                         if (checkInt($id) !== false && checkInt($cameraId) !== false) {
                             return $this->db->modify("update houses_cameras_flats set path = :path where camera_id = $cameraId and house_flat_id = $id", [
-                                "path" => $path ? : null,
+                                "path" => $path ?: null,
                             ]);
                         } else {
                             return false;

@@ -41,7 +41,7 @@
                 $this->config = $config;
                 $this->db = $db;
                 $this->redis = $redis;
-                $this->login = $login ? : ((is_array($params) && array_key_exists("_login", $params)) ? $params["_login"] : "-");
+                $this->login = $login ?: ((is_array($params) && array_key_exists("_login", $params)) ? $params["_login"] : "-");
 
                 switch ($this->login) {
                     case "-":
@@ -175,7 +175,7 @@
                 if ($value != @$this->cache[$key]) {
                     $this->cache[$key] = $value;
                     if ((int)$this->uid > 0 && !$memOnly) {
-                        $this->redis->setex($key, @$this->config["redis"]["backends_cache_ttl"] ? : ( 3 * 24 * 60 * 60 ), $value);
+                        $this->redis->setex($key, @$this->config["redis"]["backends_cache_ttl"] ?: ( 3 * 24 * 60 * 60 ), $value);
                     }
                 }
             }

@@ -497,6 +497,20 @@
                     $isdn->push($_params);
 
                     break;
+
+                case "concierge":
+                    if ($params[0] === "1" && strlen($params) === 6) {
+                        echo $households = loadBackend("households")->getDomophone((int)substr($params, 1))["concierge"];
+                    }
+
+                    break;
+
+                case "sos":
+                    if ($params[0] === "1" && strlen($params) === 6) {
+                        echo $households = loadBackend("households")->getDomophone((int)substr($params, 1))["sos"];
+                    }
+
+                    break;
             }
             break;
     }

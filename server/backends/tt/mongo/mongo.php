@@ -70,7 +70,7 @@
                     $aiid = $this->redis->incr("AIID:" . $acr);
                     $issue["issueId"] = $acr . "-" . $aiid;
 
-                    $attachments = @$issue["attachments"] ? : [];
+                    $attachments = @$issue["attachments"] ?: [];
                     unset($issue["attachments"]);
 
                     $issue["created"] = time();
@@ -578,7 +578,7 @@
                             //
                         }
                         try {
-                            $this->mongo->$db->$acr->createIndex($fullText, [ "default_language" => @$this->config["language"] ? : "en", "name" => "fullText" ]);
+                            $this->mongo->$db->$acr->createIndex($fullText, [ "default_language" => @$this->config["language"] ?: "en", "name" => "fullText" ]);
                             $cnt++;
                         } catch (\Exception $e) {
                             //
@@ -618,7 +618,7 @@
                     foreach ($indexes as $i) {
                         if (!in_array($i, $already)) {
                             try {
-                                $this->mongo->$db->$acr->createIndex([ $i => 1 ], [ "name" => "index_" . $i, "collation" => [ "locale" => @$this->config["language"] ? : "en", "strength" => 3 ] ]);
+                                $this->mongo->$db->$acr->createIndex([ $i => 1 ], [ "name" => "index_" . $i, "collation" => [ "locale" => @$this->config["language"] ?: "en", "strength" => 3 ] ]);
                                 $cnt++;
                             } catch (\Exception $e) {
                                 //
@@ -638,7 +638,7 @@
                     }
                 }
 
-                return $cnt ? : true;
+                return $cnt ?: true;
             }
 
             /**
@@ -1602,7 +1602,7 @@
 
 
                     try {
-                        $this->mongo->$db->$acr->createIndex($index, [ "name" => "manual_index" . $indexName, "collation" => [ "locale" => @$this->config["language"] ? : "en" ]  ]);
+                        $this->mongo->$db->$acr->createIndex($index, [ "name" => "manual_index" . $indexName, "collation" => [ "locale" => @$this->config["language"] ?: "en" ]  ]);
                         $c++;
                     } catch (\Exception $e) {
                         //
