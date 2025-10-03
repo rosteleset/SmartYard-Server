@@ -399,7 +399,7 @@ function handleSOS()
     local sos = dm("sos", channel.CALLERID("num"):get())
 
     if sos and sos ~= "" then
-        app.Dial("PJSIP/" .. sos, 120, "m")
+        app.Dial(sos, 120, "m")
     else
         app.Answer()
         app.StartMusicOnHold()
@@ -416,7 +416,7 @@ function handleConcierge()
     local concierge = dm("concierge", channel.CALLERID("num"):get())
 
     if concierge and concierge ~= "" then
-        app.Dial("PJSIP/" .. concierge, 120, "m")
+        app.Dial(concierge, 120, "m")
     else
         app.Answer()
         app.StartMusicOnHold()
