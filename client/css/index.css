@@ -50,6 +50,10 @@ body.dark-mode .nodec:hover {
   color: white;
 }
 
+body.dark-mode .hr-text::after .hr-text-white::after .hr-text-pointer::after hr-text-white-large::after {
+  background-color: #454d55;
+}
+
 ::-webkit-scrollbar {
   background: lightgray;
   height: 8px;
@@ -352,10 +356,6 @@ select {
   font-weight: bold;
   background-color: #ffffff;
   opacity: 1 !important;
-}
-
-body.dark-mode .hr-text::after .hr-text-white::after .hr-text-pointer::after hr-text-white-large::after {
-  background-color: #454d55;
 }
 
 .nav-item-back-hover:hover {

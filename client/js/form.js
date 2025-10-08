@@ -665,7 +665,7 @@ function cardForm(params) {
                     h += `<div name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" data-field-index="${i}" class="overflow-y-auto pl-0" style="position: relative; border: solid thin transparent; border-radius: 3px;">`;
                 } else {
                     // TODO: Do something with this!!! (max-height)
-                    h += `<div name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" data-field-index="${i}" class="overflow-y-auto pl-0" style="max-height: 400px; overflow-y: auto!important; position: relative; border: solid thin transparent; border-radius: 3px;">`;
+                    h += `<div name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" data-field-index="${i}" class="overflow-y-auto pl-0" style="max-height: 400px; overflow-y: scroll!important; position: relative; border: solid thin transparent; border-radius: 3px; padding-right: 8px">`;
                     // TODO: Do something with this!!! (max-height)
                 }
                 h += renderSortable(i);
@@ -828,33 +828,42 @@ function cardForm(params) {
             <div class="input-group">
                 <input type="text" class="form-control">
                 <div class="input-group-append">
-                    <div class="input-group-text pointer sortablePlus"><i class="far fa-fw fa-plus-square text-success"></i></div>
+                    <div class="input-group-text pointer sortablePlus"><i class="fas fa-fw fa-plus-square text-success"></i></div>
                 </div>
             </div>
         `;
+
+        h += `<div id="${_prefix}${params.fields[i].id}-items">`;
 
         for (let j = 0; j < field.options.length; j++) {
             h += `
                 <div class="input-group mt-1" data-field-option-index="${j}">
                     <div class="input-group-prepend">
+                        <div class="input-group-text pointer sortableDragItem bold">=</div>
+            `;
+            if (field.checkable) {
+                h += `
                         <span class="input-group-text">
                             <input type="checkbox" ${field.options[j].checked ? "checked" : ""}>
                         </span>
+                `;
+            }
+            h += `
                     </div>
                     <input type="text" class="form-control" value="${escapeHTML(field.options[j].text)}">
                     <div class="input-group-append">
-                        <div class="input-group-text ${(j !== 0) ? "pointer" : ""} sortableUp"><i class="far fa-fw fa-caret-square-up ${(j === 0) ? "disabled" : ""}"></i></div>
                         <div class="input-group-text pointer sortableTrash"><i class="far fa-fw fa-trash-alt text-danger"></i></div>
-                        <div class="input-group-text ${(j !== field.options.length - 1) ? "pointer" : ""} sortableDown" ><i class="far fa-fw fa-caret-square-down ${(j === field.options.length - 1) ? "disabled" : ""}"></i></div>
                     </div>
                 </div>
             `;
         }
 
+        h += '</div>';
+
         return h;
     }
 
-    function assignSortableHandlers() {
+    function assignSortableHandlers(i) {
         $(".sortablePlus").off("click").on("click", e => {
             let el = $(e.target);
             if (e.target.tagName == "I") {
@@ -869,29 +878,19 @@ function cardForm(params) {
                     checked: false,
                 });
                 field.html(renderSortable(i));
-                assignSortableHandlers();
-            }
-        });
-
-        $(".sortableUp").off("click").on("click", e => {
-            let el = $(e.target);
-            if (e.target.tagName == "I") {
-                el = el.parent();
-            }
-            let group = el.parent().parent();
-            let field = group.parent();
-            let i = parseInt(field.attr("data-field-index"));
-            let j = parseInt(group.attr("data-field-option-index"));
-            if (j > 0) {
-                [ params.fields[i].options[j], params.fields[i].options[j - 1] ] = [ params.fields[i].options[j - 1], params.fields[i].options[j] ];
-                field.html(renderSortable(i));
-                assignSortableHandlers();
+                assignSortableHandlers(i);
+                new Sortable(document.getElementById(_prefix + params.fields[i].id + "-items"), {
+                    "handle": ".sortableDragItem",
+                    "animation": 150,
+                });
             }
         });
 
         $(".sortableTrash").off("click").on("click", e => {
             let el = $(e.target);
             if (e.target.tagName == "I") {
+                el = el.parent().parent();
+            } else {
                 el = el.parent();
             }
             let group = el.parent().parent();
@@ -900,23 +899,11 @@ function cardForm(params) {
             let j = parseInt(group.attr("data-field-option-index"));
             params.fields[i].options.splice(j, 1);
             field.html(renderSortable(i));
-            assignSortableHandlers();
-        });
-
-        $(".sortableDown").off("click").on("click", e => {
-            let el = $(e.target);
-            if (e.target.tagName == "I") {
-                el = el.parent();
-            }
-            let group = el.parent().parent();
-            let field = group.parent();
-            let i = parseInt(field.attr("data-field-index"));
-            let j = parseInt(group.attr("data-field-option-index"));
-            if (j < params.fields[i].options.length - 1) {
-                [ params.fields[i].options[j], params.fields[i].options[j + 1] ] = [ params.fields[i].options[j + 1], params.fields[i].options[j] ];
-                field.html(renderSortable(i));
-                assignSortableHandlers();
-            }
+            assignSortableHandlers(i);
+            new Sortable(document.getElementById(_prefix + params.fields[i].id + "-items"), {
+                "handle": ".sortableDragItem",
+                "animation": 150,
+            });
         });
     }
 
@@ -988,7 +975,7 @@ function cardForm(params) {
 
             case "sortable":
                 let value = [];
-                $(`#${_prefix}${params.fields[i].id}`).children().each(function () {
+                $(`#${_prefix}${params.fields[i].id}-items`).children().each(function () {
                     let el = $(this);
                     if (el.attr("data-field-option-index") !== undefined) {
                         let checked = false;
@@ -1643,6 +1630,13 @@ function cardForm(params) {
                 let f = $.trim($(this).val());
                 let i = $(this).attr("id");
                 msf(i.substring(0, i.length - 7), f);
+            });
+        }
+
+        if (params.fields[i].type == "sortable") {
+            new Sortable(document.getElementById(_prefix + params.fields[i].id + "-items"), {
+                "handle": ".sortableDragItem",
+                "animation": 150,
             });
         }
     }
