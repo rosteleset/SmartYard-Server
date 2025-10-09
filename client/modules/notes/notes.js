@@ -474,6 +474,8 @@
                     title: parseInt(modules.notes.notes[id].checks) ? i18n("notes.list") : i18n("notes.body"),
                     type: parseInt(modules.notes.notes[id].checks) ? "sortable" : "area",
                     checkable: true,
+                    editable: true,
+                    appendable: "input",
                     validate: a => {
                         return parseInt(modules.notes.notes[id].checks) ? a.length > 0 : $.trim(a) != '';
                     },

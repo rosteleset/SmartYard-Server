@@ -820,24 +820,75 @@ function cardForm(params) {
 
     h += '</form>';
 
+    function s2FormatR(item) {
+        let c = '';
+        let f = '';
+
+        if (item.element && item.element.dataset && item.element.dataset.class && item.element.dataset.class !== "undefined") {
+            c = item.element.dataset.class;
+        }
+
+        if (item.element && item.element.dataset && item.element.dataset.font && item.element.dataset.font !== "undefined") {
+            f = `font-family: '${item.element.dataset.font}'`;
+        }
+
+        if (item.element && item.element.dataset && item.element.dataset.icon && item.element.dataset.icon !== "undefined") {
+            return $(`<span class="${c}" style="display: grid; align-items: center; justify-content: start;"><span style="grid-column: 1; width: fit-content;"><i class="${item.element.dataset.icon} mr-2"></i></span><span style="grid-column: 2; ${f}">${item.text}</span></span>`);
+        } else {
+            return $(`<span class="${c}" style="${f}">${item.text}</span>`);
+        }
+    }
+
+    function s2FormatS(item) {
+        let c = '';
+        let f = '';
+
+        if (item.element && item.element.dataset && item.element.dataset.class && item.element.dataset.class !== "undefined") {
+            c = item.element.dataset.class;
+        }
+
+        if (item.element && item.element.dataset && item.element.dataset.font && item.element.dataset.font !== "undefined") {
+            f = `font-family: '${item.element.dataset.font}'`;
+        }
+
+        if (item.element && item.element.dataset && item.element.dataset.icon && item.element.dataset.icon !== "undefined") {
+            return $(`<span class="${c}" style="display: grid; align-items: top; justify-content: start;"><span style="grid-column: 1; width: fit-content;"><i class="${item.element.dataset.icon} mr-2"></i></span><span style="grid-column: 2; $f">${item.text}</span></span>`);
+        } else {
+            return $(`<span class="${c}" style="${f}">${item.text}</span>`);
+        }
+    }
+
     function renderSortable(i) {
         let field = params.fields[i];
         let h = '';
 
-        h += `
-            <div class="input-group">
-                <input type="text" class="form-control">
-                <div class="input-group-append">
-                    <div class="input-group-text pointer sortablePlus"><i class="fas fa-fw fa-plus-square text-success"></i></div>
+        if (field.appendable == "input") {
+            h += `
+                <div class="input-group mb-1">
+                    <input type="text" class="form-control" id="${_prefix}${params.fields[i].id}-append">
+                    <div class="input-group-append">
+                        <div class="input-group-text pointer sortablePlus"><i class="fas fa-fw fa-plus-square text-success"></i></div>
+                    </div>
                 </div>
-            </div>
-        `;
+            `;
+        }
+
+        if (field.appendable == "select2") {
+            h += `
+                <div class="input-group mb-1">
+                    <select class="form-control select2" id="${_prefix}${params.fields[i].id}-append"></select>
+                    <div class="input-group-append">
+                        <div class="input-group-text pointer sortablePlus"><i class="fas fa-fw fa-plus-square text-success"></i></div>
+                    </div>
+                </div>
+            `;
+        }
 
         h += `<div id="${_prefix}${params.fields[i].id}-items">`;
 
         for (let j = 0; j < field.options.length; j++) {
             h += `
-                <div class="input-group mt-1" data-field-option-index="${j}">
+                <div class="input-group ${j ? 'mt-1' : ''}" data-field-option-index="${j}">
                     <div class="input-group-prepend">
                         <div class="input-group-text pointer sortableDragItem bold">=</div>
             `;
@@ -850,9 +901,9 @@ function cardForm(params) {
             }
             h += `
                     </div>
-                    <input type="text" class="form-control" value="${escapeHTML(field.options[j].text)}">
-                    <div class="input-group-append">
-                        <div class="input-group-text pointer sortableTrash"><i class="far fa-fw fa-trash-alt text-danger"></i></div>
+                    <input type="text" class="form-control" value="${escapeHTML(field.options[j].text)}" ${!field.editable ? 'readonly' : ''} data-value="${field.options[j].value}">
+                    <div class="input-group-append" data-field-option-index=${j}>
+                        <div class="input-group-text pointer sortableTrash" data-field-option-index=${j}><i class="far fa-fw fa-trash-alt text-danger" data-field-option-index=${j}></i></div>
                     </div>
                 </div>
             `;
@@ -863,47 +914,98 @@ function cardForm(params) {
         return h;
     }
 
+    function sortable(i) {
+        new Sortable(document.getElementById(_prefix + params.fields[i].id + "-items"), {
+            "handle": ".sortableDragItem",
+            "animation": 150,
+
+            onEnd: e => {
+                let n = 0;
+                let options = [];
+                $(`#${e.to.id}`).children().each(function () {
+                    let el = $(this);
+                    if (el.attr("data-field-option-index") !== undefined) {
+                        let checked = false;
+                        let text = "";
+                        let value = "";
+                        el.find("*").each(function () {
+                            let el = $(this);
+                            if (el.attr("type") == "checkbox") {
+                                checked = el.prop("checked");
+                            }
+                            if (el.attr("type") == "text") {
+                                text = el.val();
+                                value = el.attr("data-value");
+                            }
+                        });
+                        if ($.trim(text)) {
+                            options.push({
+                                text: $.trim(text),
+                                id: value,
+                                value: value,
+                                checked: checked,
+                            });
+                        }
+                        el.attr('data-field-option-index', n);
+                        if (n) {
+                            el.addClass("mt-1");
+                        } else {
+                            el.removeClass("mt-1");
+                        }
+                        n++;
+                    }
+                    params.fields[i].options = options;
+                });
+            },
+        });
+
+        if (params.fields[i].appendable == "select2") {
+            $("#" + _prefix + params.fields[i].id + "-append").select2({
+                language: lang["_code"],
+                templateResult: s2FormatR,
+                templateSelection: s2FormatS,
+                escapeMarkup: function (m) {
+                    return m;
+                },
+                data: params.fields[i].appendableData,
+            });
+        }
+    }
+
     function assignSortableHandlers(i) {
-        $(".sortablePlus").off("click").on("click", e => {
-            let el = $(e.target);
-            if (e.target.tagName == "I") {
-                el = el.parent();
-            }
-            let text = el.parent().prev().val();
-            if ($.trim(text)) {
-                let field = el.parent().parent().parent();
-                let i = parseInt(field.attr("data-field-index"));
+        $(".sortablePlus").off("click").on("click", () => {
+            let value = $("#" + _prefix + params.fields[i].id + "-append").val();
+            let text = "";
+            if ($.trim(value)) {
+                if (params.fields[i].appendable == "select2") {
+                    let data = $("#" + _prefix + params.fields[i].id + "-append").select2('data');
+                    for (let j in data) {
+                        if (data[j].id == value) {
+                            text = data[j].text;
+                            break;
+                        }
+                    }
+                } else {
+                    text = value;
+                }
                 params.fields[i].options.push({
                     text: text,
+                    id: value,
+                    value: value,
                     checked: false,
                 });
-                field.html(renderSortable(i));
+                $("#" + _prefix + params.fields[i].id).html(renderSortable(i));
                 assignSortableHandlers(i);
-                new Sortable(document.getElementById(_prefix + params.fields[i].id + "-items"), {
-                    "handle": ".sortableDragItem",
-                    "animation": 150,
-                });
+                sortable(i);
             }
         });
 
         $(".sortableTrash").off("click").on("click", e => {
-            let el = $(e.target);
-            if (e.target.tagName == "I") {
-                el = el.parent().parent();
-            } else {
-                el = el.parent();
-            }
-            let group = el.parent().parent();
-            let field = group.parent();
-            let i = parseInt(field.attr("data-field-index"));
-            let j = parseInt(group.attr("data-field-option-index"));
+            let j = parseInt($(e.target).attr("data-field-option-index"));
             params.fields[i].options.splice(j, 1);
-            field.html(renderSortable(i));
+            $("#" + _prefix + params.fields[i].id).html(renderSortable(i));
             assignSortableHandlers(i);
-            new Sortable(document.getElementById(_prefix + params.fields[i].id + "-items"), {
-                "handle": ".sortableDragItem",
-                "animation": 150,
-            });
+            sortable(i);
         });
     }
 
@@ -974,12 +1076,13 @@ function cardForm(params) {
                 return files[_prefix + params.fields[i].id];
 
             case "sortable":
-                let value = [];
+                let options = [];
                 $(`#${_prefix}${params.fields[i].id}-items`).children().each(function () {
                     let el = $(this);
                     if (el.attr("data-field-option-index") !== undefined) {
                         let checked = false;
                         let text = "";
+                        let value = "";
                         el.find("*").each(function () {
                             let el = $(this);
                             if (el.attr("type") == "checkbox") {
@@ -987,17 +1090,20 @@ function cardForm(params) {
                             }
                             if (el.attr("type") == "text") {
                                 text = el.val();
+                                value = el.attr("data-value");
                             }
                         });
                         if ($.trim(text)) {
-                            value.push({
+                            options.push({
                                 text: $.trim(text),
+                                id: value,
+                                value: value,
                                 checked: checked,
                             });
                         }
                     }
                 });
-                return value;
+                return options;
 
             case "jstree":
                 let node = $(`#${_prefix}${params.fields[i].id}`).jstree().get_selected();
@@ -1248,44 +1354,6 @@ function cardForm(params) {
 
             if (params.fields[i].ajax) {
                 s2p.ajax = params.fields[i].ajax;
-            }
-
-            function s2FormatR(item) {
-                let c = '';
-                let f = '';
-
-                if (item.element && item.element.dataset && item.element.dataset.class && item.element.dataset.class !== "undefined") {
-                    c = item.element.dataset.class;
-                }
-
-                if (item.element && item.element.dataset && item.element.dataset.font && item.element.dataset.font !== "undefined") {
-                    f = `font-family: '${item.element.dataset.font}'`;
-                }
-
-                if (item.element && item.element.dataset && item.element.dataset.icon && item.element.dataset.icon !== "undefined") {
-                    return $(`<span class="${c}" style="display: grid; align-items: center; justify-content: start;"><span style="grid-column: 1; width: fit-content;"><i class="${item.element.dataset.icon} mr-2"></i></span><span style="grid-column: 2; ${f}">${item.text}</span></span>`);
-                } else {
-                    return $(`<span class="${c}" style="${f}">${item.text}</span>`);
-                }
-            }
-
-            function s2FormatS(item) {
-                let c = '';
-                let f = '';
-
-                if (item.element && item.element.dataset && item.element.dataset.class && item.element.dataset.class !== "undefined") {
-                    c = item.element.dataset.class;
-                }
-
-                if (item.element && item.element.dataset && item.element.dataset.font && item.element.dataset.font !== "undefined") {
-                    f = `font-family: '${item.element.dataset.font}'`;
-                }
-
-                if (item.element && item.element.dataset && item.element.dataset.icon && item.element.dataset.icon !== "undefined") {
-                    return $(`<span class="${c}" style="display: grid; align-items: top; justify-content: start;"><span style="grid-column: 1; width: fit-content;"><i class="${item.element.dataset.icon} mr-2"></i></span><span style="grid-column: 2; $f">${item.text}</span></span>`);
-                } else {
-                    return $(`<span class="${c}" style="${f}">${item.text}</span>`);
-                }
             }
 
             s2p.templateResult = s2FormatR;
@@ -1634,10 +1702,8 @@ function cardForm(params) {
         }
 
         if (params.fields[i].type == "sortable") {
-            new Sortable(document.getElementById(_prefix + params.fields[i].id + "-items"), {
-                "handle": ".sortableDragItem",
-                "animation": 150,
-            });
+            assignSortableHandlers(i);
+            sortable(i);
         }
     }
 
@@ -1683,8 +1749,6 @@ function cardForm(params) {
     $(".multiselect-checkbox").off("click").on("click", () => {
         xblur();
     });
-
-    assignSortableHandlers();
 
     if (typeof params.done == "function") {
         params.done(_prefix);
