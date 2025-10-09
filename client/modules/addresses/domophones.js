@@ -559,7 +559,7 @@
                                     nowrap: true,
                                 },
                                 {
-                                    data: (modules.addresses.domophones.meta.domophones[i].model && modules.addresses.domophones.meta.models[modules.addresses.domophones.meta.domophones[i].model]) ? modules.addresses.domophones.meta.models[modules.addresses.domophones.meta.domophones[i].model].title : modules.addresses.domophones.meta.domophones[i].model,
+                                    data: modules.addresses.domophones.meta.models[modules.addresses.domophones.meta.domophones[i].model]?.title ?? "&nbsp;",
                                     nowrap: true,
                                 },
                                 {

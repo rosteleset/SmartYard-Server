@@ -1114,7 +1114,7 @@
                                     nowrap: true,
                                 },
                                 {
-                                    data: modules.addresses.cameras.meta.models[modules.addresses.cameras.meta.cameras[i].model].title ? modules.addresses.cameras.meta.models[modules.addresses.cameras.meta.cameras[i].model].title : "&nbsp;",
+                                    data: modules.addresses.cameras.meta.models[modules.addresses.cameras.meta.cameras[i].model]?.title ?? "&nbsp;",
                                     nowrap: true,
                                 },
                                 {
