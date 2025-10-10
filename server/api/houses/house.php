@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {get} /api/houses/house/:houseId get flats
+     * @api {get} /api/houses/house/:houseId get house configuration
      *
      * @apiVersion 1.0.0
      *
