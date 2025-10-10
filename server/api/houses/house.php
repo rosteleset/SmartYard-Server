@@ -5,7 +5,7 @@
      *
      * @apiVersion 1.0.0
      *
-     * @apiName getHouse
+     * @apiName getHouseConfiguration
      * @apiGroup houses
      *
      * @apiHeader {String} Authorization authentication token
