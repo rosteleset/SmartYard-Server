@@ -1488,7 +1488,7 @@
                         for (let i = 0; i < response.users.length; i++) {
                             if (!parseInt(response.users[i].uid)) continue;
 
-                            let cl = (response.users[i].enabled == 1) ? defaultClass : "bg-light text-decoration-line-through";
+                            let cl;
 
                             if ((response.users[i].notification == "emailTg" || response.users[i].notification == "tgEmail" || response.users[i].notification == "email") && !(response.users[i].eMail && response.users[i].eMail != response.users[i].login)) {
                                 cl = "bg-warning";
@@ -1497,6 +1497,8 @@
                             if ((response.users[i].notification == "tgEmail" || response.users[i].notification == "emailTg" || response.users[i].notification == "tg") && !response.users[i].tg) {
                                 cl = "bg-warning";
                             }
+
+                            cl = (response.users[i].enabled == 1) ? defaultClass : "bg-light text-decoration-line-through";
 
                             rows.push({
                                 uid: response.users[i].uid.toString(),
