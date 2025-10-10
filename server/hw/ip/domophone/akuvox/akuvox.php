@@ -5,7 +5,7 @@ namespace hw\ip\domophone\akuvox;
 use hw\ip\domophone\domophone;
 
 /**
- * Abstract class representing an Akuvox domophone.
+ * Abstract base class for Akuvox intercoms.
  */
 abstract class akuvox extends domophone
 {

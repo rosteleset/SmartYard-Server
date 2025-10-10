@@ -93,12 +93,18 @@ trait akuvox
 
         $ch = curl_init($req);
 
-        curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
-        curl_setopt($ch, CURLOPT_USERPWD, "$this->login:$this->password");
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_VERBOSE, false);
-        curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
+        // TODO: check with E12
+        curl_setopt_array($ch, [
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_SSL_VERIFYHOST => false,
+            CURLOPT_HTTPAUTH => CURLAUTH_DIGEST,
+            CURLOPT_UNRESTRICTED_AUTH => true,
+            CURLOPT_CUSTOMREQUEST => $method,
+            CURLOPT_USERPWD => "$this->login:$this->password",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT => $timeout,
+        ]);
 
         if ($payload) {
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
