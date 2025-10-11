@@ -1,0 +1,9 @@
+{
+    "title": "SOYUZ DOMOPHONE CAMERA",
+    "vendor": "SOYUZ",
+    "model": false,
+    "version": false,
+    "eventServer": "soyuz",
+    "class": "soyuz",
+    "useSmartConfigurator": true
+}
