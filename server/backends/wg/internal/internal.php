@@ -76,8 +76,10 @@
                         $primaryGroups = [];
                         $groupExists = [];
                         foreach ($allUsers as $user) {
-                            $primaryGroups[$user["login"]] = $user["primaryGroupAcronym"];
-                            @$groupExists[$user["primaryGroupAcronym"]]++;
+                            if ((int)$user["enabled"]) {
+                                $primaryGroups[$user["login"]] = $user["primaryGroupAcronym"];
+                                @$groupExists[$user["primaryGroupAcronym"]]++;
+                            }
                         }
 
                         foreach ($allGroups as $g) {
