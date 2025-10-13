@@ -3,9 +3,6 @@
 
     initialHeight: 0,
 
-    stretchedWidth: 0,
-    stretchedHeight: 0,
-
     isDragging: false,
     dragTarget: undefined,
     gridSize: 10,
@@ -396,36 +393,18 @@
         });
     },
 
-    adjustStickiesContainer: function (init) {
-        let wi = $(window);
-        let ct = $("#stickiesContainer");
-
-        let w = ct.width();
-        let h = wi.height() - mainFormTop - modules.notes.initialHeight;
-
-        if (init) {
-            modules.notes.stretchedWidth = w;
-            modules.notes.stretchedHeight = h;
-            ct.css({
-                width: w + "px",
-                height: h + "px",
-            });
-        }
-
-        let mh = 0, mw = 0;
+    adjustStickiesContainer: function () {
+        let mw = 0, mh = 0;
 
         $(".sticky").each(function () {
             let s = $(this);
             mw = Math.max(mw, s.position().left + s.outerWidth(true));
-            mh = Math.max(mh, s.position().top + s.outerHeight(true) + 20);
+            mh = Math.max(mh, s.position().top + s.outerHeight(true));
         });
 
-        mw = Math.max(modules.notes.stretchedWidth, mw);
-        mh = Math.max(modules.notes.stretchedHeight, mh - modules.notes.initialHeight);
-
-        ct.css({
-            width: mw + "px",
-            height: mh + "px",
+        $("#stickiesContainer").css({
+            width: Math.max(mw + 4, $("#stickiesTable").width()) + "px",
+            height: Math.max(mh + 4, $(window).height() - mainFormTop - 8) + "px",
         });
     },
 
@@ -720,16 +699,15 @@
             modules.notes.createNote();
         });
 
-        $("#mainForm").html(`<div class="dots"><div style="overflow-x: scroll; overflow-y: hidden;" class="p-0 m-0 mt-3"><div id="stickiesContainer" style="position: relative;" class="p-0 m-0 resizable mouseEvents"></div></div></div>`);
+        $("#mainForm").html("<div id='stickiesTable'><div style='overflow-x: scroll; overflow-y: hidden;' class='p-0 m-0 mt-3'><div id='stickiesContainer' style='position: relative;' class='p-0 m-0 resizable mouseEvents dots'></div></div></div>");
 
         let s = $("#stickiesContainer");
 
         modules.notes.initialHeight = s.parent().height();
 
-        modules.notes.adjustStickiesContainer(true);
+        modules.notes.adjustStickiesContainer();
 
         $("#stickiesContainer").off("windowResized").on("windowResized", () => {
-            modules.notes.adjustStickiesContainer(true);
             modules.notes.adjustStickiesContainer();
         });
 
