@@ -1,0 +1,11 @@
+{
+    "title": "AKUVOX S532",
+    "vendor": "AKUVOX",
+    "model": "S532",
+    "class": "s532",
+    "eventServer": "akuvox",
+    "outputs": 2,
+    "camera": "akuvox",
+    "useSmartConfigurator": true,
+    "cmses": []
+}
