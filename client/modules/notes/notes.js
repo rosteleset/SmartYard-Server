@@ -720,7 +720,7 @@
             modules.notes.createNote();
         });
 
-        $("#mainForm").html(`<div style="overflow-x: scroll; overflow-y: hidden;" class="p-0 m-0 mt-3"><div id="stickiesContainer" style="position: relative;" class="p-0 m-0 resizable mouseEvents dots"></div></div>`);
+        $("#mainForm").html(`<div class="dots"><div style="overflow-x: scroll; overflow-y: hidden;" class="p-0 m-0 mt-3"><div id="stickiesContainer" style="position: relative;" class="p-0 m-0 resizable mouseEvents"></div></div></div>`);
 
         let s = $("#stickiesContainer");
 
