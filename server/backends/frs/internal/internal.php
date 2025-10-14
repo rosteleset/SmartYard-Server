@@ -113,7 +113,8 @@
                     CURLOPT_POST => 1,
                     CURLOPT_POSTFIELDS=> $data,
                     CURLOPT_RETURNTRANSFER => 1,
-                    CURLOPT_HTTPHEADER => $headers
+                    CURLOPT_HTTPHEADER => $headers,
+                    CURLOPT_TIMEOUT => @$this->config['backends']['frs']['http_timeout'] ?? 3
                 ];
                 curl_setopt_array($curl, $options);
                 $response = curl_exec($curl);
@@ -1097,7 +1098,8 @@
                     CURLOPT_POST => 1,
                     CURLOPT_POSTFIELDS=> $data,
                     CURLOPT_RETURNTRANSFER => 1,
-                    CURLOPT_HTTPHEADER => $headers
+                    CURLOPT_HTTPHEADER => $headers,
+                    CURLOPT_TIMEOUT => @$this->config['backends']['frs']['http_timeout'] ?? 3
                 ];
                 curl_setopt_array($curl, $options);
                 $response = curl_exec($curl);
@@ -1108,38 +1110,6 @@
                 } else {
                     return json_decode($response, true);
                 }
-            }
-
-            /**
-             * @inheritDoc
-             */
-            public function addStreamLprs($cam, array $params = [])
-            {
-                // TODO: Implement addStreamLprs() method.
-            }
-
-            /**
-             * @inheritDoc
-             */
-            public function removeStreamLprs($cam)
-            {
-                // TODO: Implement removeStreamLprs() method.
-            }
-
-            /**
-             * @inheritDoc
-             */
-            public function startWorkflowLprs($cam)
-            {
-                // TODO: Implement startWorkflowLprs() method.
-            }
-
-            /**
-             * @inheritDoc
-             */
-            public function stopWorkflowLprs($cam)
-            {
-                // TODO: Implement stopWorkflowLprs() method.
             }
         }
     }
