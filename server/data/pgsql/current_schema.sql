@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict xhPagEkXE2yzxQtVav1tJTXSq2YWea097oG35NmHb4IHiPcIJ1la2kDdPp7q1OJ
+\restrict 9ewZB0QIvoMFbcJ9qHuhgDUlVmHrX8vo4pfzABn65FUiTAKl39pVIhSkutpk4DD
 
 -- Dumped from database version 17.6
 -- Dumped by pg_dump version 18.0
@@ -1570,7 +1570,6 @@ CREATE TABLE public.notes (
     owner character varying,
     note_subject character varying,
     note_body character varying,
-    checks integer DEFAULT 0,
     category character varying,
     remind integer DEFAULT 0,
     icon character varying,
@@ -4314,5 +4313,5 @@ GRANT ALL ON SCHEMA public TO rbt;
 -- PostgreSQL database dump complete
 --
 
-\unrestrict xhPagEkXE2yzxQtVav1tJTXSq2YWea097oG35NmHb4IHiPcIJ1la2kDdPp7q1OJ
+\unrestrict 9ewZB0QIvoMFbcJ9qHuhgDUlVmHrX8vo4pfzABn65FUiTAKl39pVIhSkutpk4DD
 
