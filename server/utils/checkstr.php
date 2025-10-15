@@ -39,5 +39,9 @@
             return false;
         }
 
+        if (array_key_exists("variants", $options) && !in_array($str, $options["variants"])) {
+            return false;
+        }
+
         return true;
     }

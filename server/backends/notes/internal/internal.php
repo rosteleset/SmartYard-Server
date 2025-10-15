@@ -23,7 +23,7 @@
                     "note_id" => "id",
                     "note_subject" => "subject",
                     "note_body" => "body",
-                    "checks" => "checks",
+                    "note_type" => "type",
                     "category" => "category",
                     "remind" => "remind",
                     "reminded" => "reminded",
@@ -40,7 +40,7 @@
              * @inheritDoc
              */
 
-            public function addNote($subject, $body, $checks, $category, $remind, $icon, $font, $color, $x, $y, $z) {
+            public function addNote($subject, $body, $type, $category, $remind, $icon, $font, $color, $x, $y, $z) {
                 $body = trim($body);
 
                 if (!$body) {
@@ -48,12 +48,17 @@
                     return false;
                 }
 
-                $id = $this->db->insert("insert into notes (create_date, owner, note_subject, note_body, checks, category, remind, reminded, icon, font, color, position_left, position_top, position_order) values (:create_date, :owner, :note_subject, :note_body, :checks, :category, :remind, :reminded, :icon, :font, :color, :position_left, :position_top, :position_order)", [
+                if (!checkStr($type, [ "variants" => [ "text", "markdown", "checks", ]])) {
+                    setLastError("invalidParams");
+                    return false;
+                }
+
+                $id = $this->db->insert("insert into notes (create_date, owner, note_subject, note_body, note_type, category, remind, reminded, icon, font, color, position_left, position_top, position_order) values (:create_date, :owner, :note_subject, :note_body, :checks, :category, :remind, :reminded, :icon, :font, :color, :position_left, :position_top, :position_order)", [
                     "create_date" => time(),
                     "owner" => $this->login,
                     "note_subject" => $subject ?: null,
                     "note_body" => $body ?: null,
-                    "checks" => $checks ? 1 : 0,
+                    "note_type" => $type,
                     "category" => $category ?: null,
                     "remind" => $remind ?: null,
                     "reminded" => ((int)$remind > time()) ? 0 : 1,
@@ -91,7 +96,7 @@
              * @inheritDoc
              */
 
-            public function modifyNote11($id, $subject, $body, $category, $remind, $icon, $font, $color, $x, $y, $z) {
+            public function modifyNote12($id, $subject, $body, $type, $category, $remind, $icon, $font, $color, $x, $y, $z) {
                 $body = trim($body);
 
                 if (!$body || !checkInt($id)) {
@@ -99,11 +104,17 @@
                     return false;
                 }
 
-                return $this->db->modify("update notes set note_subject = :note_subject, note_body = :note_body, category = :category, remind = :remind, reminded = :reminded, icon = :icon, font = :font, color = :color, position_left = :position_left, position_top = :position_top, position_order = :position_order where note_id = :note_id and owner = :owner", [
+                if (!checkStr($type, [ "variants" => [ "text", "markdown", "checks", ]])) {
+                    setLastError("invalidParams");
+                    return false;
+                }
+
+                return $this->db->modify("update notes set note_subject = :note_subject, note_body = :note_body, note_type = :note_type, category = :category, remind = :remind, reminded = :reminded, icon = :icon, font = :font, color = :color, position_left = :position_left, position_top = :position_top, position_order = :position_order where note_id = :note_id and owner = :owner", [
                     "note_id" => $id,
                     "owner" => $this->login,
                     "note_subject" => $subject ?: null,
                     "note_body" => $body ?: null,
+                    "note_type" => $type,
                     "category" => $category ?: null,
                     "remind" => $remind ?: null,
                     "reminded" => ((int)$remind > time()) ? 0 : 1,
@@ -185,8 +196,8 @@
 
             public function __call($method, $arguments) {
                 if ($method == 'modifyNote') {
-                    if (count($arguments) == 11) {
-                        return call_user_func_array([ $this, 'modifyNote11' ], $arguments);
+                    if (count($arguments) == 12) {
+                        return call_user_func_array([ $this, 'modifyNote12' ], $arguments);
                     }
                     else
                     if (count($arguments) == 4) {

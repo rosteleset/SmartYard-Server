@@ -15,6 +15,8 @@
     notes: {},
     categories: [],
 
+    md: false,
+
     colors: [
         {
             text: i18n("notes.white"),
@@ -187,7 +189,50 @@
         moduleLoaded("notes", this);
     },
 
-    renderNote: function (id, subject, body, color, icon, font, checks, remind, z) {
+    allLoaded: function () {
+        modules.notes.md = new remarkable.Remarkable({
+            html: true,
+            quotes: '“”‘’',
+
+            highlight: function (str, language) {
+                if (language && hljs.getLanguage(language)) {
+                    try {
+                        let h = hljs.highlight(str, { language }).value;
+                        return h;
+                    } catch (err) {
+                        console.log(err);
+                    }
+                }
+
+                try {
+                    return hljs.highlightAuto(str).value;
+                } catch (err) {
+                    console.log(err);
+                }
+
+                return ''; // use external default escaping
+            }
+        });
+
+        modules.notes.md.core.ruler.enable([
+            'abbr'
+        ]);
+
+        modules.notes.md.block.ruler.enable([
+            'footnote',
+            'deflist'
+        ]);
+
+        modules.notes.md.inline.ruler.enable([
+            'footnote_inline',
+            'ins',
+            'mark',
+            'sub',
+            'sup'
+        ]);
+    },
+
+    renderNote: function (id, subject, body, type, color, icon, font, remind, z) {
         let newSticky = `<div id='${id}' class='drag sticky sticky-bg-color-${color}' style='z-index: ${z};'>`;
 
         // TODO: box-shadow: 2px 2px 7px {shadow-color};
@@ -203,22 +248,30 @@
             newSticky += "<hr style='opacity: 50%;' />";
         }
 
-        newSticky += "<p class='body'";
+        newSticky += "<div class='body'";
         if ($.trim(font)) {
             newSticky += `style='font-family: ${font}'`
         }
         newSticky += ">";
 
-        if (parseInt(checks)) {
-            let b = body.split("\n");
-            for (let i in b) {
-                newSticky += `<span class='mr-2'><input type='checkbox' class='noteCheckbox' ${(b[i][0] == "+") ? "checked" : ""} data-line='${i}'/></span><span>${convertLinks(nl2br(escapeHTML(b[i].substring(1))))}</span><br />`;
-            }
-        } else {
-            newSticky += convertLinks(nl2br(escapeHTML(body)));
+        switch (type) {
+            case "checks":
+                let b = body.split("\n");
+                for (let i in b) {
+                    newSticky += `<span class='mr-2'><input type='checkbox' class='noteCheckbox' ${(b[i][0] == "+") ? "checked" : ""} data-line='${i}'/></span><span>${convertLinks(nl2br(escapeHTML(b[i].substring(1))))}</span><br />`;
+                }
+                break;
+
+            case "markdown":
+                newSticky += convertLinks(DOMPurify.sanitize(modules.notes.md.render(body)));
+                break;
+
+            default:
+                newSticky += convertLinks(nl2br(escapeHTML(body)));
+                break;
         }
 
-        newSticky += '</p><i class="far fa-fw fa-edit text-primary editSticky"></i>';
+        newSticky += '</div><i class="far fa-fw fa-edit text-primary editSticky"></i>';
 
         if (remind) {
             newSticky += '<i class="far fa-fw fa-clock text-small reminder"></i>';
@@ -262,9 +315,23 @@
                     }
                 },
                 {
-                    id: "checks",
-                    title: i18n("notes.checks"),
-                    type: "noyes",
+                    id: "type",
+                    title: i18n("notes.type"),
+                    type: "select",
+                    options: [
+                        {
+                            id: "text",
+                            text: i18n("notes.typeText")
+                        },
+                        {
+                            id: "markdown",
+                            text: i18n("notes.typeMarkdown")
+                        },
+                        {
+                            id: "checks",
+                            text: i18n("notes.typeChecks")
+                        },
+                    ]
                 },
                 {
                     id: "category",
@@ -322,7 +389,7 @@
                     z = Math.max(z, parseInt($(this).css("z-index")));
                 });
 
-                if (parseInt(r.checks)) {
+                if (r.type == "checks") {
                     r.body = r.body.split("\n");
                     for (let i in r.body) {
                         if ($.trim(r.body[i])) {
@@ -336,10 +403,10 @@
                     id,
                     r.subject,
                     r.body,
+                    r.type,
                     r.color,
                     r.icon,
                     r.font,
-                    r.checks,
                     parseInt(r.remind) > (new Date()).getTime() / 1000,
                     z + 1
                 );
@@ -370,7 +437,7 @@
                 POST("notes", "note", false, {
                     subject: r.subject,
                     body: r.body,
-                    checks: r.checks,
+                    type: r.type,
                     category: r.category,
                     remind: r.remind,
                     icon: r.icon,
@@ -422,9 +489,8 @@
         }
 
         let checks = [];
-        if (parseInt(modules.notes.notes[id].checks)) {
+        if (modules.notes.notes[id].type == "checks") {
             let b = modules.notes.notes[id].body.split("\n");
-            let d = md5(guid());
             for (let i in b) {
                 checks.push({
                     text: b[i].substring(1),
@@ -450,16 +516,37 @@
                 },
                 {
                     id: "body",
-                    title: parseInt(modules.notes.notes[id].checks) ? i18n("notes.list") : i18n("notes.body"),
-                    type: parseInt(modules.notes.notes[id].checks) ? "sortable" : "area",
+                    title: (modules.notes.notes[id].type == "checks") ? i18n("notes.list") : i18n("notes.body"),
+                    type: (modules.notes.notes[id].type == "checks") ? "sortable" : "area",
                     checkable: true,
                     editable: true,
                     appendable: "input",
                     validate: a => {
-                        return parseInt(modules.notes.notes[id].checks) ? a.length > 0 : $.trim(a) != '';
+                        return (modules.notes.notes[id].type == "checks") ? a.length > 0 : $.trim(a) != '';
                     },
-                    value: parseInt(modules.notes.notes[id].checks) ? undefined : modules.notes.notes[id].body,
-                    options: parseInt(modules.notes.notes[id].checks) ? checks : undefined,
+                    value: (modules.notes.notes[id].type == "checks") ? undefined : modules.notes.notes[id].body,
+                    options: (modules.notes.notes[id].type == "checks") ? checks : undefined,
+                },
+                {
+                    id: "type",
+                    title: i18n("notes.type"),
+                    type: "select",
+                    options: [
+                        {
+                            id: "text",
+                            text: i18n("notes.typeText")
+                        },
+                        {
+                            id: "markdown",
+                            text: i18n("notes.typeMarkdown")
+                        },
+                        {
+                            id: "checks",
+                            text: i18n("notes.typeChecks")
+                        },
+                    ],
+                    value: modules.notes.notes[id].type,
+                    hidden: modules.notes.notes[id].type == "checks",
                 },
                 {
                     id: "category",
@@ -500,8 +587,10 @@
             ],
             callback: r => {
 
-                if (parseInt(modules.notes.notes[id].checks)) {
+                if (modules.notes.notes[id].type == "checks") {
                     let b = '';
+
+                    console.log(111);
 
                     for (let i in r.body) {
                         b += (r.body[i].checked ? "+" : "-") + r.body[i].text + "\n";
@@ -540,6 +629,7 @@
 
                     modules.notes.notes[id].subject = r.subject;
                     modules.notes.notes[id].body = r.body;
+                    modules.notes.notes[id].type = r.type;
                     modules.notes.notes[id].category = r.category;
                     modules.notes.notes[id].remind = r.remind;
                     modules.notes.notes[id].icon = r.icon;
@@ -556,10 +646,10 @@
                         id,
                         r.subject,
                         r.body,
+                        r.type,
                         r.color,
                         r.icon,
                         r.font,
-                        modules.notes.notes[id].checks,
                         parseInt(r.remind) > (new Date()).getTime() / 1000,
                         z
                     );
@@ -586,6 +676,7 @@
                     PUT("notes", "note", modules.notes.notes[id].id, {
                         subject: r.subject,
                         body: r.body,
+                        type: r.type,
                         category: r.category,
                         remind: r.remind,
                         icon: r.icon,
@@ -651,10 +742,10 @@
                     id,
                     modules.notes.notes[id].subject,
                     modules.notes.notes[id].body,
+                    modules.notes.notes[id].type,
                     modules.notes.notes[id].color,
                     modules.notes.notes[id].icon,
                     modules.notes.notes[id].font,
-                    modules.notes.notes[id].checks,
                     parseInt(modules.notes.notes[id].remind) > (new Date()).getTime() / 1000 && !modules.notes.notes[id].reminded,
                     modules.notes.notes[id].z
                 );

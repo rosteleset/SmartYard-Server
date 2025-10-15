@@ -2,10 +2,10 @@
 -- PostgreSQL database dump
 --
 
-\restrict I2UiDmLpWiWmz5GNd4nKtlOeRlANMqXgEsQKtJ6TYY5sYoHzzuoeu6ikMpt4LX8
+\restrict xhPagEkXE2yzxQtVav1tJTXSq2YWea097oG35NmHb4IHiPcIJ1la2kDdPp7q1OJ
 
 -- Dumped from database version 17.6
--- Dumped by pg_dump version 17.6
+-- Dumped by pg_dump version 18.0
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -1048,7 +1048,9 @@ CREATE TABLE public.houses_domophones (
     display character varying,
     video character varying,
     ext character varying,
-    monitoring integer DEFAULT 1
+    monitoring integer DEFAULT 1,
+    sos character varying,
+    concierge character varying
 );
 
 
@@ -1577,7 +1579,8 @@ CREATE TABLE public.notes (
     reminded integer DEFAULT 0,
     position_left real,
     position_top real,
-    position_order integer
+    position_order integer,
+    note_type character varying
 );
 
 
@@ -2030,7 +2033,9 @@ ALTER TABLE public.tt_projects OWNER TO rbt;
 CREATE TABLE public.tt_projects_custom_fields (
     project_custom_field_id integer NOT NULL,
     project_id integer,
-    issue_custom_field_id integer
+    issue_custom_field_id integer,
+    childrens integer DEFAULT '-1'::integer,
+    links integer DEFAULT '-1'::integer
 );
 
 
@@ -2092,6 +2097,19 @@ ALTER SEQUENCE public.tt_projects_custom_fields_project_custom_field_id_seq OWNE
 
 ALTER SEQUENCE public.tt_projects_custom_fields_project_custom_field_id_seq OWNED BY public.tt_projects_custom_fields.project_custom_field_id;
 
+
+--
+-- Name: tt_projects_fields_settings; Type: TABLE; Schema: public; Owner: rbt
+--
+
+CREATE TABLE public.tt_projects_fields_settings (
+    tt_projects_field character varying NOT NULL,
+    childrens integer DEFAULT '-1'::integer,
+    links integer DEFAULT '-1'::integer
+);
+
+
+ALTER TABLE public.tt_projects_fields_settings OWNER TO rbt;
 
 --
 -- Name: tt_projects_filters; Type: TABLE; Schema: public; Owner: rbt
@@ -3105,6 +3123,14 @@ ALTER TABLE ONLY public.tt_projects_custom_fields_nojournal
 
 ALTER TABLE ONLY public.tt_projects_custom_fields
     ADD CONSTRAINT tt_projects_custom_fields_pkey PRIMARY KEY (project_custom_field_id);
+
+
+--
+-- Name: tt_projects_fields_settings tt_projects_fields_settings_pkey; Type: CONSTRAINT; Schema: public; Owner: rbt
+--
+
+ALTER TABLE ONLY public.tt_projects_fields_settings
+    ADD CONSTRAINT tt_projects_fields_settings_pkey PRIMARY KEY (tt_projects_field);
 
 
 --
@@ -4288,5 +4314,5 @@ GRANT ALL ON SCHEMA public TO rbt;
 -- PostgreSQL database dump complete
 --
 
-\unrestrict I2UiDmLpWiWmz5GNd4nKtlOeRlANMqXgEsQKtJ6TYY5sYoHzzuoeu6ikMpt4LX8
+\unrestrict xhPagEkXE2yzxQtVav1tJTXSq2YWea097oG35NmHb4IHiPcIJ1la2kDdPp7q1OJ
 

@@ -10,7 +10,6 @@
     "color": "Color",
     "createNote": "Create note",
     "default": "By default",
-    "checks": "Checkboxes",
     "deleteNote": "Delete note?",
     "modifyNote": "Modify note",
     "white": "White",
@@ -24,5 +23,9 @@
     "darkBlue": "Dark blue",
     "pink": "Pink",
     "terracotta": "Terracotta",
-    "lightGray": "Light gray"
+    "lightGray": "Light gray",
+    "typeText": "Text",
+    "typeMarkdown": "Markdown",
+    "typeChecks": "Checkboxes",
+    "type": "Note type"
 }

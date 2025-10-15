@@ -22,7 +22,7 @@
             /**
              * @param string $subject
              * @param string $body
-             * @param integer $checks
+             * @param integer $type
              * @param string $category
              * @param integer $remind
              * @param string $icon
@@ -33,12 +33,13 @@
              * @param integer $z
              * @return mixed
              */
-            abstract public function addNote($subject, $body, $checks, $category, $remind, $icon, $font, $color, $x, $y, $z);
+            abstract public function addNote($subject, $body, $type, $category, $remind, $icon, $font, $color, $x, $y, $z);
 
             /**
              * @param integer $id
              * @param string $subject
              * @param string $body
+             * @param integer $type
              * @param string $category
              * @param integer $remind
              * @param string $icon
