@@ -527,27 +527,35 @@
                     value: (modules.notes.notes[id].type == "checks") ? undefined : modules.notes.notes[id].body,
                     options: (modules.notes.notes[id].type == "checks") ? checks : undefined,
                 },
-                {
-                    id: "type",
-                    title: i18n("notes.type"),
-                    type: "select",
-                    options: [
-                        {
-                            id: "text",
-                            text: i18n("notes.typeText")
-                        },
-                        {
-                            id: "markdown",
-                            text: i18n("notes.typeMarkdown")
-                        },
-                        {
-                            id: "checks",
-                            text: i18n("notes.typeChecks")
-                        },
-                    ],
-                    value: modules.notes.notes[id].type,
-                    hidden: modules.notes.notes[id].type == "checks",
-                },
+                (modules.notes.notes[id].type == "checks") ?
+                    {
+                        id: "type",
+                        title: i18n("notes.type"),
+                        type: "select",
+                        options: [
+                            {
+                                id: "checks",
+                                text: i18n("notes.typeChecks")
+                            },
+                        ],
+                        value: modules.notes.notes[id].type,
+                    } : {
+                        id: "type",
+                        title: i18n("notes.type"),
+                        type: "select",
+                        options: [
+                            {
+                                id: "text",
+                                text: i18n("notes.typeText")
+                            },
+                            {
+                                id: "markdown",
+                                text: i18n("notes.typeMarkdown")
+                            },
+                        ],
+                        value: modules.notes.notes[id].type,
+                    }
+                ,
                 {
                     id: "category",
                     title: i18n("notes.category"),
@@ -589,8 +597,6 @@
 
                 if (modules.notes.notes[id].type == "checks") {
                     let b = '';
-
-                    console.log(111);
 
                     for (let i in r.body) {
                         b += (r.body[i].checked ? "+" : "-") + r.body[i].text + "\n";
