@@ -673,7 +673,7 @@ function cardForm(params) {
                 break;
 
             case "area":
-                h += `<textarea name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" rows="5" class="form-control modalFormField overflow-auto" autocomplete="off" style="resize: none;" placeholder="${escapeHTML(params.fields[i].placeholder ? params.fields[i].placeholder : "")}"`;
+                h += `<textarea name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" rows="5" class="form-control modalFormField overflow-auto" autocomplete="off" style="resize: vertical;" placeholder="${escapeHTML(params.fields[i].placeholder ? params.fields[i].placeholder : "")}"`;
                 if (params.fields[i].readonly) {
                     h += ` readonly="readonly"`;
                     h += ` disabled="disabled"`;
@@ -682,7 +682,7 @@ function cardForm(params) {
                 break;
 
             case "rich":
-                h += `<textarea name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" rows="5" class="form-control modalFormField overflow-auto" autocomplete="off" style="resize: none;" placeholder="${escapeHTML(params.fields[i].placeholder ? params.fields[i].placeholder : "")}"`;
+                h += `<textarea name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" rows="5" class="form-control modalFormField overflow-auto" autocomplete="off" style="resize: vertical;" placeholder="${escapeHTML(params.fields[i].placeholder ? params.fields[i].placeholder : "")}"`;
                 if (params.fields[i].readonly) {
                     h += ` readonly="readonly"`;
                     h += ` disabled="disabled"`;
@@ -692,8 +692,7 @@ function cardForm(params) {
 
             case "code":
             case "json":
-                height = params.fields[i].height ? params.fields[i].height : 400;
-                h += `<div id="${_prefix}${params.fields[i].id}-div" style="height: ${height}px;">`;
+                h += `<div id="${_prefix}${params.fields[i].id}-div">`;
                 h += `<pre class="ace-editor form-control modalFormField" id="${_prefix}${params.fields[i].id}">`;
                 h += `</pre>`;
                 h += `</div>`;
@@ -1388,14 +1387,16 @@ function cardForm(params) {
                 disableResizeEditor: true,
                 lang: (lang["_code"] === "ru") ? "ru-RU" : "en-US",
                 toolbar: [
-                    ['font', ['bold', 'italic', 'underline', 'clear']],
-                    ['fontsize', ['fontsize']],
-                    ['color', ['color']],
+                    [ 'font', [ 'bold', 'italic', 'underline', 'clear' ]],
+                    [ 'fontsize', [ 'fontsize' ]],
+                    [ 'color', [ 'color' ]],
                 ],
             });
+            let width = $(`#${_prefix}${params.fields[i].id}`).next().width();
             if (params.fields[i].value) {
                 $(`#${_prefix}${params.fields[i].id}`).summernote("code", params.fields[i].value);
             }
+            $(`#${_prefix}${params.fields[i].id}`).next().width(width).find(".note-editable").css("resize", "vertical");
         }
 
         if (params.fields[i].type == "code") {
@@ -1440,6 +1441,12 @@ function cardForm(params) {
                 },
                 exec: function (editor) { editor.redo(); }
             });
+            let height = params.fields[i].height ? params.fields[i].height : 400;
+            $(`#${_prefix}${params.fields[i].id}`).css("height", height + "px").css("resize", "vertical");
+            new ResizeObserver(function () {
+                editor.resize();
+                editor.renderer.updateFull();
+            }).observe($(`#${_prefix}${params.fields[i].id}`)[0]);
         }
 
         if (params.fields[i].type == "json") {
@@ -1482,6 +1489,12 @@ function cardForm(params) {
                 },
                 exec: function (editor) { editor.redo(); }
             });
+            let height = params.fields[i].height ? params.fields[i].height : 400;
+            $(`#${_prefix}${params.fields[i].id}`).css("height", height + "px").css("resize", "vertical");
+            new ResizeObserver(function () {
+                editor.resize();
+                editor.renderer.updateFull();
+            }).observe($(`#${_prefix}${params.fields[i].id}`)[0]);
         }
 
         if (params.fields[i].type == "files") {

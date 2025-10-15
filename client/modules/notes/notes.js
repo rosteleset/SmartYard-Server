@@ -299,7 +299,7 @@
             borderless: true,
             topApply: true,
             apply: i18n("add"),
-            size: "lg",
+            size: "xl",
             fields: [
                 {
                     id: "subject",
@@ -506,7 +506,7 @@
             topApply: true,
             apply: i18n("edit"),
             delete: i18n("delete"),
-            size: "lg",
+            size: "xl",
             fields: [
                 {
                     id: "subject",
@@ -517,7 +517,8 @@
                 {
                     id: "body",
                     title: (modules.notes.notes[id].type == "checks") ? i18n("notes.list") : i18n("notes.body"),
-                    type: (modules.notes.notes[id].type == "checks") ? "sortable" : "area",
+                    type: (modules.notes.notes[id].type == "checks") ? "sortable" : ((modules.notes.notes[id].type == "text") ? "area" : "code"),
+                    language: "markdown",
                     checkable: true,
                     editable: true,
                     appendable: "input",
