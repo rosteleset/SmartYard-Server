@@ -24,7 +24,7 @@
         use api\api;
 
         /**
-         * camera method
+         * camshot method
          */
 
         class camshot extends api {
