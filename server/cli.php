@@ -379,14 +379,6 @@
         die("curl extension is not installed\n\n");
     }
 
-    try {
-        if (PHP_VERSION_ID < 50600) {
-            die("minimal supported php version is 5.6\n\n");
-        }
-    } catch (\Exception $e) {
-        die("can't determine php version\n\n");
-    }
-
     if (function_exists("json5_decode")) {
         try {
             $config = @json5_decode(file_get_contents("config/config.json"), true);
