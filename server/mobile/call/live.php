@@ -1,17 +1,35 @@
 <?php
 
-    $hash = $param;
+$hash = $param;
 
-    $json_camera = @$redis->get("live_" . $hash);
-    $camera_params = @json_decode($json_camera, true);
+$cameraData = @$redis->get("live_" . $hash);
+if ($cameraData === false) {
+    response(404);
+}
 
-    $camera = @loadDevice('camera', $camera_params["model"], $camera_params["url"], $camera_params["credentials"]);
-
-    if (!$camera) {
-        response(404);
-    }
-
+$cameraId = is_numeric($cameraData) ? $cameraData : null;
+if ($cameraId === null) {
     header('Content-Type: image/jpeg');
-    echo $camera->getCamshot();
-
+    echo $cameraData;
     exit;
+}
+
+$camerasBackend = loadBackend('cameras');
+if (!$camerasBackend) {
+    response(500);
+}
+
+$camera = $camerasBackend->getCamera($cameraId);
+if (!$camera) {
+    response(404);
+}
+
+$snapshot = $camerasBackend->getSnapshot($camera['cameraId']);
+if ($snapshot === null) {
+    response(503);
+}
+
+header('Content-Type: image/jpeg');
+echo $camerasBackend->getSnapshot($cameraId);
+
+exit;

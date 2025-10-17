@@ -4,8 +4,7 @@
  * backends cameras namespace
  */
 
-namespace backends\cameras
-{
+namespace backends\cameras {
 
     use backends\backend;
 
@@ -87,5 +86,11 @@ namespace backends\cameras
          * @return boolean
          */
         abstract public function deleteCamera($cameraId);
+
+        /**
+         * @param int $cameraId
+         * @return string|null
+         */
+        abstract public function getSnapshot(int $cameraId): ?string;
     }
 }

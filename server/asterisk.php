@@ -402,6 +402,7 @@
                 case "camshot":
                     if ($params["domophoneId"] >= 0) {
                         $households = loadBackend("households");
+                        $camerasBackend = loadBackend("cameras");
 
                         $entrances = $households->getEntrances("domophoneId", [ "domophoneId" => $params["domophoneId"], "output" => "0" ]);
 
@@ -409,25 +410,17 @@
                             $cameras = $households->getCameras("id", $entrances[0]["cameraId"]);
 
                             if ($cameras && $cameras[0]) {
-                                $model = loadDevice('camera', $cameras[0]["model"], $cameras[0]["url"], $cameras[0]["credentials"]);
-
-                                $redis->setex("shot_" . $params["hash"], 3 * 60, $model->getCamshot());
-                                $redis->setex("live_" . $params["hash"], 3 * 60, json_encode([
-                                    "model" => $cameras[0]["model"],
-                                    "url" => $cameras[0]["url"],
-                                    "credentials" => $cameras[0]["credentials"],
-                                ]));
+                                $cameraId = $cameras[0]['cameraId'];
+                                $redis->setex("shot_" . $params["hash"], 3 * 60, $camerasBackend->getSnapshot($cameraId));
+                                $redis->setex("live_" . $params["hash"], 3 * 60, $cameraId);
 
                                 echo $params["hash"];
                             }
                         }
                     } else {
-                        $redis->setex("shot_" . $params["hash"], 3 * 60, file_get_contents(__DIR__ . "/hw/ip/camera/fake/img/callcenter.jpg"));
-                        $redis->setex("live_" . $params["hash"], 3 * 60, json_encode([
-                            "model" => "fake.json",
-                            "url" => "callcenter.jpg",
-                            "credentials" => "none",
-                        ]));
+                        $fakeImage = file_get_contents(__DIR__ . "/hw/ip/camera/fake/img/callcenter.jpg");
+                        $redis->setex("shot_" . $params["hash"], 3 * 60, $fakeImage);
+                        $redis->setex("live_" . $params["hash"], 3 * 60, $fakeImage);
 
                         echo $params["hash"];
                     }

@@ -6,6 +6,8 @@
 
 namespace backends\cameras {
 
+    use Exception;
+
     /**
      * internal.db cameras class
      */
@@ -307,6 +309,37 @@ namespace backends\cameras {
                     $query = "update cameras set ip = :ip where camera_id = " . $deviceId;
                     $this->db->modify($query, ["ip" => $ip]);
                 }
+            }
+        }
+
+        public function getSnapshot(int $cameraId): ?string
+        {
+            $cameraData = $this->getCamera($cameraId);
+            $snapshotUrl = $cameraData['ext']->snapshotUrl ?? null;
+
+            if ($snapshotUrl) {
+                $snapshot = @file_get_contents($snapshotUrl);
+
+                if ($snapshot === false) {
+                    error_log("Error getting snapshot from '$snapshotUrl' using direct URL");
+                    return null;
+                }
+
+                return $snapshot;
+            }
+
+            try {
+                $device = loadDevice(
+                    type: 'camera',
+                    model: $cameraData['model'],
+                    url: $cameraData['url'],
+                    password: $cameraData['credentials'],
+                );
+
+                return $device->getCamshot();
+            } catch (Exception) {
+                error_log("Error getting snapshot from '{$cameraData['url']}' using device method");
+                return null;
             }
         }
     }

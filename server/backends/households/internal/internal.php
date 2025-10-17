@@ -3678,14 +3678,11 @@
                         $hash = md5(GUIDv4());
 
                         if ($cameras && $cameras[0]) {
-                            $device = loadDevice('camera', $cameras[0]["model"], $cameras[0]["url"], $cameras[0]["credentials"]);
+                            $camerasBackend = loadBackend('cameras');
+                            $cameraId = $cameras[0]['cameraId'];
 
-                            $this->redis->setex("shot_" . $hash, 15 * 60, $device->getCamshot());
-                            $this->redis->setex("live_" . $hash, 3 * 60, json_encode([
-                                "model" => $cameras[0]["model"],
-                                "url" => $cameras[0]["url"],
-                                "credentials" => $cameras[0]["credentials"],
-                            ]));
+                            $this->redis->setex("shot_" . $hash, 15 * 60, $camerasBackend->getSnapshot($cameraId));
+                            $this->redis->setex("live_" . $hash, 3 * 60, $cameraId);
                         }
 
                         if (!$isdn->push([
