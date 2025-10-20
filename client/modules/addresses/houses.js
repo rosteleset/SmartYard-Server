@@ -3095,6 +3095,7 @@
                                     },
                                     {
                                         data: modules.addresses.houses.meta.cameras[i].url ? modules.addresses.houses.meta.cameras[i].url : "",
+                                        click: modules.addresses.houses.meta.cameras[i].cameraId ? ("#addresses.cameras&filter=" + modules.addresses.houses.meta.cameras[i].cameraId) : false,
                                     },
                                     {
                                         data: modules.addresses.houses.meta.cameras[i].name ? modules.addresses.houses.meta.cameras[i].name : "",
