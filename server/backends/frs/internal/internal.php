@@ -1001,7 +1001,7 @@
                     $is_liked2 = count($this->db->get($query)) > 0;
                 }
 
-                return $is_owner && $is_liked1 || $is_liked2;
+                return $is_liked1 || $is_liked2;
             }
 
             /**
