@@ -30,6 +30,6 @@ if ($snapshot === null) {
 }
 
 header('Content-Type: image/jpeg');
-echo $camerasBackend->getSnapshot($cameraId);
+echo $snapshot;
 
 exit;
