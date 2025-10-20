@@ -334,10 +334,14 @@ function handleCMSIntercom(context, extension)
         end
         if dest ~= "" then
             dest = dest:sub(2)
+
+            -- Add a header so that the Akuvox intercom forwards an incoming call to an analog handset
+            local dialOptions = "b(analog_proxy_header^s^1)"
+
             if channel.CALLERID("num"):get():sub(1, 1) == "7" then
-                app.Dial(dest, 120, "m")
+                app.Dial(dest, 120, "m" .. dialOptions)
             else
-                app.Dial(dest, 120)
+                app.Dial(dest, 120, dialOptions)
             end
         end
     end
@@ -630,6 +634,13 @@ extensions = {
 
         -- terminate active call
         [ "h" ] = handleCallTermination,
+    },
+
+    -- add ANALOG-PROXY header
+    ["analog_proxy_header"] = {
+        [ "s" ] = function()
+            app.Set("PJSIP_HEADER(add,ANALOG-PROXY)=1")
+        end
     },
 }
 
