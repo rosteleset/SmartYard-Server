@@ -2979,10 +2979,10 @@
                                     nowrap: true,
                                 },
                                 {
-                                    data: parseInt(modules.addresses.houses.meta.entrances[i].shared)?i18n("yes"):i18n("no"),
+                                    data: parseInt(modules.addresses.houses.meta.entrances[i].shared) ? i18n("yes") : i18n("no"),
                                 },
                                 {
-                                    data: parseInt(modules.addresses.houses.meta.entrances[i].shared)?modules.addresses.houses.meta.entrances[i].prefix:"-",
+                                    data: parseInt(modules.addresses.houses.meta.entrances[i].shared) ? modules.addresses.houses.meta.entrances[i].prefix : "-",
                                 },
                             ],
                             dropDown: {
@@ -3094,10 +3094,10 @@
                                         click: modules.addresses.houses.meta.cameras[i].cameraId ? ("#addresses.cameras&filter=" + modules.addresses.houses.meta.cameras[i].cameraId) : false,
                                     },
                                     {
-                                        data: modules.addresses.houses.meta.cameras[i].url?modules.addresses.houses.meta.cameras[i].url:"",
+                                        data: modules.addresses.houses.meta.cameras[i].url ? modules.addresses.houses.meta.cameras[i].url : "",
                                     },
                                     {
-                                        data: modules.addresses.houses.meta.cameras[i].name?modules.addresses.houses.meta.cameras[i].name:"",
+                                        data: modules.addresses.houses.meta.cameras[i].name ? modules.addresses.houses.meta.cameras[i].name : "",
                                         nowrap: true,
                                     },
                                     {
