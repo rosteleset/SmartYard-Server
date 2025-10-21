@@ -155,19 +155,16 @@ self.addEventListener('fetch', event => {
     if (directProtocols.indexOf(url.protocol) < 0) {
         let pathname = url.pathname.split("/");
 
-        if (!url.search) {
+        if (url.search) {
+            let search = deparam(url.search);
+            if ((parseInt(search.ver) === parseInt(version) && endsWith(url.pathname, cacheFirstResources)) || search._force_cache) {
+                event.respondWith(cacheFirst(event.request));
+            }
+        } else {
             if (forceVersioningResources.indexOf(pathname[pathname.length - 1]) >= 0) {
                 event.respondWith(Response.redirect(url.href + "?ver=" + version, 302));
             } else {
                 if (endsWith(event.request.url, cacheFirstResources)) {
-                    event.respondWith(cacheFirst(event.request));
-                }
-            }
-        } else {
-            if (url.search && parseInt(deparam(url.search).ver) === parseInt(version) && endsWith(url.pathname, cacheFirstResources)) {
-                event.respondWith(cacheFirst(event.request));
-            } else {
-                if (url.search && deparam(url.search)._force_cache) {
                     event.respondWith(cacheFirst(event.request));
                 }
             }
