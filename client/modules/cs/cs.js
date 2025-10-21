@@ -1058,9 +1058,7 @@
                         markers += issues[i][modules.cs.currentSheet.sheet.fields.map].coordinates[1] + "," + issues[i][modules.cs.currentSheet.sheet.fields.map].coordinates[0] + "," + issues[i][modules.cs.currentSheet.sheet.fields.row] + "|";
                     }
 
-                    window.location.href = navigateUrl("map", {
-                        markersLine: markers
-                    });
+                    navigateUrl("map", { markersLine: markers }, { run: true });
                 });
 
                 $(".dataCell").off("click").on("click", function () {
@@ -1343,8 +1341,7 @@
                             fail(FAIL).
                             done(() => {
                                 message(i18n("cs.sheetWasSaved"));
-                                loadingStart();
-                                window.location.href = navigateUrl("cs", { sheet: modules.cs.sheet, date: result.date, highlight: modules.cs.highlight });
+                                navigateUrl("cs", { sheet: modules.cs.sheet, date: result.date, highlight: modules.cs.highlight }, { run: true });
                             }).
                             always(() => {
                                 loadingDone();
@@ -1393,16 +1390,14 @@
                             },
                         ],
                         callback: result => {
-                            loadingStart();
-                            window.location.href = navigateUrl("cs.sheetEditor", { sheet: result.sheet, date: result.date, highlight: modules.cs.highlight });
+                            navigateUrl("cs.sheetEditor", { sheet: result.sheet, date: result.date, highlight: modules.cs.highlight }, { run: true });
                         },
                     });
                 });
 
                 $("#editCSsheet").off("click").on("click", () => {
                     if ($("#csSheet").val() && $("#csDate").val()) {
-                        loadingStart();
-                        window.location.href = navigateUrl("cs.sheetEditor", { sheet: $("#csSheet").val(),  date: $("#csDate").val(), highlight: modules.cs.highlight });
+                        navigateUrl("cs.sheetEditor", { sheet: $("#csSheet").val(),  date: $("#csDate").val(), highlight: modules.cs.highlight }, { run: true });
                     }
                 });
 
@@ -1417,20 +1412,18 @@
                             fail(FAIL).
                             fail(loadingDone).
                             done(() => {
-                                window.location.href = navigateUrl("cs", { highlight: modules.cs.highlight });
+                                navigateUrl("cs", { highlight: modules.cs.highlight }, { run: true });
                             });
                         })
                     }
                 });
 
                 $("#csSheet").off("change").on("change", () => {
-                    loadingStart();
-                    window.location.href = navigateUrl("cs", { sheet: $("#csSheet").val(), date: modules.cs.date, highlight: modules.cs.highlight });
+                    navigateUrl("cs", { sheet: $("#csSheet").val(), date: modules.cs.date, highlight: modules.cs.highlight }, { run: true });
                 });
 
                 $("#csDate").off("change").on("change", () => {
-                    loadingStart();
-                    window.location.href = navigateUrl("cs", { sheet: modules.cs.sheet, date: $("#csDate").val(), highlight: modules.cs.highlight });
+                    navigateUrl("cs", { sheet: modules.cs.sheet, date: $("#csDate").val(), highlight: modules.cs.highlight }, { run: true });
                 });
 
                 if ($("#csSheet").val() && $("#csDate").val()) {

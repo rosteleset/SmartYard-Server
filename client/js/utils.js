@@ -383,7 +383,12 @@ function navigateUrl(route, params, options) {
         delete params["_"];
     }
 
-    return "?#" + route + "&" + $.param(params);
+    if (options && options.run) {
+        loadingStart();
+        window.location.href = "?#" + route + "&" + $.param(params);
+    } else {
+        return "?#" + route + "&" + $.param(params);
+    }
 }
 
 function object2array(obj) {
