@@ -1608,7 +1608,7 @@
 
         $(".ttSaCoordinate").off("click").on("click", () => {
             lStore("_coordinate_issue", issue.issue["issueId"]);
-            window.location.href = "?#cs";
+            window.location.href = navigateUrl("cs");
         });
 
         $(".ttIssuePrint").off("click").on("click", function () {

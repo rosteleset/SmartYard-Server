@@ -362,12 +362,23 @@ function navigateUrl(route, params, options) {
     if (!params) {
         params = {};
     }
+
     params["_"] = Math.random();
 
     if (options && options.exclude) {
         for (let i in options.exclude) {
             delete params[options.exclude[i]];
         }
+    }
+
+    for (let i in params) {
+        if (params[i] === false || params[i] === undefined) {
+            delete params[i];
+        }
+    }
+
+    if (options && options.noRefresh) {
+        delete params["_"];
     }
 
     return "?#" + route + "&" + $.param(params);

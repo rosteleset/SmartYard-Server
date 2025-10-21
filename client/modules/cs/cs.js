@@ -11,18 +11,20 @@
     preCoordinate: false,
     csChangedTimeout: -1,
     menuItem: false,
+    sheet: false,
+    date: false,
     highlight: false,
 
     init: function () {
         if (parseInt(myself.uid) > 0) {
             if (AVAIL("cs", "sheets") && AVAIL("tt", "tt")) {
-                this.menuItem = leftSide("fas fa-fw fa-table", i18n("cs.cs"), "?#cs", "tt");
+                this.menuItem = leftSide("fas fa-fw fa-table", i18n("cs.cs"), navigateUrl("cs"), "tt");
             }
         }
 
         if (AVAIL("cs", "sheet", "PUT") && AVAIL("tt", "tt")) {
             loadSubModules("cs", [
-                "sheet",
+                "sheetEditor",
             ], this);
         } else {
             moduleLoaded("cs", this);
@@ -1176,10 +1178,6 @@
                 }
 
                 $(".csIssueSpan").off("click").on("click", function (e) {
-/*
-                    let cell = $(this);
-                    window.location.href = "?#tt&issue=" + cell.text();
-*/
                     e.stopPropagation();
                 });
 
@@ -1279,7 +1277,7 @@
 
                 sheetsOptions = "";
                 for (let i in sheets) {
-                    if (sheets[i] == lStore("_sheet_name")) {
+                    if (sheets[i] == modules.cs.sheet) {
                         sheetsOptions += "<option selected='selected' style='font-weight: bold;'>" + escapeHTML(sheets[i]) + "</option>";
                     } else {
                         sheetsOptions += "<option>" + escapeHTML(sheets[i]) + "</option>";
@@ -1288,7 +1286,7 @@
 
                 datesOptions = "";
                 for (let i in dates) {
-                    if (dates[i] == lStore("_sheet_date")) {
+                    if (dates[i] == modules.cs.date) {
                         datesOptions += "<option selected='selected' style='font-weight: bold;'>" + escapeHTML(dates[i]) + "</option>";
                     } else {
                         datesOptions += "<option>" + escapeHTML(dates[i]) + "</option>";
@@ -1309,6 +1307,13 @@
 
                 $("#rightTopDynamic").html(rtd);
 
+                modules.cs.sheet = $("#csSheet").val() ? $("#csSheet").val() : false;
+                modules.cs.date = $("#csDate").val() ? $("#csDate").val() : false;
+
+                if (modules.cs.menuItem) {
+                    $("#" + modules.cs.menuItem).children().first().attr("href", navigateUrl("cs", { sheet: modules.cs.sheet, date: modules.cs.date, highlight: modules.cs.highlight }));
+                }
+
                 $("#cloneCSsheet").off("click").on("click", () => {
                     cardForm({
                         title: i18n("cs.cloneSheet"),
@@ -1328,7 +1333,6 @@
                             },
                         ],
                         callback: result => {
-                            lStore("_sheet_date", result.date);
                             loadingStart();
                             modules.cs.currentSheet.sheet.date = result.date;
                             PUT("cs", "sheet", false, {
@@ -1339,7 +1343,8 @@
                             fail(FAIL).
                             done(() => {
                                 message(i18n("cs.sheetWasSaved"));
-                                window.location.href = "?#cs&_=" + Math.random();
+                                loadingStart();
+                                window.location.href = navigateUrl("cs", { sheet: modules.cs.sheet, date: result.date, highlight: modules.cs.highlight });
                             }).
                             always(() => {
                                 loadingDone();
@@ -1388,16 +1393,16 @@
                             },
                         ],
                         callback: result => {
-                            lStore("_sheet_name", result.sheet);
-                            lStore("_sheet_date", result.date);
-                            window.location.href = "?#cs.sheet&sheet=" + encodeURIComponent(result.sheet) + "&date=" + encodeURIComponent(result.date);
+                            loadingStart();
+                            window.location.href = navigateUrl("cs.sheetEditor", { sheet: result.sheet, date: result.date, highlight: modules.cs.highlight });
                         },
                     });
                 });
 
                 $("#editCSsheet").off("click").on("click", () => {
                     if ($("#csSheet").val() && $("#csDate").val()) {
-                        window.location.href = "?#cs.sheet&sheet=" + encodeURIComponent($("#csSheet").val()) + "&date=" + encodeURIComponent($("#csDate").val());
+                        loadingStart();
+                        window.location.href = navigateUrl("cs.sheetEditor", { sheet: $("#csSheet").val(),  date: $("#csDate").val(), highlight: modules.cs.highlight });
                     }
                 });
 
@@ -1412,20 +1417,20 @@
                             fail(FAIL).
                             fail(loadingDone).
                             done(() => {
-                                modules.cs.renderCS();
+                                window.location.href = navigateUrl("cs", { highlight: modules.cs.highlight });
                             });
                         })
                     }
                 });
 
                 $("#csSheet").off("change").on("change", () => {
-                    lStore("_sheet_name", $("#csSheet").val());
-                    modules.cs.renderCS();
+                    loadingStart();
+                    window.location.href = navigateUrl("cs", { sheet: $("#csSheet").val(), date: modules.cs.date, highlight: modules.cs.highlight });
                 });
 
                 $("#csDate").off("change").on("change", () => {
-                    lStore("_sheet_date", $("#csDate").val());
-                    modules.cs.renderCS();
+                    loadingStart();
+                    window.location.href = navigateUrl("cs", { sheet: modules.cs.sheet, date: $("#csDate").val(), highlight: modules.cs.highlight });
                 });
 
                 if ($("#csSheet").val() && $("#csDate").val()) {
@@ -1494,16 +1499,9 @@
 
         document.title = i18n("windowTitle") + " :: " + i18n("cs.cs");
 
-        if (params.sheet && params.date) {
-            lStore("_sheet_name", params.sheet);
-            lStore("_sheet_date", params.date);
-        }
-
-        modules.cs.highlight = params.highlight;
-
-        if (modules.cs.menuItem) {
-            $("#" + modules.cs.menuItem).children().first().attr("href", "?#cs&_=" + Math.random());
-        }
+        modules.cs.sheet = params.sheet ? params.sheet : false;
+        modules.cs.date = params.date ? params.date : false;
+        modules.cs.highlight = params.highlight ? params.highlight : false;
 
         modules.cs.renderCS();
     },
