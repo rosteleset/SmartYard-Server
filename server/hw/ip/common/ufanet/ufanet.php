@@ -124,6 +124,7 @@ trait ufanet
         string $method = 'GET',
         ?array $payload = null,
         int    $timeout = 0,
+        bool   $multipart = false,
     ): array|string|null
     {
         if ($payload !== null && $method === 'GET') {
@@ -136,23 +137,26 @@ trait ufanet
         $req = $this->url . $resource;
         $ch = curl_init($req);
 
-        curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
-        curl_setopt($ch, CURLOPT_USERPWD, "$this->login:$this->password");
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_VERBOSE, false);
-        curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
+        curl_setopt_array($ch, [
+            CURLOPT_HTTPAUTH => CURLAUTH_BASIC,
+            CURLOPT_CUSTOMREQUEST => $method,
+            CURLOPT_USERPWD => "$this->login:$this->password",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT => $timeout,
+        ]);
 
         if ($payload !== null && $method !== 'GET') {
-            if (array_filter($payload, static fn($value) => $value instanceof CURLFile)) {
+            if ($multipart || array_filter($payload, static fn($item) => $item instanceof CURLFile)) {
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
             } else {
                 $jsonPayload = empty($payload)
                     ? json_encode($payload, JSON_FORCE_OBJECT)
                     : json_encode($payload, JSON_UNESCAPED_UNICODE);
 
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonPayload);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+                curl_setopt_array($ch, [
+                    CURLOPT_POSTFIELDS => $jsonPayload,
+                    CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
+                ]);
             }
         }
 

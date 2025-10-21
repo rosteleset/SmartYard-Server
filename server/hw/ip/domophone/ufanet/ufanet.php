@@ -399,7 +399,12 @@ abstract class ufanet extends domophone implements
 
     public function setLanguage(string $language): void
     {
-        // TODO: Implement setLanguage() method.
+        $payload = [
+            'action' => 'locale',
+            'ui_language' => $language === 'ru' ? 'ru|Russian' : 'en|English',
+        ];
+
+        $this->apiCall('/cgi-bin/webui-settings.cgi', 'POST', $payload, multipart: true);
     }
 
     public function setPublicCode(int $code = 0): void
