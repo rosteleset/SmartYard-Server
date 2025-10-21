@@ -221,25 +221,6 @@
                                 modules.tt.issue.issueAction(modules.cs.preCoordinate.issueId, modules.cs.currentSheet.sheet.action, () => {
                                     message(i18n("cs.wasCoordinated"));
                                     lStore("_coordinate_issue", null);
-/*
-                                    PUT("cs", "cell", false, {
-                                        action: "release",
-                                        sheet: md5($("#csSheet").val()),
-                                        date: md5($("#csDate").val()),
-                                        col: cell.attr("data-col"),
-                                        row: cell.attr("data-row"),
-                                        uid: cell.attr("data-uid"),
-                                        sid: modules.cs.sid,
-                                    }).
-                                    done(() => {
-                                        lStore("_coordinate_issue", null);
-                                    }).
-                                    fail(FAIL).
-                                    fail(() => {
-                                        modules.cs.idle = true;
-                                        cell.removeClass("spinner-small");
-                                    });
-*/
                                 }, prefferredValues, 58 * 1000);
                             break;
                         }
