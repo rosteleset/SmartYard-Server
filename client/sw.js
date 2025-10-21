@@ -167,7 +167,7 @@ self.addEventListener('fetch', event => {
             if (url.search && parseInt(deparam(url.search).ver) === parseInt(version) && endsWith(url.pathname, cacheFirstResources)) {
                 event.respondWith(cacheFirst(event.request));
             } else {
-                if (url.search && deparam(location.search)._force_cache) {
+                if (url.search && deparam(url.search)._force_cache) {
                     event.respondWith(cacheFirst(event.request));
                 }
             }
