@@ -69,8 +69,12 @@
             } else {
                 $lines++;
             }
-            if ($line === "## RBT crons end, dont touch!!!") {
+            if (strpos($line, "## RBT crons end, dont touch!!!") !== false) {
                 $skip = false;
+                $right = substr($line, 0, strlen("## RBT crons end, dont touch!!!"));
+                if (trim($right)) {
+                    $clean[] = $right;
+                }
             }
         }
 
