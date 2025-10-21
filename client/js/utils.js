@@ -371,9 +371,11 @@ function navigateUrl(route, params, options) {
         }
     }
 
-    for (let i in params) {
-        if (params[i] === false || params[i] === undefined) {
-            delete params[i];
+    if (!options || !options.noClean) {
+        for (let i in params) {
+            if (params[i] === false || params[i] === undefined) {
+                delete params[i];
+            }
         }
     }
 
