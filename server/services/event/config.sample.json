@@ -47,7 +47,7 @@
     },
     "basip": {
       "port": 45460,
-      "apiEndpoint": "/webhook/basip"
+      "apiEndpoint": "/"
     },
     "brovotech": {
       "port": 46450
