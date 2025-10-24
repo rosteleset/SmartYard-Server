@@ -1,0 +1,9 @@
+{
+    "title": "iFLOW CAMERA",
+    "vendor": "iPera",
+    "model": false,
+    "version": false,
+    "eventServer": "iflow",
+    "class": "iflow",
+    "useSmartConfigurator": false
+}
