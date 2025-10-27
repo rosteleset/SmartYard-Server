@@ -107,7 +107,6 @@ install/kamailio/kamctlrc
 static/portal
 static/portal/*
 static/portal/**
-
 static/custom
 static/custom/*
 static/custom/**
