@@ -196,12 +196,15 @@
              * @param $name
              * @param $display
              * @param $video
+             * @param $monitoring
              * @param $ext
+             * @param $concierge
+             * @param $sos
              *
              * @return false|integer
              */
 
-            abstract public function addDomophone($enabled, $model, $server, $url, $credentials, $dtmf, $nat, $comments, $name, $display, $video, $ext);
+            abstract public function addDomophone($enabled, $model, $server, $url, $credentials, $dtmf, $nat, $comments, $name, $display, $video, $monitoring, $ext, $concierge, $sos);
 
             /**
              * @param $domophoneId
@@ -218,12 +221,15 @@
              * @param $name
              * @param $display
              * @param $video
+             * @param $monitoring
              * @param $ext
+             * @param $concierge
+             * @param $sos
              *
              * @return boolean
              */
 
-            abstract public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $dtmf, $firstTime, $nat, $locksAreOpen, $comments, $name, $display, $video, $ext);
+            abstract public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $dtmf, $firstTime, $nat, $locksAreOpen, $comments, $name, $display, $video, $monitoring, $ext, $concierge, $sos);
 
             /**
              * @param $domophoneId
@@ -243,12 +249,14 @@
              * @param $domophoneId
              * @return boolean
              */
+
             abstract public function deleteDomophone($domophoneId);
 
             /**
              * @param $domophoneId
              * @return false|array
              */
+
             abstract public function getDomophone($domophoneId);
 
             /**
@@ -278,12 +286,14 @@
              * @param $params
              * @return boolean
              */
+
             abstract public function modifySubscriber($subscriberId, $params = []);
 
             /**
              * @param $subscriberId
              * @return boolean
              */
+
             abstract public function deleteSubscriber($subscriberId);
 
             /**
@@ -291,6 +301,7 @@
              * @param $subscriberId
              * @return mixed
              */
+
             abstract public function removeSubscriberFromFlat($flatId, $subscriberId);
 
             /**
@@ -316,22 +327,20 @@
              * @param $accessType
              * @param $accessTo
              * @param $comments
-             * @param @watch
              *
              * @return false|integer
              */
 
-            abstract public function addKey($rfId, $accessType, $accessTo, $comments, $watch = 0);
+            abstract public function addKey($rfId, $accessType, $accessTo, $comments);
 
             /**
              * @param $keyId
              * @param $comments
-             * @param @watch
              *
              * @return boolean
              */
 
-            abstract public function modifyKey($keyId, $comments, $watch);
+            abstract public function modifyKey($keyId, $comments);
 
             /**
              * @param $keyId
@@ -351,6 +360,7 @@
              * @param $token
              * @return boolean
              */
+
             abstract public function dismissToken($token);
 
             /**
@@ -358,6 +368,7 @@
              * @param $params
              * @return array|false
              */
+
             abstract public function getCameras($by, $params);
 
             /**
@@ -366,6 +377,7 @@
              * @param $cameraId
              * @return mixed
              */
+
             abstract public function addCamera($to, $id, $cameraId);
 
             /**
@@ -374,6 +386,7 @@
              * @param $cameraId
              * @return mixed
              */
+
             abstract public function unlinkCamera($from, $id, $cameraId);
 
             /**
@@ -392,6 +405,7 @@
              * @param $query
              * @return false|array
              */
+
             abstract public function getDevices($by, $query);
 
             /**
@@ -422,12 +436,11 @@
              * @param integer $deviceId
              * @param integer $flatId
              * @param integer $voipEnabled
-             * @param integer $paranoid
              *
              * @return boolean
              */
 
-            abstract public function setDeviceFlat($deviceId, $flatId, $voipEnabled, $paranoid = 0);
+            abstract public function setDeviceFlat($deviceId, $flatId, $voipEnabled);
 
             /**
              * @param string search
@@ -560,17 +573,58 @@
              * @param string subId
              * @param string output
              * @param string by
-             * @param mixed details
+             * @param mixed detail
              *
              * or
              *
              * @param integer entranceId
              * @param string by
-             * @param mixed details
+             * @param mixed detail
              *
              * @return boolean
              */
 
             abstract function paranoidEvent();
+
+            /**
+             * @param $deviceId
+             * @param $flatId
+             * @param $eventType
+             * @param $eventDetail
+             * @param $comments
+             *
+             * @return boolean
+             */
+
+            abstract function watch($deviceId, $flatId, $eventType, $eventDetail, $comments);
+
+            /**
+             * @param $houseWatcherId
+             * @param $deviceId
+             *
+             * or
+             *
+             * @param $houseWatcherId
+             *
+             * @return boolean
+             */
+
+            abstract function unwatch();
+
+            /**
+             * @param integer $deviceId
+             * @param integer $flatId
+             *
+             * @return mixed
+             */
+
+            abstract function watchers($deviceId, $flatId = false);
+
+            /**
+             * @param string by [ flat, entrance, house, houses ]
+             * @param mixed query [ id(s) ]
+             */
+
+            abstract public function broadcast($by, $query, $title, $msg, $action = "inbox");
         }
     }

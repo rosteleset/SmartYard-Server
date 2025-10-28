@@ -23,7 +23,7 @@
     ];
 
     foreach ($domophones as $device) {
-        if ($device['enabled'] === 1  && $device['model'] !== 'sputnik.json' && $device['model'] !== 'rodos.json') {
+        if ($device['monitoring'] === 1  && $device['model'] !== 'sputnik.json' && $device['model'] !== 'rodos.json') {
             $model = $model_map[$device['model']] ?? $device['model'];
 
             $result[] = [

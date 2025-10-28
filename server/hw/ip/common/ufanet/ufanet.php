@@ -2,6 +2,8 @@
 
 namespace hw\ip\common\ufanet;
 
+use CURLFile;
+
 /**
  * Trait providing common functionality related to Ufanet devices.
  */
@@ -21,6 +23,10 @@ trait ufanet
 
     public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow'): void
     {
+        if (!Timezone::isSupported($timezone)) {
+            return;
+        }
+
         $this->apiCall('/cgi-bin/configManager.cgi', 'GET', [
             'action' => 'setConfig',
             'NTP.Address' => "$server:$port",
@@ -30,19 +36,45 @@ trait ufanet
         $this->reboot();
         $this->wait();
 
+        // After rebooting, the intercom functions remain unavailable for some time
+        sleep(10);
+
         // Sync time now
         $this->apiCall('/cgi-bin/j/sync-time.cgi');
     }
 
     public function getSysinfo(): array
     {
-        $serialNumber = $this->apiCall('/cgi-bin/magicBox.cgi', 'GET', ['action' => 'getSerialNo'], 3);
+        $serialNumberRaw = $this->apiCall('/cgi-bin/magicBox.cgi', 'GET', ['action' => 'getSerialNo'], 3);
+        $machineNameRaw = $this->apiCall('/cgi-bin/magicBox.cgi', 'GET', ['action' => 'getMachineName'], 3);
+        $softwareVersionRaw = $this->apiCall('/cgi-bin/magicBox.cgi', 'GET', ['action' => 'getSoftwareVersion'], 3);
 
-        if ($serialNumber !== null) {
-            return ['DeviceID' => $serialNumber];
+        if ($serialNumberRaw === null || $machineNameRaw === null || $softwareVersionRaw === null) {
+            return [];
         }
 
-        return [];
+        $serialNumberData = parse_ini_string($serialNumberRaw);
+        $machineNameData = parse_ini_string($machineNameRaw);
+        $softwareVersionData = parse_ini_string($softwareVersionRaw);
+
+        if ($serialNumberData === false || $machineNameData === false || $softwareVersionData === false) {
+            return [];
+        }
+
+        $serialNumber = $serialNumberData['sn'] ?? null;
+        $machineName = $machineNameData['name'] ?? null;
+        $version = $softwareVersionData['version'] ?? null;
+        $kernel = $softwareVersionData['kernel'] ?? null;
+
+        if ($serialNumber === null || $machineName === null || $version === null || $kernel === null) {
+            return [];
+        }
+
+        return [
+            'DeviceID' => $serialNumber,
+            'SoftwareVersion' => $version . '_' . $kernel,
+            'DeviceModel' => $machineName,
+        ];
     }
 
     public function reboot(): void
@@ -67,6 +99,16 @@ trait ufanet
         sleep(5);
     }
 
+    public function transformDbConfig(array $dbConfig): array
+    {
+        // Set DB timezone to device timezone for unsupported items
+        if (!Timezone::isSupported($dbConfig['ntp']['timezone'])) {
+            $dbConfig['ntp']['timezone'] = $this->getNtpConfig()['timezone'] ?? 'Europe/Moscow';
+        }
+
+        return $dbConfig;
+    }
+
     /**
      * Make an API call.
      *
@@ -82,10 +124,12 @@ trait ufanet
         string $method = 'GET',
         ?array $payload = null,
         int    $timeout = 0,
+        bool   $multipart = false,
     ): array|string|null
     {
         if ($payload !== null && $method === 'GET') {
-            $payload = array_map(fn($value) => str_replace(' ', '%20', $value), $payload); // Replace spaces with %20
+            // Replace spaces with "%20" and "+" with "%2B"
+            $payload = array_map(fn($value) => str_replace([' ', '+'], ['%20', '%2B'], $value), $payload);
             $queryString = urldecode(http_build_query($payload));
             $resource .= '?' . preg_replace('/=(&|$)/', '$1', $queryString); // Delete '=' if the key is without value
         }
@@ -93,20 +137,27 @@ trait ufanet
         $req = $this->url . $resource;
         $ch = curl_init($req);
 
-        curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
-        curl_setopt($ch, CURLOPT_USERPWD, "$this->login:$this->password");
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_VERBOSE, false);
-        curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
+        curl_setopt_array($ch, [
+            CURLOPT_HTTPAUTH => CURLAUTH_BASIC,
+            CURLOPT_CUSTOMREQUEST => $method,
+            CURLOPT_USERPWD => "$this->login:$this->password",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT => $timeout,
+        ]);
 
         if ($payload !== null && $method !== 'GET') {
-            $jsonPayload = empty($payload)
-                ? json_encode($payload, JSON_FORCE_OBJECT)
-                : json_encode($payload, JSON_UNESCAPED_UNICODE);
+            if ($multipart || array_filter($payload, static fn($item) => $item instanceof CURLFile)) {
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+            } else {
+                $jsonPayload = empty($payload)
+                    ? json_encode($payload, JSON_FORCE_OBJECT)
+                    : json_encode($payload, JSON_UNESCAPED_UNICODE);
 
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonPayload);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+                curl_setopt_array($ch, [
+                    CURLOPT_POSTFIELDS => $jsonPayload,
+                    CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
+                ]);
+            }
         }
 
         $res = curl_exec($ch);

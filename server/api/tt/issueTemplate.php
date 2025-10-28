@@ -8,7 +8,7 @@
      * @apiName getIssueTemplate
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {String} workflowId
      * @apiQuery {String} catalog

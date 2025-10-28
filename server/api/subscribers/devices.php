@@ -8,10 +8,10 @@
      * @apiName devices
      * @apiGroup subscribers
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
-     * @apiBody {String="flat,subscriber,id,deviceToken,authToken"} by
-     * @apiBody {String} query
+     * @apiQuery {String="flat,subscriber,id,deviceToken,authToken"} by
+     * @apiQuery {String} query
      *
      * @apiSuccess {Object[]} devices
      */

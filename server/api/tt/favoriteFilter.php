@@ -8,10 +8,11 @@
      * @apiName addFavoriteFilter
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {String} customFilterId
-     * @apiBody {Boolean} rightSide
+     * @apiBody {String} project
+     * @apiBody {Boolean} leftSide
      * @apiBody {String} icon
      * @apiBody {String} color
      *
@@ -23,10 +24,10 @@
      *
      * @apiVersion 1.0.0
      *
-     * @apiName addFavoriteFilter
+     * @apiName deleteFavoriteFilter
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {String} customFilterId
      *
@@ -48,7 +49,7 @@
         class favoriteFilter extends api {
 
             public static function POST($params) {
-                $success = loadBackend("tt")->addFavoriteFilter($params["_id"], @$params["rightSide"], @$params["icon"], @$params["color"]);
+                $success = loadBackend("tt")->addFavoriteFilter($params["_id"], @$params["project"], @$params["leftSide"], @$params["icon"], @$params["color"]);
 
                 return api::ANSWER($success, ($success !== false) ? false : "notAcceptable");
             }

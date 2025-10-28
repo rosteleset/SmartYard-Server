@@ -97,14 +97,6 @@
                     $path     = isset($parsed_url['path']) ? $parsed_url['path'] : '';
                     $query    = isset($parsed_url['query']) ? '?' . $parsed_url['query'] : '';
 
-                    if ($path && $path[0] == '/') {
-                        $path = substr($path, 1);
-                    }
-
-                    $path = explode("/", $path);
-
-                    $stream_name = $path[0];
-
                     $token = false;
                     if (isset($parsed_url['query'])) {
                         parse_str($parsed_url['query'], $parsed_query);
@@ -115,6 +107,20 @@
                     if ($token) {
                         return $token;
                     }
+
+                    // Если в конфигурации присутствует secure_token, используем его, генерируем токен
+                    if (null !== $secureToken = $dvrServer['secure_token'] ?? null) {
+                        $stream_name = strtok(ltrim($path, '/'), '/');
+
+                        $start_time = time() - 300;
+                        $end_time = $start_time + ($dvrServer['secure_token_ttl'] ?? 10800);
+
+                        $salt = bin2hex(openssl_random_pseudo_bytes(16));
+                        $hash = sha1($stream_name . 'no_check_ip' . $start_time . $end_time . $secureToken . $salt);
+
+                        return implode('-', [$hash, $salt, $end_time, $start_time]);
+                    }
+
                 }
                 // по умолчанию возвращаем токен, заданный для DVR сервера
                 return $result;

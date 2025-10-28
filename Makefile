@@ -1,4 +1,5 @@
 # Makefile
+# Still experimental
 
 # Variables
 APP_DIR = /opt/rbt

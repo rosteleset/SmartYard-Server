@@ -54,11 +54,11 @@
                         }
                     }
 
-                    $keys = $this->redis->keys("auth_*_" . $uid);
+                    $keys = $this->redis->keys("AUTH:*:" . $uid);
                     $first_key = "";
                     $first_key_time = time();
 
-                    if (count($keys) > $this->config["redis"]["max_allowed_tokens"]) {
+                    if (count($keys) > ($this->config["backends"]["authentication"]["max_allowed_tokens"] ?: 15)) {
                         foreach ($keys as $key) {
                             try {
                                 $auth = json_decode($this->redis->get($key), true);
@@ -82,7 +82,7 @@
                         }
                     }
 
-                    $this->redis->setex("auth_" . $token . "_" . $uid, $rememberMe ? (7 * 24 * 60 * 60) : $this->config["redis"]["token_idle_ttl"], json_encode([
+                    $this->redis->setex("AUTH:" . $token . ":" . $uid, $rememberMe ? (7 * 24 * 60 * 60) : ($this->config["backends"]["authentication"]["token_idle_ttl"] ?: 3600), json_encode([
                         "uid" => (string)$uid,
                         "login" => $login,
                         "persistent" => $rememberMe,
@@ -93,7 +93,7 @@
                         "updated" => time(),
                     ]));
 
-                    $this->redis->set("last_login_" . md5($login), time());
+                    $this->redis->set("LAST:LOGIN:" . md5($login), time());
 
                     return [
                         "result" => true,
@@ -127,7 +127,7 @@
                 if ($authorization[0] === "Bearer") {
                     $token = $authorization[1];
 
-                    $keys = $this->redis->keys("persistent_" . $token . "_*");
+                    $keys = $this->redis->keys("PERSISTENT:" . $token . ":*");
 
                     foreach ($keys as $key) {
                         $auth = json_decode($this->redis->get($key), true);
@@ -153,7 +153,7 @@
                         }
                     }
 
-                    $keys = $this->redis->keys("auth_" . $token . "_*");
+                    $keys = $this->redis->keys("AUTH:" . $token . ":*");
 
                     foreach ($keys as $key) {
                         $auth = json_decode($this->redis->get($key), true);
@@ -170,7 +170,7 @@
 
                         $auth["token"] = $token;
 
-                        $this->redis->setex($key, $auth["persistent"] ? (7 * 24 * 60 * 60) : $this->config["redis"]["token_idle_ttl"], json_encode($auth));
+                        $this->redis->setex($key, $auth["persistent"] ? (7 * 24 * 60 * 60) : ($this->config["backends"]["authentication"]["token_idle_ttl"] ?: 3600), json_encode($auth));
 
                         if ($users->getUidByLogin($auth["login"]) == $auth["uid"]) {
                             return $auth;
@@ -203,7 +203,7 @@
                     }
                 }
 
-                error_log("\nFAIL2BAN: $ip authentication fail: " . implode(" ", $authorization) . "\n");
+                error_log("\nFAIL2BAN: $ip");
 
                 return false;
             }
@@ -215,12 +215,12 @@
              */
 
             public function logout($token, $all = false) {
-                $keys = $this->redis->keys("auth_" . $token . "_*");
+                $keys = $this->redis->keys("AUTH:" . $token . ":*");
 
                 if ($all) {
                     foreach ($keys as $key) {
-                        $uid = (string)@explode("_", $key)[2];
-                        $_keys = $this->redis->keys("auth_*_" . $uid);
+                        $uid = (string)@explode(":", $key)[2];
+                        $_keys = $this->redis->keys("AUTH:*:" . $uid);
 
                         foreach ($_keys as $_key) {
                             $this->redis->del($_key);
@@ -229,7 +229,7 @@
                         break;
                     }
                 } else {
-                    $keys = $this->redis->keys("auth_" . $token . "_*");
+                    $keys = $this->redis->keys("AUTH:" . $token . ":*");
 
                     foreach ($keys as $key) {
                         $this->redis->del($key);
@@ -251,7 +251,7 @@
 
                 $users = loadBackend("users");
 
-                $keys = $this->redis->keys("auth_" . $token . "_*");
+                $keys = $this->redis->keys("AUTH:" . $token . ":*");
 
                 foreach ($keys as $key) {
                     $auth = json_decode($this->redis->get($key), true);
@@ -261,7 +261,7 @@
 
                         if ($secret && $ga->verifyCode($secret, $oneCode, 2)) {
                             unset($auth["secret"]);
-                            $this->redis->setex($key, $auth["persistent"] ? (7 * 24 * 60 * 60) : $this->config["redis"]["token_idle_ttl"], json_encode($auth));
+                            $this->redis->setex($key, $auth["persistent"] ? (7 * 24 * 60 * 60) : ($this->config["backends"]["authentication"]["token_idle_ttl"] ?: 3600), json_encode($auth));
                             return $users->two_fa($auth["uid"], $secret);
                         } else {
                             setLastError("invalid2FACredentials");
@@ -271,7 +271,7 @@
                         $secret = $ga->createSecret();
                         $auth["secret"] = $secret;
 
-                        $this->redis->setex($key, $auth["persistent"] ? (7 * 24 * 60 * 60) : $this->config["redis"]["token_idle_ttl"], json_encode($auth));
+                        $this->redis->setex($key, $auth["persistent"] ? (7 * 24 * 60 * 60) : ($this->config["backends"]["authentication"]["token_idle_ttl"] ?: 3600), json_encode($auth));
 
                         return $ga->getQRCodeText(@$this->config["backends"]["authentication"]["2faName"] ?: i18n("2faName"), $secret, @$this->config["backends"]["authentication"]["2faTitle"] ?: i18n("2faTitle"));
                     }

@@ -66,10 +66,37 @@
             }
 
             function init($args) {
-                global $db;
+                global $db, $redis;
 
                 maintenance(true);
                 wait_all();
+
+                $aiids = $redis->keys("aiid_*");
+                if ($aiids) {
+                    foreach ($aiids as $id) {
+                        $acr = explode("_", $id)[1];
+                        $redis->set("AIID:" . $acr, $redis->get("aiid_" . $acr));
+                        $redis->del("aiid_" . $acr);
+
+                        echo "AIID migrate: $acr\n";
+                    }
+                    echo "\n";
+                }
+
+                $persistents = $redis->keys("persistent_*");
+                if ($persistents) {
+                    foreach ($persistents as $pid) {
+                        $new = explode("_", $pid);
+                        array_shift($new);
+                        $uid = $new[0];
+                        $new = implode(":", $new);
+                        $redis->set("PERSISTENT:" . $new, $redis->get($pid));
+                        $redis->del($pid);
+
+                        echo "PERSISTENT migrate: $uid\n";
+                    }
+                    echo "\n";
+                }
 
                 backup_db(false);
                 echo "\n";

@@ -1,3 +1,42 @@
+/**
+ * Generates a dynamic, interactive HTML table inside a Bootstrap card, supporting features like filtering, pagination, custom buttons, editable rows, and dropdown menus.
+ *
+ * @function
+ * @param {Object} params - Configuration object for the table.
+ * @param {string} [params.id] - Optional ID for the table element.
+ * @param {string|HTMLElement|jQuery} [params.target] - Selector or element where the table will be rendered.
+ * @param {string} [params.mode] - If "append", appends the table to the target; otherwise replaces content.
+ * @param {Object} [params.title] - Card header configuration.
+ * @param {Object} [params.title.button] - Main button in the header.
+ * @param {string} [params.title.button.caption] - Button tooltip/caption.
+ * @param {string} [params.title.button.icon] - FontAwesome icon class for the button.
+ * @param {Function} [params.title.button.click] - Click handler for the button.
+ * @param {string} [params.title.caption] - Title text for the card.
+ * @param {boolean|string} [params.title.filter] - Enables filter input; if string, sets initial filter value.
+ * @param {Object} [params.title.altButton] - Alternative button in the header.
+ * @param {string} [params.title.altButton.caption] - Alt button tooltip/caption.
+ * @param {string} [params.title.altButton.icon] - FontAwesome icon class for the alt button.
+ * @param {Function} [params.title.altButton.click] - Click handler for the alt button.
+ * @param {Array<Object>} params.columns - Array of column definitions.
+ * @param {string} params.columns[].title - Column header text.
+ * @param {boolean} [params.columns[].hidden] - If true, column is hidden.
+ * @param {boolean} [params.columns[].fullWidth] - If true, column takes full width.
+ * @param {Function} params.rows - Function returning an array of row objects.
+ * @param {number} [params.itemsPerPage] - Number of rows per page (default: all).
+ * @param {number} [params.pagerItemsCount] - Number of pager buttons to show (default: 10).
+ * @param {number} [params.startPage] - Initial page number (default: 1).
+ * @param {Function} [params.edit] - If provided, enables edit icon per row; function called with row UID.
+ * @param {Object} [params.dropDownHeader] - Dropdown menu header configuration.
+ * @param {string} [params.dropDownHeader.icon] - FontAwesome icon class for the dropdown header.
+ * @param {string} [params.dropDownHeader.title] - Tooltip for the dropdown header.
+ * @param {string} [params.dropDownHeader.menu] - Custom HTML for dropdown header.
+ * @param {Function} [params.dropDownHeader.click] - Click handler for the dropdown header.
+ * @param {Function} [params.pageChange] - Callback when page changes; receives new page number.
+ * @param {Function} [params.filterChange] - Callback when filter changes; receives filter string.
+ * @param {string|HTMLElement|jQuery} [params.append] - Content to append after the table.
+ * @returns {jQuery|string} - If `params.target` is provided, returns the jQuery object for the rendered table; otherwise returns the table's HTML or ID.
+ */
+
 function cardTable(params) {
     let h = `<div class="card mt-2">`;
     let filterInput = '';
@@ -8,7 +47,7 @@ function cardTable(params) {
         h += '<div class="card-header">';
         h += '<table cellpadding="0" cellspacing="0"><tr>';
         if (params.title.button) {
-            titleButton = md5(guid());
+            titleButton = "button-" + md5(guid());
             let icon = params.title.button.icon ? params.title.button.icon : "fas fa-plus-circle";
             h += '<td>';
             h += `<button id="${titleButton}" type="button" class="btn btn-primary btn-sm mr-2" title="${params.title.button.caption}"><i class="fa-fw ${icon}"></i></button>`;
@@ -24,7 +63,7 @@ function cardTable(params) {
         }
         h += '</td>';
         if (params.title.filter) {
-            filterInput = md5(guid());
+            filterInput = "filter-" + md5(guid());
             h += '<td>';
             h += `<div class="card-tools d-none d-md-block">`;
             h += `<form id="${filterInput}-form" autocomplete="off" onsubmit="return false;" action="">`;
@@ -40,7 +79,7 @@ function cardTable(params) {
             h += '</td>';
         }
         if (params.title.altButton) {
-            altButton = md5(guid());
+            altButton = "altButton-" + md5(guid());
             h += '<td>';
             let icon = params.title.altButton.icon?params.title.altButton.icon:"far fa-fw fa-times-circle";
             h += `<button id="${altButton}" type="button" class="btn btn-info btn-sm ml-2" title="${params.title.altButton.caption}"><i class="fa-fw ${icon}"></i></button>`;
@@ -50,12 +89,16 @@ function cardTable(params) {
         h += `</div>`;
     }
 
-    let pageLength = params.itemsPerPage?params.itemsPerPage:Number.MAX_VALUE;
-    let pagerItemsCount = params.pagerItemsCount?params.pagerItemsCount:10;
-    let currentPage = params.startPage?params.startPage:1;
+    let pageLength = params.itemsPerPage ? params.itemsPerPage : Number.MAX_VALUE;
+    let pagerItemsCount = params.pagerItemsCount ? params.pagerItemsCount : 10;
+    let currentPage = params.startPage ? params.startPage : 1;
 
     h += `<div class="card-body table-responsive p-0">`;
-    h += `<table class="table table-hover">`;
+    if (params.id) {
+        h += `<table id= "${params.id}" class="table table-hover">`;
+    } else {
+        h += `<table class="table table-hover">`;
+    }
     h += `<thead>`;
 
     let rows = [];
@@ -112,19 +155,32 @@ function cardTable(params) {
 
     if (hasDropDowns) {
         if (params.dropDownHeader) {
-            params.dropDownHeader.id = md5(guid());
-            h += `<th><i id="${params.dropDownHeader.id}" class="fa-fw ${params.dropDownHeader.icon} hoverable pointer" title="${params.dropDownHeader.title ? params.dropDownHeader.title : ''}"></i></th>`;
+            if (params.dropDownHeader.menu) {
+                h += `<th nowrap>${params.dropDownHeader.menu}</th>`;
+            } else {
+                params.dropDownHeader.id = "dropDownHeader" + md5(guid());
+                h += `<th><i id="${params.dropDownHeader.id}" class="fa-fw ${params.dropDownHeader.icon} hoverable pointer" title="${params.dropDownHeader.title ? params.dropDownHeader.title : ''}"></i></th>`;
+            }
         } else {
             h += `<th><i class="fa fa-fw"></i></th>`;
+        }
+    } else {
+        if (params.dropDownHeader) {
+            if (params.dropDownHeader.menu) {
+                h += `<th nowrap>${params.dropDownHeader.menu}</th>`;
+            } else {
+                params.dropDownHeader.id = "dropDownHeader" + md5(guid());
+                h += `<th><i id="${params.dropDownHeader.id}" class="fa-fw ${params.dropDownHeader.icon} hoverable pointer" title="${params.dropDownHeader.title ? params.dropDownHeader.title : ''}"></i></th>`;
+            }
         }
     }
 
     h += `</tr>`;
     h += `</thead>`;
 
-    let tableClass = md5(guid());
-    let clickableClass = md5(guid());
-    let editClass = md5(guid());
+    let tableClass = "tableClass-" + md5(guid());
+    let clickableClass = "clickableClass-" + md5(guid());
+    let editClass = "editClass-" + md5(guid());
 
     h += `<tbody id="${tableClass}">`;
 
@@ -148,6 +204,9 @@ function cardTable(params) {
                     continue;
                 }
                 h += `<td rowId="${i}" colId="${j}" uid="${rows[i].uid}"`;
+                if (j == params.columns.length - 1 && !hasDropDowns && params.dropDownHeader) {
+                    h += ' colspan="2"';
+                }
                 let clss = '';
                 if (typeof rows[i].cols[j].click === "function") {
                     clss = `hoverable ${clickableClass} `;
@@ -163,10 +222,18 @@ function cardTable(params) {
                     h += ` width="100%"`;
                 }
                 h += `>`;
+                if (rows[i].cols[j].ellipses) {
+                    h += '<div class="ellipses-parent">';
+                    h += '<div class="ellipses-children">';
+                }
                 if (typeof rows[i].cols[j].click === "string") {
                     h += `<a href="${rows[i].cols[j].click}" class="nodec hoverable">${rows[i].cols[j].data}</a>`;
                 } else {
                     h += rows[i].cols[j].data;
+                }
+                if (rows[i].cols[j].ellipses) {
+                    h += '</div>';
+                    h += '</div>';
                 }
                 h += "</td>";
             }
@@ -189,7 +256,7 @@ function cardTable(params) {
                     t += `<i class="${rows[i].dropDown.items[0].icon} fa-fw"></i>`;
                     t += `</span>`;
                 } else {
-                    let ddId = md5(guid());
+                    let ddId = "ddId-" + md5(guid());
                     t += `<div class="dropdown">`;
                     t += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon" id="${ddId}" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">`;
                     if (rows[i].dropDown.icon) {
@@ -300,7 +367,7 @@ function cardTable(params) {
         return h;
     }
 
-    let tfoot = md5(guid());
+    let tfoot = "tfoot-" + md5(guid());
     h += `<tfoot id="${tfoot}">`;
     h += `<tr>`;
 
@@ -401,17 +468,25 @@ function cardTable(params) {
             params.edit($(this).attr("uid"))
         });
 
-        if (params.dropDownHeader) {
+        if (params.dropDownHeader && typeof params.dropDownHeader.click == "function") {
             $("#" + params.dropDownHeader.id).off("click").on("click", params.dropDownHeader.click);
         }
     }
 
     if (params.target) {
+        if (params.append) {
+            h += `<span class="ml-2">${params.append}</span>`;
+        }
+
         if (params.mode === "append") {
             $(params.target).append(h);
         } else {
             $(params.target).html(h);
         }
+
+        $('.ellipses-children').each(function () {
+            $(this).attr('title', $(this).text());
+        });
 
         if (Math.ceil(rows.length / pageLength) > 1) {
             $("#" + tfoot).show();
@@ -459,6 +534,6 @@ function cardTable(params) {
 
         return $(params.target);
     } else {
-        return h;
+        return params.id ? params.id : h;
     }
 }

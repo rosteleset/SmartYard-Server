@@ -34,20 +34,32 @@
             }
 
             function run($args) {
-                global $config;
+                global $config, $redis;
 
                 $part = $args["--cron"];
 
                 foreach ($config["backends"] as $backend_name => $cfg) {
                     $backend = loadBackend($backend_name);
                     if ($backend) {
-                        try {
-                            if (!$backend->cron($part)) {
-                                echo "$backend_name [$part] fail\n\n";
+                        $lock = (int)$redis->get("CRON:LOCK:{$backend_name}:$part");
+                        if (!$lock) {
+                            $redis->set("CRON:LOCK:{$backend_name}:$part", getmypid());
+                            try {
+                                if (!$backend->cron($part)) {
+                                    echo "$backend_name [$part] fail\n\n";
+                                }
+                            } catch (\Exception $e) {
+                                print_r($e);
+                                echo "$backend_name [$part] exception\n\n";
                             }
-                        } catch (\Exception $e) {
-                            print_r($e);
-                            echo "$backend_name [$part] exception\n\n";
+                            $redis->set("CRON:LOCK:{$backend_name}:$part", 0);
+                        } else {
+                            if (file_exists("/proc/$lock")) {
+                                echo "$backend_name [$part] already running, pid: $lock\n\n";
+                            } else {
+                                echo "$backend_name [$part] already running, but pid: $lock doesn't exists, cleaning\n\n";
+                                $redis->set("CRON:LOCK:{$backend_name}:$part", 0);
+                            }
                         }
                     }
                 }

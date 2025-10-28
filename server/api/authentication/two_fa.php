@@ -8,7 +8,7 @@
      * @apiName two_fa
      * @apiGroup authentication
      *
-     * @apiHeader {String} token authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {String} [oneCode]
      *

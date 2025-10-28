@@ -4,14 +4,17 @@ namespace hw\ip\domophone\hikvision;
 
 use DateInterval;
 use DateTime;
+use hw\Interface\{
+    FreePassInterface,
+    LanguageInterface,
+};
 use hw\ip\domophone\domophone;
 
 /**
  * Abstract class representing a Hikvision domophone.
  */
-abstract class hikvision extends domophone
+abstract class hikvision extends domophone implements FreePassInterface, LanguageInterface
 {
-
     use \hw\ip\common\hikvision\hikvision;
 
     public function addRfid(string $code, int $apartment = 0): void
@@ -24,9 +27,9 @@ abstract class hikvision extends domophone
                 'CardInfo' => [
                     'employeeNo' => "$apartment",
                     'cardNo' => sprintf("%'.010d", hexdec($code)),
-                    'cardType' => 'normalCard'
-                ]
-            ]
+                    'cardType' => 'normalCard',
+                ],
+            ],
         );
     }
 
@@ -72,20 +75,20 @@ abstract class hikvision extends domophone
                         'enable' => true,
                         'beginTime' => $beginTime,
                         'endTime' => $endTime,
-                        'timeType' => 'local'
+                        'timeType' => 'local',
                     ],
                     'doorRight' => '1',
                     'RightPlan' => [
                         [
                             'doorNo' => 1,
-                            'planTemplateNo' => '1'
-                        ]
+                            'planTemplateNo' => '1',
+                        ],
                     ],
                     'roomNumber' => $apartment,
                     'floorNumber' => 0,
-                    'userVerifyMode' => ''
-                ]
-            ]
+                    'userVerifyMode' => '',
+                ],
+            ],
         );
 
         $phoneNumbers = [];
@@ -101,9 +104,9 @@ abstract class hikvision extends domophone
             [
                 'PhoneNumberRecord' => [
                     'roomNo' => '1',
-                    'PhoneNumbers' => $phoneNumbers
-                ]
-            ]
+                    'PhoneNumbers' => $phoneNumbers,
+                ],
+            ],
         );
     }
 
@@ -152,7 +155,7 @@ abstract class hikvision extends domophone
                     <audioInputChannelID>1</audioInputChannelID>
                     <audioCompressionType>G.711alaw</audioCompressionType>
                 </Audio>
-            </StreamingChannel>'
+            </StreamingChannel>',
         );
 
         $this->apiCall(
@@ -198,13 +201,8 @@ abstract class hikvision extends domophone
                     <audioInputChannelID>1</audioInputChannelID>
                     <audioCompressionType>G.711alaw</audioCompressionType>
                 </Audio>
-            </StreamingChannel>'
+            </StreamingChannel>',
         );
-    }
-
-    public function configureGate(array $links = []): void
-    {
-        // Empty implementation
     }
 
     public function configureMatrix(array $matrix): void
@@ -240,7 +238,7 @@ abstract class hikvision extends domophone
                         <expires>25</expires>
                     </Standard>
                 </SIPServer>
-            </SIPServerList>"
+            </SIPServerList>",
         );
     }
 
@@ -256,7 +254,7 @@ abstract class hikvision extends domophone
                 $this->deleteApartment($value);
                 $this->apiCall(
                     '/VideoIntercom/PhoneNumberRecords/10010110001',
-                    'DELETE'
+                    'DELETE',
                 );
             }
         } else {
@@ -267,10 +265,10 @@ abstract class hikvision extends domophone
                 [
                     'UserInfoDelCond' => [
                         'EmployeeNoList' => [
-                            ['employeeNo' => "$apartment"]
-                        ]
-                    ]
-                ]
+                            ['employeeNo' => "$apartment"],
+                        ],
+                    ],
+                ],
             );
         }
     }
@@ -290,11 +288,6 @@ abstract class hikvision extends domophone
             $audioOut['AudioOutVolumelist']['AudioOutVlome']['volume'],
             $audioOut['AudioOutVolumelist']['AudioOutVlome']['talkVolume'],
         ];
-    }
-
-    public function getCmsLevels(): array
-    {
-        return [];
     }
 
     public function getLineDiagnostics(int $apartment): int
@@ -317,8 +310,8 @@ abstract class hikvision extends domophone
                         'searchID' => '1',
                         'maxResults' => 30,
                         'searchResultPosition' => ($i - 1) * 30,
-                    ]
-                ]
+                    ],
+                ],
             );
 
             foreach ($res['CardInfoSearch']['CardInfo'] as $value) {
@@ -329,13 +322,19 @@ abstract class hikvision extends domophone
         return $rfids;
     }
 
+    public function isFreePassEnabled(): bool
+    {
+        // TODO: Implement isFreePassEnabled() method.
+        return false;
+    }
+
     public function openLock(int $lockNumber = 0): void
     {
         $this->apiCall(
             '/AccessControl/RemoteControl/door/' . ($lockNumber + 1),
             'PUT',
             [],
-            '<cmd>open</cmd>'
+            '<cmd>open</cmd>',
         );
     }
 
@@ -361,7 +360,7 @@ abstract class hikvision extends domophone
                 <type>audioInput</type>
                 <volume>$levels[0]</volume>
                 </AudioInVlome></AudioInVolumelist>
-            </AudioIn>"
+            </AudioIn>",
         );
 
         $this->apiCall(
@@ -377,7 +376,7 @@ abstract class hikvision extends domophone
                         <talkVolume>$levels[2]</talkVolume>
                     </AudioOutVlome>
                 </AudioOutVolumelist>
-            </AudioOut>"
+            </AudioOut>",
         );
     }
 
@@ -389,13 +388,8 @@ abstract class hikvision extends domophone
             [],
             "<OperationTime>
                 <maxRingTime>$timeout</maxRingTime>
-            </OperationTime>"
+            </OperationTime>",
         );
-    }
-
-    public function setCmsLevels(array $levels): void
-    {
-        // Empty implementation
     }
 
     public function setCmsModel(string $model = ''): void
@@ -418,21 +412,28 @@ abstract class hikvision extends domophone
         // Empty implementation
     }
 
-    public function setLanguage(string $language = 'ru'): void
+    public function setFreePassEnabled(bool $enabled): void
     {
-        switch ($language) {
-            case 'ru':
-                $language = 'Russian';
-                break;
-            default:
-                $language = 'English';
-                break;
-        }
+        $this->apiCall(
+            '/AccessControl/RemoteControl/door/1',
+            'PUT',
+            [],
+            $enabled ? '<cmd>alwaysOpen</cmd>' : '<cmd>resume</cmd>',
+        );
+    }
+
+    public function setLanguage(string $language): void
+    {
+        $language = match ($language) {
+            'ru' => 'Russian',
+            default => 'English',
+        };
+
         $this->apiCall(
             '/System/DeviceLanguage',
             'PUT',
             [],
-            "<DeviceLanguage><language>$language</language></DeviceLanguage>"
+            "<DeviceLanguage><language>$language</language></DeviceLanguage>",
         );
     }
 
@@ -454,13 +455,8 @@ abstract class hikvision extends domophone
             [],
             "<OperationTime>
                 <talkTime>$timeout</talkTime>
-            </OperationTime>"
+            </OperationTime>",
         );
-    }
-
-    public function setTickerText(string $text = ''): void
-    {
-        // Empty implementation
     }
 
     public function setUnlockTime(int $time = 3): void
@@ -472,17 +468,7 @@ abstract class hikvision extends domophone
             "<DoorParam>
                 <doorName>Door1</doorName>
                 <openDuration>$time</openDuration>
-            </DoorParam>"
-        );
-    }
-
-    public function setUnlocked(bool $unlocked = true): void
-    {
-        $this->apiCall(
-            '/AccessControl/RemoteControl/door/1',
-            'PUT',
-            [],
-            $unlocked ? '<cmd>alwaysOpen</cmd>' : '<cmd>resume</cmd>'
+            </DoorParam>",
         );
     }
 
@@ -503,10 +489,10 @@ abstract class hikvision extends domophone
                     'maxResults' => 1,
                     'searchResultPosition' => 0,
                     'EmployeeNoList' => [
-                        ['employeeNo' => (string)$apartment]
+                        ['employeeNo' => (string)$apartment],
                     ],
                 ],
-            ]
+            ],
         );
 
         if ($res['UserInfoSearch']['responseStatusStrg'] == 'OK') {
@@ -528,7 +514,7 @@ abstract class hikvision extends domophone
                     <ipVersion>v4</ipVersion>
                     <addressingType>dynamic</addressingType>
                 </IPAddress>
-            </NetworkInterface>"
+            </NetworkInterface>",
         );
     }
 
@@ -543,7 +529,7 @@ abstract class hikvision extends domophone
         $res = $this->apiCall(
             '/AccessControl/UserInfo/Count',
             'GET',
-            ['format' => 'json']
+            ['format' => 'json'],
         );
 
         return $res['UserInfoCount']['userNumber'];
@@ -565,7 +551,7 @@ abstract class hikvision extends domophone
                         'maxResults' => 20,
                         'searchResultPosition' => ($i - 1) * 20,
                     ],
-                ]
+                ],
             );
 
             $userInfo = $res['UserInfoSearch']['UserInfo'] ?? [];
@@ -589,12 +575,6 @@ abstract class hikvision extends domophone
         return [];
     }
 
-    protected function getGateConfig(): array
-    {
-        // TODO: Implement getGateConfig() method.
-        return [];
-    }
-
     protected function getMatrix(): array
     {
         // TODO: Implement getMatrix() method.
@@ -606,7 +586,7 @@ abstract class hikvision extends domophone
         $res = $this->apiCall(
             '/AccessControl/CardInfo/Count',
             'GET',
-            ['format' => 'json']
+            ['format' => 'json'],
         );
 
         return $res['CardInfoCount']['cardNumber'];
@@ -616,17 +596,5 @@ abstract class hikvision extends domophone
     {
         // TODO: Implement getSipConfig() method.
         return [];
-    }
-
-    protected function getTickerText(): string
-    {
-        // TODO: Implement getTickerText() method.
-        return '';
-    }
-
-    protected function getUnlocked(): bool
-    {
-        // TODO: Implement getUnlocked() method.
-        return false;
     }
 }

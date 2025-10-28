@@ -15,6 +15,12 @@
         abstract class users extends backend {
 
             /**
+             * @var object $clickhouse clickhouse db
+             */
+
+            protected $clickhouse;
+
+            /**
              * @param $config
              * @param $db
              * @param $redis
@@ -134,6 +140,23 @@
             abstract public function modifyUser($uid, $realName = '', $eMail = '', $phone = '', $tg = '', $notification = 'tgEmail', $enabled = true, $defaultRoute = '', $persistentToken = false, $primaryGroup = -1);
 
             /**
+             * modify user data
+             *
+             * @param integer $uid
+             * @param string $realName
+             * @param string $eMail
+             * @param string $phone
+             * @param string $tg
+             * @param string $notification
+             * @param string $defaultRoute
+             * @param mixed $persistentToken
+             *
+             * @return boolean
+             */
+
+            abstract public function userPersonal($uid, $realName = '', $eMail = '', $phone = '', $tg = '', $notification = 'tgEmail', $defaultRoute = '', $persistentToken = false);
+
+            /**
              * @param string $tg
              * @param string $subject
              * @param string $message
@@ -168,7 +191,7 @@
             private function sendEmail($login, $email, $subject, $message, $config) {
                 try {
                     if ($email && $config && $login != $email) {
-                        return eMail($config, $email, $subject ? : "-", $message) === true;
+                        return eMail($config, $email, $subject ?: "-", $message) === true;
                     } else {
                         return false;
                     }

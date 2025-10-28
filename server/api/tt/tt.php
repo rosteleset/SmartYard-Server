@@ -8,7 +8,7 @@
      * @apiName suggestions
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiSuccess {Object} meta
      */
@@ -36,7 +36,6 @@
                         "workflows" => $tt->getWorkflows(),
                         "workflowLibs" => $tt->getWorkflowLibs(),
                         "filters" => $tt->getFilters(),
-                        "filtersExt" => $tt->getFiltersExt(),
                         "statuses" => $tt->getStatuses(),
                         "resolutions" => $tt->getResolutions(),
                         "customFields" => $tt->getCustomFields(),

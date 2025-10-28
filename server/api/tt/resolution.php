@@ -8,7 +8,7 @@
      * @apiName createResolution
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {String} resolution
      *
@@ -23,7 +23,7 @@
      * @apiName modifyResolution
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} resolutionId
      * @apiBody {String} resolution
@@ -39,7 +39,7 @@
      * @apiName deleteResolution
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} resolutionId
      *

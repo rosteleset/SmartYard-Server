@@ -8,7 +8,7 @@
      * @apiName addFlat
      * @apiGroup houses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {Number} houseId
      * @apiBody {Number} floor
@@ -36,7 +36,7 @@
      * @apiName modifyFlat
      * @apiGroup houses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} flatId
      * @apiBody {Number} [floor]
@@ -53,6 +53,9 @@
      * @apiBody {Number} [whiteRabbit]
      * @apiBody {Boolean} [sipEnabled]
      * @apiBody {String} [sipPassword]
+     * @apiBody {String} [contract]
+     * @apiBody {String} [login]
+     * @apiBody {String} [password]
      * @apiBody {String} [cars]
      * @apiBody {Number} [subscribersLimit]
      *
@@ -67,7 +70,7 @@
      * @apiName deleteFlat
      * @apiGroup houses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} flatId
      *

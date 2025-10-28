@@ -8,7 +8,7 @@
      * @apiName printIssue
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} printId
      * @apiBody {Object} data

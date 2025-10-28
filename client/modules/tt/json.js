@@ -20,7 +20,7 @@
                 let height = $(window).height() - mainFormTop;
                 let h = '';
                 h += `<div id='editorContainer' style='width: 100%; height: ${height}px;'>`;
-                h += `<pre class="ace-editor mt-2" id="issueEditor" style="position: relative; border: 1px solid #ced4da; border-radius: 0.25rem; width: 100%; height: 100%;"></pre>`;
+                h += `<pre class="ace-editor mt-2" id="issueEditor"></pre>`;
                 h += "</div>";
                 if (AVAIL("tt", "json", "PUT")) {
                     h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="issueSave" class="hoverable saveButton"><i class="fas fa-save pr-2"></i>${i18n("tt.issueSave")}</span></span>`;
@@ -88,7 +88,7 @@
                             i.issueId = r.issue.issueId;
                         } catch (e) {
                             loadingDone();
-                            error(e.message);
+                            error(e.message, i18n("error"), 30);
                             return;
                         }
                         delete i._id;

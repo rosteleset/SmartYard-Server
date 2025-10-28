@@ -8,7 +8,7 @@
      * @apiName getAttachment
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiQuery {String} issueId
      * @apiQuery {String} filename
@@ -24,7 +24,7 @@
      * @apiName addAttachments
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {String} issueId
      * @apiBody {Object[]} attachments
@@ -40,7 +40,7 @@
      * @apiName deleteAttachment
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {String} issueId
      * @apiBody {String} filename
@@ -138,9 +138,9 @@
                     $body = "";
                     $chunk = 0;
                     while (strlen($body) < $portion && !feof($file)) {
-                        $part = fread($file, $chunk ? : $portion);
+                        $part = fread($file, $chunk ?: $portion);
                         $body .= $part;
-                        $chunk = $chunk ? : strlen($part);
+                        $chunk = $chunk ?: strlen($part);
                     }
 
                     echo substr($body, 0, $portion);

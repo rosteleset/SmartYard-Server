@@ -14,6 +14,7 @@ import {
     UfanetService,
     BrovotechService,
     SoyuzService,
+    IFlowWebHookService,
 } from "./services/index.js";
 
 import {
@@ -29,6 +30,7 @@ import {
     SERVICE_UFANET,
     SERVICE_BROVOTECH,
     SERVICE_SOYUZ,
+    SERVICE_IFLOW,
 } from "./constants.js";
 
 const { hw } = config;
@@ -110,6 +112,11 @@ switch (serviceParam) {
     case SERVICE_SOYUZ:
         const soyuzService = new SoyuzService(SERVICE_SOYUZ, serviceConfig, spamWords[SERVICE_SOYUZ]);
         soyuzService.createSyslogServer();
+        break;
+
+    case SERVICE_IFLOW:
+        const iflowWebhookService = new IFlowWebHookService(SERVICE_IFLOW, serviceConfig);
+        iflowWebhookService.start();
         break;
 
     default:

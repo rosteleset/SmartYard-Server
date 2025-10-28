@@ -2,6 +2,14 @@
 
 namespace hw\ip\domophone;
 
+use hw\Interface\{
+    CmsLevelsInterface,
+    DisplayTextInterface,
+    FreePassInterface,
+    GateModeInterface,
+    HousePrefixInterface,
+    LanguageInterface,
+};
 use hw\ip\ip;
 use hw\SmartConfigurator\ConfigurationBuilder\DomophoneConfigurationBuilder;
 
@@ -10,14 +18,13 @@ use hw\SmartConfigurator\ConfigurationBuilder\DomophoneConfigurationBuilder;
  */
 abstract class domophone extends ip
 {
-
     /**
      * @var int Default public access code.
      * Used for devices that require the code to exist even if it is disabled.
      */
     public const DEFAULT_PUBLIC_ACCESS_CODE = 10000;
 
-    final public function getCurrentConfig(): array
+    final public function getConfig(): array
     {
         $builder = new DomophoneConfigurationBuilder();
 
@@ -25,12 +32,29 @@ abstract class domophone extends ip
             ->addDtmf(...$this->getDtmfConfig())
             ->addEventServer($this->getEventServer())
             ->addSip(...$this->getSipConfig())
-            ->addUnlocked($this->getUnlocked())
-            ->addCmsLevels($this->getCmsLevels())
             ->addCmsModel($this->getCmsModel())
             ->addNtp(...$this->getNtpConfig())
-            ->addTickerText($this->getTickerText())
         ;
+
+        if ($this instanceof CmsLevelsInterface) {
+            $builder->addCmsLevels($this->getCmsLevels());
+        }
+
+        if ($this instanceof DisplayTextInterface) {
+            $builder->addDisplayText($this->getDisplayText());
+        }
+
+        if ($this instanceof FreePassInterface) {
+            $builder->addFreePassEnabled($this->isFreePassEnabled());
+        }
+
+        if ($this instanceof GateModeInterface) {
+            $builder->addGateModeEnabled($this->isGateModeEnabled());
+        }
+
+        if ($this instanceof HousePrefixInterface) {
+            $builder->addHousePrefixes($this->getHousePrefixes());
+        }
 
         foreach ($this->getApartments() as $apartment) {
             $builder->addApartment(...$apartment);
@@ -38,10 +62,6 @@ abstract class domophone extends ip
 
         foreach ($this->getRfids() as $rfid) {
             $builder->addRfid($rfid);
-        }
-
-        foreach ($this->getGateConfig() as $link) {
-            $builder->addGateLink(...$link);
         }
 
         foreach ($this->getMatrix() as $matrixCell) {
@@ -60,6 +80,10 @@ abstract class domophone extends ip
         $this->setTalkTimeout(90);
         $this->setUnlockTime(5);
         $this->setPublicCode();
+
+        if ($this instanceof LanguageInterface) {
+            $this->setLanguage('ru');
+        }
     }
 
     /**
@@ -79,14 +103,6 @@ abstract class domophone extends ip
     abstract protected function getAudioLevels(): array;
 
     /**
-     * Get global CMS levels.
-     *
-     * @return string[] All CMS levels configured on the device.
-     * Usually, here's off-hook and door open levels.
-     */
-    abstract protected function getCmsLevels(): array;
-
-    /**
      * Get CMS model.
      *
      * @return string CMS model configured on the device.
@@ -99,13 +115,6 @@ abstract class domophone extends ip
      * @return array An array containing DTMF codes configured on the device.
      */
     abstract protected function getDtmfConfig(): array;
-
-    /**
-     * Get gate configuration.
-     *
-     * @return array[] An array with gate links configured on the device.
-     */
-    abstract protected function getGateConfig(): array;
 
     /**
      * Get CMS matrix.
@@ -127,20 +136,6 @@ abstract class domophone extends ip
      * @return array An array containing SIP account params configured on the device.
      */
     abstract protected function getSipConfig(): array;
-
-    /**
-     * Get the text of the ticker.
-     *
-     * @return string Ticker text configured on the device.
-     */
-    abstract protected function getTickerText(): string;
-
-    /**
-     * Get lock state.
-     *
-     * @return bool True if the domophone locks are now unlocked, false otherwise.
-     */
-    abstract protected function getUnlocked(): bool;
 
     /**
      * Add the RFID key.
@@ -193,16 +188,6 @@ abstract class domophone extends ip
      * @todo It should be in the camera class, but the camera doesn't have a "first time" field
      */
     abstract public function configureEncoding(): void;
-
-    /**
-     * Configure gate mode.
-     *
-     * @param array $links (Optional) An array containing necessary links for gate mode.
-     * If an array is empty, then gate mode is disabled. Default is empty.
-     *
-     * @return void
-     */
-    abstract public function configureGate(array $links = []): void;
 
     /**
      * Configure CMS matrix.
@@ -311,18 +296,6 @@ abstract class domophone extends ip
     abstract public function setCallTimeout(int $timeout): void;
 
     /**
-     * Set global CMS levels.
-     *
-     * @param string[] $levels An array containing global CMS levels.
-     * Array elements must be in the same order they were received from device.
-     *
-     * @return void
-     *
-     * @see getCmsLevels()
-     */
-    abstract public function setCmsLevels(array $levels): void;
-
-    /**
      * Set CMS model.
      *
      * @param string $model (Optional) CMS model in text form.
@@ -364,17 +337,6 @@ abstract class domophone extends ip
     ): void;
 
     /**
-     * Set the language used on the device.
-     *
-     * @param string $language (Optional) The language used by the device in the ISO 639-1 format.
-     * The language will be applied to the WEB interface text, sound files, etc.
-     * Default is "ru".
-     *
-     * @return void
-     */
-    abstract public function setLanguage(string $language = 'ru'): void;
-
-    /**
      * Set a public access code.
      *
      * @param int $code (Optional) Public access code.
@@ -404,16 +366,6 @@ abstract class domophone extends ip
     abstract public function setTalkTimeout(int $timeout): void;
 
     /**
-     * Set ticker text.
-     *
-     * @param string $text (Optional) Text displayed on device ticker.
-     * Default is an empty string.
-     *
-     * @return void
-     */
-    abstract public function setTickerText(string $text = ''): void;
-
-    /**
      * Set opening times for locks.
      *
      * @param int $time (Optional) Opening time in seconds after receiving the command to open the lock.
@@ -423,13 +375,4 @@ abstract class domophone extends ip
      * @see openLock()
      */
     abstract public function setUnlockTime(int $time = 3): void;
-
-    /**
-     * Set the lock state to always locked/unlocked.
-     *
-     * @param bool $unlocked (Optional) If true, then the locks will be in the open state. Closed if false.
-     *
-     * @return void
-     */
-    abstract public function setUnlocked(bool $unlocked = true): void;
 }

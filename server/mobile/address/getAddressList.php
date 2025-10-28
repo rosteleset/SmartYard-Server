@@ -19,7 +19,8 @@
      * @apiSuccess {string="entrance","wicket","gate","barrier"} -.doors.icon иконка замка
      * @apiSuccess {string} -.doors.name наименование замка
      * @apiSuccess {string} [-.doors.blocked] причина ограничения доступа к домофону
-     * @apiSuccess {string} [-.doors.dst] номер открытия
+     * @apiSuccess {string} [-.doors.dst] номер открытия по звонку (пока не используется)
+     * @apiSuccess {string} [-.doors.doorCode] код открытия двери (если нет значит выключено)
      * @apiSuccess {string="t","f"} [-.hasPlog] доступность журнала событий
      * @apiSuccess {integer} -.cctv количество видеокамер
      * @apiSuccess {object[]} [-.ext] массив объектов
@@ -71,6 +72,10 @@
         $flatDetail = $households->getFlat($flat['flatId']);
         foreach ($flatDetail['entrances'] as $entrance) {
             if (array_key_exists($entrance['entranceId'], $house['doors'])) {
+                if (isset($flatDetail['openCode']) && $flatDetail['openCode'] != '00000' && !isset($house['doors'][$entrance['entranceId']]['doorCode'])) {
+                    $house['doors'][$entrance['entranceId']]['doorCode'] = $flatDetail['openCode'];
+                }
+
                 continue;
             }
 
@@ -80,6 +85,9 @@
             $door['doorId'] = intval($e['domophoneOutput']);
             $door['icon'] = $e['entranceType'];
             $door['name'] = $e['entrance'];
+            if (!empty($flatDetail['openCode']) && $flatDetail['openCode'] != '00000') {
+                $door['doorCode'] = $flatDetail['openCode'];
+            }
 
             if ($e['cameraId']) {
                 $cam = $cameras->getCamera($e["cameraId"]);
@@ -119,7 +127,7 @@
             return $a['name'] > $b['name'];
         });
         $houses[$house_key]['doors'] = $doors;
-        unset( $houses[$house_key]['cameras']);
+        unset($houses[$house_key]['cameras']);
     }
     $result = array_values($houses);
 

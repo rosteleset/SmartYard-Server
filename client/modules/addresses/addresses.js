@@ -9,6 +9,7 @@
         "subscribers",
         "subscriberInbox",
         "subscriberDevices",
+        "watchers",
         "_search",
     ],
 
@@ -37,7 +38,7 @@
                         h += `
                             <li class="nav-item" title="${escapeHTML(r.favorites[i].title)}" style="margin-top: 3px;">
                                     <a href="${url}" class="nav-link" onclick="xblur(); return true;">
-                                    <i class="nav-icon fa-fw ${r.favorites[i].icon} ${r.favorites[i].color}"></i>
+                                    <i class="nav-icon fa-fw ${r.favorites[i].icon} text-${r.favorites[i].color}"></i>
                                     <p class="text-nowrap">${escapeHTML(r.favorites[i].title)}</p>
                                 </a>
                             </li>
@@ -116,15 +117,6 @@
         }
 
         if (!f) {
-            let icons = [];
-            for (let i in faIcons) {
-                icons.push({
-                    icon: faIcons[i].title + " fa-fw",
-                    text: faIcons[i].title.split(" fa-")[1] + (faIcons[i].searchTerms.length ? (", " + faIcons[i].searchTerms.join(", ")) : ""),
-                    value: faIcons[i].title,
-                });
-            }
-
             cardForm({
                 title: i18n("addresses.addFavorite"),
                 footer: true,
@@ -142,52 +134,13 @@
                     {
                         id: "icon",
                         title: i18n("addresses.favoriteIcon"),
-                        type: "select2",
-                        options: icons,
+                        type: "icon",
                         value: "far fa-bookmark",
                     },
                     {
                         id: "color",
                         title: i18n("addresses.favoriteColor"),
-                        type: "select2",
-                        options: [
-                            {
-                                text: "По умолчанию",
-                                value: "",
-                                class: "",
-                            },
-                            {
-                                text: "Primary",
-                                value: "text-primary",
-                                class: "text-primary",
-                            },
-                            {
-                                text: "Secondary",
-                                value: "text-secondary",
-                                class: "text-secondary",
-                            },
-                            {
-                                text: "Success",
-                                value: "text-success",
-                                class: "text-success",
-                            },
-                            {
-                                text: "Danger",
-                                value: "text-danger",
-                                class: "text-danger",
-                            },
-                            {
-                                text: "Warning",
-                                value: "text-warning",
-                                class: "text-warning",
-                            },
-                            {
-                                text: "Info",
-                                value: "text-info",
-                                class: "text-info",
-                            },
-                        ],
-                        value: ""
+                        type: "color",
                     },
                 ],
                 callback: r => {
@@ -833,7 +786,7 @@
                         type: "text",
                         title: i18n("addresses.regionWithType"),
                         placeholder: i18n("addresses.regionWithType"),
-                        validate: (v) => {
+                        validate: v => {
                             return $.trim(v) !== "";
                         },
                         value: region.regionWithType,
@@ -857,7 +810,7 @@
                         type: "text",
                         title: i18n("addresses.region"),
                         placeholder: i18n("addresses.region"),
-                        validate: (v) => {
+                        validate: v => {
                             return $.trim(v) !== "";
                         },
                         value: region.region,
@@ -868,7 +821,7 @@
                         title: i18n("addresses.timezone"),
                         placeholder: i18n("addresses.timezone"),
                         options: timezonesOptions(),
-                        validate: (v) => {
+                        validate: v => {
                             return $.trim(v) !== "";
                         },
                         value: region.timezone,
@@ -946,7 +899,7 @@
                         type: "text",
                         title: i18n("addresses.areaWithType"),
                         placeholder: i18n("addresses.areaWithType"),
-                        validate: (v) => {
+                        validate: v => {
                             return $.trim(v) !== "";
                         },
                         value: area.areaWithType,
@@ -970,7 +923,7 @@
                         type: "text",
                         title: i18n("addresses.area"),
                         placeholder: i18n("addresses.area"),
-                        validate: (v) => {
+                        validate: v => {
                             return $.trim(v) !== "";
                         },
                         value: area.area,
@@ -981,7 +934,7 @@
                         title: i18n("addresses.timezone"),
                         placeholder: i18n("addresses.timezone"),
                         options: timezonesOptions(),
-                        validate: (v) => {
+                        validate: v => {
                             return $.trim(v) !== "";
                         },
                         value: area.timezone,
@@ -1093,7 +1046,7 @@
                         type: "text",
                         title: i18n("addresses.cityWithType"),
                         placeholder: i18n("addresses.cityWithType"),
-                        validate: (v) => {
+                        validate: v => {
                             return $.trim(v) !== "";
                         },
                         value: city.cityWithType,
@@ -1117,7 +1070,7 @@
                         type: "text",
                         title: i18n("addresses.city"),
                         placeholder: i18n("addresses.city"),
-                        validate: (v) => {
+                        validate: v => {
                             return $.trim(v) !== "";
                         },
                         value: city.city,
@@ -1128,7 +1081,7 @@
                         title: i18n("addresses.timezone"),
                         placeholder: i18n("addresses.timezone"),
                         options: timezonesOptions(),
-                        validate: (v) => {
+                        validate: v => {
                             return $.trim(v) !== "";
                         },
                         value: city.timezone,
@@ -1240,7 +1193,7 @@
                         type: "text",
                         title: i18n("addresses.settlementWithType"),
                         placeholder: i18n("addresses.settlementWithType"),
-                        validate: (v) => {
+                        validate: v => {
                             return $.trim(v) !== "";
                         },
                         value: settlement.settlementWithType,
@@ -1264,7 +1217,7 @@
                         type: "text",
                         title: i18n("addresses.settlement"),
                         placeholder: i18n("addresses.settlement"),
-                        validate: (v) => {
+                        validate: v => {
                             return $.trim(v) !== "";
                         },
                         value: settlement.settlement,
@@ -1376,7 +1329,7 @@
                         type: "text",
                         title: i18n("addresses.streetWithType"),
                         placeholder: i18n("addresses.streetWithType"),
-                        validate: (v) => {
+                        validate: v => {
                             return $.trim(v) !== "";
                         },
                         value: street.streetWithType,
@@ -1400,7 +1353,7 @@
                         type: "text",
                         title: i18n("addresses.street"),
                         placeholder: i18n("addresses.street"),
-                        validate: (v) => {
+                        validate: v => {
                             return $.trim(v) !== "";
                         },
                         value: street.street,
@@ -1531,7 +1484,7 @@
                             type: "text",
                             title: i18n("addresses.houseFull"),
                             placeholder: i18n("addresses.houseFull"),
-                            validate: (v) => {
+                            validate: v => {
                                 return $.trim(v) !== "";
                             },
                             value: house.houseFull,
@@ -1541,7 +1494,7 @@
                             type: "text",
                             title: i18n("addresses.house"),
                             placeholder: i18n("addresses.house"),
-                            validate: (v) => {
+                            validate: v => {
                                 return $.trim(v) !== "";
                             },
                             value: house.house,
@@ -1615,7 +1568,7 @@
                             $(`#${prefix}regionUuid`).val(guid());
                         },
                     },
-                    validate: (v) => {
+                    validate: v => {
                         return $.trim(v) !== "";
                     }
                 },
@@ -1630,7 +1583,7 @@
                     type: "text",
                     title: i18n("addresses.regionWithType"),
                     placeholder: i18n("addresses.regionWithType"),
-                    validate: (v) => {
+                    validate: v => {
                         return $.trim(v) !== "";
                     }
                 },
@@ -1651,7 +1604,7 @@
                     type: "text",
                     title: i18n("addresses.region"),
                     placeholder: i18n("addresses.region"),
-                    validate: (v) => {
+                    validate: v => {
                         return $.trim(v) !== "";
                     }
                 },
@@ -1661,7 +1614,7 @@
                     title: i18n("addresses.timezone"),
                     placeholder: i18n("addresses.timezone"),
                     options: timezonesOptions(),
-                    validate: (v) => {
+                    validate: v => {
                         return $.trim(v) !== "";
                     }
                 },
@@ -1701,7 +1654,7 @@
                     type: "text",
                     title: i18n("addresses.areaWithType"),
                     placeholder: i18n("addresses.areaWithType"),
-                    validate: (v) => {
+                    validate: v => {
                         return $.trim(v) !== "";
                     }
                 },
@@ -1722,7 +1675,7 @@
                     type: "text",
                     title: i18n("addresses.area"),
                     placeholder: i18n("addresses.area"),
-                    validate: (v) => {
+                    validate: v => {
                         return $.trim(v) !== "";
                     }
                 },
@@ -1732,7 +1685,7 @@
                     title: i18n("addresses.timezone"),
                     placeholder: i18n("addresses.timezone"),
                     options: timezonesOptions(),
-                    validate: (v) => {
+                    validate: v => {
                         return $.trim(v) !== "";
                     }
                 },
@@ -1772,7 +1725,7 @@
                     type: "text",
                     title: i18n("addresses.cityWithType"),
                     placeholder: i18n("addresses.cityWithType"),
-                    validate: (v) => {
+                    validate: v => {
                         return $.trim(v) !== "";
                     }
                 },
@@ -1793,7 +1746,7 @@
                     type: "text",
                     title: i18n("addresses.city"),
                     placeholder: i18n("addresses.city"),
-                    validate: (v) => {
+                    validate: v => {
                         return $.trim(v) !== "";
                     }
                 },
@@ -1803,7 +1756,7 @@
                     title: i18n("addresses.timezone"),
                     placeholder: i18n("addresses.timezone"),
                     options: timezonesOptions(),
-                    validate: (v) => {
+                    validate: v => {
                         return $.trim(v) !== "";
                     }
                 },
@@ -1843,7 +1796,7 @@
                     type: "text",
                     title: i18n("addresses.settlementWithType"),
                     placeholder: i18n("addresses.settlementWithType"),
-                    validate: (v) => {
+                    validate: v => {
                         return $.trim(v) !== "";
                     }
                 },
@@ -1864,7 +1817,7 @@
                     type: "text",
                     title: i18n("addresses.settlement"),
                     placeholder: i18n("addresses.settlement"),
-                    validate: (v) => {
+                    validate: v => {
                         return $.trim(v) !== "";
                     }
                 },
@@ -1904,7 +1857,7 @@
                     type: "text",
                     title: i18n("addresses.streetWithType"),
                     placeholder: i18n("addresses.streetWithType"),
-                    validate: (v) => {
+                    validate: v => {
                         return $.trim(v) !== "";
                     }
                 },
@@ -1925,7 +1878,7 @@
                     type: "text",
                     title: i18n("addresses.street"),
                     placeholder: i18n("addresses.street"),
-                    validate: (v) => {
+                    validate: v => {
                         return $.trim(v) !== "";
                     }
                 },
@@ -1980,7 +1933,7 @@
                         type: "text",
                         title: i18n("addresses.houseFull"),
                         placeholder: i18n("addresses.houseFull"),
-                        validate: (v) => {
+                        validate: v => {
                             return $.trim(v) !== "";
                         }
                     },
@@ -1989,7 +1942,7 @@
                         type: "text",
                         title: i18n("addresses.house"),
                         placeholder: i18n("addresses.house"),
-                        validate: (v) => {
+                        validate: v => {
                             return $.trim(v) !== "";
                         }
                     },

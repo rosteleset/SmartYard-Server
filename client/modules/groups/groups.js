@@ -3,7 +3,7 @@
     meta: false,
 
     init: function () {
-        if (AVAIL("accounts", "group", "POST") || AVAIL("accounts", "group", "PUT") || AVAIL("accounts", "group", "DELETE") || AVAIL("accounts", "groupUsers", "PUT")) {
+        if (AVAIL("accounts", "group", "GET")) {
             leftSide("fas fa-fw fa-users", i18n("groups.groups"), "?#groups", "accounts");
         }
         moduleLoaded("groups", this);
@@ -105,7 +105,7 @@
                     type: "text",
                     title: i18n("groups.acronym"),
                     placeholder: i18n("groups.acronym"),
-                    validate: (v) => {
+                    validate: v => {
                         return $.trim(v) !== "";
                     }
                 },
@@ -114,7 +114,7 @@
                     type: "text",
                     title: i18n("groups.name"),
                     placeholder: i18n("groups.name"),
-                    validate: (v) => {
+                    validate: v => {
                         return $.trim(v) !== "";
                     }
                 },
@@ -165,7 +165,7 @@
                             placeholder: i18n("groups.acronym"),
                             title: i18n("groups.acronym"),
                             readonly: true,
-                            validate: (v) => {
+                            validate: v => {
                                 return $.trim(v) !== "";
                             }
                         },
@@ -175,7 +175,7 @@
                             value: response.group.name,
                             title: i18n("groups.name"),
                             placeholder: i18n("groups.name"),
-                            validate: (v) => {
+                            validate: v => {
                                 return $.trim(v) !== "";
                             }
                         },
@@ -358,7 +358,7 @@
 
             for (let i in users.users) {
                 if (users.users[i].uid) {
-                    usersList[users.users[i].uid] = $.trim(users.users[i].realName?users.users[i].realName:users.users[i].login);
+                    usersList[users.users[i].uid] = $.trim(users.users[i].realName ? users.users[i].realName : users.users[i].login);
                 }
             }
 
@@ -367,13 +367,13 @@
                     target: "#mainForm",
                     title: {
                         caption: i18n("groups.groups"),
-                        button: {
+                        button: AVAIL("accounts", "group", "POST") ? {
                             caption: i18n("groups.addGroup"),
                             click: modules.groups.addGroup,
-                        },
+                        } : false,
                         filter: true,
                     },
-                    edit: modules.groups.modifyGroup,
+                    edit: AVAIL("accounts", "group", "PUT") ? modules.groups.modifyGroup : false,
                     startPage: modules.groups.startPage,
                     columns: [
                         {

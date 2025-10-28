@@ -8,7 +8,7 @@
      * @apiName getCamshot
      * @apiGroup cameras
      *
-     * @apiHeader {String} token authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam cameraId
      *
@@ -24,27 +24,27 @@
         use api\api;
 
         /**
-         * camera method
+         * camshot method
          */
 
         class camshot extends api {
 
             public static function GET($params) {
-                $cameras = loadBackend("cameras");
+                $camerasBackend = loadBackend("cameras");
 
-                $cameras = $cameras->getCameras("id", $params["_id"]);
+                $cameras = $camerasBackend->getCameras("id", $params["_id"]);
 
                 $shot = false;
 
                 if ($cameras && $cameras[0]) {
-                    $camera = $cameras[0];
+                    $cameraId = $cameras[0]["cameraId"];
+                    $shot = $camerasBackend->getSnapshot($cameraId);
 
-                    try {
-                        $device = loadDevice('camera', $camera["model"], $camera["url"], $camera["credentials"]);
-                        $shot = $device->getCamshot();
+                    if ($shot !== null) {
                         $shot = base64_encode($shot);
-                    } catch (\Exception $e) {
-                        error_log(print_r($e, true));
+                    } else {
+                        $shot = false;
+                        error_log('Error getting snapshot for camera ' . $cameraId);
                     }
                 }
 

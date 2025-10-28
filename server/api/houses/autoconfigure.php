@@ -1,14 +1,14 @@
 <?php
 
     /**
-     * @api {get} /api/houses/autoconfigure/:id autoconfigure device
+     * @api {post} /api/houses/autoconfigure/:id autoconfigure device
      *
      * @apiVersion 1.0.0
      *
      * @apiName autoconfigure
      * @apiGroup houses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} id
      * @apiBody {String} object

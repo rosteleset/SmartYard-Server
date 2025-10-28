@@ -8,7 +8,7 @@
      * @apiName companies
      * @apiGroup companies
      *
-     * @apiHeader {String} token authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiSuccess {Object[]} companies
      */

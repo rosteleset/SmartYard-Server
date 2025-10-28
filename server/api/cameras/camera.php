@@ -8,7 +8,7 @@
      * @apiName addCamera
      * @apiGroup cameras
      *
-     * @apiHeader {String} token authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {Boolean} enabled
      * @apiBody {String} model
@@ -32,6 +32,7 @@
      * @apiBody {Boolean} common
      * @apiBody {String} comments
      * @apiBody {Boolean} sound
+     * @apiBody {Boolean} monitoring
      * @apiBody {Object} ext
      *
      * @apiSuccess {Number} cameraId
@@ -45,7 +46,7 @@
      * @apiName modifyCamera
      * @apiGroup cameras
      *
-     * @apiHeader {String} token authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} cameraId
      * @apiBody {Boolean} enabled
@@ -68,20 +69,21 @@
      * @apiBody {Boolean} common
      * @apiBody {String} comments
      * @apiBody {Boolean} sound
+     * @apiBody {Boolean} monitoring
      * @apiBody {Object} ext
      *
      * @apiSuccess {Boolean} operationResult
      */
 
     /**
-     * @api {post} /api/cameras/camera/:cameraId delete camera
+     * @api {delete} /api/cameras/camera/:cameraId delete camera
      *
      * @apiVersion 1.0.0
      *
      * @apiName deleteCamera
      * @apiGroup cameras
      *
-     * @apiHeader {String} token authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} cameraId
      *
@@ -105,17 +107,17 @@
             public static function POST($params) {
                 $cameras = loadBackend("cameras");
 
-                $cameraId = $cameras->addCamera($params["enabled"], $params["model"], $params["url"], $params["stream"], $params["credentials"], $params["name"], $params["dvrStream"], $params["timezone"], $params["lat"], $params["lon"], $params["direction"], $params["angle"], $params["distance"], $params["frs"], $params["frsMode"], $params["mdArea"], $params["rcArea"], $params["common"], $params["comments"], $params["sound"], $params["ext"]);
+                $cameraId = $cameras->addCamera($params["enabled"], $params["model"], $params["url"], $params["stream"], $params["credentials"], $params["name"], $params["dvrStream"], $params["timezone"], $params["lat"], $params["lon"], $params["direction"], $params["angle"], $params["distance"], $params["frs"], $params["frsMode"], $params["mdArea"], $params["rcArea"], $params["common"], $params["comments"], $params["sound"], $params["monitoring"], $params["ext"]);
 
-                return api::ANSWER($cameraId, ($cameraId !== false)?"cameraId":false);
+                return api::ANSWER($cameraId, ($cameraId !== false) ? "cameraId" : false);
             }
 
             public static function PUT($params) {
                 $cameras = loadBackend("cameras");
 
-                $success = $cameras->modifyCamera($params["_id"], $params["enabled"], $params["model"], $params["url"], $params["stream"], $params["credentials"], $params["name"], $params["dvrStream"], $params["timezone"], $params["lat"], $params["lon"], $params["direction"], $params["angle"], $params["distance"], $params["frs"], $params["frsMode"], $params["mdArea"], $params["rcArea"], $params["common"], $params["comments"], $params['sound'], $params["ext"]);
+                $success = $cameras->modifyCamera($params["_id"], $params["enabled"], $params["model"], $params["url"], $params["stream"], $params["credentials"], $params["name"], $params["dvrStream"], $params["timezone"], $params["lat"], $params["lon"], $params["direction"], $params["angle"], $params["distance"], $params["frs"], $params["frsMode"], $params["mdArea"], $params["rcArea"], $params["common"], $params["comments"], $params['sound'], $params["monitoring"], $params["ext"]);
 
-                return api::ANSWER($success?:$params["_id"], $success?"cameraId":false);
+                return api::ANSWER($success);
             }
 
             public static function DELETE($params) {

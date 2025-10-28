@@ -8,7 +8,7 @@
      * @apiName groupUsers
      * @apiGroup accounts
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} gid gid
      *
@@ -23,7 +23,7 @@
      * @apiName setGroupUsers
      * @apiGroup accounts
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} gid gid
      * @apiBody {Number[]} uids uids
@@ -48,13 +48,13 @@
             public static function GET($params) {
                 $uids = loadBackend("groups")->getUsers($params["_id"]);
 
-                return api::ANSWER($uids, ($uids !== false)?"uids":"notFound");
+                return api::ANSWER($uids, ($uids !== false) ? "uids" : "notFound");
             }
 
             public static function PUT($params) {
                 $success = loadBackend("groups")->setUsers($params["_id"], $params["uids"]);
 
-                return api::ANSWER($success, ($success !== false)?false:"notFound");
+                return api::ANSWER($success, ($success !== false) ? false : "notFound");
             }
 
             public static function index() {
@@ -63,12 +63,12 @@
                 if ($groups) {
                     if ($groups->capabilities()["mode"] === "rw") {
                         return [
-                            "GET",
-                            "PUT"
+                            "GET" => "#same(accounts,group,GET)",
+                            "PUT" => "#same(accounts,group,PUT)",
                         ];
                     } else {
                         return [
-                            "GET"
+                            "GET" => "#same(accounts,group,GET)",
                         ];
                     }
                 } else {

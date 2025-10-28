@@ -8,7 +8,7 @@
      * @apiName available
      * @apiGroup authorization
      *
-     * @apiHeader {String} token authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiSuccess {Object} available list of available methods
      */

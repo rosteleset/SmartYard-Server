@@ -8,12 +8,11 @@
      * @apiName createTag
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {Number} projectId
      * @apiBody {String} tag
-     * @apiBody {String} foreground
-     * @apiBody {String} background
+     * @apiBody {String} color
      *
      * @apiSuccess {Number} tagId
      */
@@ -26,12 +25,11 @@
      * @apiName modifyTag
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} tagId
      * @apiBody {String} tag
-     * @apiBody {String} foreground
-     * @apiBody {String} background
+     * @apiBody {String} color
      *
      * @apiSuccess {Boolean} operationResult
      */
@@ -44,7 +42,7 @@
      * @apiName deleteTag
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} tagId
      *
@@ -66,13 +64,13 @@
         class tag extends api {
 
             public static function POST($params) {
-                $tagId = loadBackend("tt")->addTag($params["projectId"], $params["tag"], $params["foreground"], $params["background"]);
+                $tagId = loadBackend("tt")->addTag($params["projectId"], $params["tag"], $params["color"]);
 
                 return api::ANSWER($tagId, ($tagId !== false) ? "tagId" : "notAcceptable");
             }
 
             public static function PUT($params) {
-                $success = loadBackend("tt")->modifyTag($params["_id"], $params["tag"], $params["foreground"], $params["background"]);
+                $success = loadBackend("tt")->modifyTag($params["_id"], $params["tag"], $params["color"]);
 
                 return api::ANSWER($success, ($success !== false) ? false : "notAcceptable");
             }

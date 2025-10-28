@@ -11,7 +11,7 @@
      *
      * @apiSuccess {Object[]} - массив камер
      * @apiSuccess {Number} -.id id камеры
-     * @apiSuccess {String} -.name наименование камеры
+     * @apiSuccess {String} -.name наименование камеры. Формат: название камеры/адрес установки. В приложении показывается на двух строчках.
      * @apiSuccess {Number} -.lat широта
      * @apiSuccess {Number} -.lon долгота
      * @apiSuccess {String} -.url базовый url потока

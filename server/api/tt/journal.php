@@ -8,7 +8,7 @@
      * @apiName getIssueJournal
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {String} issueId
      * @apiQuery {Number} [limit]
@@ -37,7 +37,7 @@
                     return API::ERROR(500);
                 }
 
-                $journal = $tt->getJournal($params["_id"], (@$params["limit"] === false) ? false : (@(int)$params["limit"] ? : false));
+                $journal = $tt->getJournal($params["_id"], (@$params["limit"] === false) ? false : (@(int)$params["limit"] ?: false));
 
                 return api::ANSWER($journal, "journal");
             }

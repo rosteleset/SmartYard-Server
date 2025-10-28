@@ -8,7 +8,7 @@
      * @apiName getRights
      * @apiGroup authorization
      *
-     * @apiHeader {String} token authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiSuccess {Object} rights
      */
@@ -21,7 +21,7 @@
      * @apiName setRights
      * @apiGroup authorization
      *
-     * @apiHeader {String} token authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {Boolean} user
      * @apiBody {Number} id uid or gid

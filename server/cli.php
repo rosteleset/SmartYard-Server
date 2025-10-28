@@ -31,6 +31,7 @@
     require_once "utils/generate_password.php";
     require_once "utils/apache_request_headers.php";
     require_once "utils/mb_levenshtein.php";
+    require_once "utils/array_is_list.php";
 
     require_once "backends/backend.php";
 
@@ -56,7 +57,7 @@
         "users",
     ];
 
-    function cli($stage, $backend = "#", $args) {
+    function cli($stage, $backend = "#", $args = []) {
         global $global_cli, $config;
 
         if ($config && $config["backends"]) {
@@ -376,14 +377,6 @@
 
     if (!function_exists("curl_init")) {
         die("curl extension is not installed\n\n");
-    }
-
-    try {
-        if (PHP_VERSION_ID < 50600) {
-            die("minimal supported php version is 5.6\n\n");
-        }
-    } catch (\Exception $e) {
-        die("can't determine php version\n\n");
     }
 
     if (function_exists("json5_decode")) {

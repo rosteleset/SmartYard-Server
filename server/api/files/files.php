@@ -8,10 +8,10 @@
      * @apiName getFiles
      * @apiGroup files
      *
-     * @apiHeader {String} token authentication token
+     * @apiHeader {String} Authorization authentication token
      *
-     * @apiBody {String} [type]
-     * @apiBody {Boolean} [withContent]
+     * @apiQuery {String} [type]
+     * @apiQuery {Boolean} [withContent]
      *
      * @apiSuccess {Object} operationResult
      */
@@ -36,10 +36,15 @@
                 $_files = false;
 
                 if ($files) {
-                    $_files = $files->searchFiles([
-                        "metadata.type" => @$params["type"],
+                    $search = [
                         "metadata.owner" => $params["_login"],
-                    ]);
+                    ];
+
+                    if (@$params["type"]) {
+                        $search["metadata.type"] = $params["type"];
+                    }
+
+                    $_files = $files->searchFiles($search);
                 }
 
                 if (@$params["withContent"]) {

@@ -1,3 +1,13 @@
+const additionalLinks = [
+    "fb",
+    "vless",
+    "vmess",
+    "ss",
+    "tg",
+];
+
+var phoneUtil = libphonenumber.PhoneNumberUtil.getInstance();
+
 function isEmpty(v) {
     let f = !!v;
 
@@ -53,7 +63,8 @@ function trimStr(str, len, abbr) {
         if (abbr) {
             return "<abbr title='" + escapeHTML(str) + "'>" + str.substring(0, sub) + "..." + str.substring(str.length - sub) + "</abbr>";
         } else {
-            return str.substring(0, sub) + "..." + str.substring(str.length - sub);
+            return "<span title='" + escapeHTML(str) + "'>" + str.substring(0, sub) + "..." + str.substring(str.length - sub) + "</span>";
+//            return str.substring(0, sub) + "..." + str.substring(str.length - sub);
         }
     } else {
         return str;
@@ -208,13 +219,42 @@ function parseFloatEx(f, r) {
     }
 }
 
+function telify(input) {
+    let l = lStore("_lang");
+    if (!l) {
+        l = config.defaultLanguage;
+    }
+    if (!l) {
+        l = "ru";
+    }
+
+    return input.replaceAll(new RegExp(config.regExp.phone, 'g'), function(match) {
+        try {
+            let pre = '';
+            let post = '';
+            if (match[0] < '0' || match[0] > '9') {
+                pre = match[0];
+                match = match.substring(1);
+            }
+            if (match[match.length - 1] < '0' || match[match.length - 1] > '9') {
+                post = match[match.length - 1];
+                match = match.substring(0, match.length - 1);
+            }
+            let phoneObject = phoneUtil.parse(trim(match), l);
+            return pre + '<a href="tel:' + phoneUtil.format(phoneObject, libphonenumber.PhoneNumberFormat.E164) + '" target="_blank">' + phoneUtil.format(phoneObject, libphonenumber.PhoneNumberFormat.NATIONAL) + '</a>' + post;
+        } catch (e) {
+            return match;
+        }
+    });
+}
+
 function convertLinks(input) {
     // https://linkify.js.org/
     let options = {
         defaultProtocol: "https",
         target: "_blank",
     };
-    return linkifyHtml(input, options);
+    return linkifyHtml(telify(input), options);
 }
 
 function getMonthDifference(startDate, endDate) {
@@ -222,7 +262,7 @@ function getMonthDifference(startDate, endDate) {
 }
 
 function findBootstrapEnvironment() {
-    let envs = ['xs', 'sm', 'md', 'lg', 'xl'];
+    let envs = [ 'xs', 'sm', 'md', 'lg', 'xl' ];
 
     let el = document.createElement('div');
     document.body.appendChild(el);
@@ -243,6 +283,23 @@ function findBootstrapEnvironment() {
 }
 
 $.deparam = function (query) {
+
+    function setValue(root, path, value) {
+        if (path.length > 1) {
+            let  dir = path.shift();
+            if (typeof root[dir] == 'undefined') {
+                root[dir] = path[0] == '' ? [] : {};
+            }
+            setValue(root[dir], path, value);
+        } else {
+            if (root instanceof Array) {
+                root.push(value);
+            } else {
+                root[path] = value;
+            }
+        }
+    }
+
     if (query) {
         if (query[0] == "?") {
             query = query.substring(1);
@@ -252,22 +309,6 @@ $.deparam = function (query) {
             query = query.substring(1);
         }
 
-        let setValue = function (root, path, value) {
-            if (path.length > 1) {
-                let  dir = path.shift();
-                if (typeof root[dir] == 'undefined') {
-                    root[dir] = path[0] == '' ? [] : {};
-                }
-                arguments.callee(root[dir], path, value);
-            } else {
-                if (root instanceof Array) {
-                    root.push(value);
-                } else {
-                    root[path] = value;
-                }
-            }
-        };
-
         let nvp = query.split('&');
         let data = {};
 
@@ -276,15 +317,19 @@ $.deparam = function (query) {
             let name = decodeURIComponent(pair[0]);
             let value = decodeURIComponent(pair[1]);
 
-            let path = name.match(/(^[^\[]+)(\[.*\]$)?/);
-            let first = path[1];
-            if (path[2]) {
-                path = path[2].match(/(?=\[(.*)\]$)/)[1].split('][')
-            } else {
-                path = [];
+            try {
+                let path = name.match(/(^[^\[]+)(\[.*\]$)?/);
+                let first = path[1];
+                if (path[2]) {
+                    path = path[2].match(/(?=\[(.*)\]$)/)[1].split('][')
+                } else {
+                    path = [];
+                }
+                path.unshift(first);
+                setValue(data, path, value);
+            } catch (e) {
+                //
             }
-            path.unshift(first);
-            setValue(data, path, value);
         }
 
         return data;
@@ -304,6 +349,12 @@ function refreshUrl(options) {
         }
     }
 
+    if (options && options.set) {
+        for (let i in options.set) {
+            params[i] = options.set[i];
+        }
+    }
+
     return "?#" + route + "&" + $.param(params);
 }
 
@@ -311,6 +362,7 @@ function navigateUrl(route, params, options) {
     if (!params) {
         params = {};
     }
+
     params["_"] = Math.random();
 
     if (options && options.exclude) {
@@ -319,7 +371,24 @@ function navigateUrl(route, params, options) {
         }
     }
 
-    return "?#" + route + "&" + $.param(params);
+    if (!options || !options.noClean) {
+        for (let i in params) {
+            if (params[i] === false || params[i] === undefined) {
+                delete params[i];
+            }
+        }
+    }
+
+    if (options && options.noRefresh) {
+        delete params["_"];
+    }
+
+    if (options && options.run) {
+        loadingStart();
+        window.location.href = "?#" + route + "&" + $.param(params);
+    } else {
+        return "?#" + route + "&" + $.param(params);
+    }
 }
 
 function object2array(obj) {
@@ -368,6 +437,21 @@ function pathToObject(parent, path) {
     return result;
 }
 
+function ildc() {
+    let mw = 0;
+
+    $(".ildc").each(function () {
+        let w = parseInt($(this).css("width"), 10);
+        if (w > mw) {
+            mw = w;
+        }
+    });
+
+    mw += "px"
+
+    $(".ildc").css("width", mw);
+}
+
 Object.defineProperty(Array.prototype, "assoc", {
     value: function (key, target, val) {
         let arr = this;
@@ -386,11 +470,11 @@ Object.defineProperty(Array.prototype, "assoc", {
 
 jQuery.fn.click2 = function(single_click_callback, double_click_callback, timeout) {
     return this.each(function() {
-        var clicks = 0, self = this;
-        jQuery(this).click(function(event) {
+        let clicks = 0, self = this;
+        jQuery(this).click(event => {
             clicks++;
             if (clicks == 1) {
-                setTimeout(function() {
+                setTimeout(() => {
                     if (clicks == 1) {
                         single_click_callback.call(self, event);
                     } else {
@@ -402,3 +486,22 @@ jQuery.fn.click2 = function(single_click_callback, double_click_callback, timeou
         });
     });
 }
+
+String.prototype.escapedSplit = function (delimeter) {
+    let str = this;
+
+    str = str.replaceAll(delimeter + delimeter, String.fromCharCode(27));
+    let arr = str.split(delimeter);
+
+    for (let i in arr) {
+        arr[i] = arr[i].replaceAll(String.fromCharCode(27), delimeter);
+    }
+
+    return arr;
+}
+
+for (let i in additionalLinks) {
+    linkify.registerCustomProtocol(additionalLinks[i]);
+}
+
+linkify.init();

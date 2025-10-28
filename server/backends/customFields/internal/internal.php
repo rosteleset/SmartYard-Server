@@ -104,10 +104,10 @@
              */
 
             public function deleteValues($applyTo, $id) {
-                return $this->db->modify("delete from custom_fields_values where apply_to = :apply_to, id = :id", [
+                return $this->db->modify("delete from custom_fields_values where apply_to = :apply_to and id = :id", [
                     "apply_to" => $applyTo,
                     "id" => $id,
-                ]);
+                ]) !== false;
             }
 
             /**
@@ -133,7 +133,7 @@
                     return false;
                 }
 
-                return $this->db->get("select * from custom_fields where apply_to = :apply_to", [
+                return $this->db->get("select * from custom_fields where apply_to = :apply_to order by weight", [
                     "apply_to" => $applyTo,
                 ], [
                     "custom_field_id" => "customFieldId",
@@ -151,11 +151,12 @@
                     "indx" => "indx",
                     "search" => "search",
                     "required" => "required",
-                    "magic_icon" => "magicIcon",
+                    "magic_class" => "magicClass",
                     "magic_function" => "magicFunction",
                     "magic_hint" => "magicHint",
                     "add" => "add",
                     "modify" => "modify",
+                    "tab" => "tab",
                 ]);
             }
 

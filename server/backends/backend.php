@@ -20,6 +20,12 @@
             protected $config, $db, $redis, $login, $uid, $cache = [];
 
             /**
+             * @var string $backend self name
+             */
+
+            public $backend;
+
+            /**
              * default constructor
              *
              * @param object $config link to config structute
@@ -35,7 +41,7 @@
                 $this->config = $config;
                 $this->db = $db;
                 $this->redis = $redis;
-                $this->login = $login ? : ((is_array($params) && array_key_exists("_login", $params)) ? $params["_login"] : "-");
+                $this->login = $login ?: ((is_array($params) && array_key_exists("_login", $params)) ? $params["_login"] : "-");
 
                 switch ($this->login) {
                     case "-":
@@ -161,15 +167,15 @@
              * @return void
              */
 
-            public function cacheSet($key, $value) {
+            public function cacheSet($key, $value, $memOnly = false) {
                 $key = "CACHE:" . strtoupper($this->backend) . ":" . $key . ":" . $this->uid;
 
                 $value = json_encode($value);
 
                 if ($value != @$this->cache[$key]) {
                     $this->cache[$key] = $value;
-                    if ((int)$this->uid > 0) {
-                        $this->redis->setex($key, @$this->config["redis"]["backends_cache_ttl"] ? : ( 3 * 24 * 60 * 60 ), $value);
+                    if ((int)$this->uid > 0 && !$memOnly) {
+                        $this->redis->setex($key, @$this->config["redis"]["backends_cache_ttl"] ?: ( 3 * 24 * 60 * 60 ), $value);
                     }
                 }
             }

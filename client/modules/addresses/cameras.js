@@ -38,9 +38,7 @@
         done(() => {
             message(i18n("addresses.cameraWasDeleted"))
         }).
-        always(() => {
-            modules.addresses.cameras.route();
-        });
+        always(modules.addresses.cameras.route);
     },
 
     addCamera: function () {
@@ -185,7 +183,7 @@
                     title: i18n("addresses.timezone"),
                     placeholder: i18n("addresses.timezone"),
                     options: timezonesOptions(),
-                    validate: (v) => {
+                    validate: v => {
                         return $.trim(v) !== "";
                     },
                     value: "-",
@@ -256,6 +254,13 @@
                     type: "noyes",
                     title: i18n("addresses.common"),
                     placeholder: i18n("addresses.common"),
+                    tab: i18n("addresses.secondary"),
+                },
+                {
+                    id: "monitoring",
+                    type: "yesno",
+                    title: i18n("addresses.monitoring"),
+                    placeholder: i18n("addresses.monitoring"),
                     tab: i18n("addresses.secondary"),
                 },
                 {
@@ -367,9 +372,20 @@
                 modules.addresses.cameras.map.setView([lat, lon], zoom);
                 modules.addresses.cameras.marker = L.marker([lat, lon], { draggable: true }).addTo(modules.addresses.cameras.map);
 
+                modules.addresses.cameras.map.addControl(new L.Control.Fullscreen({
+                    title: {
+                        'false': i18n("fullscreen"),
+                        'true': i18n("exitFullscreen"),
+                    }
+                }));
+
                 modules.addresses.cameras.marker.on('dragend', () => {
                     $("#" + prefix + "geo").val(modules.addresses.cameras.marker.getLatLng().lat + "," + modules.addresses.cameras.marker.getLatLng().lng);
                 });
+
+                if (config.map && config.map.hideAttribution) {
+                    $(".leaflet-control-attribution").hide();
+                }
             },
             tabActivate: function (prefix, tab) {
                 if (tab == i18n("addresses.map")) {
@@ -608,7 +624,7 @@
                         title: i18n("addresses.timezone"),
                         placeholder: i18n("addresses.timezone"),
                         options: timezonesOptions(),
-                        validate: (v) => {
+                        validate: v => {
                             return $.trim(v) !== "";
                         },
                         value: camera.timezone,
@@ -642,10 +658,18 @@
                     },
                     {
                         id: "common",
-                        type: "yesno",
+                        type: "noyes",
                         title: i18n("addresses.common"),
                         placeholder: i18n("addresses.common"),
                         value: camera.common,
+                        tab: i18n("addresses.secondary"),
+                    },
+                    {
+                        id: "monitoring",
+                        type: "yesno",
+                        title: i18n("addresses.monitoring"),
+                        placeholder: i18n("addresses.monitoring"),
+                        value: camera.monitoring,
                         tab: i18n("addresses.secondary"),
                     },
                     {
@@ -764,9 +788,20 @@
                     modules.addresses.cameras.map.setView([lat, lon], zoom);
                     modules.addresses.cameras.marker = L.marker([lat, lon], { draggable: true }).addTo(modules.addresses.cameras.map);
 
+                    modules.addresses.cameras.map.addControl(new L.Control.Fullscreen({
+                        title: {
+                            'false': i18n("fullscreen"),
+                            'true': i18n("exitFullscreen"),
+                        }
+                    }));
+
                     modules.addresses.cameras.marker.on('dragend', () => {
                         $("#" + prefix + "geo").val(modules.addresses.cameras.marker.getLatLng().lat + "," + modules.addresses.cameras.marker.getLatLng().lng);
                     });
+
+                    if (config.map && config.map.hideAttribution) {
+                        $(".leaflet-control-attribution").hide();
+                    }
 
                     let h = '';
                     h += `<div id="${prefix}md"></div>`;
@@ -983,23 +1018,26 @@
             case 'Disabled':
                 statusClass = 'status-disabled';
                 break;
-            case 'DVRerr':
+            case 'DVR error':
                 statusClass = 'status-dvr-err';
                 break;
             case 'Other':
                 statusClass = 'status-other-error';
                 break;
             default:
-                statusClass = 'status-unknown';
-                status = 'unknown'
+                if (status == i18n("addresses.disabled")) {
+                    statusClass = 'status-disabled';
+                    status = i18n("addresses.disabled")
+                } else {
+                    statusClass = 'status-unknown';
+                    status = i18n("addresses.unknown")
+                }
         }
         return `
-        <div class="status-container">
-            <span class="status-indicator ${statusClass}">
-                <div class="status-tooltip">${status}</div>
-            </span>
-        </div>
-    `;
+            <div class="status-container">
+                <span class="status-indicator ${statusClass}" title="${status}"></span>
+            </div>
+        `;
     },
 
     route: function (params) {
@@ -1051,7 +1089,7 @@
                     let rows = [];
 
                     for (let i in modules.addresses.cameras.meta.cameras) {
-                        if (params && params.filter && params.filter != modules.addresses.cameras.meta.cameras[i].cameraId) continue;
+                        if (params && params.filter && typeof(params.filter) != "function" && params.filter != modules.addresses.cameras.meta.cameras[i].cameraId) continue;
 
                         rows.push({
                             uid: modules.addresses.cameras.meta.cameras[i].cameraId,
@@ -1060,11 +1098,11 @@
                                     data: modules.addresses.cameras.meta.cameras[i].cameraId,
                                 },
                                 {
-                                    data: modules.addresses.cameras.meta.cameras[i].enabled
+                                    data: (modules.addresses.cameras.meta.cameras[i].enabled && modules.addresses.cameras.meta.cameras[i].monitoring)
                                         ? modules.addresses.cameras.handleDeviceStatus(
                                             modules.addresses.cameras.meta.cameras[i].status
-                                                ? modules.addresses.cameras.meta.cameras[i].status.status : "Unknown")
-                                        : modules.addresses.cameras.handleDeviceStatus("Disabled"),
+                                                ? modules.addresses.cameras.meta.cameras[i].status.status : i18n("addresses.unknown"))
+                                        : modules.addresses.cameras.handleDeviceStatus(i18n("addresses.disabled")),
                                     nowrap: true,
                                 },
                                 {
@@ -1076,15 +1114,15 @@
                                     nowrap: true,
                                 },
                                 {
-                                    data: modules.addresses.cameras.meta.models[modules.addresses.cameras.meta.cameras[i].model]?.title,
+                                    data: modules.addresses.cameras.meta.models[modules.addresses.cameras.meta.cameras[i].model]?.title ?? "&nbsp;",
                                     nowrap: true,
                                 },
                                 {
-                                    data: modules.addresses.cameras.meta.cameras[i].name,
+                                    data: modules.addresses.cameras.meta.cameras[i].name ? modules.addresses.cameras.meta.cameras[i].name : "&nbsp;",
                                     nowrap: true,
                                 },
                                 {
-                                    data: modules.addresses.cameras.meta.cameras[i].comments,
+                                    data: modules.addresses.cameras.meta.cameras[i].comments ? modules.addresses.cameras.meta.cameras[i].comments : "&nbsp;",
                                 },
                             ],
                         });

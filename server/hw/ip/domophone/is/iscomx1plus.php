@@ -2,11 +2,23 @@
 
 namespace hw\ip\domophone\is;
 
+use hw\Interface\DisplayTextInterface;
+
 /**
  * Class representing a Sokol ISCom X1 Plus (rev.5) intercom.
  */
-class iscomx1plus extends is
+class iscomx1plus extends is implements DisplayTextInterface
 {
+    public function getDisplayText(): array
+    {
+        $text = $this->apiCall('/panelDisplay/settings')['imgStr'] ?? '';
+        return $text === '' ? [] : [$text];
+    }
+
+    public function getDisplayTextLinesCount(): int
+    {
+        return 1;
+    }
 
     public function prepare(): void
     {
@@ -26,12 +38,12 @@ class iscomx1plus extends is
         }
     }
 
-    public function setTickerText(string $text = ''): void
+    public function setDisplayText(array $textLines): void
     {
         $this->apiCall('/panelDisplay/settings', 'PUT', [
-            'strDisplay' => $text !== '',
+            'strDisplay' => isset($textLines[0]) && $textLines[0] !== '',
             'speed' => 300, // ms
-            'imgStr' => $text,
+            'imgStr' => $textLines[0] ?? '',
         ]);
     }
 

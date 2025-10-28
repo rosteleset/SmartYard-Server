@@ -8,13 +8,13 @@
      * @apiName getCell
      * @apiGroup cs
      *
-     * @apiHeader {String} token authentication token
+     * @apiHeader {String} Authorization authentication token
      *
-     * @apiBody {String} [uid]
-     * @apiBody {String} [sheet]
-     * @apiBody {String} [date]
-     * @apiBody {String} [col]
-     * @apiBody {String} [row]
+     * @apiQuery {String} [uid]
+     * @apiQuery {String} [sheet]
+     * @apiQuery {String} [date]
+     * @apiQuery {String} [col]
+     * @apiQuery {String} [row]
      *
      * @apiSuccess {Object} cs
      */
@@ -27,7 +27,7 @@
      * @apiName putCell
      * @apiGroup cs
      *
-     * @apiHeader {String} token authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {String="claim,release"} action
      * @apiBody {String} sheet
@@ -78,7 +78,11 @@
                 $success = false;
 
                 if ($cs && ($params["action"] == "claim" || $params["action"] == "release")) {
-                    $success = $cs->setCell($params["action"], $params["sheet"], $params["date"], $params["col"], $params["row"], $params["uid"], (int)@$params["expire"], @$params["sid"], @$params["step"]);
+                    if (@$params["col"] && @$params["row"]) {
+                        $success = $cs->setCell($params["action"], $params["sheet"], $params["date"], $params["col"], $params["row"], $params["uid"], (int)@$params["expire"], @$params["sid"], @$params["step"]);
+                    } else {
+                        $success = true;
+                    }
                 }
 
                 return api::ANSWER($success);

@@ -8,7 +8,7 @@
      * @apiName createEntrance
      * @apiGroup houses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {Number} entranceId
      * @apiBody {Number} houseId
@@ -25,7 +25,7 @@
      * @apiName addEntrance
      * @apiGroup houses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {Number} houseId
      * @apiBody {Number} prefix
@@ -57,7 +57,7 @@
      * @apiName modifyEntrance
      * @apiGroup houses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} entranceId
      * @apiBody {Number} houseId
@@ -82,14 +82,14 @@
      */
 
     /**
-     * @api {delete} /api/houses/entrance/:entranceId modify entrance
+     * @api {delete} /api/houses/entrance/:entranceId delete or destroy entrance
      *
      * @apiVersion 1.0.0
      *
-     * @apiName modifyEntrance
+     * @apiName deleteEntrance
      * @apiGroup houses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} entranceId
      * @apiBody {Number} [houseId]

@@ -7,6 +7,7 @@
         "asterisk": "http://127.0.0.1/asterisk",
         "internal": "http://127.0.0.1/internal",
         "mobile": "https://example.com/mobile",
+        "wh": "https://example.com/wh",
         "kamailio": "http://127.0.0.1/kamailio",
     },
 
@@ -15,7 +16,7 @@
         "payments": true,
         "payments_url": "https://example.com/static/payments/template.html",
         "city_cams": false,
-        "support_phone": "+7(4752)429999",
+        "support_phone": "+7(1234)567890",
         "chat": true,
         "chat_url": "<!-- your chat url or remove it and use talkMe by default with options below--!>",
         "talk_me_id": "<!-- put your talkMe chat id here --!>",
@@ -23,11 +24,23 @@
         "talk_me_token": "<!-- put your talkMe chat rest Api Token here --!>",
         "phone_pattern": "7 (###) ###-##-##",
         "time_zone": "Europe/Moscow",
+        // guest_access posible values: "turnOnOnly" or "turnOnAndOff"
         "guest_access": "turnOnOnly",
         // How to show cameras in the mobile app. One of: list, tree, userDefined. List(default) - cameras are shown on the map; tree - cameras are shown as a tree structure; userDefined - user has a switch in the common settings
         "cctv_view": "list",
         // Active app's tab at start. One of: addresses, notifications, chat, pay, menu. The default value is addresses
         "active_tab": "addresses",
+
+        // Regex validation patterns
+        "validation_name_pattern": "",
+        "validation_patronymic_pattern": "",
+        "validation_last_pattern": "",
+
+        // Address Verification UI
+        // Visibility of the tab layout and its tabs
+        "address_verification_tab_layout_visible": true,
+        "address_verification_tab_1_visible": true,
+        "address_verification_tab_2_visible": true,
     },
 
     "db": {
@@ -47,8 +60,6 @@
         "port": 6379,
         "frontend_cache_ttl": 600,
         "backends_cache_ttl": 604800,
-        "max_allowed_tokens": 15,
-        "token_idle_ttl": 3600,
     },
 
     "clickhouse": {
@@ -64,6 +75,8 @@
             "backend": "internal",
             "2faName": "SmartYard",
             "2faTitle": "RBT",
+            "max_allowed_tokens": 15,
+            "token_idle_ttl": 3600,
         },
 
         "authorization": {
@@ -140,17 +153,26 @@
 
         "plog": {
             "backend": "clickhouse",
+
             // your time shift in seconds from current time as the end timepoint for processing plog_* tables (hint 60)
             "time_shift": 60,
+
             // your max call length in seconds for backward processing call events (hint 120)
             "max_call_length": 120,
+
             // your time to live in seconds for temporary data in plog_* tables (hint 86400 - one day)
             "ttl_temp_record": 86400,
+
             // your time to live in days for camshots (hint 180 - approx. half year)
             "ttl_camshot_days": 180,
+
             // your back time shift in seconds for receiving video shot from media server (hint 3)
             "back_time_shift_video_shot": 3,
+
             "cron_process_events_scheduler": "minutely",
+
+            // http timeout to get screenshots
+            "http_timeout": 3,
         },
 
         "configs": {
@@ -217,6 +239,10 @@
             "open_door_timeout": 10,
             "open_gates_timeout": 30,
             "cron_sync_data_scheduler": "5min",
+
+            // http timeout for API calls
+            "http_timeout": 3,
+
             "servers": [
                 {
                     // API type of FALPRS project. One of: frs, lprs
@@ -243,8 +269,14 @@
             ],
         },
 
+        "tt": {
+            "backend": "mongo",
+        },
+
         "cs": {
             "backend": "internal",
+            // ttl of CSs
+            "ttl": "3",
         },
 
         "mqtt": {
@@ -269,6 +301,12 @@
         "customFields": {
             "backend": "internal",
         },
+
+        "wg": {
+            "backend": "internal",
+            "api": "<!-- WGDashboard URL -->",
+            "key": "<!-- API KEY -->",
+        }
     },
 
     "email": {

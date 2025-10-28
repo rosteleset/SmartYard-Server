@@ -8,10 +8,10 @@
      * @apiName getPrint
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {String} printId
-     * @apiBody {String} mode
+     * @apiQuery {String} mode
      *
      * @apiSuccess {Mixed} $mode
      */
@@ -24,7 +24,7 @@
      * @apiName addPrint
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {String} [printId]
      * @apiBody {String} mode
@@ -40,7 +40,7 @@
      * @apiName modifyPrint
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {String} printId
      * @apiBody {String} mode
@@ -56,7 +56,7 @@
      * @apiName deletePrint
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {String} printId
      * @apiBody {String} mode

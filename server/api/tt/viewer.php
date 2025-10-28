@@ -8,7 +8,7 @@
      * @apiName getViewers
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiSuccess {Object[]} viewers
      */
@@ -21,7 +21,7 @@
      * @apiName modifyViewer
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {String} field
      * @apiBody {String} name
@@ -38,7 +38,7 @@
      * @apiName deleteViewer
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {String} field
      * @apiBody {String} name

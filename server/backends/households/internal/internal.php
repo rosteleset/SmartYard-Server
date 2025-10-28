@@ -107,6 +107,7 @@
             /**
              * @inheritDoc
              */
+
             function getFlats($by, $params) {
                 $q = "";
                 $p = [];
@@ -195,6 +196,7 @@
                                 house_flat_id
                         ";
                         $p = [
+                            // TODO: $params["code"] -> $params
                             "code" => $params["code"]
                         ];
                         break;
@@ -206,12 +208,13 @@
                             from
                                 houses_flats
                             where
-                                open_code = :code
+                                open_code = :open_code
                             group by
                                 house_flat_id
                         ";
                         $p = [
-                            "code" => $params["openCode"]
+                            // TODO: $params["openCode"] -> $params
+                            "open_code" => $params["openCode"]
                         ];
                         break;
 
@@ -222,12 +225,13 @@
                             from
                                 houses_flats
                             where
-                                house_flat_id in (select access_to from houses_rfids where access_type = 2 and rfid = :code)
+                                house_flat_id in (select access_to from houses_rfids where access_type = 2 and rfid = :rfid)
                             group by
                                 house_flat_id
                         ";
                         $p = [
-                            "code" => $params["rfId"]
+                            // TODO: $params["rfId"] -> $params
+                            "rfid" => $params["rfId"]
                         ];
                         break;
 
@@ -238,12 +242,13 @@
                             from
                                 houses_flats
                             where
-                                house_flat_id in (select house_flat_id from houses_flats_subscribers where house_subscriber_id in (select access_to from houses_rfids where access_type = 1 and rfid = :code))
+                                house_flat_id in (select house_flat_id from houses_flats_subscribers where house_subscriber_id in (select access_to from houses_rfids where access_type = 1 and rfid = :rfid))
                             group by
                                 house_flat_id
                         ";
                         $p = [
-                            "code" => $params["rfId"]
+                            // TODO: $params["rfId"] -> $params
+                            "rfid" => $params["rfId"]
                         ];
                         break;
 
@@ -259,14 +264,30 @@
                                 house_flat_id
                         ";
                         $p = [
+                            // TODO: $params["id"] -> $params
                             "id" => $params["id"]
+                        ];
+                        break;
+
+                    case "deviceId":
+                        $q = "
+                            select
+                                house_flat_id
+                            from
+                                houses_flats
+                            where
+                                house_flat_id in (select house_flat_id from houses_flats_subscribers where house_subscriber_id in (select house_subscriber_id from houses_subscribers_devices where subscriber_device_id = :subscriber_device_id))
+                            group by
+                                house_flat_id
+                        ";
+                        $p = [
+                            "subscriber_device_id" => $params,
                         ];
                         break;
 
                     case "houseId":
                         $q = "select house_flat_id from houses_flats where address_house_id = :address_house_id  group by house_flat_id";
                         $p = [
-                        // TODO: must be $params["houseId"]
                             "address_house_id" => $params,
                         ];
                         break;
@@ -274,7 +295,6 @@
                     case "domophoneId":
                         $q = "select house_flat_id from houses_flats left join houses_entrances_flats using (house_flat_id) left join houses_entrances using (house_entrance_id) where house_domophone_id = :house_domophone_id group by house_flat_id";
                         $p = [
-                        // TODO: must be $params["domophoneId"]
                             "house_domophone_id" => $params,
                         ];
                         break;
@@ -290,6 +310,7 @@
                     case "login":
                         $q = "select house_flat_id from houses_flats where login = :login group by house_flat_id";
                         $p = [
+                            // TODO: $params["login"] -> $params
                             "login" => $params["login"],
                         ];
                         break;
@@ -297,6 +318,7 @@
                     case "contract":
                         $q = "select house_flat_id from houses_flats where contract = :contract group by house_flat_id";
                         $p = [
+                            // TODO: $params["contract"] -> $params
                             "contract" => $params["contract"],
                         ];
                         break;
@@ -304,6 +326,7 @@
                     case "car":
                         $q = "select house_flat_id from houses_flats where cars is not null and cars like concat('%', cast(:number as varchar), '%') group by house_flat_id";
                         $p = [
+                            // TODO: $params["number"] -> $params
                             "number" => $params["number"],
                         ];
                         break;
@@ -364,15 +387,12 @@
                     return false;
                 }
 
-                if (!(int)$shared) {
-                    $prefix = 0;
-                }
-
                 if (!checkStr($callerId)) {
                     return false;
                 }
 
                 $altCamerasIds[0] = $cameraId;
+
                 for ($i = 0; $i <= 7; $i++) {
                     if (@(int)$altCamerasIds[$i]) {
                         $entrances = $this->getEntrances("cameraId", [ "cameraId" => (int)(int)$altCamerasIds[$i]]);
@@ -401,16 +421,16 @@
                     ":domophone_output" => (int)$domophoneOutput,
                     ":cms" => $cms,
                     ":cms_type" => $cmsType,
-                    ":camera_id" => (int)$cameraId ? : null,
-                    ":alt_camera_id_1" => @(int)$altCamerasIds[1] ? : null,
-                    ":alt_camera_id_2" => @(int)$altCamerasIds[2] ? : null,
-                    ":alt_camera_id_3" => @(int)$altCamerasIds[3] ? : null,
-                    ":alt_camera_id_4" => @(int)$altCamerasIds[4] ? : null,
-                    ":alt_camera_id_5" => @(int)$altCamerasIds[5] ? : null,
-                    ":alt_camera_id_6" => @(int)$altCamerasIds[6] ? : null,
-                    ":alt_camera_id_7" => @(int)$altCamerasIds[7] ? : null,
+                    ":camera_id" => (int)$cameraId ?: null,
+                    ":alt_camera_id_1" => @(int)$altCamerasIds[1] ?: null,
+                    ":alt_camera_id_2" => @(int)$altCamerasIds[2] ?: null,
+                    ":alt_camera_id_3" => @(int)$altCamerasIds[3] ?: null,
+                    ":alt_camera_id_4" => @(int)$altCamerasIds[4] ?: null,
+                    ":alt_camera_id_5" => @(int)$altCamerasIds[5] ?: null,
+                    ":alt_camera_id_6" => @(int)$altCamerasIds[6] ?: null,
+                    ":alt_camera_id_7" => @(int)$altCamerasIds[7] ?: null,
                     ":cms_levels" => $cmsLevels,
-                    ":path" => (int)$path ? : null,
+                    ":path" => (int)$path ?: null,
                 ]);
 
                 if (!$entranceId) {
@@ -514,16 +534,16 @@
                     ":domophone_output" => (int)$domophoneOutput,
                     ":cms" => $cms,
                     ":cms_type" => $cmsType,
-                    ":camera_id" => (int)$cameraId ? : null,
-                    ":alt_camera_id_1" => @(int)$altCamerasIds[1] ? : null,
-                    ":alt_camera_id_2" => @(int)$altCamerasIds[2] ? : null,
-                    ":alt_camera_id_3" => @(int)$altCamerasIds[3] ? : null,
-                    ":alt_camera_id_4" => @(int)$altCamerasIds[4] ? : null,
-                    ":alt_camera_id_5" => @(int)$altCamerasIds[5] ? : null,
-                    ":alt_camera_id_6" => @(int)$altCamerasIds[6] ? : null,
-                    ":alt_camera_id_7" => @(int)$altCamerasIds[7] ? : null,
+                    ":camera_id" => (int)$cameraId ?: null,
+                    ":alt_camera_id_1" => @(int)$altCamerasIds[1] ?: null,
+                    ":alt_camera_id_2" => @(int)$altCamerasIds[2] ?: null,
+                    ":alt_camera_id_3" => @(int)$altCamerasIds[3] ?: null,
+                    ":alt_camera_id_4" => @(int)$altCamerasIds[4] ?: null,
+                    ":alt_camera_id_5" => @(int)$altCamerasIds[5] ?: null,
+                    ":alt_camera_id_6" => @(int)$altCamerasIds[6] ?: null,
+                    ":alt_camera_id_7" => @(int)$altCamerasIds[7] ?: null,
                     ":cms_levels" => $cmsLevels,
-                    ":path" => (int)$path ? : null,
+                    ":path" => (int)$path ?: null,
                 ]) !== false;
 
                 if (!$cms) { // Set CMS matrix to empty...
@@ -628,7 +648,7 @@
                         ":plog" => $plog,
                         ":manual_block" => $manualBlock,
                         ":admin_block" => $adminBlock,
-                        ":open_code" => $openCode,
+                        ":open_code" => $openCode ?: '',
                         ":auto_open" => $autoOpen,
                         ":white_rabbit" => $whiteRabbit,
                         ":sip_enabled" => $sipEnabled,
@@ -732,6 +752,8 @@
                         // TODO add unique check !!!
                         $params["openCode"] = 11000 + rand(0, 88999);
                     }
+
+                    $params["openCode"] = $params["openCode"] ?: '';
 
                     if (array_key_exists("contract", $params) && !checkStr($params["contract"])) {
                         setLastError("invalidParams");
@@ -852,6 +874,8 @@
                     if ($queue) {
                         $queue->changed("flat", $flatId);
                     }
+
+                    return true;
                 } else {
                     setLastError("cantModifyFlat");
                     return false;
@@ -1024,7 +1048,10 @@
                     "sub_id" => "sub_id",
                     "display" => "display",
                     "video" => "video",
+                    "monitoring" => "monitoring",
                     "ext" => "ext",
+                    "concierge" => "concierge",
+                    "sos" => "sos",
                 ];
 
                 switch ($by) {
@@ -1101,15 +1128,16 @@
                         break;
                 }
 
+                $domophones = $this->db->get($q, false, $r);
+
+                foreach ($domophones as $key => $domophone) {
+                    $domophones[$key]["ext"] = json_decode($domophone["ext"]);
+                }
+
                 $monitoring = loadBackend("monitoring");
 
                 if ($monitoring && $withStatus) {
                     $targetHosts = [];
-                    $domophones = $this->db->get($q, false, $r);
-
-                    foreach ($domophones as &$domophone) {
-                        $domophone["ext"] = json_decode($domophone["ext"]);
-                    }
 
                     foreach ($domophones as $domophone) {
                         $targetHosts[] = [
@@ -1121,29 +1149,22 @@
                     }
 
                     $targetStatus = $monitoring->devicesStatus("domophone", $targetHosts);
+
                     if ($targetStatus) {
                         foreach ($domophones as &$domophone) {
                             $domophone["status"] = $targetStatus[$domophone["domophoneId"]]['status'];
                         }
                     }
-
-                    return $domophones;
-                } else {
-                    $domophones = $this->db->get($q, false, $r);
-
-                    foreach ($domophones as &$domophone) {
-                        $domophone["ext"] = json_decode($domophone["ext"]);
-                    }
-
-                    return $domophones;
                 }
+
+                return $domophones;
             }
 
             /**
              * @inheritDoc
              */
 
-            public function addDomophone($enabled, $model, $server, $url,  $credentials, $dtmf, $nat, $comments, $name, $display, $video, $ext) {
+            public function addDomophone($enabled, $model, $server, $url,  $credentials, $dtmf, $nat, $comments, $name, $display, $video, $monitoring, $ext, $concierge, $sos) {
                 if (!$model) {
                     setLastError("moModel");
                     return false;
@@ -1176,6 +1197,11 @@
                     return false;
                 }
 
+                if (!checkInt($monitoring)) {
+                    setLastError("monitoring");
+                    return false;
+                }
+
                 if (!checkStr($video)) {
                     return false;
                 }
@@ -1190,7 +1216,7 @@
                 }
                 $display = trim(implode("\n", $t));
 
-                $domophoneId = $this->db->insert("insert into houses_domophones (enabled, model, server, url, credentials, dtmf, nat, comments, name, display, video, ext) values (:enabled, :model, :server, :url, :credentials, :dtmf, :nat, :comments, :name, :display, :video, :ext)", [
+                $domophoneId = $this->db->insert("insert into houses_domophones (enabled, model, server, url, credentials, dtmf, nat, comments, name, display, video, monitoring, ext, concierge, sos) values (:enabled, :model, :server, :url, :credentials, :dtmf, :nat, :comments, :name, :display, :video, :monitoring, :ext, :concierge, :sos)", [
                     "enabled" => (int)$enabled,
                     "model" => $model,
                     "server" => $server,
@@ -1200,9 +1226,12 @@
                     "nat" => $nat,
                     "comments" => $comments,
                     "name" => $name,
-                    "display" => $display ? : null,
+                    "display" => $display ?: null,
                     "video" => $video,
+                    "monitoring" => $monitoring,
                     "ext" => json_encode($ext),
+                    "concierge" => $concierge ?: null,
+                    "sos" => $sos ?: null,
                 ]);
 
                 if ($domophoneId) {
@@ -1222,7 +1251,7 @@
              * @inheritDoc
              */
 
-            public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $dtmf, $firstTime, $nat, $locksAreOpen, $comments, $name, $display, $video, $ext) {
+            public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $dtmf, $firstTime, $nat, $locksAreOpen, $comments, $name, $display, $video, $monitoring, $ext, $concierge, $sos) {
                 if (!checkInt($domophoneId)) {
                     setLastError("noId");
                     return false;
@@ -1266,8 +1295,13 @@
                     return false;
                 }
 
+                if (!checkInt($monitoring)) {
+                    setLastError("monitoring");
+                    return false;
+                }
+
                 if (!checkInt($locksAreOpen)) {
-                    setLastError("nat");
+                    setLastError("locksAreOpen");
                     return false;
                 }
 
@@ -1285,7 +1319,7 @@
                 }
                 $display = trim(implode("\n", $t));
 
-                $r = $this->db->modify("update houses_domophones set enabled = :enabled, model = :model, server = :server, url = :url, credentials = :credentials, dtmf = :dtmf, first_time = :first_time, nat = :nat, locks_are_open = :locks_are_open, comments = :comments, name = :name, display = :display, video = :video, ext = :ext where house_domophone_id = $domophoneId", [
+                $r = $this->db->modify("update houses_domophones set enabled = :enabled, model = :model, server = :server, url = :url, credentials = :credentials, dtmf = :dtmf, first_time = :first_time, nat = :nat, locks_are_open = :locks_are_open, comments = :comments, name = :name, display = :display, video = :video, monitoring = :monitoring, ext = :ext, concierge = :concierge, sos = :sos where house_domophone_id = $domophoneId", [
                     "enabled" => (int)$enabled,
                     "model" => $model,
                     "server" => $server,
@@ -1297,9 +1331,12 @@
                     "locks_are_open" => $locksAreOpen,
                     "comments" => $comments,
                     "name" => $name,
-                    "display" => $display ? : null,
+                    "display" => $display ?: null,
                     "video" => $video,
+                    "monitoring" => $monitoring,
                     "ext" => json_encode($ext),
+                    "concierge" => $concierge ?: null,
+                    "sos" => $sos ?: null,
                 ]);
 
                 if ($r) {
@@ -1402,7 +1439,10 @@
                     "sub_id" => "sub_id",
                     "display" => "display",
                     "video" => "video",
+                    "monitoring" => "monitoring",
                     "ext" => "ext",
+                    "concierge" => "concierge",
+                    "sos" => "sos",
                 ], [
                     "singlify"
                 ]);
@@ -1421,8 +1461,7 @@
                     }
 
                     $domophone["json"] = json_decode(file_get_contents(__DIR__ . "/../../../hw/ip/domophone/models/" . $domophone["model"]), true);
-                    $domophone["ext"] = json_decode($domophone["ext"]);
-
+                    $domophone["ext"] = $domophone["ext"] ? json_decode($domophone["ext"]) : null;
                 }
 
                 return $domophone;
@@ -1444,11 +1483,24 @@
                         ];
                         break;
 
+                    case "entranceId":
+                        $q = "select * from houses_subscribers_mobile where house_subscriber_id in (select house_subscriber_id from houses_flats_subscribers where house_flat_id in (select house_flat_id from houses_entrances_flats where house_entrance_id = :house_entrance_id)) order by id";
+                        $p = [
+                            "house_entrance_id" => (int)$query,
+                        ];
+                        break;
+
                     case "houseId":
                         $q = "select * from houses_subscribers_mobile where house_subscriber_id in (select house_subscriber_id from houses_flats_subscribers where house_flat_id in (select house_flat_id from houses_flats where address_house_id = :address_house_id)) order by id";
                         $p = [
                             "address_house_id" => (int)$query,
                         ];
+                        break;
+
+                    case "houseIds":
+                        $in = str_repeat('?, ', count($query) - 1) . '?';
+                        $q = "select * from houses_subscribers_mobile where house_subscriber_id in (select house_subscriber_id from houses_flats_subscribers where house_flat_id in (select house_flat_id from houses_flats where address_house_id in ($in))) order by id";
+                        $p = $query;
                         break;
 
                     case "mobile":
@@ -1476,32 +1528,34 @@
                     "subscriber_full" => "subscriberFull",
                 ]);
 
-                $addresses = loadBackend("addresses");
+                if (array_search("noDetail", $options) === false) {
+                    $addresses = loadBackend("addresses");
 
-                foreach ($subscribers as &$subscriber) {
-                    $flats = $this->db->get("select house_flat_id, role, flat, address_house_id from houses_flats_subscribers left join houses_flats using (house_flat_id) where house_subscriber_id = :house_subscriber_id",
-                        [
-                            "house_subscriber_id" => $subscriber["subscriberId"]
-                        ],
-                        [
-                            "house_flat_id" => "flatId",
-                            "role" => "role",
-                            "flat" => "flat",
-                            "address_house_id" => "addressHouseId",
-                        ]
-                    );
+                    foreach ($subscribers as &$subscriber) {
+                        $flats = $this->db->get("select house_flat_id, role, flat, address_house_id from houses_flats_subscribers left join houses_flats using (house_flat_id) where house_subscriber_id = :house_subscriber_id",
+                            [
+                                "house_subscriber_id" => $subscriber["subscriberId"]
+                            ],
+                            [
+                                "house_flat_id" => "flatId",
+                                "role" => "role",
+                                "flat" => "flat",
+                                "address_house_id" => "addressHouseId",
+                            ]
+                        );
 
-                    if (array_search("withoutHouses", $options) === false) {
-                        foreach ($flats as &$flat) {
-                            $flat["house"] = $addresses->getHouse($flat["addressHouseId"]);
+                        if (array_search("withoutHouses", $options) === false) {
+                            foreach ($flats as &$flat) {
+                                $flat["house"] = $addresses->getHouse($flat["addressHouseId"]);
+                            }
+                        } else {
+                            foreach ($flats as &$flat) {
+                                $flat["house"]["houseId"] = $flat["addressHouseId"];
+                            }
                         }
-                    } else {
-                        foreach ($flats as &$flat) {
-                            $flat["house"]["houseId"] = $flat["addressHouseId"];
-                        }
+
+                        $subscriber["flats"] = $flats;
                     }
-
-                    $subscriber["flats"] = $flats;
                 }
 
                 return $subscribers;
@@ -1585,7 +1639,9 @@
                     ])) {
                         return false;
                     }
+
                     $devices = $this->getDevices("subscriber", $subscriberId);
+
                     foreach($devices as $device) {
                         $this->setDeviceFlat($device["deviceId"], $flatId, 1);
                     }
@@ -1604,8 +1660,8 @@
             /**
              * @inheritDoc
              */
-            public function deleteSubscriber($subscriberId)
-            {
+
+            public function deleteSubscriber($subscriberId) {
                 if (!checkInt($subscriberId)) {
                     return false;
                 }
@@ -1665,8 +1721,8 @@
             /**
              * @inheritDoc
              */
-            public function modifySubscriber($subscriberId, $params = [])
-            {
+
+            public function modifySubscriber($subscriberId, $params = []) {
                 if (!checkInt($subscriberId)) {
                     return false;
                 }
@@ -1824,9 +1880,23 @@
                             break;
 
                         case "keyId":
-                            $q = "select * from houses_rfids where house_rfid_id = :keyId";
+                            $q = "select * from houses_rfids where house_rfid_id = :house_rfid_id";
                             $p = [
-                                "keyId" => $query,
+                                "house_rfid_id" => $query,
+                            ];
+                            break;
+
+                        case "subscriberId":
+                            $q = "select * from houses_rfids where access_type = 1 and access_to = :house_subscriber_id";
+                            $p = [
+                                "house_subscriber_id" => $query,
+                            ];
+                            break;
+
+                        case "subscriberMobile":
+                            $q = "select * from houses_rfids where access_type = 1 and access_to in (select house_subscriber_id from houses_subscribers_mobile where id = :id)";
+                            $p = [
+                                "id" => $query,
                             ];
                             break;
 
@@ -1884,7 +1954,6 @@
                     "access_to" => "accessTo",
                     "last_seen" => "lastSeen",
                     "comments" => "comments",
-                    "watch" => "watch",
                 ]);
             }
 
@@ -1892,18 +1961,17 @@
              * @inheritDoc
              */
 
-            public function addKey($rfId, $accessType, $accessTo, $comments, $watch = 0) {
-                if (!checkInt($accessTo) || !checkInt($watch) || !checkInt($accessType) || !checkStr($rfId, [ "minLength" => 6, "maxLength" => 32 ]) || !checkStr($rfId, [ "minLength" => 6, "maxLength" => 32 ]) || !checkStr($comments, [ "maxLength" => 128 ])) {
+            public function addKey($rfId, $accessType, $accessTo, $comments) {
+                if (!checkInt($accessTo) || !checkInt($accessType) || !checkStr($rfId, [ "minLength" => 6, "maxLength" => 32 ]) || !checkStr($comments, [ "maxLength" => 128 ])) {
                     setLastError("invalidParams");
                     return false;
                 }
 
-                $r = $this->db->insert("insert into houses_rfids (rfid, access_type, access_to, comments, watch) values (:rfid, :access_type, :access_to, :comments, :watch)", [
+                $r = $this->db->insert("insert into houses_rfids (rfid, access_type, access_to, comments) values (:rfid, :access_type, :access_to, :comments)", [
                     "rfid" => $rfId,
                     "access_type" => $accessType,
                     "access_to" => $accessTo,
                     "comments" => $comments,
-                    "watch" => $watch,
                 ]);
 
                 if ($r) {
@@ -1938,15 +2006,9 @@
              * @inheritDoc
              */
 
-            public function modifyKey($keyId, $comments, $watch = 0) {
-                if (!checkInt($keyId) || !checkInt($watch)) {
-                    setLastError("invalidParams");
-                    return false;
-                }
-
-                return $this->db->modify("update houses_rfids set comments = :comments, watch = :watch where house_rfid_id = $keyId", [
+            public function modifyKey($keyId, $comments) {
+                return $this->db->modify("update houses_rfids set comments = :comments where house_rfid_id = $keyId", [
                     "comments" => $comments,
-                    "watch" => $watch,
                 ]);
             }
 
@@ -2053,14 +2115,83 @@
                         if (!checkInt($query)) {
                             return false;
                         }
-                        $q = "select address_house_id, prefix, house_entrance_id, entrance_type, entrance, lat, lon, shared, plog, prefix, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, alt_camera_id_1, alt_camera_id_2, alt_camera_id_3, alt_camera_id_4, alt_camera_id_5, alt_camera_id_6, alt_camera_id_7, coalesce(cms_levels, '') as cms_levels, path from houses_houses_entrances left join houses_entrances using (house_entrance_id) where address_house_id = $query order by entrance_type, entrance";
+                        $q = "select
+                                address_house_id,
+                                prefix,
+                                house_entrance_id,
+                                entrance_type,
+                                entrance,
+                                lat,
+                                lon,
+                                shared,
+                                plog,
+                                prefix,
+                                caller_id,
+                                house_domophone_id,
+                                domophone_output,
+                                cms,
+                                cms_type,
+                                camera_id,
+                                alt_camera_id_1,
+                                alt_camera_id_2,
+                                alt_camera_id_3,
+                                alt_camera_id_4,
+                                alt_camera_id_5,
+                                alt_camera_id_6,
+                                alt_camera_id_7,
+                                coalesce(cms_levels, '') as cms_levels,
+                                path,
+                                (select count(*) from houses_houses_entrances h2 where h1.house_entrance_id = h2.house_entrance_id) installed
+                            from
+                                houses_houses_entrances h1
+                            left join houses_entrances using (house_entrance_id)
+                            where
+                                address_house_id = $query
+                            order by
+                                entrance_type,
+                                entrance
+                        ";
                         break;
 
                     case "flatId":
                         if (!checkInt($query)) {
                             return false;
                         }
-                        $q = "select address_house_id, prefix, house_entrance_id, entrance_type, entrance, lat, lon, shared, plog, prefix, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, alt_camera_id_1, alt_camera_id_2, alt_camera_id_3, alt_camera_id_4, alt_camera_id_5, alt_camera_id_6, alt_camera_id_7, coalesce(cms_levels, '') as cms_levels, path from houses_houses_entrances left join houses_entrances using (house_entrance_id) where house_entrance_id in (select house_entrance_id from houses_entrances_flats where house_flat_id = $query) order by entrance_type, entrance";
+                        $q = "select
+                                address_house_id,
+                                prefix,
+                                house_entrance_id,
+                                entrance_type,
+                                entrance,
+                                lat,
+                                lon,
+                                shared,
+                                plog,
+                                prefix,
+                                caller_id,
+                                house_domophone_id,
+                                domophone_output,
+                                cms,
+                                cms_type,
+                                camera_id,
+                                alt_camera_id_1,
+                                alt_camera_id_2,
+                                alt_camera_id_3,
+                                alt_camera_id_4,
+                                alt_camera_id_5,
+                                alt_camera_id_6,
+                                alt_camera_id_7,
+                                coalesce(cms_levels, '') as cms_levels,
+                                path,
+                                (select count(*) from houses_houses_entrances h2 where h1.house_entrance_id = h2.house_entrance_id) installed
+                            from
+                                houses_houses_entrances h1
+                            left join houses_entrances using (house_entrance_id)
+                            where
+                                house_entrance_id in (select house_entrance_id from houses_entrances_flats where house_flat_id = $query)
+                            order by
+                                entrance_type,
+                                entrance";
                         break;
 
                     case "domophone":
@@ -2092,7 +2223,41 @@
                 }
 
                 if (!$q) {
-                    $q = "select address_house_id, prefix, house_entrance_id, entrance_type, entrance, lat, lon, shared, plog, caller_id, house_domophone_id, domophone_output, cms, cms_type, camera_id, alt_camera_id_1, alt_camera_id_2, alt_camera_id_3, alt_camera_id_4, alt_camera_id_5, alt_camera_id_6, alt_camera_id_7, coalesce(cms_levels, '') as cms_levels, path from houses_entrances left join houses_houses_entrances using (house_entrance_id) where $where order by entrance_type, entrance";
+                    $q = "select
+                            address_house_id,
+                            prefix,
+                            house_entrance_id,
+                            entrance_type,
+                            entrance,
+                            lat,
+                            lon,
+                            shared,
+                            plog,
+                            caller_id,
+                            house_domophone_id,
+                            domophone_output,
+                            cms,
+                            cms_type,
+                            camera_id,
+                            alt_camera_id_1,
+                            alt_camera_id_2,
+                            alt_camera_id_3,
+                            alt_camera_id_4,
+                            alt_camera_id_5,
+                            alt_camera_id_6,
+                            alt_camera_id_7,
+                            coalesce(cms_levels, '') as cms_levels,
+                            path,
+                            (select count(*) from houses_houses_entrances h2 where h1.house_entrance_id = h2.house_entrance_id) installed
+                        from
+                            houses_entrances h1
+                        left join
+                            houses_houses_entrances using (house_entrance_id)
+                        where
+                            $where
+                        order by
+                            entrance_type,
+                            entrance";
                 }
 
                 return $this->db->get($q,
@@ -2122,6 +2287,7 @@
                         "alt_camera_id_7" => "altCameraId7",
                         "cms_levels" => "cmsLevels",
                         "path" => "path",
+                        "installed" => "installed",
                     ]
                 );
             }
@@ -2256,7 +2422,7 @@
                     case "house":
                         if (checkInt($id) !== false && checkInt($cameraId) !== false) {
                             return $this->db->modify("update houses_cameras_houses set path = :path where camera_id = $cameraId and address_house_id = $id", [
-                                "path" => $path ? : null,
+                                "path" => $path ?: null,
                             ]);
                         } else {
                             return false;
@@ -2264,7 +2430,7 @@
                     case "flat":
                         if (checkInt($id) !== false && checkInt($cameraId) !== false) {
                             return $this->db->modify("update houses_cameras_flats set path = :path where camera_id = $cameraId and house_flat_id = $id", [
-                                "path" => $path ? : null,
+                                "path" => $path ?: null,
                             ]);
                         } else {
                             return false;
@@ -2424,7 +2590,7 @@
                 }
 
                 // TODO: paranoidEvent (pushes)
-                // clear paranoid (if flat owner/plog settings changes)
+                // clear paranoid / watchers (if flat owner/plog/watcher/rfid... settings changes)
 
                 $n += $this->db->modify("delete from houses_flats_devices where houses_flat_device_id in (select houses_flat_device_id from houses_flats_devices left join houses_subscribers_devices using (subscriber_device_id) left join houses_flats_subscribers on houses_subscribers_devices.house_subscriber_id = houses_flats_subscribers.house_subscriber_id and houses_flats_devices.house_flat_id = houses_flats_subscribers.house_flat_id where houses_flats_subscribers.house_flat_id is null)");
 
@@ -2442,6 +2608,27 @@
 
                 if ($part === "5min") {
                     $this->cleanup();
+                }
+
+                if ($part === "minutely") {
+                    $messages = $this->db->get("select * from houses_subscribers_messages limit 1024", false, [
+                        "bulk_message_id" => "bulkMessageId",
+                        "house_subscriber_id" => "subscriberId",
+                        "title" => "title",
+                        "msg" => "msg",
+                        "action" => "action",
+                    ]);
+
+                    if ($messages && count($messages)) {
+                        $inbox = loadBackend("inbox");
+
+                        foreach ($messages as $message) {
+                            $inbox->sendMessage($message["subscriberId"], $message["title"], $message["msg"], $message["action"]);
+                            $this->db->modify("delete from houses_subscribers_messages where bulk_message_id = :bulk_message_id", [
+                                "bulk_message_id" => $message["bulkMessageId"],
+                            ]);
+                        }
+                    }
                 }
 
                 return true;
@@ -2588,6 +2775,7 @@
 
                 switch ($by) {
                     case "flat":
+                    case "flatId":
                         $q = "select * from houses_subscribers_devices where subscriber_device_id in (select subscriber_device_id from houses_flats_devices where house_flat_id = :house_flat_id) order by subscriber_device_id";
                         $p = [
                             "house_flat_id" => (int)$query,
@@ -2597,7 +2785,7 @@
                     case "subscriber":
                         $q = "select * from houses_subscribers_devices where house_subscriber_id = :house_subscriber_id order by subscriber_device_id";
                         $p = [
-                            "house_subscriber_id" => $query,
+                            "house_subscriber_id" => (int)$query,
                         ];
                         break;
 
@@ -2657,7 +2845,7 @@
                             "singlify"
                         ]
                     );
-                    $flats = $this->db->get("select house_flat_id, voip_enabled, flat, address_house_id, paranoid from houses_flats_devices left join houses_flats using (house_flat_id) where subscriber_device_id = :subscriber_device_id",
+                    $flats = $this->db->get("select house_flat_id, voip_enabled, flat, address_house_id from houses_flats_devices left join houses_flats using (house_flat_id) where subscriber_device_id = :subscriber_device_id",
                         [
                             "subscriber_device_id" => $device["deviceId"]
                         ],
@@ -2666,7 +2854,6 @@
                             "voip_enabled" => "voipEnabled",
                             "flat" => "flat",
                             "address_house_id" => "addressHouseId",
-                            "paranoid" => "paranoid",
                         ]
                     );
                     $device["subscriber"] = $subscriber;
@@ -2844,11 +3031,11 @@
 
                 if (array_key_exists("flats", $params)) {
                     foreach ($params["flats"] as $flat) {
-                        if (!checkInt($flat["flatId"]) || !checkInt($flat["voipEnabled"]) || !checkInt($flat["paranoid"])) {
+                        if (!checkInt($flat["flatId"]) || !checkInt($flat["voipEnabled"])) {
                             setLastError("invalidParams");
                             return false;
                         }
-                        if ($this->setDeviceFlat($deviceId, $flat["flatId"], $flat["voipEnabled"], $flat["paranoid"])) {
+                        if ($this->setDeviceFlat($deviceId, $flat["flatId"], $flat["voipEnabled"])) {
                             $result++;
                         }
                     }
@@ -2911,22 +3098,21 @@
              * @inheritDoc
              */
 
-            public function setDeviceFlat($deviceId, $flatId, $voipEnabled, $paranoid = 0) {
+            public function setDeviceFlat($deviceId, $flatId, $voipEnabled) {
                 if (!checkInt($deviceId)) {
                     setLastError("invalidParams");
                     return false;
                 }
 
                 $r = $this->db->insert("
-                    INSERT INTO houses_flats_devices (subscriber_device_id, house_flat_id, voip_enabled, paranoid)
-                    VALUES (:subscriber_device_id, :house_flat_id, :voip_enabled, :paranoid)
+                    INSERT INTO houses_flats_devices (subscriber_device_id, house_flat_id, voip_enabled)
+                    VALUES (:subscriber_device_id, :house_flat_id, :voip_enabled)
                     ON CONFLICT (subscriber_device_id, house_flat_id)
-                    DO UPDATE SET voip_enabled = :voip_enabled, paranoid = :paranoid
+                    DO UPDATE SET voip_enabled = :voip_enabled
                 ", [
                     "subscriber_device_id" => $deviceId,
                     "house_flat_id" => $flatId,
                     "voip_enabled" => $voipEnabled ? 1 : 0,
-                    "paranoid" => $paranoid ? 1 : 0,
                 ]) !== false;
 
                 if (!$r) {
@@ -3406,7 +3592,7 @@
                 if (func_num_args() == 3) {
                     $entranceId = func_get_arg(0);
                     $by = func_get_arg(1);
-                    $details = func_get_arg(2);
+                    $detail = func_get_arg(2);
                     $entrance = $this->getEntrance($entranceId);
                 } else
                 if (func_num_args() == 5) {
@@ -3422,7 +3608,7 @@
                         return false;
                     }
                     $by = func_get_arg(3);
-                    $details = func_get_arg(4);
+                    $detail = func_get_arg(4);
                 }
 
                 $addresses = loadBackend("addresses");
@@ -3439,49 +3625,30 @@
                         $paranoids = $this->db->get("
                             select * from (
                                 select
-                                    address_house_id,
-                                    platform,
-                                    push_token,
-                                    push_token_type,
-                                    ua,
-                                    comments
+                                    houses_flats.address_house_id,
+                                    houses_subscribers_devices.platform,
+                                    houses_subscribers_devices.push_token,
+                                    houses_subscribers_devices.push_token_type,
+                                    houses_subscribers_devices.ua,
+                                    houses_watchers.comments
                                 from
-                                    houses_rfids
+                                    houses_watchers
                                 left join
-                                    houses_flats_subscribers on houses_flats_subscribers.house_subscriber_id = houses_rfids.access_to
+                                    houses_flats on houses_flats.house_flat_id = houses_watchers.house_flat_id
                                 left join
-                                    houses_flats on houses_flats.house_flat_id = houses_flats_subscribers.house_flat_id
-                                left join
-                                    houses_subscribers_devices using (house_subscriber_id)
-                                left join
-                                    houses_flats_devices on houses_flats_devices.house_flat_id = houses_flats.house_flat_id and houses_flats_devices.subscriber_device_id = houses_subscribers_devices.subscriber_device_id
+                                    houses_subscribers_devices on houses_subscribers_devices.subscriber_device_id = houses_watchers.subscriber_device_id
                                 where
-                                    access_type = 1 and paranoid = 1 and watch = 1 and rfid = :rfid
-                                union all
-                                    select
-                                        address_house_id,
-                                        platform,
-                                        push_token,
-                                        push_token_type,
-                                        ua,
-                                        comments
-                                    from
-                                        houses_rfids
-                                    left join
-                                        houses_flats_subscribers on houses_flats_subscribers.house_flat_id = houses_rfids.access_to
-                                    left join
-                                        houses_subscribers_devices using (house_subscriber_id)
-                                    left join
-                                        houses_flats_devices on houses_flats_devices.house_flat_id = houses_rfids.access_to and houses_flats_devices.subscriber_device_id = houses_subscribers_devices.subscriber_device_id
-                                    left join
-                                        houses_flats on houses_flats.house_flat_id = houses_flats_subscribers.house_flat_id
-                                    where
-                                        access_type = 2 and paranoid = 1 and watch = 1 and push_disable = 0 and rfid = :rfid
+                                    event_type = '3' and
+                                    event_detail = :rfid and
+                                    houses_watchers.house_flat_id in (
+                                        select house_flat_id from houses_entrances_flats where house_entrance_id = :house_entrance_id
+                                    )
                             ) as t
                             group by
                                 address_house_id, platform, push_token, push_token_type, ua, comments
                         ", [
-                            "rfid" => $details,
+                            "rfid" => $detail,
+                            "house_entrance_id" => $entrance["entranceId"]
                         ], [
                             "address_house_id" => "houseId",
                             "platform" => "platform",
@@ -3511,14 +3678,11 @@
                         $hash = md5(GUIDv4());
 
                         if ($cameras && $cameras[0]) {
-                            $device = loadDevice('camera', $cameras[0]["model"], $cameras[0]["url"], $cameras[0]["credentials"]);
+                            $camerasBackend = loadBackend('cameras');
+                            $cameraId = $cameras[0]['cameraId'];
 
-                            $this->redis->setex("shot_" . $hash, 15 * 60, $device->getCamshot());
-                            $this->redis->setex("live_" . $hash, 3 * 60, json_encode([
-                                "model" => $cameras[0]["model"],
-                                "url" => $cameras[0]["url"],
-                                "credentials" => $cameras[0]["credentials"],
-                            ]));
+                            $this->redis->setex("shot_" . $hash, 15 * 60, $camerasBackend->getSnapshot($cameraId));
+                            $this->redis->setex("live_" . $hash, 3 * 60, $cameraId);
                         }
 
                         if (!$isdn->push([
@@ -3528,17 +3692,149 @@
                             "ttl" => 90,
                             "platform" => [ "android", "ios", "web" ][(int)$paranoid["platform"]],
                             "title" => i18nL($l, "mobile.paranoidTitleRf"),
-                            "msg" => i18nL($l, "mobile.paranoidMsgRf", $house["houseFull"], $entrance["callerId"], $paranoid["comments"] ? $paranoid["comments"] : $details),
+                            "msg" => i18nL($l, "mobile.paranoidMsgRf", $house["houseFull"], $entrance["callerId"], $paranoid["comments"] ?: $detail),
                             "houseId" => $paranoid["houseId"],
                             "hash" => $hash,
                             "sound" => "default",
-                            "pushAction" => @$this->config["backends"]["households"]["event_push_action"] ? $this->config["backends"]["households"]["event_push_action"] : "paranoid",
+                            "pushAction" => @$this->config["backends"]["households"]["event_push_action"] ?: "paranoid",
                         ])) {
                             setLastError("pushCantBeSent");
                             return false;
                         }
                     }
                 }
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+            function watch($deviceId, $flatId, $eventType, $eventDetail, $comments) {
+                if (!checkInt($deviceId) || !checkInt($flatId) || !checkStr($eventType)) {
+                    setLastError("invalidParams");
+                    return false;
+                }
+
+                if (!trim($eventDetail)) {
+                    $eventDetail = "";
+                }
+
+                if (!trim($comments)) {
+                    $comments = null;
+                }
+
+                // TODO: need (?) settings for watching owner\non owner
+                // TODO: can non owner watch for other subscribers or only owner can watch and set watchers?
+
+                $flats = $this->getFlats("deviceId", $deviceId);
+
+                foreach ($flats as $flat) {
+                    if ($flat["flatId"] == $flatId) {
+                        return $this->db->insert("insert into houses_watchers (subscriber_device_id, house_flat_id, event_type, event_detail, comments) values (:subscriber_device_id, :house_flat_id, :event_type, :event_detail, :comments)", [
+                            "subscriber_device_id" => $deviceId,
+                            "house_flat_id" => $flatId,
+                            "event_type" => $eventType,
+                            "event_detail" => $eventDetail,
+                            "comments" => $comments,
+                        ]);
+                    }
+                }
+
+                return false;
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+            function unwatch() {
+                if (func_num_args() == 1) {
+                    // this variant only for webadmin or service part, not for mobile ip
+                    return $this->db->modify("delete from houses_watchers where house_watcher_id = :house_watcher_id", [
+                        "house_watcher_id" => (int)func_get_arg(0),
+                    ]);
+                } else
+                if (func_num_args() == 2) {
+                    return $this->db->modify("delete from houses_watchers where house_watcher_id = :house_watcher_id and subscriber_device_id = :subscriber_device_id", [
+                        "house_watcher_id" => (int)func_get_arg(0),
+                        "subscriber_device_id" => (int)func_get_arg(1),
+                    ]);
+                }
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+            function watchers($deviceId, $flatId = false) {
+                if (!(int)$deviceId && (int)$flatId) {
+                    // this variant only for webadmin or service part, not for mobile ip
+                    return $this->db->get("select * from houses_watchers where house_flat_id = :house_flat_id", [
+                        "house_flat_id" => $flatId,
+                    ], [
+                        "house_watcher_id" => "houseWatcherId",
+                        "subscriber_device_id" => "deviceId",
+                        "house_flat_id" => "flatId",
+                        "event_type" => "eventType",
+                        "event_detail" => "eventDetail",
+                        "comments" => "comments",
+                    ]);
+                }
+
+                if ((int)$deviceId && !(int)$flatId) {
+                    return $this->db->get("select * from houses_watchers where subscriber_device_id = :subscriber_device_id", [
+                        "subscriber_device_id" => $deviceId,
+                    ], [
+                        "house_watcher_id" => "houseWatcherId",
+                        "subscriber_device_id" => "deviceId",
+                        "house_flat_id" => "flatId",
+                        "event_type" => "eventType",
+                        "event_detail" => "eventDetail",
+                        "comments" => "comments",
+                    ]);
+                }
+
+                if ((int)$deviceId && (int)$flatId) {
+                    return $this->db->get("select * from houses_watchers where subscriber_device_id = :subscriber_device_id and house_flat_id = :house_flat_id", [
+                        "subscriber_device_id" => $deviceId,
+                        "house_flat_id" => $flatId,
+                    ], [
+                        "house_watcher_id" => "houseWatcherId",
+                        "subscriber_device_id" => "deviceId",
+                        "house_flat_id" => "flatId",
+                        "event_type" => "eventType",
+                        "event_detail" => "eventDetail",
+                        "comments" => "comments",
+                    ]);
+                }
+
+                return false;
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+            public function broadcast($by, $query, $title, $msg, $action = "inbox") {
+                if ($by == "houseId") {
+                    $by = "houseIds";
+                    $query = [ $query ];
+                }
+
+                $subscribers = $this->getSubscribers($by, $query, [ "noDetail" ]);
+
+                foreach ($subscribers as $subscriber) {
+                    $this->db->insert("insert into houses_subscribers_messages (house_subscriber_id, title, msg, action) values (:house_subscriber_id, :title, :msg, :action)", [
+                        "house_subscriber_id" => $subscriber["subscriberId"],
+                        "title" => $title,
+                        "msg" => $msg,
+                        "action" => $action,
+                    ], [
+                        "silent"
+                    ]);
+                }
+
+                return true;
             }
         }
     }

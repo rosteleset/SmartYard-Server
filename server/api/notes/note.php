@@ -8,11 +8,11 @@
      * @apiName createNote
      * @apiGroup notes
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {String} subject
      * @apiBody {String} body
-     * @apiBody {Boolean} checks
+     * @apiBody {String} type
      * @apiBody {String} category
      * @apiBody {Timestamp} remind
      * @apiBody {String} icon
@@ -33,11 +33,12 @@
      * @apiName createNote
      * @apiGroup notes
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} noteId
      * @apiBody {String} subject
      * @apiBody {String} body
+     * @apiBody {String} type
      * @apiBody {String} category
      * @apiBody {Timestamp} remind
      * @apiBody {String} icon
@@ -58,7 +59,7 @@
      * @apiName deleteNote
      * @apiGroup notes
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} noteId
      *
@@ -83,7 +84,7 @@
                 $notes = loadBackend("notes");
 
                 if ($notes) {
-                    $note = $notes->addNote(@$params["subject"], @$params["body"], @$params["checks"], @$params["category"], @$params["remind"], @$params["icon"], @$params["font"], @$params["color"], @$params["x"], @$params["y"], @$params["z"]);
+                    $note = $notes->addNote(@$params["subject"], @$params["body"], @$params["type"], @$params["category"], @$params["remind"], @$params["icon"], @$params["font"], @$params["color"], @$params["x"], @$params["y"], @$params["z"]);
                 }
 
                 return api::ANSWER($note, ($note !== false) ? "note" : "error");
@@ -93,7 +94,7 @@
                 $notes = loadBackend("notes");
 
                 if ($notes) {
-                    $success = $notes->modifyNote(@$params["_id"], @$params["subject"], @$params["body"], @$params["category"], @$params["remind"], @$params["icon"], @$params["font"], @$params["color"], @$params["x"], @$params["y"], @$params["z"]);
+                    $success = $notes->modifyNote(@$params["_id"], @$params["subject"], @$params["body"], @$params["type"], @$params["category"], @$params["remind"], @$params["icon"], @$params["font"], @$params["color"], @$params["x"], @$params["y"], @$params["z"]);
                 }
 
                 return api::ANSWER($success);

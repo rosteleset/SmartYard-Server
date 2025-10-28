@@ -12,7 +12,13 @@
          */
 
         class clickhouse extends inbox {
-            private $clickhouse;
+
+            /**
+             * @var object $clickhouse clickhouse db
+             */
+
+            protected $clickhouse;
+
 
             /**
              * @inheritDoc

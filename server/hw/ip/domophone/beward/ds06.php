@@ -2,14 +2,11 @@
 
 namespace hw\ip\domophone\beward;
 
-use hw\ip\domophone\domophone;
-
 /**
  * Class representing a Beward DS06* domophone.
  */
 class ds06 extends beward
 {
-
     public function addRfid(string $code, int $apartment = 0): void
     {
         // Empty implementation
@@ -43,11 +40,6 @@ class ds06 extends beward
         }
 
         $this->apiCall('cgi-bin/sip_cgi', $params);
-    }
-
-    public function configureGate(array $links = []): void
-    {
-        // Empty implementation
     }
 
     public function configureMatrix(array $matrix): void
@@ -141,11 +133,6 @@ class ds06 extends beward
         ];
     }
 
-    public function getCmsLevels(): array
-    {
-        return [];
-    }
-
     public function getLineDiagnostics(int $apartment): int
     {
         return 0;
@@ -167,7 +154,7 @@ class ds06 extends beward
 
     public function prepare(): void
     {
-        domophone::prepare();
+        parent::prepare();
         $this->enableBonjour(false);
         $this->enableCloud(false);
         $this->enableUpnp(false);
@@ -209,11 +196,6 @@ class ds06 extends beward
         // Empty implementation
     }
 
-    public function setCmsLevels(array $levels): void
-    {
-        // Empty implementation
-    }
-
     public function setCmsModel(string $model = ''): void
     {
         // Empty implementation
@@ -244,11 +226,6 @@ class ds06 extends beward
         ]);
     }
 
-    public function setLanguage(string $language = 'ru'): void
-    {
-        // Empty implementation
-    }
-
     public function setPublicCode(int $code = 0): void
     {
         // Empty implementation
@@ -264,29 +241,17 @@ class ds06 extends beward
         // Empty implementation
     }
 
-    public function setTickerText(string $text = ''): void
-    {
-        // Empty implementation
-    }
-
     public function setUnlockTime(int $time = 3): void
     {
         $this->apiCall('webs/almControllerCfgEx', ['outdelay1' => $time]);
         $this->wait();
     }
 
-    public function setUnlocked(bool $unlocked = true): void
-    {
-        // Empty implementation
-    }
-
     public function transformDbConfig(array $dbConfig): array
     {
-        $timezone = $dbConfig['ntp']['timezone'];
-        $dbConfig['ntp']['timezone'] = "{$this->getIdByTimezone($timezone)}";
+        $dbConfig = $this->commonTransformDbConfig($dbConfig);
+
         $dbConfig['rfids'] = [];
-        $dbConfig['tickerText'] = '';
-        $dbConfig['unlocked'] = false;
 
         foreach ($dbConfig['apartments'] as &$apartment) {
             $apartment['code'] = 0;
@@ -395,24 +360,9 @@ class ds06 extends beward
         return '';
     }
 
-    protected function getGateConfig(): array
-    {
-        return [];
-    }
-
     protected function getMatrix(): array
     {
         return [];
-    }
-
-    protected function getTickerText(): string
-    {
-        return '';
-    }
-
-    protected function getUnlocked(): bool
-    {
-        return false;
     }
 
     protected function setHostname(string $hostname): void

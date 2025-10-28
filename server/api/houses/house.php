@@ -1,14 +1,14 @@
 <?php
 
     /**
-     * @api {get} /api/houses/house/:houseId get flats
+     * @api {get} /api/houses/house/:houseId get house configuration
      *
      * @apiVersion 1.0.0
      *
-     * @apiName getHouse
+     * @apiName getHouseConfiguration
      * @apiGroup houses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} houseId
      *

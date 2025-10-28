@@ -8,7 +8,7 @@
      * @apiName getWorkflowLib
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {String} libId
      *
@@ -23,7 +23,7 @@
      * @apiName putWorkflowLib
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {String} libId
      * @apiBody {String} body
@@ -39,7 +39,7 @@
      * @apiName deleteWorkflowLib
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {String} libId
      *

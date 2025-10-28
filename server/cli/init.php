@@ -4,6 +4,28 @@
 
         class init {
 
+            private function latest($pre = false) {
+                $versions = @json_decode(file_get_contents("https://api.github.com/repos/rosteleset/SmartYard-Server/releases", false, stream_context_create([ 'http' => [ 'method' => 'GET', 'header' => [ 'User-Agent: PHP', 'Content-type: application/x-www-form-urlencoded' ] ] ])), true);
+
+                if (!$versions || !count($versions)) {
+                    return false;
+                }
+
+                $latest_tag_name = false;
+                $latest_updated_at = "";
+
+                foreach ($versions as $v) {
+                    if ($pre && $v["prerelease"] || (!$pre && !$v["prerelease"])) {
+                        if ($v["updated_at"] > $latest_updated_at) {
+                            $latest_updated_at = $v["updated_at"];
+                            $latest_tag_name = $v["tag_name"];
+                        }
+                    }
+                }
+
+                return $latest_tag_name;
+            }
+
             function __construct(&$global_cli) {
                 $global_cli["#"]["initialization and update"]["admin-password"] = [
                     "value" => "string",
@@ -56,6 +78,14 @@
                             ],
                         ],
                         [
+                            "pre" => [
+                                "optional" => true,
+                            ],
+                            "force" => [
+                                "optional" => true,
+                            ],
+                        ],
+                        [
                             "version" => [
                                 "value" => "string",
                                 "placeholder" => "version",
@@ -67,6 +97,11 @@
                         ],
                     ],
                     "exec" => [ $this, "update" ],
+                ];
+
+                $global_cli["#"]["initialization and update"]["version-local"] = [
+                    "description" => "Update version to local",
+                    "exec" => [ $this, "local" ],
                 ];
             }
 
@@ -129,17 +164,20 @@
             function update($args) {
                 global $config;
 
+                $dir = __DIR__;
+
+                $pre = array_key_exists("--pre", $args);
                 $devel = array_key_exists("--devel", $args);
                 $force = array_key_exists("--force", $args);
 
-                if ($devel && @$args["--version"]) {
+                if (($devel && @$args["--version"]) || ($devel && $pre) || ($pre && @$args["--version"])) {
                     \cliUsage();
                 }
 
                 if (@$args["--version"]) {
                     $version = $args["--version"];
                 } else {
-                    $version = @json_decode(file_get_contents("https://api.github.com/repos/rosteleset/SmartYard-Server/releases/latest", false, stream_context_create([ 'http' => [ 'method' => 'GET', 'header' => [ 'User-Agent: PHP', 'Content-type: application/x-www-form-urlencoded' ] ] ])), true)["tag_name"];
+                    $version = $this->latest($pre);
                 }
 
                 if (!$version) {
@@ -147,7 +185,7 @@
                     exit(2);
                 }
 
-                chdir(__DIR__ . "/../..");
+                chdir("$dir/../..");
 
                 if ($devel) {
                     $version = @substr(json_decode(file_get_contents("https://api.github.com/repos/rosteleset/SmartYard-Server/commits/main", false, stream_context_create([ 'http' => [ 'method' => 'GET', 'header' => [ 'User-Agent: PHP', 'Content-type: application/x-www-form-urlencoded' ] ] ])), true)["sha"], 0, 7);
@@ -169,9 +207,12 @@
                 $code = false;
                 $out = [];
 
+                $version_date = '';
+
                 if ($devel) {
                     exec("git pull https://github.com/rosteleset/SmartYard-Server main 2>&1 && git checkout main 2>&1 && git pull 2>&1", $out, $code);
                     $version = substr(explode(" ", explode("\n", `git log -1`)[0])[1], 0, 7);
+                    $version_date = " (" . date("Y-m-d") . ")";
                 } else {
                     exec("git pull https://github.com/rosteleset/SmartYard-Server main 2>&1 && git checkout main 2>&1 && git pull 2>&1 && git -c advice.detachedHead=false checkout $version 2>&1", $out, $code);
                 }
@@ -182,7 +223,7 @@
                     exit($code);
                 }
 
-                file_put_contents("version", $version . " (" . date("Y-m-d") . ")");
+                file_put_contents("version", $version . $version_date);
 
                 initDB();
                 echo "\n";
@@ -207,6 +248,19 @@
                 echo "\n";
 
                 maintenance(false);
+
+                echo "SmartYard: $currentVersion -> $version\n\n";
+
+                exit(0);
+            }
+
+            function local() {
+                $dir = __DIR__;
+
+                $currentVersion = @explode(" ", file_get_contents("$dir/../../version"))[0];
+                $version = substr(trim(`git -C $dir rev-parse --short HEAD`), 0, 7);
+
+                file_put_contents("$dir/../../version", $version . " (" . date("Y-m-d") . ")");
 
                 echo "SmartYard: $currentVersion -> $version\n\n";
 

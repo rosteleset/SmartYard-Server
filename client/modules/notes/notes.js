@@ -3,11 +3,9 @@
 
     initialHeight: 0,
 
-    stretchedWidth: 0,
-    stretchedHeight: 0,
-
     isDragging: false,
     dragTarget: undefined,
+    gridSize: 10,
 
     lastOffsetX: 0,
     lastOffsetY: 0,
@@ -16,6 +14,71 @@
 
     notes: {},
     categories: [],
+
+    md: false,
+
+    colors: [
+        {
+            text: i18n("notes.white"),
+            value: "white",
+            icon: "p-1 fas fa-palette sticky-bg-color-white",
+        },
+        {
+            text: i18n("notes.coral"),
+            value: "coral",
+            icon: "p-1 fas fa-palette sticky-bg-color-coral",
+        },
+        {
+            text: i18n("notes.peach"),
+            value: "peach",
+            icon: "p-1 fas fa-palette sticky-bg-color-peach",
+        },
+        {
+            text: i18n("notes.sand"),
+            value: "sand",
+            icon: "p-1 fas fa-palette sticky-bg-color-sand",
+        },
+        {
+            text: i18n("notes.mint"),
+            value: "mint",
+            icon: "p-1 fas fa-palette sticky-bg-color-mint",
+        },
+        {
+            text: i18n("notes.grayGreen"),
+            value: "grayGreen",
+            icon: "p-1 fas fa-palette sticky-bg-color-grayGreen",
+        },
+        {
+            text: i18n("notes.grayBlue"),
+            value: "grayBlue",
+            icon: "p-1 fas fa-palette sticky-bg-color-grayBlue",
+        },
+        {
+            text: i18n("notes.gray"),
+            value: "gray",
+            icon: "p-1 fas fa-palette sticky-bg-color-gray",
+        },
+        {
+            text: i18n("notes.darkBlue"),
+            value: "darkBlue",
+            icon: "p-1 fas fa-palette sticky-bg-color-darkBlue",
+        },
+        {
+            text: i18n("notes.pink"),
+            value: "pink",
+            icon: "p-1 fas fa-palette sticky-bg-color-pink",
+        },
+        {
+            text: i18n("notes.terracotta"),
+            value: "terracotta",
+            icon: "p-1 fas fa-palette sticky-bg-color-terracotta",
+        },
+        {
+            text: i18n("notes.lightGray"),
+            value: "lightGray",
+            icon: "p-1 fas fa-palette sticky-bg-color-lightGray",
+        },
+    ],
 
     init: function () {
         if (parseInt(myself.uid) > 0) {
@@ -75,9 +138,15 @@
             if (modules.notes.isDragging == 1) {
                 let off = cont.offset();
 
+                let newX = Math.max(-off.left + e.clientX - modules.notes.lastOffsetX, 0);
+                let newY = Math.max($("html").scrollTop() - off.top + e.clientY - modules.notes.lastOffsetY, 0);
+
+                newX = Math.round(newX / modules.notes.gridSize) * modules.notes.gridSize;
+                newY = Math.round(newY / modules.notes.gridSize) * modules.notes.gridSize;
+
                 modules.notes.dragTarget.css({
-                    left: -off.left + e.clientX - modules.notes.lastOffsetX + 'px',
-                    top: $("html").scrollTop() - off.top + e.clientY - modules.notes.lastOffsetY + 'px',
+                    left: newX + 'px',
+                    top: newY + 'px',
                 });
             }
 
@@ -120,78 +189,94 @@
         moduleLoaded("notes", this);
     },
 
-    renderNote: function (id, subject, body, color, icon, font, checks, remind, z) {
-        let newSticky = `<div id='${id}' class='drag sticky ${color ? color : "bg-warning"}' style='z-index: ${z};'>`;
+    allLoaded: function () {
+        modules.notes.md = new remarkable.Remarkable({
+            html: true,
+            quotes: '“”‘’',
 
-        let ch = {
-            "bg-warning": "background-color: #3498db;",
-            "bg-primary": "background-color: white;",
-            "bg-secondary": "background-color: black;",
-            "bg-success": "background-color: white;",
-            "bg-danger": "background-color: yellow;",
-            "bg-info": "",
-            "bg-purple": "background-color: yellow;",
-            "bg-orange": "",
-            "bg-lightblue": "",
-            "bg-fuchsia": "",
-            "bg-black": "background-color: yellow;",
-            "bg-lime": "",
-        };
+            highlight: function (str, language) {
+                if (language && hljs.getLanguage(language)) {
+                    try {
+                        let h = hljs.highlight(str, { language }).value;
+                        return h;
+                    } catch (err) {
+                        console.log(err);
+                    }
+                }
 
-        let cc = {
-            "bg-warning": "color: black; background-color: white;",
-            "bg-primary": "color: blue; background-color: white;",
-            "bg-secondary": "color: white; background-color: black;",
-            "bg-success": "color: green; background-color: white;",
-            "bg-danger": "color: black; background-color: yellow;",
-            "bg-info": "",
-            "bg-purple": "color: black; background-color: yellow;",
-            "bg-orange": "",
-            "bg-lightblue": "",
-            "bg-fuchsia": "",
-            "bg-black": "color: black; background-color: yellow;",
-            "bg-lime": "",
-        };
+                try {
+                    return hljs.highlightAuto(str).value;
+                } catch (err) {
+                    console.log(err);
+                }
+
+                return ''; // use external default escaping
+            }
+        });
+
+        modules.notes.md.core.ruler.enable([
+            'abbr'
+        ]);
+
+        modules.notes.md.block.ruler.enable([
+            'footnote',
+            'deflist'
+        ]);
+
+        modules.notes.md.inline.ruler.enable([
+            'footnote_inline',
+            'ins',
+            'mark',
+            'sub',
+            'sup'
+        ]);
+    },
+
+    renderNote: function (id, subject, body, type, color, icon, font, remind, z) {
+        let newSticky = `<div id='${id}' class='drag sticky sticky-bg-color-${color}' style='z-index: ${z};'>`;
+
+        // TODO: box-shadow: 2px 2px 7px {shadow-color};
 
         subject = $.trim(subject);
         if (subject) {
-            newSticky += `<h5 class="caption">`;
+            newSticky += `<h5 class="caption" style='opacity: 100%;'>`;
             if ($.trim(icon)) {
                 newSticky += `<i class="fa-fw ${icon} mr-2"></i>`;
             }
             newSticky += convertLinks(nl2br(escapeHTML(subject)));
             newSticky += "</h5>";
-            if (ch[color]) {
-                newSticky += `<hr style="${ch[color]}" />`;
-            } else {
-                newSticky += "<hr />";
-            }
+            newSticky += "<hr style='opacity: 50%;' />";
         }
 
-        newSticky += "<p class='body'";
+        newSticky += "<div class='body'";
         if ($.trim(font)) {
             newSticky += `style='font-family: ${font}'`
         }
         newSticky += ">";
 
-        if (parseInt(checks)) {
-            let b = body.split("\n");
-            for (let i in b) {
-                newSticky += `<span class='mr-2'><input type='checkbox' class='noteCheckbox' ${(b[i][0] == "+") ? "checked" : ""} data-line='${i}'/></span><span>${convertLinks(nl2br(escapeHTML(b[i].substring(1))))}</span><br />`;
-            }
-        } else {
-            newSticky += convertLinks(nl2br(escapeHTML(body)));
+        switch (type) {
+            case "checks":
+                let b = body.split("\n");
+                for (let i in b) {
+                    newSticky += `<span class='mr-2'><input type='checkbox' class='noteCheckbox' ${(b[i][0] == "+") ? "checked" : ""} data-line='${i}'/></span><span>${convertLinks(nl2br(escapeHTML(b[i].substring(1))))}</span><br />`;
+                }
+                break;
+
+            case "markdown":
+                newSticky += convertLinks(DOMPurify.sanitize(modules.notes.md.render(body)));
+                break;
+
+            default:
+                newSticky += convertLinks(nl2br(escapeHTML(body)));
+                break;
         }
 
-        if (cc[color]) {
-            newSticky += `</p><i class="far fa-fw fa-edit editSticky" style="${cc[color]}"></i>`;
-        } else {
-            newSticky += '</p><i class="far fa-fw fa-edit editSticky"></i>';
-        }
+        newSticky += '</div><i class="far fa-fw fa-edit text-primary editSticky"></i>';
 
         if (remind) {
             newSticky += '<i class="far fa-fw fa-clock text-small reminder"></i>';
         }
+
         newSticky += '</div>';
 
         return newSticky;
@@ -214,7 +299,7 @@
             borderless: true,
             topApply: true,
             apply: i18n("add"),
-            size: "lg",
+            size: "xl",
             fields: [
                 {
                     id: "subject",
@@ -230,9 +315,23 @@
                     }
                 },
                 {
-                    id: "checks",
-                    title: i18n("notes.checks"),
-                    type: "noyes",
+                    id: "type",
+                    title: i18n("notes.type"),
+                    type: "select",
+                    options: [
+                        {
+                            id: "text",
+                            text: i18n("notes.typeText")
+                        },
+                        {
+                            id: "markdown",
+                            text: i18n("notes.typeMarkdown")
+                        },
+                        {
+                            id: "checks",
+                            text: i18n("notes.typeChecks")
+                        },
+                    ]
                 },
                 {
                     id: "category",
@@ -264,8 +363,9 @@
                 {
                     id: "color",
                     title: i18n("notes.color"),
-                    type: "themeColor",
-                    value: "bg-warning",
+                    type: "select2",
+                    options: modules.notes.colors,
+                    value: "peach",
                 },
             ],
             callback: r => {
@@ -289,7 +389,7 @@
                     z = Math.max(z, parseInt($(this).css("z-index")));
                 });
 
-                if (parseInt(r.checks)) {
+                if (r.type == "checks") {
                     r.body = r.body.split("\n");
                     for (let i in r.body) {
                         if ($.trim(r.body[i])) {
@@ -303,10 +403,10 @@
                     id,
                     r.subject,
                     r.body,
+                    r.type,
                     r.color,
                     r.icon,
                     r.font,
-                    r.checks,
                     parseInt(r.remind) > (new Date()).getTime() / 1000,
                     z + 1
                 );
@@ -317,10 +417,14 @@
 
                 let x = window.innerWidth / 2 - sticky.outerWidth(true) / 2 + (-100 + Math.round(Math.random() * 50));
                 let y = window.innerHeight / 2 - sticky.outerHeight(true) / 2 + (-100 + Math.round(Math.random() * 50));
+                let w = parseInt(window.getComputedStyle(document.getElementById(id)).getPropertyValue("width"))
+                let h = parseInt(window.getComputedStyle(document.getElementById(id)).getPropertyValue("height"))
 
                 sticky.css({
                     left: x + 'px',
                     top: y + 'px',
+                    width: ((Math.floor(w / modules.notes.gridSize) + 1) * modules.notes.gridSize) + 'px',
+                    height: ((Math.floor(h / modules.notes.gridSize) + 1) * modules.notes.gridSize) + 'px',
                 });
 
                 $(".editSticky").off("click").on("click", modules.notes.modifySticky);
@@ -333,7 +437,7 @@
                 POST("notes", "note", false, {
                     subject: r.subject,
                     body: r.body,
-                    checks: r.checks,
+                    type: r.type,
                     category: r.category,
                     remind: r.remind,
                     icon: r.icon,
@@ -356,36 +460,18 @@
         });
     },
 
-    adjustStickiesContainer: function (init) {
-        let wi = $(window);
-        let ct = $("#stickiesContainer");
-
-        let w = ct.width();
-        let h = wi.height() - mainFormTop - modules.notes.initialHeight;
-
-        if (init) {
-            modules.notes.stretchedWidth = w;
-            modules.notes.stretchedHeight = h;
-            ct.css({
-                width: w + "px",
-                height: h + "px",
-            });
-        }
-
-        let mh = 0, mw = 0;
+    adjustStickiesContainer: function () {
+        let mw = 0, mh = 0;
 
         $(".sticky").each(function () {
             let s = $(this);
             mw = Math.max(mw, s.position().left + s.outerWidth(true));
-            mh = Math.max(mh, s.position().top + s.outerHeight(true) + 20);
+            mh = Math.max(mh, s.position().top + s.outerHeight(true));
         });
 
-        mw = Math.max(modules.notes.stretchedWidth, mw);
-        mh = Math.max(modules.notes.stretchedHeight, mh - modules.notes.initialHeight);
-
-        ct.css({
-            width: mw + "px",
-            height: mh + "px",
+        $("#stickiesContainer").css({
+            width: Math.max(mw + 4, $("#stickiesTable").width()) + "px",
+            height: Math.max(mh + 4, $(window).height() - mainFormTop - 8) + "px",
         });
     },
 
@@ -403,9 +489,8 @@
         }
 
         let checks = [];
-        if (parseInt(modules.notes.notes[id].checks)) {
+        if (modules.notes.notes[id].type == "checks") {
             let b = modules.notes.notes[id].body.split("\n");
-            let d = md5(guid());
             for (let i in b) {
                 checks.push({
                     text: b[i].substring(1),
@@ -421,7 +506,7 @@
             topApply: true,
             apply: i18n("edit"),
             delete: i18n("delete"),
-            size: "lg",
+            size: "xl",
             fields: [
                 {
                     id: "subject",
@@ -431,14 +516,47 @@
                 },
                 {
                     id: "body",
-                    title: parseInt(modules.notes.notes[id].checks) ? i18n("notes.list") : i18n("notes.body"),
-                    type: parseInt(modules.notes.notes[id].checks) ? "sortable" : "area",
+                    title: (modules.notes.notes[id].type == "checks") ? i18n("notes.list") : i18n("notes.body"),
+                    type: (modules.notes.notes[id].type == "checks") ? "sortable" : ((modules.notes.notes[id].type == "text") ? "area" : "code"),
+                    language: "markdown",
+                    checkable: true,
+                    editable: true,
+                    appendable: "input",
                     validate: a => {
-                        return parseInt(modules.notes.notes[id].checks) ? a.length > 0 : $.trim(a) != '';
+                        return (modules.notes.notes[id].type == "checks") ? a.length > 0 : $.trim(a) != '';
                     },
-                    value: parseInt(modules.notes.notes[id].checks) ? undefined : modules.notes.notes[id].body,
-                    options: parseInt(modules.notes.notes[id].checks) ? checks : undefined,
+                    value: (modules.notes.notes[id].type == "checks") ? undefined : modules.notes.notes[id].body,
+                    options: (modules.notes.notes[id].type == "checks") ? checks : undefined,
                 },
+                (modules.notes.notes[id].type == "checks") ?
+                    {
+                        id: "type",
+                        title: i18n("notes.type"),
+                        type: "select",
+                        options: [
+                            {
+                                id: "checks",
+                                text: i18n("notes.typeChecks")
+                            },
+                        ],
+                        value: modules.notes.notes[id].type,
+                    } : {
+                        id: "type",
+                        title: i18n("notes.type"),
+                        type: "select",
+                        options: [
+                            {
+                                id: "text",
+                                text: i18n("notes.typeText")
+                            },
+                            {
+                                id: "markdown",
+                                text: i18n("notes.typeMarkdown")
+                            },
+                        ],
+                        value: modules.notes.notes[id].type,
+                    }
+                ,
                 {
                     id: "category",
                     title: i18n("notes.category"),
@@ -471,13 +589,14 @@
                 {
                     id: "color",
                     title: i18n("notes.color"),
-                    type: "themeColor",
+                    type: "select2",
+                    options: modules.notes.colors,
                     value: modules.notes.notes[id].color,
                 },
             ],
             callback: r => {
 
-                if (parseInt(modules.notes.notes[id].checks)) {
+                if (modules.notes.notes[id].type == "checks") {
                     let b = '';
 
                     for (let i in r.body) {
@@ -517,11 +636,13 @@
 
                     modules.notes.notes[id].subject = r.subject;
                     modules.notes.notes[id].body = r.body;
+                    modules.notes.notes[id].type = r.type;
                     modules.notes.notes[id].category = r.category;
                     modules.notes.notes[id].remind = r.remind;
                     modules.notes.notes[id].icon = r.icon;
                     modules.notes.notes[id].font = r.font;
                     modules.notes.notes[id].color = r.color;
+
                     modules.notes.notes[id].x = parseFloat(x);
                     modules.notes.notes[id].y = parseFloat(y);
                     modules.notes.notes[id].z = parseInt(z);
@@ -532,10 +653,10 @@
                         id,
                         r.subject,
                         r.body,
+                        r.type,
                         r.color,
                         r.icon,
                         r.font,
-                        modules.notes.notes[id].checks,
                         parseInt(r.remind) > (new Date()).getTime() / 1000,
                         z
                     );
@@ -544,9 +665,14 @@
 
                     let sticky = $("#" + id);
 
+                    let w = parseInt(window.getComputedStyle(document.getElementById(id)).getPropertyValue("width"))
+                    let h = parseInt(window.getComputedStyle(document.getElementById(id)).getPropertyValue("height"))
+
                     sticky.css({
                         left: x + 'px',
                         top: y + 'px',
+                        width: ((Math.floor(w / modules.notes.gridSize) + 1) * modules.notes.gridSize) + 'px',
+                        height: ((Math.floor(h / modules.notes.gridSize) + 1) * modules.notes.gridSize) + 'px',
                     });
 
                     $(".editSticky").off("click").on("click", modules.notes.modifySticky);
@@ -557,6 +683,7 @@
                     PUT("notes", "note", modules.notes.notes[id].id, {
                         subject: r.subject,
                         body: r.body,
+                        type: r.type,
                         category: r.category,
                         remind: r.remind,
                         icon: r.icon,
@@ -622,10 +749,10 @@
                     id,
                     modules.notes.notes[id].subject,
                     modules.notes.notes[id].body,
+                    modules.notes.notes[id].type,
                     modules.notes.notes[id].color,
                     modules.notes.notes[id].icon,
                     modules.notes.notes[id].font,
-                    modules.notes.notes[id].checks,
                     parseInt(modules.notes.notes[id].remind) > (new Date()).getTime() / 1000 && !modules.notes.notes[id].reminded,
                     modules.notes.notes[id].z
                 );
@@ -634,9 +761,14 @@
 
                 let sticky = $("#" + id);
 
+                let w = parseInt(window.getComputedStyle(document.getElementById(id)).getPropertyValue("width"))
+                let h = parseInt(window.getComputedStyle(document.getElementById(id)).getPropertyValue("height"))
+
                 sticky.css({
                     left: modules.notes.notes[id].x + 'px',
                     top: modules.notes.notes[id].y + 'px',
+                    width: ((Math.floor(w / modules.notes.gridSize) + 1) * modules.notes.gridSize) + 'px',
+                    height: ((Math.floor(h / modules.notes.gridSize) + 1) * modules.notes.gridSize) + 'px',
                 });
             }
         }
@@ -665,22 +797,21 @@
             modules.notes.createNote();
         });
 
-        $("#mainForm").html(`<div style="overflow-x: scroll; overflow-y: hidden;" class="p-0 m-0 mt-3"><div id="stickiesContainer" style="position: relative;" class="p-0 m-0 resizable mouseEvents"></div></div>`);
+        $("#mainForm").html("<div id='stickiesTable'><div style='overflow-x: scroll; overflow-y: hidden;' class='p-0 m-0 mt-3'><div id='stickiesContainer' style='position: relative;' class='p-0 m-0 resizable mouseEvents dots'></div></div></div>");
 
         let s = $("#stickiesContainer");
 
         modules.notes.initialHeight = s.parent().height();
 
-        modules.notes.adjustStickiesContainer(true);
+        modules.notes.adjustStickiesContainer();
 
         $("#stickiesContainer").off("windowResized").on("windowResized", () => {
-            modules.notes.adjustStickiesContainer(true);
             modules.notes.adjustStickiesContainer();
         });
 
         let rtd = '';
 
-        rtd += '<form autocomplete="off"><div class="form-inline ml-3 mr-3"><div class="input-group input-group-sm mt-1"><select id="notesCategories" class="form-control select-arrow right-top-select"></select></div></div></form>';
+        rtd += '<form autocomplete="off"><div class="form-inline ml-3 mr-3"><div class="input-group input-group-sm mt-1"><select id="notesCategories" class="form-control select-arrow right-top-select top-input"></select></div></div></form>';
 
         $("#rightTopDynamic").html(rtd);
 

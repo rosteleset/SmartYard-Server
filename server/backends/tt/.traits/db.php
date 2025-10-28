@@ -15,16 +15,16 @@
             /**
              * @inheritDoc
              */
-            public function allow($params)
-            {
+
+            public function allow($params) {
                 return true;
             }
 
             /**
              * @inheritDoc
              */
-            public function capabilities()
-            {
+
+            public function capabilities() {
                 $cap = parent::capabilities();
 
                 if ($cap) {
@@ -41,6 +41,7 @@
             /**
              * @inheritDoc
              */
+
             public function getProjects($acronym = false) {
                 $key = $acronym ? "PROJECT:$acronym" : "PROJECTS";
 
@@ -51,11 +52,11 @@
 
                 try {
                     if ($acronym) {
-                        $projects = $this->db->get("select project_id, acronym, project, max_file_size, search_subject, search_description, search_comments, assigned from tt_projects where acronym = :acronym", [
+                        $projects = $this->db->get("select project_id, acronym, project, max_file_size, search_subject, search_description, search_comments, assigned, comments from tt_projects where acronym = :acronym", [
                             "acronym" => $acronym,
                         ]);
                     } else {
-                        $projects = $this->db->get("select project_id, acronym, project, max_file_size, search_subject, search_description, search_comments, assigned from tt_projects order by acronym");
+                        $projects = $this->db->get("select project_id, acronym, project, max_file_size, search_subject, search_description, search_comments, assigned, comments from tt_projects order by acronym");
                     }
                     $_projects = [];
 
@@ -201,6 +202,7 @@
                             "searchDescription" => $project["search_description"],
                             "searchComments" => $project["search_comments"],
                             "assigned" => $project["assigned"],
+                            "comments" => $project["comments"],
                             "workflows" => $w,
                             "filters" => $f,
                             "resolutions" => $r,
@@ -214,6 +216,7 @@
                     }
 
                     $this->cacheSet($key, $_projects);
+
                     return $_projects;
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
@@ -548,8 +551,8 @@
             /**
              * @inheritDoc
              */
-            public function addResolution($resolution)
-            {
+
+            public function addResolution($resolution) {
                 $this->clearCache();
 
                 $resolution = trim($resolution);
@@ -564,8 +567,8 @@
             /**
              * @inheritDoc
              */
-            public function modifyResolution($resolutionId, $resolution)
-            {
+
+            public function modifyResolution($resolutionId, $resolution) {
                 $this->clearCache();
 
                 $resolution = trim($resolution);
@@ -580,8 +583,8 @@
             /**
              * @inheritDoc
              */
-            public function deleteResolution($resolutionId)
-            {
+
+            public function deleteResolution($resolutionId) {
                 $this->clearCache();
 
                 if (!checkInt($resolutionId)) {
@@ -594,8 +597,8 @@
             /**
              * @inheritDoc
              */
-            public function setProjectResolutions($projectId, $resolutions)
-            {
+
+            public function setProjectResolutions($projectId, $resolutions) {
                 $this->clearCache();
 
                 // TODO: add transaction, commint, rollback
@@ -641,8 +644,8 @@
             /**
              * @inheritDoc
              */
-            public function getCustomFields()
-            {
+
+            public function getCustomFields() {
                 $cache = $this->cacheGet("FIELDS");
                 if ($cache) {
                     return $cache;
@@ -656,14 +659,17 @@
                             type,
                             field,
                             field_display,
+                            field_display_list,
                             field_description,
                             regex,
                             link,
                             format,
                             editor,
+                            float,
                             indx,
                             search,
-                            required
+                            required,
+                            readonly
                         from
                             tt_issue_custom_fields
                         order by
@@ -691,14 +697,17 @@
                             "type" => $customField["type"],
                             "field" => $customField["field"],
                             "fieldDisplay" => $customField["field_display"],
+                            "fieldDisplayList" => $customField["field_display_list"],
                             "fieldDescription" => $customField["field_description"],
                             "regex" => $customField["regex"],
                             "link" => $customField["link"],
                             "format" => $customField["format"],
-                            "editor" => trim($customField["editor"]?$customField["editor"]:""),
+                            "editor" => trim($customField["editor"] ? $customField["editor"] : ""),
+                            "float" => $customField["float"] ? $customField["float"] : "0",
                             "indx" => $customField["indx"],
                             "search" => $customField["search"],
                             "required" => $customField["required"],
+                            "readonly" => $customField["readonly"],
                             "options" => $_options,
                         ];
                     }
@@ -715,8 +724,8 @@
             /**
              * @inheritDoc
              */
-            public function addCustomField($catalog, $type, $field, $fieldDisplay)
-            {
+
+            public function addCustomField($catalog, $type, $field, $fieldDisplay, $fieldDisplayList) {
                 $this->clearCache();
 
                 $catalog = trim($catalog);
@@ -731,8 +740,8 @@
                 try {
                     $sth = $this->db->prepare("
                         insert into
-                            tt_issue_custom_fields (catalog, type, field, field_display)
-                        values (:catalog, :type, :field, :field_display)
+                            tt_issue_custom_fields (catalog, type, field, field_display, field_display_list)
+                        values (:catalog, :type, :field, :field_display, :field_display_list)
                     ");
 
                     if (!$sth->execute([
@@ -740,6 +749,7 @@
                         ":type" => $type,
                         ":field" => $field,
                         ":field_display" => $fieldDisplay,
+                        ":field_display_list" => $fieldDisplayList,
                     ])) {
                         return false;
                     }
@@ -956,8 +966,8 @@
             /**
              * @inheritDoc
              */
-            public function modifyCustomField($customFieldId, $catalog, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indx, $search, $required, $editor)
-            {
+
+            public function modifyCustomField($customFieldId, $catalog, $fieldDisplay, $fieldDisplayList, $fieldDescription, $regex, $format, $link, $options, $indx, $search, $required, $editor, $float, $readonly) {
                 $this->clearCache();
 
                 if (!checkInt($customFieldId)) {
@@ -976,6 +986,14 @@
                     return false;
                 }
 
+                if (!checkInt($float)) {
+                    return false;
+                }
+
+                if (!checkInt($readonly)) {
+                    return false;
+                }
+
                 $catalog = trim($catalog);
 
                 $cf = $this->db->query("select * from tt_issue_custom_fields where issue_custom_field_id = $customFieldId", \PDO::FETCH_ASSOC)->fetchAll();
@@ -991,14 +1009,17 @@
                         set
                             catalog = :catalog,
                             field_display = :field_display,
+                            field_display_list = :field_display_list,
                             field_description = :field_description,
                             regex = :regex,
                             link = :link,
                             format = :format,
                             editor = :editor,
+                            float = :float,
                             indx = :indx,
                             search = :search,
-                            required = :required
+                            required = :required,
+                            readonly = :readonly
                         where
                             issue_custom_field_id = $customFieldId
                     ");
@@ -1006,14 +1027,17 @@
                     $sth->execute([
                         ":catalog" => $catalog,
                         ":field_display" => $fieldDisplay,
+                        ":field_display_list" => $fieldDisplayList,
                         ":field_description" => $fieldDescription,
                         ":regex" => $regex,
                         ":link" => $link,
                         ":format" => $format,
                         ":editor" => $editor,
+                        ":float" => $float,
                         ":indx" => $indx,
                         ":search" => $search,
                         ":required" => $required,
+                        ":readonly" => $readonly,
                     ]);
 
                     if ($cf["type"] === "select") {
@@ -1114,8 +1138,8 @@
             /**
              * @inheritDoc
              */
-            public function getTags($projectId = false)
-            {
+
+            public function getTags($projectId = false) {
                 $key = $projectId?"TAGS:$projectId":"TAGS";
 
                 $cache = $this->cacheGet($key);
@@ -1131,8 +1155,7 @@
                     $_tags = $this->db->get("select * from tt_tags where project_id = $projectId order by tag", false, [
                         "tag_id" => "tagId",
                         "tag" => "tag",
-                        "foreground" => "foreground",
-                        "background" => "background",
+                        "color" => "color",
                     ]);
 
                     $this->cacheSet($key, $_tags);
@@ -1142,8 +1165,7 @@
                         "tag_id" => "tagId",
                         "project_id" => "projectId",
                         "tag" => "tag",
-                        "foreground" => "foreground",
-                        "background" => "background",
+                        "color" => "color",
                     ]);
 
                     $this->cacheSet($key, $_tags);
@@ -1154,8 +1176,8 @@
             /**
              * @inheritDoc
              */
-            public function addTag($projectId, $tag, $foreground, $background)
-            {
+
+            public function addTag($projectId, $tag, $color) {
                 $this->clearCache();
 
                 if (!checkInt($projectId) || !checkStr($tag)) {
@@ -1163,12 +1185,11 @@
                 }
 
                 try {
-                    $sth = $this->db->prepare("insert into tt_tags (project_id, tag, foreground, background) values (:project_id, :tag, :foreground, :background)");
+                    $sth = $this->db->prepare("insert into tt_tags (project_id, tag, color) values (:project_id, :tag, :color)");
                     if (!$sth->execute([
                         "project_id" => $projectId,
                         "tag" => $tag,
-                        "foreground" => $foreground,
-                        "background" => $background,
+                        "color" => $color,
                     ])) {
                         return false;
                     }
@@ -1183,8 +1204,8 @@
             /**
              * @inheritDoc
              */
-            public function modifyTag($tagId, $tag, $foreground, $background)
-            {
+
+            public function modifyTag($tagId, $tag, $color) {
                 $this->clearCache();
 
                 if (!checkInt($tagId) || !checkStr($tag)) {
@@ -1192,11 +1213,10 @@
                 }
 
                 try {
-                    $sth = $this->db->prepare("update tt_tags set tag = :tag, foreground = :foreground, background = :background where tag_id = $tagId");
+                    $sth = $this->db->prepare("update tt_tags set tag = :tag, color = :color where tag_id = $tagId");
                     $sth->execute([
                         "tag" => $tag,
-                        "foreground" => $foreground,
-                        "background" => $background,
+                        "color" => $color,
                     ]);
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
@@ -1372,6 +1392,7 @@
             /**
              * @inheritDoc
              */
+
             public function setProjectViewers($projectId, $viewers) {
                 $this->clearCache();
 
@@ -1395,13 +1416,59 @@
             /**
              * @inheritDoc
              */
-            public function getFavoriteFilters()
-            {
-                return $this->db->get("select filter, right_side, icon, color from tt_favorite_filters where login = :login", [
+
+            public function setProjectComments($projectId, $comments) {
+                $this->clearCache();
+
+                if (!checkInt($projectId)) {
+                    return false;
+                }
+
+                $t = [];
+
+                $comments = explode("\n", $comments);
+
+                if (function_exists("mb_trim")) {
+                    foreach ($comments as $c) {
+                        if (mb_trim(preg_replace('~^\s+|\s+$~u', '', $c))) {
+                            $t[] = $c;
+                        }
+                    }
+                } else {
+                    foreach ($comments as $c) {
+                        if (trim(preg_replace('~^\s+|\s+$~u', '', $c))) {
+                            $t[] = $c;
+                        }
+                    }
+                }
+
+                $comments = array_unique($t);
+
+                if (extension_loaded('intl') === true) {
+                    collator_asort(collator_create('root'), $comments);
+                } else {
+                    asort($comments);
+                }
+
+                $comments = trim(implode("\n", $comments));
+
+                return $this->db->modify("update tt_projects set comments = :comments where project_id = :project_id", [
+                    "project_id" => $projectId,
+                    "comments" => $comments,
+                ]);
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+            public function getFavoriteFilters() {
+                return $this->db->get("select filter, project, left_side, icon, color from tt_favorite_filters where login = :login", [
                     "login" => $this->login,
                 ], [
                     "filter" => "filter",
-                    "right_side" => "rightSide",
+                    "project" => "project",
+                    "left_side" => "leftSide",
                     "icon" => "icon",
                     "color" => "color",
                 ]);
@@ -1410,20 +1477,21 @@
             /**
              * @inheritDoc
              */
-            public function addFavoriteFilter($filter, $rightSide, $icon, $color)
-            {
+
+            public function addFavoriteFilter($filter, $project, $leftSide, $icon, $color) {
                 if (!checkStr($filter)) {
                     return false;
                 }
 
-                if (!checkInt($rightSide)) {
+                if (!checkInt($leftSide)) {
                     return false;
                 }
 
-                return $this->db->insert("insert into tt_favorite_filters (login, filter, right_side, icon, color) values (:login, :filter, :right_side, :icon, :color)", [
+                return $this->db->insert("insert into tt_favorite_filters (login, filter, project, left_side, icon, color) values (:login, :filter, :project, :left_side, :icon, :color)", [
                     "login" => $this->login,
                     "filter" => $filter,
-                    "right_side" => $rightSide,
+                    "project" => $project,
+                    "left_side" => $leftSide,
                     "icon" => $icon,
                     "color" => $color,
                 ]);
@@ -1432,8 +1500,8 @@
             /**
              * @inheritDoc
              */
-            public function deleteFavoriteFilter($filter, $all = false)
-            {
+
+            public function deleteFavoriteFilter($filter, $all = false) {
                 if (!checkStr($filter)) {
                     return false;
                 }
@@ -1453,6 +1521,7 @@
             /**
              * @inheritDoc
              */
+
             public function getCrontabs() {
                 $cache = $this->cacheGet("CRONTABS");
                 if ($cache) {

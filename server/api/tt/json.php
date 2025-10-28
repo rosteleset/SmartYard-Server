@@ -1,14 +1,14 @@
 <?php
 
     /**
-     * @api {put} /api/tt/json/:id get issue
+     * @api {put} /api/tt/json/:id get issue (raw)
      *
      * @apiVersion 1.0.0
      *
      * @apiName getIssueJSON
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {String} id issueId
      *
@@ -16,14 +16,14 @@
      */
 
     /**
-     * @api {put} /api/tt/json modify issue
+     * @api {put} /api/tt/json modify issue (raw)
      *
      * @apiVersion 1.0.0
      *
      * @apiName modifyIssueByJSON
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {Object} issue
      *

@@ -11,8 +11,9 @@ use hw\ip\camera\utils\DetectionZoneUtils;
  */
 class ufanet extends camera
 {
-
-    use \hw\ip\common\ufanet\ufanet;
+    use \hw\ip\common\ufanet\ufanet {
+        transformDbConfig as protected commonTransformDbConfig;
+    }
 
     public function configureMotionDetection(array $detectionZones): void
     {
@@ -24,7 +25,7 @@ class ufanet extends camera
                 zone: $detectionZones[0],
                 maxX: $maxX,
                 maxY: $maxY,
-                direction: 'toPixel'
+                direction: 'toPixel',
             )
             : null;
 
@@ -49,30 +50,45 @@ class ufanet extends camera
 
     public function setOsdText(string $text = ''): void
     {
+        /*
+         * Text OSD is placed in the top-left corner, and datetime OSD in the top-right corner.
+         *
+         * Reason:
+         * The device uses absolute coordinates. When placing text OSD in the bottom-left corner,
+         * it looks fine at 1280x720, but shifts toward the middle when switching to 1920x1080.
+         *
+         * However, datetime OSD supports negative coordinates, so it can be reliably placed
+         * in the top-right corner without issues.
+         */
+
+        // Text OSD
+        $this->apiCall('/cgi-bin/osd.cgi', 'GET', [
+            'action' => 'setConfig',
+            'OSD[0].Enable' => $text !== '' ? 'true' : 'false',
+            'OSD[0].Text' => $text,
+            'OSD[0].PosX' => 2,
+            'OSD[0].PosY' => 0,
+            'OSD[0].Size' => 32,
+        ]);
+
+        /*
+         * Set field "FrontColor" to 0 before setting the datetime OSD with "FrontColor" field equal to 1.
+         * This maneuver (probably?) triggers an internal mechanism that restarts the streamer or something else
+         * and avoids rebooting the camera to apply OSD settings.
+         */
+        $this->apiCall('/cgi-bin/configManager.cgi', 'GET', [
+            'action' => 'setConfig',
+            'VideoWidget[0].TimeTitle.FrontColor[3]' => 0,
+        ]);
+
         // Datetime OSD
         $this->apiCall('/cgi-bin/configManager.cgi', 'GET', [
             'action' => 'setConfig',
+            'VideoWidget[0].TimeTitle.FrontColor[3]' => 1,
             'Locales.TimeFormat' => "%22%d.%m.%y %H:%M:%S%22", // dd.mm.yy HH:MM:SS
-            'VideoWidget[0].TimeTitle.Rect[0]' => 0,
+            'VideoWidget[0].TimeTitle.Rect[0]' => -2,
             'VideoWidget[0].TimeTitle.Rect[1]' => 0,
         ]);
-
-        // Text OSD
-        // TODO: wait for fix
-        $osdTextParams = [
-            'OSD[0].Enable' => $text !== '' ? 'true' : 'false',
-            'OSD[0].Text' => $text,
-            'OSD[0].PosX' => 4,
-            'OSD[0].PosY' => 684,
-            'OSD[0].Size' => 32,
-        ];
-
-        foreach ($osdTextParams as $key => $param) {
-            $this->apiCall('/cgi-bin/osd.cgi', 'GET', ['action' => 'setConfig', $key => $param]);
-        }
-
-        $this->reboot();
-        $this->wait();
     }
 
     public function syncData(): void
@@ -82,6 +98,8 @@ class ufanet extends camera
 
     public function transformDbConfig(array $dbConfig): array
     {
+        $dbConfig = $this->commonTransformDbConfig($dbConfig);
+
         // Convert detection zone from database to pixel
         if ($dbConfig['motionDetection']) {
             [$maxX, $maxY] = explode('x', $this->getResolution());
@@ -91,7 +109,8 @@ class ufanet extends camera
                     zone: $dbConfig['motionDetection'][0],
                     maxX: $maxX,
                     maxY: $maxY,
-                    direction: 'toPixel')
+                    direction: 'toPixel',
+                ),
             ];
         }
 

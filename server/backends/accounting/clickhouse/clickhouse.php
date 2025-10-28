@@ -11,15 +11,20 @@
          */
 
         class clickhouse extends accounting {
-            private $clickhouse;
+
+            /**
+             * @var object $clickhouse clickhouse db
+             */
+
+            protected $clickhouse;
 
             /**
              * @param $config
              * @param $db
              * @param $redis
              */
-            function __construct($config, $db, $redis, $login = false)
-            {
+
+            function __construct($config, $db, $redis, $login = false) {
                 parent::__construct($config, $db, $redis, $login);
 
                 require_once __DIR__ . '/../../../utils/clickhouse.php';
@@ -38,6 +43,7 @@
              * @param $code
              * @return void
              */
+
             public function log($params, $code) {
                 $login = $this->login;
 
@@ -53,16 +59,16 @@
             /**
              * @inheritDoc
              */
-            public function raw($ip, $unit, $msg)
-            {
+
+            public function raw($ip, $unit, $msg) {
                 return $this->clickhouse->insert("syslog", [ [ "date" => time(), "ip" => $ip, "unit" => $unit, "msg" => $msg ] ]);
             }
 
             /**
              * @inheritDoc
              */
-            public function get($query)
-            {
+
+            public function get($query) {
                 // TODO: Implement get() method.
             }
         }

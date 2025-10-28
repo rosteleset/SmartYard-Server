@@ -1,7 +1,7 @@
 zabbix_export:
   version: '6.4'
   template_groups:
-    - uuid: 6207024e7115434a8abfd202bf7f283a
+    - uuid: a06c527d403f4d6d82938392b30b53ac
       name: Templates/Intercoms
   templates:
     - uuid: 1def59ffd59d4d3e88fcdfc7c3fe0377
@@ -95,7 +95,7 @@ zabbix_export:
           name: 'BEWARD Intercom: system info'
           type: HTTP_AGENT
           key: intercom.systeminfo
-          delay: 1h
+          delay: 1m
           history: 1h
           trends: '0'
           value_type: TEXT
@@ -134,9 +134,6 @@ zabbix_export:
               name: 'HTTP: port/service unreachable (ICMP OK)'
               priority: WARNING
               description: 'HTTP Check unavailable but ICMP available'
-#              dependencies:
-#                - name: 'ICMP Ping: Unavailable by ICMP ping'
-#                  expression: 'min(/Intercom_BEWARD_DKS/icmppingloss,5m)>{$ICMP_LOSS_WARN} and min(/Intercom_BEWARD_DKS/icmppingloss,5m)<100'
         - uuid: 08c81ea3a8fb4540a626cea86d095531
           name: 'BEWARD Intercom: uptime'
           type: DEPENDENT

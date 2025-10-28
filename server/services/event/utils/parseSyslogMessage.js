@@ -1,6 +1,5 @@
-import { SERVICE_UFANET } from '../constants.js';
-import { SERVICE_BROVOTECH } from '../constants.js';
-import { getTimestamp } from "./index.js";
+import { SERVICE_BROVOTECH, SERVICE_UFANET } from '../constants.js';
+import { getTimestamp } from './index.js';
 
 const parseSyslogMessage = (str, unit) => {
     if (!str) {
@@ -79,7 +78,11 @@ const parseSyslogMessage = (str, unit) => {
             message,
         };
     } else if (partsRubetek) {
-        const [, priority, timestamp, hostname, app, message] = partsRubetek;
+        const [, priority, timestamp, hostname, app, messageRaw] = partsRubetek;
+
+        // Cut message prefix for new firmwares (2025.02 and newer)
+        const message = messageRaw.replace('[Intercom]:', '').trim();
+
         return {
             format: 'Rubetek',
             priority: Number(priority),
@@ -89,6 +92,7 @@ const parseSyslogMessage = (str, unit) => {
             message,
         };
     }
+
     return false;
 };
 

@@ -8,7 +8,7 @@
      * @apiName createProject
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {String} [projectId]
      * @apiBody {String} [filter]
@@ -28,7 +28,7 @@
      * @apiName modifyProject
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {String} projectId
      * @apiBody {String} [acronym]
@@ -43,19 +43,20 @@
      * @apiBody {Object} [customFields]
      * @apiBody {Object} [customFieldsNoJournal]
      * @apiBody {Object} [viewers]
+     * @apiBody {Object} [comments]
      *
      * @apiSuccess {Boolean} operationResult
      */
 
     /**
-     * @api {delete} /api/tt/project/:projectId modify project
+     * @api {delete} /api/tt/project/:projectId delete project
      *
      * @apiVersion 1.0.0
      *
      * @apiName deleteProject
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {String} projectId
      *
@@ -116,6 +117,10 @@
 
                 if (array_key_exists("viewers", $params)) {
                     $success = $tt->setProjectViewers($params["_id"], $params["viewers"]);
+                }
+
+                if (array_key_exists("comments", $params)) {
+                    $success = $tt->setProjectComments($params["_id"], $params["comments"]);
                 }
 
                 return api::ANSWER($success);

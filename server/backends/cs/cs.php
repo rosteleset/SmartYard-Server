@@ -36,7 +36,7 @@
                 $cs = "{\n\t\"sheet\": \"$sheet\",\n\t\"date\": \"$date\"\n}";
 
                 foreach ($css as $s) {
-                    $cs = $files->streamToContents($files->getFileStream($s["id"])) ? : $cs;
+                    $cs = $files->streamToContents($files->getFileStream($s["id"])) ?: $cs;
                     break;
                 }
 
@@ -177,7 +177,7 @@
             public function setCell($action, $sheet, $date, $col, $row, $uid, $expire = 0, $sid = "", $step = 0, $comment = "") {
                 $mqtt = loadBackend("mqtt");
 
-                $expire = (int)($expire ? : 60);
+                $expire = (int)($expire ?: 60);
 
                 switch ($action) {
                     case "claim":
@@ -209,7 +209,7 @@
                             }
                         }
 
-                        if ($action == "claim") {
+                        if ($action == "claim" && $col && $row && $uid) {
                             $this->redis->setex("cell_{$sheet}_{$date}_{$col}_{$row}_{$uid}", $expire, json_encode([
                                 "login" => $this->login,
                                 "mode" => "claimed",
@@ -247,7 +247,7 @@
                             $cell = false;
                         }
 
-                        if ($cell && $cell["login"] == $this->login) {
+                        if ($cell && $cell["login"] == $this->login && $col && $row && $uid) {
                             $this->redis->setex("cell_{$sheet}_{$date}_{$col}_{$row}_{$uid}", $expire, json_encode([
                                 "login" => $this->login,
                                 "mode" => "reserved",
@@ -310,5 +310,37 @@
 
             }
 
+            /**
+             * @inheritDoc
+             */
+
+            public function cleanup() {
+                $ttl = @(int)$this->config["backends"]["cs"]["ttl"] ?: 3;
+
+                $sheets = $this->getCSes();
+
+                $n = 0;
+
+                foreach ($sheets as $sheet) {
+                    if ($sheet["metadata"]["date"] < date("Y-m-d", strtotime("-$ttl day"))) {
+                        $this->deleteCS($sheet["metadata"]["sheet"], $sheet["metadata"]["date"]);
+                        $n++;
+                    }
+                }
+
+                return $n;
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+            function cron($part) {
+                if ($part === "daily") {
+                    $this->cleanup();
+                }
+
+                return true;
+            }
         }
     }

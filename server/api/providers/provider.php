@@ -8,7 +8,7 @@
      * @apiName getProviders
      * @apiGroup providers
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiSuccess {Object} providers
      */
@@ -21,7 +21,7 @@
      * @apiName modifyProvider
      * @apiGroup providers
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} providerId
      * @apiBody {Number} uid
@@ -43,7 +43,7 @@
      * @apiName createProvider
      * @apiGroup providers
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {Number} uid
      * @apiBody {String} name
@@ -64,7 +64,7 @@
      * @apiName deleteProvider
      * @apiGroup providers
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} providerId
      *

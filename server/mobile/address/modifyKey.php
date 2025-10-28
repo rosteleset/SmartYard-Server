@@ -24,13 +24,12 @@
     $flatId = (int)@$postdata["flatId"];
     $keyId = (int)@$postdata["keyId"];
     $comments = @trim($postdata["comments"]);
-    $watch = (@trim($postdata["watch"]) == "t") ? 1 : 0;
 
     foreach ($subscriber['flats'] as $flat) {
         if ($flat['flatId'] && (int)$flat['role'] == 0) {
             $keys = $households->getKeys("keyId", $keyId);
             if ($keys && $keys[0] && $keys[0]["accessType"] == 2 && $keys[0]["accessTo"] == $flatId) {
-                $households->modifyKey($keyId, $comments, $watch);
+                $households->modifyKey($keyId, $comments);
             }
             break;
         }

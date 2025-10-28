@@ -19,6 +19,7 @@
      * @apiSuccess {string} [-.houseId] идентификатор дома
      * @apiSuccess {string} [-.flatId] идентификатор квартиры
      * @apiSuccess {string} [-.flatNumber] номер квартиры
+     * @apiSuccess {string} [-.doorCode] код открытия двери (если нет значит выключено)
      * @apiSuccess {string="t","f"} [-.hasPlog] доступность журнала событий
      * @apiSuccess {string} -.address адрес
      * @apiSuccess {string[]="internet","iptv","ctv","phone","cctv","domophone","gsm"} -.services подключенные услуги
@@ -48,17 +49,22 @@
     foreach ($subscriber['flats'] as $flat) {
         $f = [];
 
-        $f['address'] = $flat['house']['houseFull'].', кв. '.strval($flat['flat']);
+        $h_flat = $households->getFlat($flat["flatId"]);
+
+        $f['address'] = $flat['house']['houseFull'] . ', кв. ' . $flat['flat'];
         $f['houseId'] = strval($flat['house']['houseId']);
         $f['flatId'] = strval($flat['flatId']);
         $f['flatNumber'] = strval($flat['flat']);
+        if (isset($h_flat['openCode']) && $h_flat['openCode'] != '00000') {
+            $f['doorCode'] = $h_flat['openCode'];
+        }
         $is_owner = ((int)$flat['role'] == 0);
         $f['flatOwner'] = $is_owner ? 't' : 'f';
 
         // TODO : сделать временный доступ к воротам. пока он отключен, и в приложении этот раздел просто не будет отображаться.
         $f['hasGates'] = 'f';
 
-        $flat_plog = $households->getFlat($flat["flatId"])['plog'];
+        $flat_plog = $h_flat['plog'];
         $has_plog = $plog && ($flat_plog == plog::ACCESS_ALL || $flat_plog == plog::ACCESS_OWNER_ONLY && $is_owner);
         if ($plog && $flat_plog != plog::ACCESS_RESTRICTED_BY_ADMIN) {
             $f['hasPlog'] = $has_plog ? 't' : 'f';

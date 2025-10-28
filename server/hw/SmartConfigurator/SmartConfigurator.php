@@ -2,36 +2,30 @@
 
 namespace hw\SmartConfigurator;
 
-use hw\Interfaces\DbConfigUpdaterInterface;
-use hw\SmartConfigurator\DbConfigCollector\IDbConfigCollector;
+use hw\Enum\HousePrefixField;
+use hw\Interface\{
+    DbConfigUpdaterInterface,
+    DisplayTextInterface,
+    HousePrefixInterface,
+};
+use hw\SmartConfigurator\DbConfigCollector\DbConfigCollectorInterface;
+use hw\ValueObject\HousePrefix;
+use UnexpectedValueException;
 
 class SmartConfigurator
 {
     private object $device;
-    private IDbConfigCollector $dbConfigCollector;
+    private DbConfigCollectorInterface $dbConfigCollector;
     private array $dbConfig;
     private array $deviceConfig;
 
-    public function __construct(object $device, IDbConfigCollector $dbConfigCollector)
+    public function __construct(object $device, DbConfigCollectorInterface $dbConfigCollector)
     {
         $this->device = $device;
         $this->dbConfigCollector = $dbConfigCollector;
 
         $this->loadDbConfig();
         $this->loadDeviceConfig();
-    }
-
-    public function getDifference(): array
-    {
-        $transformedDbConfig = $this->device->transformDbConfig($this->dbConfig);
-
-        $difference = array_replace_recursive(
-            array_diff_assoc_recursive($transformedDbConfig, $this->deviceConfig, strict: false),
-            array_diff_assoc_recursive($this->deviceConfig, $transformedDbConfig, strict: false),
-        );
-
-        $this->removeEmptySections($difference);
-        return $difference;
     }
 
     public function makeConfiguration($retryCount = 0): void
@@ -47,14 +41,16 @@ class SmartConfigurator
         $sectionMethodMapping = [
             'cmsLevels' => 'setCmsLevels',
             'cmsModel' => 'setCmsModel',
-            'tickerText' => 'setTickerText',
+            'displayText' => 'setDisplayText',
             'osdText' => 'setOsdText',
-            'unlocked' => 'setUnlocked',
+            'freePassEnabled' => 'setFreePassEnabled',
             'dtmf' => 'setDtmfCodes',
             'motionDetection' => 'configureMotionDetection',
             'ntp' => 'configureNtp',
             'sip' => 'configureSip',
             'eventServer' => 'configureEventServer',
+            'gateModeEnabled' => 'setGateModeEnabled',
+            'housePrefixes' => 'setHousePrefixes',
         ];
 
         foreach ($difference as $sectionName => $items) {
@@ -68,8 +64,6 @@ class SmartConfigurator
                 $this->configureMatrix();
             } elseif ($sectionName === 'rfids') {
                 $this->configureRfids($items);
-            } elseif ($sectionName === 'gateLinks') {
-                $this->device->configureGate($this->dbConfig['gateLinks']);
             }
 
             echo 'Done!' . PHP_EOL;
@@ -140,6 +134,20 @@ class SmartConfigurator
         }
     }
 
+    private function getDifference(): array
+    {
+        $this->normalizeDbConfig();
+        $transformedDbConfig = $this->device->transformDbConfig($this->dbConfig);
+
+        $difference = array_replace_recursive(
+            array_diff_assoc_recursive($transformedDbConfig, $this->deviceConfig, strict: false),
+            array_diff_assoc_recursive($this->deviceConfig, $transformedDbConfig, strict: false),
+        );
+
+        $this->removeEmptySections($difference);
+        return $difference;
+    }
+
     private function hasStringKeys($array): bool
     {
         return count(array_filter(array_keys($array), 'is_string')) > 0;
@@ -156,7 +164,38 @@ class SmartConfigurator
 
     private function loadDeviceConfig(): void
     {
-        $this->deviceConfig = $this->device->getCurrentConfig();
+        $this->deviceConfig = $this->device->getConfig();
+    }
+
+    private function normalizeDbConfig(): void
+    {
+        if ($this->device instanceof DisplayTextInterface && isset($this->dbConfig['displayText'])) {
+            $this->dbConfig['displayText'] = array_slice(
+                $this->dbConfig['displayText'],
+                0,
+                $this->device->getDisplayTextLinesCount(),
+            );
+        }
+
+        if ($this->device instanceof HousePrefixInterface && isset($this->dbConfig['housePrefixes'])) {
+            $supported = $this->device->getHousePrefixSupportedFields();
+
+            $normalizedPrefixes = [];
+            foreach ($this->dbConfig['housePrefixes'] as $prefix) {
+                if (!$prefix instanceof HousePrefix) {
+                    throw new UnexpectedValueException('Expected instance of HousePrefix');
+                }
+
+                $normalizedPrefixes[] = new HousePrefix(
+                    number: $prefix->number,
+                    address: in_array(HousePrefixField::Address, $supported, true) ? $prefix->address : null,
+                    firstFlat: in_array(HousePrefixField::FirstFlat, $supported, true) ? $prefix->firstFlat : null,
+                    lastFlat: in_array(HousePrefixField::LastFlat, $supported, true) ? $prefix->lastFlat : null,
+                );
+            }
+
+            $this->dbConfig['housePrefixes'] = $normalizedPrefixes;
+        }
     }
 
     private function removeEmptySections(&$difference): void

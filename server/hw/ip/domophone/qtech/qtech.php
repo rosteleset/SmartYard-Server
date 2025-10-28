@@ -2,14 +2,28 @@
 
 namespace hw\ip\domophone\qtech;
 
+use hw\Enum\HousePrefixField;
+use hw\Interface\{
+    DisplayTextInterface,
+    FreePassInterface,
+    HousePrefixInterface,
+    LanguageInterface,
+};
 use hw\ip\domophone\domophone;
+use hw\ValueObject\{
+    FlatNumber,
+    HousePrefix,
+};
 
 /**
  * Abstract class representing a Qtech domophone.
  */
-abstract class qtech extends domophone
+abstract class qtech extends domophone implements
+    DisplayTextInterface,
+    FreePassInterface,
+    HousePrefixInterface,
+    LanguageInterface
 {
-
     use \hw\ip\common\qtech\qtech;
 
     /**
@@ -111,27 +125,6 @@ abstract class qtech extends domophone
             'Config.DoorSetting.RTSP.H264BitRate2' => 512, // Bitrate
             'Config.DoorSetting.RTSP.H264VideoProfile2' => 0, // Baseline profile
         ]);
-    }
-
-    public function configureGate(array $links = []): void
-    {
-        $this->clearGateDialplan();
-
-        if ($links) {
-            $this->setPanelMode('GATE');
-
-            foreach ($links as $link) {
-                $this->apiCall('dialreplacemp', 'add', [
-                    'prefix' => (string)$link['prefix'],
-                    'Start' => (string)$link['firstFlat'],
-                    'End' => (string)$link['lastFlat'], // there will be an error if lastFlat === firstFlat
-                    'Account' => 0,
-                    'Address' => '',
-                ]);
-            }
-        } else {
-            $this->setPanelMode('NORMAL');
-        }
     }
 
     public function configureMatrix(array $matrix): void
@@ -270,9 +263,42 @@ abstract class qtech extends domophone
         return [$micVol, $micVolMp, $spkVol, $kpdVol];
     }
 
-    public function getCmsLevels(): array
+    public function getDisplayText(): array
     {
-        return [];
+        $text = $this->getParam('Config.Settings.OTHERS.GreetMsg') ?? '';
+        return $text === '' ? [] : [$text];
+    }
+
+    public function getDisplayTextLinesCount(): int
+    {
+        return 1;
+    }
+
+    public function getHousePrefixSupportedFields(): array
+    {
+        return [HousePrefixField::FirstFlat, HousePrefixField::LastFlat];
+    }
+
+    public function getHousePrefixes(): array
+    {
+        $gateDialplans = $this->apiCall('dialreplacemp', 'get')['data'] ?? [];
+        $prefixes = [];
+
+        if (!$gateDialplans || $gateDialplans['num'] === 0) {
+            return $prefixes;
+        }
+
+        unset($gateDialplans['num']);
+
+        foreach ($gateDialplans as $gateDialplan) {
+            $prefixes[] = new HousePrefix(
+                number: $gateDialplan['prefix'],
+                firstFlat: new FlatNumber($gateDialplan['start']),
+                lastFlat: new FlatNumber($gateDialplan['end']),
+            );
+        }
+
+        return $prefixes;
     }
 
     public function getLineDiagnostics(int $apartment): string
@@ -310,6 +336,15 @@ abstract class qtech extends domophone
         }
 
         return $rfidKeys;
+    }
+
+    public function isFreePassEnabled(): bool
+    {
+        $relayA = $this->getParam('Config.DoorSetting.RELAY.RelayATrigAlways');
+        $relayB = $this->getParam('Config.DoorSetting.RELAY.RelayBTrigAlways');
+        $relayC = $this->getParam('Config.DoorSetting.RELAY.RelayCTrigAlways');
+
+        return $relayA && $relayB && $relayC;
     }
 
     public function openLock(int $lockNumber = 0): void
@@ -358,11 +393,6 @@ abstract class qtech extends domophone
         ]);
     }
 
-    public function setCmsLevels(array $levels): void
-    {
-        // Empty implementation
-    }
-
     public function setCmsModel(string $model = ''): void
     {
         $modelMapping = [
@@ -390,6 +420,19 @@ abstract class qtech extends domophone
         $this->setParams(['Config.Programable.SOFTKEY01.Param1' => $sipNumber]);
     }
 
+    public function setDisplayText(array $textLines): void
+    {
+        $this->setParams([
+            'Config.Settings.OTHERS.AccountStatusEnable' => 2,
+            'Config.Settings.OTHERS.GreetMsg' => $textLines[0] ?? '',
+            'Config.Settings.OTHERS.SendingMsg' => 'Вызываю...',
+            'Config.Settings.OTHERS.TalkingMsg' => 'Говорите',
+            'Config.Settings.OTHERS.OpenDoorSucMsg' => 'Дверь открыта!',
+            'Config.Settings.OTHERS.OpenDoorFaiMsg' => 'Ошибка!',
+            'Config.DoorSetting.GENERAL.DisplayNumber' => 1,
+        ]);
+    }
+
     public function setDtmfCodes(string $code1 = '1', string $code2 = '2', string $code3 = '3', string $codeCms = '1'): void
     {
         $this->setParams([
@@ -400,7 +443,47 @@ abstract class qtech extends domophone
         ]);
     }
 
-    public function setLanguage(string $language = 'ru'): void
+    public function setFreePassEnabled(bool $enabled): void
+    {
+        // Skip if the locks are currently already in the required state
+        if ($enabled === $this->isFreePassEnabled()) {
+            return;
+        }
+
+        $this->setParams([
+            'Config.DoorSetting.RELAY.RelayATrigAlways' => (int)$enabled,
+            'Config.DoorSetting.RELAY.RelayBTrigAlways' => (int)$enabled,
+            'Config.DoorSetting.RELAY.RelayCTrigAlways' => (int)$enabled,
+        ]);
+
+        // Pull relays immediately
+        $this->openLock();
+        $this->openLock(1);
+        $this->openLock(2);
+    }
+
+    public function setHousePrefixes(array $prefixes): void
+    {
+        $this->clearGateDialplan();
+
+        if (!empty($prefixes)) {
+            $this->setPanelMode('GATE');
+
+            foreach ($prefixes as $prefix) {
+                $this->apiCall('dialreplacemp', 'add', [
+                    'prefix' => (string)$prefix->number,
+                    'Start' => (string)$prefix->firstFlat->number,
+                    'End' => (string)$prefix->lastFlat->number, // There will be an error if lastFlat === firstFlat
+                    'Account' => 0,
+                    'Address' => '', // There must be an empty string, otherwise the method will not work
+                ]);
+            }
+        } else {
+            $this->setPanelMode('NORMAL');
+        }
+    }
+
+    public function setLanguage(string $language): void
     {
         $this->setParams(['Config.Settings.LANGUAGE.WebLang' => ($language === 'ru') ? 3 : 0]);
     }
@@ -432,20 +515,6 @@ abstract class qtech extends domophone
         ]);
     }
 
-    public function setTickerText(string $text = ''): void
-    {
-        // TODO: translation into other languages
-        $this->setParams([
-            'Config.Settings.OTHERS.AccountStatusEnable' => 2,
-            'Config.Settings.OTHERS.GreetMsg' => $text,
-            'Config.Settings.OTHERS.SendingMsg' => 'Вызываю...',
-            'Config.Settings.OTHERS.TalkingMsg' => 'Говорите',
-            'Config.Settings.OTHERS.OpenDoorSucMsg' => 'Дверь открыта!',
-            'Config.Settings.OTHERS.OpenDoorFaiMsg' => 'Ошибка!',
-            'Config.DoorSetting.GENERAL.DisplayNumber' => 1,
-        ]);
-    }
-
     public function setUnlockTime(int $time = 3): void
     {
         $this->setParams([
@@ -453,25 +522,6 @@ abstract class qtech extends domophone
             'Config.DoorSetting.RELAY.RelayBDelay' => $time,
             'Config.DoorSetting.RELAY.RelayCDelay' => $time,
         ]);
-    }
-
-    public function setUnlocked(bool $unlocked = true): void
-    {
-        // Skip if the locks are currently already in the required state
-        if ($unlocked === $this->getUnlocked()) {
-            return;
-        }
-
-        $this->setParams([
-            'Config.DoorSetting.RELAY.RelayATrigAlways' => (int)$unlocked,
-            'Config.DoorSetting.RELAY.RelayBTrigAlways' => (int)$unlocked,
-            'Config.DoorSetting.RELAY.RelayCTrigAlways' => (int)$unlocked,
-        ]);
-
-        // Pull relays immediately
-        $this->openLock();
-        $this->openLock(1);
-        $this->openLock(2);
     }
 
     public function transformDbConfig(array $dbConfig): array
@@ -483,10 +533,6 @@ abstract class qtech extends domophone
 
         foreach ($dbConfig['apartments'] as &$apartment) {
             $apartment['cmsLevels'] = [];
-        }
-
-        foreach ($dbConfig['gateLinks'] as &$gateLink) {
-            $gateLink['address'] = '';
         }
 
         return $dbConfig;
@@ -545,7 +591,7 @@ abstract class qtech extends domophone
                     $dialplan['prefix'],
                     self::EMPTY_ANALOG_REPLACE,
                     $dialplan['replace2'],
-                    $dialplan['tags']
+                    $dialplan['tags'],
                 );
             }
         }
@@ -781,29 +827,6 @@ abstract class qtech extends domophone
         ];
     }
 
-    protected function getGateConfig(): array
-    {
-        $gateConfig = [];
-        $links = $this->apiCall('dialreplacemp', 'get')['data'] ?? [];
-
-        if (!$links || $links['num'] === 0) {
-            return $gateConfig;
-        }
-
-        unset($links['num']);
-
-        foreach ($links as $link) {
-            $gateConfig[] = [
-                'address' => '',
-                'prefix' => $link['prefix'],
-                'firstFlat' => $link['start'],
-                'lastFlat' => $link['end']
-            ];
-        }
-
-        return $gateConfig;
-    }
-
     protected function getMatrix(): array
     {
         $this->loadDialplans();
@@ -880,20 +903,6 @@ abstract class qtech extends domophone
             'stunServer' => $this->getParam('Config.Account1.STUN.Server'),
             'stunPort' => $this->getParam('Config.Account1.STUN.Port'),
         ];
-    }
-
-    protected function getTickerText(): string
-    {
-        return $this->getParam('Config.Settings.OTHERS.GreetMsg');
-    }
-
-    protected function getUnlocked(): bool
-    {
-        $relayA = $this->getParam('Config.DoorSetting.RELAY.RelayATrigAlways');
-        $relayB = $this->getParam('Config.DoorSetting.RELAY.RelayBTrigAlways');
-        $relayC = $this->getParam('Config.DoorSetting.RELAY.RelayCTrigAlways');
-
-        return $relayA && $relayB && $relayC;
     }
 
     /**

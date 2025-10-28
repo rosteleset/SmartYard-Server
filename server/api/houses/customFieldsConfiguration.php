@@ -8,7 +8,7 @@
      * @apiName customFieldsConfiguration
      * @apiGroup houses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiSuccess {Object[]} customFieldsConfiguration
      */

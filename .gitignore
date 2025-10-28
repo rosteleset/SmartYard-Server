@@ -23,12 +23,16 @@ package-lock.json
 .templates
 .templates/*
 .templates/**
+version
 
 client/lib/
 client/lib/AdminLTE/
 client/lib/qrcodejs/
 client/lib/loading-bar/
 client/lib/ace-builds/
+client/custom
+client/custom/*
+client/custom/**
 client/modules/custom
 client/modules/custom/*
 client/modules/custom/**
@@ -39,6 +43,7 @@ client/modules/**/custom/*
 client/custom.html
 client/config/config.json
 client/config/config.yml
+client/version.app
 
 !server/services/push/package.json
 !server/services/ami/package.json
@@ -91,6 +96,10 @@ server/mobile/pay/custom/*.php
 server/mobile/sip/custom/*.php
 server/mobile/user/custom/*.php
 server/hw/**/custom
+server/hw/ip/domophone/ufanet/assets/display_image.jpg
+server/services/push/package.json
+server/services/push/package-lock.json
+server/wh/*.php
 
 install/kamailio/kamailio-local.cfg
 install/kamailio/kamctlrc
@@ -98,6 +107,9 @@ install/kamailio/kamctlrc
 static/portal
 static/portal/*
 static/portal/**
+static/custom
+static/custom/*
+static/custom/**
 
 asterisk/custom/*
 asterisk/custom/**
@@ -107,5 +119,4 @@ asterisk/config.lua
 asterisk/extconfig.conf
 asterisk/http.conf
 asterisk/pjsip.conf
-
-./version
+asterisk/logger.conf

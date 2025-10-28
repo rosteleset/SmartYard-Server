@@ -5,14 +5,14 @@ namespace hw\ip\domophone\sputnik;
 use DateTime;
 use DateTimeZone;
 use Exception;
+use hw\Interface\CmsLevelsInterface;
 use hw\ip\domophone\domophone;
 
 /**
  * Class representing a Sputnik domophone.
  */
-class sputnik extends domophone
+class sputnik extends domophone implements CmsLevelsInterface
 {
-
     use \hw\ip\common\sputnik\sputnik;
 
     protected array $rfidKeysToBeDeleted = [];
@@ -71,7 +71,7 @@ class sputnik extends domophone
         int   $code = 0,
         array $sipNumbers = [],
         bool  $cmsEnabled = true,
-        array $cmsLevels = []
+        array $cmsLevels = [],
     ): void
     {
         $this->loadFlats();
@@ -97,25 +97,6 @@ class sputnik extends domophone
         // Empty implementation
     }
 
-    public function configureGate(array $links = []): void
-    {
-//        $this->apiCall('mutation', 'removeAllClusterPrefix', ['uuid' => $this->uuid]);
-//
-//        $clusterPrefixes = array_map(function ($link) {
-//            return [
-//                'prefix' => $link['prefix'],
-//                'firstFlat' => $link['firstFlat'],
-//                'lastFlat' => $link['lastFlat'],
-//                'voiceText' => $link['address']
-//            ];
-//        }, $links);
-//
-//        $this->apiCall('mutation', 'addClusterPrefixesToIntercom', [
-//            'intercomID' => $this->uuid,
-//            'clusterPrefixes' => $clusterPrefixes,
-//        ]);
-    }
-
     public function configureMatrix(array $matrix): void
     {
         $this->loadFlats();
@@ -132,7 +113,7 @@ class sputnik extends domophone
                 'hundreds' => $hundreds,
                 'tens' => $tens,
                 'units' => $units,
-                'apartment' => $apartment
+                'apartment' => $apartment,
             ] = $cell;
 
             $alias = $hundreds * 100 + $tens * 10 + $units;
@@ -162,7 +143,7 @@ class sputnik extends domophone
         int    $port = 5060,
         bool   $stunEnabled = false,
         string $stunServer = '',
-        int    $stunPort = 3478
+        int    $stunPort = 3478,
     ): void
     {
         $this->apiCall('mutation', 'updateIntercomSipParameters', [
@@ -174,7 +155,7 @@ class sputnik extends domophone
                 'permanentSipConnection' => true,
                 'server' => "$server:$port",
                 'username' => $login,
-            ]
+            ],
         ]);
     }
 
@@ -197,6 +178,20 @@ class sputnik extends domophone
     public function deleteRfid(string $code = ''): void
     {
         $this->rfidKeysToBeDeleted[] = $this->flipRfid($code);
+    }
+
+    public function getCmsLevels(): array
+    {
+        $rawCmsLevels = $this->apiCall('query', 'intercom', ['uuid' => $this->uuid], [
+            'configShadow' => ['flats' => ['defaultThresholdCall', 'defaultThresholdDoor']],
+        ]);
+
+        [
+            'defaultThresholdCall' => $thresholdCall,
+            'defaultThresholdDoor' => $thresholdDoor,
+        ] = $rawCmsLevels['data']['intercom']['configShadow']['flats'];
+
+        return [$thresholdCall, $thresholdDoor];
     }
 
     public function getLineDiagnostics(int $apartment): float
@@ -272,18 +267,13 @@ class sputnik extends domophone
         string $code1 = '1',
         string $code2 = '2',
         string $code3 = '3',
-        string $codeCms = '1'
+        string $codeCms = '1',
     ): void
     {
         $this->apiCall('mutation', 'updateIntercomSipParameters', [
             'intercomID' => $this->uuid,
             'sipParameters' => ['dtmfOpenDoor' => $code1],
         ]);
-    }
-
-    public function setLanguage(string $language = 'ru'): void
-    {
-        // Empty implementation
     }
 
     public function setPublicCode(int $code = 0): void
@@ -310,11 +300,6 @@ class sputnik extends domophone
         ]);
     }
 
-    public function setTickerText(string $text = ''): void
-    {
-        // Empty implementation
-    }
-
     public function setUnlockTime(int $time = 3): void
     {
         $this->apiCall('mutation', 'updateIntercomOpenDoorConfig', [
@@ -323,11 +308,6 @@ class sputnik extends domophone
             'social' => $time,
             'bluetooth' => $time,
         ]);
-    }
-
-    public function setUnlocked(bool $unlocked = true): void
-    {
-        // Empty implementation
     }
 
     public function syncData(): void
@@ -342,8 +322,6 @@ class sputnik extends domophone
 
     public function transformDbConfig(array $dbConfig): array
     {
-        $dbConfig['tickerText'] = '';
-        $dbConfig['unlocked'] = false;
         $dbConfig['cmsModel'] = $this->cmsModelType[$dbConfig['cmsModel']];
 
         $dbConfig['sip']['stunServer'] = '';
@@ -439,7 +417,7 @@ class sputnik extends domophone
                 'code' => $codes[$apartment] ?? 0,
                 'sipNumbers' => [$sipNumber],
                 'cmsEnabled' => !$cmsBlocked,
-                'cmsLevels' => [$thresholdCall, $thresholdDoor]
+                'cmsLevels' => [$thresholdCall, $thresholdDoor],
             ];
         }
 
@@ -462,24 +440,10 @@ class sputnik extends domophone
         return [$general, $speakHandsetTx, $speakLoudspeaker, $speakSIP];
     }
 
-    protected function getCmsLevels(): array
-    {
-        $rawCmsLevels = $this->apiCall('query', 'intercom', ['uuid' => $this->uuid], [
-            'configShadow' => ['flats' => ['defaultThresholdCall', 'defaultThresholdDoor']]
-        ]);
-
-        [
-            'defaultThresholdCall' => $thresholdCall,
-            'defaultThresholdDoor' => $thresholdDoor,
-        ] = $rawCmsLevels['data']['intercom']['configShadow']['flats'];
-
-        return [$thresholdCall, $thresholdDoor];
-    }
-
     protected function getCmsModel(): string
     {
         $intercom = $this->apiCall('query', 'intercom', ['uuid' => $this->uuid], [
-            'configShadow' => ['commutator' => ['commutatorType']]
+            'configShadow' => ['commutator' => ['commutatorType']],
         ]);
 
         return $intercom['data']['intercom']['configShadow']['commutator']['commutatorType'];
@@ -488,7 +452,7 @@ class sputnik extends domophone
     protected function getDtmfConfig(): array
     {
         $intercom = $this->apiCall('query', 'intercom', ['uuid' => $this->uuid], [
-            'configShadow' => ['calls' => ['sipAccount' => ['dtmfOpenDoor']]]
+            'configShadow' => ['calls' => ['sipAccount' => ['dtmfOpenDoor']]],
         ]);
 
         $dtmfCode = $intercom['data']['intercom']['configShadow']['calls']['sipAccount']['dtmfOpenDoor'] ?? '';
@@ -513,11 +477,6 @@ class sputnik extends domophone
                 'thresholdDoor' => 9.99,
             ],
         ];
-    }
-
-    protected function getGateConfig(): array
-    {
-        return [];
     }
 
     protected function getMatrix(): array
@@ -610,7 +569,7 @@ class sputnik extends domophone
 
         $keys = array_map(
             fn($code) => strtoupper(str_pad(implode(array_reverse(str_split($code, 2))), 14, '0', STR_PAD_LEFT)),
-            array_column($rawKeys, 'node')
+            array_column($rawKeys, 'node'),
         );
 
         return array_combine($keys, $keys);
@@ -619,7 +578,7 @@ class sputnik extends domophone
     protected function getSipConfig(): array
     {
         $intercom = $this->apiCall('query', 'intercom', ['uuid' => $this->uuid], [
-            'configShadow' => ['calls' => ['sipAccount' => ['login', 'password', 'server', 'username']]]
+            'configShadow' => ['calls' => ['sipAccount' => ['login', 'password', 'server', 'username']]],
         ]);
 
         $rawSipConfig = $intercom['data']['intercom']['configShadow']['calls']['sipAccount'];
@@ -638,16 +597,6 @@ class sputnik extends domophone
             'stunServer' => '',
             'stunPort' => 3478,
         ];
-    }
-
-    protected function getTickerText(): string
-    {
-        return '';
-    }
-
-    protected function getUnlocked(): bool
-    {
-        return false;
     }
 
     /**
@@ -676,12 +625,12 @@ class sputnik extends domophone
                                     'blocked',          // CMS blocked
                                     'thresholdCall',    // Handset up level
                                     'thresholdDoor',    // Door opening level
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-            ]
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ]);
 
         $rawFlats = $intercom['data']['intercom']['configShadow']['flats']['flats']['edges'];
@@ -712,12 +661,12 @@ class sputnik extends domophone
                             'description',
                             'node' => [
                                 'uuid',
-                                'value'
-                            ]
-                        ]
-                    ]
-                ]
-            ]
+                                'value',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ]);
 
         $rawCodes = $intercom['data']['intercom']['configShadow']['keys']['digitalKeys']['edges'];
@@ -795,7 +744,7 @@ class sputnik extends domophone
         // Upload flats
         $this->apiCall('mutation', 'updateIntercomFlats', [
             'intercomID' => $this->uuid,
-            'flats' => $flats
+            'flats' => $flats,
         ]);
     }
 

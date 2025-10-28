@@ -18,7 +18,7 @@
 
             function confirmNumbers() {
                 return [
-                    @$this->config["backends"]["isdn"]["confirm_number"] ? : "88002220374",
+                    @$this->config["backends"]["isdn"]["confirm_number"] ?: "88002220374",
                 ];
             }
 

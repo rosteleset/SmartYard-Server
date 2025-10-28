@@ -1,0 +1,1 @@
+ALTER TABLE tt_favorite_filters RENAME COLUMN right_side TO left_side;

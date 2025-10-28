@@ -36,6 +36,9 @@
     "partCols": "Show columns",
     "cols": "Columns",
     "wasCoordinated": "Coordinated",
+    "list": "List issues",
+    "map": "Issues on map",
+    "unhighlight": "Deselect",
     "methods": {
         "cs": {
             "_title": "Coordination sheet",

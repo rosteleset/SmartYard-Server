@@ -1,3 +1,24 @@
+# 2025-09-03
+
+Since version 0.0.15, server configs "max_allowed_tokens" and "token_idle_ttl" moved from "redis" section to "backends->authentication" section
+
+# 2025-08-14
+
+Do
+
+```bash
+rm /opt/rbt/version
+rm /opt/rbt/client/version.app
+```
+
+ONCE **before** updating to versions 0.0.11+ (to avoid git conflicts),
+and
+```
+php /opt/rbt/server/cli.php --init-db
+ln -sf /opt/rbt/version /opt/rbt/client/version.app
+```
+ONCE **after** updating
+
 # 2025-04-11
 
 You will need to update mongodb php library and driver

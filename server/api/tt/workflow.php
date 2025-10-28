@@ -8,7 +8,7 @@
      * @apiName getWorkflow
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {String} workflowId
      *
@@ -23,7 +23,7 @@
      * @apiName modifyWorkflow
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {String} workflowId
      * @apiBody {String} body
@@ -39,7 +39,7 @@
      * @apiName deleteWorkflow
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {String} workflowId
      *

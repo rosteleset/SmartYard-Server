@@ -2,16 +2,11 @@
 
 namespace hw\ip\common\beward;
 
-use DateTimeImmutable;
-use DateTimeZone;
-use Exception;
-
 /**
  * Trait providing common functionality related to Beward devices.
  */
 trait beward
 {
-
     public function configureEventServer(string $url): void
     {
         ['host' => $server, 'port' => $port] = parse_url_ext($url);
@@ -28,8 +23,10 @@ trait beward
 
     public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow'): void
     {
-        // Depending on the device model, the auto mode can be 'on'/'off' or '1'/'0'.
-        // This must be determined before calling the NTP configuration, otherwise the call will fail.
+        /*
+         * Depending on the device model, the auto mode can be 'on'/'off' or '1'/'0'.
+         * This must be determined before calling the NTP configuration, otherwise the call will fail.
+         */
         $automode = $this->getParams('ntp_cgi')['AutoMode'] ?? null;
         $automodeIsNumeric = is_numeric($automode);
 
@@ -38,7 +35,7 @@ trait beward
             'Enable' => 'on',
             'ServerAddress' => $server,
             'ServerPort' => $port,
-            'Timezone' => $this->getIdByTimezone($timezone),
+            'Timezone' => Timezone::getIdByTimezone($timezone),
             'AutoMode' => $automodeIsNumeric ? '0' : 'off',
         ]);
     }
@@ -94,7 +91,7 @@ trait beward
     public function transformDbConfig(array $dbConfig): array
     {
         $timezone = $dbConfig['ntp']['timezone'];
-        $dbConfig['ntp']['timezone'] = "{$this->getIdByTimezone($timezone)}";
+        $dbConfig['ntp']['timezone'] = (string)Timezone::getIdByTimezone($timezone);
         return $dbConfig;
     }
 
@@ -107,7 +104,6 @@ trait beward
      * @param int $timeout (Optional) The maximum number of seconds to allow cURL functions to execute.
      * @param string $referer (Optional) Add referer header to query. Default is empty string.
      * @param int $authType (Optional) Authentication type. Default is CURLAUTH_BASIC.
-     *
      * @return string API response.
      */
     protected function apiCall(
@@ -143,7 +139,7 @@ trait beward
         curl_setopt(
             $ch,
             CURLOPT_USERAGENT,
-            'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.96 Safari/537.36'
+            'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.96 Safari/537.36',
         );
         curl_setopt($ch, CURLOPT_VERBOSE, false);
         curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
@@ -171,58 +167,6 @@ trait beward
         return 'syslog.udp' . ':' . $server . ':' . $port;
     }
 
-    /**
-     * Get the ID corresponding to the given timezone.
-     *
-     * @param string $timezone Timezone identifier.
-     *
-     * @return int ID associated with the timezone.
-     */
-    protected function getIdByTimezone(string $timezone): int
-    {
-        /** Map of time zone offsets to corresponding Beward identifiers */
-        $tzIdMap = [
-            '-12' => 0,
-            '-11' => 1,
-            '-10' => 2,
-            '-9' => 3,
-            '-8' => 4,
-            '-7' => 5,
-            '-6' => 6,
-            '-5' => 7,
-            '-4' => 9,
-            '-3.5' => 10,
-            '-3' => 11,
-            '-2' => 12,
-            '-1' => 13,
-            '0' => 14,
-            '1' => 15,
-            '2' => 19,
-            '3' => 21,
-            '3.5' => 22,
-            '4' => 23,
-            '4.5' => 24,
-            '5' => 25,
-            '5.5' => 26,
-            '6' => 27,
-            '7' => 28,
-            '8' => 29,
-            '9' => 30,
-            '9.5' => 31,
-            '10' => 32,
-            '11' => 33,
-            '12' => 34,
-        ];
-
-        try {
-            $now = new DateTimeImmutable('now', new DateTimeZone($timezone));
-            $gmtOffset = strval($now->getOffset() / 3600);
-            return $tzIdMap[$gmtOffset] ?? 21;
-        } catch (Exception) {
-            return 21; // ID for Europe/Moscow timezone
-        }
-    }
-
     protected function getNtpConfig(): array
     {
         $ntp = $this->getParams('ntp_cgi');
@@ -238,7 +182,6 @@ trait beward
      * Get params from specified section with "action=get".
      *
      * @param string $resource Section from which to get parameters (like "sip_cgi", "ntp_cgi", etc.).
-     *
      * @return array
      */
     protected function getParams(string $resource): array
@@ -256,7 +199,6 @@ trait beward
      * Parse response string to array.
      *
      * @param string $res Response string.
-     *
      * @return array Associative array with parsed parameters.
      */
     protected function parseParamValue(string $res): array
@@ -270,31 +212,5 @@ trait beward
         }
 
         return $ret;
-    }
-
-    /**
-     * Set parameter in the "alarm" section.
-     *
-     * @param string $name Parameter name.
-     * @param string $value Parameter value.
-     *
-     * @return void
-     */
-    protected function setAlarm(string $name, string $value): void
-    {
-        $this->apiCall('cgi-bin/intercom_alarm_cgi', ['action' => 'set', $name => $value]);
-    }
-
-    /**
-     * Set parameter in the "intercom" section.
-     *
-     * @param string $name Parameter name.
-     * @param string $value Parameter value.
-     *
-     * @return void
-     */
-    protected function setIntercom(string $name, string $value): void
-    {
-        $this->apiCall('cgi-bin/intercom_cgi', ['action' => 'set', $name => $value]);
     }
 }

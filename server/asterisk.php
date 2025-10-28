@@ -247,7 +247,7 @@
         if ($extension[0] === "7" && strlen($extension) === 10) {
             switch ($section) {
                 case "aors":
-                    $cred = $redis->get("webrtc_" . md5($extension));
+                    $cred = $redis->get("WEBRTC:" . md5($extension));
 
                     if ($cred) {
                         return [
@@ -260,7 +260,7 @@
                     break;
 
                 case "auths":
-                    $cred = $redis->get("webrtc_" . md5($extension));
+                    $cred = $redis->get("WEBRTC:" . md5($extension));
 
                     if ($cred) {
                         return [
@@ -274,7 +274,7 @@
                     break;
 
                 case "endpoints":
-                    $cred = $redis->get("webrtc_" . md5($extension));
+                    $cred = $redis->get("WEBRTC:" . md5($extension));
 
                     $users = loadBackend("users");
                     $user = $users->getUser((int)substr($extension, 1));
@@ -402,6 +402,7 @@
                 case "camshot":
                     if ($params["domophoneId"] >= 0) {
                         $households = loadBackend("households");
+                        $camerasBackend = loadBackend("cameras");
 
                         $entrances = $households->getEntrances("domophoneId", [ "domophoneId" => $params["domophoneId"], "output" => "0" ]);
 
@@ -409,25 +410,17 @@
                             $cameras = $households->getCameras("id", $entrances[0]["cameraId"]);
 
                             if ($cameras && $cameras[0]) {
-                                $model = loadDevice('camera', $cameras[0]["model"], $cameras[0]["url"], $cameras[0]["credentials"]);
-
-                                $redis->setex("shot_" . $params["hash"], 3 * 60, $model->getCamshot());
-                                $redis->setex("live_" . $params["hash"], 3 * 60, json_encode([
-                                    "model" => $cameras[0]["model"],
-                                    "url" => $cameras[0]["url"],
-                                    "credentials" => $cameras[0]["credentials"],
-                                ]));
+                                $cameraId = $cameras[0]['cameraId'];
+                                $redis->setex("shot_" . $params["hash"], 3 * 60, $camerasBackend->getSnapshot($cameraId));
+                                $redis->setex("live_" . $params["hash"], 3 * 60, $cameraId);
 
                                 echo $params["hash"];
                             }
                         }
                     } else {
-                        $redis->setex("shot_" . $params["hash"], 3 * 60, file_get_contents(__DIR__ . "/hw/ip/camera/fake/img/callcenter.jpg"));
-                        $redis->setex("live_" . $params["hash"], 3 * 60, json_encode([
-                            "model" => "fake.json",
-                            "url" => "callcenter.jpg",
-                            "credentials" => "none",
-                        ]));
+                        $fakeImage = file_get_contents(__DIR__ . "/hw/ip/camera/fake/img/callcenter.jpg");
+                        $redis->setex("shot_" . $params["hash"], 3 * 60, $fakeImage);
+                        $redis->setex("live_" . $params["hash"], 3 * 60, $fakeImage);
 
                         echo $params["hash"];
                     }
@@ -454,7 +447,7 @@
                         "hash" => $params["hash"],
                         "extension" => $params["extension"],
                         "server" => $server["ip"],
-                        "port" => @$server["sip_tcp_port"] ? : 5060,
+                        "port" => @$server["sip_tcp_port"] ?: 5060,
                         "transport" => "tcp",
                         "dtmf" => $params["dtmf"],
                         "timestamp" => time(),
@@ -495,6 +488,20 @@
                     }
 
                     $isdn->push($_params);
+
+                    break;
+
+                case "concierge":
+                    if ($params[0] === "1" && strlen($params) === 6) {
+                        echo json_encode(loadBackend("households")->getDomophone((int)substr($params, 1))["concierge"]);
+                    }
+
+                    break;
+
+                case "sos":
+                    if ($params[0] === "1" && strlen($params) === 6) {
+                        echo json_encode(loadBackend("households")->getDomophone((int)substr($params, 1))["sos"]);
+                    }
 
                     break;
             }

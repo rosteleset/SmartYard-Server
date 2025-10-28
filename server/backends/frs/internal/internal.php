@@ -98,6 +98,12 @@
                 else
                     $data = "";
                 $headers = ['Expect:', 'Accept: application/json', 'Content-Type: application/json'];
+
+                // X-Balancer-Data header
+                if ($method === self::M_MOTION_DETECTION && isset($params[self::P_STREAM_ID])) {
+                    $headers[] = 'X-Balancer-Data: ' . $params[self::P_STREAM_ID];
+                }
+
                 $auth_token = $this->getAuthToken($base_url);
                 if (isset($auth_token)) {
                     $headers[] = 'Authorization: Bearer ' . $auth_token;
@@ -107,7 +113,8 @@
                     CURLOPT_POST => 1,
                     CURLOPT_POSTFIELDS=> $data,
                     CURLOPT_RETURNTRANSFER => 1,
-                    CURLOPT_HTTPHEADER => $headers
+                    CURLOPT_HTTPHEADER => $headers,
+                    CURLOPT_TIMEOUT => @$this->config['backends']['frs']['http_timeout'] ?? 3
                 ];
                 curl_setopt_array($curl, $options);
                 $response = curl_exec($curl);
@@ -563,10 +570,9 @@
 
                         $frs_server = $this->getServerByUrl($frs_base_url);
                         $api_type = $frs_server[frs::API_TYPE] ?? null;
+                        $rbt_all_data[$frs_base_url][$stream_id][self::P_URL] = $this->config["api"]["internal"] . "/frs/camshot/" . $stream_id;
+                        $rbt_all_data[$frs_base_url][$stream_id][self::P_CALLBACK_URL] = $this->config["api"]["internal"] . "/frs/callback?stream_id=" . $stream_id;
                         if ($api_type === frs::API_FRS) {
-                            $rbt_all_data[$frs_base_url][$stream_id][self::P_URL] = $this->config["api"]["internal"] . "/frs/camshot/" . $stream_id;
-                            $rbt_all_data[$frs_base_url][$stream_id][self::P_CALLBACK_URL] = $this->config["api"]["internal"] . "/frs/callback?stream_id=" . $stream_id;
-
                             $config = null;
                             if (isset($item['rc_area']) && $item['rc_area'] !== "null") {
                                 $area = json_decode($item['rc_area'], true);
@@ -995,7 +1001,7 @@
                     $is_liked2 = count($this->db->get($query)) > 0;
                 }
 
-                return $is_owner && $is_liked1 || $is_liked2;
+                return $is_liked1 || $is_liked2;
             }
 
             /**
@@ -1076,6 +1082,13 @@
                 else
                     $data = "";
                 $headers = ['Expect:', 'Accept: application/json', 'Content-Type: application/json'];
+
+                // X-Balancer-Data header
+                if (($method === self::M_START_WORKFLOW || $method === self::M_STOP_WORKFLOW)
+                    && isset($params[self::P_STREAM_ID])) {
+                    $headers[] = 'X-Balancer-Data: ' . $params[self::P_STREAM_ID];
+                }
+
                 $auth_token = $this->getAuthToken($base_url);
                 if (isset($auth_token)) {
                     $headers[] = 'Authorization: Bearer ' . $auth_token;
@@ -1085,7 +1098,8 @@
                     CURLOPT_POST => 1,
                     CURLOPT_POSTFIELDS=> $data,
                     CURLOPT_RETURNTRANSFER => 1,
-                    CURLOPT_HTTPHEADER => $headers
+                    CURLOPT_HTTPHEADER => $headers,
+                    CURLOPT_TIMEOUT => @$this->config['backends']['frs']['http_timeout'] ?? 3
                 ];
                 curl_setopt_array($curl, $options);
                 $response = curl_exec($curl);
@@ -1096,38 +1110,6 @@
                 } else {
                     return json_decode($response, true);
                 }
-            }
-
-            /**
-             * @inheritDoc
-             */
-            public function addStreamLprs($cam, array $params = [])
-            {
-                // TODO: Implement addStreamLprs() method.
-            }
-
-            /**
-             * @inheritDoc
-             */
-            public function removeStreamLprs($cam)
-            {
-                // TODO: Implement removeStreamLprs() method.
-            }
-
-            /**
-             * @inheritDoc
-             */
-            public function startWorkflowLprs($cam)
-            {
-                // TODO: Implement startWorkflowLprs() method.
-            }
-
-            /**
-             * @inheritDoc
-             */
-            public function stopWorkflowLprs($cam)
-            {
-                // TODO: Implement stopWorkflowLprs() method.
             }
         }
     }

@@ -2,14 +2,18 @@
 
 namespace hw\ip\domophone\is;
 
+use hw\Interface\{
+    CmsLevelsInterface,
+    FreePassInterface,
+    GateModeInterface,
+};
 use hw\ip\domophone\domophone;
 
 /**
  * Abstract class representing an Intersvyaz (IS) domophone.
  */
-abstract class is extends domophone
+abstract class is extends domophone implements CmsLevelsInterface, FreePassInterface, GateModeInterface
 {
-
     use \hw\ip\common\is\is;
 
     protected const CMS_PARAMS = [
@@ -119,14 +123,6 @@ abstract class is extends domophone
         ]);
     }
 
-    public function configureGate(array $links = []): void
-    {
-        $this->apiCall('/gate/settings', 'PUT', [
-            'gateMode' => (bool)$links,
-            'prefixHouse' => (bool)$links,
-        ]);
-    }
-
     public function configureMatrix(array $matrix): void
     {
         $params = [];
@@ -138,7 +134,7 @@ abstract class is extends domophone
                 // 'hundreds' => $hundreds,
                 'tens' => $tens,
                 'units' => $units,
-                'apartment' => $apartment
+                'apartment' => $apartment,
             ] = $matrixCell;
 
             $params[$tens][$units] = $apartment;
@@ -205,6 +201,11 @@ abstract class is extends domophone
         }
     }
 
+    public function getCmsLevels(): array
+    {
+        return array_map('intval', array_values($this->apiCall('/levels')['resistances']));
+    }
+
     public function getLineDiagnostics(int $apartment): int
     {
         $res = $this->apiCall("/panelCode/$apartment/resist");
@@ -214,6 +215,16 @@ abstract class is extends domophone
         }
 
         return $res['resist'];
+    }
+
+    public function isFreePassEnabled(): bool
+    {
+        return $this->apiCall('/relay/1/settings')['alwaysOpen'];
+    }
+
+    public function isGateModeEnabled(): bool
+    {
+        return $this->apiCall('/gate/settings')['gateMode'] ?? false;
     }
 
     public function openLock(int $lockNumber = 0): void
@@ -278,13 +289,25 @@ abstract class is extends domophone
                 '1' => $code1,
                 '2' => $code2,
                 '3' => $code3,
-            ]
+            ],
         ]);
     }
 
-    public function setLanguage(string $language = 'ru'): void
+    public function setFreePassEnabled(bool $enabled): void
     {
-        // Empty implementation
+        $relays = $this->apiCall('/relay/info');
+
+        foreach ($relays as $relay) {
+            $this->apiCall("/relay/$relay/settings", 'PUT', ['alwaysOpen' => $enabled]);
+        }
+    }
+
+    public function setGateModeEnabled(bool $enabled): void
+    {
+        $this->apiCall('/gate/settings', 'PUT', [
+            'gateMode' => $enabled,
+            'prefixHouse' => $enabled,
+        ]);
     }
 
     public function setPublicCode(int $code = 0): void
@@ -316,15 +339,6 @@ abstract class is extends domophone
         }
     }
 
-    public function setUnlocked(bool $unlocked = true): void
-    {
-        $relays = $this->apiCall('/relay/info');
-
-        foreach ($relays as $relay) {
-            $this->apiCall("/relay/$relay/settings", 'PUT', ['alwaysOpen' => $unlocked]);
-        }
-    }
-
     public function transformDbConfig(array $dbConfig): array
     {
         $dbConfig['sip']['stunEnabled'] = false;
@@ -337,17 +351,6 @@ abstract class is extends domophone
             if (count($apartment['cmsLevels']) === 4) {
                 $apartment['cmsLevels'] = array_slice($apartment['cmsLevels'], 2, 2);
             }
-        }
-
-        if ($dbConfig['gateLinks']) {
-            unset($dbConfig['gateLinks']);
-
-            $dbConfig['gateLinks'][] = [
-                'address' => '',
-                'prefix' => 0,
-                'firstFlat' => 1,
-                'lastFlat' => 1,
-            ];
         }
 
         return $dbConfig;
@@ -365,7 +368,7 @@ abstract class is extends domophone
     {
         $this->apiCall('/openCode', 'POST', [
             'code' => $code,
-            'panelCode' => $apartment
+            'panelCode' => $apartment,
         ]);
     }
 
@@ -511,29 +514,24 @@ abstract class is extends domophone
         return array_values($this->apiCall('/levels')['volumes']);
     }
 
-    protected function getCmsLevels(): array
-    {
-        return array_map('intval', array_values($this->apiCall('/levels')['resistances']));
-    }
-
     protected function getCmsModel(): string
     {
         $idModelMap = [
             'FACTORIAL' => [
-                64 => 'FACTORIAL 8x8'
+                64 => 'FACTORIAL 8x8',
             ],
             'CYFRAL' => [
-                100 => 'KMG-100'
+                100 => 'KMG-100',
             ],
             'VIZIT' => [
-                100 => 'BK-100'
+                100 => 'BK-100',
             ],
             'METAKOM' => [
                 100 => 'COM-100U',
                 220 => 'COM-220U',
             ],
             'ELTIS' => [
-                100 => 'KM100-7.1'
+                100 => 'KM100-7.1',
             ],
         ];
 
@@ -552,22 +550,6 @@ abstract class is extends domophone
             'code3' => '3',
             'codeCms' => '1',
         ];
-    }
-
-    protected function getGateConfig(): array
-    {
-        ['gateMode' => $gateModeEnabled] = $this->apiCall('/gate/settings');
-
-        if (!$gateModeEnabled) {
-            return [];
-        }
-
-        return [[
-            'address' => '',
-            'prefix' => 0,
-            'firstFlat' => 1,
-            'lastFlat' => 1,
-        ]];
     }
 
     protected function getMatrix(): array
@@ -635,7 +617,7 @@ abstract class is extends domophone
             'port' => $port,
             'domain' => $server,
             'username' => $login,
-            'password' => $password
+            'password' => $password,
         ] = $this->apiCall('/sip/settings')['remote'];
 
         return [
@@ -647,16 +629,6 @@ abstract class is extends domophone
             'stunServer' => '',
             'stunPort' => 3478,
         ];
-    }
-
-    protected function getTickerText(): string
-    {
-        return $this->apiCall('/panelDisplay/settings')['imgStr'] ?? '';
-    }
-
-    protected function getUnlocked(): bool
-    {
-        return $this->apiCall('/relay/1/settings')['alwaysOpen'];
     }
 
     /**

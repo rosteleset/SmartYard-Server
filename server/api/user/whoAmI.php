@@ -8,7 +8,7 @@
      * @apiName whoAmI
      * @apiGroup user
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiSuccess {Object} user user info
      */
@@ -31,11 +31,11 @@
                 $user = $params["_backends"]["users"]->getUser($params["_uid"]);
 
                 $extension = sprintf("7%09d", (int)$params["_uid"]);
-                $cred = $params["_redis"]->get("webrtc_" . md5($extension));
+                $cred = $params["_redis"]->get("WEBRTC:" . md5($extension));
                 if (!$cred) {
                     $cred = md5(GUIDv4());
                 }
-                $params["_redis"]->setex("webrtc_" . md5($extension), 24 * 60 * 60, $cred);
+                $params["_redis"]->setex("WEBRTC:" . md5($extension), 24 * 60 * 60, $cred);
 
                 $user["webRtcExtension"] = $extension;
                 $user["webRtcPassword"] = $cred;

@@ -8,7 +8,7 @@
      * @apiName getFlats
      * @apiGroup houses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiQuery {String="flatIdByPrefix,apartment,code,openCode,rfId,subscriberId,houseId,domophoneId,credentials,login,contract,customField"} by
      * @apiQuery {Mixed} params

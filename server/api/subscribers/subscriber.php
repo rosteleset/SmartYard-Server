@@ -8,7 +8,7 @@
      * @apiName addSubscriber
      * @apiGroup subscribers
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {String} mobile
      * @apiBody {String} subscriberName
@@ -28,7 +28,7 @@
      * @apiName modifySubscriber
      * @apiGroup subscribers
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} subscriberId
      * @apiBody {String} [mobile]
@@ -48,7 +48,7 @@
      * @apiName deleteSubscriber
      * @apiGroup subscribers
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} subscriberId
      *
@@ -65,7 +65,7 @@
      * @apiName deleteSubscriberFromFlat
      * @apiGroup subscribers
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} flatId
      * @apiBody {Number} subscriberId

@@ -70,6 +70,16 @@
             size: "lg",
             fields: [
                 {
+                    id: "name",
+                    type: "text",
+                    title: i18n("addresses.domophoneName"),
+                    placeholder: i18n("addresses.domophoneName"),
+                    validate: v => {
+                        return $.trim(v).length <= 64;
+                    },
+                    tab: i18n("addresses.primary"),
+                },
+                {
                     id: "enabled",
                     type: "yesno",
                     title: i18n("addresses.enabled"),
@@ -129,14 +139,14 @@
                     validate: v => {
                         return [ "*", "#", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" ].indexOf($.trim(v)) >= 0;
                     },
-                    tab: i18n("addresses.primary"),
+                    tab: i18n("addresses.secondary"),
                 },
                 {
                     id: "nat",
                     type: "yesno",
                     title: i18n("addresses.nat"),
                     value: "0",
-                    tab: i18n("addresses.primary"),
+                    tab: i18n("addresses.secondary"),
                 },
                 {
                     id: "video",
@@ -153,17 +163,23 @@
                         },
                     ],
                     value: "inband",
-                    tab: i18n("addresses.primary"),
+                    tab: i18n("addresses.secondary"),
                 },
                 {
-                    id: "name",
+                    id: "concierge",
                     type: "text",
-                    title: i18n("addresses.domophoneName"),
-                    placeholder: i18n("addresses.domophoneName"),
-                    validate: v => {
-                        return $.trim(v).length <= 64;
-                    },
-                    tab: i18n("addresses.primary"),
+                    title: i18n("addresses.concierge"),
+                    placeholder: i18n("addresses.concierge"),
+                    hint: i18n("addresses.dial"),
+                    tab: i18n("addresses.secondary"),
+                },
+                {
+                    id: "sos",
+                    type: "text",
+                    title: i18n("addresses.sos"),
+                    placeholder: i18n("addresses.sos"),
+                    hint: i18n("addresses.dial"),
+                    tab: i18n("addresses.secondary"),
                 },
                 {
                     id: "comments",
@@ -173,6 +189,13 @@
                     validate: v => {
                         return $.trim(v).length <= 64;
                     },
+                    tab: i18n("addresses.secondary"),
+                },
+                {
+                    id: "monitoring",
+                    type: "yesno",
+                    title: i18n("addresses.monitoring"),
+                    placeholder: i18n("addresses.monitoring"),
                     tab: i18n("addresses.primary"),
                 },
                 {
@@ -242,6 +265,17 @@
                         tab: i18n("addresses.primary"),
                     },
                     {
+                        id: "name",
+                        type: "text",
+                        title: i18n("addresses.domophoneName"),
+                        placeholder: i18n("addresses.domophoneName"),
+                        value: domophone.name,
+                        validate: v => {
+                            return $.trim(v).length <= 64;
+                        },
+                        tab: i18n("addresses.primary"),
+                    },
+                    {
                         id: "enabled",
                         type: "yesno",
                         title: i18n("addresses.enabled"),
@@ -305,21 +339,21 @@
                         validate: v => {
                             return [ "*", "#", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" ].indexOf($.trim(v)) >= 0;
                         },
-                        tab: i18n("addresses.primary"),
+                        tab: i18n("addresses.secondary"),
                     },
                     {
                         id: "firstTime",
                         type: "yesno",
                         title: i18n("addresses.firstTime"),
                         value: domophone.firstTime,
-                        tab: i18n("addresses.primary"),
+                        tab: i18n("addresses.secondary"),
                     },
                     {
                         id: "nat",
                         type: "yesno",
                         title: i18n("addresses.nat"),
                         value: domophone.nat,
-                        tab: i18n("addresses.primary"),
+                        tab: i18n("addresses.secondary"),
                     },
                     {
                         id: "video",
@@ -336,25 +370,32 @@
                             },
                         ],
                         value: domophone.video,
-                        tab: i18n("addresses.primary"),
+                        tab: i18n("addresses.secondary"),
+                    },
+                    {
+                        id: "concierge",
+                        type: "text",
+                        title: i18n("addresses.concierge"),
+                        placeholder: i18n("addresses.concierge"),
+                        hint: i18n("addresses.dial"),
+                        value: domophone.concierge,
+                        tab: i18n("addresses.secondary"),
+                    },
+                    {
+                        id: "sos",
+                        type: "text",
+                        title: i18n("addresses.sos"),
+                        placeholder: i18n("addresses.sos"),
+                        hint: i18n("addresses.dial"),
+                        value: domophone.sos,
+                        tab: i18n("addresses.secondary"),
                     },
                     {
                         id: "locksAreOpen",
                         type: "yesno",
                         title: i18n("addresses.locksAreOpen"),
                         value: domophone.locksAreOpen,
-                        tab: i18n("addresses.primary"),
-                    },
-                    {
-                        id: "name",
-                        type: "text",
-                        title: i18n("addresses.domophoneName"),
-                        placeholder: i18n("addresses.domophoneName"),
-                        value: domophone.name,
-                        validate: v => {
-                            return $.trim(v).length <= 64;
-                        },
-                        tab: i18n("addresses.primary"),
+                        tab: i18n("addresses.secondary"),
                     },
                     {
                         id: "comments",
@@ -365,15 +406,23 @@
                         validate: v => {
                             return $.trim(v).length <= 64;
                         },
-                        tab: i18n("addresses.primary"),
+                        tab: i18n("addresses.secondary"),
                     },
                     {
                         id: "display",
                         type: "area",
                         title: i18n("addresses.display"),
-                        placeholder: i18n("addresses.display"),
+                        placeholder: i18n("addresses.displayPlaceholder"),
                         value: domophone.display,
                         tab: i18n("addresses.primary"),
+                    },
+                    {
+                        id: "monitoring",
+                        type: "yesno",
+                        title: i18n("addresses.monitoring"),
+                        placeholder: i18n("addresses.monitoring"),
+                        tab: i18n("addresses.secondary"),
+                        value: domophone.monitoring,
                     },
                     {
                         id: "ext",
@@ -405,6 +454,7 @@
 
     handleDeviceStatus: function (status) {
         let statusClass;
+
         switch (status) {
             case 'OK':
                 statusClass = 'status-ok';
@@ -422,16 +472,19 @@
                 statusClass = 'status-other-error';
                 break;
             default:
-                statusClass = 'status-unknown';
-                status = 'unknown'
+                if (status == i18n("addresses.disabled")) {
+                    statusClass = 'status-disabled';
+                    status = i18n("addresses.disabled")
+                } else {
+                    statusClass = 'status-unknown';
+                    status = i18n("addresses.unknown")
+                }
         }
         return `
-        <div class="status-container">
-            <span class="status-indicator ${statusClass}">
-                <div class="status-tooltip">${status}</div>
-            </span>
-        </div>
-    `;
+            <div class="status-container">
+                <span class="status-indicator ${statusClass}" title="${status}"></span>
+            </div>
+        `;
     },
 
     route: function (params) {
@@ -487,7 +540,6 @@
                     let rows = [];
 
                     for (let i in modules.addresses.domophones.meta.domophones) {
-
                         rows.push({
                             uid: modules.addresses.domophones.meta.domophones[i].domophoneId,
                             cols: [
@@ -495,11 +547,11 @@
                                     data: modules.addresses.domophones.meta.domophones[i].domophoneId,
                                 },
                                 {
-                                    data: modules.addresses.domophones.meta.domophones[i].enabled
+                                    data: (modules.addresses.domophones.meta.domophones[i].enabled && modules.addresses.domophones.meta.domophones[i].monitoring)
                                         ? modules.addresses.domophones.handleDeviceStatus(
                                             modules.addresses.domophones.meta.domophones[i].status
-                                                ? modules.addresses.domophones.meta.domophones[i].status.status : "Unknown")
-                                        : modules.addresses.domophones.handleDeviceStatus("Disabled"),
+                                                ? modules.addresses.domophones.meta.domophones[i].status.status : i18n("addresses.unknown"))
+                                        : modules.addresses.domophones.handleDeviceStatus(i18n("addresses.disabled")),
                                     nowrap: true,
                                 },
                                 {
@@ -507,7 +559,7 @@
                                     nowrap: true,
                                 },
                                 {
-                                    data: (modules.addresses.domophones.meta.domophones[i].model && modules.addresses.domophones.meta.models[modules.addresses.domophones.meta.domophones[i].model]) ? modules.addresses.domophones.meta.models[modules.addresses.domophones.meta.domophones[i].model].title : modules.addresses.domophones.meta.domophones[i].model,
+                                    data: modules.addresses.domophones.meta.models[modules.addresses.domophones.meta.domophones[i].model]?.title ?? "&nbsp;",
                                     nowrap: true,
                                 },
                                 {

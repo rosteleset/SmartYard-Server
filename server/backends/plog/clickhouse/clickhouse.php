@@ -21,6 +21,7 @@
             private $ttl_camshot_days;  // время жизни кадра события
             private $back_time_shift_video_shot;  // сдвиг назад в секундах от времени события для получения кадра от медиа сервера
             private $cron_process_events_scheduler;
+            private $http_timeout;  // timeout for file_get_contents
 
             public function __construct($config, $db, $redis, $login = false) {
                 parent::__construct($config, $db, $redis, $login);
@@ -41,6 +42,7 @@
                 $this->ttl_camshot_days = $config['backends']['plog']['ttl_camshot_days'];
                 $this->back_time_shift_video_shot = $config['backends']['plog']['back_time_shift_video_shot'];
                 $this->cron_process_events_scheduler = $config['backends']['plog']['cron_process_events_scheduler'];
+                $this->http_timeout = $config['backends']['plog']['http_timeout'] ?? 3;  // default 3 seconds
             }
 
             /**
@@ -89,7 +91,8 @@
                                         $image_data = false;
                                         $urlOfScreenshot = $response[frs::P_DATA][frs::P_SCREENSHOT] ?? $response[frs::P_DATA][frs::P_SCREENSHOT_URL] ?? "";
                                         if (filter_var($urlOfScreenshot, FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED) !== false) {
-                                            $image_data = file_get_contents($urlOfScreenshot);
+                                            $image_data = file_get_contents($urlOfScreenshot, false,
+                                                stream_context_create(["http" => ["timeout" => $this->http_timeout]]));
                                         }
                                         if ($image_data) {
                                             $headers = implode("\n", $http_response_header);
@@ -120,7 +123,8 @@
                                         $image_data = false;
                                         $urlOfScreenshot = $response[frs::P_DATA][frs::P_SCREENSHOT_URL];
                                         if (filter_var($urlOfScreenshot, FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED) !== false) {
-                                            $image_data = file_get_contents($urlOfScreenshot);
+                                            $image_data = file_get_contents($urlOfScreenshot, false,
+                                                stream_context_create(["http" => ["timeout" => $this->http_timeout]]));
                                         }
                                         if ($image_data) {
                                             $headers = implode("\n", $http_response_header);
@@ -175,7 +179,8 @@
                                     if (pathinfo(parse_url($urlOfScreenshot, PHP_URL_PATH), PATHINFO_EXTENSION) === 'mp4') {
                                         system("ffmpeg -y -i " . $urlOfScreenshot . " -vframes 1 $filename 1>/dev/null 2>/dev/null");
                                     } else {
-                                        file_put_contents($filename, file_get_contents($urlOfScreenshot));
+                                        file_put_contents($filename, file_get_contents($urlOfScreenshot, false,
+                                            stream_context_create(["http" => ["timeout" => $this->http_timeout]])));
                                     }
                                     if (file_exists($filename)) {
                                         $camshot_data[self::COLUMN_IMAGE_UUID] = $files->toGUIDv4($files->addFile(
@@ -1338,7 +1343,7 @@
                                 ["/SIP UA event: CALL_ESTABLISHED \( sip:(\d+)@.*\)/", false, true, false, 0],
                                 ["/pickup 1/", false, true, false, 0],
                                 ["/DTMF/", false, false, true, 1],
-                                ["/STAT\/DOOR1: 1/" , false, false, true, 0], // Not sure about it
+                                ["/STAT\/DOOR1: 1/" , false, false, true, 0], // TODO: no info about opening with CMS handset
                             ];
 
                             foreach ($patterns_call as [$pattern, $flag_start, $flag_talk_started, $flag_door_opened, $now_call_from_panel]) {

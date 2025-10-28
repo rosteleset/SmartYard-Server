@@ -75,11 +75,32 @@
                 $path = substr($path, 1);
             }
 
-            // FIXME, test new feature ⚡
             // Handle SIP REGISTER message
             if ($request_method === 'POST' && $path === 'subscriber/hash') {
                 $this->auth();
-                [$subscriber, $sipDomain] = explode('@', explode(':', $postData['from_uri'])[1]);
+
+                if (empty($postData)){
+                    response(400, false, false, 'Invalid post body');
+                }
+
+                $requiredFields = ['event', 'source_ip', 'from_uri'];
+                foreach ($requiredFields as $field) {
+                    if (!isset($postData[$field])) {
+                        response(400, false, false, "Missing required field: $field");
+                        exit(1);
+                    }
+                }
+
+                if ($postData['event'] !== 'REGISTER') {
+                    response(400, false, false, 'Unsupported event type');
+                    exit(1);
+                }
+
+                if (sscanf($postData['from_uri'], 'sip:%[^@]@%s', $subscriber, $sipDomain) !== 2) {
+                    response(400, false, false, 'Invalid from_uri format');
+                    exit(1);
+                }
+
                 $this->handleExtension($subscriber, $sipDomain);
             }
 
@@ -159,7 +180,7 @@
          */
         private function handleExtension(int $extension, string $sipDomain): void
         {
-            $sipDomain = $this->checkSipDomain($sipDomain);// validate SIP domain
+            $sipDomain = $this->checkSipDomain($sipDomain);
 
             $indoorPattern = '/^4\d{9}$/';//  indoor SIP intercom extension pattern 4000000000
             $outdoorPattern = '/^1\d{5}$/';// outdoor SIP intercom extension pattern 100000
@@ -172,7 +193,6 @@
             } elseif (preg_match($outdoorPattern, $extension)) {
                 $credential = $this->getIntercomCredentials($extension, 'outdoor');
             }
-
             if ($credential) {
                 $ha1 = $this->generateHash($extension, $sipDomain, $credential);
                 $this->reply(200, ['ha1' => $ha1]);
@@ -313,4 +333,3 @@
              */
         }
     }
-

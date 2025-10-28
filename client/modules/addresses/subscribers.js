@@ -130,8 +130,8 @@
                     type: "text",
                     title: i18n("addresses.mobile"),
                     placeholder: config.phonePattern?config.phonePattern:i18n("addresses.mobile"),
-                    validate: (v) => {
-                        return new RegExp(config.regExp.phone).test(v);
+                    validate: v => {
+                        return new RegExp("^" + config.regExp.phone + "$").test(v);
                     }
                 },
                 {
@@ -178,8 +178,8 @@
                     type: "text",
                     title: i18n("addresses.key"),
                     placeholder: "00000000ABCDEF",
-                    validate: (v) => {
-                        return new RegExp(config.regExp.rfid).test(v);
+                    validate: v => {
+                        return new RegExp("^" + config.regExp.rfid + "$").test(v);
                     }
                 },
                 {
@@ -187,11 +187,6 @@
                     type: "text",
                     title: i18n("addresses.comments"),
                     placeholder: i18n("addresses.comments"),
-                },
-                {
-                    id: "watch",
-                    type: "noyes",
-                    title: i18n("addresses.watch"),
                 },
             ],
             callback: function (result) {
@@ -248,7 +243,7 @@
 
                 flats.push({
                     "id": subscriber.flats[i].flatId,
-                    "text": trimStr($.trim(subscriber.flats[i].house.houseFull + ", " + subscriber.flats[i].flat), 64, true) + " " + link,
+                    "text": trimStr($.trim(subscriber.flats[i].house.houseFull + ", " + subscriber.flats[i].flat), 64) + " " + link,
                     "checked": true,
                     "append": flat,
                 });
@@ -274,8 +269,8 @@
                         type: "text",
                         title: i18n("addresses.mobile"),
                         placeholder: config.phonePattern?config.phonePattern:i18n("addresses.mobile"),
-                        validate: (v) => {
-                            return new RegExp(config.regExp.phone).test(v);
+                        validate: v => {
+                            return new RegExp("^" + config.regExp.phone + "$").test(v);
                         },
                         value: subscriber.mobile,
                     },
@@ -381,8 +376,8 @@
                     type: "text",
                     title: i18n("addresses.mobile"),
                     placeholder: config.phonePattern?config.phonePattern:i18n("addresses.mobile"),
-                    validate: (v) => {
-                        return new RegExp(config.regExp.phone).test(v);
+                    validate: v => {
+                        return new RegExp("^" + config.regExp.phone + "$").test(v);
                     },
                     value: subscriber.mobile,
                 },
@@ -474,15 +469,8 @@
                         placeholder: i18n("addresses.comments"),
                         value: key.comments,
                     },
-                    {
-                        id: "watch",
-                        type: "noyes",
-                        title: i18n("addresses.watch"),
-                        hidden: parseInt(key.accessType) != 2,
-                        value: key.watch,
-                    },
                 ],
-                callback: function (result) {
+                callback: result => {
                     if (result.delete === "yes") {
                         modules.addresses.subscribers.deleteKey(keyId);
                     } else {
@@ -638,10 +626,6 @@
                     title: i18n("addresses.comments"),
                     fullWidth: true,
                 },
-                {
-                    title: i18n("addresses.watch"),
-                    fullWidth: true,
-                },
             ],
             rows: () => {
                 let rows = [];
@@ -664,9 +648,6 @@
                             },
                             {
                                 data: list[i].comments,
-                            },
-                            {
-                                data: parseInt(list[i].watch) ? i18n("yes") : i18n("no"),
                             },
                         ],
                     });
@@ -846,9 +827,9 @@
                         by: "flatId",
                         query: params.flatId,
                     }).done(response => {
-                        modules.addresses.subscribers.renderSubscribers(response.flat.subscribers);
-                        modules.addresses.subscribers.renderKeys(response.flat.keys);
-                        modules.addresses.subscribers.renderCameras(response.flat.cameras);
+                        modules.addresses.subscribers.renderSubscribers(response.subscribers);
+                        modules.addresses.subscribers.renderKeys(response.keys);
+                        modules.addresses.subscribers.renderCameras(response.cameras);
                     }).
                     fail(FAIL).
                     fail(() => {

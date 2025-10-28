@@ -8,7 +8,7 @@
      * @apiName check
      * @apiGroup notes
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} noteId
      * @apiBody {Number} line

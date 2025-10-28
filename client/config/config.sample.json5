@@ -36,13 +36,14 @@
         },
         // minimal and maximum zoom levels
         "min": 4,
-        "max": 18
+        "max": 18,
+        "hideAttribution": false,
     },
     "regExp": {
         // phone number validation regexp
-        "phone": "^(7 \\(\\d{3}\\) \\d{3}-\\d{2}-\\d{2}|7\\d{10})$",
+        "phone": "(8|7|\\+7)((\\d{10})|(\\s\\(\\d{3}\\)\\s\\d{3}\\s\\d{2}\\s\\d{2}))",
         // rfid validation regexp
-        "rfid": "^[0-9A-F]{14}$"
+        "rfid": "[0-9A-F]{14}"
     },
     // default client route
     "defaultRoute": "#about",

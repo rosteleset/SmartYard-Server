@@ -8,15 +8,15 @@
      * @apiName addresses
      * @apiGroup addresses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
-     * @apiBody {Number} [regionId] regionId
-     * @apiBody {Number} [areaId] areaId
-     * @apiBody {Number} [cityId] cityId
-     * @apiBody {Number} [settlementId] settlementId
-     * @apiBody {Number} [streetId] streetId
-     * @apiBody {Number} [houseId] houseId
-     * @apiBody {String} [include="regions,areas,cities,settlements,streets,houses"] include objects
+     * @apiQuery {Number} [regionId] regionId
+     * @apiQuery {Number} [areaId] areaId
+     * @apiQuery {Number} [cityId] cityId
+     * @apiQuery {Number} [settlementId] settlementId
+     * @apiQuery {Number} [streetId] streetId
+     * @apiQuery {Number} [houseId] houseId
+     * @apiQuery {String} [include="regions,areas,cities,settlements,streets,houses"] include objects
      *
      * @apiSuccess {Object} list of address objects
      */

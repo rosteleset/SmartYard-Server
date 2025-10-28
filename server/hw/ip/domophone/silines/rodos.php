@@ -6,11 +6,9 @@ use hw\ip\domophone\domophone;
 
 /**
  * Abstract class representing a RODOS IP relay.
- * @todo REFACTOR THIS!!!! REFACTOR ALL HW!!! PLS!!
  */
 class rodos extends domophone
 {
-
     public function addRfid(string $code, int $apartment = 0): void
     {
         // Empty implementation
@@ -26,7 +24,7 @@ class rodos extends domophone
         int   $code = 0,
         array $sipNumbers = [],
         bool  $cmsEnabled = true,
-        array $cmsLevels = []
+        array $cmsLevels = [],
     ): void
     {
         // Empty implementation
@@ -38,11 +36,6 @@ class rodos extends domophone
     }
 
     public function configureEventServer(string $url): void
-    {
-        // Empty implementation
-    }
-
-    public function configureGate(array $links = []): void
     {
         // Empty implementation
     }
@@ -64,7 +57,7 @@ class rodos extends domophone
         int    $port = 5060,
         bool   $stunEnabled = false,
         string $stunServer = '',
-        int    $stunPort = 3478
+        int    $stunPort = 3478,
     ): void
     {
         // Empty implementation
@@ -142,11 +135,6 @@ class rodos extends domophone
         // Empty implementation
     }
 
-    public function setCmsLevels(array $levels): void
-    {
-        // Empty implementation
-    }
-
     public function setCmsModel(string $model = ''): void
     {
         // Empty implementation
@@ -158,11 +146,6 @@ class rodos extends domophone
     }
 
     public function setDtmfCodes(string $code1 = '1', string $code2 = '2', string $code3 = '3', string $codeCms = '1'): void
-    {
-        // Empty implementation
-    }
-
-    public function setLanguage(string $language = 'ru'): void
     {
         // Empty implementation
     }
@@ -182,17 +165,7 @@ class rodos extends domophone
         // Empty implementation
     }
 
-    public function setTickerText(string $text = ''): void
-    {
-        // Empty implementation
-    }
-
     public function setUnlockTime(int $time = 3): void
-    {
-        // Empty implementation
-    }
-
-    public function setUnlocked(bool $unlocked = true): void
     {
         // Empty implementation
     }
@@ -204,8 +177,6 @@ class rodos extends domophone
 
     public function transformDbConfig(array $dbConfig): array
     {
-        $dbConfig['unlocked'] = false;
-
         $dbConfig['dtmf'] = [
             'code1' => '1',
             'code2' => '2',
@@ -288,11 +259,6 @@ class rodos extends domophone
         return [];
     }
 
-    protected function getCmsLevels(): array
-    {
-        return [];
-    }
-
     protected function getCmsModel(): string
     {
         return '';
@@ -311,11 +277,6 @@ class rodos extends domophone
     protected function getEventServer(): string
     {
         return '';
-    }
-
-    protected function getGateConfig(): array
-    {
-        return [];
     }
 
     protected function getMatrix(): array
@@ -348,16 +309,6 @@ class rodos extends domophone
             'stunServer' => '',
             'stunPort' => 3478,
         ];
-    }
-
-    protected function getTickerText(): string
-    {
-        return '';
-    }
-
-    protected function getUnlocked(): bool
-    {
-        return false;
     }
 
     protected function initializeProperties(): void

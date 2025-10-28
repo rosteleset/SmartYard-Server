@@ -8,12 +8,13 @@
      * @apiName addCustomField
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {String} catalog
      * @apiBody {String} type
      * @apiBody {String} field
      * @apiBody {String} fieldDisplay
+     * @apiBody {String} fieldDisplayList
      *
      * @apiSuccess {Number} customFieldId
      */
@@ -26,11 +27,12 @@
      * @apiName modifyCustomField
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} customFieldId
      * @apiBody {String} catalog
      * @apiBody {String} fieldDisplay
+     * @apiBody {String} fieldDisplayList
      * @apiBody {String} fieldDescription
      * @apiBody {String} regex
      * @apiBody {String} format
@@ -40,19 +42,21 @@
      * @apiBody {Boolean} search
      * @apiBody {Boolean} required
      * @apiBody {String} editor
+     * @apiBody {Number} float
+     * @apiBody {Boolean} readonly
      *
      * @apiSuccess {Boolean} operationResult
      */
 
     /**
-     * @api {put} /api/tt/customField/:customFieldId delete custom field
+     * @api {delete} /api/tt/customField/:customFieldId delete custom field
      *
      * @apiVersion 1.0.0
      *
      * @apiName deleteCustomField
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} customFieldId
      *
@@ -74,13 +78,13 @@
         class customField extends api {
 
             public static function POST($params) {
-                $customFieldId = loadBackend("tt")->addCustomField($params["catalog"], $params["type"], $params["field"], $params["fieldDisplay"]);
+                $customFieldId = loadBackend("tt")->addCustomField($params["catalog"], $params["type"], $params["field"], $params["fieldDisplay"], $params["fieldDisplayList"]);
 
                 return api::ANSWER($customFieldId, ($customFieldId !== false) ? "customFieldId" : "notAcceptable");
             }
 
             public static function PUT($params) {
-                $success = loadBackend("tt")->modifyCustomField($params["_id"], $params["catalog"], $params["fieldDisplay"], $params["fieldDescription"], $params["regex"], $params["format"], $params["link"], $params["options"], $params["indx"], $params["search"], $params["required"], $params["editor"]);
+                $success = loadBackend("tt")->modifyCustomField($params["_id"], $params["catalog"], $params["fieldDisplay"], $params["fieldDisplayList"], $params["fieldDescription"], $params["regex"], $params["format"], $params["link"], $params["options"], $params["indx"], $params["search"], $params["required"], $params["editor"], $params["float"], $params["readonly"]);
 
                 return api::ANSWER($success, ($success !== false) ? false : "notAcceptable");
             }

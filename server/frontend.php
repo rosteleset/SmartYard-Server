@@ -38,6 +38,7 @@
     require_once "utils/i18n.php";
     require_once "utils/mime_content_type.php";
     require_once "utils/mb_levenshtein.php";
+    require_once "utils/array_is_list.php";
 
     require_once "backends/backend.php";
 
@@ -163,7 +164,7 @@
 
     $params = [];
 
-    if (count($m) >= 3) {
+    if (count($m) >= 3 && $m[2]) {
         $params["_id"] = urldecode($m[2]);
     }
 
@@ -308,7 +309,7 @@
     $params["_ip"] = $ip;
 
     if (@$params["_login"]) {
-        $redis->set("last_action_" . md5($params["_login"]), time());
+        $redis->set("LAST:ACTION:" . md5($params["_login"]), time());
     }
 
     if ($api == "accounts" && $method == "forgot") {

@@ -11,7 +11,6 @@ use Exception;
  */
 trait rubetek
 {
-
     /**
      * @var string Default WEB interface password.
      */
@@ -41,7 +40,7 @@ trait rubetek
 
     public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow'): void
     {
-        $timeSettings = $this->getConfig()['time'];
+        $timeSettings = $this->getConfiguration()['time'];
         $timeSettings['ntp_pool'] = "$server:$port";
         $timeSettings['timezone'] = $this->getOffsetByTimezone($timezone);
         $this->apiCall('/configuration', 'PATCH', ['time' => $timeSettings]);
@@ -49,12 +48,14 @@ trait rubetek
 
     public function getSysinfo(): array
     {
-        $version = $this->apiCall('/version', 'GET', [], 3);
+        $version = $this->apiCall('/version', 'GET', [], 3) ?? [];
 
-        $sysinfo['DeviceID'] = $version['serial_number'];
-        $sysinfo['DeviceModel'] = $version['model'];
-        $sysinfo['HardwareVersion'] = $version['hardware_version'];
-        $sysinfo['SoftwareVersion'] = $version['firmware_version'];
+        $sysinfo['DeviceID'] = $version['serial_number'] ?? null;
+        $sysinfo['DeviceModel'] = $version['model'] ?? null;
+        $sysinfo['HardwareVersion'] = $version['hardware_version'] ?? null;
+        $sysinfo['SoftwareVersion'] = $version['firmware_version'] ?? null;
+
+        $this->softwareVersion = $sysinfo['SoftwareVersion'];
 
         return $sysinfo;
     }
@@ -146,14 +147,14 @@ trait rubetek
      *
      * @return array Device configuration.
      */
-    protected function getConfig(): array
+    protected function getConfiguration(): array
     {
         return $this->apiCall('/configuration');
     }
 
     protected function getEventServer(): string
     {
-        $syslogUrl = $this->getConfig()['syslog']['address'];
+        $syslogUrl = $this->getConfiguration()['syslog']['address'];
         [$server, $port] = array_pad(explode(':', $syslogUrl), 2, 514);
 
         return 'syslog.udp' . ':' . $server . ':' . $port;
@@ -164,7 +165,7 @@ trait rubetek
         [
             'timezone' => $offset,
             'ntp_pool' => $ntpPool,
-        ] = $this->getConfig()['time'];
+        ] = $this->getConfiguration()['time'];
 
         [$server, $port] = array_pad(explode(':', $ntpPool), 2, 0);
 
@@ -207,6 +208,6 @@ trait rubetek
      */
     protected function isLegacyVersion(): bool
     {
-        return $this->getSoftwareVersion() !== null && $this->getSoftwareVersion() < '2024.08.150111497';
+        return $this->getSoftwareVersion() !== null && $this->getSoftwareVersion() < '2025.04.171131928';
     }
 }

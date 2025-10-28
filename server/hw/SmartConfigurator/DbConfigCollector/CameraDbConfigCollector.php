@@ -6,11 +6,10 @@ use hw\ip\camera\entities\DetectionZone;
 use hw\SmartConfigurator\ConfigurationBuilder\CameraConfigurationBuilder;
 
 /**
- * This class is responsible for collecting camera configuration data from the database.
+ * Class responsible for collecting camera configuration data from the database.
  */
-class CameraDbConfigCollector implements IDbConfigCollector
+class CameraDbConfigCollector implements DbConfigCollectorInterface
 {
-
     /**
      * @var array The application configuration.
      */
@@ -76,7 +75,6 @@ class CameraDbConfigCollector implements IDbConfigCollector
         );
 
         $this->builder->addMotionDetection($zones);
-
         return $this;
     }
 

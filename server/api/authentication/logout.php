@@ -8,7 +8,7 @@
      * @apiName logout
      * @apiGroup authentication
      *
-     * @apiHeader {String} token authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {String=all,this} [mode=all] logout all
      */

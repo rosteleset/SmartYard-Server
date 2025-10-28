@@ -17,8 +17,10 @@
         echo "current DB version $_version\n\n";
 
         $skip = [];
-        foreach(explode(",", $_skip) as $s) {
-            $skip[$s] = true;
+        if ($_skip) {
+            foreach(explode(",", $_skip) as $s) {
+                $skip[$s] = true;
+            }
         }
 
         $db->exec("BEGIN TRANSACTION");

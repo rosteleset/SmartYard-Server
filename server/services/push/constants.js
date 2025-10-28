@@ -1,8 +1,12 @@
 const { argv } = require('node:process');
 
+let file = parseInt(argv[2]) ? (".env" + argv[2].toString()) : ".env";
+
 require("dotenv").config({
-    path: argv[2] ? argv[2] : ".env",
+    path: file,
 });
+
+console.log("using " + file + " config file");
 
 const path = require('path')
 
@@ -10,14 +14,16 @@ const path = require('path')
 const PORT = process.env.APP_PORT || 8080;
 const HOST = process.env.APP_HOST || "127.0.0.1";
 
+// COMMON
+
 // FCM
+const FCM_PROJECT_NAME = process.env.FCM_PROJECT_NAME || null;
+const FCM_DATABASE_NAME = process.env.FCM_DATABASE_NAME || null;
 const FCM_SERVICE_ACCOUNT = process.env.FCM_SERVICE_ACCOUNT ? path.join(__dirname, './assets/' + process.env.FCM_SERVICE_ACCOUNT) : path.join(__dirname, './assets/pushServiceAccountKey.json');
-const FCM_APP_PROJECT_NAME = process.env.APP_PROJECT_NAME || null;
-const FCM_APP_BUNDLE_ID = process.env.APP_BUNDLE_ID || null;
-const FCM_APP_USER_AGENT = process.env.APP_USER_AGENT || null;
-const FCM_DB_NAME = process.env.APP_DATABASE_NAME || null;
 
 // APN
+const APN_BUNDLE_ID = process.env.APN_BUNDLE_ID || null;
+const APN_USER_AGENT = process.env.APN_USER_AGENT || null;
 const APN_CERT = process.env.APN_CERT ? path.join(__dirname, './assets/' + process.env.APN_CERT) : path.join(__dirname, './assets/certificate-and-privatekey.pem');
 
 // HCM
@@ -33,12 +39,12 @@ module.exports = {
     PORT,
     HOST,
 
+    FCM_PROJECT_NAME,
+    FCM_DATABASE_NAME,
     FCM_SERVICE_ACCOUNT,
-    FCM_APP_PROJECT_NAME,
-    FCM_APP_BUNDLE_ID,
-    FCM_APP_USER_AGENT,
-    FCM_DB_NAME,
 
+    APN_BUNDLE_ID,
+    APN_USER_AGENT,
     APN_CERT,
 
     HUAWEI_CLIENT_ID,
@@ -48,3 +54,5 @@ module.exports = {
     RUSTORE_PROJECT_ID,
     RUSTORE_TOKEN
 }
+
+console.log(module.exports);

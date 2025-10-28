@@ -8,7 +8,7 @@
      * @apiName modifyDevice
      * @apiGroup subscribers
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} [deviceId]
      * @apiBody {String} [authToken]
@@ -35,7 +35,7 @@
      * @apiName deleteDevice
      * @apiGroup subscribers
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} [deviceId]
      *

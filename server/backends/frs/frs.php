@@ -241,34 +241,5 @@
              * @return false|object
              */
             abstract public function apiCallLprs($base_url, $method, $params);
-
-            /**
-             * Add video stream to LPRS
-             * @param object $cam camera object
-             * @param array $params array of setup parameters for video stream
-             * @return object
-             */
-            abstract public function addStreamLprs($cam, array $params = []);
-
-            /**
-             * Remove video stream from LPRS
-             * @param object $cam camera object
-             * @return object
-             */
-            abstract public function removeStreamLprs($cam);
-
-            /**
-             * Start Workflow
-             * @param object $cam camera object
-             * @return object
-             */
-            abstract public function startWorkflowLprs($cam);
-
-            /**
-             * Stop Workflow
-             * @param object $cam camera object
-             * @return object
-             */
-            abstract public function stopWorkflowLprs($cam);
         }
     }

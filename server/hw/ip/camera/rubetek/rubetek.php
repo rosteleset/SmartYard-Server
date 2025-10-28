@@ -10,7 +10,6 @@ use hw\ip\camera\entities\DetectionZone;
  */
 class rubetek extends camera
 {
-
     use \hw\ip\common\rubetek\rubetek {
         transformDbConfig as protected commonTransformDbConfig;
     }
@@ -44,7 +43,18 @@ class rubetek extends camera
 
     public function getCamshot(): string
     {
-        return $this->apiCall('/image', 'GET', [], 5);
+        if ($this->isLegacyVersion()) {
+            return $this->apiCall('/image', 'GET', [], 5);
+        }
+
+        $context = stream_context_create([
+            'http' => [
+                'timeout' => 3.0,
+            ],
+        ]);
+
+        $auth = base64_encode($this->login . ':' . $this->password);
+        return file_get_contents("$this->url/snap.jpg?auth=$auth", false, $context);
     }
 
     public function setOsdText(string $text = ''): void
@@ -73,7 +83,7 @@ class rubetek extends camera
 
     protected function getMotionDetectionConfig(): array
     {
-        ['detection_mode' => $detectionMode] = $this->getConfig()['face_detection'];
+        ['detection_mode' => $detectionMode] = $this->getConfiguration()['face_detection'];
 
         if ($detectionMode === 1) {
             return [new DetectionZone(0, 0, 100, 100)];
@@ -84,6 +94,6 @@ class rubetek extends camera
 
     protected function getOsdText(): string
     {
-        return $this->getConfig()['osd']['name'];
+        return $this->getConfiguration()['osd']['name'];
     }
 }

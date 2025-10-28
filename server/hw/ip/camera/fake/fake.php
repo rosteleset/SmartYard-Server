@@ -27,7 +27,7 @@ class fake extends camera
 
     public function getCamshot(): string
     {
-        return file_get_contents(__DIR__ . '/img/' . $this->url);
+        return file_get_contents(__DIR__ . '/img/callcenter.jpg');
     }
 
     public function getSysinfo(): array

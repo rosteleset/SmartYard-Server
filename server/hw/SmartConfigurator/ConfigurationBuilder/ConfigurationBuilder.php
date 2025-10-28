@@ -3,11 +3,10 @@
 namespace hw\SmartConfigurator\ConfigurationBuilder;
 
 /**
- * This abstract class serves as a base for building configurations.
+ * The abstract class responsible for building the device configuration.
  */
 abstract class ConfigurationBuilder
 {
-
     /**
      * @var array The configuration being built.
      */
@@ -17,13 +16,11 @@ abstract class ConfigurationBuilder
      * Add an event server to the configuration.
      *
      * @param string $url Event server URL.
-     *
      * @return self
      */
     public function addEventServer(string $url): self
     {
         $this->config['eventServer'] = $url;
-
         return $this;
     }
 
@@ -33,13 +30,11 @@ abstract class ConfigurationBuilder
      * @param string $server The NTP server's address.
      * @param int $port The NTP server's port number.
      * @param string $timezone The timezone identifier.
-     *
      * @return self
      */
     public function addNtp(string $server, int $port, string $timezone): self
     {
         $this->config['ntp'] = compact('server', 'port', 'timezone');
-
         return $this;
     }
 

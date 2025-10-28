@@ -8,7 +8,7 @@
      * @apiName searchFlat
      * @apiGroup subscribers
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiQuery {String} search
      *

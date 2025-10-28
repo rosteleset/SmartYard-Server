@@ -6,7 +6,7 @@
 
     callsLoaded: false,
 
-    createIssue: function (current_project, parent) {
+    createIssue: function (currentProject, parent, catalogByIssue) {
         let projects = [];
 
         projects.push({
@@ -18,13 +18,13 @@
             projects.push({
                 id: modules.tt.meta.projects[i].acronym,
                 text: $.trim(modules.tt.meta.projects[i].project ? modules.tt.meta.projects[i].project : modules.tt.meta.projects[i].acronym),
-                selected: current_project == modules.tt.meta.projects[i].acronym || lStore("ttProject") == modules.tt.meta.projects[i].acronym,
+                selected: currentProject == modules.tt.meta.projects[i].acronym || lStore("ttProject") == modules.tt.meta.projects[i].acronym,
             });
         }
 
         for (let i in projects) {
             if (projects[i].selected) {
-                current_project = projects[i].id;
+                currentProject = projects[i].id;
             }
         }
 
@@ -34,7 +34,7 @@
             workflows[i] = modules.tt.meta.workflows[i].name ? modules.tt.meta.workflows[i].name : i;
         }
 
-        function workflowsByProject(project) {
+        function workflowsByProject(project, catalogByIssue) {
             let w = [
                 {
                     id: "-",
@@ -51,7 +51,7 @@
                                 w.push({
                                     id: modules.tt.meta.projects[i].workflows[j],
                                     text: wn,
-                                    selected: lStore("ttWorkflow") == modules.tt.meta.projects[i].workflows[j],
+                                    selected: (catalogByIssue && parent && parent.workflow == modules.tt.meta.projects[i].workflows[j]) || (!catalogByIssue && !parent && lStore("ttWorkflow") == modules.tt.meta.projects[i].workflows[j]),
                                 });
                             }
                         }
@@ -63,7 +63,7 @@
             return w;
         }
 
-        function catalogByWorkflow(workflow, prefix) {
+        function catalogByWorkflow(workflow, prefix, catalogByIssue) {
             let catalog = [{
                 id: "-",
                 text: "-",
@@ -71,12 +71,16 @@
 
             let x = false;
 
-            for (let i in modules.tt.meta.workflows) {
-                if (i == workflow) {
-                    if (modules.tt.meta.workflows[i].catalog) {
-                        x = modules.tt.meta.workflows[i].catalog;
+            if (catalogByIssue) {
+                x = catalogByIssue;
+            } else {
+                for (let i in modules.tt.meta.workflows) {
+                    if (i == workflow) {
+                        if (modules.tt.meta.workflows[i].catalog) {
+                            x = modules.tt.meta.workflows[i].catalog;
+                        }
+                        break;
                     }
-                    break;
                 }
             }
 
@@ -129,11 +133,11 @@
                     minimumResultsForSearch: Infinity,
                     select: (el, id, prefix) => {
                         $(`#${prefix}workflow`).html("").select2({
-                            data: workflowsByProject(el.val()),
+                            data: workflowsByProject(el.val(), catalogByIssue),
                             minimumResultsForSearch: Infinity,
                             language: lang["_code"],
                         });
-                        if (catalogByWorkflow($(`#${prefix}workflow`).val(), prefix)) {
+                        if (catalogByWorkflow($(`#${prefix}workflow`).val(), prefix, catalogByIssue)) {
                             $(`#${prefix}catalog`).attr("disabled", false);
                         } else {
                             $(`#${prefix}catalog`).attr("disabled", true);
@@ -149,9 +153,9 @@
                     type: "select2",
                     title: i18n("tt.workflowName"),
                     minimumResultsForSearch: Infinity,
-                    options: workflowsByProject(current_project),
+                    options: workflowsByProject(currentProject, catalogByIssue),
                     select: (el, id, prefix) => {
-                        if (catalogByWorkflow(el.val(), prefix)) {
+                        if (catalogByWorkflow(el.val(), prefix, catalogByIssue)) {
                             $(`#${prefix}catalog`).attr("disabled", false);
                         } else {
                             $(`#${prefix}catalog`).attr("disabled", true);
@@ -160,6 +164,7 @@
                     validate: v => {
                         return v && v !== '-' && v !== 'undefined';
                     },
+                    readonly: !!catalogByIssue,
                 },
                 {
                     id: "catalog",
@@ -167,28 +172,28 @@
                     title: i18n("tt.catalog"),
                     minimumResultsForSearch: Infinity,
                     validate: (v, prefix) => {
-                        return $(`#${prefix}catalog`).attr("disabled") || (v && v !== '-' && v !== 'undefined');
+                        return !!$(`#${prefix}catalog`).attr("disabled") || (!!v && v !== '-' && v !== 'undefined');
                     },
                 },
             ],
-            done: function (prefix) {
-                if (catalogByWorkflow($(`#${prefix}workflow`).val(), prefix)) {
+            done: prefix => {
+                if (catalogByWorkflow($(`#${prefix}workflow`).val(), prefix, catalogByIssue)) {
                     $(`#${prefix}catalog`).attr("disabled", false);
                 } else {
                     $(`#${prefix}catalog`).attr("disabled", true);
                 }
             },
-            callback: function (result) {
+            callback: result => {
                 if (result.project && result.workflow) {
                     lStore("ttProject", result.project);
                     lStore("ttWorkflow", result.workflow);
                 }
-                modules.tt.issue.createIssueForm(result.project, result.workflow, result.catalog, (!!parent) ? encodeURIComponent(parent) : "");
+                modules.tt.issue.createIssueForm(result.project, result.workflow, result.catalog, (!!parent) ? encodeURIComponent(parent["issueId"]) : "");
             },
         });
     },
 
-    createIssueForm: function (current_project, workflow, catalog, parent) {
+    createIssueForm: function (currentProject, workflow, catalog, parent) {
         subTop();
 
         $("#leftTopDynamic").html("");
@@ -196,7 +201,7 @@
 
         loadingStart();
 
-        function ciForm(current_project, workflow, catalog, parent) {
+        function ciForm(currentProject, workflow, catalog, parent) {
             QUERY("tt", "issueTemplate", {
                 _id: workflow,
                 catalog: catalog,
@@ -215,7 +220,7 @@
                 let projectId = -1;
 
                 for (let i in modules.tt.meta.projects) {
-                    if (modules.tt.meta.projects[i].acronym == current_project) {
+                    if (modules.tt.meta.projects[i].acronym == currentProject) {
                         project = modules.tt.meta.projects[i];
                         projectName = modules.tt.meta.projects[i].project?modules.tt.meta.projects[i].project:modules.tt.meta.projects[i].acronym;
                         projectId = modules.tt.meta.projects[i].projectId;
@@ -306,7 +311,7 @@
                     fields: fields,
                     callback: modules.tt.issue.doCreateIssue,
                     cancel: () => {
-                        window.location.href = "?#tt&_=" + Math.random();
+                        window.location.reload();
                     },
                 }).show();
 
@@ -314,17 +319,17 @@
             }).
             fail(FAIL).
             fail(() => {
-                window.location.href = "?#tt&_=" + Math.random();
+                window.location.reload();
             });
         }
 
         modules.users.loadUsers(() => {
             if (modules.groups) {
                 modules.groups.loadGroups(() => {
-                    ciForm(current_project, workflow, catalog, parent);
+                    ciForm(currentProject, workflow, catalog, parent);
                 });
             } else {
-                ciForm(current_project, workflow, catalog, parent);
+                ciForm(currentProject, workflow, catalog, parent);
             }
         });
     },
@@ -425,7 +430,7 @@
 
                         if (n) {
                             cardForm({
-                                title: modules.tt.displayAction(action),
+                                title: issueId,
                                 apply: modules.tt.displayAction(action),
                                 fields: fields,
                                 footer: true,
@@ -447,17 +452,33 @@
                                 },
                             });
                         } else {
-                            mConfirm(action + " \"" + issue.issue.issueId + "\"?", i18n("confirm"), modules.tt.displayAction(action), () => {
-                                loadingStart();
-                                PUT("tt", "action", issue.issue.issueId, {
-                                    action: action,
-                                }).
-                                fail(FAIL).
-                                always(() => {
-                                    if (typeof callback === "function") {
-                                        callback();
+                            cardForm({
+                                title: issueId,
+                                apply: modules.tt.displayAction(action),
+                                fields: [
+                                    {
+                                        id: "confirm",
+                                        type: "none",
+                                        title: modules.tt.displayAction(action) + "?",
                                     }
-                                });
+                                ],
+                                footer: true,
+                                borderless: true,
+                                size: "lg",
+                                timeout: timeout,
+                                noHover: true,
+                                callback: () => {
+                                    loadingStart();
+                                    PUT("tt", "action", issue.issue.issueId, {
+                                        action: action,
+                                    }).
+                                    fail(FAIL).
+                                    always(() => {
+                                        if (typeof callback === "function") {
+                                            callback();
+                                        }
+                                    });
+                                },
                             });
                         }
                     }
@@ -472,6 +493,50 @@
     },
 
     renderIssue: function (issue, filter, search) {
+
+        function commentsMenu() {
+            let options = [];
+            let c = project.comments.split("\n");
+            for (let i in c) {
+                options.push({
+                    id: parseInt(i) + 100,
+                    text: c[i],
+                });
+            }
+
+            let value = [];
+            if (lStore("ttCommentsFilter")) {
+                value = lStore("ttCommentsFilter");
+            }
+
+            cardForm({
+                title: i18n("tt.commentsHideFilter"),
+                footer: true,
+                borderless: true,
+                noFocus: true,
+                noHover: true,
+                singleColumn: true,
+                fields: [
+                    {
+                        id: "comments",
+                        type: "multiselect",
+                        options,
+                        value,
+                    },
+                ],
+                callback: r => {
+                    let h = [];
+                    for (let i in r.comments) {
+                        h.push(parseInt(r.comments[i]));
+                    }
+                    lStore("ttCommentsFilter", h);
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 50);
+                },
+            });
+        }
+
         modules.tt.issue.callsLoaded = false;
 
         let count = false;
@@ -564,9 +629,9 @@
                 if (f) {
                     let x = modules.tt.issueField2Html(issue.issue, issue.fields[i], undefined, target);
                     if (x) {
-                        h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${modules.tt.issueFieldTitle(issue.fields[i])}' style="font-size: 11pt;"/></td></tr>`;
+                        h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${modules.tt.issueFieldTitle(issue.fields[i])}' /></td></tr>`;
                         h += "<tr>";
-                        h += "<td colspan='2' style='width: 100%; font-size: 12pt;' class='pl-1'>";
+                        h += "<td colspan='2' style='width: 100%;' class='pl-1'>";
                         h += x;
                         h += "</td>";
                         h += "</tr>";
@@ -587,7 +652,8 @@
         h += "<span class='mr-3'>";
         let url = new URL(window.location.href);
         url = url.origin + url.pathname + "?#tt&issue=" + issue.issue["issueId"];
-        h += "<span class='cc hover pointer' id='issueIssueId' data-clipboard-target='#issueIssueId' data-clipboard-text='" + url + "'>" + issue.issue["issueId"] + "</span>";
+        h += "<span class='cc hover pointer fas fa-fw fa-link mr-2' id='issueIssueIdUrl' data-clipboard-target='#issueIssueIdUrl' data-clipboard-text='" + url + "' title='" + i18n("tt.issueIdUrl") + "'></span>";
+        h += "<span class='cc hover pointer' id='issueIssueIdText' data-clipboard-target='#issueIssueIdText' data-clipboard-text='" + issue.issue["issueId"] + "' title='" + i18n("tt.issueIdText") + "'>" + issue.issue["issueId"] + "</span>";
         if (!isEmpty(issue.actions)) {
             h += ":";
         }
@@ -713,9 +779,7 @@
             h += "<td style='vertical-align: top; width: 100%;' colspan='2'>";
             h += "<div class='pt-1 pb-1 small'>";
             for (let i in issue.issue.tags) {
-                let fg = (tags[issue.issue.tags[i]] && tags[issue.issue.tags[i]].foreground) ? tags[issue.issue.tags[i]].foreground : "#666666";
-                let bg = (tags[issue.issue.tags[i]] && tags[issue.issue.tags[i]].background) ? tags[issue.issue.tags[i]].background : "#ffffff";
-                h += `<span class="mr-1 text-bold" style='border: solid thin #cbccce; padding-left: 6px; padding-right: 5px; padding-top: 2px; padding-bottom: 2px; color: ${fg}; border-radius: 4px; background: ${bg};'><i class="fas fa-tag mr-2"></i>${escapeHTML(issue.issue.tags[i])}</span>`;
+                h += `<span class="mr-1 text-bold ${(tags[issue.issue.tags[i]] && tags[issue.issue.tags[i]].color) ? ("bg-" + tags[issue.issue.tags[i]].color) : ""}" style='border: solid thin #cbccce; padding-left: 6px; padding-right: 5px; padding-top: 2px; padding-bottom: 2px; border-radius: 8px;'><i class="fas fa-tag mr-2"></i>${escapeHTML(issue.issue.tags[i])}</span>`;
             }
             h += "</div>";
             h += "</td>";
@@ -750,16 +814,17 @@
         }
 
         if (issue.issue.attachments && Object.keys(issue.issue.attachments).length) {
-            h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.attachments")}' style="font-size: 11pt;"/></td></tr>`;
+            h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.attachments")}' /></td></tr>`;
+            h += '<tbody class="gallery">';
             for (let i in issue.issue.attachments) {
                 h += "<tr>";
-                h += "<td colspan='2' class='pl-1' style='font-size: 14px;'>";
+                h += "<td colspan='2' class='pl-1'>";
                 h += "<div>";
-                h += "#" + (parseInt(i) + 1) + " ";
-                h += ttDate(issue.issue.attachments[i].metadata.added);
-                h += "<span class='ml-2 text-info text-bold'>";
-                h += members[issue.issue.attachments[i].metadata.attachman]?members[issue.issue.attachments[i].metadata.attachman]:issue.issue.attachments[i].metadata.attachman;
+                h += "<span class='text-bold'>";
+                h += members[issue.issue.attachments[i].metadata.attachman] ? members[issue.issue.attachments[i].metadata.attachman] : issue.issue.attachments[i].metadata.attachman;
                 h += "</span>";
+                h += "&nbsp;" + i18n("tt.wasAttached") + "&nbsp;";
+                h += ttDate(issue.issue.attachments[i].metadata.added);
                 if (modules.tt.meta.myRoles[issue.issue.project] >= 20 && !modules.tt.meta.finalStatus[issue.issue.status]) {
                     if (modules.tt.meta.myRoles[issue.issue.project] >= 70 || issue.issue.attachments[i].metadata.attachman == lStore("_login")) {
                         h += "<i class='far fa-trash-alt ml-2 pointer text-danger deleteFile'></i>";
@@ -767,55 +832,98 @@
                 }
                 h += "</div>";
                 h += "<div class='ml-2 mb-2 mt-1'>";
-                h += "<a class='hoverable' href='" + lStore("_server") + "/tt/file?issueId=" + encodeURIComponent(issue.issue["issueId"]) + "&filename=" + encodeURIComponent(issue.issue.attachments[i].filename) + "&_token=" + encodeURIComponent(lStore("_token")) + "' target='_blank'>";
+                let ref = lStore("_server") + "/tt/file?issueId=" + encodeURIComponent(issue.issue["issueId"]) + "&filename=" + encodeURIComponent(issue.issue.attachments[i].filename) + "&_token=" + encodeURIComponent(lStore("_token"));
                 if (issue.issue.attachments[i].metadata.type.indexOf("image/") == 0) {
-                    h += $.trim(issue.issue.attachments[i].filename) + "<br />";
-                    h += `<img src="${lStore("_server") + "/tt/file?issueId=" + encodeURIComponent(issue.issue["issueId"]) + "&filename=" + encodeURIComponent(issue.issue.attachments[i].filename) + "&_token=" + encodeURIComponent(lStore("_token"))}" style="height: 200px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;"></img>`;
+                    h += `<span>${$.trim(issue.issue.attachments[i].filename)}</span>`;
+                    h += "<br />";
+                    h += `<a class='gallery-link' href='${ref}'>`;
+                    h += `<img class='gallery-image' src="${ref}" style="height: 200px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;"></img>`;
+                    h += '</a>'
                 } else {
+                    h += `<a class='hoverable' href='${ref}' target='_blank'>`;
                     h += $.trim(issue.issue.attachments[i].filename);
+                    h += "</a>";
                 }
-                h += "</a>";
-//                h += " [" + formatBytes(issue.issue.attachments[i].length) + "]";
                 h += "</div>";
                 h += "</td>";
                 h += "</tr>";
             }
+            h += "</tbody>";
         }
 
         if (issue.issue.childrens && issue.issue.childrens.issues && Object.keys(issue.issue.childrens.issues).length) {
-            h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.subIssues")}' style="font-size: 11pt;"/></td></tr>`;
+            h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.subIssues")}' /></td></tr>`;
             h += "<tr>";
-            h += "<td colspan='2' class='pl-1' style='font-size: 14px;'>";
-            h += "<table>";
+            h += "<td colspan='2' class='pl-1 pr-3'>";
+            h += '<table class="datatable">';
+
+            h += '<thead>';
+            h += '<tr>';
+            h += '<th class="pl-2 pr-2 ildc" nowrap>' + i18n("tt.issue") + '</th>';
+            h += '<th class="pl-2 pr-2 ildc" nowrap>' + i18n("tt.created") + '</th>';
+            h += '<th class="pl-2 pr-2 ildc" nowrap>' + i18n("tt.author") + '</th>';
+            h += '<th class="pl-2 pr-2 ildc" nowrap>' + i18n("tt.status") + '</th>';
+            h += '<th class="pl-2 pr-2 ildc" nowrap>' + i18n("tt.catalog") + '</th>';
+            h += '<th class="pl-2 pr-2 ildc" nowrap>' + i18n("tt.resolution") + '</th>';
+            h += '<th class="pl-2 pr-2" style="width: 100%;">' + i18n("tt.subject") + '</th>';
+            h += '</tr>';
+            h += '</thead>';
+
+            h += '<tbody>';
             for (let i in issue.issue.childrens.issues) {
                 h += "<tr>";
-                h += `<td class='text-bold hoverable ttIssue'>${issue.issue.childrens.issues[i].issueId}</td>`;
-                h += `<td class='pl-2'>${ttDate(issue.issue.childrens.issues[i].created, true)}</td>`;
-                h += `<td class='pl-2'>${modules.tt.issueField2Html(issue.issue.childrens.issues[i], "author", undefined, "left")}</td>`;
-                h += `<td class='pl-2'>${issue.issue.childrens.issues[i].subject}</td>`;
-                h += `<td class='pl-2'>${modules.tt.issueField2Html(issue.issue.childrens.issues[i], "status", undefined, "left")}</td>`;
+                h += `<td><a class='hoverable pl-2 pr-2 ildc' href='?#tt&issue=${issue.issue.childrens.issues[i].issueId}'>${issue.issue.childrens.issues[i].issueId}</a></td>`;
+                h += `<td class='pl-2 pr-2 ildc' nowrap>${ttDate(issue.issue.childrens.issues[i].created, true)}</td>`;
+                h += `<td class='pl-2 pr-2 ildc' nowrap>${modules.tt.issueField2Html(issue.issue.childrens.issues[i], "author", undefined, "list")}</td>`;
+                h += `<td class='pl-2 pr-2 ildc' nowrap>${modules.tt.issueField2Html(issue.issue.childrens.issues[i], "status", undefined, "list")}</td>`;
+                h += `<td class='pl-2 pr-2 ildc' nowrap>${modules.tt.issueField2Html(issue.issue.childrens.issues[i], "catalog", undefined, "list")}</td>`;
+                h += `<td class='pl-2 pr-2 ildc' nowrap>${modules.tt.issueField2Html(issue.issue.childrens.issues[i], "resolution", undefined, "list")}</td>`;
+                h += `<td class='pl-2 pr-2'>${modules.tt.issueField2Html(issue.issue.childrens.issues[i], "subject", undefined, "list")}</td>`;
                 h += "</tr>";
             }
+            h += '</tbody>';
+
             h += "</table>";
             h += "</td>";
             h += "</tr>";
         }
 
         if (issue.issue.linkedIssues && issue.issue.linkedIssues.issues && Object.keys(issue.issue.linkedIssues.issues).length) {
-            h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.links")}' style="font-size: 11pt;"/></td></tr>`;
+            h += `<tr><td colspan='2' style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.links")}' /></td></tr>`;
             h += "<tr>";
-            h += "<td colspan='2' class='pl-1' style='font-size: 14px;'>";
-            h += "<table>";
+            h += "<td colspan='2' class='pl-1'>";
+
+            h += '<table class="datatable">';
+
+            h += '<thead>';
+            h += '<tr>';
+            h += '<th class="pl-2 pr-2 ildc" nowrap>' + i18n("tt.issue") + '</th>';
+            h += '<th class="pl-2 pr-2 ildc" nowrap>' + i18n("tt.created") + '</th>';
+            h += '<th class="pl-2 pr-2 ildc" nowrap>' + i18n("tt.author") + '</th>';
+            h += '<th class="pl-2 pr-2 ildc" nowrap>' + i18n("tt.status") + '</th>';
+            h += '<th class="pl-2 pr-2 ildc" nowrap>' + i18n("tt.catalog") + '</th>';
+            h += '<th class="pl-2 pr-2 ildc" nowrap>' + i18n("tt.resolution") + '</th>';
+            h += '<th class="pl-2 pr-2" width="100%;">' + i18n("tt.subject") + '</th>';
+            h += '<th class="pl-2 pr-2">&nbsp;</th>';
+            h += '</tr>';
+            h += '</thead>';
+
+            h += '<tbody>';
+
             for (let i in issue.issue.linkedIssues.issues) {
                 h += "<tr>";
-                h += `<td class='text-bold hoverable ttIssue'>${issue.issue.linkedIssues.issues[i].issueId}</td>`;
-                h += `<td class='pl-2'>${ttDate(issue.issue.linkedIssues.issues[i].created, true)}</td>`;
-                h += `<td class='pl-2'>${modules.tt.issueField2Html(issue.issue.linkedIssues.issues[i], "author", undefined, "left")}</td>`;
-                h += `<td class='pl-2'>${issue.issue.linkedIssues.issues[i].subject}</td>`;
-                h += `<td class='pl-2'>${modules.tt.issueField2Html(issue.issue.linkedIssues.issues[i], "status", undefined, "left")}</td>`;
-                h += `<td class='pl-2'><i class='fas fa-fw fa-unlink pointer text-danger unlinkIssue' data-issueId='${issue.issue.linkedIssues.issues[i].issueId}'></i></td>`;
+                h += `<td><a class='hoverable pl-2 pr-2 ildc' href='?#tt&issue=${issue.issue.linkedIssues.issues[i].issueId}'>${issue.issue.linkedIssues.issues[i].issueId}</a></td>`;
+                h += `<td class='pl-2 pr-2 ildc' nowrap>${ttDate(issue.issue.linkedIssues.issues[i].created, true)}</td>`;
+                h += `<td class='pl-2 pr-2 ildc' nowrap>${modules.tt.issueField2Html(issue.issue.linkedIssues.issues[i], "author", undefined, "list")}</td>`;
+                h += `<td class='pl-2 pr-2 ildc' nowrap>${modules.tt.issueField2Html(issue.issue.linkedIssues.issues[i], "status", undefined, "list")}</td>`;
+                h += `<td class='pl-2 pr-2 ildc' nowrap>${modules.tt.issueField2Html(issue.issue.linkedIssues.issues[i], "catalog", undefined, "list")}</td>`;
+                h += `<td class='pl-2 pr-2 ildc' nowrap>${modules.tt.issueField2Html(issue.issue.linkedIssues.issues[i], "resolution", undefined, "list")}</td>`;
+                h += `<td class='pl-2 pr-2'>${modules.tt.issueField2Html(issue.issue.linkedIssues.issues[i], "subject", undefined, "list")}</td>`;
+                h += `<td class='pl-2 pr-2'><i class='fas fa-fw fa-unlink pointer text-danger unlinkIssue' data-issueId='${issue.issue.linkedIssues.issues[i].issueId}' title='${i18n("tt.unlinkIssuesTitle")}'></i></td>`;
                 h += "</tr>";
             }
+
+            h += '</tbody>';
             h += "</table>";
             h += "</td>";
             h += "</tr>";
@@ -825,35 +933,56 @@
 
         h += "<table style='width: 100%;' class='ml-2' id='issueComments'>";
 
+        let hc = 0;
+
         if (issue.issue.comments && Object.keys(issue.issue.comments).length) {
-            h += `<tr><td style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.comments")}' style="font-size: 11pt;"/></td></tr>`;
+            let cts = [];
+            try {
+                cts = project.comments.split("\n");
+            } catch (_) {
+                //
+            }
+            let cf = lStore("ttCommentsFilter");
+            if (project.comments && project.comments.split("\n").length > 0 && trim(project.comments.split("\n")[0])) {
+                h += `<tr><td style="width: 100%"><hr class='hr-text-pointer mt-1 mb-1 commentsMenu' data-content='&#x2630; ${i18n("tt.comments")}' /></td></tr>`;
+            } else {
+                h += `<tr><td style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.comments")}' /></td></tr>`;
+            }
             for (let i in issue.issue.comments) {
-                h += "<tr class='issueComment' data-time='" + issue.issue.comments[i].created + "'>";
-                h += "<td class='pl-1' style='font-size: 14px;'>";
-                h += "<div>";
-                h += "<span class='text-bold'>";
-                h += members[issue.issue.comments[i].author]?members[issue.issue.comments[i].author]:issue.issue.comments[i].author;
-                h += "</span>";
-                h += " ";
-                h += i18n("tt.commented");
-                h += " [#" + (parseInt(i) + 1) + "]: ";
-                h += ttDate(issue.issue.comments[i].created);
-                if (issue.issue.comments[i].private) {
-                    h += "<i class='ml-2 fas fa-fw fa-eye-slash text-warning'></i>";
-                } else {
-                    h += "<i class='ml-2 fas fa-fw fa-eye text-success'></i>";
+                let ct = 0;
+                if (cts.indexOf(issue.issue.comments[i].type) >= 0) {
+                    ct = cts.indexOf(issue.issue.comments[i].type) + 100;
                 }
-                if (modules.tt.meta.myRoles[issue.issue.project] >= 20 && !modules.tt.meta.finalStatus[issue.issue.status]) {
-                    if (modules.tt.meta.myRoles[issue.issue.project] >= 70 || issue.issue.comments[i].author == lStore("_login")) {
-                        h += `<i class='far fa-fw fa-edit ml-2 pointer text-primary modifyComment' data-index='${i}'></i>`;
+                if (!cf || !Array.isArray(cf) || cf.indexOf(ct) < 0) {
+                    h += "<tr class='issueComment' data-type='" + ct + "' data-time='" + issue.issue.comments[i].created + "' data-date='" + date("d-m-Y H:i:s", issue.issue.comments[i].created) + "'>";
+                    h += "<td class='pl-1'>";
+                    h += "<div>";
+                    h += "<span class='text-bold'>";
+                    h += members[issue.issue.comments[i].author] ? members[issue.issue.comments[i].author] : issue.issue.comments[i].author;
+                    h += "</span>";
+                    h += "&nbsp;";
+                    h += i18n("tt.commented");
+                    h += "&nbsp;";
+                    h += ttDate(issue.issue.comments[i].created);
+                    if (issue.issue.comments[i].private) {
+                        h += "<i class='ml-2 fas fa-fw fa-eye-slash text-warning'></i>";
+                    } else {
+                        h += "<i class='ml-2 fas fa-fw fa-eye text-success'></i>";
                     }
+                    if (modules.tt.meta.myRoles[issue.issue.project] >= 20 && !modules.tt.meta.finalStatus[issue.issue.status]) {
+                        if (modules.tt.meta.myRoles[issue.issue.project] >= 70 || issue.issue.comments[i].author == lStore("_login")) {
+                            h += `<i class='far fa-fw fa-edit ml-2 pointer text-primary modifyComment' data-index='${i}'></i>`;
+                        }
+                    }
+                    h += "</div>";
+                    h += "<div class='ml-2 mb-2 mt-1'>";
+                    h += convertLinks(nl2br($.trim(escapeHTML(issue.issue.comments[i].body))));
+                    h += "</div>";
+                    h += "</td>";
+                    h += "</tr>";
+                } else {
+                    hc++;
                 }
-                h += "</div>";
-                h += "<div class='ml-2 mb-2 mt-1'>";
-                h += convertLinks(nl2br($.trim(escapeHTML(issue.issue.comments[i].body))));
-                h += "</div>";
-                h += "</td>";
-                h += "</tr>";
             }
         }
 
@@ -865,8 +994,12 @@
 
         $("#mainForm").html(h);
 
+        if (hc) {
+            $(".commentsMenu").attr("data-content", "☰ " + i18n("tt.commentsHidden", hc));
+        }
+
         $(".ttIssue").off("click").on("click", function () {
-            window.location.href = "?#tt&issue=" + encodeURIComponent($(this).text());
+            // window.location.href = "?#tt&issue=" + encodeURIComponent($(this).text());
         });
 
         $(".ttJournal").off("click").on("click", () => {
@@ -886,9 +1019,8 @@
                     $(".ttCalls").hide();
                     $("#issueComments").hide();
                     let h = '';
-                    h += `<tr><td style='width: 100%' colspan='2'><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.journal")}' style='font-size: 11pt;'/></td></tr>`;
+                    h += `<tr><td style='width: 100%' colspan='2'><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.journal")}' /></td></tr>`;
                     let jf = true;
-                    let c = 1;
                     for (let i in response.journal) {
                         let o = response.journal[i].old && typeof response.journal[i].old.length == 'undefined';
                         let n = response.journal[i].new && typeof response.journal[i].new.length == 'undefined';
@@ -897,24 +1029,21 @@
                         }
                         let action = response.journal[i].action.split("#")[0];
                         let indx = parseInt(response.journal[i].action.split("#")[1]) + 1;
-                        let sep = ![ "modifyIssue", "modifyComment" ].includes(action.split("#")[0]);
                         h += "<tr>";
                         if (jf) {
                             jf = false;
-                            h += "<td class='pl-1' style='font-size: 14px;' colspan='2'>";
+                            h += "<td class='pl-1' colspan='2'>";
                         } else {
-                            h += "<td class='pl-1 pt-3' style='font-size: 14px;' colspan='2'>";
+                            h += "<td class='pl-1 pt-3' colspan='2'>";
                         }
                         h += "<div>";
-                        h += "#" + c + " ";
-                        c++;
-                        h += ttDate(response.journal[i].date);
-                        h += "<span class='ml-2 text-info text-bold'>";
+                        h += "<span class='text-bold'>";
                         h += members[response.journal[i].login] ? members[response.journal[i].login] : response.journal[i].login;
                         h += "</span>";
-                        h += "<span class='ml-2'>";
+                        h += "&nbsp;";
                         h += i18n("tt.journalAction" + action.charAt(0).toUpperCase() + action.substring(1), indx);
-                        h += "</span>";
+                        h += "&nbsp;";
+                        h += ttDate(response.journal[i].date);
                         h += "</div>";
                         h += "</td>";
                         h += "</tr>";
@@ -972,7 +1101,6 @@
                             k = [...new Set(k)].sort();
                             for (let j in k) {
                                 if (noJournal.indexOf(k[j]) >= 0) continue;
-//                                if (sep) {
                                     h += "<tr class='tr-hoverable'>";
                                     h += "<td class='pl-2 td-journal nowrap'>";
                                     h += modules.tt.issueFieldTitle(k[j]) + ": ";
@@ -981,24 +1109,6 @@
                                     h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].new[k[j]], "journal");
                                     h += "</td>";
                                     h += "</tr>";
-//                                } else {
-/*
-                                    h += "<tr class='tr-hoverable'>";
-                                    h += "<td class='pl-2 td-journal nowrap'>";
-                                    h += modules.tt.issueFieldTitle(k[j]) + " (" + i18n("tt.old") + "): ";
-                                    h += "</td>";
-                                    h += "<td class='pl-2 td-journal' style='width: 100%;'>&nbsp;</td>";
-                                    h += "</tr>";
-                                    h += "<tr class='tr-hoverable'>";
-                                    h += "<td class='pl-2 td-journal nowrap'>";
-                                    h += modules.tt.issueFieldTitle(k[j]) + " (" + i18n("tt.new") + "): ";
-                                    h += "</td>";
-                                    h += "<td class='pl-2 td-journal' style='width: 100%;'>";
-                                    h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].new[k[j]], "journal");
-                                    h += "</td>";
-                                    h += "</tr>";
-                                }
-*/
                             }
                         }
 
@@ -1016,21 +1126,10 @@
                                 h += modules.tt.issueField2Html(issue.issue, k[j], response.journal[i].old[k[j]], "journal");
                                 h += "</td>";
                                 h += "</tr>";
-/*
-                                h += "<tr class='tr-hoverable'>";
-                                h += "<td class='pl-2 td-journal nowrap'>";
-                                h += modules.tt.issueFieldTitle(k[j]) + " (" + i18n("tt.new") + "): ";
-                                h += "</td>";
-                                h += "<td class='pl-2 td-journal' style='width: 100%;'>&nbsp;</td>";
-                                h += "</tr>";
-*/
                             }
                         }
                     }
                     $("#issueJournal").html(h).show();
-                    $(".ttIssue").off("click").on("click", function () {
-                        window.location.href = "?#tt&issue=" + encodeURIComponent($(this).text());
-                    });
                 }).
                 always(loadingDone);
             } else {
@@ -1057,48 +1156,64 @@
                     if ($("#issueComments").text()) {
                         for (let i in result.cdr) {
                             let comments = $(".issueComment");
-                            let h = "<tr class='issueComment' data-time='" + result.cdr[i].start + "'>";
-                            h += "<td class='pl-1' style='font-size: 14px;'>";
+
+                            let h = "<tr class='issueComment' data-time='" + result.cdr[i].start + "' data-date='" + date("d-m-Y H:i:s", result.cdr[i].start) + "'>";
+                            h += "<td class='pl-1'>";
                             h += "<div>";
-                            h += "*" + (parseInt(i) + 1) + " ";
-                            h += ttDate(result.cdr[i].start);
-                            h += "<span class='ml-2 text-info text-bold'>";
-                            h += result.cdr[i].src + "&nbsp;>>>&nbsp;" + result.cdr[i].dst + " [" + result.cdr[i].billsec + " " + i18n("tt.sec") + "]";
+                            h += "<span class='text-bold'>";
+                            h += i18n("tt.call");
                             h += "</span>";
+                            h += " ";
+                            h += result.cdr[i].src + "&nbsp;>>>&nbsp;" + result.cdr[i].dst + ", " + result.cdr[i].billsec + " " + i18n("tt.sec");
+                            h += "&nbsp;";
+                            h += ttDate(result.cdr[i].start);
                             h += "</div>";
+
                             h += "<div class='ml-2 mb-1 mt-1'>";
                             h += `<audio src='${result.cdr[i].file}' controls='true' preload='none'>`;
                             h += "</div>";
                             h += "</td>";
                             h += "</tr>";
+
+                            let first = comments.first();
                             let f = false;
-                            let last = false;
-                            $(comments.get().reverse()).each(function () {
-                                let comment = $(this);
-                                if (!last) {
-                                    last = comment;
-                                }
-                                if (parseInt(result.cdr[i].start) < parseInt(comment.attr("data-time"))) {
-                                    f = true;
-                                    $(h).insertBefore(comment);
-                                    return false;
-                                }
-                            });
+
+                            if (parseInt(result.cdr[i].start) < parseInt(first.attr("data-time"))) {
+                                $(h).insertBefore(first);
+                                f = true;
+                            } else {
+                                comments.each(function () {
+                                    let comment = $(this);
+                                    if ((parseInt(result.cdr[i].start) > parseInt(comment.attr("data-time"))) && (parseInt(result.cdr[i].start) <= parseInt(comment.next().attr("data-time")))) {
+                                        $(h).insertAfter(comment);
+                                        f = true;
+                                        return false;
+                                    }
+                                });
+                            }
+
                             if (!f) {
-                                $(h).insertAfter(last);
+                                $(h).insertAfter(comments.last());
                             }
                         }
                     } else {
-                        let h = `<tr><td style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.comments")}' style="font-size: 11pt;"/></td></tr>`;
+                        let h = '';
+                        if (project.comments && project.comments.split("\n").length > 0 && trim(project.comments.split("\n")[0])) {
+                            h += `<tr><td style="width: 100%"><hr class='hr-text-pointer mt-1 mb-1 commentsMenu' data-content='&#x2630; ${i18n("tt.comments")}' /></td></tr>`;
+                        } else {
+                            h += `<tr><td style="width: 100%"><hr class='hr-text mt-1 mb-1' data-content='${i18n("tt.comments")}' /></td></tr>`;
+                        }
                         for (let i in result.cdr) {
-                            h += "<tr class='issueComment' data-time='" + result.cdr[i].start + "'>";
-                            h += "<td class='pl-1' style='font-size: 14px;'>";
+                            h += "<tr class='issueComment' data-time='" + result.cdr[i].start + "' data-date='" + date("d-m-Y H:i:s", result.cdr[i].start) + "'>";
+                            h += "<td class='pl-1'>";
                             h += "<div>";
-                            h += "*" + (parseInt(i) + 1) + " ";
-                            h += ttDate(result.cdr[i].start);
-                            h += "<span class='ml-2 text-info text-bold'>";
-                            h += result.cdr[i].src + "&nbsp;>>>&nbsp;" + result.cdr[i].dst + " [" + result.cdr[i].billsec + " " + i18n("tt.sec") + "]";
+                            h += "<span class='text-bold'>";
+                            h += i18n("tt.call");
                             h += "</span>";
+                            h += " ";
+                            h += result.cdr[i].src + "&nbsp;>>>&nbsp;" + result.cdr[i].dst + ", " + result.cdr[i].billsec + " " + i18n("tt.sec");
+                            h += "&nbsp;";
+                            h += ttDate(result.cdr[i].start);
                             h += "</div>";
                             h += "<div class='ml-2 mb-2 mt-1'>";
                             h += `<audio src='${result.cdr[i].file}' controls='true' preload='none'>`;
@@ -1107,6 +1222,7 @@
                             h += "</tr>";
                         }
                         $("#issueComments").html(h);
+                        $(".commentsMenu").off("click").on("click", commentsMenu);
                     }
                     message(i18n("tt.callsLoaded", result.cdr.length));
                 } else {
@@ -1277,13 +1393,11 @@
         });
 
         $(".ttSaAddSingleFile").off("click").on("click", () => {
-            let mimeTypes;
-
             let maxSize = parseInt(project.maxFileSize);
 
             let files = [];
 
-            loadFile(mimeTypes, maxSize, file => {
+            loadFile(false, maxSize, file => {
                 if (file) {
                     files.push(file);
                     loadingStart();
@@ -1298,13 +1412,11 @@
         });
 
         $(".ttSaAddSingleFileQuiet").off("click").on("click", () => {
-            let mimeTypes;
-
             let maxSize = parseInt(project.maxFileSize);
 
             let files = [];
 
-            loadFile(mimeTypes, maxSize, file => {
+            loadFile(false, maxSize, file => {
                 if (file) {
                     files.push(file);
                     loadingStart();
@@ -1316,6 +1428,22 @@
                     });
                 }
             }, false, true);
+        });
+
+        $(".ttSaAddMultipleFilesQuiet").off("click").on("click", () => {
+            let maxSize = parseInt(project.maxFileSize);
+
+            loadFiles(false, maxSize, files => {
+                if (files) {
+                    loadingStart();
+                    POST("tt", "file", false, { issueId: issue.issue.issueId, attachments: files }).
+                    fail(FAIL).
+                    fail(loadingDone).
+                    done(() => {
+                        window.location.href = refreshUrl();
+                    });
+                }
+            });
         });
 
         $(".deleteFile").off("click").on("click", function () {
@@ -1376,7 +1504,16 @@
         });
 
         $(".ttSaSubIssue").off("click").on("click", () => {
-            modules.tt.issue.createIssue(issue.issue["project"], issue.issue["issueId"]);
+            loadingStart();
+            POST("tt", "catalog", false, {
+                issue: issue.issue
+            }).
+            done(r => {
+                loadingDone();
+                modules.tt.issue.createIssue(issue.issue["project"], issue.issue, r.catalog);
+            }).
+            fail(loadingDone).
+            fail(FAIL);
         });
 
         $(".ttSaLink").off("click").on("click", () => {
@@ -1385,12 +1522,13 @@
                 footer: true,
                 borderless: true,
                 topApply: true,
+                size: "xl",
                 fields: [
                     {
                         id: "issueId",
                         type: "select2",
                         title: i18n("tt.issue"),
-                        multiple: false,
+                        multiple: true,
                         options: [],
                         value: [],
                         validate: a => {
@@ -1470,7 +1608,7 @@
 
         $(".ttSaCoordinate").off("click").on("click", () => {
             lStore("_coordinate_issue", issue.issue["issueId"]);
-            window.location.href = "?#cs";
+            window.location.href = navigateUrl("cs");
         });
 
         $(".ttIssuePrint").off("click").on("click", function () {
@@ -1511,6 +1649,8 @@
             });
         });
 
+        $(".commentsMenu").off("click").on("click", commentsMenu);
+
         $("#stepPrev").off("click").on("click", () => {
             loadingStart();
             window.location.href = navigateUrl("tt", {
@@ -1533,6 +1673,80 @@
             loadingStart();
             modules.tt.selectFilter(filter, Math.floor((index - 1) / modules.tt.defaultIssuesPerPage) * modules.tt.defaultIssuesPerPage, modules.tt.defaultIssuesPerPage, search);
         });
+
+        $(".gallery-image").off("load").on("load", function () {
+            let img = $(this);
+            img.parent().attr("data-pswp-width", img.get(0).naturalWidth);
+            img.parent().attr("data-pswp-height", img.get(0).naturalHeight);
+        });
+
+        let lightbox = new PhotoSwipeLightbox({
+            gallery: '.gallery',
+            children: 'a.gallery-link',
+            pswpModule: PhotoSwipe,
+            showHideAnimationType: 'none',
+        });
+
+        lightbox.on('uiRegister', function() {
+            lightbox.pswp.ui.registerElement({
+                name: 'download-button',
+                order: 8,
+                isButton: true,
+                tagName: 'a',
+
+                html: '<i class="fas fa-fw fa-save" style="margin-top: 23px; margin-left: 18px; color: white;"></i>',
+
+                onInit: (el, pswp) => {
+                    el.setAttribute('download', '');
+                    el.setAttribute('target', '_blank');
+                    el.setAttribute('rel', 'noopener');
+
+                    pswp.on('change', () => {
+                        el.href = pswp.currSlide.data.src;
+                    });
+                }
+            });
+
+            lightbox.pswp.ui.registerElement({
+                name: 'rotate-right',
+                order: 8,
+                isButton: true,
+                tagName: 'div',
+
+                html: '<i class="fas fa-fw fa-undo" style="margin-top: 23px; margin-left: 18px; color: white; -moz-transform: scaleX(-1); -o-transform: scaleX(-1); -webkit-transform: scaleX(-1); transform: scaleX(-1); filter: FlipH; -ms-filter: "FlipH";"></i>',
+
+                onClick: () => {
+                    const rotations = [ '', 'rotate(90deg)', 'rotate(180deg)', 'rotate(270deg)' ];
+                    const currentSlide = lightbox.pswp.currSlide;
+                    const imageElement = currentSlide.container.querySelector('img');
+
+                    if (imageElement && rotations.indexOf(imageElement.style.transform) >= 0) {
+                        imageElement.style.transform = rotations[(rotations.indexOf(imageElement.style.transform) + 1) % 4];
+                    }
+                }
+            });
+
+            lightbox.pswp.ui.registerElement({
+                name: 'rotate-left',
+                order: 8,
+                isButton: true,
+                tagName: 'div',
+
+                html: '<i class="fas fa-fw fa-undo" style="margin-top: 23px; margin-left: 18px; color: white;"></i>',
+
+                onClick: () => {
+                    const rotations = [ '', 'rotate(270deg)', 'rotate(180deg)', 'rotate(90deg)' ];
+                    const currentSlide = lightbox.pswp.currSlide;
+                    const imageElement = currentSlide.container.querySelector('img');
+
+                    if (imageElement && rotations.indexOf(imageElement.style.transform) >= 0) {
+                        imageElement.style.transform = rotations[(rotations.indexOf(imageElement.style.transform) + 1) % 4];
+                    }
+                }
+            });
+        });
+
+        lightbox.init();
 
         (new ClipboardJS('.cc', {
             text: function(trigger) {

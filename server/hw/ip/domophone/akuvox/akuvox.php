@@ -9,7 +9,6 @@ use hw\ip\domophone\domophone;
  */
 abstract class akuvox extends domophone
 {
-
     use \hw\ip\common\akuvox\akuvox;
 
     public function addRfid(string $code, int $apartment = 0): void
@@ -22,15 +21,9 @@ abstract class akuvox extends domophone
         $keys = [];
 
         foreach ($rfids as $rfid) {
-            $internalRfid = substr($rfid, 6);
-            $externalRfid = '00' . substr($rfid, 8);
-            $codeToPanel = ($internalRfid === $externalRfid)
-                ? $internalRfid
-                : $internalRfid . ';' . $externalRfid;
-
             $keys[] = [
-                'CardCode' => $codeToPanel,
-                'ScheduleRelay' => '1001-1;'
+                'CardCode' => ltrim($rfid, '0'),
+                'ScheduleRelay' => '1001-1;',
             ];
         }
 
@@ -81,11 +74,6 @@ abstract class akuvox extends domophone
             'Config.DoorSetting.RTSP.H264FrameRate2' => '30',
             'Config.DoorSetting.RTSP.H264BitRate2' => '512',
         ]);
-    }
-
-    public function configureGate(array $links = []): void
-    {
-        // Empty implementation
     }
 
     public function configureMatrix(array $matrix): void
@@ -180,11 +168,6 @@ abstract class akuvox extends domophone
         return array_map('intval', $this->getConfigParams($params));
     }
 
-    public function getCmsLevels(): array
-    {
-        return [];
-    }
-
     public function getLineDiagnostics(int $apartment): int
     {
         return 0;
@@ -193,13 +176,14 @@ abstract class akuvox extends domophone
     public function getRfids(): array
     {
         $items = $this->apiCall('/user/get')['data']['item'];
+        $rfids = [];
 
-        return array_reduce($items, function ($result, $item) {
-            $codes = explode(';', $item['CardCode']);
-            $rfid = '000000' . ($codes[1] ?? $codes[0]);
-            $result[$rfid] = $rfid;
-            return $result;
-        }, []);
+        foreach ($items as $item) {
+            $code = str_pad($item['CardCode'], 14, '0', STR_PAD_LEFT);
+            $rfids[$code] = $code;
+        }
+
+        return $rfids;
     }
 
     public function openLock(int $lockNumber = 0): void
@@ -253,11 +237,6 @@ abstract class akuvox extends domophone
         ]);
     }
 
-    public function setCmsLevels(array $levels): void
-    {
-        // Empty implementation
-    }
-
     public function setCmsModel(string $model = ''): void
     {
         // Empty implementation
@@ -282,11 +261,6 @@ abstract class akuvox extends domophone
         ]);
     }
 
-    public function setLanguage(string $language = 'ru'): void
-    {
-        // Empty implementation
-    }
-
     public function setPublicCode(int $code = 0): void
     {
         // Empty implementation
@@ -303,11 +277,6 @@ abstract class akuvox extends domophone
         $this->setConfigParams(['Config.Features.DOORPHONE.MaxCallTime' => "$timeout"]);
     }
 
-    public function setTickerText(string $text = ''): void
-    {
-        // Empty implementation
-    }
-
     public function setUnlockTime(int $time = 3): void
     {
         $this->apiCall('', 'POST', [
@@ -317,15 +286,8 @@ abstract class akuvox extends domophone
         ]);
     }
 
-    public function setUnlocked(bool $unlocked = true): void
-    {
-        // Empty implementation
-    }
-
     public function transformDbConfig(array $dbConfig): array
     {
-        $dbConfig['tickerText'] = '';
-        $dbConfig['unlocked'] = false;
         unset($dbConfig['apartments'][9999]);
 
         foreach ($dbConfig['apartments'] as &$apartment) {
@@ -427,9 +389,7 @@ abstract class akuvox extends domophone
      */
     protected function configureRfidReaders(): void
     {
-        $this->setConfigParams([
-            'Config.DoorSetting.RFCARDDISPLAY.RfidDisplayMode' => '4'
-        ]);
+        $this->setConfigParams(['Config.DoorSetting.RFCARDDISPLAY.RfidDisplayMode' => '4']);
     }
 
     /**
@@ -501,11 +461,6 @@ abstract class akuvox extends domophone
         ];
     }
 
-    protected function getGateConfig(): array
-    {
-        return [];
-    }
-
     protected function getMatrix(): array
     {
         return [];
@@ -525,7 +480,7 @@ abstract class akuvox extends domophone
         foreach ($items as $item) {
             $codes = explode(';', $item['CardCode']);
             $fullCode = $codes[1] ?? $codes[0];
-            if (strpos($code, $fullCode) !== false) {
+            if (str_contains($code, $fullCode)) {
                 return $item['ID'];
             }
         }
@@ -541,7 +496,7 @@ abstract class akuvox extends domophone
             $server,
             $stunEnabled,
             $stunServer,
-            $stunPort
+            $stunPort,
         ] = $this->getConfigParams([
             'Config.Account1.GENERAL.AuthName',
             'Config.Account1.SIP.Port',
@@ -560,15 +515,5 @@ abstract class akuvox extends domophone
             'stunServer' => $stunServer,
             'stunPort' => $stunPort,
         ];
-    }
-
-    protected function getTickerText(): string
-    {
-        return '';
-    }
-
-    protected function getUnlocked(): bool
-    {
-        return false;
     }
 }

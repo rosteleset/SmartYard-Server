@@ -8,7 +8,7 @@
      * @apiName getUser
      * @apiGroup accounts
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} uid user id
      */
@@ -21,7 +21,7 @@
      * @apiName createUser
      * @apiGroup accounts
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {String} login login
      * @apiBody {String} realName real name
@@ -37,7 +37,7 @@
      * @apiName updateUser
      * @apiGroup accounts
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} uid user id
      * @apiBody {String} password password
@@ -49,6 +49,9 @@
      * @apiBody {Boolean} enabled enabled or disabled
      * @apiBody {String} defaultRoute default hash route
      * @apiBody {String} persistentToken persistent token
+     * @apiBody {Object} avatar
+     * @apiBody {String} password password
+     * @apiBody {Number[]} userGroups gids
      * @apiBody {String} primaryGroup gid
      */
 
@@ -60,7 +63,7 @@
      * @apiName deleteUser
      * @apiGroup accounts
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} uid user id
      */
@@ -80,7 +83,7 @@
         class user extends api {
 
             public static function GET($params) {
-                $user = $params["_backends"]["users"]->getUser(@$params["_id"]);
+                $user = $params["_backends"]["users"]->getUser(@$params["_id"], true, true);
 
                 return api::ANSWER($user, ($user !== false) ? "user" : "notFound");
             }
@@ -93,6 +96,15 @@
 
             public static function PUT($params) {
                 $success = $params["_backends"]["users"]->modifyUser($params["_id"], $params["realName"], $params["eMail"], $params["phone"], $params["tg"], $params["notification"], $params["enabled"], $params["defaultRoute"], $params["persistentToken"], @$params["primaryGroup"]);
+
+                if (@$params["avatar"]) {
+                    $success = $success && $params["_backends"]["users"]->putAvatar($params["_id"], $params["avatar"]);
+                }
+
+                if (@$params["userGroups"]) {
+                    $groups = loadBackend("groups");
+                    $success = $groups && $success && $groups->setGroups($params["_id"], $params["userGroups"]);
+                }
 
                 if (@$params["password"] && (int)$params["_id"]) {
                     $success = $success && $params["_backends"]["users"]->setPassword($params["_id"], $params["password"]);
@@ -109,7 +121,7 @@
                     $success = $params["_backends"]["users"]->deleteUser($params["_id"]);
                 }
 
-                return api::ANSWER($success, ($success !== false)?false:"notAcceptable");
+                return api::ANSWER($success, ($success !== false) ? false : "notAcceptable");
             }
 
             public static function index() {
@@ -117,9 +129,9 @@
 
                 if ($users && $users->capabilities()["mode"] === "rw") {
                     return [
-                        "GET" => "#personal",
+                        "GET",
                         "POST",
-                        "PUT" => "#personal",
+                        "PUT",
                         "DELETE"
                     ];
                 } else {

@@ -54,7 +54,8 @@
         "paranoidTitleRf": "Door opened by rfId",
         "paranoidMsgRf": "%s, %s opened by rfId \"%s\"",
         "overLimit": "Device limit per mobile number exceeded",
-        "contactProviderForAdding": "Please contact your provider or flat owner"
+        "contactProviderForAdding": "Please contact your provider or flat owner",
+        "invalidPlateNumber": "Invalid license plate number"
     },
 
     "services": {

@@ -8,7 +8,7 @@
      * @apiName queues
      * @apiGroup queues
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiSuccess {Object[]} queues
      */
@@ -25,7 +25,7 @@
          * queues method
          */
 
-         class queues extends api {
+        class queues extends api {
 
             public static function GET($params) {
                 $queue = loadBackend('queue');

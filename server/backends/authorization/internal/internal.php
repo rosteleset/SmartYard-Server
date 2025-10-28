@@ -371,6 +371,8 @@
                     "delete from core_groups_rights where gid not in (select gid from core_groups)",
                     "delete from core_users_groups where uid not in (select uid from core_users)",
                     "delete from core_users_groups where gid not in (select gid from core_groups)",
+                    "delete from core_users_rights where aid not in (select aid from core_api_methods where permissions_same is null)",
+                    "delete from core_groups_rights where aid not in (select aid from core_api_methods where permissions_same is null)",
                 ];
 
                 for ($i = 0; $i < count($c); $i++) {

@@ -108,7 +108,7 @@ zabbix_export:
               priority: WARNING
               description: 'HTTP Check unavailable but ICMP available'
               dependencies:
-                - name: 'ICMP Ping: Unavailable by ICMP ping'
+                - name: 'ICMP: Unavailable by ICMP ping'
                   expression: 'max(/Intercom_RUBETEK_RV-3434/icmpping,#3)=0'
         - uuid: 6f70e2267a0f4f02b7c47c7166c8e991
           name: 'RUBETEK Intercom: uptime'

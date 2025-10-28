@@ -8,7 +8,7 @@
      * @apiName getFavorites
      * @apiGroup addresses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiSuccess {Array} favorites
      */
@@ -21,7 +21,7 @@
      * @apiName addFavorite
      * @apiGroup addresses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {String="area,region,city,settlement,street,house"} object
      * @apiBody {Number} id
@@ -40,7 +40,7 @@
      * @apiName deleteFavorite
      * @apiGroup addresses
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {String="area,region,city,settlement,street,house"} object
      * @apiBody {Number} id

@@ -8,7 +8,7 @@
      * @apiName getFilter
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {String} filterId
      *
@@ -23,7 +23,7 @@
      * @apiName addFavoriteFilter
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiSuccess {Object[]} filters
      */
@@ -36,7 +36,7 @@
      * @apiName putFilter
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {String} filterId
      * @apiBody {String} body
@@ -52,7 +52,7 @@
      * @apiName deleteFilter
      * @apiGroup tt
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {String} filterId
      *

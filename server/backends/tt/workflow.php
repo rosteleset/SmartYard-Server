@@ -43,8 +43,8 @@
              * @param $arguments
              * @return mixed
              */
-            public function __call($name, $arguments)
-            {
+
+            public function __call($name, $arguments) {
                 $ret = @$this->sandbox->callFunction($name, ...$arguments);
 
                 if (isset($ret) && is_array($ret) && isset($ret[0])) {

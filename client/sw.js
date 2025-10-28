@@ -1,4 +1,5 @@
 var version = false;
+var cache = false;
 
 const forceVersioningResources = [
     "index.css",
@@ -6,6 +7,7 @@ const forceVersioningResources = [
     "form.js",
     "greetings.js",
     "i18n.js",
+    "loader.js",
     "menu.js",
     "phpjs.js",
     "pwgen.js",
@@ -29,6 +31,7 @@ const cacheFirstResources = [
 
 const directProtocols = [
     "chrome-extension:",
+    "tg:",
 ];
 
 if (location.search) {
@@ -88,7 +91,7 @@ function deparam(query) {
     } else {
         return {};
     }
-};
+}
 
 function endsWith(str, ends) {
     let value = false;
@@ -96,37 +99,55 @@ function endsWith(str, ends) {
         return str.endsWith(element);
     });
     return value;
-};
+}
 
 async function deleteCache(key) {
     await caches.delete(key);
-};
+}
 
 async function deleteOldCaches() {
     let cacheKeepList = [ version ];
     let keyList = await caches.keys();
     let cachesToDelete = keyList.filter(key => !cacheKeepList.includes(key));
     await Promise.all(cachesToDelete.map(deleteCache));
-};
+}
 
 async function putInCache(request, response) {
-    let cache = await caches.open(version);
-    await cache.put(request, response);
-};
+    if (!cache) {
+        cache = await caches.open(version);
+    }
+    await cache.put(request, response.clone());
+    return response;
+}
 
 async function cacheFirst(request) {
     let responseFromCache = await caches.match(request);
     if (responseFromCache) {
+        if (responseFromCache.url) {
+            let url;
+            try {
+                url = new URL(responseFromCache.url);
+            } catch (e) {
+                url = false;
+            }
+            if (url && url.search) {
+                let search = deparam(url.search);
+                if (search._force_cache) {
+                    let ttl = parseInt(search._force_cache);
+                    if (ttl > 0 && Date.parse(responseFromCache.headers.get("date")) + ttl < Date.now()) {
+                        return putInCache(request, await fetch(request));
+                    }
+                }
+            }
+        }
         return responseFromCache;
     }
-    let responseFromNetwork = await fetch(request);
-    putInCache(request, responseFromNetwork.clone());
-    return responseFromNetwork;
-};
+    return putInCache(request, await fetch(request));
+}
 
 self.addEventListener("activate", event => {
     event.waitUntil(deleteOldCaches());
-});
+})
 
 self.addEventListener('fetch', event => {
     let url = new URL(event.request.url);
@@ -134,7 +155,12 @@ self.addEventListener('fetch', event => {
     if (directProtocols.indexOf(url.protocol) < 0) {
         let pathname = url.pathname.split("/");
 
-        if (!url.search) {
+        if (url.search) {
+            let search = deparam(url.search);
+            if ((parseInt(search.ver) === parseInt(version) && endsWith(url.pathname, cacheFirstResources)) || search._force_cache) {
+                event.respondWith(cacheFirst(event.request));
+            }
+        } else {
             if (forceVersioningResources.indexOf(pathname[pathname.length - 1]) >= 0) {
                 event.respondWith(Response.redirect(url.href + "?ver=" + version, 302));
             } else {
@@ -142,10 +168,6 @@ self.addEventListener('fetch', event => {
                     event.respondWith(cacheFirst(event.request));
                 }
             }
-        } else {
-            if (url.search && parseInt(deparam(url.search).ver) === parseInt(version) && endsWith(url.pathname, cacheFirstResources)) {
-                event.respondWith(cacheFirst(event.request));
-            }
         }
     }
-});
+})

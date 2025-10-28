@@ -172,6 +172,8 @@ function hashChange() {
 
         loadingStart();
 
+        cleanupContextMenusGlobalList();
+
         setTimeout(() => {
             currentPage = route;
 
@@ -395,7 +397,7 @@ function doLogout(all) {
         all = "no";
     }
     POST("authentication", "logout", false, {
-        mode: "all",
+        mode: all,
     }).always(() => {
         lStore("_token", null);
         window.location.reload();
@@ -488,7 +490,7 @@ function whoAmI(force) {
             });
 
             $("#selfSettings").off("click").on("click", () => {
-                modules.users.modifyUser(myself.uid, true);
+                modules.users.modifyMyself();
             });
 
             let userCard = _me.user.login;
@@ -707,7 +709,6 @@ function loadModule() {
     let module = moduleLoadQueue.shift();
     lastLoadedModule = module;
     if (!module) {
-//        console.log("loading done");
         for (let i in modules) {
             if (typeof modules[i].allLoaded == "function") {
                 modules[i].allLoaded();
@@ -731,7 +732,6 @@ function loadModule() {
         window.onhashchange = hashChange;
         $("#app").show();
     } else {
-//        console.log("loading module: " + module);
         let l = lStore("_lang");
         if (!l) {
             l = config.defaultLanguage;
@@ -791,7 +791,6 @@ function loadModule() {
 }
 
 function moduleLoaded(module, object) {
-//    console.log("module loaded: " + module);
     let m = module.split(".");
 
     if (!modules[module] && m.length === 1 && object) {
@@ -824,7 +823,6 @@ function loadSubModules(parent, subModules, doneOrParentObject) {
             moduleLoaded(parent, doneOrParentObject);
         }
     } else{
-//        console.log("loading submodule: " + module);
         $.getScript("modules/" + parent + "/" + module + ".js?ver=" + version).
         done(() => {
             loadSubModules(parent, subModules, doneOrParentObject);
@@ -838,7 +836,6 @@ function loadCustomSubModules(parent, subModules) {
     if (!module) {
         loadModule();
     } else{
-//        console.log("loding custom submodule: " + module);
         $.getScript("modules/" + parent + "/custom/" + module + ".js?ver=" + version).
         done(() => {
             loadCustomSubModules(parent, subModules);

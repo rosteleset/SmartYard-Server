@@ -2,15 +2,31 @@
 
 namespace hw\SmartConfigurator\DbConfigCollector;
 
-use backends\addresses\addresses;
-use backends\configs\configs;
-use backends\households\households;
-use backends\sip\sip;
+use backends\{
+    addresses\addresses,
+    configs\configs,
+    households\households,
+    sip\sip,
+};
+use hw\hw;
+use hw\Interface\{
+    CmsLevelsInterface,
+    DisplayTextInterface,
+    FreePassInterface,
+    GateModeInterface,
+    HousePrefixInterface,
+};
 use hw\SmartConfigurator\ConfigurationBuilder\DomophoneConfigurationBuilder;
+use hw\ValueObject\{
+    FlatNumber,
+    HousePrefix,
+};
 
-class DomophoneDbConfigCollector implements IDbConfigCollector
+/**
+ * Class responsible for collecting intercom configuration data from the database.
+ */
+class DomophoneDbConfigCollector implements DbConfigCollectorInterface
 {
-
     /**
      * @var array The application configuration.
      */
@@ -42,16 +58,23 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
     private $entranceIsShared;
 
     /**
+     * @var hw
+     */
+    private hw $device;
+
+    /**
      * Construct a new DomophoneDbConfigCollector instance.
      *
      * @param array $appConfig The application configuration.
      * @param array $domophoneData The domophone data.
-     * @param households|false $householdsBackend Households backend object.
+     * @param households $householdsBackend Households backend object.
+     * @param hw $device Device instance.
      */
-    public function __construct(array $appConfig, array $domophoneData, households $householdsBackend)
+    public function __construct(array $appConfig, array $domophoneData, households $householdsBackend, hw $device)
     {
         $this->appConfig = $appConfig;
         $this->domophoneData = $domophoneData;
+        $this->device = $device;
 
         $this->entrances = $householdsBackend->getEntrances('domophoneId', [
             'domophoneId' => $domophoneData['domophoneId'],
@@ -65,22 +88,32 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
 
     public function collectConfig(): array
     {
+        if ($this->device instanceof DisplayTextInterface) {
+            $this->addDisplayText();
+        }
+
+        if ($this->device instanceof FreePassInterface) {
+            $this->addFreePassEnabled();
+        }
+
         $this
+            ->addApartmentsAndHousePrefixes()
             ->addDtmf()
             ->addEventServer()
             ->addNtp()
             ->addSip()
-            ->addUnlocked()
         ;
 
-        if ($this->mainEntrance) { // If the domophone is linked to the entrance
+        // If the domophone is linked to the entrance
+        if ($this->mainEntrance) {
+            if ($this->device instanceof CmsLevelsInterface) {
+                $this->addCmsLevels();
+            }
+
             $this
-                ->addApartmentsAndGates()
-                ->addCmsLevels()
                 ->addCmsModel()
                 ->addMatrix()
                 ->addRfids()
-                ->addTickerText()
             ;
         }
 
@@ -88,12 +121,12 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
     }
 
     /**
-     * Add apartments and gate links to the domophone configuration.
+     * Add apartments and house prefixes to the domophone configuration.
      *
      * @return self
      * @todo: ugly but it works
      */
-    private function addApartmentsAndGates(): self
+    private function addApartmentsAndHousePrefixes(): self
     {
         /** @var addresses $addresses */
         $addresses = loadBackend('addresses');
@@ -103,7 +136,7 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
 
         $domophoneId = $this->domophoneData['domophoneId'];
         $offset = 0; // For shared domophones that must contain apartments from several houses
-        $gateLinks = [];
+        $housePrefixes = [];
 
         foreach ($this->entrances as $entrance) {
             $flatsRaw = $households->getFlats('houseId', $entrance['houseId']);
@@ -119,13 +152,16 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
             $firstFlat = min($flatNumbers);
             $lastFlat = max($flatNumbers);
 
-            // Collect gate link
-            $gateLinks[$entrance['prefix']] = [
-                'prefix' => $entrance['prefix'],
-                'address' => $addresses->getHouse($entrance['houseId'])['houseFull'],
-                'firstFlat' => $firstFlat,
-                'lastFlat' => $lastFlat,
-            ];
+            // Collect house prefixes
+            $prefixNumber = $entrance['prefix'] ?? 0;
+            if ($prefixNumber > 0) {
+                $housePrefixes[] = new HousePrefix(
+                    number: $prefixNumber,
+                    address: $addresses->getHouse($entrance['houseId'])['houseFull'],
+                    firstFlat: new FlatNumber($firstFlat),
+                    lastFlat: new FlatNumber($lastFlat),
+                );
+            }
 
             foreach ($flats as $flat) {
                 $flatEntrances = array_filter($flat['entrances'], function ($entrance) use ($domophoneId) {
@@ -170,11 +206,14 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
             }
         }
 
-        // Add gate links if the entrance is shared
-        if ($this->entranceIsShared) {
-            foreach ($gateLinks as $gateLink) {
-                $this->builder->addGateLink(...$gateLink);
-            }
+        // TODO: move to a separate method
+        if ($this->device instanceof GateModeInterface) {
+            $this->builder->addGateModeEnabled(!empty($housePrefixes));
+        }
+
+        // TODO: move to a separate method
+        if ($this->device instanceof HousePrefixInterface) {
+            $this->builder->addHousePrefixes($housePrefixes);
         }
 
         return $this;
@@ -183,9 +222,9 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
     /**
      * Add global CMS levels settings to the domophone configuration.
      *
-     * @return self
+     * @return void
      */
-    private function addCmsLevels(): self
+    private function addCmsLevels(): void
     {
         $rawCmsLevels = $this->mainEntrance['cmsLevels'];
         $cmsLevels = !empty($rawCmsLevels)
@@ -193,7 +232,6 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
             : [];
 
         $this->builder->addCmsLevels($cmsLevels);
-        return $this;
     }
 
     /**
@@ -210,6 +248,25 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
         $cmsFile = $this->mainEntrance['cms'];
         $this->builder->addCmsModel($cmses[$cmsFile]['model'] ?? '');
         return $this;
+    }
+
+    /**
+     * Adds display text lines to the intercom configuration.
+     *
+     * @return void
+     */
+    private function addDisplayText(): void
+    {
+        $display = $this->domophoneData['display'] ?? '';
+        $callerId = $this->mainEntrance['callerId'] ?? '';
+
+        $lines = match (true) {
+            trim($display) !== '' => explode("\n", $display),
+            trim($callerId) !== '' => [$callerId],
+            default => [],
+        };
+
+        $this->builder->addDisplayText($lines);
     }
 
     /**
@@ -233,6 +290,16 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
         $url = $this->appConfig['syslog_servers'][$this->domophoneData['json']['eventServer']][0] ?? '';
         $this->builder->addEventServer($url);
         return $this;
+    }
+
+    /**
+     * Add the free pass mode status to the intercom configuration.
+     *
+     * @return void
+     */
+    private function addFreePassEnabled(): void
+    {
+        $this->builder->addFreePassEnabled($this->domophoneData['locksAreOpen']);
     }
 
     /**
@@ -274,9 +341,9 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
     /**
      * Add RFID keys to the domophone configuration.
      *
-     * @return self
+     * @return void
      */
-    private function addRfids(): self
+    private function addRfids(): void
     {
         /** @var households $households */
         $households = loadBackend('households');
@@ -285,16 +352,14 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
         foreach ($keys as $key) {
             $this->builder->addRfid($key['rfId']);
         }
-
-        return $this;
     }
 
     /**
      * Add SIP parameters to the domophone configuration.
      *
-     * @return self
+     * @return void
      */
-    private function addSip(): self
+    private function addSip(): void
     {
         /** @var sip $sip */
         $sip = loadBackend("sip");
@@ -303,7 +368,7 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
             'server' => $server,
             'domophoneId' => $domophoneId,
             'credentials' => $password,
-            'nat' => $natEnabled
+            'nat' => $natEnabled,
         ] = $this->domophoneData;
 
         $port = $sip->server('ip', $server)['sip_udp_port'] ?? 5060;
@@ -320,35 +385,8 @@ class DomophoneDbConfigCollector implements IDbConfigCollector
             $password,
             $natEnabled,
             $stunServer,
-            $stunPort
+            $stunPort,
         );
-
-        return $this;
-    }
-
-    /**
-     * Add the ticker text to the domophone configuration.
-     *
-     * @return void
-     */
-    private function addTickerText(): void
-    {
-        // TODO: use multiline text on display for compatible devices
-        $tickerText = isset($this->domophoneData['display'])
-            ? strtok($this->domophoneData['display'], "\n")
-            : $this->mainEntrance['callerId'];
-
-        $this->builder->addTickerText($tickerText);
-    }
-
-    /**
-     * Add unlocked status to the domophone configuration.
-     *
-     * @return void
-     */
-    private function addUnlocked(): void
-    {
-        $this->builder->addUnlocked($this->domophoneData['locksAreOpen']);
     }
 
     /**

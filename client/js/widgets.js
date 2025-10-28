@@ -204,6 +204,7 @@ function FAIL(response) {
             setTimeout(() => {
                 window.location.reload();
             }, 5000);
+            return $.Deferred().reject(response.responseJSON.error);
         }
     } else {
         if (response && response.getResponseHeader("x-last-error")) {
@@ -332,7 +333,7 @@ function leftSide(button, title, target, group, wisibleOnlyWhenActive) {
 
     let route = hashParse("route");
 
-    let id = md5(guid());
+    let id = "id-" + md5(guid());
 
     let style;
 
@@ -368,7 +369,7 @@ function leftSideClick(button, title, group, click) {
         `);
     }
 
-    let id = md5(guid());
+    let id = "id-" + md5(guid());
 
     let style;
 

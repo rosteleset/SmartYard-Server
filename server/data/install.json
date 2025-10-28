@@ -226,5 +226,47 @@
     ],
     "70": [
         "v70_custom_fields.sql"
+    ],
+    "71": [
+        "v71_custom_fields.sql"
+    ],
+    "72": [
+        "v72_project_comments.sql"
+    ],
+    "73": [
+        "v73_favorite_filters.sql"
+    ],
+    "74": [
+        "v74_favorite_filters.sql"
+    ],
+    "75": [
+        "v75_readonly.sql"
+    ],
+    "76": [
+        "v76_custom_fields.sql"
+    ],
+    "77": [
+        "v77_custom_fields.sql"
+    ],
+    "78": [
+        "v78_bulk_messages.sql"
+    ],
+    "79": [
+        "v79_monitoring.sql"
+    ],
+    "80": [
+        "v80_watchers.sql"
+    ],
+    "81": [
+        "v81_tags.sql"
+    ],
+    "82": [
+        "v82_fields.sql"
+    ],
+    "83": [
+        "v83_sos.sql"
+    ],
+    "84": [
+        "v84_notes.sql"
     ]
 }

@@ -1,7 +1,7 @@
 ({
     meta: {},
 
-    defaultIssuesPerPage: 50,
+    defaultIssuesPerPage: lStore("defaultIssuesPerPage") ? lStore("defaultIssuesPerPage") : 50,
     defaultPagerItemsCount: 10,
     menuItem: false,
 
@@ -10,6 +10,7 @@
         "saAddFile",
         "saAddSingleFile",
         "saAddSingleFileQuiet",
+        "saAddMultipleFilesQuiet",
         "saAssignToMe",
         "saWatch",
         "saDelete",
@@ -59,12 +60,12 @@
         if (modules.tt.menuItem && parseInt(myself.uid) && AVAIL("tt", "favoriteFilter")) {
             let h = "";
             for (let i in modules.tt.meta.favoriteFilters) {
-                if (parseInt(modules.tt.meta.favoriteFilters[i].rightSide)) {
-                    let title = modules.tt.meta.filtersExt[modules.tt.meta.favoriteFilters[i].filter].shortName ? modules.tt.meta.filtersExt[modules.tt.meta.favoriteFilters[i].filter].shortName : modules.tt.meta.filtersExt[modules.tt.meta.favoriteFilters[i].filter].name;
+                if (parseInt(modules.tt.meta.favoriteFilters[i].leftSide)) {
+                    let title = modules.tt.meta.filters[modules.tt.meta.favoriteFilters[i].filter].shortName ? modules.tt.meta.filters[modules.tt.meta.favoriteFilters[i].filter].shortName : modules.tt.meta.filters[modules.tt.meta.favoriteFilters[i].filter].name;
                     h += `
                         <li class="nav-item" title="${escapeHTML(title)}" style="margin-top: 3px;">
-                            <a href="?#tt&filter=${modules.tt.meta.favoriteFilters[i].filter}" class="nav-link" onclick="xblur(); return true;">
-                                <i class="nav-icon fa-fw ${modules.tt.meta.favoriteFilters[i].icon} ${modules.tt.meta.favoriteFilters[i].color}"></i>
+                            <a href="?#tt&project=${modules.tt.meta.favoriteFilters[i].project}&filter=${modules.tt.meta.favoriteFilters[i].filter}" class="nav-link" onclick="xblur(); lStore('ttIssueFilter:${modules.tt.meta.favoriteFilters[i].project}', '${modules.tt.meta.favoriteFilters[i].filter}'); return true;">
+                                <i class="nav-icon fa-fw ${modules.tt.meta.favoriteFilters[i].icon} text-${modules.tt.meta.favoriteFilters[i].color}"></i>
                                 <p class="text-nowrap">${title}</p>
                             </a>
                         </li>
@@ -119,7 +120,7 @@
         }
     },
 
-    issueFieldTitle: function (field) {
+    issueFieldTitle: function (field, target) {
         let fieldId;
 
         if (typeof field === "object") {
@@ -194,6 +195,9 @@
                 case "commentPrivate":
                     return i18n("tt.commentPrivate");
 
+                case "commentType":
+                    return i18n("tt.commentType");
+
                 case "attachmentFilename":
                     return i18n("tt.attachmentFilename");
 
@@ -223,14 +227,18 @@
             }
 
             if (cf) {
-                return cf.fieldDisplay;
+                if (target == "list") {
+                    return cf.fieldDisplayList ? cf.fieldDisplayList : cf.fieldDisplay;
+                } else {
+                    return cf.fieldDisplay;
+                }
             } else {
                 return fieldId;
             }
         }
     },
 
-    issueField2FormFieldEditor: function (issue, field, projectId, filter, prefferredValue) {
+    issueField2FormFieldEditor: function (issue, field, projectId, filter, prefferredValue, title) {
 
         function peoples(project, withGroups, withUsers) {
             let p = [];
@@ -327,7 +335,7 @@
                     return {
                         id: "issueId",
                         type: "text",
-                        title: modules.tt.issueFieldTitle(field),
+                        title: title ? title: modules.tt.issueFieldTitle(field),
                         placeholder: modules.tt.issueFieldTitle(field),
                         value: (typeof prefferredValue !== "undefined") ? prefferredValue : ((issue && issue.issueId) ? issue.issueId : ""),
                         hidden: true,
@@ -337,7 +345,7 @@
                     return {
                         id: "subject",
                         type: "text",
-                        title: modules.tt.issueFieldTitle(field),
+                        title: title ? title: modules.tt.issueFieldTitle(field),
                         placeholder: modules.tt.issueFieldTitle(field),
                         value: (typeof prefferredValue !== "undefined") ? prefferredValue : ((issue && issue.subject) ? issue.subject : ""),
                         validate: v => {
@@ -349,7 +357,7 @@
                     return {
                         id: "description",
                         type: "area",
-                        title: modules.tt.issueFieldTitle(field),
+                        title: title ? title: modules.tt.issueFieldTitle(field),
                         placeholder: modules.tt.issueFieldTitle(field),
                         value: (typeof prefferredValue !== "undefined") ? prefferredValue : ((issue && issue.description) ? issue.description : ""),
                         validate: v => {
@@ -361,7 +369,7 @@
                     return {
                         id: "comment",
                         type: "area",
-                        title: modules.tt.issueFieldTitle(field),
+                        title: title ? title: modules.tt.issueFieldTitle(field),
                         placeholder: modules.tt.issueFieldTitle(field),
                         validate: v => {
                             return $.trim(v) !== "";
@@ -372,7 +380,7 @@
                     return {
                         id: "comment",
                         type: "area",
-                        title: modules.tt.issueFieldTitle(field),
+                        title: title ? title: modules.tt.issueFieldTitle(field),
                         placeholder: modules.tt.issueFieldTitle(field),
                     };
 
@@ -388,16 +396,16 @@
                         }
                     }
 
-                return {
-                    id: "resolution",
-                    type: "select2",
-                    title: modules.tt.issueFieldTitle(field),
-                    options: select2Filter(resolutions, filter),
-                    value: (typeof prefferredValue !== "undefined") ? prefferredValue : ((issue && issue.resolution) ? issue.resolution : -1),
-                    validate: v => {
-                        return $.trim(v) !== "";
-                    },
-                };
+                    return {
+                        id: "resolution",
+                        type: "select2",
+                        title: title ? title: modules.tt.issueFieldTitle(field),
+                        options: select2Filter(resolutions, filter),
+                        value: (typeof prefferredValue !== "undefined") ? prefferredValue : ((issue && issue.resolution) ? issue.resolution : -1),
+                        validate: v => {
+                            return $.trim(v) !== "";
+                        },
+                    };
 
                 case "status":
                     let statuses = [];
@@ -412,7 +420,7 @@
                     return {
                         id: "status",
                         type: "select2",
-                        title: modules.tt.issueFieldTitle(field),
+                        title: title ? title: modules.tt.issueFieldTitle(field),
                         options: select2Filter(statuses, filter),
                         value: (typeof prefferredValue !== "undefined") ? prefferredValue : ((issue && issue.status) ? issue.status : -1),
                     };
@@ -423,7 +431,7 @@
                         type: "select2",
                         tags: true,
                         multiple: true,
-                        title: modules.tt.issueFieldTitle(field),
+                        title: title ? title: modules.tt.issueFieldTitle(field),
                         placeholder: modules.tt.issueFieldTitle(field),
                         options: select2Filter(tags, filter),
                         value: (typeof prefferredValue !== "undefined") ? prefferredValue : ((issue && issue.tags) ? Object.values(issue.tags) : []),
@@ -434,7 +442,7 @@
                         id: "assigned",
                         type: "select2",
                         multiple: [3, 4, 5].indexOf(parseInt(project.assigned)) >= 0,
-                        title: modules.tt.issueFieldTitle(field),
+                        title: title ? title: modules.tt.issueFieldTitle(field),
                         placeholder: modules.tt.issueFieldTitle(field),
                         options: select2Filter(peoples(project, [0, 2, 3, 5].indexOf(parseInt(project.assigned)) >= 0, [0, 1, 3, 4].indexOf(parseInt(project.assigned)) >= 0), filter),
                         value: (typeof prefferredValue !== "undefined") ? prefferredValue : ((issue && issue.assigned) ? Object.values(issue.assigned) : []),
@@ -445,7 +453,7 @@
                         id: "watchers",
                         type: "select2",
                         multiple: true,
-                        title: modules.tt.issueFieldTitle(field),
+                        title: title ? title: modules.tt.issueFieldTitle(field),
                         placeholder: modules.tt.issueFieldTitle(field),
                         options: select2Filter(peoples(project, false, true), filter),
                         value: (typeof prefferredValue !== "undefined") ? prefferredValue:((issue && issue.watchers) ? Object.values(issue.watchers) : []),
@@ -475,7 +483,7 @@
                     return {
                         id: fieldId,
                         type: "select2",
-                        title: modules.tt.issueFieldTitle(field),
+                        title: title ? title: modules.tt.issueFieldTitle(field),
                         placeholder: modules.tt.issueFieldTitle(field),
                         options: select2Filter(options, filter),
                         multiple: true,
@@ -530,7 +538,7 @@
                     return {
                         id: "attachments",
                         type: "files",
-                        title: modules.tt.issueFieldTitle(field),
+                        title: title ? title: modules.tt.issueFieldTitle(field),
                         maxSize: project.maxFileSize,
                     };
 
@@ -568,11 +576,22 @@
                     return {
                         id: "workflow",
                         type: "select2",
-                        title: modules.tt.issueFieldTitle(field),
+                        title: title ? title: modules.tt.issueFieldTitle(field),
                         placeholder: modules.tt.issueFieldTitle(field),
                         options: select2Filter(workflowsByProject(project), filter),
                         value: issue.workflow,
                     };
+
+                case "created":
+                    return {
+                        id: fieldId,
+                        type: "datetime-local",
+                        title: title ? title: modules.tt.issueFieldTitle(field),
+                        placeholder: modules.tt.issueFieldTitle(field),
+                        sec: true,
+                        value: (typeof prefferredValue !== "undefined") ? prefferredValue : ((issue && issue.assigned) ? Object.values(issue.assigned) : []),
+                    }
+
             }
         } else {
             if (fieldId) {
@@ -612,7 +631,8 @@
                                 prefferredValue = 0;
                             }
 
-                            let ro = cf.editor == "text-ro";
+                            let ro = parseInt(cf.readonly);
+
                             let val;
                             let editor = cf.editor;
 
@@ -643,7 +663,8 @@
                             return {
                                 id: "_cf_" + fieldId,
                                 type: editor,
-                                title: modules.tt.issueFieldTitle(field),
+                                float: parseInt(cf.float) ? Math.pow(10, -parseInt(cf.float)) : false,
+                                title: title ? title: modules.tt.issueFieldTitle(field),
                                 placeholder: modules.tt.issueFieldTitle(field),
                                 hint: cf.fieldDescription ? cf.fieldDescription : false,
                                 sec: true,
@@ -655,11 +676,11 @@
                         case "select":
                             let already = {};
 
-                            if (cf.format.indexOf("suggestions") >= 0) {
+                            if (cf.format.indexOf("suggestions") >= 0 || !cf.required) {
                                 already[""] = 1;
                                 options.push({
                                     id: "",
-                                    text: "-",
+                                    text: "",
                                 });
                             }
 
@@ -685,7 +706,7 @@
                             return {
                                 id: "_cf_" + fieldId,
                                 type: "select2",
-                                title: modules.tt.issueFieldTitle(field),
+                                title: title ? title: modules.tt.issueFieldTitle(field),
                                 placeholder: modules.tt.issueFieldTitle(field),
                                 hint: cf.fieldDescription?cf.fieldDescription:false,
                                 options: select2Filter(options, filter),
@@ -756,7 +777,7 @@
                             return {
                                 id: "_cf_" + fieldId,
                                 type: "select2",
-                                title: modules.tt.issueFieldTitle(field),
+                                title: title ? title: modules.tt.issueFieldTitle(field),
                                 placeholder: modules.tt.issueFieldTitle(field),
                                 hint: cf.fieldDescription?cf.fieldDescription:false,
                                 options: select2Filter(options, filter),
@@ -799,14 +820,14 @@
                             return {
                                 id: "_cf_" + fieldId,
                                 type: "select2",
-                                title: modules.tt.issueFieldTitle(field),
+                                title: title ? title: modules.tt.issueFieldTitle(field),
                                 placeholder: modules.tt.issueFieldTitle(field),
                                 hint: cf.fieldDescription?cf.fieldDescription:false,
                                 options: select2Filter(options, filter),
                                 multiple: true,
                                 tags: true,
                                 createTags: true,
-                                value: (typeof prefferredValue !== "undefined")?prefferredValue:(ax?ax:[]),
+                                value: (typeof prefferredValue !== "undefined") ? prefferredValue : (ax ? ax : []),
                                 validate: validate,
                             }
 
@@ -826,11 +847,11 @@
                             return {
                                 id: "_cf_" + fieldId,
                                 type: "select2",
-                                title: modules.tt.issueFieldTitle(field),
+                                title: title ? title: modules.tt.issueFieldTitle(field),
                                 placeholder: modules.tt.issueFieldTitle(field),
                                 hint: cf.fieldDescription?cf.fieldDescription:false,
                                 options: select2Filter(options, filter),
-                                value: (typeof prefferredValue !== "undefined")?prefferredValue:((issue && issue["_cf_" + fieldId])?issue["_cf_" + fieldId]:[]),
+                                value: (typeof prefferredValue !== "undefined") ? prefferredValue : ((issue && issue["_cf_" + fieldId]) ? issue["_cf_" + fieldId] : []),
                                 validate: validate,
                                 ajax: {
                                     delay: 1000,
@@ -894,7 +915,7 @@
                             return {
                                 id: "_cf_" + fieldId,
                                 type: "select2",
-                                title: modules.tt.issueFieldTitle(field),
+                                title: title ? title: modules.tt.issueFieldTitle(field),
                                 placeholder: modules.tt.issueFieldTitle(field),
                                 hint: cf.fieldDescription?cf.fieldDescription:false,
                                 options: select2Filter(options, filter),
@@ -1068,7 +1089,7 @@
                         break;
 
                     case "parent":
-                        val = `<span class='hoverable ttIssue text-bold'>${val}</span>`;
+                        val = `<span><a class='hoverable text-bold' class='' href='?#tt&issue=${val}'>${val}</a></span>`;
                         break;
 
                     case "created":
@@ -1203,7 +1224,7 @@
                             val = nl2br(escapeHTML(val));
                         }
 
-                        if (cf.link) {
+                        if (cf.link && cf.link != "false") {
                             val = "<a href='" + cf.link.replaceAll('%value%', val) + "' target='_blank' class='hover'>" + val + "</a>";
                         }
 
@@ -1256,7 +1277,7 @@
             }
         }
 
-        if (val === false || typeof val === "undefined") {
+        if (val === false || typeof val === "undefined" || val === null) {
             val = "";
         }
 
@@ -1295,6 +1316,40 @@
     },
 
     renderIssues: function (params, target, issuesListId, callback, fail) {
+/*
+        Этот код реализует функцию renderIssues, которая отвечает за отображение списка задач (issues) в пользовательском
+        интерфейсе системы трекинга задач. Функция принимает параметры фильтрации, целевой элемент для вывода, идентификатор
+        списка задач, а также колбэки для успешного и неуспешного завершения.
+
+        В начале функция определяет текущий проект, основываясь на параметрах или сохранённых данных пользователя. Затем
+        формируется выпадающий список проектов, к которым у пользователя есть доступ, и, если это необходимо, добавляются
+        элементы управления пользовательскими фильтрами (например, кнопки для создания, редактирования или удаления фильтров).
+
+        Далее определяется имя фильтра, который будет применён к списку задач. Если фильтр не задан явно, используется сохранённый
+        ранее фильтр для текущего проекта. После этого происходит асинхронный запрос к серверу для получения информации о
+        фильтре и его структуре.
+
+        В зависимости от полученных данных строится дерево фильтров (с помощью вспомогательной функции hh), которое отображается
+        в виде вложенного выпадающего меню. Это меню позволяет пользователю выбирать фильтры, сгруппированные по различным
+        категориям: личные, групповые, общие и т.д. Каждый фильтр сопровождается иконкой, отражающей его тип.
+
+        После выбора фильтра формируется и отправляется запрос на сервер для получения списка задач, соответствующих
+        выбранному фильтру и проекту. В ответе от сервера содержится информация о задачах, их количестве, а также о возможных
+        действиях (например, массовые операции, экспорт в CSV и т.д.).
+
+        Далее функция строит таблицу задач с возможностью сортировки по различным полям, пагинацией и дополнительными действиями
+        через выпадающее меню. Для каждой задачи отображаются основные поля, а также предоставляются ссылки для перехода к
+        подробному просмотру или внешним ресурсам (если такие ссылки определены в метаданных).
+
+        В случае, если фильтр поддерживает пользовательский поиск, отображается редактор фильтра на основе Ace Editor,
+        позволяющий пользователю создавать и сохранять сложные фильтры в формате JSON.
+
+        В завершение функция обрабатывает различные сценарии ошибок, отображая соответствующие сообщения пользователю и
+        сбрасывая некорректные фильтры или проекты при необходимости.
+
+        Вспомогательная функция hh строит вложенное дерево фильтров для выпадающего меню, группируя их по категориям и добавляя
+        соответствующие иконки и стили для каждого типа фильтра.
+*/
         if (target === "undefined") {
             target = false;
         }
@@ -1303,12 +1358,12 @@
             issuesListId = md5(guid());
         }
 
-        let current_project;
+        let currentProject;
 
         if (target) {
-            current_project = params.project;
+            currentProject = params.project;
         } else {
-            current_project = params.project ? params.project : lStore("ttProject");
+            currentProject = params.project ? params.project : lStore("ttProject");
         }
 
         let pn = {};
@@ -1325,11 +1380,11 @@
             if (pc == 1) {
                 rtd += `<select id="ttProjectSelect" style="display: none;">`;
             } else {
-                rtd += `<form autocomplete="off"><div class="form-inline ml-3 mr-3"><div class="input-group input-group-sm mt-1"><select id="ttProjectSelect" class="form-control select-arrow right-top-select">`;
+                rtd += `<form autocomplete="off"><div class="form-inline ml-3 mr-3"><div class="input-group input-group-sm mt-1"><select id="ttProjectSelect" class="form-control select-arrow right-top-select top-input">`;
             }
 
             for (let j in modules.tt.meta.myRoles) {
-                if (j == current_project) {
+                if (j == currentProject) {
                     rtd += `<option selected="selected" value="${j}">${pn[j]} [${j}]</option>`;
                 } else {
                     rtd += `<option value="${j}">${pn[j]} [${j}]</option>`;
@@ -1344,18 +1399,17 @@
 
             if (AVAIL("tt", "customFilter")) {
                 rtd += `<li class="nav-item nav-item-back-hover"><a href="?#tt&filter=empty&customSearch=yes&_=${Math.random()}" class="nav-link pointer" role="button" title="${i18n("tt.customSearch")}"><i class="fab fa-lg fa-fw fa-searchengin"></i></a></li>`;
-                rtd += `<li class="nav-item nav-item-back-hover" style="display: none;"><span id="customFilterEdit" class="nav-link pointer" role="button" title="${i18n("tt.customFilterEdit")}"><i class="fas fa-lg fa-fw fa-pen-square"></i></span></li>`;
-                rtd += `<li class="nav-item nav-item-back-hover" style="display: none;"><span id="customFilterDelete" class="nav-link pointer" role="button" title="${i18n("tt.customFilterDelete")}"><i class="fas fa-lg fa-fw fa-minus-square"></i></span></li>`;
             }
         }
 
-        if (!AVAIL("tt", "project", "POST")) {
+        if (AVAIL("tt", "project", "POST")) {
             rtd += `<li class="nav-item nav-item-back-hover"><a href="?#tt.settings" class="nav-link pointer" role="button" title="${i18n("tt.settings")}"><i class="fas fa-lg fa-fw fa-cog"></i></a></li>`;
         }
 
         if (!target) {
             $("#rightTopDynamic").html(rtd);
-            current_project = $("#ttProjectSelect").val();
+            currentProject = $("#ttProjectSelect").val();
+            lStore("ttProject", currentProject);
         }
 
         $("#ttProjectSelect").off("change").on("change", () => {
@@ -1365,759 +1419,1070 @@
         let project = false;
 
         for (let i in modules.tt.meta.projects) {
-            if (modules.tt.meta.projects[i].acronym == current_project) {
+            if (modules.tt.meta.projects[i].acronym == currentProject) {
                 project = modules.tt.meta.projects[i];
             }
         }
 
-        let x = false;
+        let filterName = false;
 
         if (target) {
             try {
-                x = params["filter"];
-            } catch (e) {
+                filterName = params["filter"];
+            } catch (_) {
                 //
             }
         } else {
             try {
-                x = params["filter"] ? params["filter"] : lStore("ttIssueFilter:" + current_project);
-            } catch (e) {
+                filterName = params["filter"] ? params["filter"] : lStore("ttIssueFilter:" + currentProject);
+            } catch (_) {
                 //
             }
         }
 
-        let filters = '';
+        GET("tt", "filter", filterName, true).
+        done(r => {
+            let realFilter;
 
-        if (target || $.trim(x)[0] == "#") {
-            filters = `<span class="text-bold ${params.class ? params.class : ''}">${params.caption ? params.caption : ((modules.tt.meta.filters[x] ? modules.tt.meta.filters[x] : i18n("tt.filter")).replaceAll("/", "<i class='fas fa-fw fa-xs fa-angle-double-right'></i>"))}</span>`;
-        } else {
-            let fcount = 0;
-
-            let filtersTree = {};
-            for (let i in project.filters) {
-                let tree = (project.filters[i].filter ? modules.tt.meta.filters[project.filters[i].filter] : project.filters[i].filter).split("/");
-                let f = filtersTree;
-                for (let j = 0; j < tree.length - 1; j++) {
-                    tree[j] = tree[j].trim();
-                    if (!f[tree[j]]) {
-                        f[tree[j]] = {};
-                    }
-                    f = f[tree[j]];
-                }
-                f[tree[tree.length - 1].trim()] = project.filters[i];
+            try {
+                realFilter = JSON.parse(r.body);
+            } catch (_) {
+                realFilter = {};
             }
 
-            let filterName = modules.tt.meta.filters[x] ? modules.tt.meta.filters[x] : i18n("tt.filter");
-            document.title = i18n("windowTitle") + " :: " + filterName;
+            let filters = '';
+            let fp = -1;
 
-            let alreadyFavorite = false;
+            if (target || $.trim(filterName)[0] == "#") {
+                filters = `<span class="text-bold ${params.class ? params.class : ''}">${params.caption ? params.caption : ((modules.tt.meta.filters[filterName] ? modules.tt.meta.filters[filterName].name : i18n("tt.filter")).replaceAll("/", "<i class='fas fa-fw fa-xs fa-angle-double-right'></i>"))}</span>`;
+            } else {
+                let fcount = 0;
 
-            function hh(t) {
-                let filters = '';
+                let filtersTree = {};
+                for (let i in project.filters) {
+                    let tree = (project.filters[i].filter ? modules.tt.meta.filters[project.filters[i].filter].name : project.filters[i].filter).escapedSplit("/");
+                    let f = filtersTree;
+                    for (let j = 0; j < tree.length - 1; j++) {
+                        tree[j] = tree[j].trim();
+                        if (!f[tree[j]]) {
+                            f[tree[j]] = {};
+                        }
+                        f = f[tree[j]];
+                    }
+                    f[tree[tree.length - 1].trim()] = project.filters[i];
+                }
 
-                let fMy = [];
-                let fFolders = [];
-                let fPersonal = [];
-                let fGroups = [];
-                let fOthers = [];
-                let ts = [];
+                let realFilterName = modules.tt.meta.filters[filterName] ? modules.tt.meta.filters[filterName].name : i18n("tt.filter");
+                document.title = i18n("windowTitle") + " :: " + realFilterName;
 
-                for (let i in t) {
-                    if ($.trim(i.split("/")[0]) == myself.realName) {
-                        fMy.push(i);
-                    } else {
-                        if (!t[i].filter) {
-                            fFolders.push(i);
+                let alreadyFavorite = false;
+
+                function hh(t) {
+                    let filters = '';
+
+                    let fMy = [];
+                    let fFolders = [];
+                    let fPersonal = [];
+                    let fGroups = [];
+                    let fOthers = [];
+                    let ts = [];
+
+                    for (let i in t) {
+                        if ($.trim(i.escapedSplit("/")[0]) == myself.realName) {
+                            fMy.push(i);
                         } else {
-                            if (parseInt(t[i].personal) > 1000000) {
-                                fPersonal.push(i);
-                            } else
-                            if (parseInt(t[i].personal)) {
-                                fGroups.push(i);
+                            if (!t[i].filter) {
+                                fFolders.push(i);
                             } else {
-                                fOthers.push(i);
+                                if (parseInt(t[i].personal) > 1000000) {
+                                    fPersonal.push(i);
+                                } else
+                                if (parseInt(t[i].personal)) {
+                                    fGroups.push(i);
+                                } else {
+                                    fOthers.push(i);
+                                }
                             }
                         }
                     }
+
+                    ts = ts.concat(fMy.sort());
+                    ts = ts.concat(fFolders.sort());
+                    ts = ts.concat(fPersonal.sort());
+                    ts = ts.concat(fGroups.sort());
+                    ts = ts.concat(fOthers.sort());
+
+                    let hasSub = fMy.length || fFolders.length;
+
+                    for (let sk in ts) {
+                        let i = ts[sk];
+                        if (t[i].filter) {
+                            if (filterName == t[i].filter) {
+                                filters += `<li class="dropdown-item${hasSub ? ' nomenu' : ''} pointer tt_issues_filter font-weight-bold mr-3" data-filter-name="${t[i].filter}">`;
+                            } else {
+                                filters += `<li class="dropdown-item${hasSub ? ' nomenu' : ''} pointer tt_issues_filter mr-3" data-filter-name="${t[i].filter}">`;
+                            }
+                            if (parseInt(t[i].personal) > 1000000) {
+                                filters += '<i class="fas fa-fw fa-users mr-2"></i>';
+                            } else
+                            if (parseInt(t[i].personal)) {
+                                if (t[i].filter, modules.tt.meta.filters[t[i].filter].owner == myself.login) {
+                                    filters += '<i class="fas fa-fw fa-user-graduate mr-2"></i>';
+                            } else {
+                                    filters += '<i class="fas fa-fw fa-user mr-2"></i>';
+                                }
+                            } else {
+                                filters += '<i class="fas fa-fw fa-globe-americas mr-2"></i>';
+                            }
+                            filters += "<span>" + $.trim(i) + "&nbsp;</span>";
+                            filters += "</li>";
+                            fcount++;
+                        } else {
+                            filters += `<li class="dropdown-item pointer submenu mr-4"><i class="far fa-fw fa-folder mr-2"></i><span>${i}&nbsp;</span></li>`;
+                            filters += '<ul class="dropdown-menu">';
+                            filters += hh(t[i]);
+                            filters += '</ul>';
+                            filters += `</li>`;
+                        }
+                    }
+
+                    return filters;
                 }
 
-                ts = ts.concat(fMy.sort());
-                ts = ts.concat(fFolders.sort());
-                ts = ts.concat(fPersonal.sort());
-                ts = ts.concat(fGroups.sort());
-                ts = ts.concat(fOthers.sort());
+                let filterNames = realFilterName.escapedSplit("/");
 
-                let hasSub = fMy.length || fFolders.length;
+                let cpff = false;
 
-                for (let sk in ts) {
-                    let i = ts[sk];
-                    if (t[i].filter) {
-                        if (x == t[i].filter) {
-                            filters += `<li class="dropdown-item${hasSub ? ' nomenu' : ''} pointer tt_issues_filter font-weight-bold mr-3" data-filter-name="${t[i].filter}">`;
-                        } else {
-                            filters += `<li class="dropdown-item${hasSub ? ' nomenu' : ''} pointer tt_issues_filter mr-3" data-filter-name="${t[i].filter}">`;
+                if (modules.tt.meta.favoriteFilters.length) {
+                    for (let ff in modules.tt.meta.favoriteFilters) {
+                        if (modules.tt.meta.favoriteFilters[ff].project == currentProject) {
+                            cpff = true;
+                            break;
                         }
-                        if (parseInt(t[i].personal) > 1000000) {
-                            filters += '<i class="fas fa-fw fa-users mr-2"></i>';
-                        } else
-                        if (parseInt(t[i].personal)) {
-                            filters += '<i class="fas fa-fw fa-user mr-2"></i>';
-                        } else {
-                            filters += '<i class="fas fa-fw fa-globe-americas mr-2"></i>';
-                        }
-                        filters += "<span>" + $.trim(i) + "&nbsp;</span>";
-                        filters += "</li>";
-                        fcount++;
+                    }
+                }
+
+                for (let o in filterNames) {
+                    filters += `<span class="dropdown">`;
+                    if (o == 0) {
+                        filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter-${o}" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" data-flip="false" style="margin-left: -4px;"><i class="far fa-fw fa-caret-square-down mr-1"></i>${filterNames[o].trim()}</span>`;
                     } else {
-                        filters += `<li class="dropdown-item pointer submenu mr-4"><i class="far fa-fw fa-folder mr-2"></i><span>${i}&nbsp;</span></li>`;
+                        filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter-${o}" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false"  data-flip="false"><i class="far fa-fw fa-caret-square-down mr-1"></i>${filterNames[o].trim()}</span>`;
+                    }
+                    filters += `<ul class="dropdown-menu" aria-labelledby="ttFilter-${o}">`;
+
+                    if (cpff && !alreadyFavorite) {
+                        alreadyFavorite = true;
+                        filters += `<li class="dropdown-item pointer submenu mr-4"><i class="far fa-fw fa-bookmark mr-2"></i><span>${i18n("tt.favoriteFilters")}&nbsp;</span></li>`;
                         filters += '<ul class="dropdown-menu">';
-                        filters += hh(t[i]);
+                        for (let ff in modules.tt.meta.favoriteFilters) {
+                            if (modules.tt.meta.favoriteFilters[ff].project == currentProject) {
+                                if (filterName == modules.tt.meta.favoriteFilters[ff].filter) {
+                                    filters += `<li class="dropdown-item nomenu pointer tt_issues_filter font-weight-bold mr-3" data-filter-name="${modules.tt.meta.favoriteFilters[ff].filter}">`;
+                                } else {
+                                    filters += `<li class="dropdown-item nomenu pointer tt_issues_filter mr-3" data-filter-name="${modules.tt.meta.favoriteFilters[ff].filter}">`;
+                                }
+                                filters += `<i class="fa-fw mr-2 ${modules.tt.meta.favoriteFilters[ff].icon} ${modules.tt.meta.favoriteFilters[ff].color}"></i>`;
+                                filters += "<span>" + $.trim(modules.tt.meta.filters[modules.tt.meta.favoriteFilters[ff].filter].shortName ? modules.tt.meta.filters[modules.tt.meta.favoriteFilters[ff].filter].shortName : modules.tt.meta.filters[modules.tt.meta.favoriteFilters[ff].filter].name) + "&nbsp;</span>";
+                                filters += "</li>";
+                            }
+                        }
                         filters += '</ul>';
                         filters += `</li>`;
                     }
-                }
 
-                return filters;
-            }
+                    filters += hh(filtersTree);
+                    filters += "</ul></span>";
 
-            filterNames = filterName.split("/");
-
-            for (let o in filterNames) {
-                filters += `<span class="dropdown">`;
-                if (o == 0) {
-                    filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter-${o}" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" data-flip="false" style="margin-left: -4px;"><i class="far fa-fw fa-caret-square-down mr-1"></i>${filterNames[o].trim()}</span>`;
-                } else {
-                    filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter-${o}" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false"  data-flip="false"><i class="far fa-fw fa-caret-square-down mr-1"></i>${filterNames[o].trim()}</span>`;
-                }
-                filters += `<ul class="dropdown-menu" aria-labelledby="ttFilter-${o}">`;
-
-                if (modules.tt.meta.favoriteFilters.length && !alreadyFavorite) {
-                    alreadyFavorite = true;
-                    filters += `<li class="dropdown-item pointer submenu mr-4"><i class="far fa-fw fa-bookmark mr-2"></i><span>${i18n("tt.favoriteFilters")}&nbsp;</span></li>`;
-                    filters += '<ul class="dropdown-menu">';
-                    for (let ff in modules.tt.meta.favoriteFilters) {
-                        if (x == modules.tt.meta.favoriteFilters[ff].filter) {
-                            filters += `<li class="dropdown-item nomenu pointer tt_issues_filter font-weight-bold mr-3" data-filter-name="${modules.tt.meta.favoriteFilters[ff].filter}">`;
-                        } else {
-                            filters += `<li class="dropdown-item nomenu pointer tt_issues_filter mr-3" data-filter-name="${modules.tt.meta.favoriteFilters[ff].filter}">`;
-                        }
-                        filters += `<i class="fa-fw mr-2 ${modules.tt.meta.favoriteFilters[ff].icon} ${modules.tt.meta.favoriteFilters[ff].color}"></i>`;
-                        filters += "<span>" + $.trim(modules.tt.meta.filtersExt[modules.tt.meta.favoriteFilters[ff].filter].shortName ? modules.tt.meta.filtersExt[modules.tt.meta.favoriteFilters[ff].filter].shortName : modules.tt.meta.filtersExt[modules.tt.meta.favoriteFilters[ff].filter].name) + "&nbsp;</span>";
-                        filters += "</li>";
+                    if (o < filterNames.length - 1) {
+                        filters += "<i class='fas fa-fw fa-xs fa-angle-double-right ml-2 mr-2'></i>";
                     }
-                    filters += '</ul>';
-                    filters += `</li>`;
+
+                    if (filtersTree[filterNames[o].trim()]) {
+                        filtersTree = filtersTree[filterNames[o].trim()];
+                    }
                 }
 
-                filters += hh(filtersTree);
-                filters += "</ul></span>";
-
-                if (o < filterNames.length - 1) {
-                    filters += "<i class='fas fa-fw fa-xs fa-angle-double-right ml-2 mr-2'></i>";
+                for (let i in project.filters) {
+                    if (project.filters[i].filter == filterName) {
+                        fp = project.filters[i].personal;
+                        break;
+                    }
                 }
 
-                if (filtersTree[filterNames[o].trim()]) {
-                    filtersTree = filtersTree[filterNames[o].trim()];
-                }
-            }
-
-            let fp = -1;
-            for (let i in project.filters) {
-                if (project.filters[i].filter == x) {
-                    fp = project.filters[i].personal;
-                    break;
+                if (!fcount) {
+                    filters = `<span class="text-bold text-warning">${i18n('tt.noFiltersAvailable')}</span>`;
                 }
             }
 
-            if (AVAIL("tt", "customFilter") && x && x != "#search") {
-                $("#customFilterEdit").off("click").on("click", function () {
-                    window.location.href = '?#tt&filter=' + x + '&customSearch=yes&_=' + Math.random();
-                }).parent().show();
+            let skip = parseInt(params.skip ? params.skip : 0);
+            let limit = parseInt(params.limit ? params.limit : modules.tt.defaultIssuesPerPage);
 
-                if (md5(md5($.trim(modules.tt.meta.filters[x])) + "-" + md5(lStore("_login"))) == x && fp == myself.uid) {
-                    $("#customFilterDelete").off("click").on("click", function () {
-                        mConfirm(i18n("tt.filterDelete", modules.tt.meta.filters[x]), i18n("confirm"), i18n("delete"), () => {
+            let _ = Math.random();
+
+            let query = {
+                "project": currentProject,
+                "filter": filterName ? filterName : '',
+                "skip": skip,
+                "limit": limit,
+                "search": ($.trim(params.search) && params.search !== true) ? $.trim(params.search) : '',
+            };
+
+            if (lStore("sortBy:" + filterName)) {
+                query.sort = lStore("sortBy:" + filterName);
+                if (query.sort._id) {
+                    delete query.sort._id;
+                }
+            }
+
+            let t = lStore(`_filter_form_${filterName}`);
+            if (t) {
+                let preprocess = {};
+                let types = {};
+                for (let i in t) {
+                    if (i != "types") {
+                        preprocess['%%' + i] = t[i];
+                    } else {
+                        for (let j in t[i]) {
+                            types['%%' + j] = t[i][j];
+                        }
+                    }
+                }
+                query.preprocess = preprocess;
+                query.types = types;
+            }
+
+            POST("tt", "issues", false, query).
+            done(response => {
+                if (response && response.issues && response.issues.all) {
+                    lStore("ttIssueFilterList:" + filterName, response.issues.all);
+                }
+
+                if (response.issues.exception) {
+                    error(i18n("errors." + response.issues.exception), i18n("error"), 30);
+                }
+
+                let issues = response.issues;
+
+                limit = parseInt(issues.limit);
+                skip = parseInt(issues.skip);
+
+                let page = Math.floor(skip / limit) + 1;
+
+                function pager(issuesListId) {
+                    let h = '';
+
+                    let pages = Math.ceil(issues.count / limit);
+                    let delta = Math.floor(modules.tt.defaultPagerItemsCount / 2);
+
+                    let first, last;
+
+                    if (pages <= modules.tt.defaultPagerItemsCount) {
+                        first = 1;
+                        last = pages;
+                    } else {
+                        if (page <= delta) {
+                            first = 1;
+                            last = modules.tt.defaultPagerItemsCount;
+                        } else {
+                            first = page - delta + 1;
+                            last = first + modules.tt.defaultPagerItemsCount - 1;
+                            if (last > pages) {
+                                last = pages;
+                                first = last - modules.tt.defaultPagerItemsCount + 1;
+                            }
+                        }
+                    }
+
+                    h += `<nav class="pager" data-target="${issuesListId}">`;
+                    h += '<ul class="pagination mb-0 ml-0" style="margin-right: -2px!important;">';
+
+                    if (first > 1) {
+                        h += `<li class="page-item pointer tt_pager" data-page="1" data-target="${issuesListId}"><span class="page-link"><span aria-hidden="true">&laquo;</span></li>`;
+                    } else {
+                        h += `<li class="page-item disabled"><span class="page-link"><span aria-hidden="true">&laquo;</span></li>`;
+                    }
+
+                    for (let i = first; i <= last; i++) {
+                        if (page == i) {
+                            h += `<li class="page-item font-weight-bold disabled" data-page="${i}" data-target="${issuesListId}"><span class="page-link">${i}</span></li>`;
+                        } else {
+                            h += `<li class="page-item pointer tt_pager" data-page="${i}" data-target="${issuesListId}"><span class="page-link">${i}</span></li>`;
+                        }
+                    }
+
+                    if (last < pages) {
+                        h += `<li class="page-item pointer tt_pager" data-page="${pages}" data-target="${issuesListId}"><span class="page-link"><span aria-hidden="true">&raquo;</span></li>`;
+                    } else {
+                        h += `<li class="page-item disabled"><span class="page-link"><span aria-hidden="true">&raquo;</span></li>`;
+                    }
+
+                    h += '</ul>';
+                    h += '</nav>';
+
+                    return h;
+                }
+
+                let cs = '';
+
+                if (!target && params.customSearch && params.customSearch !== true) {
+                    let height = 400;
+                    cs += '<div>';
+                    cs += `<div id='editorContainer' style='width: 100%; height: ${height}px;' data-fh="true">`;
+                    cs += `<pre class="ace-editor mt-2" id="filterEditor"></pre>`;
+                    cs += "</div>";
+                    cs += `<span style='position: absolute; right: 35px; top: 35px;'>`;
+                    cs += `<span id="filterRun" class="hoverable saveButton"><i class="far fa-play-circle pr-2"></i>${i18n("tt.filterRun")}</span>`;
+                    cs += `</span>`;
+                    cs += '</div>';
+                }
+
+                if (target) {
+                    if (!$("#" + issuesListId).length) {
+                        target.append(`<table class="mt-2" style="width: 100%;"><tr><td style="width: 100%;">${filters}<br/><span id='${issuesListId + '-count'}'></span></td><td>${pager(issuesListId)}</td></tr></table><div id="${issuesListId}"></div>`);
+                    } else {
+                        $(`.pager[data-target="${issuesListId}"]`).html(pager(issuesListId));
+                    }
+                } else {
+                    let o = cs;
+                    if (cs) {
+                        o += `<table class="mt-2" style="width: 100%;"><tr><td style="width: 100%;"><span id='${issuesListId + '-count'}'></span></td></tr></table>`;
+                    } else {
+                        o += `<table class="mt-2" style="width: 100%;"><tr><td style="width: 100%;">${filters}<br/><span id='${issuesListId + '-count'}'></span></td><td>${pager(issuesListId)}</td></tr></table>`;
+                    }
+                    o += `<div id="${issuesListId}"></div>`;
+                    if (!cs) {
+                        o += `<table class="mb-2 issuesBottomPager" style="width: 100%; display: none;"><tr><td style="width: 100%;">&nbsp;</td><td>${pager(issuesListId)}</td></tr></table>`;
+                    }
+                    $("#mainForm").html(o);
+                }
+
+                $(".tt_issues_filter").off("click").on("click", function () {
+                    let filter = $(this).attr("data-filter-name");
+                    loadingStart();
+                    GET("tt", "filter", filter, true).
+                    done(f => {
+                        try {
+                            f = JSON.parse(f.body);
+                        } catch (_) {
+                            f = false;
+                        }
+                        try {
+                            if (f && f.form && f.form.title && f.form.fields && f.form.fields.length > 0) {
+                                let values = lStore(`_filter_form_${filter}`);
+                                let fields = [];
+                                let project;
+
+                                for (let i in modules.tt.meta.projects) {
+                                    if (modules.tt.meta.projects[i].acronym == lStore("ttProject")) {
+                                        project = modules.tt.meta.projects[i];
+                                        break;
+                                    }
+                                }
+
+                                let types = {};
+
+                                for (let i in f.form.fields) {
+                                    let t = modules.tt.issueField2FormFieldEditor(null, f.form.fields[i].field, project.projectId, false, (values && values[`_form_${f.form.fields[i].id}`]) ? values[`_form_${f.form.fields[i].id}`] : "", f.form.fields[i].title);
+                                    t.id = `_form_${f.form.fields[i].id}`;
+                                    if (!f.form.fields[i].keepRO) {
+                                        t.readonly = false;
+                                    }
+                                    if (f.form.fields[i].editor) {
+                                        t.type = f.form.fields[i].editor;
+                                    }
+                                    fields.push(t);
+                                    if (f.form.fields[i].cast) {
+                                        types[t.id] = f.form.fields[i].cast;
+                                    }
+                                }
+
+                                loadingDone();
+
+                                cardForm({
+                                    title: f.form.title,
+                                    apply: f.form.apply,
+                                    fields: fields,
+                                    topApply: f.form.topApply,
+                                    footer: f.form.footer,
+                                    borderless: f.form.borderless,
+                                    size: "lg",
+                                    callback: r => {
+                                        r.types = types;
+                                        lStore(`_filter_form_${filter}`, r);
+                                        modules.tt.selectFilter(filter);
+                                    },
+                                })
+                            } else {
+                                modules.tt.selectFilter(filter);
+                            }
+                        } catch (e) {
+                            loadingDone();
+                            console.error(e);
+                            FAIL();
+                        }
+                    }).
+                    fail(FAIL).
+                    fail(loadingDone);
+                });
+
+                $(`.tt_pager[data-target="${issuesListId}"]`).off("click").on("click", function () {
+                    params.skip = Math.max(0, (parseInt($(this).attr("data-page")) - 1) * limit);
+                    params.limit = limit ? limit : modules.tt.defaultIssuesPerPage;
+                    if (params.pager && typeof params.pager == "function") {
+                        params.pager(params);
+                    } else {
+                        if (target) {
+                            // for workspaces
                             loadingStart();
-                            DELETE("tt", "customFilter", x, { "project": current_project }).
+                            modules.tt.renderIssues(params, target, issuesListId, callback);
+                        } else {
+                            modules.tt.selectFilter(params.filter ? params.filter : false, params.skip, params.limit, params.search);
+                        }
+                    }
+                });
+
+                let pKeys = [];
+
+                if (issues.projection) {
+                    pKeys = Object.keys(issues.projection);
+                }
+
+                if (pKeys && filterName && modules.tt.meta.filters[filterName] && modules.tt.meta.filters[filterName].hide) {
+                    let t = [];
+                    for (let i in pKeys) {
+                        if (modules.tt.meta.filters[filterName].hide.indexOf(pKeys[i]) < 0) {
+                            t.push(pKeys[i]);
+                        }
+                    }
+                    pKeys = t;
+                }
+
+                let sortMenuItems = [
+                    {
+                        text: "-",
+                        hint: i18n("tt.sortBy"),
+                    },
+                ];
+
+                let sort = response.issues.sort;
+
+                if (!sort || Object.keys(sort) === 0 || typeof sort.length != "undefined") {
+                    sort = lStore("sortBy:" + filterName);
+                }
+
+                if (!sort || Object.keys(sort) === 0 || typeof sort.length != "undefined") {
+                    sort = {};
+                }
+
+                if (sort._id) {
+                    delete sort._id;
+                }
+
+                let virtuals = {};
+                let links = {}
+
+                for (let i in modules.tt.meta.customFields) {
+                    if (modules.tt.meta.customFields[i].type == 'virtual') {
+                        virtuals["_cf_" + modules.tt.meta.customFields[i].field] = 1;
+                    }
+                    if (modules.tt.meta.customFields[i].link) {
+                        links["_cf_" + modules.tt.meta.customFields[i].field] = modules.tt.meta.customFields[i].link;
+                    }
+                }
+
+                let sorted = false;
+
+                for (let i = 0; i < pKeys.length; i++) {
+                    if (virtuals[pKeys[i]]) continue;
+
+                    if (sort[pKeys[i]]) {
+                        sorted = true;
+                        sortMenuItems.push({
+                            id: pKeys[i],
+                            icon: (parseInt(sort[pKeys[i]]) == 1) ? 'fas fa-sort-alpha-down' : 'fas fa-fw fa-sort-alpha-up-alt',
+                            text: modules.tt.issueFieldTitle(pKeys[i]) + ' [' + (Object.keys(sort).indexOf(pKeys[i]) + 1) + ']',
+                            selected: true,
+                        });
+                    } else {
+                        sortMenuItems.push({
+                            id: pKeys[i],
+                            icon: 'fas',
+                            text: modules.tt.issueFieldTitle(pKeys[i]),
+                        });
+                    }
+                };
+
+                if (!sorted) {
+                    sort = {};
+                    lStore("sortBy:" + filterName, sort);
+                }
+
+                sortMenuItems.push({
+                    text: "-",
+                });
+
+                sortMenuItems.push({
+                    id: "noSort",
+                    text: i18n("tt.noSort"),
+                    selected: !sorted,
+                    icon: !sorted ? 'fas fa-check' : '',
+                });
+
+                let sortMenu = menu({
+                    icon: 'fas fa-sort',
+                    items: sortMenuItems,
+                    click: id => {
+                        if (id == "noSort") {
+                            sort = {};
+                        } else {
+                            if (!sort || Object.keys(sort) === 0 || typeof sort.length != "undefined") {
+                                sort = {};
+                            }
+                            if (sort[id]) {
+                                if (sort[id] == 1) {
+                                    sort[id] = -1;
+                                } else
+                                if (sort[id] == -1) {
+                                    delete sort[id];
+                                }
+                            } else {
+                                sort[id] = 1;
+                            }
+                        }
+                        lStore("sortBy:" + filterName, sort);
+                        if (target) {
+                            // for workspaces
+                            loadingStart();
+                            params.skip = 0;
+                            params.limit = limit ? limit : modules.tt.defaultIssuesPerPage;
+                            modules.tt.renderIssues(params, target, issuesListId, callback);
+                        } else {
+                            modules.tt.selectFilter(params.filter ? params.filter : false, params.skip, params.limit, params.search);
+                        }
+                    }
+                });
+
+                let columns = [];
+
+                if ((modules && modules.tt && modules.tt.meta && modules.tt.meta.filters[filterName] && modules.tt.meta.filters[filterName].disableCustomSort) || (params.customSearch && params.customSearch !== true)) {
+                    columns.push({
+                        title: i18n("tt.issueIndx"),
+                        nowrap: true,
+                    });
+                } else {
+                    columns.push({
+                        title: sortMenu,
+                        nowrap: true,
+                    });
+                }
+
+                for (let i = 0; i < pKeys.length; i++) {
+                    columns.push({
+                        title: modules.tt.issueFieldTitle(pKeys[i], "list"),
+                        nowrap: true,
+                        fullWidth: i == pKeys.length - 1,
+                    });
+                };
+
+                if (params.customSearch && params.customSearch !== true) {
+                    let editor = ace.edit("filterEditor");
+                    if (modules.darkmode && modules.darkmode.isDark())
+                        editor.setTheme("ace/theme/one_dark");
+                    else
+                        editor.setTheme("ace/theme/chrome");
+                    editor.setOptions({
+                        enableBasicAutocompletion: true,
+                        enableSnippets: true,
+                        enableLiveAutocompletion: true,
+                    });
+                    editor.session.setMode("ace/mode/json");
+                    editor.setFontSize(14);
+                    let template = {
+                        "name": "My",
+                        "filter": {
+                            "$or": [
+                                {
+                                    "assigned": {
+                                        "$elemMatch": {
+                                            "$in": "%%my"
+                                        }
+                                    }
+                                },
+                                {
+                                    "author": "%%me"
+                                }
+                            ]
+                        },
+                        "fields": [
+                            "subject",
+                            "status",
+                            "workflow"
+                        ]
+                    };
+                    editor.setValue(JSON.stringify(template, null, "\t"));
+                    currentAceEditor = editor;
+                    currentAceEditorOriginalValue = currentAceEditor.getValue();
+                    editor.getSession().getUndoManager().reset();
+                    editor.clearSelection();
+                    editor.focus();
+                    editor.commands.removeCommand("removeline");
+                    editor.commands.removeCommand("redo");
+                    editor.commands.addCommand({
+                        name: "removeline",
+                        description: "Remove line",
+                        bindKey: {
+                            win: "Ctrl-Y",
+                            mac: "Cmd-Y"
+                        },
+                        exec: function (editor) { editor.removeLines(); },
+                        scrollIntoView: "cursor",
+                        multiSelectAction: "forEachLine"
+                    });
+                    editor.commands.addCommand({
+                        name: "redo",
+                        description: "Redo",
+                        bindKey: {
+                            win: "Ctrl-Shift-Z",
+                            mac: "Command-Shift-Z"
+                        },
+                        exec: function (editor) { editor.redo(); }
+                    });
+                    editor.commands.addCommand({
+                        name: 'save',
+                        bindKey: {
+                            win: "Ctrl-S",
+                            mac: "Cmd-S"
+                        },
+                        exec: (() => {
+                            $("#filterRun").click();
+                        }),
+                    });
+                    editor.commands.addCommand({
+                        name: 'run',
+                        bindKey: {
+                            win: "Ctrl-R",
+                            mac: "Cmd-R"
+                        },
+                        exec: (() => {
+                            $("#filterRun").click();
+                        }),
+                    });
+                    $("#filterRun").off("click").on("click", () => {
+                        let f = false;
+                        let err;
+                        try {
+                            f = JSON.parse($.trim(editor.getValue()));
+                        } catch (e) {
+                            err = e.message;
+                            f = false;
+                        }
+                        if (f && $.trim(f.name) && f.fields) {
+                            let t = $.trim($.trim(f.name).escapedSplit("/")[0]);
+                            if (t != myself.realName) {
+                                f.name = myself.realName + " / " + $.trim(f.name);
+                            }
+                            let n = md5(md5($.trim(f.name)) + "-" + md5(lStore("_login")));
+                            f.fileName = n;
+                            loadingStart();
+                            PUT("tt", "customFilter", n, {
+                                "project": currentProject,
+                                "body": JSON.stringify(f, true, 4),
+                            }).
                             done(() => {
-                                message(i18n("tt.filterWasDeleted"));
-                                lStore("ttIssueFilter:" + current_project, null);
-                                window.location.href = '?#tt&_=' + Math.random();
+                                GET("tt", "tt", false, true).
+                                done(modules.tt.tt).
+                                done(() => {
+                                    message(i18n("tt.filterWasSaved"));
+                                    lStore("ttIssueFilter:" + currentProject, n);
+                                    window.onbeforeunload = null;
+                                    window.location.href = '?#tt&filter=' + n + '&customSearch=yes&owner=' + myself.login + '&_=' + Math.random();
+                                }).
+                                fail(FAIL).
+                                fail(loadingDone);
                             }).
                             fail(FAIL).
                             fail(loadingDone);
-                        });
-                    }).parent().show();
-                }
-            }
-
-            if (!fcount) {
-                filters = `<span class="text-bold text-warning">${i18n('tt.noFiltersAvailable')}</span>`;
-            }
-        }
-
-        let skip = parseInt(params.skip ? params.skip : 0);
-        let limit = parseInt(params.limit ? params.limit : modules.tt.defaultIssuesPerPage);
-
-        let _ = Math.random();
-
-        let query = {
-            "project": current_project,
-            "filter": x ? x : '',
-            "skip": skip,
-            "limit": limit,
-            "search": ($.trim(params.search) && params.search !== true) ? $.trim(params.search) : '',
-        };
-
-        if (lStore("sortBy:" + x)) {
-            query.sort = lStore("sortBy:" + x);
-        }
-
-        QUERY("tt", "issues", query, true).
-        done(response => {
-            if (response && response.issues && response.issues.all) {
-                lStore("ttIssueFilterList:" + x, response.issues.all);
-            }
-
-            if (response.issues.exception) {
-                error(i18n("errors." + response.issues.exception), i18n("error"), 30);
-            }
-
-            let issues = response.issues;
-
-            limit = parseInt(issues.limit);
-            skip = parseInt(issues.skip);
-
-            let page = Math.floor(skip / limit) + 1;
-
-            function pager(issuesListId) {
-                let h = '';
-
-                let pages = Math.ceil(issues.count / limit);
-                let delta = Math.floor(modules.tt.defaultPagerItemsCount / 2);
-
-                let first, last;
-
-                if (pages <= modules.tt.defaultPagerItemsCount) {
-                    first = 1;
-                    last = pages;
-                } else {
-                    if (page <= delta) {
-                        first = 1;
-                        last = modules.tt.defaultPagerItemsCount;
-                    } else {
-                        first = page - delta + 1;
-                        last = first + modules.tt.defaultPagerItemsCount - 1;
-                        if (last > pages) {
-                            last = pages;
-                            first = last - modules.tt.defaultPagerItemsCount + 1;
-                        }
-                    }
-                }
-
-                h += `<nav class="pager" data-target="${issuesListId}">`;
-                h += '<ul class="pagination mb-0 ml-0" style="margin-right: -2px!important;">';
-
-                if (first > 1) {
-                    h += `<li class="page-item pointer tt_pager" data-page="1" data-target="${issuesListId}"><span class="page-link"><span aria-hidden="true">&laquo;</span></li>`;
-                } else {
-                    h += `<li class="page-item disabled"><span class="page-link"><span aria-hidden="true">&laquo;</span></li>`;
-                }
-
-                for (let i = first; i <= last; i++) {
-                    if (page == i) {
-                        h += `<li class="page-item font-weight-bold disabled" data-page="${i}" data-target="${issuesListId}"><span class="page-link">${i}</span></li>`;
-                    } else {
-                        h += `<li class="page-item pointer tt_pager" data-page="${i}" data-target="${issuesListId}"><span class="page-link">${i}</span></li>`;
-                    }
-                }
-
-                if (last < pages) {
-                    h += `<li class="page-item pointer tt_pager" data-page="${pages}" data-target="${issuesListId}"><span class="page-link"><span aria-hidden="true">&raquo;</span></li>`;
-                } else {
-                    h += `<li class="page-item disabled"><span class="page-link"><span aria-hidden="true">&raquo;</span></li>`;
-                }
-
-                h += '</ul>';
-                h += '</nav>';
-
-                return h;
-            }
-
-            let cs = '';
-
-            if (!target && params.customSearch && params.customSearch !== true) {
-                let height = 400;
-                cs += '<div>';
-                cs += `<div id='editorContainer' style='width: 100%; height: ${height}px;' data-fh="true">`;
-                cs += `<pre class="ace-editor mt-2" id="filterEditor" style="position: relative; border: 1px solid #ced4da; border-radius: 0.25rem; width: 100%; height: 100%;"></pre>`;
-                cs += "</div>";
-                cs += `<span style='position: absolute; right: 35px; top: 35px;'>`;
-                cs += `<span id="filterRun" class="hoverable saveButton"><i class="far fa-play-circle pr-2"></i>${i18n("tt.filterRun")}</span>`;
-                cs += `</span>`;
-                cs += '</div>';
-            }
-
-            if (target) {
-                if (!$("#" + issuesListId).length) {
-                    target.append(`<table class="mt-2" style="width: 100%;"><tr><td style="width: 100%;">${filters}<br/><span id='${issuesListId + '-count'}'></span></td><td>${pager(issuesListId)}</td></tr></table><div id="${issuesListId}"></div>`);
-                } else {
-                    $(`.pager[data-target="${issuesListId}"]`).html(pager(issuesListId));
-                }
-            } else {
-                $("#mainForm").html(`${cs}<table class="mt-2" style="width: 100%;"><tr><td style="width: 100%;">${cs ? '' : (filters + '<br/>')}<span id='${issuesListId + '-count'}'></span></td><td>${pager(issuesListId)}</td></tr></table><div id="${issuesListId}"></div>`);
-            }
-
-            $(".tt_issues_filter").off("click").on("click", function () {
-                modules.tt.selectFilter($(this).attr("data-filter-name"));
-            });
-
-            $(`.tt_pager[data-target="${issuesListId}"]`).off("click").on("click", function () {
-                params.skip = Math.max(0, (parseInt($(this).attr("data-page")) - 1) * limit);
-                params.limit = limit ? limit : modules.tt.defaultIssuesPerPage;
-                if (params.pager && typeof params.pager == "function") {
-                    params.pager(params);
-                } else {
-                    if (target) {
-                        // for workspaces
-                        loadingStart();
-                        modules.tt.renderIssues(params, target, issuesListId, callback);
-                    } else {
-                        modules.tt.selectFilter(params.filter ? params.filter : false, params.skip, params.limit, params.search);
-                    }
-                }
-            });
-
-            let pKeys = [];
-
-            if (issues.projection) {
-                pKeys = Object.keys(issues.projection);
-            }
-
-            if (pKeys && modules.tt.meta.filtersExt && x && modules.tt.meta.filtersExt[x] && modules.tt.meta.filtersExt[x].hide) {
-                let t = [];
-                for (let i in pKeys) {
-                    if (modules.tt.meta.filtersExt[x].hide.indexOf(pKeys[i]) < 0) {
-                        t.push(pKeys[i]);
-                    }
-                }
-                pKeys = t;
-            }
-
-            let sortMenuItems = [
-                {
-                    text: "-",
-                    hint: i18n("tt.sortBy"),
-                },
-            ];
-
-            let sort = response.issues.sort;
-
-            if (!sort) {
-                sort = lStore("sortBy:" + x);
-            }
-
-            if (!sort) {
-                sort = {};
-            }
-
-            let virtuals = {};
-
-            for (let i in modules.tt.meta.customFields) {
-                if (modules.tt.meta.customFields[i].type == 'virtual') {
-                    virtuals["_cf_" + modules.tt.meta.customFields[i].field] = 1;
-                }
-            }
-
-            for (let i = 0; i < pKeys.length; i++) {
-                if (virtuals[pKeys[i]]) continue;
-
-                if (sort[pKeys[i]]) {
-                    sortMenuItems.push({
-                        id: pKeys[i],
-                        text: ((parseInt(sort[pKeys[i]]) == 1) ? '<i class="fas fa-fw fa-sort-alpha-down mr-2"></i>' : '<i class="fas fa-fw fa-sort-alpha-up-alt mr-2"></i>') + modules.tt.issueFieldTitle(pKeys[i]),
-                        selected: true,
-                    });
-                } else {
-                    sortMenuItems.push({
-                        id: pKeys[i],
-                        text: '<i class="fas fa-fw mr-2"></i>' + modules.tt.issueFieldTitle(pKeys[i]),
-                    });
-                }
-            };
-
-            let sortMenu = menu({
-                button: "<i class='fas fa-fw fa-sort pointer'></i>",
-                items: sortMenuItems,
-                click: function (id) {
-                    if (sort && sort[id]) {
-                        if (sort[id] == 1) {
-                            sort = {};
-                            sort[id] = -1;
-                        } else
-                        if (sort[id] == -1) {
-                            sort = null;
-                        }
-                    } else {
-                        sort = {};
-                        sort[id] = 1;
-                    }
-                    lStore("sortBy:" + x, sort);
-                    if (target) {
-                        // for workspaces
-                        loadingStart();
-                        params.skip = 0;
-                        params.limit = limit ? limit : modules.tt.defaultIssuesPerPage;
-                        modules.tt.renderIssues(params, target, issuesListId, callback);
-                    } else {
-                        modules.tt.selectFilter(params.filter ? params.filter : false, params.skip, params.limit, params.search);
-                    }
-                }
-            });
-
-            let columns = [];
-
-            if (modules && modules.tt && modules.tt.meta && modules.tt.meta.filtersExt && modules.tt.meta.filtersExt[x] && modules.tt.meta.filtersExt[x].disableCustomSort) {
-                columns.push({
-                    title: i18n("tt.issueIndx"),
-                    nowrap: true,
-                });
-            } else {
-                columns.push({
-                    title: sortMenu,
-                    nowrap: true,
-                });
-            }
-
-            for (let i = 0; i < pKeys.length; i++) {
-                columns.push({
-                    title: modules.tt.issueFieldTitle(pKeys[i]),
-                    nowrap: true,
-                    fullWidth: i == pKeys.length - 1,
-                });
-            };
-
-            if (params.customSearch && params.customSearch !== true) {
-                let editor = ace.edit("filterEditor");
-                if (modules.darkmode && modules.darkmode.isDark())
-                    editor.setTheme("ace/theme/one_dark");
-                else
-                    editor.setTheme("ace/theme/chrome");
-                editor.setOptions({
-                    enableBasicAutocompletion: true,
-                    enableSnippets: true,
-                    enableLiveAutocompletion: true,
-                });
-                editor.session.setMode("ace/mode/json");
-                editor.setFontSize(14);
-                let template = {
-                    "name": "My",
-                    "filter": {
-                        "$or": [
-                            {
-                                "assigned": {
-                                    "$elemMatch": {
-                                        "$in": "%%my"
-                                    }
-                                }
-                            },
-                            {
-                                "author": "%%me"
-                            }
-                        ]
-                    },
-                    "fields": [
-                        "subject",
-                        "status",
-                        "workflow"
-                    ]
-                };
-                editor.setValue(JSON.stringify(template, null, "\t"));
-                currentAceEditor = editor;
-                currentAceEditorOriginalValue = currentAceEditor.getValue();
-                editor.getSession().getUndoManager().reset();
-                editor.clearSelection();
-                editor.focus();
-                editor.commands.removeCommand("removeline");
-                editor.commands.removeCommand("redo");
-                editor.commands.addCommand({
-                    name: "removeline",
-                    description: "Remove line",
-                    bindKey: {
-                        win: "Ctrl-Y",
-                        mac: "Cmd-Y"
-                    },
-                    exec: function (editor) { editor.removeLines(); },
-                    scrollIntoView: "cursor",
-                    multiSelectAction: "forEachLine"
-                });
-                editor.commands.addCommand({
-                    name: "redo",
-                    description: "Redo",
-                    bindKey: {
-                        win: "Ctrl-Shift-Z",
-                        mac: "Command-Shift-Z"
-                    },
-                    exec: function (editor) { editor.redo(); }
-                });
-                editor.commands.addCommand({
-                    name: 'save',
-                    bindKey: {
-                        win: "Ctrl-S",
-                        mac: "Cmd-S"
-                    },
-                    exec: (() => {
-                        $("#filterRun").click();
-                    }),
-                });
-                editor.commands.addCommand({
-                    name: 'run',
-                    bindKey: {
-                        win: "Ctrl-R",
-                        mac: "Cmd-R"
-                    },
-                    exec: (() => {
-                        $("#filterRun").click();
-                    }),
-                });
-                $("#filterRun").off("click").on("click", () => {
-                    let f = false;
-                    try {
-                        f = JSON.parse($.trim(editor.getValue()));
-                    } catch (e) {
-                        f = false;
-                    }
-                    if (f && $.trim(f.name) && f.fields) {
-                        let t = $.trim($.trim(f.name).split("/")[0]);
-                        if (t != myself.realName) {
-                            f.name = myself.realName + " / " + $.trim(f.name);
-                        }
-                        let n = md5(md5($.trim(f.name)) + "-" + md5(lStore("_login")));
-                        f.fileName = n;
-                        loadingStart();
-                        PUT("tt", "customFilter", n, {
-                            "project": current_project,
-                            "body": JSON.stringify(f, true, 4),
-                        }).
-                        done(() => {
-                            message(i18n("tt.filterWasSaved"));
-                            lStore("ttIssueFilter:" + current_project, n);
-                            window.onbeforeunload = null;
-                            window.location.href = '?#tt&filter=' + n + '&customSearch=yes&_=' + Math.random();
-                        }).
-                        fail(FAIL).
-                        fail(loadingDone);
-                    } else {
-                        error(i18n("errors.invalidFilter"), i18n("error"), 30);
-                    }
-                });
-                if (params.filter && params.filter !== true && params.filter != "empty") {
-                    if (modules.tt.meta.filtersExt[params.filter].owner) {
-                        GET("tt", "customFilter", params.filter).
-                        done(response => {
-                            editor.setValue(response.body, -1);
-                            currentAceEditorOriginalValue = currentAceEditor.getValue();
-                            loadingDone();
-                        });
-                    } else {
-                        GET("tt", "filter", params.filter).
-                        done(response => {
-                            editor.setValue(response.body, -1);
-                            currentAceEditorOriginalValue = currentAceEditor.getValue();
-                            loadingDone();
-                        });
-                    }
-                }
-            }
-
-            let bookmarked = false;
-
-            for (let i in modules.tt.meta.favoriteFilters) {
-                if (modules.tt.meta.favoriteFilters[i].filter == x) {
-                    bookmarked = true;
-                    break;
-                }
-            }
-
-            if (issues.issues && issues.issues.length) {
-                $("#" + issuesListId + "-count").text("[" + x + "]: " + i18n("tt.showCounts", parseInt(issues.skip) + 1, parseInt(issues.skip) + issues.issues.length, issues.count)).addClass("small");
-                cardTable({
-                    target: "#" + issuesListId,
-                    columns: columns,
-                    dropDownHeader: (x && x[0] != '#') ? {
-                        icon: (bookmarked ? "fas" : "far") + " text-primary fa-bookmark",
-                        title: bookmarked ? i18n("tt.removeFavoriteFilter") : i18n("tt.addFavoriteFilter"),
-                        click: () => {
-                            if (!bookmarked) {
-                                let icons = [];
-                                for (let i in faIcons) {
-                                    icons.push({
-                                        icon: faIcons[i].title + " fa-fw",
-                                        text: faIcons[i].title.split(" fa-")[1] + (faIcons[i].searchTerms.length ? (", " + faIcons[i].searchTerms.join(", ")) : ""),
-                                        value: faIcons[i].title,
-                                    });
-                                }
-                                cardForm({
-                                    title: i18n("tt.addFavoriteFilter"),
-                                    footer: true,
-                                    borderless: true,
-                                    topApply: true,
-                                    apply: i18n("add"),
-                                    size: "lg",
-                                    fields: [
-                                        {
-                                            id: "icon",
-                                            title: i18n("tt.filterIcon"),
-                                            type: "select2",
-                                            options: icons,
-                                            value: "far fa-bookmark",
-                                        },
-                                        {
-                                            id: "color",
-                                            title: i18n("tt.filterColor"),
-                                            type: "select2",
-                                            options: [
-                                                {
-                                                    text: "По умолчанию",
-                                                    value: "",
-                                                    class: "",
-                                                },
-                                                {
-                                                    text: "Primary",
-                                                    value: "text-primary",
-                                                    class: "text-primary",
-                                                },
-                                                {
-                                                    text: "Secondary",
-                                                    value: "text-secondary",
-                                                    class: "text-secondary",
-                                                },
-                                                {
-                                                    text: "Success",
-                                                    value: "text-success",
-                                                    class: "text-success",
-                                                },
-                                                {
-                                                    text: "Danger",
-                                                    value: "text-danger",
-                                                    class: "text-danger",
-                                                },
-                                                {
-                                                    text: "Warning",
-                                                    value: "text-warning",
-                                                    class: "text-warning",
-                                                },
-                                                {
-                                                    text: "Info",
-                                                    value: "text-info",
-                                                    class: "text-info",
-                                                },
-                                            ],
-                                            value: ""
-                                        },
-                                        {
-                                            id: "rightSide",
-                                            title: i18n("tt.filterRightSide"),
-                                            type: "noyes",
-                                        },
-                                    ],
-                                    callback: r => {
-                                        loadingStart();
-                                        POST("tt", "favoriteFilter", x, {
-                                            icon: r.icon,
-                                            color: r.color,
-                                            rightSide: r.rightSide,
-                                        }).
-                                        done(() => {
-                                            window.location = refreshUrl();
-                                        }).
-                                        fail(FAIL).
-                                        fail(loadingDone);
-                                    },
-                                });
+                        } else {
+                            if (err) {
+                                error(err, i18n("errors.invalidFilter"), 30);
                             } else {
-                                mConfirm(i18n("tt.removeFavoriteFilter") + "?", modules.tt.meta.filtersExt[x].shortName ? modules.tt.meta.filtersExt[x].shortName : modules.tt.meta.filtersExt[x].name, i18n("remove"), () => {
-                                    loadingStart();
-                                    DELETE("tt", "favoriteFilter", x).
-                                    done(() => {
-                                        window.location = refreshUrl();
-                                    }).
-                                    fail(FAIL).
-                                    fail(loadingDone);
-                                });
+                                error(i18n("errors.invalidFilter"), i18n("error"), 30);
                             }
-                        },
-                    } : false,
-                    rows: () => {
-                        let rows = [];
-
-                        for (let i = 0; i < issues.issues.length; i++) {
-
-                            let cols = [ {
-                                data: i + skip + 1,
-                                nowrap: true,
-                                click: navigateUrl("tt", {
-                                    issue: issues.issues[i]["issueId"],
-                                    filter: x ? x : "",
-                                    search: ($.trim(params.search) && params.search !== true) ? $.trim(params.search) : "",
-                                }),
-                            } ];
-
-                            for (let j = 0; j < pKeys.length; j++) {
-                                cols.push({
-                                    data: modules.tt.issueField2Html(issues.issues[i], pKeys[j], undefined, "list", x),
-                                    nowrap: true,
-                                    click: navigateUrl("tt", {
-                                        issue: issues.issues[i]["issueId"],
-                                        filter: x ? x : "",
-                                        search: ($.trim(params.search) && params.search !== true) ? $.trim(params.search) : "",
-                                    }),
-                                    fullWidth: j == pKeys.length - 1,
-                                });
-                            }
-
-                            rows.push({
-                                uid: utf8_to_b64(JSON.stringify({
-                                    id: issues.issues[i]["issueId"],
-                                    filter: x ? x : "",
-                                    search: ($.trim(params.search) && params.search !== true) ? $.trim(params.search) : "",
-                                })),
-                                cols: cols,
-                                dropDown: {
-                                    items: [
-                                        {
-                                            icon: "fas fa-external-link-alt text-primary",
-                                            title: i18n("tt.openIssueNewWindow"),
-                                            click: uid => {
-                                                let i = JSON.parse(b64_to_utf8(uid));
-                                                window.open(navigateUrl("tt", { issue: i.id }), '_blank');
-                                            }
-                                        },
-                                    ],
-                                },
+                        }
+                    });
+                    if (params.filter && params.filter !== true && params.filter != "empty") {
+                        if (params.owner || (modules.tt.meta.filters[params.filter] && modules.tt.meta.filters[params.filter].owner)) {
+                            GET("tt", "customFilter", params.filter).
+                            done(response => {
+                                editor.setValue(response.body, -1);
+                                currentAceEditorOriginalValue = currentAceEditor.getValue();
+                                loadingDone();
+                            });
+                        } else {
+                            GET("tt", "filter", params.filter).
+                            done(response => {
+                                editor.setValue(response.body, -1);
+                                currentAceEditorOriginalValue = currentAceEditor.getValue();
+                                loadingDone();
                             });
                         }
+                    }
+                }
 
-                        return rows;
-                    },
-                });
-            } else {
-                if (x) {
-                    $("#" + issuesListId + "-count").text("[" + x + "]: " + i18n("tt.noIssuesAvailable")).addClass("small");
-                }  else {
-                    $("#" + issuesListId + "-count").text(i18n("tt.noIssuesAvailable")).addClass("small");
+                let bookmarked = false;
+
+                for (let i in modules.tt.meta.favoriteFilters) {
+                    if (modules.tt.meta.favoriteFilters[i].filter == filterName) {
+                        bookmarked = true;
+                        break;
+                    }
                 }
-            }
-            if (!params.customSearch || params.customSearch === true || !params.filter || params.filter === true || params.filter == "empty") {
-                if (typeof callback === "undefined") {
-                    loadingDone();
+
+                let currentIssuesList = [];
+
+                if (issues.issues) {
+                    $("#" + issuesListId + "-count").text("[" + filterName + "]: " + i18n("tt.showCounts", parseInt(issues.skip) ? (parseInt(issues.skip) + 1) : (issues.count ? '1' : '0'), parseInt(issues.skip) + issues.issues.length, issues.count)).addClass("small");
+
+                    let menuItems = [];
+
+                    if (filterName && filterName[0] != '#') {
+                        menuItems.push({
+                            id: "favorite",
+                            icon: (bookmarked ? "fas" : "far") + " text-primary fa-bookmark",
+                            text: bookmarked ? i18n("tt.removeFavoriteFilter") : i18n("tt.addFavoriteFilter"),
+                            data: filterName,
+                        });
+                    }
+
+                    if (pc) {
+                        if (AVAIL("tt", "customFilter")) {
+                            if (filterName && filterName != "#search") {
+                                menuItems.push({
+                                    id: "customFilterEdit",
+                                    icon: "fas fa-pen",
+                                    text: i18n("tt.customFilterEdit"),
+                                });
+
+                                if (modules.tt.meta.filters[filterName] && md5(md5($.trim(modules.tt.meta.filters[filterName].name)) + "-" + md5(lStore("_login"))) == filterName && fp == myself.uid) {
+                                    menuItems.push({
+                                        id: "customFilterDelete",
+                                        icon: "fas fa-trash-alt text-danger",
+                                        text: i18n("tt.customFilterDelete"),
+                                    });
+                                }
+                            }
+                        }
+                    }
+
+                    menuItems.push({
+                        text: "-",
+                        hint: i18n("tt.select"),
+                    });
+
+                    menuItems.push({
+                        id: "selectAll",
+                        text: i18n("tt.selectAll"),
+                        icon: "far fa-check-square"
+                    });
+
+                    menuItems.push({
+                        id: "unselectAll",
+                        text: i18n("tt.unselectAll"),
+                        icon: "far fa-square"
+                    });
+
+                    menuItems.push({
+                        text: "-",
+                        hint: i18n("tt.export"),
+                    });
+
+                    menuItems.push({
+                        icon: "fas fa-file-csv",
+                        id: "export",
+                        text: i18n("tt.exportToCSV"),
+                    });
+
+                    if (!target && !(params.customSearch && params.customSearch !== true)) {
+                        menuItems.push({
+                            text: "-",
+                            hint: i18n("tt.issuesPerPage"),
+                        });
+
+                        let ipp = [ 10, 25, 50, 100 ];
+
+                        for (let i in ipp) {
+                            menuItems.push({
+                                id: "items-" + ipp[i],
+                                text: i18n("tt." + ipp[i] + "Items"),
+                                selected: limit == ipp[i],
+                                icon: (limit == ipp[i]) ? 'fas fa-check' : '',
+                                data: ipp[i],
+                            });
+                        }
+                    }
+
+                    if (realFilter && realFilter.bulkWorkflow && realFilter.bulkActions && realFilter.bulkActions.length) {
+                        menuItems.push({
+                            text: "-",
+                            hint: i18n("tt.bulkActions"),
+                        });
+
+                        for (let i in realFilter.bulkActions) {
+                            menuItems.push({
+                                id: "action-" + md5(guid()),
+                                text: realFilter.bulkActions[i],
+                                data: realFilter.bulkActions[i],
+                            });
+                        }
+                    }
+
+                    cardTable({
+                        target: "#" + issuesListId,
+                        id: "table-" + issuesListId,
+                        columns: columns,
+                        dropDownHeader: {
+                            menu: menu({
+                                icon: "fas fa-bars",
+                                right: true,
+                                items: menuItems,
+                                click: (id, data) => {
+                                    if (id == "favorite") {
+                                        if (!bookmarked) {
+                                            cardForm({
+                                                title: i18n("tt.addFavoriteFilter"),
+                                                footer: true,
+                                                borderless: true,
+                                                topApply: true,
+                                                apply: i18n("add"),
+                                                size: "lg",
+                                                fields: [
+                                                    {
+                                                        id: "icon",
+                                                        title: i18n("tt.filterIcon"),
+                                                        type: "icon",
+                                                        value: "far fa-bookmark",
+                                                    },
+                                                    {
+                                                        id: "leftSide",
+                                                        title: i18n("tt.filterLeftSide"),
+                                                        type: "yesno",
+                                                    },
+                                                    {
+                                                        id: "color",
+                                                        title: i18n("tt.filterColor"),
+                                                        type: "color",
+                                                    },
+                                                ],
+                                                callback: r => {
+                                                    loadingStart();
+                                                    POST("tt", "favoriteFilter", filterName, {
+                                                        project: lStore("ttProject"),
+                                                        icon: r.icon,
+                                                        color: r.color,
+                                                        leftSide: r.leftSide,
+                                                    }).
+                                                    done(() => {
+                                                        window.location.reload();
+                                                    }).
+                                                    fail(FAIL).
+                                                    fail(loadingDone);
+                                                },
+                                            });
+                                        } else {
+                                            mConfirm(i18n("tt.removeFavoriteFilter") + "?", modules.tt.meta.filters[filterName].shortName ? modules.tt.meta.filters[filterName].shortName : modules.tt.meta.filters[filterName].name, i18n("remove"), () => {
+                                                loadingStart();
+                                                DELETE("tt", "favoriteFilter", filterName).
+                                                done(() => {
+                                                    window.location.reload();
+                                                }).
+                                                fail(FAIL).
+                                                fail(loadingDone);
+                                            });
+                                        }
+                                    }
+                                    if (id == "export") {
+                                        let ignoreRows = [];
+                                        let cbs = $("table[id='table-" + issuesListId + "'] > tbody > tr > td[colid=0] > input");
+                                        if (cbs.length) {
+                                            for (let i  = 0; i < cbs.length; i++) {
+                                                if (!$(cbs[i]).prop("checked")) ignoreRows.push(i);
+                                            }
+                                        }
+                                        modules.tt.exportCSV("table-" + issuesListId, filterName, ignoreRows);
+                                    }
+                                    if (id.substring(0, 7) == "action-") {
+                                        let issues = [];
+                                        let cbs = $("table[id='table-" + issuesListId + "'] > tbody > tr > td[colid=0] > input");
+                                        if (cbs.length) {
+                                            for (let i  = 0; i < cbs.length; i++) {
+                                                if ($(cbs[i]).prop("checked")) {
+                                                    issues.push($(cbs[i]).parent().next().text());
+                                                };
+                                            }
+                                        } else {
+                                            issues = currentIssuesList;
+                                        }
+                                        modules.tt.bulkAction(currentProject, filterName, realFilter.bulkWorkflow, issues, data);
+                                    }
+                                    if (id.substring(0, 6) == "items-") {
+                                        modules.tt.defaultIssuesPerPage = parseInt(data);
+                                        lStore("defaultIssuesPerPage", parseInt(data));
+                                        window.location.href = '?#tt&_=' + Math.random();
+                                    }
+                                    if (id == "customFilterEdit") {
+                                        window.location.href = '?#tt&filter=' + filterName + '&customSearch=yes&_=' + Math.random();
+                                    }
+                                    if (id == "customFilterDelete") {
+                                        mConfirm(i18n("tt.filterDelete", modules.tt.meta.filters[filterName].name), i18n("confirm"), i18n("delete"), () => {
+                                            loadingStart();
+                                            DELETE("tt", "customFilter", filterName, { "project": currentProject }).
+                                            done(() => {
+                                                message(i18n("tt.filterWasDeleted"));
+                                                lStore("ttIssueFilter:" + currentProject, null);
+                                                window.location.href = '?#tt&_=' + Math.random();
+                                            }).
+                                            fail(FAIL).
+                                            fail(loadingDone);
+                                        });
+                                    }
+                                    if (id == "selectAll") {
+                                        $("table[id='table-" + issuesListId + "'] > tbody > tr > td[colid=0]").html("<input type='checkbox' class='ml-1 tableRowCheckbox' checked='checked'>");
+                                    }
+                                    if (id == "unselectAll") {
+                                        $("table[id='table-" + issuesListId + "'] > tbody > tr > td[colid=0]").html("<input type='checkbox' class='ml-1 tableRowCheckbox'>");
+                                    }
+                                }
+                            }),
+                        },
+                        rows: () => {
+                            let rows = [];
+
+                            for (let i = 0; i < issues.issues.length; i++) {
+                                currentIssuesList.push(issues.issues[i]["issueId"]);
+
+                                let cols = [
+                                    {
+                                        data: i + skip + 1,
+                                        nowrap: true,
+                                        click: navigateUrl("tt", {
+                                            issue: issues.issues[i]["issueId"],
+                                            filter: filterName ? filterName : "",
+                                            search: ($.trim(params.search) && params.search !== true) ? $.trim(params.search) : "",
+                                        }),
+                                    }
+                                ];
+
+                                for (let j = 0; j < pKeys.length; j++) {
+                                    if (links[pKeys[j]]) {
+                                        if (links[pKeys[j]] == "false") {
+                                            cols.push({
+                                                data: modules.tt.issueField2Html(issues.issues[i], pKeys[j], undefined, "list", filterName),
+                                                nowrap: true,
+                                                fullWidth: j == pKeys.length - 1,
+                                                ellipses: j == pKeys.length - 1,
+                                            });
+                                        } else {
+                                            let l = links[pKeys[j]];
+                                            if (issues.issues[i][pKeys[j]]) {
+                                                cols.push({
+                                                    data: modules.tt.issueField2Html(issues.issues[i], pKeys[j], undefined, "list", filterName),
+                                                    nowrap: true,
+                                                    click: () => {
+                                                        window.open(l.replaceAll('%value%', issues.issues[i][pKeys[j]]));
+                                                    },
+                                                    fullWidth: j == pKeys.length - 1,
+                                                    ellipses: j == pKeys.length - 1,
+                                                });
+                                            } else {
+                                                cols.push({
+                                                    data: modules.tt.issueField2Html(issues.issues[i], pKeys[j], undefined, "list", filterName),
+                                                    nowrap: true,
+                                                    fullWidth: j == pKeys.length - 1,
+                                                    ellipses: j == pKeys.length - 1,
+                                                });
+                                            }
+                                        }
+                                    } else {
+                                        cols.push({
+                                            data: modules.tt.issueField2Html(issues.issues[i], pKeys[j], undefined, "list", filterName),
+                                            nowrap: true,
+                                            click: navigateUrl("tt", {
+                                                issue: issues.issues[i]["issueId"],
+                                                filter: filterName ? filterName : "",
+                                                search: ($.trim(params.search) && params.search !== true) ? $.trim(params.search) : "",
+                                            }),
+                                            fullWidth: j == pKeys.length - 1,
+                                            ellipses: j == pKeys.length - 1,
+                                        });
+                                    }
+                                }
+
+                                rows.push({
+                                    uid: utf8_to_b64(JSON.stringify({
+                                        id: issues.issues[i]["issueId"],
+                                        filter: filterName ? filterName : "",
+                                        search: ($.trim(params.search) && params.search !== true) ? $.trim(params.search) : "",
+                                    })),
+                                    cols: cols,
+                                });
+                            }
+
+                            return rows;
+                        },
+                        append: (!issues.issues || !issues.issues.length) ? i18n("tt.noIssuesAvailable") : '',
+                    });
+                    if ($("#" + issuesListId).height() > $(window).height()) {
+                        $(".issuesBottomPager").show();
+                    }
+                    if (!target && !!!(params && params.noScroll && parseInt(params.noScroll) == 1)) {
+                        $('html').scrollTop(0);
+                    }
+                }
+                if (!params.customSearch || params.customSearch === true || !params.filter || params.filter === true || params.filter == "empty") {
+                    if (typeof callback === "undefined") {
+                        loadingDone();
+                    } else {
+                        callback();
+                    }
+                }
+            }).
+            fail(FAIL).
+            fail(response => {
+                if (typeof fail == "function") {
+                    fail(response);
                 } else {
-                    callback();
+                    if (target) {
+                        let e = i18n("errors.unknown");
+                        if (response && response.responseJSON && response.responseJSON.error) {
+                            e = i18n("errors." + response.responseJSON.error);
+                        }
+                        e = `<span class="text-danger text-bold">${e} [${params.filter}]<span/>`;
+                        if (target !== true) {
+                            target.append(`<table class="mt-2" style="width: 100%;"><tr><td style="width: 100%;">${e}</td></tr></table>`);
+                        } else {
+                            $("#" + issuesListId).html(e);
+                        }
+                        if (typeof callback === "undefined") {
+                            loadingDone();
+                        } else {
+                            callback();
+                        }
+                    } else {
+                        if (response.responseJSON.error != "tokenNotFound") {
+                            lStore("ttIssueFilter:" + $("#ttProjectSelect").val(), null);
+                            lStore("ttIssueFilter:" + lStore("ttProject"), null);
+                            lStore("ttProject", null);
+                            if (params["_"] != _) {
+                                window.location.href = `?#tt&_=${_}`;
+                            }
+                        }
+                    }
                 }
-            }
+            });
         }).
         fail(FAIL).
-        fail((response) => {
+        fail(response => {
             if (typeof fail == "function") {
                 fail(response);
             } else {
@@ -2138,18 +2503,142 @@
                         callback();
                     }
                 } else {
-                    lStore("ttIssueFilter:" + $("#ttProjectSelect").val(), null);
-                    lStore("ttIssueFilter:" + lStore("ttProject"), null);
-                    lStore("ttProject", null);
-                    if (params["_"] != _) {
-                        window.location.href = `?#tt&_=${_}`;
+                    if (response.responseJSON.error != "tokenNotFound") {
+                        lStore("ttIssueFilter:" + $("#ttProjectSelect").val(), null);
+                        lStore("ttIssueFilter:" + lStore("ttProject"), null);
+                        lStore("ttProject", null);
+                        if (params["_"] != _) {
+                            window.location.href = `?#tt&_=${_}`;
+                        }
                     }
                 }
             }
         });
     },
 
+    bulkAction: function (project, filterName, workflow, currentIssuesList, action) {
+        loadingStart();
+        QUERYID("tt", "bulkAction", filterName, {
+            workflow,
+            action
+        }, true).
+        done(r => {
+            if (r && r.template && r.template == "!") {
+                loadingDone();
+                mConfirm(modules.tt.displayAction(action) + "?", i18n("tt.bulkActionConfirm"), modules.tt.displayAction(action), () => {
+                    loadingStart();
+                    PUT("tt", "bulkAction", false, {
+                        project,
+                        query: {
+                            "issueId": {
+                                "$in": currentIssuesList,
+                            }
+                        },
+                        set: {},
+                        action,
+                    }).
+                    done(r => {
+                        message(i18n("tt.bulkActionDone", r));
+                    }).
+                    fail(FAIL).
+                    always(loadingDone);
+                });
+            }
+
+            if (r && r.template && r.template != "!") {
+                let fields = [];
+
+                let kx = [];
+                let ky = {};
+
+                for (let i in r.template) {
+                    let fx = ((typeof r.template[i] == "string") ? r.template[i] : i).toString();
+                    if (fx.charAt(0) == '%') {
+                        fx = fx.split('%');
+                        kx[fx[1]] = fx[2];
+                        ky[fx[2]] = (typeof r.template[i] == "string") ? false : r.template[i];
+                    } else {
+                        kx.push(fx);
+                        ky[fx] = (typeof r.template[i] == "string") ? false : r.template[i];
+                    }
+                }
+
+                let projectId = -1;
+                for (let i in modules.tt.meta.projects) {
+                    if (modules.tt.meta.projects[i].acronym == project) {
+                        projectId = modules.tt.meta.projects[i].projectId;
+                        break;
+                    }
+                }
+
+                for (let i in kx) {
+                    let fi = modules.tt.issueField2FormFieldEditor(null, kx[i], projectId, ky[kx[i]]);
+                    if (fi) {
+                        fields.push(fi);
+                        if (kx[i] == "comment" || kx[i] == "optionalComment") {
+                            fields.push({
+                                id: "commentPrivate",
+                                type: "yesno",
+                                title: i18n("tt.commentPrivate"),
+                                value: "1",
+                            });
+                        }
+                    }
+                }
+
+                loadingDone();
+
+                cardForm({
+                    title: i18n("tt.bulkActionConfirm"),
+                    apply: modules.tt.displayAction(action),
+                    fields: fields,
+                    footer: true,
+                    borderless: true,
+                    size: "lg",
+                    callback: r => {
+                        loadingStart();
+                        PUT("tt", "bulkAction", false, {
+                            project,
+                            query: {
+                                "issueId": {
+                                    "$in": currentIssuesList,
+                                }
+                            },
+                            set: r,
+                            action,
+                        }).
+                        done(r => {
+                            message(i18n("tt.bulkActionDone", r));
+                            window.location.href = '?#tt&_=' + Math.random();
+                        }).
+                        fail(FAIL).
+                        always(loadingDone);
+                    },
+                });
+            }
+        }).
+        fail(FAIL).
+        fail(loadingDone);
+    },
+
+    exportCSV: function (issuesTableId, filterName, ignoreRows) {
+        let tableToCSV = new TableToCSV("#" + issuesTableId, {
+            filename: filterName + ".csv",
+            delimiter: ",",
+            ignoreColumns: [
+                0,
+                $("#" + issuesTableId + " > thead > tr > th").length - 1,
+            ],
+            ignoreRows,
+        });
+        tableToCSV.download();
+    },
+
     route: function (params) {
+        if (params.project) {
+            lStore("ttProject", params.project);
+        }
+
         loadingStart();
 
         subTop();
@@ -2186,8 +2675,11 @@
                 } else {
                     $("#" + modules.tt.menuItem).children().first().attr("href", refreshUrl({
                         exclude: [
-                            "customSearch"
-                        ]
+                            "customSearch",
+                        ],
+                        set: {
+                            "noScroll": 1,
+                        },
                     }));
                 }
             }

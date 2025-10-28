@@ -8,10 +8,10 @@
      * @apiName getFile
      * @apiGroup files
      *
-     * @apiHeader {String} token authentication token
+     * @apiHeader {String} Authorization authentication token
      *
-     * @apiBody {String} [type]
-     * @apiBody {String} [filename]
+     * @apiQuery {String} filename
+     * @apiQuery {String} [type]
      *
      * @apiSuccess {Object} operationResult
      */
@@ -24,12 +24,12 @@
      * @apiName putFile
      * @apiGroup files
      *
-     * @apiHeader {String} token authentication token
+     * @apiHeader {String} Authorization authentication token
      *
-     * @apiBody {String} type
-     * @apiBody {String} [filename]
-     * @apiBody {Object} [metadata]
+     * @apiBody {String} filename
      * @apiBody {String} file
+     * @apiBody {String} [type]
+     * @apiBody {Object} [metadata]
      *
      * @apiSuccess {Object} operationResult
      */
@@ -42,12 +42,12 @@
      * @apiName postFile
      * @apiGroup files
      *
-     * @apiHeader {String} token authentication token
+     * @apiHeader {String} Authorization authentication token
      *
-     * @apiBody {String} [type]
-     * @apiBody {String} [filename]
-     * @apiBody {Object} [metadata]
+     * @apiBody {String} filename
      * @apiBody {String} file
+     * @apiBody {String} [type]
+     * @apiBody {Object} [metadata]
      *
      * @apiSuccess {Object} operationResult
      */
@@ -60,10 +60,10 @@
      * @apiName deleteFile
      * @apiGroup files
      *
-     * @apiHeader {String} token authentication token
+     * @apiHeader {String} Authorization authentication token
      *
+     * @apiBody {String} filename
      * @apiBody {String} [type]
-     * @apiBody {String} [filename]
      *
      * @apiSuccess {Object} operationResult
      */
@@ -85,11 +85,21 @@
             public static function GET($params) {
                 $files = loadBackend("files");
 
-                $list = $files->searchFiles([
-                    "metadata.type" => @$params["type"],
+                $search = [
                     "metadata.owner" => $params["_login"],
-                    "filename" => @$params["filename"],
-                ]);
+                ];
+
+                if (@$params["type"]) {
+                    $search["metadata.type"] = $params["type"];
+                }
+
+                if (@$params["filename"]) {
+                    $search["filename"] = $params["filename"];
+                }
+
+                $list = $files->searchFiles($search);
+
+                error_log(print_r($list, true));
 
                 $file = false;
 
@@ -110,11 +120,19 @@
 
                 $success = true;
 
-                $list = $files->searchFiles([
-                    "metadata.type" => @$params["type"],
+                $search = [
                     "metadata.owner" => $params["_login"],
-                    "filename" => @$params["filename"],
-                ]);
+                ];
+
+                if (@$params["type"]) {
+                    $search["metadata.type"] = $params["type"];
+                }
+
+                if (@$params["filename"]) {
+                    $search["filename"] = $params["filename"];
+                }
+
+                $list = $files->searchFiles($search);
 
                 foreach ($list as $f) {
                     $success = $success && $files->deleteFile($f["id"]);
@@ -141,19 +159,26 @@
             public static function DELETE($params) {
                 $files = loadBackend("files");
 
-                $success = true;
+                $success = 0;
 
-                $list = $files->searchFiles([
-                    "metadata.type" => @$params["type"],
+                $search = [
                     "metadata.owner" => $params["_login"],
-                    "filename" => @$params["filename"],
-                ]);
+                ];
 
-                foreach ($list as $f) {
-                    $success = $success && $files->deleteFile($f["id"]);
+                if (@$params["type"]) {
+                    $search["metadata.type"] = $params["type"];
+                }
+                if (@$params["filename"]) {
+                    $search["filename"] = $params["filename"];
                 }
 
-                return api::ANSWER($success);
+                $list = $files->searchFiles($search);
+
+                foreach ($list as $f) {
+                    $success += (int)!!$files->deleteFile($f["id"]);
+                }
+
+                return api::ANSWER($success > 0);
             }
 
             public static function index() {

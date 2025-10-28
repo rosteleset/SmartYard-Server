@@ -8,10 +8,10 @@
      * @apiName getMessages
      * @apiGroup inbox
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} subscriberId
-     * @apiBody {Number} [messageId]
+     * @apiQuery {Number} [messageId]
      *
      * @apiSuccess {Object[]} messages
      */
@@ -24,7 +24,7 @@
      * @apiName sendMessage
      * @apiGroup inbox
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} subscriberId
      * @apiBody {String} title

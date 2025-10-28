@@ -34,6 +34,13 @@ if (!$number) {
 
 $number = trim($number);
 
+// convert and validate license plate number
+require_once __DIR__ . "/helpers/converters.php";
+$number = toLatin($number);
+if (!isValidPlateNumber($number)) {
+    response(422, false, i18n("mobile.invalidPlateNumber"));
+}
+
 $households = loadBackend("households");
 $numbers = array_filter(explode("\n", $households->getFlat($flat_id)['cars']));
 $numbers[] = $number;

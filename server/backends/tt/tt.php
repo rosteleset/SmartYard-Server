@@ -170,6 +170,9 @@
                         },
                         "myself" => function () {
                             return [ loadBackend("users")->getUser($this->uid) ];
+                        },
+                        "matchFilter" => function (...$args) {
+                            return [ $this->matchFilter(...$args) ];
                         }
                     ]);
 
@@ -289,7 +292,11 @@
                             return [ mb_substr(...$args) ];
                         },
                         "trim" => function ($str) {
-                            return [ trim(preg_replace('~^\s+|\s+$~u', '', $str)) ];
+                            if (function_exists("mb_trim")) {
+                                return [ mb_trim(preg_replace('~^\s+|\s+$~u', '', $str)) ];
+                            } else {
+                                return [ trim(preg_replace('~^\s+|\s+$~u', '', $str)) ];
+                            }
                         }
                     ]);
 
@@ -689,10 +696,12 @@
              * @param $type
              * @param $field
              * @param $fieldDisplay
+             * @param $fieldDisplayList
+             *
              * @return false|integer
              */
 
-            abstract public function addCustomField($catalog, $type, $field, $fieldDisplay);
+            abstract public function addCustomField($catalog, $type, $field, $fieldDisplay, $fieldDisplayList);
 
             /**
              * @param $projectId
@@ -753,6 +762,7 @@
              * @param $customFieldId
              * @param $catalog
              * @param $fieldDisplay
+             * @param $fieldDisplayList
              * @param $fieldDescription
              * @param $regex
              * @param $format
@@ -762,10 +772,13 @@
              * @param $search
              * @param $required
              * @param $editor
+             * @param $float
+             * @param $readonly
+             *
              * @return boolean
              */
 
-            abstract public function modifyCustomField($customFieldId, $catalog, $fieldDisplay, $fieldDescription, $regex, $format, $link, $options, $indx, $search, $required, $editor);
+            abstract public function modifyCustomField($customFieldId, $catalog, $fieldDisplay, $fieldDisplayList, $fieldDescription, $regex, $format, $link, $options, $indx, $search, $required, $editor, $float, $readonly);
 
             /**
              * @param $customFieldId
@@ -784,22 +797,22 @@
             /**
              * @param $projectId
              * @param $tag
-             * @param $foreground
-             * @param $background
+             * @param $color
+             *
              * @return false|integer
              */
 
-            abstract public function addTag($projectId, $tag, $foreground, $background);
+            abstract public function addTag($projectId, $tag, $fcolor);
 
             /**
              * @param $tagId
              * @param $tag
-             * @param $foreground
-             * @param $background
+             * @param $color
+             *
              * @return boolean
              */
 
-            abstract public function modifyTag($tagId, $tag, $foreground, $background);
+            abstract public function modifyTag($tagId, $tag, $color);
 
             /**
              * @return boolean
@@ -812,38 +825,6 @@
              */
 
             public function getFilters() {
-                $files = loadBackend("files");
-
-                if (!$files) {
-                    $this->unCache("FILTERS");
-                    return false;
-                }
-
-                $cache = $this->cacheGet("FILTERS");
-                if ($cache) {
-                    return $cache;
-                }
-
-                $filters = $files->searchFiles([ "metadata.type" => "filter" ]);
-
-                $_list = [];
-                foreach ($filters as $filter) {
-                    try {
-                        $_list[$filter["metadata"]["filter"]] = @json_decode($this->getFilter($filter["metadata"]["filter"]), true)["name"] ? : $filter["metadata"]["filter"];
-                    } catch (\Exception $e) {
-                        $_list[$filter["metadata"]["filter"]] = $filter["metadata"]["filter"];
-                    }
-                }
-
-                $this->cacheSet("FILTERS", $_list);
-                return $_list;
-            }
-
-            /**
-             * @return false|array
-             */
-
-            public function getFiltersExt() {
                 $files = loadBackend("files");
 
                 if (!$files) {
@@ -863,7 +844,7 @@
                     try {
                         $f = @json_decode($this->getFilter($filter["metadata"]["filter"]), true);
                         $_list[$filter["metadata"]["filter"]] = [
-                            "name" => @$f["name"] ? : $filter["metadata"]["filter"],
+                            "name" => @$f["name"] ?: $filter["metadata"]["filter"],
                             "shortName" => @$f["shortName"],
                             "sort" => @$f["sort"],
                             "hide" => @$f["hide"],
@@ -1105,7 +1086,7 @@
                         "filename" => $v["metadata"]["viewer"],
                         "name" => $v["metadata"]["name"],
                         "field" => $v["metadata"]["field"],
-                        "code" => $files->streamToContents($files->getFileStream($v["id"])) ? : "//function subject_v1 (value, field, issue, target) {\n\treturn val;\n//}\n",
+                        "code" => $files->streamToContents($files->getFileStream($v["id"])) ?: "//function subject_v1 (value, field, issue, target) {\n\treturn val;\n//}\n",
                     ];
                 }
 
@@ -1127,6 +1108,14 @@
              */
 
             abstract public function setProjectViewers($projectId, $viewers);
+
+            /**
+             * @param $projectId
+             * @param $comments
+             * @return mixed
+             */
+
+            abstract public function setProjectComments($projectId, $comments);
 
             /**
              * @return mixed
@@ -1169,7 +1158,7 @@
              * @return boolean
              */
 
-            private static function an($a){
+            private static function an($a) {
                 return ctype_digit(implode('', array_keys($a)));
             }
 
@@ -1607,27 +1596,39 @@
              */
 
             public function preprocessFilter($query, $params, $types) {
-                if ($query) {
-                    array_walk_recursive($query, function (&$item, $key, $params) use ($types) {
-                        if (array_key_exists($item, $params)) {
-                            if (@$types[$item]) {
-                                $cast = $types[$item];
-                            } else {
-                                $cast = false;
+                if (!is_array($query)) {
+                    error_log(print_r($query, true));
+                } else {
+                    if ($query) {
+                        array_walk_recursive($query, function (&$item, $key, $params) use ($types) {
+                            if (array_key_exists($item, $params)) {
+                                if (@$types[$item]) {
+                                    $cast = $types[$item];
+                                } else {
+                                    $cast = false;
+                                }
+                                if (is_callable($params[$item])) {
+                                    $item = $params[$item]();
+                                } else {
+                                    $item = $params[$item];
+                                }
+                                if ($cast) {
+                                    if ($cast == "date") {
+                                        $item = date("Y-m-d", (int)$item);
+                                    } else
+                                    if ($cast == "json") {
+                                        $item = json_decode($item);
+                                    }
+                                    else {
+                                        settype($item, $cast);
+                                    }
+                                }
                             }
-                            if (is_callable($params[$item])) {
-                                $item = $params[$item]();
-                            } else {
-                                $item = $params[$item];
-                            }
-                            if ($cast) {
-                                settype($item, $cast);
-                            }
-                        }
-                    }, $params);
-                }
+                        }, $params);
+                    }
 
-                return $query;
+                    return $query;
+                }
             }
 
             /**
@@ -1637,6 +1638,16 @@
              */
 
             public function linkIssues($issue1, $issue2) {
+                if (gettype($issue2) == "array") {
+                    $success = true;
+
+                    foreach ($issue2 as $is2) {
+                        $success = $success && $this->linkIssues($issue1, $is2);
+                    }
+
+                    return $success;
+                }
+
                 $issue1 = $this->getIssue($issue1);
                 if (!$issue1) {
                     setLastError("issue1NotFound");
@@ -1828,7 +1839,7 @@
                     ]);
 
                     if ($data) {
-                        return $files->streamToContents($files->getFileStream($data[0]["id"])) ? : "//function data (issue, callback) {\n\tcallback(issue);\n//}\n";
+                        return $files->streamToContents($files->getFileStream($data[0]["id"])) ?: "//function data (issue, callback) {\n\tcallback(issue);\n//}\n";
                     } else {
                         return "//function data (issue, callback) {\n\tcallback(issue);\n//}\n";
                     }
@@ -1884,7 +1895,7 @@
                     ]);
 
                     if ($formatter) {
-                        return $files->streamToContents($files->getFileStream($formatter[0]["id"])) ? : "";
+                        return $files->streamToContents($files->getFileStream($formatter[0]["id"])) ?: "";
                     } else {
                         return "";
                     }
@@ -2144,8 +2155,7 @@
              * @return mixed
              */
 
-            public function printExec($id, $data)
-            {
+            public function printExec($id, $data) {
                 $tmp = md5(time() . rand());
 
                 $print = $this->getPrint($id);
@@ -2159,10 +2169,10 @@
                     $data[$i] = (string)$v;
                 }
 
-                $path = rtrim(@$this->config["document_builder"]["tmp"]?:"/tmp/print", "/");
-                $bin = @$this->config["document_builder"]["bin"]?:"/opt/onlyoffice/documentbuilder/docbuilder";
-                $user = @$this->config["document_builder"]["www_user"]?:"www-data";
-                $group = @$this->config["document_builder"]["www_group"]?:"www-data";
+                $path = rtrim(@$this->config["document_builder"]["tmp"] ?: "/tmp/print", "/");
+                $bin = @$this->config["document_builder"]["bin"] ?: "/opt/onlyoffice/documentbuilder/docbuilder";
+                $user = @$this->config["document_builder"]["www_user"] ?: "www-data";
+                $group = @$this->config["document_builder"]["www_group"] ?: "www-data";
 
                 if (!is_dir($path)) {
                     mkdir($path);
@@ -2217,7 +2227,7 @@
              * @return mixed
              */
 
-             abstract public function getSuggestions($project, $field, $query);
+            abstract public function getSuggestions($project, $field, $query);
 
             /**
              * @param string $issueId
@@ -2254,28 +2264,39 @@
 
             /**
              * @param string $filter
-             * @param string $rightSide
+             * @param string $project
+             * @param string $leftSide
              * @param string $icon
              * @param string $color
+             *
              * @return mixed
              */
 
-            public abstract function addFavoriteFilter($filter, $rightSide, $icon, $color);
+            public abstract function addFavoriteFilter($filter, $project, $leftSide, $icon, $color);
 
             /**
              * @param string $filter
              * @param boolean $all
+             *
              * @return mixed
              */
 
             public abstract function deleteFavoriteFilter($filter, $all = false);
 
             /**
+             * @param string $filter
+             * @param string $issueId
+             *
+             * return boolean
+             */
+
+            public abstract function matchFilter($project, $filter, $issueId);
+
+            /**
              * @inheritDoc
              */
 
-            public function cron($part)
-            {
+            public function cron($part) {
                 $success = true;
 
                 $tasks = $this->db->get("select acronym, filter, action, uid, login from tt_crontabs left join tt_projects using (project_id) left join core_users using (uid) where crontab = :crontab and enabled = 1", [
@@ -2301,7 +2322,10 @@
                                     $issue = $this->getIssue($issues["issues"][$i]["issueId"]);
 
                                     if ($issue) {
-                                        $this->loadWorkflow($issue["workflow"])->action($issue, $task["action"], $issue);
+                                        $set = [
+                                            "issueId" => $issue["issueId"],
+                                        ];
+                                        $this->loadWorkflow($issue["workflow"])->action($set, $task["action"], $issue);
                                     }
                                 }
                             } while (count($issues["issues"]));
@@ -2313,9 +2337,9 @@
 
                 try {
                     if ($part == "minutely") {
-                        $path = @$this->config["document_builder"]["tmp"] ? : "/tmp/print";
-                        $user = @$this->config["document_builder"]["www_user"] ? : "www-data";
-                        $group = @$this->config["document_builder"]["www_group"] ? : "www-data";
+                        $path = @$this->config["document_builder"]["tmp"] ?: "/tmp/print";
+                        $user = @$this->config["document_builder"]["www_user"] ?: "www-data";
+                        $group = @$this->config["document_builder"]["www_group"] ?: "www-data";
                         if (is_dir($path)) {
                             $fileSystemIterator = new \FilesystemIterator($path);
                             $threshold = strtotime('-15 min');

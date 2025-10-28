@@ -8,7 +8,7 @@
      * @apiName getGroup
      * @apiGroup accounts
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} gid group id
      *
@@ -23,7 +23,7 @@
      * @apiName createGroup
      * @apiGroup accounts
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiBody {String} acronym group acronym, i.e. short name
      * @apiBody {String} name group name
@@ -48,7 +48,7 @@
      * @apiName updateGroup
      * @apiGroup accounts
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} gid group id
      * @apiBody {String} acronym group acronym
@@ -66,7 +66,7 @@
      * @apiName deleteGroup
      * @apiGroup accounts
      *
-     * @apiHeader {String} authorization authentication token
+     * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} gid group id
      *

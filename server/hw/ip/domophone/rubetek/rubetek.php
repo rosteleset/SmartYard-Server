@@ -2,22 +2,34 @@
 
 namespace hw\ip\domophone\rubetek;
 
-use hw\Interfaces\DbConfigUpdaterInterface;
+use hw\Enum\HousePrefixField;
+use hw\Interface\{
+    CmsLevelsInterface,
+    DbConfigUpdaterInterface,
+    DisplayTextInterface,
+    FreePassInterface,
+    HousePrefixInterface,
+    LanguageInterface,
+};
 use hw\ip\domophone\domophone;
+use hw\ValueObject\{
+    FlatNumber,
+    HousePrefix,
+};
 
 /**
  * Abstract class representing a Rubetek domophone.
  */
-abstract class rubetek extends domophone implements DbConfigUpdaterInterface
+abstract class rubetek extends domophone implements
+    CmsLevelsInterface,
+    DbConfigUpdaterInterface,
+    DisplayTextInterface,
+    FreePassInterface,
+    HousePrefixInterface,
+    LanguageInterface
 {
-
     use \hw\ip\common\rubetek\rubetek {
         transformDbConfig as protected commonTransformDbConfig;
-    }
-
-    use legacy\rubetek {
-        getUnlocked as protected getUnlockedLegacy;
-        setUnlocked as protected setUnlockedLegacy;
     }
 
     /**
@@ -47,7 +59,7 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface
                 'door_access' => [
                     RubetekConst::RELAY_1_INTERNAL,
                     RubetekConst::RELAY_2_EXTERNAL,
-                ]
+                ],
             ]);
         }
     }
@@ -57,7 +69,7 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface
         int   $code = 0,
         array $sipNumbers = [],
         bool  $cmsEnabled = true,
-        array $cmsLevels = []
+        array $cmsLevels = [],
     ): void
     {
         $this->loadDialplans();
@@ -111,23 +123,6 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface
         $videoSettings['snapshot_size'] = '1280x720';
 
         $this->apiCall('/settings/video', 'PATCH', $videoSettings);
-    }
-
-    public function configureGate(array $links = []): void
-    {
-        $this->apiCall('/apart_ranges', 'DELETE');
-
-        foreach ($links as $link) {
-            $this->apiCall('/apart_ranges', 'POST', [
-                'house' => "{$link['prefix']}",
-                'address' => $link['address'],
-                'start_number' => $link['firstFlat'],
-                'end_number' => $link['lastFlat'],
-                'call_number' => 'XXXXYYYY',
-                'call_type' => RubetekConst::SIP,
-                'door_access' => [RubetekConst::RELAY_1_INTERNAL],
-            ]);
-        }
     }
 
     public function configureMatrix(array $matrix): void
@@ -186,7 +181,7 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface
         int    $port = 5060,
         bool   $stunEnabled = false,
         string $stunServer = '',
-        int    $stunPort = 3478
+        int    $stunPort = 3478,
     ): void
     {
         $params = [
@@ -270,7 +265,7 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface
 
     public function getAudioLevels(): array
     {
-        $audioSettings = $this->getConfig()['audio'];
+        $audioSettings = $this->getConfiguration()['audio'];
 
         return [
             $audioSettings['system']['volume'] ?? 15,
@@ -299,16 +294,72 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface
         ];
     }
 
+    public function getDisplayText(): array
+    {
+        $displaySettings = $this->getConfiguration()['display'];
+
+        // Three line text
+        if (isset($displaySettings['text1'])) {
+            return array_filter([
+                $displaySettings['text1'],
+                $displaySettings['text2'],
+                $displaySettings['text3'],
+            ]);
+        }
+
+        $text = trim($displaySettings['text'] ?? '');
+        return $text === '' ? [] : [$text];
+    }
+
+    public function getDisplayTextLinesCount(): int
+    {
+        return 3;
+    }
+
+    public function getHousePrefixSupportedFields(): array
+    {
+        return [HousePrefixField::Address, HousePrefixField::FirstFlat, HousePrefixField::LastFlat];
+    }
+
+    public function getHousePrefixes(): array
+    {
+        $apartRanges = $this->apiCall('/apart_ranges') ?? [];
+        $prefixes = [];
+
+        foreach ($apartRanges as $apartRange) {
+            $prefixes[] = new HousePrefix(
+                number: $apartRange['house'],
+                address: $apartRange['address'],
+                firstFlat: new FlatNumber($apartRange['start_number']),
+                lastFlat: new FlatNumber($apartRange['end_number']),
+            );
+        }
+
+        return $prefixes;
+    }
+
     public function getLineDiagnostics(int $apartment): float
     {
-        $handsetStatus = $this->apiCall("/analog_handset_status/$apartment") ?? [];
-        $voltageRaw = $handsetStatus['voltage'] ?? '';
+        $this->loadDialplans();
+        $analogNumber = $this->dialplans[$apartment]['analog_number'] ?? null;
+
+        if ($analogNumber === null) {
+            return 0;
+        }
+
+        $lineVoltage = $this->apiCall("/settings/analog/line_voltage/start/$analogNumber") ?? [];
+        $voltageRaw = $lineVoltage['voltage'] ?? '';
         return (float)filter_var($voltageRaw, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
     }
 
     public function getRfids(): array
     {
         return array_column($this->apiCall('/rfids'), 'rfid', 'rfid');
+    }
+
+    public function isFreePassEnabled(): bool
+    {
+        return $this->apiCall('/operating_mode')['free_passage_mode'] ?? true;
     }
 
     public function openLock(int $lockNumber = 0): void
@@ -328,7 +379,7 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface
 
     public function setAudioLevels(array $levels = []): void
     {
-        $audioSettings = $this->getConfig()['audio'];
+        $audioSettings = $this->getConfiguration()['audio'];
 
         $audioSettings['system']['volume'] = $levels[0] ?? 15;
         $audioSettings['system']['mic_sensitivity'] = $levels[1] ?? 10;
@@ -347,12 +398,12 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface
 
     public function setCallTimeout(int $timeout): void
     {
-        $callSettings = $this->getConfig()['call'];
+        $callSettings = $this->getConfiguration()['call'];
         $callSettings['dial_out_time'] = $timeout;
         $this->apiCall('/settings/call', 'PATCH', $callSettings);
     }
 
-    public function setCmsLevels(array $levels = []): void
+    public function setCmsLevels(array $levels): void
     {
         $analogSettings = $this->apiCall('/settings/analog');
 
@@ -399,6 +450,30 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface
         ]);
     }
 
+    public function setDisplayText(array $textLines): void
+    {
+        $displaySettings = $this->getConfiguration()['display'];
+        $textLinesCount = count($textLines);
+
+        if ($textLinesCount === 0) {
+            $displaySettings['welcome_display'] = 4; // Current date and time
+            $displaySettings['text'] = '';
+        } elseif ($textLinesCount === 1) {
+            $text = $textLines[0] ?? '';
+            $displaySettings['welcome_display'] = 1; // Long text in one line
+            $displaySettings['text'] = $text . ' '; // Space is needed, otherwise the text will stick together
+            $displaySettings['changeLineTimeout'] = 5; // Seconds
+            $displaySettings['changeSymbolTimeout'] = 5; // Milliseconds
+        } else {
+            $displaySettings['welcome_display'] = 6; // Three line text
+            $displaySettings['text1'] = $textLines[0];
+            $displaySettings['text2'] = $textLines[1];
+            $displaySettings['text3'] = $textLines[2] ?? '';
+        }
+
+        $this->apiCall('/settings/display', 'PATCH', $displaySettings);
+    }
+
     public function setDtmfCodes(
         string $code1 = '1',
         string $code2 = '2',
@@ -417,70 +492,9 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface
         ]);
     }
 
-    public function setLanguage(string $language = 'ru'): void
+    public function setFreePassEnabled(bool $enabled): void
     {
-        // Empty implementation
-    }
-
-    public function setPublicCode(int $code = 0): void
-    {
-        // Empty implementation
-    }
-
-    public function setSosNumber(int $sipNumber): void
-    {
-        $this->apiCall('/settings/sos', 'PATCH', [
-            'enabled' => true,
-            'dial_number' => "$sipNumber",
-            'analog_dial_number' => '',
-            'call_type' => RubetekConst::SIP,
-            'door_access' => [RubetekConst::RELAY_1_INTERNAL],
-            'backlight_period' => 3,
-        ]);
-    }
-
-    public function setTalkTimeout(int $timeout): void
-    {
-        $callSettings = $this->getConfig()['call'];
-        $callSettings['max_call_time'] = $timeout;
-        $this->apiCall('/settings/call', 'PATCH', $callSettings);
-    }
-
-    public function setTickerText(string $text = ''): void
-    {
-        $displaySettings = $this->getConfig()['display'];
-        $displaySettings['welcome_display'] = 1;
-        $displaySettings['text'] = $text . ' '; // Space is needed, otherwise the text will stick together
-        $displaySettings['changeLineTimeout'] = 5; // Seconds
-        $displaySettings['changeSymbolTimeout'] = 5; // Milliseconds
-        $this->apiCall('/settings/display', 'PATCH', $displaySettings);
-    }
-
-    public function setUnlockTime(int $time = 3): void
-    {
-        // Closes the relay if the door is currently open by API, RFID, personal access code, etc.
-        $doors = $this->getDoors();
-
-        foreach ($doors as $door) {
-            $id = $door['id'];
-            $inverted = $this->apiCall("/doors/$id/param")['inverted'];
-
-            $this->apiCall("/doors/$id/param", 'PATCH', [
-                'id' => $id,
-                'open_timeout' => $time,
-                'inverted' => $inverted,
-            ]);
-        }
-    }
-
-    public function setUnlocked(bool $unlocked = true): void
-    {
-        if ($this->isLegacyVersion()) {
-            $this->setUnlockedLegacy($unlocked);
-            return;
-        }
-
-        if ($unlocked) {
+        if ($enabled) {
             $this->apiCall('/free_passage/start', 'POST', [
                 'door_access' => [1, 2],
                 'mon' => true,
@@ -505,6 +519,69 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface
         sleep(3); // Wait for the relay to switch
     }
 
+    public function setHousePrefixes(array $prefixes): void
+    {
+        $this->apiCall('/apart_ranges', 'DELETE');
+
+        foreach ($prefixes as $prefix) {
+            $this->apiCall('/apart_ranges', 'POST', [
+                'house' => (string)$prefix->number,
+                'address' => $prefix->address,
+                'start_number' => $prefix->firstFlat->number,
+                'end_number' => $prefix->lastFlat->number,
+                'call_number' => 'XXXXYYYY',
+                'call_type' => RubetekConst::SIP,
+                'door_access' => [RubetekConst::RELAY_1_INTERNAL],
+            ]);
+        }
+    }
+
+    public function setLanguage(string $language): void
+    {
+        // TODO: Implement setLanguage() method.
+    }
+
+    public function setPublicCode(int $code = 0): void
+    {
+        // Empty implementation
+    }
+
+    public function setSosNumber(int $sipNumber): void
+    {
+        $this->apiCall('/settings/sos', 'PATCH', [
+            'enabled' => true,
+            'dial_number' => "$sipNumber",
+            'analog_dial_number' => '',
+            'call_type' => RubetekConst::SIP,
+            'door_access' => [RubetekConst::RELAY_1_INTERNAL],
+            'backlight_period' => 3,
+        ]);
+    }
+
+    public function setTalkTimeout(int $timeout): void
+    {
+        $callSettings = $this->getConfiguration()['call'];
+        $callSettings['max_call_time'] = $timeout;
+        $this->apiCall('/settings/call', 'PATCH', $callSettings);
+    }
+
+    public function setUnlockTime(int $time = 3): void
+    {
+        // Closes the relay if the door is currently open by API, RFID, personal access code, etc.
+        $doors = $this->getDoors();
+
+        foreach ($doors as $door) {
+            $id = $door['id'];
+            $inverted = $this->apiCall("/doors/$id/param")['inverted'];
+
+            $this->apiCall("/doors/$id/param", 'PATCH', [
+                'id' => $id,
+                'open_timeout' => $time,
+                'inverted' => $inverted,
+            ]);
+        }
+    }
+
     public function transformDbConfig(array $dbConfig): array
     {
         $dbConfig = $this->commonTransformDbConfig($dbConfig);
@@ -527,7 +604,7 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface
          * if the prefixes and apartment numbers intersect (for example, 1, 2, 3).
          * TODO: need to check if we can use an empty array of SIP numbers in gate mode for all devices
          */
-        if (!empty($dbConfig['gateLinks'])) {
+        if (!empty($dbConfig['housePrefixes'])) {
             foreach ($dbConfig['apartments'] as &$apartment) {
                 $apartment['sipNumbers'] = [];
             }
@@ -747,8 +824,8 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface
             'code1' => $code1,
             'code2' => $code2,
             'code3' => $code3,
-            'out_code' => $codeCms
-        ] = $this->getConfig()['dtmf'];
+            'out_code' => $codeCms,
+        ] = $this->getConfiguration()['dtmf'];
 
         return [
             'code1' => $code1,
@@ -756,30 +833,6 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface
             'code3' => $code3,
             'codeCms' => $codeCms,
         ];
-    }
-
-    protected function getGateConfig(): array
-    {
-        $links = [];
-        $apartRanges = $this->apiCall('/apart_ranges');
-
-        foreach ($apartRanges as $link) {
-            [
-                'house' => $prefix,
-                'address' => $address,
-                'start_number' => $firstFlat,
-                'end_number' => $lastFlat,
-            ] = $link;
-
-            $links[] = [
-                'address' => $address,
-                'prefix' => $prefix,
-                'firstFlat' => $firstFlat,
-                'lastFlat' => $lastFlat,
-            ];
-        }
-
-        return $links;
     }
 
     protected function getMatrix(): array
@@ -832,20 +885,6 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface
             'stunServer' => $stunServer,
             'stunPort' => $stunPort,
         ];
-    }
-
-    protected function getTickerText(): string
-    {
-        return trim($this->getConfig()['display']['text']) ?? '';
-    }
-
-    protected function getUnlocked(): bool
-    {
-        if ($this->isLegacyVersion()) {
-            return $this->getUnlockedLegacy();
-        }
-
-        return $this->apiCall('/operating_mode')['free_passage_mode'] ?? true;
     }
 
     /**
@@ -905,7 +944,7 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface
             $pin = '';
         }
 
-        $displaySettings = $this->getConfig()['display'];
+        $displaySettings = $this->getConfiguration()['display'];
         $displaySettings['admin_password'] = $pin;
         $this->apiCall('/configuration', 'PATCH', ['display' => $displaySettings]);
     }
@@ -930,7 +969,7 @@ abstract class rubetek extends domophone implements DbConfigUpdaterInterface
         string $analogNumber,
         string $callType,
         array  $doorAccess,
-        array  $accessCodes
+        array  $accessCodes,
     ): void
     {
         $this->loadDialplans();

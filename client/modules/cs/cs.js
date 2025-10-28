@@ -11,17 +11,20 @@
     preCoordinate: false,
     csChangedTimeout: -1,
     menuItem: false,
+    sheet: false,
+    date: false,
+    highlight: false,
 
     init: function () {
         if (parseInt(myself.uid) > 0) {
             if (AVAIL("cs", "sheets") && AVAIL("tt", "tt")) {
-                this.menuItem = leftSide("fas fa-fw fa-table", i18n("cs.cs"), "?#cs", "tt");
+                this.menuItem = leftSide("fas fa-fw fa-table", i18n("cs.cs"), navigateUrl("cs"), "tt");
             }
         }
 
         if (AVAIL("cs", "sheet", "PUT") && AVAIL("tt", "tt")) {
             loadSubModules("cs", [
-                "sheet",
+                "sheetEditor",
             ], this);
         } else {
             moduleLoaded("cs", this);
@@ -71,6 +74,8 @@
     },
 
     mqttCellMsg: function (topic, payload) {
+        if (!payload || !payload.uid) return;
+
         cell = $(".dataCell[data-uid=" + payload.uid + "]");
 
         if (cell && cell.length == 1) {
@@ -85,7 +90,62 @@
                     if (payload.login == lStore("_login") && payload.sid == modules.cs.sid) {
                         switch (parseInt(payload.step)) {
                             case 0:
-                                mYesNo(i18n("cs.coordinateOrReserve"), i18n("cs.action"), () => {
+                                if (AVAIL("cs", "reserveCell", "PUT")) {
+                                    mYesNo(i18n("cs.coordinateOrReserve"), i18n("cs.action"), () => {
+                                        cell.addClass("spinner-small");
+                                        PUT("cs", "cell", false, {
+                                            action: "claim",
+                                            step: 1,
+                                            sheet: md5($("#csSheet").val()),
+                                            date: md5($("#csDate").val()),
+                                            col: cell.attr("data-col"),
+                                            row: cell.attr("data-row"),
+                                            uid: cell.attr("data-uid"),
+                                            sid: modules.cs.sid,
+                                            expire: 300,
+                                        }).
+                                        fail(FAIL).
+                                        fail(() => {
+                                            cell.removeClass("spinner-small");
+                                        });
+                                    }, () => {
+                                        cardForm({
+                                            title: i18n("cs.reserve"),
+                                            footer: true,
+                                            borderless: true,
+                                            topApply: true,
+                                            fields: [
+                                                {
+                                                    id: "comment",
+                                                    type: "text",
+                                                    title: i18n("cs.comment"),
+                                                    placeholder: i18n("cs.comment"),
+                                                    validate: v => {
+                                                        return $.trim(v) !== "";
+                                                    }
+                                                },
+                                            ],
+                                            callback: result => {
+                                                cell.addClass("spinner-small");
+                                                PUT("cs", "reserveCell", false, {
+                                                    action: "reserve",
+                                                    sheet: md5($("#csSheet").val()),
+                                                    date: md5($("#csDate").val()),
+                                                    col: cell.attr("data-col"),
+                                                    row: cell.attr("data-row"),
+                                                    uid: cell.attr("data-uid"),
+                                                    sid: modules.cs.sid,
+                                                    expire: (modules.cs.currentSheet.sheet.reserveDays ? parseInt(modules.cs.currentSheet.sheet.reserveDays) : 21) * 24 * 60 * 60,
+                                                    comment: $.trim(result.comment),
+                                                }).
+                                                fail(FAIL).
+                                                fail(() => {
+                                                    cell.removeClass("spinner-small");
+                                                });
+                                            },
+                                        });
+                                    }, i18n("cs.coordinate"), i18n("cs.reserve"), 58 * 1000);
+                                } else {
                                     cell.addClass("spinner-small");
                                     PUT("cs", "cell", false, {
                                         action: "claim",
@@ -102,43 +162,7 @@
                                     fail(() => {
                                         cell.removeClass("spinner-small");
                                     });
-                                }, () => {
-                                    cardForm({
-                                        title: i18n("cs.reserve"),
-                                        footer: true,
-                                        borderless: true,
-                                        topApply: true,
-                                        fields: [
-                                            {
-                                                id: "comment",
-                                                type: "text",
-                                                title: i18n("cs.comment"),
-                                                placeholder: i18n("cs.comment"),
-                                                validate: (v) => {
-                                                    return $.trim(v) !== "";
-                                                }
-                                            },
-                                        ],
-                                        callback: result => {
-                                            cell.addClass("spinner-small");
-                                            PUT("cs", "reserveCell", false, {
-                                                action: "reserve",
-                                                sheet: md5($("#csSheet").val()),
-                                                date: md5($("#csDate").val()),
-                                                col: cell.attr("data-col"),
-                                                row: cell.attr("data-row"),
-                                                uid: cell.attr("data-uid"),
-                                                sid: modules.cs.sid,
-                                                expire: 7 * 24 * 60 * 60,
-                                                comment: $.trim(result.comment),
-                                            }).
-                                            fail(FAIL).
-                                            fail(() => {
-                                                cell.removeClass("spinner-small");
-                                            });
-                                        },
-                                    });
-                                }, i18n("cs.coordinate"), i18n("cs.reserve"), 58 * 1000);
+                                }
                                 break;
 
                             case 1:
@@ -198,25 +222,7 @@
 
                                 modules.tt.issue.issueAction(modules.cs.preCoordinate.issueId, modules.cs.currentSheet.sheet.action, () => {
                                     message(i18n("cs.wasCoordinated"));
-/*
-                                    PUT("cs", "cell", false, {
-                                        action: "release",
-                                        sheet: md5($("#csSheet").val()),
-                                        date: md5($("#csDate").val()),
-                                        col: cell.attr("data-col"),
-                                        row: cell.attr("data-row"),
-                                        uid: cell.attr("data-uid"),
-                                        sid: modules.cs.sid,
-                                    }).
-                                    done(() => {
-                                        lStore("_coordinate_issue", null);
-                                    }).
-                                    fail(FAIL).
-                                    fail(() => {
-                                        modules.cs.idle = true;
-                                        cell.removeClass("spinner-small");
-                                    });
-*/
+                                    lStore("_coordinate_issue", null);
                                 }, prefferredValues, 58 * 1000);
                             break;
                         }
@@ -241,7 +247,7 @@
     },
 
     mqttRedisExpireMsg: function (topic, payload) {
-        if (payload.key.substring(0, 5) == "cell_") {
+        if (payload.key.substring(0, 5) == "cell_" && payload.key.split("_")[5]) {
             let cell = $(".dataCell[data-uid=" + payload.key.split("_")[5] + "]");
             if (cell && cell.length == 1) {
                 cell.removeClass("spinner-small");
@@ -379,6 +385,15 @@
         h += `<li class="pointer dropdown-item colClearAssigners" data-col="${md5(col)}">${i18n("cs.clearAssigners")}</li>`;
         h += `<li class="dropdown-divider"></li>`;
         h += `<li class="pointer dropdown-item colSettings" data-col="${md5(col)}">${i18n("cs.colSettings")}</li>`;
+        if (modules.cs.currentSheet.sheet.fields.map || modules.cs.currentSheet.sheet.fields.list) {
+            h += `<li class="dropdown-divider"></li>`;
+        }
+        if (modules.cs.currentSheet.sheet.fields.list) {
+            h += `<li class="pointer dropdown-item colListIssues" data-col="${md5(col)}">${i18n("cs.list")}</li>`;
+        }
+        if (modules.cs.currentSheet.sheet.fields.map) {
+            h += `<li class="pointer dropdown-item colMapIssues" data-col="${md5(col)}">${i18n("cs.map")}</li>`;
+        }
         h += `</ul></span>`;
 
         return h;
@@ -421,7 +436,13 @@
                                 if (modules.cs.currentSheet.sheet.data[j].col == col) {
                                     let rs;
                                     if (typeof modules.cs.currentSheet.sheet.data[j].rows === "string") {
-                                        rs = JSON.parse(JSON.stringify(modules.cs.currentSheet.sheet.rowsTemplates[modules.cs.currentSheet.sheet.data[j].rows]));
+                                        try {
+                                            rs = JSON.parse(JSON.stringify(modules.cs.currentSheet.sheet.rowsTemplates[modules.cs.currentSheet.sheet.data[j].rows]));
+                                        } catch (_) {
+                                            FAILPAGE();
+                                            loadingDone();
+                                            return;
+                                        }
                                     } else {
                                         rs = modules.cs.currentSheet.sheet.data[j].rows;
                                     }
@@ -431,7 +452,7 @@
                                                 start = k;
                                             }
                                             if (k - start < cells) {
-                                                modules.cs.issues[r.issues.issues[i].issueId] = true;
+                                                modules.cs.issues[r.issues.issues[i].issueId] = r.issues.issues[i];
                                                 if (!modules.cs.issuesInSheet) {
                                                     modules.cs.issuesInSheet = {};
                                                 }
@@ -439,19 +460,26 @@
                                                 if (!modules.cs.issuesInSheet[uid]) {
                                                     modules.cs.issuesInSheet[uid] = "";
                                                 }
+                                                let title = "";
+                                                if (modules.cs.currentSheet.sheet.fields.hint && r.issues.issues[i][modules.cs.currentSheet.sheet.fields.hint]) {
+                                                    title = escapeHTML(r.issues.issues[i][modules.cs.currentSheet.sheet.fields.hint]);
+                                                }
+                                                if (modules.cs.highlight == r.issues.issues[i].issueId) {
+                                                    modules.cs.issuesInSheet[uid] += `<span class="${modules.cs.currentSheet.sheet.issueHighlightClass ? modules.cs.currentSheet.sheet.issueHighlightClass : "bg-orange"}"><a class="csIssueSpan pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a><span class="unhighlight"><i class="far fa-fw fa-times-circle" title="${i18n("cs.unhighlight")}"></i></span></span><br />`;
+                                                } else
                                                 if (closed) {
-                                                    modules.cs.issuesInSheet[uid] += `<span class="${modules.cs.currentSheet.sheet.issueClosedClass}"><a class="csIssueSpan pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}">${r.issues.issues[i].issueId}</a></span><br />`;
+                                                    modules.cs.issuesInSheet[uid] += `<span class="${modules.cs.currentSheet.sheet.issueClosedClass}"><a class="csIssueSpan pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a></span><br />`;
                                                 } else
                                                 if (installers && installers.length && !done) {
-                                                    modules.cs.issuesInSheet[uid] += `<span class="${modules.cs.currentSheet.sheet.issueAssignedClass}"><a class="csIssueSpan pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}">${r.issues.issues[i].issueId}</a></span><br />`;
+                                                    modules.cs.issuesInSheet[uid] += `<span class="${modules.cs.currentSheet.sheet.issueAssignedClass}"><a class="csIssueSpan pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a></span><br />`;
                                                 } else
                                                 if ((!installers || !installers.length) && done) {
-                                                    modules.cs.issuesInSheet[uid] += `<span class="${modules.cs.currentSheet.sheet.issueDoneClass}"><a class="csIssueSpan pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}">${r.issues.issues[i].issueId}</a></span><br />`;
+                                                    modules.cs.issuesInSheet[uid] += `<span class="${modules.cs.currentSheet.sheet.issueDoneClass}"><a class="csIssueSpan pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a></span><br />`;
                                                 } else
                                                 if (installers && installers.length && done) {
-                                                    modules.cs.issuesInSheet[uid] += `<span class="${modules.cs.currentSheet.sheet.issueAssignedClass} ${modules.cs.currentSheet.sheet.issueDoneClass}"><a class="csIssueSpan pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}">${r.issues.issues[i].issueId}</a></span><br />`;
+                                                    modules.cs.issuesInSheet[uid] += `<span class="${modules.cs.currentSheet.sheet.issueAssignedClass} ${modules.cs.currentSheet.sheet.issueDoneClass}"><a class="csIssueSpan pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a></span><br />`;
                                                 } else {
-                                                    modules.cs.issuesInSheet[uid] += `<a class="csIssueSpan pointer text-dark pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}">${r.issues.issues[i].issueId}</a><br />`;
+                                                    modules.cs.issuesInSheet[uid] += `<a class="csIssueSpan pointer text-dark pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a><br />`;
                                                 }
                                             }
                                         }
@@ -470,8 +498,8 @@
                         callback();
                     }
                 }
-            } catch (_) {
-                FAIL();
+            } catch (e) {
+                FAILPAGE();
                 loadingDone();
                 modules.cs.idle = true;
             }
@@ -550,12 +578,12 @@
                 for (let p in parts) {
                     if (p != cp) {
                         if (parseInt(p) >= 0 || p) {
-                            h += "<tr><td>&nbsp;</td><td style='border: none!important; font-weight: bold;' class='text-primary' colspan='" + maxCols.toString() + "'><span class='hoverable csPart'>" + p + "</span></td></tr>";
+                            h += "<tr><td nowrap style='width: 0%'>&nbsp;</td><td style='border: none!important; font-weight: bold;' class='text-primary' colspan='" + maxCols.toString() + "'><span class='hoverable csPart'>" + p + "</span></td></tr>";
                         }
                         cp = p;
                     }
                     h += '<tr>';
-                    h += '<td>&nbsp;</td>';
+                    h += '<td nowrap style="width: 0%">&nbsp;</td>';
                     let cCols = 0;
                     for (let i in modules.cs.cols) {
                         if (parts[p].indexOf(modules.cs.cols[i]) < 0) {
@@ -597,9 +625,9 @@
                     for (let i in modules.cs.rows) {
                         h += '<tr>';
                         if (response.sheet.sheet.timeClass) {
-                            h += '<td class="timeCell ' + response.sheet.sheet.timeClass + '">' + escapeHTML(modules.cs.rows[i]) + '</td>';
+                            h += '<td class="timeCell ' + response.sheet.sheet.timeClass + '" nowrap style="width: 0%">' + escapeHTML(modules.cs.rows[i]) + '</td>';
                         } else {
-                            h += '<td class="timeCell">' + escapeHTML(modules.cs.rows[i]) + '</td>';
+                            h += '<td class="timeCell" nowrap style="width: 0%">' + escapeHTML(modules.cs.rows[i]) + '</td>';
                         }
                         cCols = 0;
                         for (let j in modules.cs.cols) {
@@ -671,7 +699,7 @@
                         if (parseInt(modules.users.meta[i].uid)) {
                             u.push({
                                 id: modules.users.meta[i].login,
-                                text: modules.users.meta[i].realName,
+                                text: modules.users.meta[i].realName + ' [' + modules.users.meta[i].login + ']',
                             });
                         }
                     }
@@ -690,6 +718,7 @@
                         footer: true,
                         borderless: true,
                         topApply: true,
+                        size: "lg",
                         fields: [
                             {
                                 id: "logins",
@@ -873,10 +902,12 @@
                             action: modules.cs.currentSheet.sheet.setAssignedAction,
                             set: { }
                         };
+
                         bulk.query[modules.cs.currentSheet.sheet.fields.sheet] = modules.cs.currentSheet.sheet.sheet;
                         bulk.query[modules.cs.currentSheet.sheet.fields.date] = modules.cs.currentSheet.sheet.date;
                         bulk.query[modules.cs.currentSheet.sheet.fields.col] = col_name;
                         bulk.set[modules.cs.currentSheet.sheet.fields.assigned] = logins;
+
                         PUT("tt", "bulkAction", false, bulk).
                         fail(FAIL).
                         done(() => {
@@ -901,24 +932,133 @@
                     }
 
                     if (col_name) {
+                        loadingStart();
                         let bulk = {
                             project: modules.cs.currentSheet.sheet.project,
                             query: { },
                             action: modules.cs.currentSheet.sheet.setAssignedAction,
                             set: { },
                         };
+
                         bulk.query[modules.cs.currentSheet.sheet.fields.sheet] = modules.cs.currentSheet.sheet.sheet;
                         bulk.query[modules.cs.currentSheet.sheet.fields.date] = modules.cs.currentSheet.sheet.date;
                         bulk.query[modules.cs.currentSheet.sheet.fields.col] = col_name;
                         bulk.set[modules.cs.currentSheet.sheet.fields.assigned] = [];
+
                         PUT("tt", "bulkAction", false, bulk).
                         fail(FAIL).
                         done(() => {
+                            loadingDone();
                             message(i18n("cs.done"));
                         });
                     } else {
                         mAlert(i18n("cs.columnNotFound"));
                     }
+                });
+
+                $(".colListIssues").off("click").on("click", function () {
+                    let col = $(this).attr("data-col");
+
+                    let rows = "";
+
+                    for (let i in modules.cs.currentSheet.sheet.data) {
+                        if (md5(modules.cs.currentSheet.sheet.data[i].col) == col) {
+                            rows = modules.cs.currentSheet.sheet.data[i].rows;
+                            break;
+                        }
+                    }
+
+                    let issues = [];
+
+                    for (let i in modules.cs.issues) {
+                        if (md5(modules.cs.issues[i][modules.cs.currentSheet.sheet.fields.col]) == col && modules.cs.issues[i][modules.cs.currentSheet.sheet.fields.map]) {
+                            issues.push(modules.cs.issues[i]);
+                        }
+                    }
+
+                    issues.sort((a, b) => {
+                        return rows.indexOf(a[modules.cs.currentSheet.sheet.fields.row]) - rows.indexOf(b[modules.cs.currentSheet.sheet.fields.row]);
+                    });
+
+                    $("#modalBody").parent().removeClass("modal-sm modal-lg modal-xl");
+                    $("#modalBody").parent().addClass("modal-xl");
+
+                    let h = '';
+
+                    h += `<div class="card-header pointer" id="modalHeader">`;
+                    h += `<h3 class="card-title text-bold">`;
+                    h += i18n("cs.list");
+                    h += `</h3>`;
+                    h += `<button type="button" class="btn btn-danger btn-xs btn-tool-rbt-right ml-2 float-right modalFormCancel" data-dismiss="modal" title="${i18n("cancel")}"><i class="far fa-fw fa-times-circle"></i></button>`;
+                    h += `</div>`;
+
+                    h += '<div class="card mt-0 mb-0" style="max-height: calc(100vh - 140px);">';
+                    h += `<div class="card-body table-responsive p-2" style="overflow-x: hidden!important;">`;
+                    h += '<table width="100%" class="datatable" style="">';
+
+                    for (let i in issues) {
+                        h += '<tr>';
+                        h += '<td nowrap class="pl-2 pr-2">' + issues[i][modules.cs.currentSheet.sheet.fields.row] + '</td>';
+                        h += '<td nowrap class="pl-2 pr-2"><a href="?#tt&issue=' + issues[i].issueId + '">' + issues[i].issueId + '</a></td>';
+                        if (typeof modules.cs.currentSheet.sheet.fields.list == "string") {
+                            h += '<td style="width: 100%;" class="pl-2 pr-2">' + (issues[i][modules.cs.currentSheet.sheet.fields.list] ? issues[i][modules.cs.currentSheet.sheet.fields.list] : '?') + '</td>';
+                        } else
+                        if (typeof modules.cs.currentSheet.sheet.fields.list == "object") {
+                            let l = 0;
+                            for (let j = 0; j < modules.cs.currentSheet.sheet.fields.list.length - 1; j++) {
+                                l++;
+                                h += '<td nowrap class="pl-2 pr-2">' + (issues[i][modules.cs.currentSheet.sheet.fields.list[j]] ? issues[i][modules.cs.currentSheet.sheet.fields.list[j]] : '?') + '</td>';
+                            }
+                            h += '<td style="width: 100%;" class="pl-2 pr-2">' + (issues[i][modules.cs.currentSheet.sheet.fields.list[l]] ? issues[i][modules.cs.currentSheet.sheet.fields.list[l]] : '?') + '</td>';
+                        }
+                        h += '</tr>';
+                    }
+
+                    h += '</table>';
+                    h += '</div>';
+                    h += '</div>';
+
+                    modal(h);
+
+                    $(".modalFormCancel").off("click").on("click", () => {
+                        $('#modal').modal('hide');
+                    });
+
+                    $("#modal").draggable({
+                        handle: "#modalHeader",
+                    });
+                });
+
+                $(".colMapIssues").off("click").on("click", function () {
+                    let col = $(this).attr("data-col");
+
+                    let markers = "";
+                    let rows = "";
+
+                    for (let i in modules.cs.currentSheet.sheet.data) {
+                        if (md5(modules.cs.currentSheet.sheet.data[i].col) == col) {
+                            rows = modules.cs.currentSheet.sheet.data[i].rows;
+                            break;
+                        }
+                    }
+
+                    let issues = [];
+
+                    for (let i in modules.cs.issues) {
+                        if (md5(modules.cs.issues[i][modules.cs.currentSheet.sheet.fields.col]) == col && modules.cs.issues[i][modules.cs.currentSheet.sheet.fields.map]) {
+                            issues.push(modules.cs.issues[i]);
+                        }
+                    }
+
+                    issues.sort((a, b) => {
+                        return rows.indexOf(a[modules.cs.currentSheet.sheet.fields.row]) - rows.indexOf(b[modules.cs.currentSheet.sheet.fields.row]);
+                    });
+
+                    for (let i in issues) {
+                        markers += issues[i][modules.cs.currentSheet.sheet.fields.map].coordinates[1] + "," + issues[i][modules.cs.currentSheet.sheet.fields.map].coordinates[0] + "," + issues[i][modules.cs.currentSheet.sheet.fields.row] + "|";
+                    }
+
+                    navigateUrl("map", { markersLine: markers }, { run: true });
                 });
 
                 $(".dataCell").off("click").on("click", function () {
@@ -1036,10 +1176,6 @@
                 }
 
                 $(".csIssueSpan").off("click").on("click", function (e) {
-/*
-                    let cell = $(this);
-                    window.location.href = "?#tt&issue=" + cell.text();
-*/
                     e.stopPropagation();
                 });
 
@@ -1104,6 +1240,11 @@
                     });
                 });
 
+                $(".unhighlight").off("click").on("click", e => {
+                    navigateUrl("cs", { sheet: modules.cs.sheet, date: modules.cs.date }, { run: true });
+                    e.stopPropagation();
+                });
+
                 modules.cs.idle = true;
                 loadingDone();
             } else {
@@ -1139,8 +1280,8 @@
 
                 sheetsOptions = "";
                 for (let i in sheets) {
-                    if (sheets[i] == lStore("_sheet_name")) {
-                        sheetsOptions += "<option selected='selected'>" + escapeHTML(sheets[i]) + "</option>";
+                    if (sheets[i] == modules.cs.sheet) {
+                        sheetsOptions += "<option selected='selected' style='font-weight: bold;'>" + escapeHTML(sheets[i]) + "</option>";
                     } else {
                         sheetsOptions += "<option>" + escapeHTML(sheets[i]) + "</option>";
                     }
@@ -1148,8 +1289,8 @@
 
                 datesOptions = "";
                 for (let i in dates) {
-                    if (dates[i] == lStore("_sheet_date")) {
-                        datesOptions += "<option selected='selected'>" + escapeHTML(dates[i]) + "</option>";
+                    if (dates[i] == modules.cs.date) {
+                        datesOptions += "<option selected='selected' style='font-weight: bold;'>" + escapeHTML(dates[i]) + "</option>";
                     } else {
                         datesOptions += "<option>" + escapeHTML(dates[i]) + "</option>";
                     }
@@ -1157,8 +1298,8 @@
 
                 let rtd = "";
 
-                rtd += `<form autocomplete="off"><div class="form-inline ml-3 mr-3"><div class="input-group input-group-sm mt-1"><select id="csSheet" class="form-control select-arrow right-top-select">${sheetsOptions}</select></div></div></form>`;
-                rtd += `<form autocomplete="off"><div class="form-inline ml-3 mr-3"><div class="input-group input-group-sm mt-1"><select id="csDate" class="form-control select-arrow right-top-select">${datesOptions}</select></div></div></form>`;
+                rtd += `<form autocomplete="off"><div class="form-inline ml-3 mr-3"><div class="input-group input-group-sm mt-1"><select id="csSheet" class="form-control select-arrow right-top-select top-input">${sheetsOptions}</select></div></div></form>`;
+                rtd += `<form autocomplete="off"><div class="form-inline ml-3 mr-3"><div class="input-group input-group-sm mt-1"><select id="csDate" class="form-control select-arrow right-top-select top-input">${datesOptions}</select></div></div></form>`;
 
                 if (AVAIL("cs", "sheet", "PUT")) {
                     rtd += `<li class="nav-item nav-item-back-hover"><span id="cloneCSsheet" class="nav-link pointer" role="button" title="${i18n("cs.cloneSheet")}"><i class="fas fa-lg fa-fw fa-clone"></i></span></li>`;
@@ -1168,6 +1309,13 @@
                 }
 
                 $("#rightTopDynamic").html(rtd);
+
+                modules.cs.sheet = $("#csSheet").val() ? $("#csSheet").val() : false;
+                modules.cs.date = $("#csDate").val() ? $("#csDate").val() : false;
+
+                if (modules.cs.menuItem) {
+                    $("#" + modules.cs.menuItem).children().first().attr("href", navigateUrl("cs", { sheet: modules.cs.sheet, date: modules.cs.date, highlight: modules.cs.highlight }));
+                }
 
                 $("#cloneCSsheet").off("click").on("click", () => {
                     cardForm({
@@ -1182,13 +1330,12 @@
                                 title: i18n("cs.date"),
                                 return: "asis",
                                 placeholder: i18n("cs.date"),
-                                validate: (v) => {
+                                validate: v => {
                                     return $.trim(v) !== "";
                                 }
                             },
                         ],
                         callback: result => {
-                            lStore("_sheet_date", result.date);
                             loadingStart();
                             modules.cs.currentSheet.sheet.date = result.date;
                             PUT("cs", "sheet", false, {
@@ -1199,7 +1346,7 @@
                             fail(FAIL).
                             done(() => {
                                 message(i18n("cs.sheetWasSaved"));
-                                window.location.href = "?#cs&_=" + Math.random();
+                                navigateUrl("cs", { sheet: modules.cs.sheet, date: result.date, highlight: modules.cs.highlight }, { run: true });
                             }).
                             always(() => {
                                 loadingDone();
@@ -1232,7 +1379,7 @@
                                 tags: true,
                                 createTags: true,
                                 options: sheetsOptions,
-                                validate: (v) => {
+                                validate: v => {
                                     return $.trim(v) !== "";
                                 }
                             },
@@ -1242,22 +1389,20 @@
                                 title: i18n("cs.date"),
                                 return: "asis",
                                 placeholder: i18n("cs.date"),
-                                validate: (v) => {
+                                validate: v => {
                                     return $.trim(v) !== "";
                                 }
                             },
                         ],
                         callback: result => {
-                            lStore("_sheet_name", result.sheet);
-                            lStore("_sheet_date", result.date);
-                            window.location.href = "?#cs.sheet&sheet=" + encodeURIComponent(result.sheet) + "&date=" + encodeURIComponent(result.date);
+                            navigateUrl("cs.sheetEditor", { sheet: result.sheet, date: result.date, highlight: modules.cs.highlight }, { run: true });
                         },
                     });
                 });
 
                 $("#editCSsheet").off("click").on("click", () => {
                     if ($("#csSheet").val() && $("#csDate").val()) {
-                        window.location.href = "?#cs.sheet&sheet=" + encodeURIComponent($("#csSheet").val()) + "&date=" + encodeURIComponent($("#csDate").val());
+                        navigateUrl("cs.sheetEditor", { sheet: $("#csSheet").val(),  date: $("#csDate").val(), highlight: modules.cs.highlight }, { run: true });
                     }
                 });
 
@@ -1272,20 +1417,18 @@
                             fail(FAIL).
                             fail(loadingDone).
                             done(() => {
-                                modules.cs.renderCS();
+                                navigateUrl("cs", { highlight: modules.cs.highlight }, { run: true });
                             });
                         })
                     }
                 });
 
                 $("#csSheet").off("change").on("change", () => {
-                    lStore("_sheet_name", $("#csSheet").val());
-                    modules.cs.renderCS();
+                    navigateUrl("cs", { sheet: $("#csSheet").val(), date: modules.cs.date, highlight: modules.cs.highlight }, { run: true });
                 });
 
                 $("#csDate").off("change").on("change", () => {
-                    lStore("_sheet_date", $("#csDate").val());
-                    modules.cs.renderCS();
+                    navigateUrl("cs", { sheet: modules.cs.sheet, date: $("#csDate").val(), highlight: modules.cs.highlight }, { run: true });
                 });
 
                 if ($("#csSheet").val() && $("#csDate").val()) {
@@ -1295,10 +1438,10 @@
                         "extended": 1,
                     }).
                     fail(FAIL).
-                    fail(loadingDone).
                     fail(() => {
                         modules.cs.idle = true;
                         $("#mainForm").html(i18n("cs.errorLoadingSheet"));
+                        loadingDone();
                     }).
                     done(response => {
                         modules.cs.cols = [];
@@ -1354,9 +1497,9 @@
 
         document.title = i18n("windowTitle") + " :: " + i18n("cs.cs");
 
-        if (modules.cs.menuItem) {
-            $("#" + modules.cs.menuItem).children().first().attr("href", "?#cs&_=" + Math.random());
-        }
+        modules.cs.sheet = params.sheet ? params.sheet : false;
+        modules.cs.date = params.date ? params.date : false;
+        modules.cs.highlight = params.highlight ? params.highlight : false;
 
         modules.cs.renderCS();
     },

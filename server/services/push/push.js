@@ -6,12 +6,12 @@ const {
     PORT,
     HOST,
 
+    FCM_PROJECT_NAME,
+    FCM_DATABASE_NAME,
     FCM_SERVICE_ACCOUNT,
-    FCM_APP_PROJECT_NAME,
-    FCM_APP_BUNDLE_ID,
-    FCM_APP_USER_AGENT,
-    FCM_DB_NAME,
 
+    APN_BUNDLE_ID,
+    APN_USER_AGENT,
     APN_CERT,
 
     HUAWEI_CLIENT_ID,
@@ -36,7 +36,7 @@ const pushOk = (token, result, res) => {
         return;
     }
 
-    if (result && result.toString() && result.indexOf(`projects/${FCM_APP_PROJECT_NAME}/messages/`) === 0) {
+    if (result && result.toString() && result.indexOf(`projects/${FCM_PROJECT_NAME}/messages/`) === 0) {
         res.send('OK');
         return;
     }
@@ -144,10 +144,10 @@ const realPush = (msg, data, options, token, type, res) => {
             curl.setOpt(Curl.option.URL, `${http2_server}/3/device/${token}`);
             curl.setOpt(Curl.option.PORT, 443);
             curl.setOpt(Curl.option.HTTPHEADER, [
-                `apns-topic: ${FCM_APP_BUNDLE_ID}.voip`,
+                `apns-topic: ${APN_BUNDLE_ID}.voip`,
                 `apns-push-type: voip`,
                 `apns-expiration: ${parseInt((new Date()).getTime() / 1000) + 60}`,
-                `User-Agent: ${FCM_APP_USER_AGENT}`,
+                `User-Agent: ${APN_USER_AGENT}`,
             ]);
             curl.setOpt(Curl.option.POST, true);
             curl.setOpt(Curl.option.POSTFIELDS, JSON.stringify({
@@ -343,7 +343,7 @@ const initFirebase = async () => {
     try {
         admin.initializeApp({
             credential: admin.credential.cert(FCM_SERVICE_ACCOUNT),
-            databaseURL: FCM_DB_NAME,
+            databaseURL: FCM_DATABASE_NAME,
         });
         console.log(`${new Date().toLocaleString()} | Firebase init success`);
     } catch (error) {

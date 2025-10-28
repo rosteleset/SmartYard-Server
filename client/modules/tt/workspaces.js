@@ -52,7 +52,7 @@
 
             let rtd = "";
 
-            rtd += '<form autocomplete="off"><div class="form-inline ml-3 mr-3"><div class="input-group input-group-sm mt-1"><select id="ttWorkspaceSelect" class="form-control select-arrow right-top-select"></select></div></div></form>';
+            rtd += '<form autocomplete="off"><div class="form-inline ml-3 mr-3"><div class="input-group input-group-sm mt-1"><select id="ttWorkspaceSelect" class="form-control select-arrow right-top-select top-input"></select></div></div></form>';
 
             rtd += `<li class="nav-item nav-item-back-hover"><span id="editWorkspace" class="nav-link pointer" role="button" title="${i18n("tt.addModifyWorkspace")}"><i class="fas fa-lg fa-fw fa-pen-square"></i></span></li>`;
 
@@ -229,5 +229,9 @@
         } else {
             window.location.href = "?#tt.settings";
         }
+    },
+
+    search: function (s) {
+        modules.tt.search(s);
     },
 }).init();

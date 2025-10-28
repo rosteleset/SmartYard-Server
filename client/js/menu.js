@@ -6,14 +6,48 @@ function contextMenuGlobalHandler(item, data) {
     contextMenusGlobalList[item[0]](item[1], data);
 }
 
+function cleanupContextMenusGlobalList() {
+    let present = {};
+
+    $(".contextMenusGlobalList").each(function () {
+        present[$(this).attr("id")] = true;
+    });
+
+    for (let i in contextMenusGlobalList) {
+        if (!present[i]) {
+            delete contextMenusGlobalList[i];
+        }
+    }
+}
+
 function menu(config) {
     let h = '';
 
     let xid = guid();
 
     h += `<span class="dropdown">`;
-    h += `<span class="pointer hoverable dropdown-toggle dropdown-toggle-no-icon" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" data-flip="false" id="${xid}">${config.button}</span>`;
-    h += `<ul class="dropdown-menu" aria-labelledby="${xid}" style="min-width: 250px!important;">`;
+    h += `<span id="${xid}" class="contextMenusGlobalList pointer dropdown-toggle dropdown-toggle-no-icon" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" data-flip="false">`;
+    if (config.icon) {
+        h += `<i class="mr-1 fa-fw ${config.icon}"></i>`
+    }
+    if (config.text) {
+        h += `<span class="hoverable ml-1">${config.text}</span>`;
+    }
+    h += '</span>';
+
+    if (config.right) {
+        h += `<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="${xid}" style="min-width: 250px!important;">`;
+    } else {
+        h += `<ul class="dropdown-menu" aria-labelledby="${xid}" style="min-width: 250px!important;">`;
+    }
+
+    let icons = false;
+
+    for (let i in config.items) {
+        if (config.items[i].icon) {
+            icons = true;
+        }
+    }
 
     for (let i in config.items) {
         if (config.items[i].text == "-") {
@@ -35,10 +69,19 @@ function menu(config) {
             }
             c = c.trim();
             if (config.items[i].data) {
-                h += `<li class="pointer dropdown-item ${c}" onclick="contextMenuGlobalHandler('${xid + ":" + (config.items[i].id ? config.items[i].id : config.items[i].text)}', $(this).attr('data-menu'))" data-menu="${config.items[i].data}">${config.items[i].text}</li>`;
+                h += `<li class="pointer dropdown-item ${c}" onclick="contextMenuGlobalHandler('${xid + ":" + (config.items[i].id ? config.items[i].id : config.items[i].text)}', $(this).attr('data-menu'))" data-menu="${config.items[i].data}">`;
             } else {
-                h += `<li class="pointer dropdown-item ${c}" onclick="contextMenuGlobalHandler('${xid + ":" + (config.items[i].id ? config.items[i].id : config.items[i].text)}')">${config.items[i].text}</li>`;
+                h += `<li class="pointer dropdown-item ${c}" onclick="contextMenuGlobalHandler('${xid + ":" + (config.items[i].id ? config.items[i].id : config.items[i].text)}')">`;
             }
+            if (icons) {
+                if (config.items[i].icon) {
+                    h += `<i class="fa-fw mr-2 ${config.items[i].icon}"></i>`;
+                } else {
+                    h += `<i class="fas fa-fw mr-2"></i>`;
+                }
+            }
+            h += config.items[i].text ? config.items[i].text : '&nbsp;';
+            h += '</li>';
         }
     }
 
