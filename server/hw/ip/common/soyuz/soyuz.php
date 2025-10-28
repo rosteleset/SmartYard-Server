@@ -23,7 +23,7 @@ trait soyuz
     public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow'): void
     {
         $this->apiCall('/v2/system/tz', 'PUT', ['tz' => $timezone]);
-        $this->apiCall('/v2/system/ntp', 'PUT', ['ntp'=>[$server]);
+        $this->apiCall('/v2/system/ntp', 'PUT', ['ntp'=>$server]);
     }
 
     public function getSysinfo(): array
