@@ -51,6 +51,24 @@ class soyuz extends camera
 
         return $dbConfig;
     }
+	
+    protected function convertResponseToArray(string $response): array
+    {
+        $responseArray = [];
+
+        if (!empty($response)) {
+            $lines = explode("\n", trim($response));
+
+            foreach ($lines as $line) {
+                [$longKey, $value] = explode('=', trim($line), 2);
+                $longKeyArray = explode('.', $longKey);
+                $responseArray[end($longKeyArray)] = $value;
+            }
+        }
+
+        return $responseArray;
+    }
+
 
     protected function getMotionDetectionConfig(): array
     {
