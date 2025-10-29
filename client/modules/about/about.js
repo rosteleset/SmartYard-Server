@@ -11,7 +11,11 @@
         document.title = i18n("windowTitle") + " :: " + i18n("about.about");
 
         $.get("modules/custom/version?_=" + Math.random()).
-        done(custom => {
+        always((x, y) => {
+            let custom;
+            if (y == "success" && $.trim(x)) {
+                custom = $.trim(x);
+            }
             $.get("version.cli?_=" + Math.random()).
             done(cli => {
                 GET("server", "version", false, true).
@@ -21,6 +25,6 @@
                 fail(FAIL).
                 always(loadingDone);
             }).fail(FAIL);
-        }).fail(FAIL);
+        });
     },
 }).init();

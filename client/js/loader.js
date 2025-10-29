@@ -9,7 +9,11 @@ function ver(c) {
         $.get("version.cli?_=" + Math.random()).
         done(v2 => {
             $.get("modules/custom/version?_=" + Math.random()).
-            done(v3 => {
+            always((x, y) => {
+                let v3 = "-";
+                if (y == "success" && $.trim(x)) {
+                    v3 = $.trim(x);
+                }
                 version = md5(v1 + "/" + v2 + "/" + v3);
                 lStore("_version", version);
                 if ("serviceWorker" in navigator) {
@@ -47,9 +51,6 @@ function ver(c) {
                 } else {
                     cfg(c);
                 }
-            }).
-            fail(() => {
-                cfg(c);
             });
         }).
         fail(() => {
