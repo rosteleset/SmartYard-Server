@@ -188,7 +188,6 @@
                 }
 
                 if ($issue) {
-                    error_log(print_r($issue, true));
                     $old = $this->getIssue($issue["issueId"]);
                     $update = false;
                     if ($old) {
