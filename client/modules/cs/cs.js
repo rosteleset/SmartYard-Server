@@ -1313,6 +1313,11 @@
                 modules.cs.sheet = $("#csSheet").val() ? $("#csSheet").val() : false;
                 modules.cs.date = $("#csDate").val() ? $("#csDate").val() : false;
 
+                if (modules.cs.sheet && modules.cs.date) {
+                    lStore("csSheet", modules.cs.sheet);
+                    lStore("csDate", modules.cs.date);
+                }
+
                 if (modules.cs.menuItem) {
                     $("#" + modules.cs.menuItem).children().first().attr("href", navigateUrl("cs", { sheet: modules.cs.sheet, date: modules.cs.date, highlight: modules.cs.highlight }));
                 }
@@ -1497,9 +1502,14 @@
 
         document.title = i18n("windowTitle") + " :: " + i18n("cs.cs");
 
-        modules.cs.sheet = params.sheet ? params.sheet : false;
-        modules.cs.date = params.date ? params.date : false;
+        modules.cs.sheet = params.sheet ? params.sheet : (lStore("csSheet") ? lStore("csSheet") : false);
+        modules.cs.date = params.date ? params.date : (lStore("csDate") ? lStore("csDate") : false);
         modules.cs.highlight = params.highlight ? params.highlight : false;
+
+        if (modules.cs.sheet && modules.cs.date) {
+            lStore("csSheet", modules.cs.sheet);
+            lStore("csDate", modules.cs.date);
+        }
 
         modules.cs.renderCS();
     },
