@@ -1300,19 +1300,19 @@
         } else {
             filter = lStore("ttIssueFilter:" + $("#ttProjectSelect").val());
         }
-        window.location.href = navigateUrl("tt", {
+        navigateUrl("tt", {
             filter: filter,
             skip: skip ? skip : 0,
             limit: limit ? limit : modules.tt.defaultIssuesPerPage,
             search: ($.trim(search) && typeof search === "string") ? $.trim(search) : "",
-        });
+        }, { run: true });
     },
 
     selectProject: function (project) {
         lStore("ttProject", project);
-        window.location.href = navigateUrl("tt", {
+        navigateUrl("tt", {
             project: project,
-        });
+        }, { run: true });
     },
 
     renderIssues: function (params, target, issuesListId, callback, fail) {
@@ -2096,7 +2096,7 @@
                                     message(i18n("tt.filterWasSaved"));
                                     lStore("ttIssueFilter:" + currentProject, n);
                                     window.onbeforeunload = null;
-                                    window.location.href = '?#tt&filter=' + n + '&customSearch=yes&owner=' + myself.login + '&_=' + Math.random();
+                                    navigateUrl("tt", { filter: n, customSearch: "yes", owner: myself.login }, { run: true })
                                 }).
                                 fail(FAIL).
                                 fail(loadingDone);
@@ -2328,10 +2328,10 @@
                                     if (id.substring(0, 6) == "items-") {
                                         modules.tt.defaultIssuesPerPage = parseInt(data);
                                         lStore("defaultIssuesPerPage", parseInt(data));
-                                        window.location.href = '?#tt&_=' + Math.random();
+                                        navigateUrl("tt", false, { run: true });
                                     }
                                     if (id == "customFilterEdit") {
-                                        window.location.href = '?#tt&filter=' + filterName + '&customSearch=yes&_=' + Math.random();
+                                        navigateUrl("tt", { filter: filterName, customSearch: "yes" }, { run: true });
                                     }
                                     if (id == "customFilterDelete") {
                                         mConfirm(i18n("tt.filterDelete", modules.tt.meta.filters[filterName].name), i18n("confirm"), i18n("delete"), () => {
@@ -2340,7 +2340,7 @@
                                             done(() => {
                                                 message(i18n("tt.filterWasDeleted"));
                                                 lStore("ttIssueFilter:" + currentProject, null);
-                                                window.location.href = '?#tt&_=' + Math.random();
+                                                navigateUrl("tt", false, { run: true });
                                             }).
                                             fail(FAIL).
                                             fail(loadingDone);
@@ -2474,7 +2474,7 @@
                             lStore("ttIssueFilter:" + lStore("ttProject"), null);
                             lStore("ttProject", null);
                             if (params["_"] != _) {
-                                window.location.href = `?#tt&_=${_}`;
+                                navigateUrl("tt", { _ }, { run: true });
                             }
                         }
                     }
@@ -2508,7 +2508,7 @@
                         lStore("ttIssueFilter:" + lStore("ttProject"), null);
                         lStore("ttProject", null);
                         if (params["_"] != _) {
-                            window.location.href = `?#tt&_=${_}`;
+                            navigateUrl("tt", { _ }, { run: true });
                         }
                     }
                 }
@@ -2609,7 +2609,7 @@
                         }).
                         done(r => {
                             message(i18n("tt.bulkActionDone", r));
-                            window.location.href = '?#tt&_=' + Math.random();
+                            navigateUrl("tt", false, { run: true });
                         }).
                         fail(FAIL).
                         always(loadingDone);
@@ -2699,7 +2699,7 @@
                     });
                 }
             } else {
-                window.location.href = "?#tt.settings";
+                navigateUrl("tt.settings", false, { run: true });
             }
         }
     },
@@ -2709,7 +2709,7 @@
         if (s) {
             let i = new RegExp("^[a-zA-Z]{2,}-[0-9]{1,}$");
             if (i.test(s)) {
-                window.location.href = "?#tt&issue=" + s.toUpperCase() + "&search=" + s.toUpperCase() + "&_=" + Math.random();
+                navigateUrl("tt", { issue: s.toUpperCase(), search: s.toUpperCase() }, { run: true });
             } else {
                 modules.tt.selectFilter("#search", 0, modules.tt.defaultIssuesPerPage, s);
             }

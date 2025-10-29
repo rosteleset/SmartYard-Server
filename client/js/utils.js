@@ -363,7 +363,9 @@ function navigateUrl(route, params, options) {
         params = {};
     }
 
-    params["_"] = Math.random();
+    if (!params["_"]) {
+        params["_"] = Math.random();
+    }
 
     if (options && options.exclude) {
         for (let i in options.exclude) {
