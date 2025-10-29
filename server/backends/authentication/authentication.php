@@ -66,10 +66,10 @@
                                     $first_key = $key;
                                 }
                             } catch (\Exception $e) {
-                                $this->redis->delete($key);
+                                $this->redis->del($key);
                             }
                         }
-                        $this->redis->delete($first_key);
+                        $this->redis->del($first_key);
                     }
 
                     if ($rememberMe) {

@@ -194,7 +194,7 @@
                                 ($action == "release" && $cell["login"] == $this->login && $cell["mode"] == "reserved" && (int)$cell["uid"] == (int)$uid && $cell["sheet"] == $sheet && $cell["date"] == $date && $cell["col"] == $col && $cell["row"] == $row) ||
                                 ($action == "release-force" && $cell["mode"] == "reserved" && (int)$cell["uid"] == (int)$uid && $cell["sheet"] == $sheet && $cell["date"] == $date && $cell["col"] == $col && $cell["row"] == $row)
                             ) {
-                                $this->redis->delete($key);
+                                $this->redis->del($key);
 
                                 if ($mqtt) {
                                     $mqtt->broadcast("cs/cell", [
