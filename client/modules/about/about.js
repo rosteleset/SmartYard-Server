@@ -34,7 +34,8 @@
                     always(loadingDone);
                 }).
                 fail(FAIL);
-            }).fail(FAIL);
+            }).
+            fail(FAIL);
         });
     },
 }).init();
