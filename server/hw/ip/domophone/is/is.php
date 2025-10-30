@@ -25,6 +25,7 @@ abstract class is extends domophone implements CmsLevelsInterface, FreePassInter
         'COM-100U' => ['METAKOM', 100, 10, 10],
         'COM-220U' => ['METAKOM', 220, 22, 10],
         'FACTORIAL 8x8' => ['FACTORIAL', 64, 8, 8],
+        'DP-K2D' => ['DP-K2D', 260, 10, 26],
     ];
 
     protected array $apartments = [];
