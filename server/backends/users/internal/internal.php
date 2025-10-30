@@ -727,7 +727,7 @@
              * @inheritDoc
              */
 
-            public function two_fa($uid, $secret = "") {
+            public function twoFa($uid, $secret = "") {
                 global $cli;
 
                 if ($secret === "") {
@@ -797,7 +797,7 @@
                         die("user not found\n");
                     }
 
-                    if ($this->two_fa($uid, false)) {
+                    if ($this->twoFa($uid, false)) {
                         echo "2fa disabled for user: #$uid ({$args["--disable-2fa"]})\n";
                     } else {
                         echo "failed to disable 2fa for user: #$uid ({$args["--disable-2fa"]})\n";

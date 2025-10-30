@@ -405,7 +405,7 @@
              * @return mixed
              */
 
-            abstract public function two_fa($uid, $secret = "");
+            abstract public function twoFa($uid, $secret = "");
 
             /**
              * @inheritDoc

@@ -406,7 +406,7 @@
                             click: prefix => {
                                 if ($.trim($("#" + prefix + "2faConfirm").val())) {
                                     mConfirm(i18n("users.enable2FA") + "?", i18n("confirm"), i18n("users.enable2FA"), () => {
-                                        POST("authentication", "two_fa", false, {
+                                        POST("authentication", "twoFa", false, {
                                             oneCode: $.trim($("#" + prefix + "2faConfirm").val()),
                                         }).done(() => {
                                             doLogout(true);
@@ -453,12 +453,12 @@
                 ],
 
                 done: function (prefix) {
-                    POST("authentication", "two_fa", false, {
+                    POST("authentication", "twoFa", false, {
                         //
                     }).done(result => {
                         let secret;
                         try {
-                            secret = (new URL(result.two_fa)).searchParams.get("secret");
+                            secret = (new URL(result.twoFa)).searchParams.get("secret");
                         } catch (_) {
 
                         }
@@ -466,7 +466,7 @@
                         (new QRCode(document.getElementById(prefix + "2faCode"), {
                             width: 256,
                             height: 256,
-                        })).makeCode(result.two_fa);
+                        })).makeCode(result.twoFa);
                         $($("#" + prefix + "2faCode").children()[1]).css("width", "50%");
                     });
 
@@ -982,7 +982,7 @@
                                 click: prefix => {
                                     if ($.trim($("#" + prefix + "2faConfirm").val())) {
                                         mConfirm(i18n("users.enable2FA") + "?", i18n("confirm"), i18n("users.enable2FA"), () => {
-                                            POST("authentication", "two_fa", false, {
+                                            POST("authentication", "twoFa", false, {
                                                 oneCode: $.trim($("#" + prefix + "2faConfirm").val()),
                                             }).done(() => {
                                                 doLogout(true);
@@ -1029,12 +1029,12 @@
                     ],
 
                     done: function (prefix) {
-                        POST("authentication", "two_fa", false, {
+                        POST("authentication", "twoFa", false, {
                             //
                         }).done(result => {
                             let secret;
                             try {
-                                secret = (new URL(result.two_fa)).searchParams.get("secret");
+                                secret = (new URL(result.twoFa)).searchParams.get("secret");
                             } catch (_) {
 
                             }
@@ -1042,7 +1042,7 @@
                             (new QRCode(document.getElementById(prefix + "2faCode"), {
                                 width: 256,
                                 height: 256,
-                            })).makeCode(result.two_fa);
+                            })).makeCode(result.twoFa);
                             $($("#" + prefix + "2faCode").children()[1]).css("width", "50%");
                         });
 
