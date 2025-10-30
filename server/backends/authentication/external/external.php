@@ -78,5 +78,23 @@
                     return false;
                 }
             }
+
+            public function cron($part) {
+                if ($part == "daily" && @$this->config["backends"]["authentication"]["checkexists"]) {
+                    $users = loadBackend("users");
+                    $allUsers = $users->getUsers();
+
+                    foreach ($allUsers as $user) {
+                        $url = $this->config["backends"]["authentication"]["checkexists"];
+                        $url = str_replace("%%login", urlencode($user["login"]), $url);
+
+                        $exists = trim(@file_get_contents($url));
+
+                        echo $exists . "\n";
+                    }
+                }
+
+                return parent::cron($part);
+            }
         }
     }

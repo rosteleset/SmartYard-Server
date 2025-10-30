@@ -415,6 +415,7 @@
                 if ($part == "minutely") {
                     $this->realNotify();
                 }
+
                 return true;
             }
         }
