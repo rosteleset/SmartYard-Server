@@ -30,6 +30,9 @@ client/lib/AdminLTE/
 client/lib/qrcodejs/
 client/lib/loading-bar/
 client/lib/ace-builds/
+client/custom
+client/custom/*
+client/custom/**
 client/modules/custom
 client/modules/custom/*
 client/modules/custom/**
@@ -104,6 +107,9 @@ install/kamailio/kamctlrc
 static/portal
 static/portal/*
 static/portal/**
+static/custom
+static/custom/*
+static/custom/**
 
 asterisk/custom/*
 asterisk/custom/**

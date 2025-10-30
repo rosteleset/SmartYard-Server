@@ -20,7 +20,7 @@
              * @return false|integer false if user not found or uid
              */
 
-            public function check_auth($login, $password) {
+            public function checkAuth($login, $password) {
                 $sth = $this->db->prepare("select uid, password from core_users where login = :login and enabled = 1");
                 $sth->execute([ ":login" => $login ]);
                 $res = $sth->fetchAll(\PDO::FETCH_ASSOC);
@@ -64,7 +64,7 @@
                                     if ($ext) {
                                         $users->modifyUser($uid, $ext["real_name"], $ext["email"], $ext["phone"], $ext["tg_id"]);
                                     }
-                                    return $this->check_auth($login, $password);
+                                    return $this->checkAuth($login, $password);
                                 } else {
                                     return false;
                                 }

@@ -99,8 +99,6 @@
 
                 $list = $files->searchFiles($search);
 
-                error_log(print_r($list, true));
-
                 $file = false;
 
                 foreach ($list as $f) {

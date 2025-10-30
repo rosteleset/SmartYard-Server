@@ -48,12 +48,12 @@
                     return false;
                 }
 
-                if (!checkStr($type, [ "variants" => [ "text", "markdown", "checks", ]])) {
+                if (!checkStr($type, [ "variants" => [ "text", "markdown", "checks", ] ])) {
                     setLastError("invalidParams");
                     return false;
                 }
 
-                $id = $this->db->insert("insert into notes (create_date, owner, note_subject, note_body, note_type, category, remind, reminded, icon, font, color, position_left, position_top, position_order) values (:create_date, :owner, :note_subject, :note_body, :checks, :category, :remind, :reminded, :icon, :font, :color, :position_left, :position_top, :position_order)", [
+                $id = $this->db->insert("insert into notes (create_date, owner, note_subject, note_body, note_type, category, remind, reminded, icon, font, color, position_left, position_top, position_order) values (:create_date, :owner, :note_subject, :note_body, :note_type, :category, :remind, :reminded, :icon, :font, :color, :position_left, :position_top, :position_order)", [
                     "create_date" => time(),
                     "owner" => $this->login,
                     "note_subject" => $subject ?: null,
@@ -77,7 +77,7 @@
                     "note_id" => "id",
                     "note_subject" => "subject",
                     "note_body" => "body",
-                    "checks" => "checks",
+                    "note_type" => "type",
                     "category" => "category",
                     "remind" => "remind",
                     "reminded" => "reminded",
@@ -104,7 +104,7 @@
                     return false;
                 }
 
-                if (!checkStr($type, [ "variants" => [ "text", "markdown", "checks", ]])) {
+                if (!checkStr($type, [ "variants" => [ "text", "markdown", "checks", ] ])) {
                     setLastError("invalidParams");
                     return false;
                 }
@@ -156,7 +156,7 @@
                     return false;
                 }
 
-                $body = $this->db->get("select note_body from notes where note_id = :note_id and owner = :owner and checks = 1", [
+                $body = $this->db->get("select note_body from notes where note_id = :note_id and owner = :owner and note_type = 'checks'", [
                     "note_id" => $id,
                     "owner" => $this->login,
                 ], [
@@ -171,7 +171,7 @@
                 }
                 $body = implode("\n", $body);
 
-                return $this->db->modify("update notes set note_body = :note_body where note_id = :note_id and owner = :owner and checks = 1", [
+                return $this->db->modify("update notes set note_body = :note_body where note_id = :note_id and owner = :owner and note_type = 'checks'", [
                     "note_id" => $id,
                     "owner" => $this->login,
                     "note_body" => $body,

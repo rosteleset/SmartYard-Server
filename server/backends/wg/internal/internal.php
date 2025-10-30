@@ -164,9 +164,11 @@
                                     }
                                 }
                             } else {
+/*
                                 if (@$groupExists[$g["acronym"]]) {
                                     echo $g["acronym"] . ": " . $peers["message"] . "\n";
                                 }
+*/
                             }
                         }
                     }

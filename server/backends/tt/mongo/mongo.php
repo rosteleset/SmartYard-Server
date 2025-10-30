@@ -1355,12 +1355,15 @@
                     $journal = $this->clickhouse->select("select * from default.ttlog where issue='$issueId' order by date");
                 }
 
-                foreach ($journal as &$record) {
-                    $record["old"] = json_decode($record["old"], true);
-                    $record["new"] = json_decode($record["new"], true);
+                if ($journal) {
+                    foreach ($journal as &$record) {
+                        $record["old"] = json_decode($record["old"], true);
+                        $record["new"] = json_decode($record["new"], true);
+                    }
+                    return $journal;
+                } else {
+                    return [];
                 }
-
-                return $journal;
             }
 
             /**

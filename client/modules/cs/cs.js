@@ -465,7 +465,7 @@
                                                     title = escapeHTML(r.issues.issues[i][modules.cs.currentSheet.sheet.fields.hint]);
                                                 }
                                                 if (modules.cs.highlight == r.issues.issues[i].issueId) {
-                                                    modules.cs.issuesInSheet[uid] += `<span class="${modules.cs.currentSheet.sheet.issueHighlightClass ? modules.cs.currentSheet.sheet.issueHighlightClass : "bg-orange"}"><a class="csIssueSpan pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a></span><br />`;
+                                                    modules.cs.issuesInSheet[uid] += `<span class="${modules.cs.currentSheet.sheet.issueHighlightClass ? modules.cs.currentSheet.sheet.issueHighlightClass : "bg-orange"}"><a class="csIssueSpan pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a><span class="unhighlight"><i class="far fa-fw fa-times-circle" title="${i18n("cs.unhighlight")}"></i></span></span><br />`;
                                                 } else
                                                 if (closed) {
                                                     modules.cs.issuesInSheet[uid] += `<span class="${modules.cs.currentSheet.sheet.issueClosedClass}"><a class="csIssueSpan pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a></span><br />`;
@@ -1240,6 +1240,11 @@
                     });
                 });
 
+                $(".unhighlight").off("click").on("click", e => {
+                    navigateUrl("cs", { sheet: modules.cs.sheet, date: modules.cs.date }, { run: true });
+                    e.stopPropagation();
+                });
+
                 modules.cs.idle = true;
                 loadingDone();
             } else {
@@ -1307,6 +1312,11 @@
 
                 modules.cs.sheet = $("#csSheet").val() ? $("#csSheet").val() : false;
                 modules.cs.date = $("#csDate").val() ? $("#csDate").val() : false;
+
+                if (modules.cs.sheet && modules.cs.date) {
+                    lStore("csSheet", modules.cs.sheet);
+                    lStore("csDate", modules.cs.date);
+                }
 
                 if (modules.cs.menuItem) {
                     $("#" + modules.cs.menuItem).children().first().attr("href", navigateUrl("cs", { sheet: modules.cs.sheet, date: modules.cs.date, highlight: modules.cs.highlight }));
@@ -1492,9 +1502,14 @@
 
         document.title = i18n("windowTitle") + " :: " + i18n("cs.cs");
 
-        modules.cs.sheet = params.sheet ? params.sheet : false;
-        modules.cs.date = params.date ? params.date : false;
+        modules.cs.sheet = params.sheet ? params.sheet : (lStore("csSheet") ? lStore("csSheet") : false);
+        modules.cs.date = params.date ? params.date : (lStore("csDate") ? lStore("csDate") : false);
         modules.cs.highlight = params.highlight ? params.highlight : false;
+
+        if (modules.cs.sheet && modules.cs.date) {
+            lStore("csSheet", modules.cs.sheet);
+            lStore("csDate", modules.cs.date);
+        }
 
         modules.cs.renderCS();
     },

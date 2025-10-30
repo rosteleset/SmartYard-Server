@@ -1343,7 +1343,7 @@
                                 ["/SIP UA event: CALL_ESTABLISHED \( sip:(\d+)@.*\)/", false, true, false, 0],
                                 ["/pickup 1/", false, true, false, 0],
                                 ["/DTMF/", false, false, true, 1],
-                                ["/STAT\/DOOR1: 1/" , false, false, true, 0], // Not sure about it
+                                ["/STAT\/DOOR1: 1/" , false, false, true, 0], // TODO: no info about opening with CMS handset
                             ];
 
                             foreach ($patterns_call as [$pattern, $flag_start, $flag_talk_started, $flag_door_opened, $now_call_from_panel]) {

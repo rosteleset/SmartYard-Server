@@ -17,6 +17,7 @@
         "start:sputnik": "node index.js sputnik_cloud",
         "start:ufanet": "node index.js ufanet",
         "start:brovotech": "node index.js brovotech",
+        "start:iflow": "node index.js iflow",
         "dev:akuvox": "nodemon index.js akuvox",
         "dev:beward": "nodemon index.js beward",
         "dev:beward_ds": "nodemon index.js beward_ds",
@@ -26,6 +27,7 @@
         "dev:sputnik": "nodemon index.js sputnik_cloud",
         "dev:ufanet": "nodemon index.js ufanet",
         "dev:brovotech": "nodemon index.js brovotech",
+        "dev:iflow": "nodemon index.js iflow",
         "debug:akuvox": "NODE_ENV=debug nodemon index.js akuvox",
         "debug:beward": "NODE_ENV=debug nodemon index.js beward",
         "debug:beward_ds": "NODE_ENV=debug nodemon index.js beward_ds",
@@ -34,7 +36,8 @@
         "debug:rubetek": "NODE_ENV=debug nodemon index.js rubetek",
         "debug:sputnik": "NODE_ENV=debug nodemon index.js sputnik_cloud",
         "debug:ufanet": "NODE_ENV=debug nodemon index.js ufanet",
-        "debug:brovotech": "NODE_ENV=debug nodemon index.js brovotech"
+        "debug:brovotech": "NODE_ENV=debug nodemon index.js brovotech",
+        "debug:iflow": "NODE_ENV=debug nodemon index.js iflow"
     },
     "keywords": [],
     "author": "",

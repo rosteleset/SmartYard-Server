@@ -114,7 +114,7 @@
              * @return array|false
              */
 
-            public function getUser($uid, $withGroups = true) {
+            public function getUser($uid, $withGroups = true, $withWG = false) {
                 if (!checkInt($uid)) {
                     return false;
                 }
@@ -162,17 +162,19 @@
                                 if ($groups !== false) {
                                     $_user["groups"] = $groups->getGroups($uid);
 
-                                    $wg = loadBackend("wg");
-                                    if ($wg) {
-                                        $primaryGroupAdmin = false;
-                                        foreach ($_user["groups"] as $g) {
-                                            if ($g["acronym"] == $_user["primaryGroupAcronym"]) {
-                                                $primaryGroupAdmin = $g["admin"];
-                                                break;
+                                    if ($withWG) {
+                                        $wg = loadBackend("wg");
+                                        if ($wg) {
+                                            $primaryGroupAdmin = false;
+                                            foreach ($_user["groups"] as $g) {
+                                                if ($g["acronym"] == $_user["primaryGroupAcronym"]) {
+                                                    $primaryGroupAdmin = $g["admin"];
+                                                    break;
+                                                }
                                             }
-                                        }
-                                        if ($this->uid <= 0 || $this->uid == $uid || $this->uid == $primaryGroupAdmin) {
-                                            $_user["wg"] = $wg->clientConfig($_user["login"],  $_user["primaryGroupAcronym"]);
+                                            if ($this->uid <= 0 || $this->uid == $uid || $this->uid == $primaryGroupAdmin) {
+                                                $_user["wg"] = $wg->clientConfig($_user["login"],  $_user["primaryGroupAcronym"]);
+                                            }
                                         }
                                     }
                                 }
@@ -725,7 +727,7 @@
              * @inheritDoc
              */
 
-            public function two_fa($uid, $secret = "") {
+            public function twoFa($uid, $secret = "") {
                 global $cli;
 
                 if ($secret === "") {
@@ -795,7 +797,7 @@
                         die("user not found\n");
                     }
 
-                    if ($this->two_fa($uid, false)) {
+                    if ($this->twoFa($uid, false)) {
                         echo "2fa disabled for user: #$uid ({$args["--disable-2fa"]})\n";
                     } else {
                         echo "failed to disable 2fa for user: #$uid ({$args["--disable-2fa"]})\n";

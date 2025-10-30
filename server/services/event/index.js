@@ -13,6 +13,7 @@ import {
     SputnikCloudService,
     UfanetService,
     BrovotechService,
+    IFlowWebHookService,
 } from "./services/index.js";
 
 import {
@@ -27,6 +28,7 @@ import {
     SERVICE_SPUTNIK_CLOUD,
     SERVICE_UFANET,
     SERVICE_BROVOTECH,
+    SERVICE_IFLOW,
 } from "./constants.js";
 
 const { hw } = config;
@@ -103,6 +105,11 @@ switch (serviceParam) {
     case SERVICE_BROVOTECH:
         const brovotechService = new BrovotechService(SERVICE_BROVOTECH, serviceConfig, spamWords[SERVICE_BROVOTECH]);
         brovotechService.createSyslogServer();
+        break;
+
+    case SERVICE_IFLOW:
+        const iflowWebhookService = new IFlowWebHookService(SERVICE_IFLOW, serviceConfig);
+        iflowWebhookService.start();
         break;
 
     default:

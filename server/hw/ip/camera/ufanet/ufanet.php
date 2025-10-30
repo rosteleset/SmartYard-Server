@@ -25,7 +25,7 @@ class ufanet extends camera
                 zone: $detectionZones[0],
                 maxX: $maxX,
                 maxY: $maxY,
-                direction: 'toPixel'
+                direction: 'toPixel',
             )
             : null;
 
@@ -50,13 +50,24 @@ class ufanet extends camera
 
     public function setOsdText(string $text = ''): void
     {
+        /*
+         * Text OSD is placed in the top-left corner, and datetime OSD in the top-right corner.
+         *
+         * Reason:
+         * The device uses absolute coordinates. When placing text OSD in the bottom-left corner,
+         * it looks fine at 1280x720, but shifts toward the middle when switching to 1920x1080.
+         *
+         * However, datetime OSD supports negative coordinates, so it can be reliably placed
+         * in the top-right corner without issues.
+         */
+
         // Text OSD
         $this->apiCall('/cgi-bin/osd.cgi', 'GET', [
             'action' => 'setConfig',
             'OSD[0].Enable' => $text !== '' ? 'true' : 'false',
             'OSD[0].Text' => $text,
-            'OSD[0].PosX' => 4,
-            'OSD[0].PosY' => 684,
+            'OSD[0].PosX' => 2,
+            'OSD[0].PosY' => 0,
             'OSD[0].Size' => 32,
         ]);
 
@@ -75,7 +86,7 @@ class ufanet extends camera
             'action' => 'setConfig',
             'VideoWidget[0].TimeTitle.FrontColor[3]' => 1,
             'Locales.TimeFormat' => "%22%d.%m.%y %H:%M:%S%22", // dd.mm.yy HH:MM:SS
-            'VideoWidget[0].TimeTitle.Rect[0]' => 0,
+            'VideoWidget[0].TimeTitle.Rect[0]' => -2,
             'VideoWidget[0].TimeTitle.Rect[1]' => 0,
         ]);
     }
@@ -98,7 +109,8 @@ class ufanet extends camera
                     zone: $dbConfig['motionDetection'][0],
                     maxX: $maxX,
                     maxY: $maxY,
-                    direction: 'toPixel')
+                    direction: 'toPixel',
+                ),
             ];
         }
 

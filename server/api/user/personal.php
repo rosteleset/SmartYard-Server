@@ -50,7 +50,7 @@
         class personal extends api {
 
             public static function GET($params) {
-                $user = $params["_backends"]["users"]->getUser($params["_uid"]);
+                $user = $params["_backends"]["users"]->getUser($params["_uid"], true, true);
 
                 return api::ANSWER($user, ($user !== false) ? "user" : "notFound");
             }

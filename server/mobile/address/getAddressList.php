@@ -85,7 +85,7 @@
             $door['doorId'] = intval($e['domophoneOutput']);
             $door['icon'] = $e['entranceType'];
             $door['name'] = $e['entrance'];
-            if (isset($flatDetail['openCode']) && $flatDetail['openCode'] != '00000') {
+            if (!empty($flatDetail['openCode']) && $flatDetail['openCode'] != '00000') {
                 $door['doorCode'] = $flatDetail['openCode'];
             }
 

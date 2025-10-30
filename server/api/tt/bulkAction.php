@@ -72,13 +72,15 @@
                     $success = 0;
 
                     if ($issues && count($issues)) {
-                        foreach ($issues["issues"] as $issue) {
+                        foreach ($issues["issues"] as $_issue) {
+                            $issue["issueId"] = $_issue["issueId"];
+                            $issue["workflow"] = $_issue["workflow"];
                             foreach ($params["set"] as $key => $value) {
                                 if ($key != "issueId") {
                                     $issue[$key] = $value;
                                 }
                             }
-                            if ($tt->loadWorkflow($issue["workflow"])->action($issue, $params["action"], $tt->getIssue($issue["issueId"]))) {
+                            if ($tt->loadWorkflow($issue["workflow"])->action($issue, $params["action"], $_issue)) {
                                 $success++;
                             }
                         }

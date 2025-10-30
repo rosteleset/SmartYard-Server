@@ -20,7 +20,7 @@
              * @return mixed
              */
 
-            abstract public function check_auth($login, $password);
+            abstract public function checkAuth($login, $password);
 
             /**
              * @param string $login login
@@ -34,20 +34,20 @@
              */
 
             public function login($login, $password, $rememberMe, $ua = "", $did = "", $ip = "", $oneCode = "") {
-                $uid = $this->check_auth($login, $password);
+                $uid = $this->checkAuth($login, $password);
 
 
                 if ($uid !== false) {
                     $users = loadBackend("users");
 
-                    $two_fa = $users->two_fa($uid);
+                    $twoFa = $users->twoFa($uid);
 
-                    if ($two_fa) {
+                    if ($twoFa) {
                         require_once "lib/GoogleAuthenticator/GoogleAuthenticator.php";
 
                         $ga = new \PHPGangsta_GoogleAuthenticator();
 
-                        if (!$ga->verifyCode($two_fa, $oneCode, 2)) {
+                        if (!$ga->verifyCode($twoFa, $oneCode, 2)) {
                             return [
                                 "otp" => true,
                             ];
@@ -66,10 +66,10 @@
                                     $first_key = $key;
                                 }
                             } catch (\Exception $e) {
-                                $this->redis->delete($key);
+                                $this->redis->del($key);
                             }
                         }
-                        $this->redis->delete($first_key);
+                        $this->redis->del($first_key);
                     }
 
                     if ($rememberMe) {
@@ -244,7 +244,7 @@
              * @return boolean
              */
 
-            public function two_fa($token, $oneCode) {
+            public function twoFa($token, $oneCode) {
                 require_once "lib/GoogleAuthenticator/GoogleAuthenticator.php";
 
                 $ga = new \PHPGangsta_GoogleAuthenticator();
@@ -262,7 +262,7 @@
                         if ($secret && $ga->verifyCode($secret, $oneCode, 2)) {
                             unset($auth["secret"]);
                             $this->redis->setex($key, $auth["persistent"] ? (7 * 24 * 60 * 60) : ($this->config["backends"]["authentication"]["token_idle_ttl"] ?: 3600), json_encode($auth));
-                            return $users->two_fa($auth["uid"], $secret);
+                            return $users->twoFa($auth["uid"], $secret);
                         } else {
                             setLastError("invalid2FACredentials");
                             return false;

@@ -1,11 +1,11 @@
 <?php
 
     /**
-     * @api {post} /api/authentication/two_fa two_fa request and confirm
+     * @api {post} /api/authentication/twoFa twoFa request and confirm
      *
      * @apiVersion 1.0.0
      *
-     * @apiName two_fa
+     * @apiName twoFa
      * @apiGroup authentication
      *
      * @apiHeader {String} Authorization authentication token
@@ -24,16 +24,16 @@
         use api\api;
 
         /**
-         * two_fa method
+         * twoFa method
          */
 
-        class two_fa extends api {
+        class twoFa extends api {
 
             public static function POST($params) {
 
-                $two_fa = $params["_backends"]["authentication"]->two_fa($params["_token"], @$params["oneCode"]);
+                $twoFa = $params["_backends"]["authentication"]->twoFa($params["_token"], @$params["oneCode"]);
 
-                return api::ANSWER($two_fa, ($two_fa !== false) ? "two_fa" : "notAcceptable");
+                return api::ANSWER($twoFa, ($twoFa !== false) ? "twoFa" : "notAcceptable");
             }
 
             public static function index() {
