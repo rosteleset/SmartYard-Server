@@ -4,7 +4,7 @@
         moduleLoaded("about", this);
     },
 
-    route: function (params) {
+    route: function () {
         subTop();
         $("#altForm").hide();
 
