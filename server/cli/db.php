@@ -140,7 +140,7 @@
             }
 
             function list() {
-                list_db_backups();
+                listDBBackups();
 
                 exit(0);
             }
@@ -150,7 +150,7 @@
 
                 waitAll();
 
-                restore_db($args["--restore-db"]);
+                restoreDB($args["--restore-db"]);
 
                 maintenance(false);
 

@@ -1,7 +1,6 @@
 <?php
 
-    function backupDB($check_backup = true)
-    {
+    function backupDB($check_backup = true) {
         global $config, $db;
 
         $path = @$config["db"]["backup"] ? : (__DIR__ . "/../db/backup");
@@ -16,11 +15,11 @@
 
         switch ($dsn["protocol"]) {
             case "pgsql":
-                backup_pgsql($dsn["params"]["host"] ? : "127.0.0.1", $dsn["params"]["port"] ? : 5432, $config["db"]["username"] ? : "rbt", $config["db"]["password"] ? : "rbt", $dsn["params"]["dbname"], $file);
+                backupPgSql($dsn["params"]["host"] ? : "127.0.0.1", $dsn["params"]["port"] ? : 5432, $config["db"]["username"] ? : "rbt", $config["db"]["password"] ? : "rbt", $dsn["params"]["dbname"], $file);
                 break;
 
             case "sqlite":
-                backup_sqlite($dsn["params"][0], $file);
+                backupSQlite($dsn["params"][0], $file);
                 break;
         }
 
@@ -31,8 +30,7 @@
         echo "db backup complete: $file\n";
     }
 
-    function list_db_backups()
-    {
+    function listDBBackups() {
         global $config;
 
         $path = @$config["db"]["backup"] ? : (__DIR__ . "/../db/backup");
@@ -62,8 +60,7 @@
         }
     }
 
-    function restore_db($file)
-    {
+    function restoreDB($file) {
         global $config, $db;
 
         $path = @$config["db"]["backup"] ? : (__DIR__ . "/../db/backup");
@@ -82,19 +79,18 @@
 
         switch ($dsn["protocol"]) {
             case "pgsql":
-                restore_pgsql($dsn["params"]["host"] ? : "127.0.0.1", $dsn["params"]["port"] ? : 5432, $config["db"]["username"] ? : "rbt", $config["db"]["password"] ? : "rbt", $dsn["params"]["dbname"], $file);
+                restorePgSql($dsn["params"]["host"] ? : "127.0.0.1", $dsn["params"]["port"] ? : 5432, $config["db"]["username"] ? : "rbt", $config["db"]["password"] ? : "rbt", $dsn["params"]["dbname"], $file);
                 break;
 
             case "sqlite":
-                restore_sqlite($dsn["params"][0], $file);
+                restoreSQlite($dsn["params"][0], $file);
                 break;
         }
 
         echo "db restore complete: $file\n";
     }
 
-    function backup_pgsql($host, $port, $login, $password, $db, $file)
-    {
+    function backupPgSql($host, $port, $login, $password, $db, $file) {
         $result = -1;
 
         system("PGPASSWORD=\"$password\" pg_dump -U $login -d $db -h $host -p $port -c --if-exists >$file", $result);
@@ -104,8 +100,7 @@
         }
     }
 
-    function backup_sqlite($db, $file)
-    {
+    function backupSQlite($db, $file) {
         $result = -1;
 
         system("sqlite3 $db .dump >$file", $result);
@@ -115,13 +110,11 @@
         }
     }
 
-    function restore_pgsql($host, $port, $login, $password, $db, $file)
-    {
+    function restorePgSql($host, $port, $login, $password, $db, $file) {
         system("PGPASSWORD=\"$password\" psql -U $login -d $db -h $host -p $port <$file");
     }
 
-    function restore_sqlite($db, $file)
-    {
+    function restoreSQlite($db, $file) {
         if (file_exists($db)) {
             unlink($db);
         }
