@@ -4,10 +4,9 @@
      * backends queue namespace
      */
 
-    namespace backends\queue
-    {
-        class internal extends queue
-        {
+    namespace backends\queue {
+
+        class internal extends queue {
             private const RFID_ACCESS_TYPES = [
                 0 => 'all',
                 1 => 'subscriber',
@@ -88,8 +87,8 @@
             /**
              * @inheritDoc
              */
-            public function cron($part)
-            {
+
+            public function cron($part) {
                 $this->db->modify("delete from core_running_processes where (done is not null and expire < :expire) or (done is not null and start < :start)", [
                     "expire" => time(),
                     "start" => time() - 7 * 24 * 60 * 60,
@@ -109,8 +108,8 @@
             /**
              * @inheritDoc
              */
-            public function autoconfigureDevices()
-            {
+
+            public function autoconfigureDevices() {
                 global $script_filename;
 
                 $deviceTypes = ['domophone', 'camera'];

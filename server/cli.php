@@ -275,14 +275,18 @@
                     }
                 }
 
-                $pids = $db->get("select running_process_id, pid from core_running_processes where done is not null and coalesce(expire, 0) < " . time(), false, [
+                $pids = $db->get("select running_process_id, pid from core_running_processes where done is null and coalesce(expire, 0) < " . time(), false, [
                     "running_process_id" => "id",
                     "pid" => "pid",
                 ], [ "silent" ]);
 
                 if ($pids) {
                     foreach ($pids as $process) {
-                        echo "Process {$process["id"]} with pid {$process["pid"]} running more than 24h\n";
+                        if (file_exists("/proc/{$process["pid"]}")) {
+                            echo "Process {$process["id"]} with pid {$process["pid"]} running more than 24h\n";
+                        } else {
+                            echo "Process {$process["id"]} with pid {$process["pid"]} doesn't exists\n";
+                        }
                     }
                 }
             } catch (\Exception $e) {
