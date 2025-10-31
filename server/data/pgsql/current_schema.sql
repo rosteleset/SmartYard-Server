@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict 9ewZB0QIvoMFbcJ9qHuhgDUlVmHrX8vo4pfzABn65FUiTAKl39pVIhSkutpk4DD
+\restrict tOPWQPhBJyHw2xzyK7lRExZbpHI1QQbKMipIKXFhKQvxoe1kvbfR6fA5Ja9vUrB
 
 -- Dumped from database version 17.6
 -- Dumped by pg_dump version 18.0
@@ -657,7 +657,8 @@ CREATE TABLE public.core_users (
     primary_group integer,
     secret character varying,
     settings character varying,
-    avatar character varying
+    avatar character varying,
+    service_account integer DEFAULT 0
 );
 
 
@@ -4313,5 +4314,5 @@ GRANT ALL ON SCHEMA public TO rbt;
 -- PostgreSQL database dump complete
 --
 
-\unrestrict 9ewZB0QIvoMFbcJ9qHuhgDUlVmHrX8vo4pfzABn65FUiTAKl39pVIhSkutpk4DD
+\unrestrict tOPWQPhBJyHw2xzyK7lRExZbpHI1QQbKMipIKXFhKQvxoe1kvbfR6fA5Ja9vUrB
 

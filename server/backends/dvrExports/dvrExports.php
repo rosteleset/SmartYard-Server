@@ -1,27 +1,27 @@
 <?php
 
     /**
-    * backends dvr_exports namespace
+    * backends dvrExports namespace
     */
 
-    namespace backends\dvr_exports
-    {
+    namespace backends\dvrExports {
 
         use backends\backend;
 
         /**
-         * base dvr_exports class
+         * base dvrExports class
          */
-        abstract class dvr_exports extends backend
-        {
-//
-/**
+
+        abstract class dvrExports extends backend {
+
+            /**
              * @param $cameraId
              * @param $subscriberId
              * @param $start
              * @param $finish
              * @return boolean
              */
+
             abstract public function addDownloadRecord($cameraId, $subscriberId, $start, $finish);
 
             /**
@@ -31,12 +31,14 @@
              * @param $finish
              * @return id|false
              */
+
             abstract public function checkDownloadRecord($cameraId, $subscriberId, $start, $finish);
 
             /**
              * @param $recordId
              * @return oid|false file id
              */
+
             abstract public function runDownloadRecordTask($recordId);
 
             /**
@@ -66,8 +68,8 @@
             public function cli($args) {
                 if (array_key_exists("--run-record-download", $args)) {
                     $recordId = (int)$args["--run-record-download"];
-                    $dvr_exports = $this;
-                    if ($dvr_exports && ($uuid = $dvr_exports->runDownloadRecordTask($recordId))) {
+                    $dvrExports = $this;
+                    if ($dvrExports && ($uuid = $dvrExports->runDownloadRecordTask($recordId))) {
                         $inbox = loadBackend("inbox");
                         $files = loadBackend("files");
 
@@ -80,6 +82,5 @@
 
                 parent::cli($args);
             }
-
         }
     }

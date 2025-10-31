@@ -1,26 +1,27 @@
 <?php
 
     /**
-     * backends dvr_exports namespace
+     * backends dvrExports namespace
      */
 
-    namespace backends\dvr_exports
+    namespace backends\dvrExports
     {
-        class filesystem extends dvr_exports
+        class mongo extends dvrExports
         {
+//
             /**
              * @inheritDoc
              */
             public function addDownloadRecord($cameraId, $subscriberId, $start, $finish)
             {
-                $dvr_files_ttl = @$this->config["backends"]["dvr_exports"]["dvr_files_ttl"] ?: 259200; // 3 days
+                $dvr_files_ttl = @$this->config["backends"]["dvrExports"]["dvr_files_ttl"] ?: 259200; // 3 days
 
                 if (!checkInt($cameraId) || !checkInt($subscriberId) || !checkInt($start) || !checkInt($finish)) {
                     return false;
                 }
 
                 $filename = GUIDv4() . '.mp4';
-                
+
                 return $this->db->insert("insert into camera_records (camera_id, subscriber_id, start, finish, filename, expire, state) values (:camera_id, :subscriber_id, :start, :finish, :filename, :expire, :state)", [
                     "camera_id" => (int)$cameraId,
                     "subscriber_id" => (int)$subscriberId,
@@ -63,6 +64,7 @@
             public function runDownloadRecordTask($recordId)
             {
                 $config = $this->config;
+                // TODO: добавить удаление старых заданий на скачивание.
 
                 try {
                     $task = $this->db->get(
@@ -84,81 +86,60 @@
                         ]
                     );
                     if ($task) {
-                        $dvr_files_path = @$config["backends"]["dvr_exports"]["dvr_files_path"] ?: false;
-                        if ( $dvr_files_path && substr($dvr_files_path, -1) != '/' ) $dvr_files_path = $dvr_files_path . '/';
-        
                         $cameras = loadBackend("cameras");
                         $cam = $cameras->getCamera($task['cameraId']);
-        
+
                         if (!$cam) {
                             echo "Camera with id = " . $task['cameraId'] . " was not found\n";
-                            exit(0);
-        
+                           return false;
+
                         }
                         $request_url = loadBackend("dvr")->getUrlOfRecord($cam, $task['subscriberId'], $task['start'], $task['finish']);
-                        
+
                         $this->db->modify("update camera_records set state = 1 where record_id = $recordId");
-                        
+
                         echo "Record download task with id = $recordId was started\n";
-                        echo "Fetching record form {$request_url} to ". $dvr_files_path . $task['filename']  . "\n";
-                        // echo "curl \"{$request_url}\" --fail -o " . $dvr_files_path . $task['filename'] . "\n";
-                        // exec("curl \"{$request_url}\" --fail -o " . $dvr_files_path . $task['filename'], $out, $code);
-                        
-                        $fh = fopen($dvr_files_path . $task['filename'], 'w');
-                        $ch = curl_init($request_url);
-                        curl_setopt($ch, CURLOPT_FILE, $fh);
-                        curl_exec($ch);
-                        $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-                        curl_close($ch);
-                        fclose($fh);
-                        
-                        $code = 200;
-                        if ($code === 200) {
+                        echo "Fetching record form {$request_url} to " . $task['filename']  . "\n";
+
+                        $files = loadBackend("files");
+                        $arrContextOptions=array(
+                            "ssl"=>array(
+                                "verify_peer"=>false,
+                                "verify_peer_name"=>false,
+                            ),
+                        );
+                        $file = fopen($request_url, "r", false, stream_context_create($arrContextOptions));
+                        $fileId = $files->addFile($task['filename'], $file, [
+                            "camId" => $task['cameraId'],
+                            "start" => $task['start'],
+                            "finish" => $task['finish'],
+                            "subscriberId" => $task['subscriberId'],
+                            "expire" => $task['expire']
+                        ]);
+
+                        if ($file ) {
                             $this->db->modify("update camera_records set state = 2 where record_id = $recordId");
                             echo "Record download task with id = $recordId was successfully finished!\n";
-                            return 0;
-
+                            fclose($file);
+                            // print_r($files->getFile($fileId)["fileInfo"]);
+                            // echo "\n\n";
+                            return $fileId;
                         } else {
 
                             $this->db->modify("update camera_records set state = 3 where record_id = $recordId");
                             echo "Record download task with id = $recordId was finished with error code = $code!\n";
-                            return 1;
+                            return false;
                         }
                     } else {
                         echo "Task with id = $recordId was not found\n";
-                        return 1;
+                        return false;
                     }
-                    
-                    
+
+
                 } catch (Exception $e) {
                     echo "Record download task with id = $recordId was failed to start\n";
-                    return 1;
+                    return false;
                 }
-            }
-
-            /**
-             * @inheritDoc
-             */
-
-            public function cron($part) {
-                if ($part == 'daily') {
-                    $dvrFileTtl = @$this->config["backends"]["dvr_exports"]["dvr_files_ttl"];
-                    $currentTime = time();
-                    $dvrExportsFolder = @$this->config["backends"]["dvr_exports"]["dvr_files_path"];
-                    $allFiles = scandir($dvrExportsFolder);
-                    foreach ($allFiles as $fileName) {
-                        if (is_file($dvrExportsFolder . "/" . $fileName) && ($fileName != ".") && ($fileName != "..")) {
-                            $fileTime = filemtime($dvrExportsFolder . $fileName);
-                            if (($currentTime - $fileTime) > $dvrFileTtl) {
-                                $pathToFile = "$dvrExportsFolder$fileName";
-                                unlink($pathToFile);
-                                $this->db->modify("delete from camera_records where filename = $fileName");
-                            }
-                        }
-                    }
-                    $this->db->modify("delete from camera_records where expire > :now",["now"=>time()]);
-                }
-                return true;
             }
         }
     }

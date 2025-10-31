@@ -1,3 +1,7 @@
+# 2025-10-31
+
+Since version 0.0.17, backend dvr_export renamed to  dvrExport (need modify server/config/config.json)
+
 # 2025-09-03
 
 Since version 0.0.15, server configs "max_allowed_tokens" and "token_idle_ttl" moved from "redis" section to "backends->authentication" section

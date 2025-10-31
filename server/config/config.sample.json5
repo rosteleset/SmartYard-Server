@@ -200,7 +200,7 @@
             },
         },
 
-        "dvr_exports": {
+        "dvrExports": {
             "backend": "mongo",
             "dvr_files_ttl": 259200,
         },
