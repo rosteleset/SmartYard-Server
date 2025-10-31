@@ -282,7 +282,7 @@
 
                 if ($pids) {
                     foreach ($pids as $process) {
-                        echo "Process {$pids["running_process_id"]} with pid {$pids["pid"]} running more than 24h\n";
+                        echo "Process {$process["id"]} with pid {$process["pid"]} running more than 24h\n";
                     }
                 }
             } catch (\Exception $e) {
