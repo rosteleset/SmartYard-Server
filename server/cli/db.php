@@ -69,7 +69,8 @@
                 global $db, $redis;
 
                 maintenance(true);
-                wait_all();
+
+                waitAll();
 
                 $aiids = $redis->keys("aiid_*");
                 if ($aiids) {
@@ -98,7 +99,7 @@
                     echo "\n";
                 }
 
-                backup_db(false);
+                backupDB(false);
                 echo "\n";
 
                 if (@$args["--set-version"]) {
@@ -128,9 +129,10 @@
 
             function backup() {
                 maintenance(true);
-                wait_all();
 
-                backup_db();
+                waitAll();
+
+                backupDB();
 
                 maintenance(false);
 
@@ -145,7 +147,8 @@
 
             function restore($args) {
                 maintenance(true);
-                wait_all();
+
+                waitAll();
 
                 restore_db($args["--restore-db"]);
 
@@ -156,7 +159,8 @@
 
             function schema($args) {
                 maintenance(true);
-                wait_all();
+
+                waitAll();
 
                 schema($args["--schema"]);
 
@@ -167,7 +171,8 @@
 
             function fcv($args) {
                 maintenance(true);
-                wait_all();
+
+                waitAll();
 
                 if (@$config["mongo"]["uri"]) {
                     $manager = new \MongoDB\Driver\Manager($config["mongo"]["uri"]);

@@ -85,12 +85,21 @@
                     $allUsers = $users->getUsers();
 
                     foreach ($allUsers as $user) {
-                        $url = $this->config["backends"]["authentication"]["checkexists"];
-                        $url = str_replace("%%login", urlencode($user["login"]), $url);
+                        if ((int)$user["uid"] && !(int)$user["serviceAccount"]) {
+                            $url = $this->config["backends"]["authentication"]["checkexists"];
+                            $url = str_replace("%%login", urlencode($user["login"]), $url);
+                            $exists = trim(@file_get_contents($url));
 
-                        $exists = trim(@file_get_contents($url));
+                            if ($exists == "EXISTS" && !(int)$user["enabled"]) {
+                                echo "need unlock: {$user["login"]}\n";
+                                $users->enableUser($user["uid"]);
+                            }
 
-                        echo $exists . "\n";
+                            if ($exists == "NOT EXISTS" && (int)$user["enabled"]) {
+                                echo "need lock: {$user["login"]}\n";
+                                $users->enableUser($user["uid"], false);
+                            }
+                        }
                     }
                 }
 

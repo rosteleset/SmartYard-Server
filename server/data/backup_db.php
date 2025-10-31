@@ -1,6 +1,6 @@
 <?php
 
-    function backup_db($check_backup = true)
+    function backupDB($check_backup = true)
     {
         global $config, $db;
 

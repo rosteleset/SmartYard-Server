@@ -851,7 +851,7 @@
                             type: "password",
                             title: i18n("password"),
                             placeholder: i18n("password"),
-                            hidden: uid.toString() === "0",
+                            hidden: !parseInt(uid),
                             validate: (v, prefix) => {
                                 return ($.trim(v).length === 0) || ($.trim(v).length >= 8 && $(`#${prefix}password`).val() === $(`#${prefix}confirm`).val());
                             },
@@ -872,7 +872,7 @@
                             type: "password",
                             title: i18n("confirm"),
                             placeholder: i18n("confirm"),
-                            hidden: uid.toString() === "0",
+                            hidden: !parseInt(uid),
                             validate: (v, prefix) => {
                                 return ($.trim(v).length === 0) || ($.trim(v).length >= 8 && $(`#${prefix}password`).val() === $(`#${prefix}confirm`).val());
                             },
@@ -924,6 +924,25 @@
                             validate: v => {
                                 return $.trim(v) === "" || $.trim(v).length === 32;
                             },
+                            tab: i18n("users.primary"),
+                        },
+                        {
+                            id: "serviceAccount",
+                            type: "select",
+                            value: response.user.serviceAccount ? "yes" : "no",
+                            title: i18n("users.serviceAccount"),
+                            readonly: parseInt(myself.uid),
+                            hidden: !parseInt(uid),
+                            options: [
+                                {
+                                    value: "yes",
+                                    text: i18n("yes"),
+                                },
+                                {
+                                    value: "no",
+                                    text: i18n("no"),
+                                },
+                            ],
                             tab: i18n("users.primary"),
                         },
                         {
@@ -1261,6 +1280,7 @@
                             modules.users.deleteUser(result.uid);
                         } else {
                             result.enabled = result.disabled === "no";
+                            result.serviceAccount = result.serviceAccount === "yes";
                             modules.users.doModifyUser(result);
                         }
                     },

@@ -1,0 +1,1 @@
+ALTER TABLE core_users ADD IF NOT EXISTS service_account INTEGER DEFAULT 0;

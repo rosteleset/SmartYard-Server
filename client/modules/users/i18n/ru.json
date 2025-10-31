@@ -57,6 +57,7 @@
     "avatarDelete": "Удалить аватар",
     "showPassword": "Показать / скрыть пароль",
     "generatePassword": "Сгенерировать пароль",
+    "serviceAccount": "Служебный аккаунт",
     "wg": "WG",
     "errors": {
         "invalid2FACredentials": "Неверный код авторизации"

@@ -253,7 +253,7 @@
         }
     }
 
-    function check_if_pid_exists() {
+    function checkIfPidExists() {
         global $db;
 
         if (@$db) {
@@ -275,7 +275,16 @@
                     }
                 }
 
-                $db->modify("delete from core_running_processes where done is not null and coalesce(expire, 0) < " . time(), false, [ "silent" ]);
+                $pids = $db->get("select running_process_id, pid from core_running_processes where done is not null and coalesce(expire, 0) < " . time(), false, [
+                    "running_process_id" => "id",
+                    "pid" => "pid",
+                ], [ "silent" ]);
+
+                if ($pids) {
+                    foreach ($pids as $process) {
+                        echo "Process {$pids["running_process_id"]} with pid {$pids["pid"]} running more than 24h\n";
+                    }
+                }
             } catch (\Exception $e) {
                 //
             }
@@ -296,7 +305,7 @@
         }
     }
 
-    function wait_all() {
+    function waitAll() {
         global $db;
 
         echo "waiting other processes to finish";
@@ -451,7 +460,7 @@
 
     startup();
 
-    check_if_pid_exists();
+    checkIfPidExists();
 
     if (count($args) && (strpos($argv[1], "--") === false || strpos($argv[1], "--") > 0)) {
         $backend = $argv[1];

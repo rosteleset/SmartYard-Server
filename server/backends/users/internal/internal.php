@@ -43,7 +43,7 @@
                 }
 
                 try {
-                    $users = $this->db->query("select uid, login, real_name, e_mail, phone, tg, enabled, primary_group, acronym primary_group_acronym, notification, secret from core_users left join core_groups on core_users.primary_group = core_groups.gid order by real_name, login, uid", \PDO::FETCH_ASSOC)->fetchAll();
+                    $users = $this->db->query("select uid, login, real_name, e_mail, phone, tg, enabled, primary_group, acronym primary_group_acronym, notification, secret, service_account from core_users left join core_groups on core_users.primary_group = core_groups.gid order by real_name, login, uid", \PDO::FETCH_ASSOC)->fetchAll();
                     $_users = [];
 
                     foreach ($users as $user) {
@@ -61,6 +61,7 @@
                             "primaryGroup" => $user["primary_group"],
                             "primaryGroupAcronym" => $user["primary_group_acronym"],
                             "twoFA" => $user["secret"] ? 1 : 0,
+                            "serviceAccount" => $user["service_account"],
                         ];
                     }
 
@@ -138,7 +139,7 @@
                 if ($uid >= 0) {
                     // ordinary user
                     try {
-                        $user = $this->db->queryEx("select uid, login, real_name, e_mail, phone, tg, notification, enabled, default_route, primary_group, acronym primary_group_acronym, secret from core_users left join core_groups on core_users.primary_group = core_groups.gid where uid = $uid");
+                        $user = $this->db->queryEx("select uid, login, real_name, e_mail, phone, tg, notification, enabled, default_route, primary_group, acronym primary_group_acronym, secret, service_account from core_users left join core_groups on core_users.primary_group = core_groups.gid where uid = $uid");
 
                         if (count($user)) {
                             $_user = [
@@ -154,6 +155,7 @@
                                 "primaryGroup" => $user[0]["primary_group"],
                                 "primaryGroupAcronym" => $user[0]["primary_group_acronym"],
                                 "twoFA" => $user[0]["secret"] ? 1 : 0,
+                                "serviceAccount" => $user[0]["service_account"],
                             ];
 
                             if ($withGroups) {
@@ -213,7 +215,7 @@
 
                     // force fill memory cache
                     try {
-                        $users = $this->db->queryEx("select uid, login, real_name, e_mail, phone, tg, notification, enabled, default_route, primary_group, acronym primary_group_acronym, secret from core_users left join core_groups on core_users.primary_group = core_groups.gid");
+                        $users = $this->db->queryEx("select uid, login, real_name, e_mail, phone, tg, notification, enabled, default_route, primary_group, acronym primary_group_acronym, secret, service_account from core_users left join core_groups on core_users.primary_group = core_groups.gid");
 
                         if ($withGroups) {
                             $groups = loadBackend("groups");
@@ -233,6 +235,7 @@
                                 "primaryGroup" => $users[$i]["primary_group"],
                                 "primaryGroupAcronym" => $users[$i]["primary_group_acronym"],
                                 "twoFA" => $users[$i]["secret"] ? 1 : 0,
+                                "serviceAccount" => $users[$i]["service_account"],
                             ];
 
                             if (@$groups) {
@@ -383,7 +386,7 @@
              * @inheritDoc
              */
 
-            public function modifyUser($uid, $realName = '', $eMail = '', $phone = '', $tg = '', $notification = 'tgEmail', $enabled = true, $defaultRoute = '', $persistentToken = false, $primaryGroup = -1) {
+            public function modifyUser($uid, $realName = '', $eMail = '', $phone = '', $tg = '', $notification = 'tgEmail', $enabled = true, $defaultRoute = '', $persistentToken = false, $primaryGroup = -1, $serviceAccount = 0) {
                 if (!checkInt($uid)) {
                     return false;
                 }
@@ -399,7 +402,7 @@
                 try {
                     $a = loadBackend("authorization");
 
-                    $sth = $this->db->prepare("update core_users set real_name = :real_name, e_mail = :e_mail, phone = :phone, tg = :tg, notification = :notification, enabled = :enabled, default_route = :default_route, primary_group = :primary_group where uid = $uid");
+                    $sth = $this->db->prepare("update core_users set real_name = :real_name, e_mail = :e_mail, phone = :phone, tg = :tg, notification = :notification, enabled = :enabled, default_route = :default_route, primary_group = :primary_group, service_account = :service_account where uid = $uid");
 
                     if ($persistentToken && strlen(trim($persistentToken)) === 32 && $uid && $enabled) {
                         $this->redis->set("PERSISTENT:" . trim($persistentToken) . ":" . $uid, json_encode([
@@ -430,6 +433,7 @@
                         ":enabled" => $enabled ? "1" : "0",
                         ":default_route" => trim($defaultRoute),
                         ":primary_group" => (int)$primaryGroup,
+                        ":service_account" => (int)$serviceAccount,
                     ]);
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
@@ -437,6 +441,22 @@
                 }
 
                 return true;
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+            public function enableUser($uid, $enabled = true) {
+                if (!checkInt($uid) && $uid) {
+                    return false;
+                }
+
+                $this->clearCache();
+
+                return $this->db->modify("update core_users set enabled = :enabled where uid = " . $uid, [
+                    "enabled" => $enabled ? 1 : 0,
+                ]);
             }
 
             /**

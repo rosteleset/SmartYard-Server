@@ -19,7 +19,7 @@
              */
 
             public function methods($_all = true) {
-                $key = "METHODS:" . ($_all?"1":"0");
+                $key = "METHODS:" . ($_all ? "1" : "0");
 
                 $cache = $this->cacheGet($key);
                 if ($cache) {

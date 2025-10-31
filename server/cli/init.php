@@ -199,9 +199,9 @@
                 }
 
                 maintenance(true);
-                wait_all();
+                waitAll();
 
-                backup_db();
+                backupDB();
                 echo "\n";
 
                 $code = false;

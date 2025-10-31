@@ -133,11 +133,23 @@
              * @param string $defaultRoute
              * @param mixed $persistentToken
              * @param integer $primaryGroup
+             * @param integer $serviceAccount
              *
              * @return boolean
              */
 
-            abstract public function modifyUser($uid, $realName = '', $eMail = '', $phone = '', $tg = '', $notification = 'tgEmail', $enabled = true, $defaultRoute = '', $persistentToken = false, $primaryGroup = -1);
+            abstract public function modifyUser($uid, $realName = '', $eMail = '', $phone = '', $tg = '', $notification = 'tgEmail', $enabled = true, $defaultRoute = '', $persistentToken = false, $primaryGroup = -1, $serviceAccount = 0);
+
+            /**
+             * enable or disable user
+             *
+             * @param integer $uid
+             * @param boolean $enabled
+             *
+             * @return boolean
+             */
+
+            abstract public function enableUser($uid, $enabled = true);
 
             /**
              * modify user data

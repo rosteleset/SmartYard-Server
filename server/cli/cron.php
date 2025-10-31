@@ -36,13 +36,26 @@
             function run($args) {
                 global $config, $redis;
 
+                $keys = $redis->keys("CRON:LOCK:*");
+                foreach ($keys as $key) {
+                    $pid = (int)$redis->get($key);
+                    if (!file_exists("/proc/$pid")) {
+                        echo "lock $key found, but process doesn't exists, cleaning\n";
+                        $redis->del($key);
+                    }
+                }
+
                 $part = $args["--cron"];
+
+                if (!checkStr($part, [ "variants" => [ "minutely", "5min", "hourly", "daily", "monthly", ] ])) {
+                    cliUsage();
+                }
 
                 foreach ($config["backends"] as $backend_name => $cfg) {
                     $backend = loadBackend($backend_name);
                     if ($backend) {
-                        $lock = (int)$redis->get("CRON:LOCK:{$backend_name}:$part");
-                        if (!$lock) {
+                        $pid = (int)$redis->get("CRON:LOCK:{$backend_name}:$part");
+                        if (!$pid) {
                             $redis->set("CRON:LOCK:{$backend_name}:$part", getmypid());
                             try {
                                 if (!$backend->cron($part)) {
@@ -52,13 +65,13 @@
                                 print_r($e);
                                 echo "$backend_name [$part] exception\n\n";
                             }
-                            $redis->set("CRON:LOCK:{$backend_name}:$part", 0);
+                            $redis->del("CRON:LOCK:{$backend_name}:$part");
                         } else {
-                            if (file_exists("/proc/$lock")) {
-                                echo "$backend_name [$part] already running, pid: $lock\n\n";
+                            if (file_exists("/proc/$pid")) {
+                                echo "$backend_name [$part] locked by pid: $pid\n";
                             } else {
-                                echo "$backend_name [$part] already running, but pid: $lock doesn't exists, cleaning\n\n";
-                                $redis->set("CRON:LOCK:{$backend_name}:$part", 0);
+                                echo "$backend_name [$part] locked by pid: $pid, but process doesn't exists, cleaning\n";
+                                $redis->del("CRON:LOCK:{$backend_name}:$part");
                             }
                         }
                     }
