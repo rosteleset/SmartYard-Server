@@ -21,7 +21,7 @@
 
     auth();
 
-    $adapter = loadBackend('issue_adapter');
+    $adapter = loadBackend('issueAdapter');
     if (!$adapter)
         response(417, false, false, i18n("mobile.cantChangeIssue"));
 

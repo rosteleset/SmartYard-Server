@@ -25,7 +25,7 @@
 
     auth();
 
-    $adapter = loadBackend('issue_adapter');
+    $adapter = loadBackend('issueAdapter');
 
     $r = [];
     if ($adapter) {
