@@ -36,6 +36,8 @@
             function run($args) {
                 global $config, $redis;
 
+                $part = $args["--cron"];
+
                 if ($part == "daily") {
                     $keys = $redis->keys("CRON:LOCK:*");
                     foreach ($keys as $key) {
@@ -46,8 +48,6 @@
                         }
                     }
                 }
-
-                $part = $args["--cron"];
 
                 if (!checkStr($part, [ "variants" => [ "minutely", "5min", "hourly", "daily", "monthly", ] ])) {
                     cliUsage();
