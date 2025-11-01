@@ -36,12 +36,14 @@
             function run($args) {
                 global $config, $redis;
 
-                $keys = $redis->keys("CRON:LOCK:*");
-                foreach ($keys as $key) {
-                    $pid = (int)$redis->get($key);
-                    if (!file_exists("/proc/$pid")) {
-                        echo "lock $key found, but process doesn't exists, cleaning\n";
-                        $redis->del($key);
+                if ($part == "daily") {
+                    $keys = $redis->keys("CRON:LOCK:*");
+                    foreach ($keys as $key) {
+                        $pid = (int)$redis->get($key);
+                        if (!file_exists("/proc/$pid")) {
+                            echo "lock $key found, but process doesn't exists, cleaning\n";
+                            $redis->del($key);
+                        }
                     }
                 }
 
