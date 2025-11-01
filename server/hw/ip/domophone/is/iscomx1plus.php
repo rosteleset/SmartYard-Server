@@ -83,4 +83,36 @@ class iscomx1plus extends is implements DisplayTextInterface
             'pass' => $pass,
         ]);
     }
+
+    public function openLock(int $lockNumber = 0): void
+    {
+        if ($lockNumber === 0 || $lockNumber === 1) {
+            $this->apiCall('/relay/' . ($lockNumber + 1) . '/open', 'PUT', [], 3);
+        } else {
+            $this->apiCall('/relay/external/' . ($lockNumber - 2) . '/open', 'PUT', [], 3);
+        }
+    }
+
+    public function addRfids(array $rfids): void
+    {
+        $keys = [];
+        foreach ($rfids as $rfid) {
+            $keys[] = [
+                "uuid" => $rfid,
+                "panelCode" => 0,
+                "encryption" => false,
+                "access" => [
+                    "main" => true,
+                    "second" => true,
+                    "gates" =>  (object)[
+                        "0" => true,
+                        "1" => true,
+                        "2" => true,
+                        "3" => true
+                    ]
+                ]
+            ];
+        }
+        $this->apiCall('/key/store/merge', 'PUT', $keys);
+    }
 }
