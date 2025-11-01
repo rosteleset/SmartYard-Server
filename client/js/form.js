@@ -994,8 +994,8 @@ function cardForm(params) {
                     checked: false,
                 });
                 $("#" + _prefix + params.fields[i].id).html(renderSortable(i));
-                assignSortableHandlers(i);
                 sortable(i);
+                assignSortableHandlers(i);
             }
         });
 
@@ -1003,8 +1003,8 @@ function cardForm(params) {
             let j = parseInt($(e.target).attr("data-field-option-index"));
             params.fields[i].options.splice(j, 1);
             $("#" + _prefix + params.fields[i].id).html(renderSortable(i));
-            assignSortableHandlers(i);
             sortable(i);
+            assignSortableHandlers(i);
         });
     }
 
@@ -1715,8 +1715,8 @@ function cardForm(params) {
         }
 
         if (params.fields[i].type == "sortable") {
-            assignSortableHandlers(i);
             sortable(i);
+            assignSortableHandlers(i);
         }
     }
 
