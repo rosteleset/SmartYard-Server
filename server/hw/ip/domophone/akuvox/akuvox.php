@@ -11,29 +11,37 @@ abstract class akuvox extends domophone
 {
     use \hw\ip\common\akuvox\akuvox;
 
+    /**
+     * @var int Maximum number of RFID keys stored per user.
+     *
+     * It is technically possible to store more (e.g. 5),
+     * but the API will return a string no longer than 63 chars, and the last key may be truncated.
+     */
+    protected const MAX_RFIDS_PER_USER = 4;
+
+    /**
+     * @var int Maximum number of users.
+     */
+    protected const MAX_USERS = 1000;
+
     public function addRfid(string $code, int $apartment = 0): void
     {
-        // TODO
+        // Refactor when adding an interface
     }
 
     public function addRfids(array $rfids): void
     {
-        $keys = [];
+        $currentUsers = $this->getUsers();
+        $neededSlots = ceil(count($rfids) / self::MAX_RFIDS_PER_USER);
 
-        foreach ($rfids as $rfid) {
-            $keys[] = [
-                'CardCode' => ltrim($rfid, '0'),
-                'ScheduleRelay' => '1001-1;',
-            ];
+        // Check if adding these keys would exceed the limit
+        if (count($currentUsers) + $neededSlots > self::MAX_USERS) {
+            $allRfids = array_merge($this->getRfids(), $rfids); // Repack existing keys plus new keys
+            $this->deleteRfid();
+            $this->pushRfids($allRfids);
+        } else {
+            $this->pushRfids($rfids); // Simply push new keys as new users
         }
-
-        $this->apiCall('', 'POST', [
-            'target' => 'user',
-            'action' => 'add',
-            'data' => [
-                'item' => $keys,
-            ],
-        ]);
     }
 
     public function configureApartment(
@@ -141,18 +149,36 @@ abstract class akuvox extends domophone
 
     public function deleteRfid(string $code = ''): void
     {
-        if ($code) {
-            $this->apiCall('', 'POST', [
-                'target' => 'user',
-                'action' => 'del',
-                'data' => [
-                    'item' => [
-                        ['ID' => $this->getRfidId($code)],
-                    ],
-                ],
-            ]);
-        } else {
+        if ($code === '') {
             $this->apiCall('/user/clear');
+            return;
+        }
+
+        $normalizedCode = ltrim($code, '0');
+        $remainingRfids = [];
+
+        foreach ($this->getUsers() as $user) {
+            $codes = explode(';', $user['CardCode']);
+            $index = array_search($normalizedCode, $codes, true);
+
+            if ($index !== false) {
+                unset($codes[$index]);
+                $remainingRfids = array_merge($remainingRfids, $codes);
+
+                $this->apiCall('', 'POST', [
+                    'target' => 'user',
+                    'action' => 'del',
+                    'data' => [
+                        'item' => [['ID' => $user['ID']]],
+                    ],
+                ]);
+
+                break;
+            }
+        }
+
+        if (!empty($remainingRfids)) {
+            $this->pushRfids($remainingRfids);
         }
     }
 
@@ -175,12 +201,15 @@ abstract class akuvox extends domophone
 
     public function getRfids(): array
     {
-        $items = $this->apiCall('/user/get')['data']['item'];
         $rfids = [];
 
-        foreach ($items as $item) {
-            $code = str_pad($item['CardCode'], 14, '0', STR_PAD_LEFT);
-            $rfids[$code] = $code;
+        foreach ($this->getUsers() as $user) {
+            $codes = explode(';', $user['CardCode'] ?? '');
+
+            foreach ($codes as $code) {
+                $code = str_pad($code, 14, '0', STR_PAD_LEFT);
+                $rfids[$code] = $code;
+            }
         }
 
         return $rfids;
@@ -466,28 +495,6 @@ abstract class akuvox extends domophone
         return [];
     }
 
-    /**
-     * Get RFID key ID by card code.
-     *
-     * @param string $code RFID code.
-     *
-     * @return string RFID key ID.
-     */
-    protected function getRfidId(string $code): string
-    {
-        $items = $this->apiCall('/user/get')['data']['item'];
-
-        foreach ($items as $item) {
-            $codes = explode(';', $item['CardCode']);
-            $fullCode = $codes[1] ?? $codes[0];
-            if (str_contains($code, $fullCode)) {
-                return $item['ID'];
-            }
-        }
-
-        return '';
-    }
-
     protected function getSipConfig(): array
     {
         [
@@ -515,5 +522,40 @@ abstract class akuvox extends domophone
             'stunServer' => $stunServer,
             'stunPort' => $stunPort,
         ];
+    }
+
+    protected function getUsers(): array
+    {
+        return $this->apiCall('/user/get')['data']['item'];
+    }
+
+    /**
+     * Pushes an array of RFID codes to the device, distributing them into users
+     * with a maximum of {@see MAX_RFIDS_PER_USER} codes per user.
+     *
+     * @param string[] $rfids Array of RFID codes to be added to the device. Each code should be a non-empty string.
+     * @return void
+     */
+    protected function pushRfids(array $rfids): void
+    {
+        $items = [];
+        $rfidChunks = array_chunk($rfids, self::MAX_RFIDS_PER_USER);
+
+        foreach ($rfidChunks as $chunk) {
+            $normalizedChunk = array_map(static fn($code): string => ltrim($code, '0'), $chunk);
+
+            $items[] = [
+                'CardCode' => implode(';', $normalizedChunk),
+                'ScheduleRelay' => '1001-1;',
+            ];
+        }
+
+        $this->apiCall('', 'POST', [
+            'target' => 'user',
+            'action' => 'add',
+            'data' => [
+                'item' => $items,
+            ],
+        ]);
     }
 }
