@@ -281,11 +281,7 @@
 
                 if ($pids) {
                     foreach ($pids as $process) {
-                        if (file_exists("/proc/{$process["pid"]}")) {
-                            echo "Process {$process["id"]} with pid {$process["pid"]} running more than 24h\n";
-                        } else {
-                            echo "Process {$process["id"]} with pid {$process["pid"]} doesn't exists\n";
-                        }
+                        echo "Process {$process["id"]} with pid {$process["pid"]} running more than 24h\n";
                     }
                 }
             } catch (\Exception $e) {
