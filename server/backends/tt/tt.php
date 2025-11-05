@@ -66,6 +66,7 @@
              * load workflow
              *
              * @param $workflow
+             *
              * @return false|object
              */
 
@@ -318,6 +319,7 @@
 
             /**
              * @param $workflow
+             *
              * @return string
              */
 
@@ -358,6 +360,7 @@
             /**
              * @param $workflow
              * @param $body
+             *
              * @return boolean
              */
 
@@ -391,6 +394,7 @@
 
             /**
              * @param $workflow
+             *
              * @return boolean
              */
 
@@ -450,8 +454,7 @@
              * @return string
              */
 
-            public function getWorkflowLibsCode()
-            {
+            public function getWorkflowLibsCode() {
                 $files = loadBackend("files");
 
                 if (!$files) {
@@ -473,6 +476,7 @@
 
             /**
              * @param $lib
+             *
              * @return string
              */
 
@@ -504,6 +508,7 @@
             /**
              * @param $lib
              * @param $body
+             *
              * @return boolean
              */
 
@@ -535,11 +540,11 @@
 
             /**
              * @param $workflow
+             *
              * @return boolean
              */
 
-            public function deleteWorkflowLib($lib)
-            {
+            public function deleteWorkflowLib($lib) {
                 $files = loadBackend("files");
 
                 if (!$files) {
@@ -570,6 +575,7 @@
             /**
              * @param $acronym
              * @param $project
+             *
              * @return false|integer
              */
 
@@ -584,6 +590,7 @@
              * @param $searchDescription
              * @param $searchComments
              * @param $assigned
+             *
              * @return boolean
              */
 
@@ -593,6 +600,7 @@
              * delete project and all it derivatives
              *
              * @param $projectId
+             *
              * @return boolean
              */
 
@@ -601,6 +609,7 @@
             /**
              * @param $projectId
              * @param $workflows
+             *
              * @return boolean
              */
 
@@ -610,6 +619,7 @@
              * @param $projectId
              * @param $filter
              * @param $personal
+             *
              * @return boolean
              */
 
@@ -617,6 +627,7 @@
 
             /**
              * @param $projectFilterId
+             *
              * @return boolean
              */
 
@@ -630,6 +641,7 @@
 
             /**
              * @param $status
+             *
              * @return false|integer
              */
 
@@ -638,6 +650,7 @@
             /**
              * @param $statusId
              * @param $status
+             *
              * @return boolean
              */
 
@@ -645,6 +658,7 @@
 
             /**
               * @param $statusId
+
               * @return boolean
               */
 
@@ -658,6 +672,7 @@
 
             /**
              * @param $resolution
+             *
              * @return false|integer
              */
 
@@ -666,12 +681,14 @@
             /**
              * @param $resolutionId
              * @param $resolution
+             *
              * @return boolean
              */
             abstract public function modifyResolution($resolutionId, $resolution);
 
             /**
              * @param $resolutionId
+             *
              * @return boolean
              */
 
@@ -680,6 +697,7 @@
             /**
              * @param $projectId
              * @param $resolutions
+             *
              * @return boolean
              */
 
@@ -706,6 +724,7 @@
             /**
              * @param $projectId
              * @param $customFields
+             *
              * @return boolean
              */
 
@@ -714,6 +733,7 @@
             /**
              * @param $projectId
              * @param $customFields
+             *
              * @return boolean
              */
 
@@ -723,6 +743,7 @@
              * @param $projectId
              * @param $uid
              * @param $roleId
+             *
              * @return false|integer
              */
 
@@ -732,6 +753,7 @@
              * @param $projectId
              * @param $gid
              * @param $roleId
+             *
              * @return false|integer
              */
 
@@ -745,6 +767,7 @@
 
             /**
              * @param $projectRoleId
+             *
              * @return boolean
              */
 
@@ -753,6 +776,7 @@
             /**
              * @param $roleId
              * @param $nameDisplay
+             *
              * @return boolean
              */
 
@@ -782,6 +806,7 @@
 
             /**
              * @param $customFieldId
+             *
              * @return boolean
              */
 
@@ -789,6 +814,7 @@
 
             /**
              * @param $projectId
+             *
              * @return false|array
              */
 
@@ -866,6 +892,7 @@
             /**
              * @param $filter
              * @param $owner
+             *
              * @return false|string
              */
 
@@ -906,6 +933,7 @@
              * @param $filter
              * @param $body
              * @param $owner
+             *
              * @return boolean
              */
 
@@ -958,11 +986,11 @@
             /**
              * @param $filter
              * @param $owner
+             *
              * @return boolean
              */
 
-            public function deleteFilter($filter, $owner = false)
-            {
+            public function deleteFilter($filter, $owner = false) {
                 $files = loadBackend("files");
 
                 if (!$files) {
@@ -997,6 +1025,7 @@
              * @param $field
              * @param $name
              * @param $code
+             *
              * @return mixed
              */
 
@@ -1034,6 +1063,7 @@
             /**
              * @param $field
              * @param $name
+             *
              * @return mixed
              */
 
@@ -1096,6 +1126,7 @@
 
             /**
              * @param $projectId
+             *
              * @return mixed
              */
 
@@ -1104,6 +1135,7 @@
             /**
              * @param $projectId
              * @param $viewers
+             *
              * @return mixed
              */
 
@@ -1112,6 +1144,7 @@
             /**
              * @param $projectId
              * @param $comments
+             *
              * @return mixed
              */
 
@@ -1129,6 +1162,7 @@
              * @param $filter
              * @param $uid
              * @param $action
+             *
              * @return mixed
              */
 
@@ -1136,6 +1170,7 @@
 
             /**
              * @param $crontabId
+             *
              * @return mixed
              */
 
@@ -1143,6 +1178,7 @@
 
             /**
              * @param $a
+             *
              * @return boolean
              */
 
@@ -1155,6 +1191,7 @@
 
             /**
              * @param $a
+             *
              * @return boolean
              */
 
@@ -1164,6 +1201,7 @@
 
             /**
              * @param $a
+             *
              * @return mixed
              */
 
@@ -1188,6 +1226,7 @@
 
             /**
              * @param $issue
+             *
              * @return mixed
              */
 
@@ -1301,6 +1340,7 @@
 
             /**
              * @param $issueId
+             *
              * @return void
              */
 
@@ -1360,6 +1400,7 @@
 
             /**
              * @param $issue
+             *
              * @return mixed
              */
 
@@ -1368,6 +1409,7 @@
             /**
              * @param $issue
              * @param $workflowAction
+             *
              * @return mixed
              */
 
@@ -1375,6 +1417,7 @@
 
             /**
              * @param $issueId
+             *
              * @return mixed
              */
 
@@ -1389,6 +1432,7 @@
              * @param int $limit
              * @param array $preprocess
              * @param array $types
+             *
              * @return mixed
              */
 
@@ -1400,6 +1444,7 @@
              * @param $private
              * @param $type
              * @param $silent
+             *
              * @return mixed
              */
 
@@ -1410,6 +1455,7 @@
              * @param $commentIndex
              * @param $comment
              * @param $private
+             *
              * @return mixed
              */
 
@@ -1418,6 +1464,7 @@
             /**
              * @param $issueId
              * @param $commentIndex
+             *
              * @return mixed
              */
 
@@ -1426,6 +1473,7 @@
             /**
              * @param $issueId
              * @param $attachments
+             *
              * @return mixed
              */
 
@@ -1434,6 +1482,7 @@
             /**
              * @param $issueId
              * @param $filename
+             *
              * @return mixed
              */
 
@@ -1443,6 +1492,7 @@
              * @param $issueId
              * @param $field
              * @param $value
+             *
              * @return mixed
              */
 
@@ -1452,6 +1502,7 @@
              * @param $issueId
              * @param $field
              * @param $value
+             *
              * @return mixed
              */
 
@@ -1459,6 +1510,7 @@
 
             /**
              * @param $uid
+             *
              * @return mixed
              */
 
@@ -1466,6 +1518,7 @@
 
             /**
              * @param $returnGids
+             *
              * @return mixed
              */
 
@@ -1473,6 +1526,7 @@
 
             /**
              * @param $returnGid
+             *
              * @return mixed
              */
 
@@ -1491,6 +1545,7 @@
              * @param object $new
              * @param mixed $workflowAction
              * @param boolean $silent
+             *
              * @return void
              */
 
@@ -1512,6 +1567,7 @@
 
             /**
              * @param string $issueId
+             *
              * @return mixed
              */
 
@@ -1525,6 +1581,7 @@
 
             /**
              * @param $issue
+             *
              * @return mixed
              */
 
@@ -1555,6 +1612,7 @@
 
             /**
              * @param $issue
+             *
              * @return mixed
              */
 
@@ -1590,50 +1648,48 @@
 
             /**
              * @param $query
-             * @param $params
+             * @param $preprocess
              * @param $types
+             *
              * @return mixed
              */
 
-            public function preprocessFilter($query, $params, $types) {
-                if (!is_array($query)) {
-                    error_log(print_r($query, true));
-                } else {
-                    if ($query) {
-                        array_walk_recursive($query, function (&$item, $key, $params) use ($types) {
-                            if (array_key_exists($item, $params)) {
-                                if (@$types[$item]) {
-                                    $cast = $types[$item];
-                                } else {
-                                    $cast = false;
+            public function preprocessFilter($query, $preprocess, $types) {
+                if ($query && is_array($query)) {
+                    array_walk_recursive($query, function (&$item, $key, $preprocess) use ($types) {
+                        if (array_key_exists(gettype($item), [ "string", "integer", "double", "boolean", "resource", "NULL" ]) >= 0 && array_key_exists($item, $preprocess)) {
+                            if (@$types[$item]) {
+                                $cast = $types[$item];
+                            } else {
+                                $cast = false;
+                            }
+                            if (is_callable($preprocess[$item])) {
+                                $item = $preprocess[$item]($item);
+                            } else {
+                                $item = $preprocess[$item];
+                            }
+                            if ($cast) {
+                                if ($cast == "date") {
+                                    $item = date("Y-m-d", (int)$item);
+                                } else
+                                if ($cast == "json") {
+                                    $item = json_decode($item);
                                 }
-                                if (is_callable($params[$item])) {
-                                    $item = $params[$item]();
-                                } else {
-                                    $item = $params[$item];
-                                }
-                                if ($cast) {
-                                    if ($cast == "date") {
-                                        $item = date("Y-m-d", (int)$item);
-                                    } else
-                                    if ($cast == "json") {
-                                        $item = json_decode($item);
-                                    }
-                                    else {
-                                        settype($item, $cast);
-                                    }
+                                else {
+                                    settype($item, $cast);
                                 }
                             }
-                        }, $params);
-                    }
-
-                    return $query;
+                        }
+                    }, $preprocess);
                 }
+
+                return $query;
             }
 
             /**
              * @param $issue1
              * @param $issue2
+             *
              * @return mixed
              */
 
@@ -1727,6 +1783,7 @@
             /**
              * @param $issue1
              * @param $issue2
+             *
              * @return mixed
              */
 
@@ -1809,6 +1866,7 @@
              * @param $formName
              * @param $extension
              * @param $description
+             *
              * @return mixed
              */
 
@@ -1824,6 +1882,7 @@
 
             /**
              * @param $id
+             *
              * @return mixed
              */
 
@@ -1851,6 +1910,7 @@
             /**
              * @param $id
              * @param $file
+             *
              * @return mixed
              */
 
@@ -1880,6 +1940,7 @@
 
             /**
              * @param $id
+             *
              * @return mixed
              */
 
@@ -1907,6 +1968,7 @@
             /**
              * @param $id
              * @param $file
+             *
              * @return mixed
              */
 
@@ -1936,11 +1998,11 @@
 
             /**
              * @param $id
+             *
              * @return mixed
              */
 
-            public function printGetTemplate($id)
-            {
+            public function printGetTemplate($id) {
                 $print = $this->getPrint($id);
 
                 if ($print) {
@@ -1968,11 +2030,11 @@
             /**
              * @param $id
              * @param $file
+             *
              * @return mixed
              */
 
-            public function printSetTemplate($id, $fileName, $fileBody)
-            {
+            public function printSetTemplate($id, $fileName, $fileBody) {
                 if (!checkInt($id)) {
                     return false;
                 }
@@ -2000,11 +2062,11 @@
 
             /**
              * @param $id
+             *
              * @return mixed
              */
 
-            public function printDeleteTemplate($id)
-            {
+            public function printDeleteTemplate($id) {
                 if (!checkInt($id)) {
                     return false;
                 }
@@ -2032,11 +2094,11 @@
              * @param $formName
              * @param $extension
              * @param $description
+             *
              * @return mixed
              */
 
-            public function modifyPrint($id, $formName, $extension, $descripton)
-            {
+            public function modifyPrint($id, $formName, $extension, $descripton) {
                 if (!checkInt($id)) {
                     return false;
                 }
@@ -2052,11 +2114,11 @@
 
             /**
              * @param $id
+             *
              * @return mixed
              */
 
-            public function getPrint($id)
-            {
+            public function getPrint($id) {
                 if (!checkInt($id)) {
                     return false;
                 }
@@ -2076,8 +2138,7 @@
              * @return mixed
              */
 
-            public function getPrints()
-            {
+            public function getPrints() {
                 $cache = $this->cacheGet("PRINTS");
                 if ($cache) {
                     return $cache;
@@ -2114,11 +2175,11 @@
 
             /**
              * @param $id
+             *
              * @return mixed
              */
 
-            public function deletePrint($id)
-            {
+            public function deletePrint($id) {
                 if (!checkInt($id)) {
                     return false;
                 }
@@ -2152,6 +2213,7 @@
             /**
              * @param $id
              * @param $data
+             *
              * @return mixed
              */
 
@@ -2224,6 +2286,7 @@
              * @param $project
              * @param $field
              * @param $query
+             *
              * @return mixed
              */
 
@@ -2235,6 +2298,7 @@
              * @param object $old
              * @param object $new
              * @param string $workflowAction
+             *
              * @return boolean
              */
 
@@ -2243,6 +2307,7 @@
             /**
              * @param string $issueId
              * @param mixed $limit
+             *
              * @return mixed
              */
 
@@ -2251,6 +2316,7 @@
             /**
              * @param string $login
              * @param integer $limit
+             *
              * @return mixed
              */
 

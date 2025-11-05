@@ -353,19 +353,28 @@
                 if ($users && $groups) {
                     $gl = $groups->getGroups();
 
-                    $users->getUser(-1);
-
                     foreach ($gl as $g) {
-                        $gu = [];
-                        $uids = $groups->getUsers($g["gid"]);
-                        if ($uids) {
-                            foreach ($uids as $uid) {
-                                if ($uid) {
-                                    $gu[] = $users->getUser((int)$uid)["login"];
+                        $preprocess["%%group::{$g['acronym']}"] = function ($pp) {
+                            $acr = explode("::", $pp)[1];
+
+                            $groups = loadBackend("groups");
+                            $users = loadBackend("users");
+                            $users->getUser(-1);
+
+                            $gu = [];
+
+                            $uids = $groups->getUsers($groups->getGroupByAcronym($acr));
+
+                            if ($uids) {
+                                foreach ($uids as $uid) {
+                                    if ($uid) {
+                                        $gu[] = $users->getUser((int)$uid)["login"];
+                                    }
                                 }
                             }
-                        }
-                        $preprocess["%%group::{$g['acronym']}"] = array_values($gu);
+
+                            return array_values($gu);
+                        };
                     }
                 }
 
@@ -376,7 +385,8 @@
                 $preprocess = $this->standartPreprocessValues($preprocess);
                 $types = $this->standartPreprocessTypes($types);
 
-                $preprocess["%%last"] = function () {
+                $preprocess["%%last"] = function ($pp) {
+                    error_log($pp);
                     $last = $this->journalLast($this->login);
                     $issues = [];
                     foreach ($last as $issue) {
