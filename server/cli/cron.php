@@ -43,7 +43,6 @@
                     foreach ($keys as $key) {
                         $pid = (int)$redis->get($key);
                         if (!file_exists("/proc/$pid")) {
-                            echo "lock $key found, but process doesn't exists, cleaning\n";
                             $redis->del($key);
                         }
                     }
@@ -72,7 +71,6 @@
                             if (file_exists("/proc/$pid")) {
                                 echo "$backend_name [$part] locked by pid: $pid\n";
                             } else {
-                                echo "$backend_name [$part] locked by pid: $pid, but process doesn't exists, cleaning\n";
                                 $redis->del("CRON:LOCK:{$backend_name}:$part");
                             }
                         }
