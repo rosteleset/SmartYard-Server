@@ -93,7 +93,6 @@ trait akuvox
 
         $ch = curl_init($req);
 
-        // TODO: check with E12
         curl_setopt_array($ch, [
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_SSL_VERIFYPEER => false,
