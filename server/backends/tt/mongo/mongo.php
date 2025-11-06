@@ -1254,7 +1254,7 @@
                                 }
                             }
                             if ($found) {
-                                error_log("try something like this: ./mongofiles -d rbt delete_id '{\"\$oid\":\"68f260ffcb9bb20613039b42\"}'");
+                                error_log("\ntry something like this: ./mongofiles -d rbt delete_id '{\"\$oid\":\"68f260ffcb9bb20613039b42\"}'");
                             }
                         }
                     }
