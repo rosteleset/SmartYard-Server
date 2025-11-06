@@ -1243,18 +1243,18 @@
 
                         if ($files) {
                             $list = $files->searchFiles([ "metadata.issue" => true ]);
+                            $found = false;
                             foreach ($list as $file) {
                                 $db = $this->dbName;
                                 $project = $file["metadata"]["project"];
-                                $found = false;
                                 $count = $this->mongo->$db->$project->countDocuments([ "issueId" => $file["metadata"]["issueId"] ]);
                                 if (!$count) {
                                     error_log("missing: " . $file["metadata"]["issueId"] . " but file exists: " . $file["id"]);
                                     $found = true;
                                 }
-                                if ($found) {
-                                    error_log("try something like this: ./mongofiles -d rbt delete_id '{\"$oid\":\"68f260ffcb9bb20613039b42\"}'");
-                                }
+                            }
+                            if ($found) {
+                                error_log("try something like this: ./mongofiles -d rbt delete_id '{\"\$oid\":\"68f260ffcb9bb20613039b42\"}'");
                             }
                         }
                     }
