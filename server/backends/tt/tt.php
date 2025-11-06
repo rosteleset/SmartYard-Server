@@ -2381,9 +2381,10 @@
                         $filter = @json_decode($this->getFilter($task["filter"]), true);
                         if ($filter) {
                             $skip = 0;
+                            $step = 50;
                             do {
-                                $issues = $this->getIssues($task["acronym"], @$filter["filter"], @$filter["fields"], [ "created" => 1 ], $skip, 5);
-                                $skip += 5;
+                                $issues = $this->getIssues($task["acronym"], @$filter["filter"], @$filter["fields"], [ "created" => 1 ], $skip, $step);
+                                $skip += $step;
                                 for ($i = 0; $i < count($issues["issues"]); $i++) {
                                     $issue = $this->getIssue($issues["issues"][$i]["issueId"]);
 

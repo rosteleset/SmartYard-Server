@@ -515,8 +515,8 @@
             /**
              * @inheritDoc
              */
-            public function cleanup()
-            {
+
+            public function cleanup() {
                 return $this->dbCleanup();
             }
 
@@ -654,8 +654,8 @@
             /**
              * @inheritDoc
              */
-            public function addComment($issueId, $comment, $private, $type = false, $silent = false)
-            {
+
+            public function addComment($issueId, $comment, $private, $type = false, $silent = false) {
                 $db = $this->dbName;
                 $acr = explode("-", $issueId)[0];
 
@@ -724,8 +724,8 @@
             /**
              * @inheritDoc
              */
-            public function modifyComment($issueId, $commentIndex, $comment, $private)
-            {
+
+            public function modifyComment($issueId, $commentIndex, $comment, $private) {
                 $db = $this->dbName;
                 $acr = explode("-", $issueId)[0];
 
@@ -791,8 +791,8 @@
             /**
              * @inheritDoc
              */
-            public function deleteComment($issueId, $commentIndex)
-            {
+
+            public function deleteComment($issueId, $commentIndex) {
                 $db = $this->dbName;
                 $acr = explode("-", $issueId)[0];
 
@@ -934,8 +934,8 @@
             /**
              * @inheritDoc
              */
-            public function deleteAttachment($issueId, $filename)
-            {
+
+            public function deleteAttachment($issueId, $filename) {
                 $db = $this->dbName;
 
                 $project = explode("-", $issueId)[0];
@@ -1235,6 +1235,31 @@
                 $success = true;
                 if ($part == "5min") {
                     $success = $this->reCreateIndexes();
+                }
+
+                try {
+                    if ($part == "monthly") {
+                        $files = loadBackend("files");
+
+                        if ($files) {
+                            $list = $files->searchFiles([ "metadata.issue" => true ]);
+                            foreach ($list as $file) {
+                                $db = $this->dbName;
+                                $project = $file["metadata"]["project"];
+                                $found = false;
+                                $count = $this->mongo->$db->$project->countDocuments([ "issueId" => $file["metadata"]["issueId"] ]);
+                                if (!$count) {
+                                    error_log("missing: " . $file["metadata"]["issueId"] . " but file exists: " . $file["id"]);
+                                    $found = true;
+                                }
+                                if ($found) {
+                                    error_log("try something like this: ./mongofiles -d rbt delete_id '{\"$oid\":\"68f260ffcb9bb20613039b42\"}'");
+                                }
+                            }
+                        }
+                    }
+                } catch (\Exception $e) {
+                    $success = false;
                 }
 
                 return $success && parent::cron($part);
