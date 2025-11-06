@@ -2385,15 +2385,8 @@
                             do {
                                 $issues = $this->getIssues($task["acronym"], @$filter["filter"], @$filter["fields"], [ "created" => 1 ], $skip, $step);
                                 $skip += $step;
-                                for ($i = 0; $i < count($issues["issues"]); $i++) {
-                                    $issue = $this->getIssue($issues["issues"][$i]["issueId"]);
-
-                                    if ($issue) {
-                                        $set = [
-                                            "issueId" => $issue["issueId"],
-                                        ];
-                                        $this->loadWorkflow($issue["workflow"])->action($set, $task["action"], $issue);
-                                    }
+                                foreach ($issues["issues"] as $issue) {
+                                    $this->loadWorkflow($issue["workflow"])->action([ "issueId" => $issue["issueId"] ], $task["action"], $issue);
                                 }
                             } while (count($issues["issues"]));
                         }

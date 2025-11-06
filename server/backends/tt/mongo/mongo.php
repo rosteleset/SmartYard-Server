@@ -452,13 +452,13 @@
                 $count = 0;
 
                 if ($byPipeline) {
-                    $_query = json_decode(json_encode($query), true);
+                    $_query = object_to_array($query);
                     $_query[] = [ '$project' => $projection ];
                     $_query[] = [ '$skip' => (int)$skip ];
                     $_query[] = [ '$limit' => (int)$limit ];
                     $issues = $this->mongo->$db->$collection->aggregate($_query);
 
-                    $_query = json_decode(json_encode($query), true);
+                    $_query = object_to_array($query);
                     $_query[] = [ '$group' => [ '_id' => null, 'countDocuments' => [ '$sum' => 1 ] ] ];
                     $_query[] = [ '$project' => [ '_id' => 0 ] ];
                     $cursor = $this->mongo->$db->$collection->aggregate($_query);
@@ -466,7 +466,7 @@
                         $count = $document["countDocuments"];
                     }
                 } else {
-                    $_query = json_decode(json_encode($query), true);
+                    $_query = object_to_array($query);
                     $issues = $this->mongo->$db->$collection->find($query, $options);
                     $count = $this->mongo->$db->$collection->countDocuments($query);
                 }
@@ -476,8 +476,8 @@
                 $files = loadBackend("files");
 
                 foreach ($issues as $issue) {
-                    $x = json_decode(json_encode($issue), true);
-                    $x["id"] = $x["_id"]["\$oid"];
+                    $x = object_to_array($issue);
+                    $x["id"] = $x["_id"]["oid"];
                     unset($x["_id"]);
                     if ($files && (!$fields || !count($fields) || in_array("attachments", $fields))) {
                         $x["attachments"] = $files->searchFiles([
@@ -489,7 +489,7 @@
                 }
 
                 if ($byPipeline) {
-                    $_query = json_decode(json_encode($query), true);
+                    $_query = object_to_array($query);
                     $_query[] = [ '$project' => $projection_all ];
                     $issues = $this->mongo->$db->$collection->aggregate($_query);
                 } else {
@@ -1460,11 +1460,11 @@
                     $query = false;
 
                     if (isset($filter["pipeline"])) {
-                        $query = json_decode(json_encode($this->getIssuesQuery($project, @$filter["pipeline"], [ "issueId" ], [], 0, 1, [], [], true)));
+                        $query = object_to_array($this->getIssuesQuery($project, @$filter["pipeline"], [ "issueId" ], [], 0, 1, [], [], true));
                     }
 
                     if (isset($filter["filter"])) {
-                        $query = json_decode(json_encode($this->getIssuesQuery($project, @$filter["filter"], [ "issueId" ], [], 0, 1), true));
+                        $query = object_to_array($this->getIssuesQuery($project, @$filter["filter"], [ "issueId" ], [], 0, 1));
                     }
 
                     if ($query) {

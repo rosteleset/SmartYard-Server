@@ -58,7 +58,7 @@
                     $first_key = "";
                     $first_key_time = time();
 
-                    if (count($keys) > ($this->config["backends"]["authentication"]["max_allowed_tokens"] ?: 15)) {
+                    if (count($keys) > (@$this->config["backends"]["authentication"]["max_allowed_tokens"] ?: 15)) {
                         foreach ($keys as $key) {
                             try {
                                 $auth = json_decode($this->redis->get($key), true);

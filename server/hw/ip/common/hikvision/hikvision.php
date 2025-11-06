@@ -135,6 +135,8 @@ trait hikvision
         }
 
         if (curl_getinfo($ch, CURLINFO_CONTENT_TYPE) == 'application/xml') {
+            // TODO: try this
+            // return object_to_array(simplexml_load_string($res));
             return json_decode(json_encode(simplexml_load_string($res)), true);
         }
 

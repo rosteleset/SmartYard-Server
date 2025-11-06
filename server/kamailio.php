@@ -15,6 +15,7 @@
     require_once "utils/i18n.php";
     require_once "utils/apache_request_headers.php";
     require_once "utils/mb_levenshtein.php";
+    require_once "utils/object_to_array.php";
 
     use kamailio\kamailio;
 

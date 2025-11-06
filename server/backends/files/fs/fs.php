@@ -51,8 +51,8 @@
             /**
              * @inheritDoc
              */
-            public function getFile($uuid)
-            {
+
+            public function getFile($uuid) {
                 $db = $this->dbName;
 
                 $bucket = $this->mongo->$db->selectGridFSBucket();
@@ -70,24 +70,24 @@
             /**
              * @inheritDoc
              */
-            public function getFileStream($uuid)
-            {
+
+            public function getFileStream($uuid) {
                 return $this->getFile($uuid)["stream"];
             }
 
             /**
              * @inheritDoc
              */
-            public function getFileInfo($uuid)
-            {
+
+            public function getFileInfo($uuid) {
                 return $this->getFile($uuid)["fileInfo"];
             }
 
             /**
              * @inheritDoc
              */
-            public function setFileMetadata($uuid, $metadata)
-            {
+
+            public function setFileMetadata($uuid, $metadata) {
                 $collection = "fs.files";
                 $db = $this->dbName;
 
@@ -97,16 +97,16 @@
             /**
              * @inheritDoc
              */
-            public function getFileMetadata($uuid)
-            {
+
+            public function getFileMetadata($uuid) {
                 return $this->getFileInfo($uuid)->metadata;
             }
 
             /**
              * @inheritDoc
              */
-            public function searchFiles($query)
-            {
+
+            public function searchFiles($query) {
                 $collection = "fs.files";
                 $db = $this->dbName;
 
@@ -118,8 +118,8 @@
 
                 $files = [];
                 foreach ($cursor as $document) {
-                    $document = json_decode(json_encode($document), true);
-                    $document["id"] = (string)$document["_id"]["\$oid"];
+                    $document = object_to_array($document);
+                    $document["id"] = (string)$document["_id"]["oid"];
                     unset($document["_id"]);
                     $files[] = $document;
                 }
@@ -130,8 +130,8 @@
             /**
              * @inheritDoc
              */
-            public function deleteFile($uuid)
-            {
+
+            public function deleteFile($uuid) {
                 $db = $this->dbName;
 
                 $bucket = $this->mongo->$db->selectGridFSBucket();
@@ -151,8 +151,8 @@
             /**
              * @inheritDoc
              */
-            public function deleteFiles($query)
-            {
+
+            public function deleteFiles($query) {
                 $files = $this->searchFiles($query);
 
                 foreach ($files as $f) {
@@ -167,8 +167,8 @@
             /**
              * @inheritDoc
              */
-            public function cron($part)
-            {
+
+            public function cron($part) {
                 $collection = "fs.files";
                 $db = $this->dbName;
 

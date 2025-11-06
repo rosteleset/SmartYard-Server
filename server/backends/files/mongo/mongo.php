@@ -118,8 +118,8 @@
 
                 $files = [];
                 foreach ($cursor as $document) {
-                    $document = json_decode(json_encode($document), true);
-                    $document["id"] = (string)$document["_id"]["\$oid"];
+                    $document = object_to_array($document);
+                    $document["id"] = (string)$document["_id"]["oid"];
                     unset($document["_id"]);
                     $files[] = $document;
                 }

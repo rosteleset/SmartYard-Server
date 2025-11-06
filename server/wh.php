@@ -20,7 +20,7 @@
     require_once "utils/apache_request_headers.php";
     require_once "utils/mb_levenshtein.php";
     require_once "utils/array_is_list.php";
-
+    require_once "utils/object_to_array.php";
     require_once "utils/checkint.php";
     require_once "utils/guidv4.php";
 

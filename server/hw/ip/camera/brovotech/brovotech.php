@@ -44,6 +44,8 @@ class brovotech extends camera
         }
 
         if (curl_getinfo($ch, CURLINFO_CONTENT_TYPE) == 'application/xml' || curl_getinfo($ch, CURLINFO_CONTENT_TYPE) == 'text/xml') {
+            // TODO: try this
+            // return object_to_array(simplexml_load_string($res));
             return json_decode(json_encode(simplexml_load_string($res)), true);
         }
 
