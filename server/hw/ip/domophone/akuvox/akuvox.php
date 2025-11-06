@@ -236,11 +236,8 @@ abstract class akuvox extends domophone
     public function prepare(): void
     {
         parent::prepare();
-        $this->configureAudio();
         $this->configureBle(false);
         $this->configureHangUpAfterOpen(false);
-        $this->configureInputsBinding();
-        $this->configureLed(false);
         $this->setInternalReader();
         $this->setExternalReader();
         $this->configureRps(false);
@@ -329,14 +326,23 @@ abstract class akuvox extends domophone
     }
 
     /**
-     * Configure general audio settings.
+     * Sets the binding of discrete inputs to relays.
      *
+     * @param int $inputA (Optional) Relay number controlled by Input A. Relay A (1) by default.
+     * @param int $inputB (Optional) Relay number controlled by Input B. Relay B (2) by default.
      * @return void
      */
-    protected function configureAudio(): void
+    protected function bindInputsToRelays(int $inputA = 1, int $inputB = 2): void
     {
-        $this->setConfigParams([
-            'Config.Settings.HANDFREE.VolumeLevel' => '2', // Increase volume level
+        $this->apiCall('', 'POST', [
+            'target' => 'input',
+            'action' => 'set',
+            'data' => [
+                'Config.DoorSetting.INPUT.InputEnable' => '1',
+                'Config.DoorSetting.INPUT.InputBEnable' => '1',
+                'Config.DoorSetting.INPUT.InputRelay' => (string)$inputA,
+                'Config.DoorSetting.INPUT.InputBRelay' => (string)$inputB,
+            ],
         ]);
     }
 
@@ -372,43 +378,6 @@ abstract class akuvox extends domophone
         $this->setConfigParams([
             'Config.Settings.CALLTIMEOUT.OpenRelayType' => $enabled ? '2' : '1',
             'Config.Settings.CALLTIMEOUT.OpenRelay' => "$timeout",
-        ]);
-    }
-
-    /**
-     * Configure the binding of discrete inputs to the relay.
-     *
-     * @return void
-     */
-    protected function configureInputsBinding(): void
-    {
-        $this->apiCall('', 'POST', [
-            'target' => 'input',
-            'action' => 'set',
-            'data' => [
-                'Config.DoorSetting.INPUT.InputEnable' => '1',
-                'Config.DoorSetting.INPUT.InputBEnable' => '1',
-                'Config.DoorSetting.INPUT.InputRelay' => '1',
-                'Config.DoorSetting.INPUT.InputBRelay' => '1',
-            ],
-        ]);
-    }
-
-    /**
-     * Configure LED fill light.
-     *
-     * @param bool $enabled (Optional) True if enabled, false otherwise. Default is true.
-     * @param int $minThreshold (Optional) Minimum illumination threshold. Default is 1500.
-     * @param int $maxThreshold (Optional) Maximum illumination threshold. Default is 1600.
-     *
-     * @return void
-     */
-    protected function configureLed(bool $enabled = true, int $minThreshold = 1500, int $maxThreshold = 1600): void
-    {
-        $this->setConfigParams([
-            'Config.DoorSetting.GENERAL.LedType' => $enabled ? '0' : '2',
-            'Config.DoorSetting.GENERAL.MinPhotoresistors' => "$minThreshold",
-            'Config.DoorSetting.GENERAL.MaxPhotoresistors' => "$maxThreshold",
         ]);
     }
 

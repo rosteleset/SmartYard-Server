@@ -7,4 +7,9 @@ namespace hw\ip\domophone\akuvox;
  */
 class r20a extends akuvox
 {
+    public function prepare(): void
+    {
+        parent::prepare();
+        $this->bindInputsToRelays();
+    }
 }
