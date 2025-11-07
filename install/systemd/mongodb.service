@@ -14,13 +14,13 @@ Environment=HOME=/var/lib/mongodb
 WorkingDirectory=/var/lib/mongodb
 User=mongodb
 Group=mongodb
-ExecStart=/opt/mongodb/bin/mongod --dbpath /var/lib/mongodb --directoryperdb --pidfilepath /var/run/mongodb/mongodb.pid --bind_ip 127.0.0.1
+ExecStart=/opt/mongodb/bin/mongod --dbpath /var/lib/mongodb --directoryperdb --pidfilepath /var/run/mongodb/mongodb.pid --bind_ip 127.0.0.1 --logpath /var/log/mongodb/mongodb.log --logappend --logRotate reopen
 LimitCORE=infinity
 Restart=always
 RestartSec=4
 StandardOutput=null
 PrivateTmp=true
-ExecStartPre=+/bin/bash -c '[ ! -d "/var/run/mongodb" ] && /bin/mkdir /var/run/mongodb ; /bin/chown -R mongodb:mongodb /var/{lib,run}/mongodb'
+ExecStartPre=+/bin/bash -c '[ ! -d "/var/run/mongodb" ] && /bin/mkdir /var/run/mongodb ; [ ! -d "/var/log/mongodb" ] && /bin/mkdir /var/log/mongodb; /bin/chown -R mongodb:mongodb /var/{lib,run,log}/mongodb'
 
 [Install]
 WantedBy=multi-user.target
