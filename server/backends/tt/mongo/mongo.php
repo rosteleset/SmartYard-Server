@@ -1233,6 +1233,7 @@
 
             public function cron($part) {
                 $success = true;
+
                 if ($part == "5min") {
                     $success = $this->reCreateIndexes();
                 }
@@ -1260,6 +1261,7 @@
                     }
                 } catch (\Exception $e) {
                     $success = false;
+                    error_log(print_r($e, true));
                 }
 
                 return $success && parent::cron($part);

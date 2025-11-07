@@ -2163,7 +2163,7 @@
                         if ($p["hasTemplate"]) {
                             $p["templateName"] = $template[0]["filename"];
                             $p["templateSize"] = $template[0]["length"];
-                            $p["templateUploadDate"] = $template[0]["uploadDate"]['$date'];
+                            $p["templateUploadDate"] = $template[0]["uploadDate"]["milliseconds"];
                         }
                     }
                 }
@@ -2391,6 +2391,7 @@
                             } while (count($issues["issues"]));
                         }
                     } catch (\Exception $e) {
+                        error_log(print_r($e, true));
                         $success = false;
                     }
                 }
@@ -2416,6 +2417,7 @@
                         }
                     }
                 } catch (\Exception $e) {
+                    error_log(print_r($e, true));
                     $success = false;
                 }
 
