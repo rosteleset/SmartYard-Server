@@ -34,7 +34,7 @@
             }
 
             function run($args) {
-                global $config, $redis;
+                global $config, $redis, $script_debug;
 
                 $part = $args["--cron"];
 
@@ -54,6 +54,9 @@
 
                 foreach ($config["backends"] as $backend_name => $cfg) {
                     $backend = loadBackend($backend_name);
+                    if ($script_debug) {
+                        error_log($backend_name);
+                    }
                     if ($backend) {
                         $pid = (int)$redis->get("CRON:LOCK:{$backend_name}:$part");
                         if (!$pid) {

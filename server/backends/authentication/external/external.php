@@ -80,6 +80,8 @@
             }
 
             public function cron($part) {
+                global $script_debug;
+
                 if ($part == "daily" && @$this->config["backends"]["authentication"]["checkexists"]) {
                     $users = loadBackend("users");
                     $allUsers = $users->getUsers();
@@ -88,6 +90,11 @@
                         if ((int)$user["uid"] && !(int)$user["serviceAccount"]) {
                             $url = $this->config["backends"]["authentication"]["checkexists"];
                             $url = str_replace("%%login", urlencode($user["login"]), $url);
+
+                            if ($script_debug) {
+                                error_log($url);
+                            }
+
                             $exists = trim(@file_get_contents($url));
 
                             if ($exists == "EXISTS" && !(int)$user["enabled"]) {
