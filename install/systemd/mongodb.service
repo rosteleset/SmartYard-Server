@@ -14,7 +14,7 @@ Environment=HOME=/var/lib/mongodb
 WorkingDirectory=/var/lib/mongodb
 User=mongodb
 Group=mongodb
-ExecStart=/opt/mongodb/bin/mongod --dbpath /var/lib/mongodb --directoryperdb --pidfilepath /var/run/mongodb/mongodb.pid --bind_ip 127.0.0.1 --logpath /var/log/mongodb/mongodb.log --logappend --logRotate reopen
+ExecStart=/opt/mongodb/bin/mongod --dbpath /var/lib/mongodb --directoryperdb --pidfilepath /var/run/mongodb/mongod.pid --bind_ip 127.0.0.1 --logpath /var/log/mongodb/mongod.log --logappend --logRotate reopen
 LimitCORE=infinity
 Restart=always
 RestartSec=4
