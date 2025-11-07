@@ -284,7 +284,10 @@ abstract class akuvox extends domophone
         $this->apiCall('', 'POST', [
             'target' => 'relay',
             'action' => 'set',
-            'data' => ['Config.DoorSetting.DTMF.Code1' => $code1],
+            'data' => [
+                'Config.DoorSetting.DTMF.Code1' => $code1,
+                'Config.DoorSetting.DTMF.Code2' => $code2,
+            ],
         ]);
     }
 
@@ -440,14 +443,14 @@ abstract class akuvox extends domophone
 
     protected function getDtmfConfig(): array
     {
-        $dtmfCode = $this->apiCall('', 'POST', [
+        $relayConfig = $this->apiCall('', 'POST', [
             'target' => 'relay',
             'action' => 'get',
-        ])['data']['Config.DoorSetting.DTMF.Code1'];
+        ])['data'];
 
         return [
-            'code1' => $dtmfCode,
-            'code2' => '2',
+            'code1' => $relayConfig['Config.DoorSetting.DTMF.Code1'],
+            'code2' => $relayConfig['Config.DoorSetting.DTMF.Code2'] ?? '2',
             'code3' => '3',
             'codeCms' => '1',
         ];
