@@ -82,7 +82,7 @@
                         }
                     }
 
-                    $this->redis->setex("AUTH:" . $token . ":" . $uid, $rememberMe ? (7 * 24 * 60 * 60) : ($this->config["backends"]["authentication"]["token_idle_ttl"] ?: 3600), json_encode([
+                    $this->redis->setex("AUTH:" . $token . ":" . $uid, $rememberMe ? (7 * 24 * 60 * 60) : (@$this->config["backends"]["authentication"]["token_idle_ttl"] ?: 3600), json_encode([
                         "uid" => (string)$uid,
                         "login" => $login,
                         "persistent" => $rememberMe,
@@ -170,7 +170,7 @@
 
                         $auth["token"] = $token;
 
-                        $this->redis->setex($key, $auth["persistent"] ? (7 * 24 * 60 * 60) : ($this->config["backends"]["authentication"]["token_idle_ttl"] ?: 3600), json_encode($auth));
+                        $this->redis->setex($key, $auth["persistent"] ? (7 * 24 * 60 * 60) : (@$this->config["backends"]["authentication"]["token_idle_ttl"] ?: 3600), json_encode($auth));
 
                         if ($users->getUidByLogin($auth["login"]) == $auth["uid"]) {
                             return $auth;
@@ -261,7 +261,7 @@
 
                         if ($secret && $ga->verifyCode($secret, $oneCode, 2)) {
                             unset($auth["secret"]);
-                            $this->redis->setex($key, $auth["persistent"] ? (7 * 24 * 60 * 60) : ($this->config["backends"]["authentication"]["token_idle_ttl"] ?: 3600), json_encode($auth));
+                            $this->redis->setex($key, $auth["persistent"] ? (7 * 24 * 60 * 60) : (@$this->config["backends"]["authentication"]["token_idle_ttl"] ?: 3600), json_encode($auth));
                             return $users->twoFa($auth["uid"], $secret);
                         } else {
                             setLastError("invalid2FACredentials");
@@ -271,7 +271,7 @@
                         $secret = $ga->createSecret();
                         $auth["secret"] = $secret;
 
-                        $this->redis->setex($key, $auth["persistent"] ? (7 * 24 * 60 * 60) : ($this->config["backends"]["authentication"]["token_idle_ttl"] ?: 3600), json_encode($auth));
+                        $this->redis->setex($key, $auth["persistent"] ? (7 * 24 * 60 * 60) : (@$this->config["backends"]["authentication"]["token_idle_ttl"] ?: 3600), json_encode($auth));
 
                         return $ga->getQRCodeText(@$this->config["backends"]["authentication"]["2faName"] ?: i18n("2faName"), $secret, @$this->config["backends"]["authentication"]["2faTitle"] ?: i18n("2faTitle"));
                     }
