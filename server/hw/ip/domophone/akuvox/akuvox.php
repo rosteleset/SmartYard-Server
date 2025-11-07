@@ -309,7 +309,10 @@ abstract class akuvox extends domophone
         $this->apiCall('', 'POST', [
             'target' => 'relay',
             'action' => 'set',
-            'data' => ['Config.DoorSetting.RELAY.RelayADelay' => "$time"],
+            'data' => [
+                'Config.DoorSetting.RELAY.RelayADelay' => (string)$time,
+                'Config.DoorSetting.RELAY.RelayBDelay' => (string)$time,
+            ],
         ]);
     }
 
