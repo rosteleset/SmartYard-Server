@@ -606,6 +606,7 @@
                         "status",
                         "catalog",
                         "workflow",
+                        "parent",
                     ];
 
                     foreach ($project["customFields"] as $c => $p) {
