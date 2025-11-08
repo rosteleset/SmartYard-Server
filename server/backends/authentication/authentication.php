@@ -103,7 +103,7 @@
                         "uid" => $uid,
                     ];
                 } else {
-                    error_log("\nFAIL2BAN: $ip login fail: " . $login . "\n");
+                    error_log("FAIL2BAN: $ip login fail: " . $login);
 
                     return [
                         "result" => false,
@@ -203,7 +203,7 @@
                     }
                 }
 
-                error_log("\nFAIL2BAN: $ip");
+                error_log("FAIL2BAN: $ip");
 
                 return false;
             }
