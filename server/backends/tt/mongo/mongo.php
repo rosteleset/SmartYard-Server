@@ -599,14 +599,20 @@
 
                 foreach ($projects as $acr => $project) {
                     $indexes = [
-                        "issueId",
-                        "created",
-                        "subject",
-                        "description",
-                        "status",
+                        "assigned",
+                        "author",
                         "catalog",
-                        "workflow",
+                        "created",
+                        "description",
+                        "issueId",
                         "parent",
+                        "project",
+                        "resolution",
+                        "status",
+                        "subject",
+                        "updated",
+                        "watchers",
+                        "workflow",
                     ];
 
                     foreach ($project["customFields"] as $c => $p) {
