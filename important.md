@@ -1,6 +1,6 @@
 # 2025-11-08
 
-Since version 0.0.19, rbt/install/systemd/mongodb.service renamed to mongod.service (check your /etc/systemd/system folder)
+Since version 0.0.18c, rbt/install/systemd/mongodb.service renamed to mongod.service (check your /etc/systemd/system folder)
 
 # 2025-10-31
 
