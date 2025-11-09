@@ -635,7 +635,8 @@
                     foreach ($indexes as $i) {
                         if (!in_array($i, $already)) {
                             try {
-                                $this->mongo->$db->$acr->createIndex([ $i => 1 ], [ "name" => "index_" . $i, "collation" => [ "locale" => @$this->config["language"] ?: "en", "strength" => 3 ] ]);
+                                // $this->mongo->$db->$acr->createIndex([ $i => 1 ], [ "name" => "index_" . $i, "collation" => [ "locale" => @$this->config["language"] ?: "en", "strength" => 3 ] ]);
+                                $this->mongo->$db->$acr->createIndex([ $i => 1 ], [ "name" => "index_" . $i, ]);
                                 $cnt++;
                             } catch (\Exception $e) {
                                 //
