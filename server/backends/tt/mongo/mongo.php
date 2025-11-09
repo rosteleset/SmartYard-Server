@@ -479,8 +479,8 @@
                     }
                 } else {
                     $_query = object_to_array($query);
-                    $issues = $this->mongo->$db->$collection->find($query, $options);
-                    $count = $this->mongo->$db->$collection->countDocuments($query);
+                    $issues = $this->mongo->$db->$collection->find($_query, $options);
+                    $count = $this->mongo->$db->$collection->countDocuments($_query);
                 }
 
                 $i = [];
@@ -505,7 +505,7 @@
                     $_query[] = [ '$project' => $projection_all ];
                     $issues = $this->mongo->$db->$collection->aggregate($_query);
                 } else {
-                    $issues = $this->mongo->$db->$collection->find($query, $options_all);
+                    $issues = $this->mongo->$db->$collection->find($_query, $options_all);
                 }
 
                 $a = [];
