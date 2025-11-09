@@ -1650,7 +1650,8 @@
 
 
                     try {
-                        $this->mongo->$db->$acr->createIndex($index, [ "name" => "manual_index" . $indexName, "collation" => [ "locale" => @$this->config["language"] ?: "en" ]  ]);
+                        // $this->mongo->$db->$acr->createIndex($index, [ "name" => "manual_index" . $indexName, "collation" => [ "locale" => @$this->config["language"] ?: "en" ]  ]);
+                        $this->mongo->$db->$acr->createIndex($index, [ "name" => "manual_index" . $indexName, ]);
                         $c++;
                     } catch (\Exception $e) {
                         //
