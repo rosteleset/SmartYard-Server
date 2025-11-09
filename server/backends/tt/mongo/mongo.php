@@ -350,6 +350,19 @@
                 $groups = loadBackend("groups");
                 $users = loadBackend("users");
 
+                $inline_casts = [
+                    "int",
+                    "string",
+                    "double"
+                ];
+
+                foreach ($preprocess as $key => $value) {
+                    foreach ($inline_casts as $type) {
+                        $preprocess["$key<$type>"] = $value;
+                        $types["$key<$type>"] = $type;
+                    }
+                }
+
                 if ($users && $groups) {
                     $gl = $groups->getGroups();
 
@@ -386,7 +399,6 @@
                 $types = $this->standartPreprocessTypes($types);
 
                 $preprocess["%%last"] = function ($pp) {
-                    error_log($pp);
                     $last = $this->journalLast($this->login);
                     $issues = [];
                     foreach ($last as $issue) {
