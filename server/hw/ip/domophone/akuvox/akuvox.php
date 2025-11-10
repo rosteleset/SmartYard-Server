@@ -246,7 +246,6 @@ abstract class akuvox extends domophone
         $this->configureBle(false);
         $this->configureHangUpAfterOpen(false);
         $this->setInternalReader();
-        $this->setExternalReader();
         $this->configureRps(false);
         $this->enablePnp(false);
     }
@@ -533,17 +532,23 @@ abstract class akuvox extends domophone
     }
 
     /**
-     * Sets the external Wiegand RFID reader mode.
+     * Sets the external Wiegand RFID reader parameters.
      *
+     * @param bool $openRelayA Whether the successful reading triggers relay A.
+     * @param bool $openRelayB Whether the successful reading triggers relay B.
      * @return void
      */
-    protected function setExternalReader(): void
+    protected function setExternalReader(bool $openRelayA = false, bool $openRelayB = false): void
     {
-        $this->setConfigParams(['Config.DoorSetting.GENERAL.WiegandType' => '1']); // Wiegand-34
+        $this->setConfigParams([
+            'Config.DoorSetting.GENERAL.WiegandType' => '1', // Wiegand-34
+            'Config.DoorSetting.GENERAL.WiegandOpenRelayA' => $openRelayA ? '1' : '0',
+            'Config.DoorSetting.GENERAL.WiegandOpenRelayB' => $openRelayB ? '1' : '0',
+        ]);
     }
 
     /**
-     * Sets the internal RFID reader mode.
+     * Sets the internal RFID reader parameters.
      *
      * @return void
      */
