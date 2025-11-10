@@ -11,5 +11,6 @@ class r20a extends akuvox
     {
         parent::prepare();
         $this->bindInputsToRelays();
+        $this->setExternalReader(openRelayB: true);
     }
 }

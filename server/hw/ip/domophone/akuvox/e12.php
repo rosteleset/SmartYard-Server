@@ -10,9 +10,10 @@ class e12 extends akuvox
     public function prepare(): void
     {
         parent::prepare();
+        $this->bindInputsToRelays(inputB: 1); // Map all inputs to Relay A (only one relay available)
         $this->configureAudio();
         $this->configureLed(false);
-        $this->bindInputsToRelays(inputB: 1);
+        $this->setExternalReader(openRelayA: true); // Link external reader to Relay A (only one relay available)
     }
 
     /**
