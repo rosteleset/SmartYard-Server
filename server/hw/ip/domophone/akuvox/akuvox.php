@@ -241,7 +241,8 @@ abstract class akuvox extends domophone
         $this->configureHangUpAfterOpen(false);
         $this->configureInputsBinding();
         $this->configureLed(false);
-        $this->configureRfidReaders();
+        $this->setInternalReader();
+        $this->setExternalReader();
         $this->configureRps(false);
         $this->enablePnp(false);
     }
@@ -412,16 +413,6 @@ abstract class akuvox extends domophone
     }
 
     /**
-     * Configure RFID readers mode.
-     *
-     * @return void
-     */
-    protected function configureRfidReaders(): void
-    {
-        $this->setConfigParams(['Config.DoorSetting.RFCARDDISPLAY.RfidDisplayMode' => '4']);
-    }
-
-    /**
      * Configure redirect provisioning server.
      *
      * @param bool $enabled (Optional) True if enabled, false otherwise. Default is true.
@@ -557,5 +548,25 @@ abstract class akuvox extends domophone
                 'item' => $items,
             ],
         ]);
+    }
+
+    /**
+     * Sets the external Wiegand RFID reader mode.
+     *
+     * @return void
+     */
+    protected function setExternalReader(): void
+    {
+        $this->setConfigParams(['Config.DoorSetting.GENERAL.WiegandType' => '1']); // Wiegand-34
+    }
+
+    /**
+     * Sets the internal RFID reader mode.
+     *
+     * @return void
+     */
+    protected function setInternalReader(): void
+    {
+        $this->setConfigParams(['Config.DoorSetting.RFCARDDISPLAY.RfidDisplayMode' => '4']); // 8HR
     }
 }
