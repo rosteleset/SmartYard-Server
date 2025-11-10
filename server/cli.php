@@ -282,7 +282,7 @@
 
                 if ($pids) {
                     foreach ($pids as $process) {
-                        echo "Process {$process["id"]} with pid {$process["pid"]} running more than 24h\n";
+                        error_log("Process {$process["id"]} with pid {$process["pid"]} running more than 24h");
                     }
                 }
             } catch (\Exception $e) {
@@ -456,11 +456,11 @@
         }
     }
 
+    checkIfPidExists();
+
     cli("pre", "#", $args);
 
     startup();
-
-    checkIfPidExists();
 
     if (count($args) && (strpos($argv[1], "--") === false || strpos($argv[1], "--") > 0)) {
         $backend = $argv[1];

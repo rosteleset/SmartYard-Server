@@ -89,10 +89,6 @@
              */
 
             public function cron($part) {
-                $this->db->modify("delete from core_running_processes where done is not null and start < :start", [
-                    "start" => time() - 7 * 24 * 60 * 60,
-                ]);
-
                 if (@$this->tasks[$part]) {
                     foreach ($this->tasks[$part] as $task) {
                         $this->$task();
@@ -138,8 +134,8 @@
             /**
              * @inheritDoc
              */
-            public function wait()
-            {
+
+            public function wait() {
                 $pid = getmypid();
 
                 while (true) {
@@ -152,8 +148,7 @@
                 }
             }
 
-            private function getTasksForDeviceType($deviceType)
-            {
+            private function getTasksForDeviceType($deviceType) {
                 $query = "select * from tasks_changes where object_type = '$deviceType' limit 25";
 
                 return $this->db->get($query, [], [
@@ -163,8 +158,7 @@
                 ]);
             }
 
-            private function autoconfigureDomophone($domophoneId, $script_filename, $pid)
-            {
+            private function autoconfigureDomophone($domophoneId, $script_filename, $pid) {
                 $households = loadBackend('households');
                 $domophone = $households->getDomophone($domophoneId);
 
