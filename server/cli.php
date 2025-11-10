@@ -436,7 +436,7 @@
             }
         }
 
-        $pids = $db->get("select running_process_id, pid from core_running_processes where done is null and coalesce(expire, 0) < " . time(), false, [
+        $pids = $db->get("select running_process_id, pid from core_running_processes where done is null and coalesce(start, 0) < " . time() - 24 * 60 * 60, false, [
             "running_process_id" => "id",
             "pid" => "pid",
         ], [ "silent" ]);
@@ -446,6 +446,8 @@
                 error_log("process {$process["id"]} with pid {$process["pid"]} running more than 24h");
             }
         }
+
+        $db->modify("delete from core_running_processes where done is not null and coalesce(expire, 0) < " . time());
     } catch (\Exception $e) {
         error_log(print_r($e, true));
     }
