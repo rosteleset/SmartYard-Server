@@ -254,43 +254,6 @@
         }
     }
 
-    function checkIfPidExists() {
-        global $db;
-
-        if (@$db) {
-            try {
-                $pids = $db->get("select running_process_id, pid from core_running_processes where done is null", false, [
-                    "running_process_id" => "id",
-                    "pid" => "pid",
-                ], [ "silent" ]);
-
-                if ($pids) {
-                    foreach ($pids as $process) {
-                        if (!file_exists( "/proc/{$process['pid']}")) {
-                            $db->modify("update core_running_processes set done = :done, result = 'unknown' where running_process_id = :running_process_id", [
-                                "done" => time(),
-                                "running_process_id" => $process['id'],
-                            ], [ "silent" ]);
-                        }
-                    }
-                }
-
-                $pids = $db->get("select running_process_id, pid from core_running_processes where done is null and coalesce(expire, 0) < " . time(), false, [
-                    "running_process_id" => "id",
-                    "pid" => "pid",
-                ], [ "silent" ]);
-
-                if ($pids) {
-                    foreach ($pids as $process) {
-                        error_log("Process {$process["id"]} with pid {$process["pid"]} running more than 24h");
-                    }
-                }
-            } catch (\Exception $e) {
-                //
-            }
-        }
-    }
-
     function maintenance($on) {
         global $db;
 
@@ -456,7 +419,36 @@
         }
     }
 
-    checkIfPidExists();
+    try {
+        $pids = $db->get("select running_process_id, pid from core_running_processes where done is null", false, [
+            "running_process_id" => "id",
+            "pid" => "pid",
+        ], [ "silent" ]);
+
+        if ($pids) {
+            foreach ($pids as $process) {
+                if (!file_exists( "/proc/{$process['pid']}")) {
+                    $db->modify("update core_running_processes set done = :done, result = 'unknown' where running_process_id = :running_process_id", [
+                        "done" => time(),
+                        "running_process_id" => $process['id'],
+                    ], [ "silent" ]);
+                }
+            }
+        }
+
+        $pids = $db->get("select running_process_id, pid from core_running_processes where done is null and coalesce(expire, 0) < " . time(), false, [
+            "running_process_id" => "id",
+            "pid" => "pid",
+        ], [ "silent" ]);
+
+        if ($pids) {
+            foreach ($pids as $process) {
+                error_log("process {$process["id"]} with pid {$process["pid"]} running more than 24h");
+            }
+        }
+    } catch (\Exception $e) {
+        error_log(print_r($e, true));
+    }
 
     cli("pre", "#", $args);
 
