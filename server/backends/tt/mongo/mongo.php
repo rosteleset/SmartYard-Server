@@ -351,15 +351,17 @@
                 $users = loadBackend("users");
 
                 $inline_casts = [
-                    "int",
+                    "integer",
                     "string",
                     "double"
                 ];
 
                 foreach ($preprocess as $key => $value) {
-                    foreach ($inline_casts as $type) {
-                        $preprocess["$key<$type>"] = $value;
-                        $types["$key<$type>"] = $type;
+                    if (array_key_exists(gettype($value), $inline_casts) >= 0) {
+                        foreach ($inline_casts as $type) {
+                            $preprocess["$key<$type>"] = $value;
+                            $types["$key<$type>"] = $type;
+                        }
                     }
                 }
 
