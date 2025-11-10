@@ -1657,7 +1657,7 @@
             public function preprocessFilter($query, $preprocess, $types) {
                 if ($query && is_array($query)) {
                     array_walk_recursive($query, function (&$item, $key, $preprocess) use ($types) {
-                        if (array_key_exists(gettype($item), [ "string", "integer", "double", "boolean", "resource", "NULL" ]) >= 0 && array_key_exists($item, $preprocess)) {
+                        if (array_key_exists(gettype($item), [ "string", "integer", "double", "boolean", "resource", "NULL" ]) >= 0 && @array_key_exists($item, $preprocess)) {
                             if (@$types[$item]) {
                                 $cast = $types[$item];
                             } else {
