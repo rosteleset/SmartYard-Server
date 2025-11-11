@@ -31,14 +31,11 @@
                         $("#mainForm").html(h);
                         loadingDone();
                     }).
-                    fail(FAIL).
-                    fail(loadingDone);
+                    fail(FAILPAGE);
                 }).
-                fail(FAIL).
-                fail(loadingDone);
+                fail(FAILPAGE);
             }).
-            fail(FAIL).
-            fail(loadingDone);
+            fail(FAILPAGE);
         });
     },
 }).init();
