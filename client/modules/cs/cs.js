@@ -42,7 +42,7 @@
         modules.cs.sid = md5(guid());
 
         setInterval(() => {
-            $(".dataCell").each(function () {
+            $(".csDataCell").each(function () {
                 let cell = $(this);
 
                 if (modules.cs.cellExpired(modules.cs.currentSheet.sheet.date, modules.cs.rowsMd5[cell.attr("data-row")])) {
@@ -50,7 +50,7 @@
                     cell.removeClass(modules.cs.currentSheet.sheet.reservedClass);
                     cell.removeClass(modules.cs.currentSheet.sheet.blockedClass);
                     cell.removeClass("pointer");
-                    cell.removeClass("dataCell");
+                    cell.removeClass("csDataCell");
                     cell.addClass(modules.cs.currentSheet.sheet.emptyClass);
                 }
             });
@@ -76,7 +76,8 @@
     mqttCellMsg: function (topic, payload) {
         if (!payload || !payload.uid) return;
 
-        cell = $(".dataCell[data-uid=" + payload.uid + "]");
+        let cell = $(".csDataCell[data-uid=" + payload.uid + "]");
+        let cellLogin = $(".csDataCellLogin[data-uid=" + payload.uid + "]");
 
         if (cell && cell.length == 1) {
             cell.removeClass("spinner-small");
@@ -86,7 +87,8 @@
                     modules.cs.clearCell(cell);
                     cell.removeClass(modules.cs.currentSheet.sheet.reservedClass);
                     cell.addClass(modules.cs.currentSheet.sheet.blockedClass);
-                    cell.attr("data-login", payload.login).attr("data-login-display", modules.users.login2name(payload.login));
+                    cell.attr("data-login", payload.login);
+                    cellLogin.html(modules.users.login2name(payload.login));
                     if (payload.login == lStore("_login") && payload.sid == modules.cs.sid) {
                         switch (parseInt(payload.step)) {
                             case 0:
@@ -169,7 +171,8 @@
                                 modules.cs.clearCell(cell);
                                 cell.removeClass(modules.cs.currentSheet.sheet.reservedClass);
                                 cell.addClass(modules.cs.currentSheet.sheet.blockedClass);
-                                cell.attr("data-login", payload.login).attr("data-login-display", modules.users.login2name(payload.login));
+                                cell.attr("data-login", payload.login);
+                                cellLogin.html(modules.users.login2name(payload.login));
                                 if (payload.login == lStore("_login") && payload.sid == modules.cs.sid) {
                                     modules.cs.coordinate(cell);
                                 }
@@ -233,14 +236,16 @@
                     modules.cs.clearCell(cell);
                     cell.removeClass(modules.cs.currentSheet.sheet.blockedClass);
                     cell.addClass(modules.cs.currentSheet.sheet.reservedClass);
-                    cell.attr("data-login", payload.login).attr("data-login-display", modules.users.login2name(payload.login) + (payload.comment ? ("\n[" + payload.comment + "]") : ""));
+                    cell.attr("data-login", payload.login);
+                    cellLogin.html(modules.users.login2name(payload.login) + (payload.comment ? ("<br>[" + modules.tt.issuesLinks(payload.comment + "]")) : ""));
                     break;
 
                 case "released":
                     cell.removeClass(modules.cs.currentSheet.sheet.reservedClass);
                     cell.removeClass(modules.cs.currentSheet.sheet.blockedClass);
                     modules.cs.restoreCell(cell);
-                    cell.attr("data-login", false).attr("data-login-display", false);
+                    cell.attr("data-login", false);
+                    cellLogin.html("");
                     break;
             }
         }
@@ -248,13 +253,15 @@
 
     mqttRedisExpireMsg: function (topic, payload) {
         if (payload.key.substring(0, 5) == "cell_" && payload.key.split("_")[5]) {
-            let cell = $(".dataCell[data-uid=" + payload.key.split("_")[5] + "]");
+            let cell = $(".csDataCell[data-uid=" + payload.key.split("_")[5] + "]");
+            let cellLogin = $(".csDataCellLogin[data-uid=" + payload.key.split("_")[5] + "]");
             if (cell && cell.length == 1) {
                 cell.removeClass("spinner-small");
                 cell.removeClass(modules.cs.currentSheet.sheet.blockedClass);
                 cell.removeClass(modules.cs.currentSheet.sheet.reservedClass);
                 modules.cs.restoreCell(cell);
-                cell.attr("data-login", false).attr("data-login-display", false);
+                cell.attr("data-login", false);
+                cellLogin.html("");
             }
         }
     },
@@ -649,9 +656,9 @@
                                             let uid = md5($("#csSheet").val() + ":" + $("#csDate").val() + ":" + modules.cs.cols[j] + ":" + modules.cs.rows[i]);
                                             if (!modules.cs.cellExpired(modules.cs.currentSheet.sheet.date, rs[l])) {
                                                 if (modules.cs.currentSheet && modules.cs.currentSheet.sheet && modules.cs.currentSheet.sheet.specialRows && modules.cs.currentSheet.sheet.specialRows.indexOf(rs[l]) >= 0) {
-                                                    h += '<td class="' + modules.cs.currentSheet.sheet.specialRowClass + ' dataCell pointer" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '">';
+                                                    h += '<td class="' + modules.cs.currentSheet.sheet.specialRowClass + ' csDataCell pointer" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '">';
                                                 } else {
-                                                    h += '<td class="dataCell pointer" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '">';
+                                                    h += '<td class="csDataCell pointer" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '">';
                                                 }
                                             } else {
                                                 if (response.sheet.sheet.emptyClass) {
@@ -663,6 +670,7 @@
                                             if (modules.cs.issuesInSheet[uid]) {
                                                 h += modules.cs.issuesInSheet[uid];
                                             }
+                                            h += '<span class="csDataCellLogin" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '"></span>';
                                             h += '</td>';
                                             break;
                                         }
@@ -1061,7 +1069,11 @@
                     navigateUrl("map", { markersLine: markers }, { run: true });
                 });
 
-                $(".dataCell").off("click").on("click", function () {
+                $(".csDataCell").off("click").on("click", function (e) {
+                    if (e.target && $(e.target).length == 1 && $(e.target)[0].nodeName == "A") {
+                        return;
+                    }
+
                     let cell = $(this);
 
                     if ($(".spinner-small").length) {
@@ -1161,16 +1173,18 @@
                     switch (modules.cs.currentSheet.cells[i].mode) {
                         case "claimed":
                             if (modules.cs.currentSheet.sheet.specialRowClass) {
-                                $(".dataCell[data-uid=" + modules.cs.currentSheet.cells[i].uid + "]").removeClass(modules.cs.currentSheet.sheet.specialRowClass);
+                                $(".csDataCell[data-uid=" + modules.cs.currentSheet.cells[i].uid + "]").removeClass(modules.cs.currentSheet.sheet.specialRowClass);
                             }
-                            $(".dataCell[data-uid=" + modules.cs.currentSheet.cells[i].uid + "]").addClass(modules.cs.currentSheet.sheet.blockedClass).attr("data-login", modules.cs.currentSheet.cells[i].login).attr("data-login-display", modules.users.login2name(modules.cs.currentSheet.cells[i].login));
+                            $(".csDataCell[data-uid=" + modules.cs.currentSheet.cells[i].uid + "]").addClass(modules.cs.currentSheet.sheet.blockedClass).attr("data-login", modules.cs.currentSheet.cells[i].login);
+                            $(".csDataCellLogin[data-uid=" + modules.cs.currentSheet.cells[i].uid + "]").html(modules.users.login2name(modules.cs.currentSheet.cells[i].login));
                             break;
 
                         case "reserved":
                             if (modules.cs.currentSheet.sheet.specialRowClass) {
-                                $(".dataCell[data-uid=" + modules.cs.currentSheet.cells[i].uid + "]").removeClass(modules.cs.currentSheet.sheet.specialRowClass);
+                                $(".csDataCell[data-uid=" + modules.cs.currentSheet.cells[i].uid + "]").removeClass(modules.cs.currentSheet.sheet.specialRowClass);
                             }
-                            $(".dataCell[data-uid=" + modules.cs.currentSheet.cells[i].uid + "]").addClass(modules.cs.currentSheet.sheet.reservedClass).attr("data-login", modules.cs.currentSheet.cells[i].login).attr("data-login-display", modules.users.login2name(modules.cs.currentSheet.cells[i].login) + (modules.cs.currentSheet.cells[i].comment ? ("\n[" + modules.cs.currentSheet.cells[i].comment + "]") : ""));
+                            $(".csDataCell[data-uid=" + modules.cs.currentSheet.cells[i].uid + "]").addClass(modules.cs.currentSheet.sheet.reservedClass).attr("data-login", modules.cs.currentSheet.cells[i].login);
+                            $(".csDataCellLogin[data-uid=" + modules.cs.currentSheet.cells[i].uid + "]").html(modules.users.login2name(modules.cs.currentSheet.cells[i].login) + (modules.cs.currentSheet.cells[i].comment ? ("<br>[" + modules.tt.issuesLinks(modules.cs.currentSheet.cells[i].comment) + "]") : ""));
                             break;
                     }
                 }

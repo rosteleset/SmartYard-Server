@@ -497,22 +497,6 @@ select {
 	display: block;
 }
 
-.data-login {
-  position: relative;
-}
-
-.data-login::after {
-  content: attr(data-login-display);
-  position: absolute;
-  display: inline-block;
-  top: 0px;
-  right: 0px;
-  padding-right: 3px;
-  font-size: small;
-  white-space: pre-wrap;
-  text-align: right;
-}
-
 .datatable {
   margin: 2px 0; border-collapse: collapse;
 }
@@ -839,4 +823,23 @@ code {
   background-image: radial-gradient(lightgray 1px, transparent 0);
   background-size: 10px 10px;
   background-position: -4px -4px;
+}
+
+.csDataCell {
+  position: relative;
+}
+
+.csDataCellLogin {
+  position: absolute;
+  display: inline-block;
+  top: 0px;
+  right: 0px;
+  padding-right: 3px;
+  font-size: small;
+  white-space: pre-wrap;
+  text-align: right;
+}
+
+.csDataCellLogin > a {
+  color: white;
 }

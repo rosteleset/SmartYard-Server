@@ -1424,7 +1424,7 @@
             abstract public function deleteIssue($issueId);
 
             /**
-             * @param $collection
+             * @param $project
              * @param $query
              * @param array $fields
              * @param int[] $sort
@@ -1436,7 +1436,7 @@
              * @return mixed
              */
 
-            abstract public function getIssues($collection, $query, $fields = [], $sort = [ "issueId" => 1 ], $skip = 0, $limit = 100, $preprocess = [], $types = [], $byPipeline = false);
+            abstract public function getIssues($project, $query, $fields = [], $sort = [ "issueId" => 1 ], $skip = 0, $limit = 100, $preprocess = [], $types = [], $byPipeline = false);
 
             /**
              * @param $issueId

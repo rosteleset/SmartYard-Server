@@ -335,10 +335,10 @@
                 return $types;
             }
 
-            private function getIssuesQuery($collection, $query, $fields = [], $sort = [], $skip = 0, $limit = 100, $preprocess = [], $types = [], $byPipeline = false) {
+            private function getIssuesQuery($project, $query, $fields = [], $sort = [], $skip = 0, $limit = 100, $preprocess = [], $types = [], $byPipeline = false) {
                 $me = $this->myRoles();
 
-                if (!@$me[$collection]) {
+                if (!@$me[$project]) {
                     return [];
                 }
 
@@ -416,10 +416,10 @@
              * @inheritDoc
              */
 
-            public function getIssues($collection, $query, $fields = [], $sort = [], $skip = 0, $limit = 100, $preprocess = [], $types = [], $byPipeline = false) {
+            public function getIssues($project, $query, $fields = [], $sort = [], $skip = 0, $limit = 100, $preprocess = [], $types = [], $byPipeline = false) {
                 $db = $this->dbName;
 
-                $query = $this->getIssuesQuery($collection, $query, $fields, $sort, $skip, $limit, $preprocess, $types, $byPipeline);
+                $query = $this->getIssuesQuery($project, $query, $fields, $sort, $skip, $limit, $preprocess, $types, $byPipeline);
 
                 $projection = [];
 
@@ -470,19 +470,19 @@
                     $_query[] = [ '$project' => $projection ];
                     $_query[] = [ '$skip' => (int)$skip ];
                     $_query[] = [ '$limit' => (int)$limit ];
-                    $issues = $this->mongo->$db->$collection->aggregate($_query);
+                    $issues = $this->mongo->$db->$project->aggregate($_query);
 
                     $_query = object_to_array($query);
                     $_query[] = [ '$group' => [ '_id' => null, 'countDocuments' => [ '$sum' => 1 ] ] ];
                     $_query[] = [ '$project' => [ '_id' => 0 ] ];
-                    $cursor = $this->mongo->$db->$collection->aggregate($_query);
+                    $cursor = $this->mongo->$db->$project->aggregate($_query);
                     foreach ($cursor as $document) {
                         $count = $document["countDocuments"];
                     }
                 } else {
                     $_query = object_to_array($query);
-                    $issues = $this->mongo->$db->$collection->find($_query, $options);
-                    $count = $this->mongo->$db->$collection->countDocuments($_query);
+                    $issues = $this->mongo->$db->$project->find($_query, $options);
+                    $count = $this->mongo->$db->$project->countDocuments($_query);
                 }
 
                 $i = [];
@@ -505,9 +505,9 @@
                 if ($byPipeline) {
                     $_query = object_to_array($query);
                     $_query[] = [ '$project' => $projection_all ];
-                    $issues = $this->mongo->$db->$collection->aggregate($_query);
+                    $issues = $this->mongo->$db->$project->aggregate($_query);
                 } else {
-                    $issues = $this->mongo->$db->$collection->find($_query, $options_all);
+                    $issues = $this->mongo->$db->$project->find($_query, $options_all);
                 }
 
                 $a = [];
