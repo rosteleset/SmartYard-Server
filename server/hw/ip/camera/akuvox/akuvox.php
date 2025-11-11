@@ -10,7 +10,6 @@ use hw\ip\camera\entities\DetectionZone;
  */
 class akuvox extends camera
 {
-
     use \hw\ip\common\akuvox\akuvox;
 
     public function configureMotionDetection(array $detectionZones): void
@@ -39,16 +38,22 @@ class akuvox extends camera
     public function getCamshot(): string
     {
         $url = parse_url_ext($this->url);
-        $host = $url["host"];
-        $port = @($url["fragmentExt"] && $url["fragmentExt"]["camshotPort"]) ? $url["fragmentExt"]["camshotPort"] : 8080;
+        $host = $url['host'] ?? null;
+        $port = $url['fragmentExt']['camshotPort'] ?? 8080;
 
-        $context = stream_context_create([
-            'http' => [
-                'timeout' => 3.0,
-            ],
+        $ch = curl_init("http://$host:$port/picture.jpg");
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT => 3,
+            CURLOPT_CONNECTTIMEOUT => 1,
+            CURLOPT_USERPWD => "$this->login:$this->password",
+            CURLOPT_HTTPAUTH => CURLAUTH_BASIC,
         ]);
 
-        return file_get_contents("http://$this->login:$this->password@$host:$port/picture.jpg", false, $context);
+        $result = curl_exec($ch);
+        curl_close($ch);
+
+        return $result ?: '';
     }
 
     public function setOsdText(string $text = ''): void // Latin only
@@ -65,7 +70,7 @@ class akuvox extends camera
         // Round off detection zone coordinates
         if ($dbConfig['motionDetection']) {
             $dbConfig['motionDetection'] = [
-                new DetectionZone(...array_map('round', (array)$dbConfig['motionDetection'][0]))
+                new DetectionZone(...array_map('round', (array)$dbConfig['motionDetection'][0])),
             ];
         }
 
@@ -81,7 +86,7 @@ class akuvox extends camera
                 'Config.DoorSetting.MOTION_DETECT.AreaEndWidth',
                 'Config.DoorSetting.MOTION_DETECT.AreaStartHeight',
                 'Config.DoorSetting.MOTION_DETECT.AreaEndHeight',
-            ])
+            ]),
         );
 
         if ($areaStartWidth == 0 && $areaEndWidth == 0 && $areaStartHeight == 0 && $areaEndHeight == 0) {
