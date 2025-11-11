@@ -291,7 +291,7 @@
                         }
                     }
 
-                    echo "$c indexes created\n";
+                    echo "$c indexes [re]created\n";
 
                     exit(0);
                 }
