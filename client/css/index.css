@@ -841,5 +841,14 @@ code {
 }
 
 .csDataCellLogin > a {
-  color: white;
+  color: inherit!important;
+}
+
+.csDataCellLogin > a:visited {
+  color: inherit!important;
+}
+
+.csDataCellLogin > a:hover {
+  color: inherit!important;
+  text-decoration: underline!important;
 }
