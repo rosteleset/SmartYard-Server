@@ -106,7 +106,7 @@
              * @inheritDoc
              */
 
-            public function searchFiles($query) {
+            public function searchFiles($query, $skip = 0, $limit = 1024) {
                 $collection = "fs.files";
                 $db = $this->dbName;
 
@@ -114,6 +114,8 @@
                     "sort" => [
                         "filename" => 1,
                     ],
+                    "skip" => (int)$skip,
+                    "limit" => (int)$limit,
                 ]);
 
                 $files = [];
@@ -253,13 +255,24 @@
                         "md5"
                     ];
 
-                    $files = $this->searchFiles([]);
-                    foreach ($files as $file) {
-                        if ($file["metadata"] && is_array($file["metadata"])) {
-                            foreach ($file["metadata"] as $i => $m) {
-                                $indexes[] = "metadata.$i";
+                    $skip = 0;
+                    $step = 1024;
+
+                    $t = [];
+
+                    while ($files = $this->searchFiles([], $skip, $step)) {
+                        $skip += $step;
+                        foreach ($files as $file) {
+                            if ($file["metadata"] && is_array($file["metadata"])) {
+                                foreach ($file["metadata"] as $i => $m) {
+                                    $t["metadata.$i"] = 1;
+                                }
                             }
                         }
+                    }
+
+                    foreach ($t as $i => $one) {
+                        $indexes[] = "metadata.$i";
                     }
 
                     $indexes = array_unique($indexes);

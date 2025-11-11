@@ -106,7 +106,7 @@
              * @inheritDoc
              */
 
-            public function searchFiles($query) {
+            public function searchFiles($query, $skip = 0, $limit = 1024) {
                 $collection = "fs.files";
                 $db = $this->dbName;
 

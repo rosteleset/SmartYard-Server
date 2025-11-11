@@ -67,10 +67,13 @@
 
             /**
              * @param $query
+             * @param $skip
+             * @param $limit
+             *
              * @return mixed
              */
 
-            abstract public function searchFiles($query);
+            abstract public function searchFiles($query, $skip = 0, $limit = 1024);
 
             /**
              * delete file
