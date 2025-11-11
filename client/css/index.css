@@ -829,6 +829,32 @@ code {
   position: relative;
 }
 
+.csDataCell > a {
+  color: inherit!important;
+}
+
+.csDataCell > a:visited {
+  color: inherit!important;
+}
+
+.csDataCell > a:hover {
+  color: inherit!important;
+  text-decoration: underline!important;
+}
+
+.csIssueSpan {
+  color: inherit!important;
+}
+
+.csIssueSpan:visited {
+  color: inherit!important;
+}
+
+.csIssueSpan:hover {
+  color: inherit!important;
+  text-decoration: underline!important;
+}
+
 .csDataCellLogin {
   position: absolute;
   display: inline-block;
