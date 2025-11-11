@@ -19,6 +19,8 @@
         "saLink",
     ],
 
+    issueRegExp: false,
+
     init: function () {
         // dirty hack, don't do that!
         modules.tt = this;
@@ -117,6 +119,30 @@
             if (parseInt(modules.tt.meta.statuses[i].final)) {
                 modules.tt.meta.finalStatus[modules.tt.meta.statuses[i].status] = true;
             }
+        }
+
+        let acronyms = [];
+
+        for (let i in modules.tt.meta.projects) {
+            acronyms.push(modules.tt.meta.projects[i].acronym);
+        }
+
+        if (acronyms.length) {
+            modules.tt.issueRegExp = new RegExp(`(\\b)((${acronyms.join('|')})-\\d+)(\\b)`, 'gm');
+        }
+    },
+
+    issuesLinks: function (str) {
+        if (str) {
+            if (modules.tt.issueRegExp) {
+                return convertLinks(nl2br($.trim(escapeHTML(str)))).replaceAll(modules.tt.issueRegExp, m => {
+                    return `<a target='_blank' href='${navigateUrl('tt', { 'issue': m })}'>${m}</a>`;
+                });
+            } else {
+                return convertLinks(nl2br($.trim(escapeHTML(str))));
+            }
+        } else {
+            return str;
         }
     },
 
@@ -1020,7 +1046,7 @@
                     case "subject":
                     case "commentBody":
                         escaped = true;
-                        val = convertLinks(nl2br(escapeHTML(val)));
+                        val = modules.tt.issuesLinks(val);
                         break;
 
                     case "assigned":
