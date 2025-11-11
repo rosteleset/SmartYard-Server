@@ -31,13 +31,13 @@
                         $("#mainForm").html(h);
                     }).
                     fail(FAIL).
-                    always(loadingDone);
+                    fail(loadingDone);
                 }).
                 fail(FAIL).
-                always(loadingDone);
+                fail(loadingDone);
             }).
             fail(FAIL).
-            always(loadingDone);
+            fail(loadingDone);
         });
     },
 }).init();
