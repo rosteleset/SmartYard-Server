@@ -29,6 +29,7 @@
                             h += `<br /><button type="button" class="mt-3 btn btn-outline-secondary" onclick="window.location.reload(true);"><i class="fas fa-sync-alt mr-2"></i>${i18n("about.refresh")}</button>`;
                         }
                         $("#mainForm").html(h);
+                        loadingDone();
                     }).
                     fail(FAIL).
                     fail(loadingDone);
