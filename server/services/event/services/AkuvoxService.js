@@ -3,13 +3,13 @@ import { API, mdTimer } from '../utils/index.js';
 
 class AkuvoxService extends SyslogService {
     async handleSyslogMessage(now, host, msg) {
-        //  Motion detection: start
+        // Motion detection: start
         if (msg.includes('Requst SnapShot')) {
             await API.motionDetection({ date: now, ip: host, motionActive: true });
             await mdTimer({ ip: host });
         }
 
-        //  Opening a door by DTMF
+        // Opening a door by DTMF
         if (msg.includes('DTMF_LOG:From')) {
             const apartmentId = parseInt(msg.split(' ').pop().substring(1));
             await API.setRabbitGates({ date: now, ip: host, apartmentId });
@@ -17,7 +17,13 @@ class AkuvoxService extends SyslogService {
 
         // Opening a door by RFID key
         if (msg.includes('OPENDOOR_LOG:Type:RF')) {
-            const [_, rfid, status] = msg.match(/KeyCode:(\w+)\s*(?:Relay:\d\s*)?Status:(\w+)/);
+            const match = msg.match(/KeyCode:(\w+)\s*(?:Relay:\d\s*)?Status:(\w+)/);
+            if (!match) {
+                return;
+            }
+
+            const [_, rfid, status] = match;
+
             if (status === 'Successful') {
                 await API.openDoor({
                     date: now,
