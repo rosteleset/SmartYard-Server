@@ -20,9 +20,11 @@ abstract class akuvox extends domophone
     protected const MAX_RFIDS_PER_USER = 4;
 
     /**
-     * @var int Maximum number of users.
+     * Returns the maximum number of users supported by the intercom.
+     *
+     * @return int Maximum number of users.
      */
-    protected const MAX_USERS = 1000;
+    abstract protected static function getMaxUsers(): int;
 
     public function addRfid(string $code, int $apartment = 0): void
     {
@@ -35,7 +37,7 @@ abstract class akuvox extends domophone
         $neededSlots = ceil(count($rfids) / self::MAX_RFIDS_PER_USER);
 
         // Check if adding these keys would exceed the limit
-        if (count($currentUsers) + $neededSlots > self::MAX_USERS) {
+        if (count($currentUsers) + $neededSlots > static::getMaxUsers()) {
             $allRfids = array_merge($this->getRfids(), $rfids); // Repack existing keys plus new keys
             $this->deleteRfid();
             $this->pushRfids($allRfids);

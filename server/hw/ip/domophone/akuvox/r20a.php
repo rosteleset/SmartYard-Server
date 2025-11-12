@@ -7,6 +7,11 @@ namespace hw\ip\domophone\akuvox;
  */
 class r20a extends akuvox
 {
+    protected static function getMaxUsers(): int
+    {
+        return 4000;
+    }
+
     public function prepare(): void
     {
         parent::prepare();
