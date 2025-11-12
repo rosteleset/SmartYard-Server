@@ -7,4 +7,8 @@ namespace hw\ip\domophone\akuvox;
  */
 class s532 extends akuvox
 {
+    protected static function getMaxUsers(): int
+    {
+        return 4000; // TODO: check
+    }
 }
