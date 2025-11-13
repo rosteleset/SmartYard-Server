@@ -271,7 +271,7 @@
                 break;
         }
 
-        newSticky += '</div><i class="far fa-fw fa-edit text-primary editSticky"></i>';
+        newSticky += '</div><i class="fas fa-fw fa-edit text-primary editSticky"></i>';
 
         if (remind) {
             newSticky += '<i class="far fa-fw fa-clock text-small reminder"></i>';

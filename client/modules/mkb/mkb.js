@@ -89,7 +89,7 @@
                                         <i class="fas fa-fw fa-plus-circle"></i>
                                     </a>
                                     <a href="#" class="btn btn-tool">
-                                        <i class="fas fa-pen"></i>
+                                        <i class="fas fa-fw fa-edit"></i>
                                     </a>
                                 </div>
                             </div>
@@ -101,7 +101,7 @@
                                             <div class="card-tools">
                                                 <a href="#" class="btn btn-tool btn-link">#3</a>
                                                 <a href="#" class="btn btn-tool">
-                                                    <i class="fas fa-pen"></i>
+                                                    <i class="fas fa-fw fa-edit"></i>
                                                 </a>
                                             </div>
                                         </div>
