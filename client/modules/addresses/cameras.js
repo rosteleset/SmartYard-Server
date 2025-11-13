@@ -43,17 +43,23 @@
 
     addCamera: function () {
         let models = [];
-        let first;
 
         for (let id in modules.addresses.cameras.meta.models) {
-            if (!first) {
-                first = id;
-            }
             models.push({
                 id,
                 text: modules.addresses.cameras.meta.models[id].title,
             })
         }
+
+        models.sort((a, b) => {
+            if (a.text > b.text) {
+                return 1;
+            }
+            if (a.text < b.text) {
+                return -1;
+            }
+            return 0;
+        });
 
         frss = [];
 
@@ -409,17 +415,23 @@
 
     modifyCamera: function (cameraId) {
         let models = [];
-        let first;
 
         for (let id in modules.addresses.cameras.meta.models) {
-            if (!first) {
-                first = id;
-            }
             models.push({
                 id,
                 text: modules.addresses.cameras.meta.models[id].title,
             })
         }
+
+        models.sort((a, b) => {
+            if (a.text > b.text) {
+                return 1;
+            }
+            if (a.text < b.text) {
+                return -1;
+            }
+            return 0;
+        });
 
         let camera = false;
 

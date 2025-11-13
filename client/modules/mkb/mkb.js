@@ -65,7 +65,10 @@
         }
 
         if (parseInt(myself.uid) && AVAIL("mkb")) {
-            $("#leftTopDynamic").html(`<li class="nav-item d-none d-sm-inline-block"><span class="hoverable pointer nav-link text-success text-bold createNote">${i18n("mkb.createDeck")}</span></li>`);
+            $("#leftTopDynamic").html(`
+                <li class="nav-item d-none d-sm-inline-block"><span class="hoverable pointer nav-link text-success text-bold addDeck">${i18n("mkb.addDeck")}</span></li>
+                <li class="nav-item d-none d-sm-inline-block"><span class="hoverable pointer nav-link text-primary text-bold addColumn">${i18n("mkb.addColumn")}</span></li>
+            `);
         }
 
         $(".createDeck").off("click").on("click", () => {

@@ -54,6 +54,16 @@
             })
         }
 
+        models.sort((a, b) => {
+            if (a.text > b.text) {
+                return 1;
+            }
+            if (a.text < b.text) {
+                return -1;
+            }
+            return 0;
+        });
+
         for (let id in modules.addresses.domophones.meta.servers) {
             servers.push({
                 id: modules.addresses.domophones.meta.servers[id].ip,
@@ -227,6 +237,16 @@
                 text: modules.addresses.domophones.meta.models[id].title,
             })
         }
+
+        models.sort((a, b) => {
+            if (a.text > b.text) {
+                return 1;
+            }
+            if (a.text < b.text) {
+                return -1;
+            }
+            return 0;
+        });
 
         for (let id in modules.addresses.domophones.meta.servers) {
             servers.push({
