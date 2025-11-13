@@ -1,5 +1,6 @@
 ({
     menuItem: false,
+    md: false,
 
     init: function () {
         if (parseInt(myself.uid) > 0) {
