@@ -2,7 +2,7 @@
     map: false,
 
     init: function () {
-        leftSide("fas fa-fw fa-map-marked-alt", i18n("map.map"), "?#map", "map");
+        leftSide("fas fa-fw fa-map-marked-alt", i18n("map.map"), "?#map", "productivity");
 
         function trim(str) {
             return str.trim ? str.trim() : str.replace(/^\s+|\s+$/g, '');
