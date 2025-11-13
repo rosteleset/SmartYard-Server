@@ -4,7 +4,7 @@
     init: function () {
         if (parseInt(myself.uid) > 0) {
             if (AVAIL("mkb")) {
-                this.menuItem = leftSide("fas fa-fw fa-tasks", i18n("mkb.mkb"), "?#mkb", "mkb");
+                this.menuItem = leftSide("fas fa-fw fa-tasks", i18n("mkb.mkb"), "?#mkb", "productivity");
             }
 
         }

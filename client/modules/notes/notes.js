@@ -83,7 +83,7 @@
     init: function () {
         if (parseInt(myself.uid) > 0) {
             if (AVAIL("notes")) {
-                this.menuItem = leftSide("fas fa-fw fa-thumbtack", i18n("notes.notes"), "?#notes", "notes");
+                this.menuItem = leftSide("fas fa-fw fa-thumbtack", i18n("notes.notes"), "?#notes", "productivity");
             }
         }
 
