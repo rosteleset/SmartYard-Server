@@ -86,6 +86,9 @@
                                 </h3>
                                 <div class="card-tools">
                                     <a href="#" class="btn btn-tool">
+                                        <i class="fas fa-fw fa-plus-circle"></i>
+                                    </a>
+                                    <a href="#" class="btn btn-tool">
                                         <i class="fas fa-pen"></i>
                                     </a>
                                 </div>
@@ -155,8 +158,8 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="card card-row card-default">
-                            <div class="card-header bg-info col-handle">
+                        <div class="card card-row card-lime">
+                            <div class="card-header col-handle">
                                 <h3 class="card-title">
                                 In Progress
                                 </h3>
@@ -168,7 +171,7 @@
                             </div>
                             <div id="inprogress" style="min-height: 100%;">
                                 <div class="card-body">
-                                    <div class="card card-light card-outline">
+                                    <div class="card card-red card-outline">
                                         <div class="card-header card-handle">
                                             <h5 class="card-title">Update Readme</h5>
                                             <div class="card-tools">
@@ -185,6 +188,33 @@
                                                 Cum sociis natoque penatibus et magnis dis parturient montes,
                                                 nascetur ridiculus mus.
                                             </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card card-row card-success">
+                            <div class="card-header col-handle">
+                                <h3 class="card-title">
+                                Done
+                                </h3>
+                                <div class="card-tools">
+                                    <a href="#" class="btn btn-tool">
+                                        <i class="fas fa-pen"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div id="done" style="min-height: 100%;">
+                                <div class="card-body">
+                                    <div class="card card-primary card-outline">
+                                        <div class="card-header card-handle">
+                                            <h5 class="card-title">Create repo</h5>
+                                            <div class="card-tools">
+                                                <a href="#" class="btn btn-tool btn-link">#1</a>
+                                                <a href="#" class="btn btn-tool">
+                                                    <i class="fas fa-pen"></i>
+                                                </a>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
