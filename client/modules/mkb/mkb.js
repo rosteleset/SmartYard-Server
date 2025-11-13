@@ -5,7 +5,7 @@
     init: function () {
         if (parseInt(myself.uid) > 0) {
             if (AVAIL("mkb")) {
-                this.menuItem = leftSide("fas fa-fw fa-tasks", i18n("mkb.mkb"), "?#mkb", "productivity");
+                this.menuItem = leftSide("fas fa-fw fa-layer-group", i18n("mkb.mkb"), "?#mkb", "productivity");
             }
 
         }
@@ -205,7 +205,7 @@
                                     </a>
                                 </div>
                             </div>
-                            <div id="done" style="min-height: 100%;">
+                            <div id="done1" style="min-height: 100%;">
                                 <div class="card-body">
                                     <div class="card card-primary card-outline">
                                         <div class="card-header card-handle">
@@ -232,7 +232,7 @@
                                     </a>
                                 </div>
                             </div>
-                            <div id="done" style="min-height: 100%;">
+                            <div id="done2" style="min-height: 100%;">
                                 <div class="card-body">
                                     <div class="card card-primary card-outline">
                                         <div class="card-header card-handle">
@@ -273,7 +273,13 @@
             "group": "cols",
         });
 
-        new Sortable(document.getElementById("done"), {
+        new Sortable(document.getElementById("done1"), {
+            "handle": ".card-handle",
+            "animation": 150,
+            "group": "cols",
+        });
+
+        new Sortable(document.getElementById("done2"), {
             "handle": ".card-handle",
             "animation": 150,
             "group": "cols",
