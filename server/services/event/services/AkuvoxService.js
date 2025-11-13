@@ -17,17 +17,18 @@ class AkuvoxService extends SyslogService {
 
         // Opening a door by RFID key
         if (msg.includes('OPENDOOR_LOG:Type:RF')) {
-            const match = msg.match(/KeyCode:(\w+)\s*(?:Relay:\d\s*)?Status:(\w+)/);
+            const match = msg.match(/KeyCode:(\w+)\s+Relay:(\d+)\s+Status:(\w+)/);
             if (!match) {
                 return;
             }
 
-            const [_, rfid, status] = match;
+            const [_, rfid, door, status] = match;
 
             if (status === 'Successful') {
                 await API.openDoor({
                     date: now,
                     ip: host,
+                    door: door - 1,
                     detail: rfid.padStart(14, '0'),
                     by: 'rfid',
                 });
