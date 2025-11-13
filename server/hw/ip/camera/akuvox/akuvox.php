@@ -61,7 +61,6 @@ class akuvox extends camera
         $this->setConfigParams([
             'Config.DoorSetting.RTSP.OSDEnable' => $text ? '1' : '0',
             'Config.DoorSetting.RTSP.OSDText' => $text,
-            'Config.DoorSetting.RTSP.OSDColor' => '3', // green color for high contrast
         ]);
     }
 
