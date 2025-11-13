@@ -878,3 +878,12 @@ code {
   color: inherit!important;
   text-decoration: underline!important;
 }
+
+.content-wrapper .kanban {
+  height: auto!important;
+  min-height: auto!important;
+}
+
+.kanban-col {
+  min-height: calc(100vh - 90px);
+}

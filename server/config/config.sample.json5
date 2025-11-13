@@ -306,6 +306,10 @@
             "backend": "internal",
             "api": "<!-- WGDashboard URL -->",
             "key": "<!-- API KEY -->",
+        },
+
+        "mkb": {
+            "backend": "mongo",
         }
     },
 
