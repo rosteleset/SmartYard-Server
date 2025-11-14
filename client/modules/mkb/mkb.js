@@ -100,16 +100,11 @@
                                             </h5>
                                             <div class="card-tools">
                                                 <span class="btn btn-tool text-primary"><i class="fas fa-fw fa-link"></i></span>
-                                                <span class="dropdown">
+                                                <span class="dropdown card-calendar">
                                                     <span class="btn btn-tool text-info dropdown-toggle dropdown-toggle-no-icon pb-0" data-toggle="dropdown" data-boundary="window" aria-expanded="false" data-offset="-100,0" data-flip="true" style="margin-bottom: -8px;">
                                                         <i class="far fa-fw fa-calendar"></i>
                                                         <ul class="dropdown-menu">
-                                                            <div class="dropdown-calendar">11111111111111111111111111
-                                                            11111111111111111111111111
-                                                            11111111111111111111111111
-                                                            11111111111111111111111111
-                                                            11111111111111111111111111
-                                                            </div>
+                                                            <div class="dropdown-calendar"></div>
                                                         </ul>
                                                     </span>
                                                 </span>
@@ -352,14 +347,19 @@
             e.stopPropagation();
         });
 
-        let c = new VanillaCalendarPro.Calendar(".dropdown-calendar", {
-            locale: 'ru',
-            selectedMonth: 6,
-            selectedYear: 2024,
-            selectedDates: ['2024-07-22'],
-        });
+        $(".card-calendar").off("show.bs.dropdown").on("show.bs.dropdown", function () {
+            let cc = $(this);
+            console.log(cc);
 
-        c.init();
+            let c = new VanillaCalendarPro.Calendar(".dropdown-calendar", {
+                locale: 'ru',
+                selectedMonth: 6,
+                selectedYear: 2024,
+                selectedDates: ['2024-07-22'],
+            });
+
+            c.init();
+        });
 
         loadingDone();
     },
