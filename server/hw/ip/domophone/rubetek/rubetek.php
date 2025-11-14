@@ -12,6 +12,7 @@ use hw\Interface\{
     LanguageInterface,
 };
 use hw\ip\domophone\domophone;
+use hw\ip\domophone\rubetek\Enums\DisplayType;
 use hw\ValueObject\{
     FlatNumber,
     HousePrefix,
@@ -31,6 +32,12 @@ abstract class rubetek extends domophone implements
     use \hw\ip\common\rubetek\rubetek {
         transformDbConfig as protected commonTransformDbConfig;
     }
+
+    /**
+     * Marker to indicate that the device has a custom display type (e.g., a manually set image),
+     * which should not be overwritten by the autoconfiguration.
+     */
+    protected const CUSTOM_DISPLAY = ['__CUSTOM_DISPLAY__'];
 
     /**
      * @var array|null $dialplans An array that holds dialplan information,
@@ -296,6 +303,10 @@ abstract class rubetek extends domophone implements
 
     public function getDisplayText(): array
     {
+        if ($this->hasCustomDisplayType()) {
+            return self::CUSTOM_DISPLAY;
+        }
+
         $displaySettings = $this->getConfiguration()['display'];
 
         // Three line text
@@ -456,16 +467,16 @@ abstract class rubetek extends domophone implements
         $textLinesCount = count($textLines);
 
         if ($textLinesCount === 0) {
-            $displaySettings['welcome_display'] = 4; // Current date and time
+            $displaySettings['welcome_display'] = DisplayType::CurrentTime->value;
             $displaySettings['text'] = '';
         } elseif ($textLinesCount === 1) {
             $text = $textLines[0] ?? '';
-            $displaySettings['welcome_display'] = 1; // Long text in one line
+            $displaySettings['welcome_display'] = DisplayType::ScrollingText->value;
             $displaySettings['text'] = $text . ' '; // Space is needed, otherwise the text will stick together
             $displaySettings['changeLineTimeout'] = 5; // Seconds
             $displaySettings['changeSymbolTimeout'] = 5; // Milliseconds
         } else {
-            $displaySettings['welcome_display'] = 6; // Three line text
+            $displaySettings['welcome_display'] = DisplayType::ThreeLineText->value;
             $displaySettings['text1'] = $textLines[0];
             $displaySettings['text2'] = $textLines[1];
             $displaySettings['text3'] = $textLines[2] ?? '';
@@ -590,6 +601,10 @@ abstract class rubetek extends domophone implements
         if (!$stunEnabled) {
             $dbConfig['sip']['stunServer'] = '';
             $dbConfig['sip']['stunPort'] = 3478;
+        }
+
+        if ($this->hasCustomDisplayType()) {
+            $dbConfig['displayText'] = self::CUSTOM_DISPLAY;
         }
 
         return $dbConfig;
@@ -885,6 +900,29 @@ abstract class rubetek extends domophone implements
             'stunServer' => $stunServer,
             'stunPort' => $stunPort,
         ];
+    }
+
+    /**
+     * Checks if the current configuration uses a custom display type.
+     *
+     * A display type is considered "custom" if it is cycling text, default image, or custom image.
+     *
+     * @return bool True if the display type is custom, false otherwise.
+     */
+    protected function hasCustomDisplayType(): bool
+    {
+        $displayTypeRaw = $this->getConfiguration()['display']['welcome_display'] ?? null;
+
+        // If the display type cannot be retrieved from the configuration, treat it as custom
+        if ($displayTypeRaw === null) {
+            return true;
+        }
+
+        return in_array(DisplayType::tryFrom($displayTypeRaw), [
+            DisplayType::CyclicText,
+            DisplayType::DefaultImage,
+            DisplayType::CustomImage,
+        ], true);
     }
 
     /**
