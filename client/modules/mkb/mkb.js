@@ -108,8 +108,8 @@
                                                         </ul>
                                                     </span>
                                                 </span>
-                                                <span class="btn btn-tool"><i class="fas fa-fw fa-edit"></i></span>
                                                 <span class="btn btn-tool btn-checkbox" data-checked="0"><i class="far fa-fw fa-circle"></i></span>
+                                                <span class="btn btn-tool"><i class="fas fa-fw fa-edit"></i></span>
                                             </div>
                                         </div>
                                         <div class="card-body">
