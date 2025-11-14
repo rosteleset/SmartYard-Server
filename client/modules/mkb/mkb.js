@@ -86,47 +86,72 @@
                                     Backlog
                                 </h3>
                                 <div class="card-tools">
-                                    <a href="#" class="btn btn-tool">
-                                        <i class="fas fa-fw fa-plus-circle"></i>
-                                    </a>
-                                    <a href="#" class="btn btn-tool">
-                                        <i class="fas fa-fw fa-edit"></i>
-                                    </a>
+                                    <span class="btn btn-tool"><i class="fas fa-fw fa-plus-circle"></i></span>
+                                    <span class="btn btn-tool"><i class="fas fa-fw fa-edit"></i></span>
                                 </div>
                             </div>
                             <div id="backlog" style="min-height: 100%;">
-                                <div class="card-body">
+                                <div class="card-body card-no-scroll">
                                     <div class="card card-info card-outline">
                                         <div class="card-header card-handle">
-                                            <h5 class="card-title">Create Labels</h5>
+                                            <h5 class="card-title">
+                                                <span class="btn btn-tool">#1</span>
+                                                <span class="btn btn-tool text-danger">5дн</span>
+                                            </h5>
                                             <div class="card-tools">
-                                                <a href="#" class="btn btn-tool btn-link">#3</a>
-                                                <a href="#" class="btn btn-tool">
-                                                    <i class="fas fa-fw fa-edit"></i>
-                                                </a>
+                                                <span class="btn btn-tool text-primary"><i class="fas fa-fw fa-link"></i></span>
+                                                <span class="dropdown">
+                                                    <span class="btn btn-tool text-info dropdown-toggle dropdown-toggle-no-icon pb-0" data-toggle="dropdown" data-boundary="window" aria-expanded="false" data-offset="-100,0" data-flip="true" style="margin-bottom: -8px;">
+                                                        <i class="far fa-fw fa-calendar"></i>
+                                                        <ul class="dropdown-menu">
+                                                            <div class="dropdown-calendar">11111111111111111111111111
+                                                            11111111111111111111111111
+                                                            11111111111111111111111111
+                                                            11111111111111111111111111
+                                                            11111111111111111111111111
+                                                            </div>
+                                                        </ul>
+                                                    </span>
+                                                </span>
+                                                <span class="btn btn-tool"><i class="fas fa-fw fa-edit"></i></span>
+                                                <span class="btn btn-tool btn-checkbox" data-checked="0"><i class="far fa-fw fa-circle"></i></span>
                                             </div>
                                         </div>
                                         <div class="card-body">
-                                            <div class="custom-control custom-checkbox">
-                                                <input class="custom-control-input" type="checkbox" id="customCheckbox1">
-                                                <label for="customCheckbox1" class="custom-control-label">Bug</label>
+                                            <div class="subtasks">
+                                                <div>
+                                                    <span id="customCheckbox1" class="pl-0 pr-1 btn btn-tool btn-checkbox" data-checked="0"><i class="far fa-circle"></i></span>
+                                                    <label for="customCheckbox1" class="btn-checkbox-label">Bug</label>
+                                                </div>
+                                                <div>
+                                                    <span id="customCheckbox2" class="pl-0 pr-1 btn btn-tool btn-checkbox" data-checked="0"><i class="far fa-circle"></i></span>
+                                                    <label for="customCheckbox2" class="btn-checkbox-label">Feature</label>
+                                                </div>
+                                                <div>
+                                                    <span id="customCheckbox3" class="pl-0 pr-1 btn btn-tool btn-checkbox" data-checked="0"><i class="far fa-circle"></i></span>
+                                                    <label for="customCheckbox3" class="btn-checkbox-label">Enhancement</label>
+                                                </div>
+                                                <div>
+                                                    <span id="customCheckbox4" class="pl-0 pr-1 btn btn-tool btn-checkbox" data-checked="0"><i class="far fa-circle"></i></span>
+                                                    <label for="customCheckbox4" class="btn-checkbox-label">Documentation</label>
+                                                </div>
+                                                <div>
+                                                    <span id="customCheckbox5" class="pl-0 pr-1 btn btn-tool btn-checkbox" data-checked="0"><i class="far fa-circle"></i></span>
+                                                    <label for="customCheckbox5" class="btn-checkbox-label">Examples</label>
+                                                </div>
                                             </div>
-                                            <div class="custom-control custom-checkbox">
-                                                <input class="custom-control-input" type="checkbox" id="customCheckbox2">
-                                                <label for="customCheckbox2" class="custom-control-label">Feature</label>
+                                            <div class="pointer subtasks-progress mt-2">
+                                                <div class="progress progress-xxs">
+                                                    <div class="progress-bar progress-bar-danger progress-bar-striped" role="progressbar" style="width: 90%"></div>
+                                                </div>
+                                                <div class="small">Progress: 7/7</div>
                                             </div>
-                                            <div class="custom-control custom-checkbox">
-                                                <input class="custom-control-input" type="checkbox" id="customCheckbox3">
-                                                <label for="customCheckbox3" class="custom-control-label">Enhancement</label>
-                                            </div>
-                                            <div class="custom-control custom-checkbox">
-                                                <input class="custom-control-input" type="checkbox" id="customCheckbox4">
-                                                <label for="customCheckbox4" class="custom-control-label">Documentation</label>
-                                            </div>
-                                            <div class="custom-control custom-checkbox">
-                                                <input class="custom-control-input" type="checkbox" id="customCheckbox5">
-                                                <label for="customCheckbox5" class="custom-control-label">Examples</label>
-                                            </div>
+                                            <p class="mt-2 mb-0">
+                                                Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
+                                                Aenean commodo ligula eget dolor. Aenean massa.
+                                                Cum sociis natoque penatibus et magnis dis parturient montes,
+                                                nascetur ridiculus mus.
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
@@ -150,6 +175,14 @@
                                             <h5 class="card-title">Create first milestone</h5>
                                             <div class="card-tools">
                                                 <a href="#" class="btn btn-tool btn-link">#5</a>
+                                                <span class="dropdown">
+                                                    <span class="btn btn-tool text-info dropdown-toggle dropdown-toggle-no-icon pb-0" data-toggle="dropdown" data-boundary="window" aria-expanded="false" data-offset="-100,0" data-flip="true" style="margin-bottom: -8px;">
+                                                        <i class="far fa-fw fa-calendar"></i>
+                                                        <ul class="dropdown-menu">
+                                                            <div class="dropdown-calendar"></div>
+                                                        </ul>
+                                                    </span>
+                                                </span>
                                                 <a href="#" class="btn btn-tool">
                                                     <i class="fas fa-pen"></i>
                                                 </a>
@@ -177,13 +210,21 @@
                                             <h5 class="card-title">Update Readme</h5>
                                             <div class="card-tools">
                                                 <a href="#" class="btn btn-tool btn-link">#2</a>
+                                                <span class="dropdown">
+                                                    <span class="btn btn-tool text-info dropdown-toggle dropdown-toggle-no-icon pb-0" data-toggle="dropdown" data-boundary="window" aria-expanded="false" data-offset="-100,0" data-flip="true" style="margin-bottom: -8px;">
+                                                        <i class="far fa-fw fa-calendar"></i>
+                                                        <ul class="dropdown-menu">
+                                                            <div class="dropdown-calendar"></div>
+                                                        </ul>
+                                                    </span>
+                                                </span>
                                                 <a href="#" class="btn btn-tool">
                                                     <i class="fas fa-pen"></i>
                                                 </a>
                                             </div>
                                         </div>
                                         <div class="card-body">
-                                            <p>
+                                            <p class="mb-0">
                                                 Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
                                                 Aenean commodo ligula eget dolor. Aenean massa.
                                                 Cum sociis natoque penatibus et magnis dis parturient montes,
@@ -289,6 +330,36 @@
             "handle": ".col-handle",
             "animation": 150,
         });
+
+        $(".subtasks-progress").off("click").on("click", () => {
+            $(".subtasks").toggle();
+        });
+
+        $(".btn-checkbox").off("click").on("click", function () {
+            let btn = $(this);
+            if (btn.attr("data-checked") == "1") {
+                btn.attr("data-checked", "0").removeClass("text-success").children().first().addClass("far fa-circle").removeClass("fas fa-check-circle");
+            } else {
+                btn.attr("data-checked", "1").addClass("text-success").children().first().removeClass("far fa-circle").addClass("fas fa-check-circle");
+            }
+        });
+
+        $(".btn-checkbox-label").off("click").on("click", function () {
+            $("#" + $(this).attr("for")).click();
+        });
+
+        $(".dropdown-calendar").off("click").on("click", e => {
+            e.stopPropagation();
+        });
+
+        let c = new VanillaCalendarPro.Calendar(".dropdown-calendar", {
+            locale: 'ru',
+            selectedMonth: 6,
+            selectedYear: 2024,
+            selectedDates: ['2024-07-22'],
+        });
+
+        c.init();
 
         loadingDone();
     },
