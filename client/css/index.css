@@ -825,37 +825,37 @@ code {
   background-position: -4px -4px;
 }
 
-.csDataCell {
+.cs-data-cell {
   position: relative;
 }
 
-.csDataCell > a {
+.cs-data-cell > a {
   color: inherit!important;
 }
 
-.csDataCell > a:visited {
+.cs-data-cell > a:visited {
   color: inherit!important;
 }
 
-.csDataCell > a:hover {
-  color: inherit!important;
-  text-decoration: underline!important;
-}
-
-.csIssueSpan {
-  color: inherit!important;
-}
-
-.csIssueSpan:visited {
-  color: inherit!important;
-}
-
-.csIssueSpan:hover {
+.cs-data-cell > a:hover {
   color: inherit!important;
   text-decoration: underline!important;
 }
 
-.csDataCellLogin {
+.cs-issue-span {
+  color: inherit!important;
+}
+
+.cs-issue-span:visited {
+  color: inherit!important;
+}
+
+.cs-issue-span:hover {
+  color: inherit!important;
+  text-decoration: underline!important;
+}
+
+.cs-data-cellLogin {
   position: absolute;
   display: inline-block;
   top: 0px;
@@ -866,15 +866,15 @@ code {
   text-align: right;
 }
 
-.csDataCellLogin > a {
+.cs-data-cellLogin > a {
   color: inherit!important;
 }
 
-.csDataCellLogin > a:visited {
+.cs-data-cellLogin > a:visited {
   color: inherit!important;
 }
 
-.csDataCellLogin > a:hover {
+.cs-data-cellLogin > a:hover {
   color: inherit!important;
   text-decoration: underline!important;
 }
@@ -898,4 +898,13 @@ code {
 
 .kanban-desk .kanban-col:first-child {
   margin-left: 2px!important;
+}
+
+.btn-checkbox-label {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }

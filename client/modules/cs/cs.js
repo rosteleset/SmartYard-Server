@@ -42,7 +42,7 @@
         modules.cs.sid = md5(guid());
 
         setInterval(() => {
-            $(".csDataCell").each(function () {
+            $(".cs-data-cell").each(function () {
                 let cell = $(this);
 
                 if (modules.cs.cellExpired(modules.cs.currentSheet.sheet.date, modules.cs.rowsMd5[cell.attr("data-row")])) {
@@ -50,7 +50,7 @@
                     cell.removeClass(modules.cs.currentSheet.sheet.reservedClass);
                     cell.removeClass(modules.cs.currentSheet.sheet.blockedClass);
                     cell.removeClass("pointer");
-                    cell.removeClass("csDataCell");
+                    cell.removeClass("cs-data-cell");
                     cell.addClass(modules.cs.currentSheet.sheet.emptyClass);
                 }
             });
@@ -76,8 +76,8 @@
     mqttCellMsg: function (topic, payload) {
         if (!payload || !payload.uid) return;
 
-        let cell = $(".csDataCell[data-uid=" + payload.uid + "]");
-        let cellLogin = $(".csDataCellLogin[data-uid=" + payload.uid + "]");
+        let cell = $(".cs-data-cell[data-uid=" + payload.uid + "]");
+        let cellLogin = $(".cs-data-cellLogin[data-uid=" + payload.uid + "]");
 
         if (cell && cell.length == 1) {
             cell.removeClass("spinner-small");
@@ -253,8 +253,8 @@
 
     mqttRedisExpireMsg: function (topic, payload) {
         if (payload.key.substring(0, 5) == "cell_" && payload.key.split("_")[5]) {
-            let cell = $(".csDataCell[data-uid=" + payload.key.split("_")[5] + "]");
-            let cellLogin = $(".csDataCellLogin[data-uid=" + payload.key.split("_")[5] + "]");
+            let cell = $(".cs-data-cell[data-uid=" + payload.key.split("_")[5] + "]");
+            let cellLogin = $(".cs-data-cellLogin[data-uid=" + payload.key.split("_")[5] + "]");
             if (cell && cell.length == 1) {
                 cell.removeClass("spinner-small");
                 cell.removeClass(modules.cs.currentSheet.sheet.blockedClass);
@@ -472,21 +472,21 @@
                                                     title = escapeHTML(r.issues.issues[i][modules.cs.currentSheet.sheet.fields.hint]);
                                                 }
                                                 if (modules.cs.highlight == r.issues.issues[i].issueId) {
-                                                    modules.cs.issuesInSheet[uid] += `<span class="csIssueHighlight ${modules.cs.currentSheet.sheet.issueHighlightClass ? modules.cs.currentSheet.sheet.issueHighlightClass : "bg-orange"}"><a class="csIssueSpan pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a><span class="unhighlight"><i class="far fa-fw fa-times-circle" title="${i18n("cs.unhighlight")}"></i></span></span><br />`;
+                                                    modules.cs.issuesInSheet[uid] += `<span class="csIssueHighlight ${modules.cs.currentSheet.sheet.issueHighlightClass ? modules.cs.currentSheet.sheet.issueHighlightClass : "bg-orange"}"><a class="cs-issue-span pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a><span class="unhighlight"><i class="far fa-fw fa-times-circle" title="${i18n("cs.unhighlight")}"></i></span></span><br />`;
                                                 } else
                                                 if (closed) {
-                                                    modules.cs.issuesInSheet[uid] += `<span class="csIssueHighlight ${modules.cs.currentSheet.sheet.issueClosedClass}"><a class="csIssueSpan pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a></span><br />`;
+                                                    modules.cs.issuesInSheet[uid] += `<span class="csIssueHighlight ${modules.cs.currentSheet.sheet.issueClosedClass}"><a class="cs-issue-span pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a></span><br />`;
                                                 } else
                                                 if (installers && installers.length && !done) {
-                                                    modules.cs.issuesInSheet[uid] += `<span class="csIssueHighlight ${modules.cs.currentSheet.sheet.issueAssignedClass}"><a class="csIssueSpan pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a></span><br />`;
+                                                    modules.cs.issuesInSheet[uid] += `<span class="csIssueHighlight ${modules.cs.currentSheet.sheet.issueAssignedClass}"><a class="cs-issue-span pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a></span><br />`;
                                                 } else
                                                 if ((!installers || !installers.length) && done) {
-                                                    modules.cs.issuesInSheet[uid] += `<span class="csIssueHighlight ${modules.cs.currentSheet.sheet.issueDoneClass}"><a class="csIssueSpan pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a></span><br />`;
+                                                    modules.cs.issuesInSheet[uid] += `<span class="csIssueHighlight ${modules.cs.currentSheet.sheet.issueDoneClass}"><a class="cs-issue-span pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a></span><br />`;
                                                 } else
                                                 if (installers && installers.length && done) {
-                                                    modules.cs.issuesInSheet[uid] += `<span class="csIssueHighlight ${modules.cs.currentSheet.sheet.issueAssignedClass} ${modules.cs.currentSheet.sheet.issueDoneClass}"><a class="csIssueSpan pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a></span><br />`;
+                                                    modules.cs.issuesInSheet[uid] += `<span class="csIssueHighlight ${modules.cs.currentSheet.sheet.issueAssignedClass} ${modules.cs.currentSheet.sheet.issueDoneClass}"><a class="cs-issue-span pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a></span><br />`;
                                                 } else {
-                                                    modules.cs.issuesInSheet[uid] += `<a class="csIssueSpan pointer text-dark pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a><br />`;
+                                                    modules.cs.issuesInSheet[uid] += `<a class="cs-issue-span pointer text-dark pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a><br />`;
                                                 }
                                             }
                                         }
@@ -656,9 +656,9 @@
                                             let uid = md5($("#csSheet").val() + ":" + $("#csDate").val() + ":" + modules.cs.cols[j] + ":" + modules.cs.rows[i]);
                                             if (!modules.cs.cellExpired(modules.cs.currentSheet.sheet.date, rs[l])) {
                                                 if (modules.cs.currentSheet && modules.cs.currentSheet.sheet && modules.cs.currentSheet.sheet.specialRows && modules.cs.currentSheet.sheet.specialRows.indexOf(rs[l]) >= 0) {
-                                                    h += '<td class="' + modules.cs.currentSheet.sheet.specialRowClass + ' csDataCell pointer" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '">';
+                                                    h += '<td class="' + modules.cs.currentSheet.sheet.specialRowClass + ' cs-data-cell pointer" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '">';
                                                 } else {
-                                                    h += '<td class="csDataCell pointer" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '">';
+                                                    h += '<td class="cs-data-cell pointer" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '">';
                                                 }
                                             } else {
                                                 if (response.sheet.sheet.emptyClass) {
@@ -670,7 +670,7 @@
                                             if (modules.cs.issuesInSheet[uid]) {
                                                 h += modules.cs.issuesInSheet[uid];
                                             }
-                                            h += '<span class="csDataCellLogin" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '"></span>';
+                                            h += '<span class="cs-data-cellLogin" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '"></span>';
                                             h += '</td>';
                                             break;
                                         }
@@ -1069,7 +1069,7 @@
                     navigateUrl("map", { markersLine: markers }, { run: true });
                 });
 
-                $(".csDataCell").off("click").on("click", function (e) {
+                $(".cs-data-cell").off("click").on("click", function (e) {
                     if (e.target && $(e.target).length == 1 && $(e.target)[0].nodeName == "A") {
                         return;
                     }
@@ -1173,23 +1173,23 @@
                     switch (modules.cs.currentSheet.cells[i].mode) {
                         case "claimed":
                             if (modules.cs.currentSheet.sheet.specialRowClass) {
-                                $(".csDataCell[data-uid=" + modules.cs.currentSheet.cells[i].uid + "]").removeClass(modules.cs.currentSheet.sheet.specialRowClass);
+                                $(".cs-data-cell[data-uid=" + modules.cs.currentSheet.cells[i].uid + "]").removeClass(modules.cs.currentSheet.sheet.specialRowClass);
                             }
-                            $(".csDataCell[data-uid=" + modules.cs.currentSheet.cells[i].uid + "]").addClass(modules.cs.currentSheet.sheet.blockedClass).attr("data-login", modules.cs.currentSheet.cells[i].login);
-                            $(".csDataCellLogin[data-uid=" + modules.cs.currentSheet.cells[i].uid + "]").html(modules.users.login2name(modules.cs.currentSheet.cells[i].login));
+                            $(".cs-data-cell[data-uid=" + modules.cs.currentSheet.cells[i].uid + "]").addClass(modules.cs.currentSheet.sheet.blockedClass).attr("data-login", modules.cs.currentSheet.cells[i].login);
+                            $(".cs-data-cellLogin[data-uid=" + modules.cs.currentSheet.cells[i].uid + "]").html(modules.users.login2name(modules.cs.currentSheet.cells[i].login));
                             break;
 
                         case "reserved":
                             if (modules.cs.currentSheet.sheet.specialRowClass) {
-                                $(".csDataCell[data-uid=" + modules.cs.currentSheet.cells[i].uid + "]").removeClass(modules.cs.currentSheet.sheet.specialRowClass);
+                                $(".cs-data-cell[data-uid=" + modules.cs.currentSheet.cells[i].uid + "]").removeClass(modules.cs.currentSheet.sheet.specialRowClass);
                             }
-                            $(".csDataCell[data-uid=" + modules.cs.currentSheet.cells[i].uid + "]").addClass(modules.cs.currentSheet.sheet.reservedClass).attr("data-login", modules.cs.currentSheet.cells[i].login);
-                            $(".csDataCellLogin[data-uid=" + modules.cs.currentSheet.cells[i].uid + "]").html(modules.users.login2name(modules.cs.currentSheet.cells[i].login) + (modules.cs.currentSheet.cells[i].comment ? ("<br>[" + modules.tt.issuesLinks(modules.cs.currentSheet.cells[i].comment) + "]") : ""));
+                            $(".cs-data-cell[data-uid=" + modules.cs.currentSheet.cells[i].uid + "]").addClass(modules.cs.currentSheet.sheet.reservedClass).attr("data-login", modules.cs.currentSheet.cells[i].login);
+                            $(".cs-data-cellLogin[data-uid=" + modules.cs.currentSheet.cells[i].uid + "]").html(modules.users.login2name(modules.cs.currentSheet.cells[i].login) + (modules.cs.currentSheet.cells[i].comment ? ("<br>[" + modules.tt.issuesLinks(modules.cs.currentSheet.cells[i].comment) + "]") : ""));
                             break;
                     }
                 }
 
-                $(".csIssueSpan").off("click").on("click", function (e) {
+                $(".cs-issue-span").off("click").on("click", function (e) {
                     e.stopPropagation();
                 });
 

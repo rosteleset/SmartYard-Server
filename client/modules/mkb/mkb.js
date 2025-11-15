@@ -97,6 +97,7 @@
                                     <div class="card card-info card-outline">
                                         <div class="card-header card-handle">
                                             <h5 class="card-title">
+                                                <span class="btn btn-tool btn-checkbox pl-0" data-checked="0"><i class="far fa-circle"></i></span>
                                                 <span class="btn btn-tool">#1</span>
                                                 <span class="btn btn-tool text-danger">5дн</span>
                                             </h5>
@@ -111,7 +112,6 @@
                                                 </span>
                                                 <span class="btn btn-tool"><i class="far fa-fw fa-copy"></i></span>
                                                 <span class="btn btn-tool text-primary"><i class="fas fa-fw fa-link"></i></span>
-                                                <span class="btn btn-tool btn-checkbox" data-checked="0"><i class="far fa-fw fa-circle"></i></span>
                                                 <span class="btn btn-tool"><i class="fas fa-fw fa-edit"></i></span>
                                             </div>
                                         </div>
