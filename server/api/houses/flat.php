@@ -39,10 +39,10 @@
      * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} flatId
+     * @apiBody {String} flat
      * @apiBody {Number} [floor]
-     * @apiBody {String} [flat]
      * @apiBody {String} [code]
-     * @apiBody {Object[]} [entrances]
+     * @apiBody {Object[]} [entrances] if you want to change entrances or apartmentsAndLevels both must be specified
      * @apiBody {Object[]} [apartmentsAndLevels]
      * @apiBody {Boolean} [manualBlock]
      * @apiBody {Boolean} [adminBlock]
