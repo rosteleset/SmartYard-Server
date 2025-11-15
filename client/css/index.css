@@ -891,3 +891,11 @@ code {
 .card-no-scroll {
   overflow-y: inherit!important;
 }
+
+.kanban-desk .kanban-col:last-child {
+  margin-right: 2px!important;
+}
+
+.kanban-desk .kanban-col:first-child {
+  margin-left: 2px!important;
+}

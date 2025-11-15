@@ -79,8 +79,8 @@
 
         let h = `
             <div class="content-wrapper kanban mt-3" style="margin-left: 0px!important;">
-                <section class="content pb-3 pl-0">
-                    <div id="desk" class="h-100" style="display: flex;">
+                <section class="content pb-3 pl-0 pr-0">
+                    <div id="desk" class="h-100 kanban-desk" style="display: flex;">
                         <div class="card card-row card-secondary kanban-col">
                             <div class="card-header col-handle">
                                 <h3 class="card-title">
@@ -155,7 +155,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="card card-row card-primary">
+                        <div class="card card-row card-primary kanban-col">
                             <div class="card-header col-handle">
                                 <h3 class="card-title">
                                 To Do
@@ -182,7 +182,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="card card-row card-lime">
+                        <div class="card card-row card-lime kanban-col">
                             <div class="card-header col-handle">
                                 <h3 class="card-title">
                                 In Progress
@@ -217,7 +217,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="card card-row card-success">
+                        <div class="card card-row card-success kanban-col">
                             <div class="card-header col-handle">
                                 <h3 class="card-title">
                                 Done
@@ -244,7 +244,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="card card-row card-success">
+                        <div class="card card-row card-success kanban-col">
                             <div class="card-header col-handle">
                                 <h3 class="card-title">
                                 Done
@@ -334,19 +334,48 @@
             e.stopPropagation();
         });
 
+        $("#dropdown-calendar").off("dragstart").on("dragstart", e => {
+            e.stopPropagation();
+        });
+
+        $("#dropdown-calendar").off("pointerdown").on("pointerdown", e => {
+            e.stopPropagation();
+        });
+
+        $("#dropdown-calendar").off("mousedown").on("mousedown", e => {
+            e.stopPropagation();
+        });
+
+        $("#dropdown-calendar").off("touchstart").on("touchstart", e => {
+            e.stopPropagation();
+        });
+
+        $("#dropdown-calendar").off("dragover").on("dragover", e => {
+            e.stopPropagation();
+        });
+
+        $("#dropdown-calendar").off("dragenter").on("dragenter", e => {
+            e.stopPropagation();
+        });
+
         $(".card-calendar").off("show.bs.dropdown").on("show.bs.dropdown", function () {
             let i = md5(guid());
 
             $("#dropdown-calendar").html(`<span id='c${i}'></span>`);
 
-            let c = new VanillaCalendarPro.Calendar("#c" + i, {
+            modules.mkb.c = new VanillaCalendarPro.Calendar("#c" + i, {
                 locale: 'ru',
                 selectedMonth: 6,
                 selectedYear: 2024,
                 selectedDates: [ '2024-07-22' ],
+                selectionTimeMode: 24,
+                selectedTime: '12:15',
             });
 
-            c.init();
+            modules.mkb.c.init();
+
+            // modules.mkb.c.context.selectedTime
+            // modules.mkb.c.context.selectedDates
         });
 
         loadingDone();
