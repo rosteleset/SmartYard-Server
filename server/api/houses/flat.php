@@ -43,7 +43,7 @@
      * @apiBody {Number} [floor]
      * @apiBody {String} [code]
      * @apiBody {Object[]} [entrances] if you want to change entrances or apartmentsAndLevels both must be specified
-     * @apiBody {Object[]} [apartmentsAndLevels]
+     * @apiBody {Object[]} [apartmentsAndLevels] if you want to change entrances or apartmentsAndLevels both must be specified
      * @apiBody {Boolean} [manualBlock]
      * @apiBody {Boolean} [adminBlock]
      * @apiBody {Boolean} [autoBlock]
