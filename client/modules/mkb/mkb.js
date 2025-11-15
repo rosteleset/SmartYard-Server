@@ -1,6 +1,7 @@
 ({
     menuItem: false,
     md: false,
+    c: false,
 
     init: function () {
         if (parseInt(myself.uid) > 0) {
@@ -86,6 +87,7 @@
                                     Backlog
                                 </h3>
                                 <div class="card-tools">
+                                    <span class="btn btn-tool"><i class="far fa-fw fa-clipboard"></i></span>
                                     <span class="btn btn-tool"><i class="fas fa-fw fa-plus-circle"></i></span>
                                     <span class="btn btn-tool"><i class="fas fa-fw fa-edit"></i></span>
                                 </div>
@@ -99,15 +101,16 @@
                                                 <span class="btn btn-tool text-danger">5дн</span>
                                             </h5>
                                             <div class="card-tools">
-                                                <span class="btn btn-tool text-primary"><i class="fas fa-fw fa-link"></i></span>
                                                 <span class="dropdown card-calendar">
-                                                    <span class="btn btn-tool text-info dropdown-toggle dropdown-toggle-no-icon pb-0" data-toggle="dropdown" data-boundary="window" aria-expanded="false" data-offset="-100,0" data-flip="true" style="margin-bottom: -8px;">
-                                                        <i class="far fa-fw fa-calendar"></i>
+                                                    <span class="btn btn-tool text-info dropdown-toggle dropdown-toggle-no-icon pb-0" data-toggle="dropdown" aria-expanded="false" data-flip="true" style="margin-bottom: -8px;">
+                                                        <i class="far fa-fw fa-calendar-alt"></i>
                                                         <ul class="dropdown-menu">
-                                                            <div class="dropdown-calendar"></div>
+                                                            <li id="dropdown-calendar"></li>
                                                         </ul>
                                                     </span>
                                                 </span>
+                                                <span class="btn btn-tool"><i class="far fa-fw fa-copy"></i></span>
+                                                <span class="btn btn-tool text-primary"><i class="fas fa-fw fa-link"></i></span>
                                                 <span class="btn btn-tool btn-checkbox" data-checked="0"><i class="far fa-fw fa-circle"></i></span>
                                                 <span class="btn btn-tool"><i class="fas fa-fw fa-edit"></i></span>
                                             </div>
@@ -170,14 +173,6 @@
                                             <h5 class="card-title">Create first milestone</h5>
                                             <div class="card-tools">
                                                 <a href="#" class="btn btn-tool btn-link">#5</a>
-                                                <span class="dropdown">
-                                                    <span class="btn btn-tool text-info dropdown-toggle dropdown-toggle-no-icon pb-0" data-toggle="dropdown" data-boundary="window" aria-expanded="false" data-offset="-100,0" data-flip="true" style="margin-bottom: -8px;">
-                                                        <i class="far fa-fw fa-calendar"></i>
-                                                        <ul class="dropdown-menu">
-                                                            <div class="dropdown-calendar"></div>
-                                                        </ul>
-                                                    </span>
-                                                </span>
                                                 <a href="#" class="btn btn-tool">
                                                     <i class="fas fa-pen"></i>
                                                 </a>
@@ -205,14 +200,6 @@
                                             <h5 class="card-title">Update Readme</h5>
                                             <div class="card-tools">
                                                 <a href="#" class="btn btn-tool btn-link">#2</a>
-                                                <span class="dropdown">
-                                                    <span class="btn btn-tool text-info dropdown-toggle dropdown-toggle-no-icon pb-0" data-toggle="dropdown" data-boundary="window" aria-expanded="false" data-offset="-100,0" data-flip="true" style="margin-bottom: -8px;">
-                                                        <i class="far fa-fw fa-calendar"></i>
-                                                        <ul class="dropdown-menu">
-                                                            <div class="dropdown-calendar"></div>
-                                                        </ul>
-                                                    </span>
-                                                </span>
                                                 <a href="#" class="btn btn-tool">
                                                     <i class="fas fa-pen"></i>
                                                 </a>
@@ -269,7 +256,7 @@
                                 </div>
                             </div>
                             <div id="done2" style="min-height: 100%;">
-                                <div class="card-body">
+                                <div class="card-body card-no-scroll">
                                     <div class="card card-primary card-outline">
                                         <div class="card-header card-handle">
                                             <h5 class="card-title">Create repo</h5>
@@ -340,22 +327,23 @@
         });
 
         $(".btn-checkbox-label").off("click").on("click", function () {
-            $("#" + $(this).attr("for")).click();
+            $("#" + $(this).attr("for")).trigger("click");
         });
 
-        $(".dropdown-calendar").off("click").on("click", e => {
+        $("#dropdown-calendar").off("click").on("click", e => {
             e.stopPropagation();
         });
 
         $(".card-calendar").off("show.bs.dropdown").on("show.bs.dropdown", function () {
-            let cc = $(this);
-            console.log(cc);
+            let i = md5(guid());
 
-            let c = new VanillaCalendarPro.Calendar(".dropdown-calendar", {
+            $("#dropdown-calendar").html(`<span id='c${i}'></span>`);
+
+            let c = new VanillaCalendarPro.Calendar("#c" + i, {
                 locale: 'ru',
                 selectedMonth: 6,
                 selectedYear: 2024,
-                selectedDates: ['2024-07-22'],
+                selectedDates: [ '2024-07-22' ],
             });
 
             c.init();
