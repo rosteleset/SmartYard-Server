@@ -110,41 +110,50 @@
                                                         </ul>
                                                     </span>
                                                 </span>
-                                                <span class="btn btn-tool"><i class="far fa-fw fa-copy"></i></span>
                                                 <span class="btn btn-tool text-primary"><i class="fas fa-fw fa-link"></i></span>
                                                 <span class="btn btn-tool"><i class="fas fa-fw fa-edit"></i></span>
+                                                <span class="btn btn-tool btn-min-max"><i class="fas fa-fw fa-minus"></i></span>
                                             </div>
                                         </div>
                                         <div class="card-body">
-                                            <div class="subtasks">
+                                            <div class="text-bold">Subject</div>
+                                            <hr class="min-max" />
+                                            <div class="subtasks min-max">
                                                 <div>
                                                     <span id="customCheckbox1" class="pl-0 pr-1 btn btn-tool btn-checkbox" data-checked="0"><i class="far fa-circle"></i></span>
-                                                    <label for="customCheckbox1" class="btn-checkbox-label">Bug</label>
+                                                    <label for="customCheckbox1" class="btn-checkbox-label text-no-bold">Bug</label>
                                                 </div>
                                                 <div>
                                                     <span id="customCheckbox2" class="pl-0 pr-1 btn btn-tool btn-checkbox" data-checked="0"><i class="far fa-circle"></i></span>
-                                                    <label for="customCheckbox2" class="btn-checkbox-label">Feature</label>
+                                                    <label for="customCheckbox2" class="btn-checkbox-label text-no-bold">Feature</label>
                                                 </div>
                                                 <div>
                                                     <span id="customCheckbox3" class="pl-0 pr-1 btn btn-tool btn-checkbox" data-checked="0"><i class="far fa-circle"></i></span>
-                                                    <label for="customCheckbox3" class="btn-checkbox-label">Enhancement</label>
+                                                    <label for="customCheckbox3" class="btn-checkbox-label text-no-bold">Enhancement</label>
                                                 </div>
                                                 <div>
                                                     <span id="customCheckbox4" class="pl-0 pr-1 btn btn-tool btn-checkbox" data-checked="0"><i class="far fa-circle"></i></span>
-                                                    <label for="customCheckbox4" class="btn-checkbox-label">Documentation</label>
+                                                    <label for="customCheckbox4" class="btn-checkbox-label text-no-bold">Documentation</label>
                                                 </div>
                                                 <div>
                                                     <span id="customCheckbox5" class="pl-0 pr-1 btn btn-tool btn-checkbox" data-checked="0"><i class="far fa-circle"></i></span>
-                                                    <label for="customCheckbox5" class="btn-checkbox-label">Examples</label>
+                                                    <label for="customCheckbox5" class="btn-checkbox-label text-no-bold">Examples</label>
                                                 </div>
                                             </div>
-                                            <div class="pointer subtasks-progress mt-2">
+                                            <div class="pointer subtasks-progress mt-2 mb-2 min-max">
                                                 <div class="progress progress-xxs">
                                                     <div class="progress-bar progress-bar-danger progress-bar-striped" role="progressbar" style="width: 90%"></div>
                                                 </div>
                                                 <div class="small">Progress: 7/7</div>
                                             </div>
-                                            <p class="mt-2 mb-0">
+                                            <div class="subtasks-progress-minimized mt-3 min-max hidden">
+                                                <div class="progress progress-xxs">
+                                                    <div class="progress-bar progress-bar-danger progress-bar-striped" role="progressbar" style="width: 90%"></div>
+                                                </div>
+                                                <div class="small">Progress: 7/7</div>
+                                            </div>
+                                            <hr class="min-max mt-0 mb-0" />
+                                            <p class="mt-2 mb-0 min-max">
                                                 Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
                                                 Aenean commodo ligula eget dolor. Aenean massa.
                                                 Cum sociis natoque penatibus et magnis dis parturient montes,
@@ -376,6 +385,11 @@
 
             // modules.mkb.c.context.selectedTime
             // modules.mkb.c.context.selectedDates
+        });
+
+        $(".btn-min-max").off("click").on("click", function () {
+            $(".btn-min-max").children().first().removeClass("fa-minus").addClass("fa-plus");
+            $(".min-max").toggle();
         });
 
         loadingDone();

@@ -921,7 +921,8 @@
 
                     $meta["date"] = @$attachment["date"] ? round($attachment["date"] / 1000) : time();
                     $meta["added"] = time();
-                    $meta["type"] = $attachment["type"];
+                    $meta["type"] = @$attachment["type"];
+                    $meta["comment"] = @$attachment["comment"];
                     $meta["issue"] = true;
                     $meta["project"] = $acr;
                     $meta["issueId"] = $issueId;

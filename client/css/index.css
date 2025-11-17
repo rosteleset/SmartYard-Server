@@ -187,7 +187,7 @@ select {
   margin: -0.15rem 0 -0.75rem;
 }
 
-.ldBar-label {
+.ld-bar-label {
   font-size: 24pt;
   font-weight: bold;
   font-family: Verdana, serif;
@@ -907,4 +907,12 @@ code {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+}
+
+.text-no-bold {
+  font-weight: normal!important;
+}
+
+.hidden {
+  display: none;
 }
