@@ -97,12 +97,18 @@ class DomophoneDbConfigCollector implements DbConfigCollectorInterface
         }
 
         $this
-            ->addApartmentsAndHousePrefixes()
             ->addDtmf()
             ->addEventServer()
             ->addNtp()
             ->addSip()
         ;
+
+        // We assume this is used only with single-subscriber intercoms
+        if (isset($this->domophoneData['ext']->forceFlatExtension)) {
+            $this->addForcedApartment();
+        } else {
+            $this->addApartmentsAndHousePrefixes();
+        }
 
         // If the domophone is linked to the entrance
         if ($this->mainEntrance) {
@@ -123,10 +129,10 @@ class DomophoneDbConfigCollector implements DbConfigCollectorInterface
     /**
      * Add apartments and house prefixes to the domophone configuration.
      *
-     * @return self
+     * @return void
      * @todo: ugly but it works
      */
-    private function addApartmentsAndHousePrefixes(): self
+    private function addApartmentsAndHousePrefixes(): void
     {
         /** @var addresses $addresses */
         $addresses = loadBackend('addresses');
@@ -215,8 +221,6 @@ class DomophoneDbConfigCollector implements DbConfigCollectorInterface
         if ($this->device instanceof HousePrefixInterface) {
             $this->builder->addHousePrefixes($housePrefixes);
         }
-
-        return $this;
     }
 
     /**
@@ -290,6 +294,24 @@ class DomophoneDbConfigCollector implements DbConfigCollectorInterface
         $url = $this->appConfig['syslog_servers'][$this->domophoneData['json']['eventServer']][0] ?? '';
         $this->builder->addEventServer($url);
         return $this;
+    }
+
+    /**
+     * Adds a single forced apartment with a specific SIP number.
+     *
+     * Uses the `forceFlatExtension` from the intercom extra settings as the SIP number.
+     *
+     * @return void
+     */
+    private function addForcedApartment(): void
+    {
+        $this->builder->addApartment(
+            apartment: 1,
+            code: 0,
+            sipNumbers: [$this->domophoneData['ext']->forceFlatExtension],
+            cmsEnabled: false,
+            cmsLevels: [],
+        );
     }
 
     /**
