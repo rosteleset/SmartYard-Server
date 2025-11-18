@@ -397,9 +397,7 @@
         loadingDone();
     },
 
-/*
     search: function (search) {
         console.log(search);
     }
-*/
 }).init();
