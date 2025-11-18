@@ -78,7 +78,7 @@
         });
 
         let h = `
-            <div class="content-wrapper kanban mt-3" style="margin-left: 0px!important;">
+            <div class="content-wrapper kanban pt-3" style="margin-left: 0px!important; margin-top: 0px!important;">
                 <section class="content pb-3 pl-0 pr-0">
                     <div id="desk" class="h-100 kanban-desk" style="display: flex;">
                         <div class="card card-row card-secondary kanban-col">
@@ -118,47 +118,45 @@
                                         <div class="card-body">
                                             <div class="text-bold">Subject</div>
                                             <hr class="min-max" />
-                                            <div class="subtasks min-max">
+                                            <div class="subtasks pb-2 min-max">
                                                 <div>
                                                     <span id="customCheckbox1" class="pl-0 pr-1 btn btn-tool btn-checkbox" data-checked="0"><i class="far fa-circle"></i></span>
-                                                    <label for="customCheckbox1" class="btn-checkbox-label text-no-bold">Bug</label>
+                                                    <span data-for="customCheckbox1" class="btn-checkbox-label text-no-bold">Bug</span>
                                                 </div>
                                                 <div>
                                                     <span id="customCheckbox2" class="pl-0 pr-1 btn btn-tool btn-checkbox" data-checked="0"><i class="far fa-circle"></i></span>
-                                                    <label for="customCheckbox2" class="btn-checkbox-label text-no-bold">Feature</label>
+                                                    <span data-for="customCheckbox2" class="btn-checkbox-label text-no-bold">Feature</span>
                                                 </div>
                                                 <div>
                                                     <span id="customCheckbox3" class="pl-0 pr-1 btn btn-tool btn-checkbox" data-checked="0"><i class="far fa-circle"></i></span>
-                                                    <label for="customCheckbox3" class="btn-checkbox-label text-no-bold">Enhancement</label>
+                                                    <span data-for="customCheckbox3" class="btn-checkbox-label text-no-bold">Enhancement</span>
                                                 </div>
                                                 <div>
                                                     <span id="customCheckbox4" class="pl-0 pr-1 btn btn-tool btn-checkbox" data-checked="0"><i class="far fa-circle"></i></span>
-                                                    <label for="customCheckbox4" class="btn-checkbox-label text-no-bold">Documentation</label>
+                                                    <span data-for="customCheckbox4" class="btn-checkbox-label text-no-bold">Documentation</span>
                                                 </div>
                                                 <div>
                                                     <span id="customCheckbox5" class="pl-0 pr-1 btn btn-tool btn-checkbox" data-checked="0"><i class="far fa-circle"></i></span>
-                                                    <label for="customCheckbox5" class="btn-checkbox-label text-no-bold">Examples</label>
+                                                    <span data-for="customCheckbox5" class="btn-checkbox-label text-no-bold">Examples</span>
                                                 </div>
                                             </div>
-                                            <div class="pointer subtasks-progress mt-2 mb-2 min-max">
-                                                <div class="progress progress-xxs">
-                                                    <div class="progress-bar progress-bar-danger progress-bar-striped" role="progressbar" style="width: 90%"></div>
+                                            <div class="pointer subtasks-progress pt-1 pb-1 min-max">
+                                                <div class="progress">
+                                                    <div class="progress-bar progress-bar-danger progress-bar-striped" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
                                                 </div>
-                                                <div class="small">Progress: 7/7</div>
                                             </div>
-                                            <div class="subtasks-progress-minimized mt-3 min-max hidden">
-                                                <div class="progress progress-xxs">
-                                                    <div class="progress-bar progress-bar-danger progress-bar-striped" role="progressbar" style="width: 90%"></div>
+                                            <div class="pt-3 pb-1 min-max hidden">
+                                                <div class="progress">
+                                                    <div class="progress-bar progress-bar-danger progress-bar-striped" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
                                                 </div>
-                                                <div class="small">Progress: 7/7</div>
                                             </div>
-                                            <hr class="min-max mt-0 mb-0" />
-                                            <p class="mt-2 mb-0 min-max">
+                                            <hr class="min-max" />
+                                            <div class="min-max">
                                                 Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
                                                 Aenean commodo ligula eget dolor. Aenean massa.
                                                 Cum sociis natoque penatibus et magnis dis parturient montes,
                                                 nascetur ridiculus mus.
-                                            </p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -336,7 +334,7 @@
         });
 
         $(".btn-checkbox-label").off("click").on("click", function () {
-            $("#" + $(this).attr("for")).trigger("click");
+            $("#" + $(this).attr("data-for")).trigger("click");
         });
 
         $("#dropdown-calendar").off("click").on("click", e => {
@@ -388,7 +386,11 @@
         });
 
         $(".btn-min-max").off("click").on("click", function () {
-            $(".btn-min-max").children().first().removeClass("fa-minus").addClass("fa-plus");
+            if ($(".btn-min-max").children().first().hasClass("fa-minus")) {
+                $(".btn-min-max").children().first().removeClass("fa-minus").addClass("fa-plus");
+            } else {
+                $(".btn-min-max").children().first().addClass("fa-minus").removeClass("fa-plus");
+            }
             $(".min-max").toggle();
         });
 

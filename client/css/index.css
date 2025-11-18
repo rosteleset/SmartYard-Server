@@ -916,3 +916,11 @@ code {
 .hidden {
   display: none;
 }
+
+.dropdown-avatar {
+  width: 30px;
+  height: 30px;
+  margin-top: 4px;
+  margin-left: 14.33px;
+  margin-right: 14.33px;
+}
