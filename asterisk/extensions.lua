@@ -400,7 +400,7 @@ function handleSOS()
 
     local sos = dm("sos", from)
 
-    if sos and sos ~= "" then
+    if sos and sos ~= "" and sos ~= cjson.null then
         local entrance = dm("entrance", tonumber(from:sub(2)))
 
         logDebug("entrance: " .. inspect(entrance))
@@ -425,7 +425,7 @@ function handleConcierge()
 
     local concierge = dm("concierge", from)
 
-    if concierge and concierge ~= "" then
+    if concierge and concierge ~= "" and concierge ~= cjson.null then
         local entrance = dm("entrance", tonumber(from:sub(2)))
 
         logDebug("entrance: " .. inspect(entrance))
