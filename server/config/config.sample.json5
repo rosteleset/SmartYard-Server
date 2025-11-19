@@ -310,7 +310,15 @@
 
         "mkb": {
             "backend": "mongo",
-        }
+        },
+
+        "tmpfs": {
+            "backend": "internal",
+            "path": "/tmp",
+            "path_rights": "777",
+            "file_rights": "777",
+            "max_age": "3day",
+        },
     },
 
     "email": {

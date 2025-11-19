@@ -39,7 +39,14 @@
 
                 $bucket = $this->mongo->$db->selectGridFSBucket();
 
-                $id = $bucket->uploadFromStream(preg_replace('/[\+]/', '_', $realFileName), $stream);
+                $tmpfs = loadBackend("tmpfs");
+
+                if ($tmpfs && $metadata && $metadata["expire"]) {
+                    $id = $bucket->uploadFromStream(preg_replace('/[\+]/', '_', $realFileName), $this->contentsToStream(""));
+                    $tmpfs->addFile($id, $stream);
+                } else {
+                    $id = $bucket->uploadFromStream(preg_replace('/[\+]/', '_', $realFileName), $stream);
+                }
 
                 if ($metadata) {
                     $this->setFileMetadata($id, $metadata);
@@ -55,15 +62,23 @@
             public function getFile($uuid) {
                 $db = $this->dbName;
 
+                $tmpfs = loadBackend("tmpfs");
+
                 $bucket = $this->mongo->$db->selectGridFSBucket();
 
                 $fileId = new \MongoDB\BSON\ObjectId($uuid);
+
+                $tstream = false;
+
+                if ($tmpfs) {
+                    $tstream = $tmpfs->getFile($uuid);
+                }
 
                 $stream = $bucket->openDownloadStream($fileId);
 
                 return [
                     "fileInfo" => $bucket->getFileDocumentForStream($stream),
-                    "stream" => $stream,
+                    "stream" => $tstream ?: $stream,
                 ];
             }
 
@@ -136,6 +151,16 @@
             public function deleteFile($uuid) {
                 $db = $this->dbName;
 
+                $tmpfs = loadBackend("tmpfs");
+
+                if ($tmpfs) {
+                    try {
+                        $tmpfs->deleteFile($uuid);
+                    } catch (\Exception $e) {
+                        //
+                    }
+                }
+
                 $bucket = $this->mongo->$db->selectGridFSBucket();
 
                 if ($bucket) {
@@ -175,7 +200,6 @@
                 $db = $this->dbName;
 
                 if ($part == '5min') {
-
                     $cursor = $this->mongo->$db->$collection->find([ "metadata.expire" => [ '$lt' => time() ] ]);
                     foreach ($cursor as $document) {
                         $this->deleteFile($document->_id);

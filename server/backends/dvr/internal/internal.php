@@ -435,7 +435,7 @@
                 $prefix = $this->getDVRStreamURLForCam($cam);
                 if ($time === null)
                     $time = now();
-                $dvr = loadBackend("dvr")->getDVRServerForCam($cam);
+                $dvr = $this->getDVRServerForCam($cam);
                 $type = $dvr['type'];
 
                 switch($type) {
@@ -555,7 +555,7 @@
                     // Flussonic Server by default
                     $url = "$prefix/$time-preview.mp4";
                     if (isset($dvr['token']) && strlen($dvr['token']) !== 0)
-                       $url = $url . "?token=" . $dvr['token'];
+                        $url = $url . "?token=" . $dvr['token'];
                     return $url;
                 }
                 return false;

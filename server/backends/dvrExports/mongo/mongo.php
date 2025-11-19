@@ -91,9 +91,9 @@
 
                         if (!$cam) {
                             echo "Camera with id = " . $task['cameraId'] . " was not found\n";
-                           return false;
-
+                            return false;
                         }
+
                         $request_url = loadBackend("dvr")->getUrlOfRecord($cam, $task['subscriberId'], $task['start'], $task['finish']);
 
                         $this->db->modify("update camera_records set state = 1 where record_id = $recordId");
@@ -121,11 +121,8 @@
                             $this->db->modify("update camera_records set state = 2 where record_id = $recordId");
                             echo "Record download task with id = $recordId was successfully finished!\n";
                             fclose($file);
-                            // print_r($files->getFile($fileId)["fileInfo"]);
-                            // echo "\n\n";
                             return $fileId;
                         } else {
-
                             $this->db->modify("update camera_records set state = 3 where record_id = $recordId");
                             echo "Record download task with id = $recordId was finished with error code = $code!\n";
                             return false;
