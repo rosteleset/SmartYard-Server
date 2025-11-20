@@ -137,7 +137,6 @@
                                 unlink($info->getPath() . "/" . $uuid);
                             }
                         }
-
                     }
 
                     echo "$c files deleted\n";
