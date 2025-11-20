@@ -314,10 +314,25 @@
 
         "tmpfs": {
             "backend": "internal",
-            "path": "/tmp",
+            "path": "/tmp/tmpfs",
             "path_rights": "777",
             "file_rights": "777",
             "max_age": "3day",
+        },
+
+        "extfs": {
+            "backend": "internal",
+            "path": "/tmp/extfs",
+            "path_rights": "777",
+            "file_rights": "777",
+        },
+
+        "memfs": {
+            "backend": "internal",
+            "path": "/tmp/memfs",
+            "path_rights": "777",
+            "file_rights": "777",
+            "max_age": "15min",
         },
     },
 

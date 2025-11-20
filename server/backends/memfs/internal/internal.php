@@ -1,23 +1,23 @@
 <?php
 
     /**
-     * backends tmpfs namespace
+     * backends memfs namespace
      */
 
-    namespace backends\tmpfs {
+    namespace backends\memfs {
 
-        class internal extends tmpfs {
+        class internal extends memfs {
 
             /**
              * @inheritDoc
              */
 
-            public function addFile($uuid, $stream) {
+            public function putFile($uuid, $content) {
                 $id = (string)$uuid;
 
-                $path = @$this->config["backends"]["tmpfs"]["path"] ?: "/tmp/tmpfs";
-                $path_rights = octdec(@(int)$this->config["backends"]["tmpfs"]["path_rights"] ?: 777);
-                $file_rights = octdec(@(int)$this->config["backends"]["tmpfs"]["file_rights"] ?: 777);
+                $path = @$this->config["backends"]["memfs"]["path"] ?: "/tmp/memfs";
+                $path_rights = octdec(@(int)$this->config["backends"]["memfs"]["path_rights"] ?: 777);
+                $file_rights = octdec(@(int)$this->config["backends"]["memfs"]["file_rights"] ?: 777);
 
                 if ($path[strlen($path) - 1] != "/") {
                     $path .= "/";
@@ -32,18 +32,11 @@
 
                 $path .= $id;
 
-                $file = fopen($path, "w");
-
-                while (!feof($stream)) {
-                    fwrite($file, fread($stream, 1024 * 1024));
-                }
-
-                fclose($file);
-                fclose($stream);
+                $res = file_put_contents($path, $content);
 
                 chmod($path, $file_rights);
 
-                return true;
+                return $res;
             }
 
             /**
@@ -53,7 +46,7 @@
             public function getFile($uuid) {
                 $id = (string)$uuid;
 
-                $path = @$this->config["backends"]["tmpfs"]["path"] ?: "/tmp/tmpfs";
+                $path = @$this->config["backends"]["memfs"]["path"] ?: "/tmp/memfs";
 
                 if ($path[strlen($path) - 1] != "/") {
                     $path .= "/";
@@ -65,36 +58,10 @@
                 $path .= $id;
 
                 if (file_exists($path)) {
-                    return fopen($path, "r");
+                    return @file_get_contents($path);
                 } else {
                     return false;
                 }
-            }
-
-            /**
-             * @inheritDoc
-             */
-
-            public function deleteFile($uuid) {
-                $id = (string)$uuid;
-
-                $path = @$this->config["backends"]["tmpfs"]["path"] ?: "/tmp/tmpfs";
-
-                if ($path[strlen($path) - 1] != "/") {
-                    $path .= "/";
-                }
-
-                $path .= $id[0] . "/";
-                $path .= $id[1] . "/";
-
-                $path .= $id;
-
-                if (file_exists($path)) {
-                    return unlink($path);
-                } else {
-                    return false;
-                }
-
             }
 
             /**
@@ -102,9 +69,9 @@
              */
 
             public function cron($part) {
-                if ($part == "daily") {
-                    $path = @$this->config["backends"]["tmpfs"]["path"] ?: "/tmp/tmpfs";
-                    $max_age = @$this->config["backends"]["tmpfs"]["max_age"] ?: "1month";
+                if ($part == "5min") {
+                    $path = @$this->config["backends"]["memfs"]["path"] ?: "/tmp/memfs";
+                    $max_age = @$this->config["backends"]["memfs"]["max_age"] ?: "5min";
                     $threshold = strtotime("-" . $max_age);
 
                     if (file_exists($path) && $threshold) {

@@ -1,12 +1,12 @@
 <?php
 
     /**
-     * backends tmpfs namespace
+     * backends extfs namespace
      */
 
-    namespace backends\tmpfs {
+    namespace backends\extfs {
 
-        class internal extends tmpfs {
+        class internal extends extfs {
 
             /**
              * @inheritDoc
@@ -15,9 +15,9 @@
             public function addFile($uuid, $stream) {
                 $id = (string)$uuid;
 
-                $path = @$this->config["backends"]["tmpfs"]["path"] ?: "/tmp/tmpfs";
-                $path_rights = octdec(@(int)$this->config["backends"]["tmpfs"]["path_rights"] ?: 777);
-                $file_rights = octdec(@(int)$this->config["backends"]["tmpfs"]["file_rights"] ?: 777);
+                $path = @$this->config["backends"]["path"] ?: "/tmp/extfs";
+                $path_rights = octdec(@(int)$this->config["backends"]["extfs"]["path_rights"] ?: 777);
+                $file_rights = octdec(@(int)$this->config["backends"]["extfs"]["file_rights"] ?: 777);
 
                 if ($path[strlen($path) - 1] != "/") {
                     $path .= "/";
@@ -53,7 +53,7 @@
             public function getFile($uuid) {
                 $id = (string)$uuid;
 
-                $path = @$this->config["backends"]["tmpfs"]["path"] ?: "/tmp/tmpfs";
+                $path = @$this->config["backends"]["extfs"]["path"] ?: "/tmp/extfs";
 
                 if ($path[strlen($path) - 1] != "/") {
                     $path .= "/";
@@ -78,7 +78,7 @@
             public function deleteFile($uuid) {
                 $id = (string)$uuid;
 
-                $path = @$this->config["backends"]["tmpfs"]["path"] ?: "/tmp/tmpfs";
+                $path = @$this->config["backends"]["extfs"]["path"] ?: "/tmp/extfs";
 
                 if ($path[strlen($path) - 1] != "/") {
                     $path .= "/";
@@ -103,19 +103,6 @@
 
             public function cron($part) {
                 if ($part == "daily") {
-                    $path = @$this->config["backends"]["tmpfs"]["path"] ?: "/tmp/tmpfs";
-                    $max_age = @$this->config["backends"]["tmpfs"]["max_age"] ?: "1month";
-                    $threshold = strtotime("-" . $max_age);
-
-                    if (file_exists($path) && $threshold) {
-                        $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));
-                        foreach ($iterator as $info) {
-                            if ($info->isFile() && $threshold >= $info->getMTime()) {
-                                unlink($info->getPath() . "/" . $info->getFilename());
-                            }
-                        }
-                    }
-
                     return true;
                 }
 

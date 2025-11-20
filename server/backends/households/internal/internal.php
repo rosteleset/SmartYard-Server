@@ -3681,7 +3681,14 @@
                             $camerasBackend = loadBackend('cameras');
                             $cameraId = $cameras[0]['cameraId'];
 
-                            $this->redis->setex("shot_" . $hash, 15 * 60, $camerasBackend->getSnapshot($cameraId));
+                            $memfs = loadBackend("memfs");
+
+                            if ($memfs) {
+                                $memfs->putFile("shot_" . $hash, $camerasBackend->getSnapshot($cameraId));
+                            } else {
+                                $this->redis->setex("shot_" . $hash, 15 * 60, $camerasBackend->getSnapshot($cameraId));
+                            }
+
                             $this->redis->setex("live_" . $hash, 3 * 60, $cameraId);
                         }
 

@@ -45,7 +45,13 @@
                     $id = $bucket->uploadFromStream(preg_replace('/[\+]/', '_', $realFileName), $this->contentsToStream(""));
                     $tmpfs->addFile($id, $stream);
                 } else {
-                    $id = $bucket->uploadFromStream(preg_replace('/[\+]/', '_', $realFileName), $stream);
+                    $extfs = loadBackend($extfs);
+                    if ($extfs) {
+                        $id = $bucket->uploadFromStream(preg_replace('/[\+]/', '_', $realFileName), $this->contentsToStream(""));
+                        $extfs->addFile($id, $stream);
+                    } else {
+                        $id = $bucket->uploadFromStream(preg_replace('/[\+]/', '_', $realFileName), $stream);
+                    }
                 }
 
                 if ($metadata) {
@@ -63,22 +69,28 @@
                 $db = $this->dbName;
 
                 $tmpfs = loadBackend("tmpfs");
+                $extfs = loadBackend("tmpfs");
 
                 $bucket = $this->mongo->$db->selectGridFSBucket();
 
                 $fileId = new \MongoDB\BSON\ObjectId($uuid);
 
                 $tstream = false;
+                $estream = false;
 
                 if ($tmpfs) {
                     $tstream = $tmpfs->getFile($uuid);
+                }
+
+                if ($extfs) {
+                    $estream = $extfs->getFile($uuid);
                 }
 
                 $stream = $bucket->openDownloadStream($fileId);
 
                 return [
                     "fileInfo" => $bucket->getFileDocumentForStream($stream),
-                    "stream" => $tstream ?: $stream,
+                    "stream" => $tstream ?: ( $estream ?: $stream),
                 ];
             }
 
@@ -156,6 +168,16 @@
                 if ($tmpfs) {
                     try {
                         $tmpfs->deleteFile($uuid);
+                    } catch (\Exception $e) {
+                        //
+                    }
+                }
+
+                $extfs = loadBackend("extfs");
+
+                if ($extfs) {
+                    try {
+                        $extfs->deleteFile($uuid);
                     } catch (\Exception $e) {
                         //
                     }

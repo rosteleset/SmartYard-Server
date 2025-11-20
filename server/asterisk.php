@@ -401,6 +401,8 @@
                     break;
 
                 case "camshot":
+                    $memfs = loadBackend("memfs");
+
                     if ($params["domophoneId"] >= 0) {
                         $households = loadBackend("households");
                         $camerasBackend = loadBackend("cameras");
@@ -412,7 +414,13 @@
 
                             if ($cameras && $cameras[0]) {
                                 $cameraId = $cameras[0]['cameraId'];
-                                $redis->setex("shot_" . $params["hash"], 3 * 60, $camerasBackend->getSnapshot($cameraId));
+
+                                if ($memfs) {
+                                    $memfs->putFile($params["hash"], $camerasBackend->getSnapshot($cameraId));
+                                } else {
+                                    $redis->setex("shot_" . $params["hash"], 3 * 60, $camerasBackend->getSnapshot($cameraId));
+                                }
+
                                 $redis->setex("live_" . $params["hash"], 3 * 60, $cameraId);
 
                                 echo $params["hash"];
@@ -420,8 +428,12 @@
                         }
                     } else {
                         $fakeImage = file_get_contents(__DIR__ . "/hw/ip/camera/fake/img/callcenter.jpg");
-                        $redis->setex("shot_" . $params["hash"], 3 * 60, $fakeImage);
-                        $redis->setex("live_" . $params["hash"], 3 * 60, $fakeImage);
+
+                        if ($memfs) {
+                            $memfs->putFile($params["hash"], $fakeImage);
+                        } else {
+                            $redis->setex("shot_" . $params["hash"], 3 * 60, $fakeImage);
+                        }
 
                         echo $params["hash"];
                     }
