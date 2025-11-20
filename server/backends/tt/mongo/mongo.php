@@ -81,16 +81,24 @@
                         if ($attachments) {
                             $files = loadBackend("files");
 
+                            $ext = $this->config["backends"]["tt"]["attachments"] === "external";
+
+                            $meta = [
+                                "date" => round($attachment["date"] / 1000),
+                                "added" => time(),
+                                "type" => $attachment["type"],
+                                "issue" => true,
+                                "project" => $acr,
+                                "issueId" => $issue["issueId"],
+                                "attachman" => $issue["author"],
+                            ];
+
+                            if ($ext) {
+                                $meta["external"] = true;
+                            }
+
                             foreach ($attachments as $attachment) {
-                                $add = $files->addFile($attachment["name"], $files->contentsToStream(base64_decode($attachment["body"])), [
-                                    "date" => round($attachment["date"] / 1000),
-                                    "added" => time(),
-                                    "type" => $attachment["type"],
-                                    "issue" => true,
-                                    "project" => $acr,
-                                    "issueId" => $issue["issueId"],
-                                    "attachman" => $issue["author"],
-                                ]) &&
+                                $add = $files->addFile($attachment["name"], $files->contentsToStream(base64_decode($attachment["body"])), $meta) &&
                                 $this->addJournalRecord($issue["issueId"], "addAttachment", null, [
                                     "attachmentFilename" => $attachment["name"],
                                 ]);
@@ -927,6 +935,12 @@
                     $meta["project"] = $acr;
                     $meta["issueId"] = $issueId;
                     $meta["attachman"] = $this->login;
+
+                    $ext = $this->config["backends"]["tt"]["attachments"] === "external";
+
+                    if ($ext) {
+                        $meta["external"] = true;
+                    }
 
                     if (!(
                         $files->addFile($attachment["name"], $files->contentsToStream($attachment["body"]), $meta) &&

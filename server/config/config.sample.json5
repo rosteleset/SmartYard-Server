@@ -271,6 +271,7 @@
 
         "tt": {
             "backend": "mongo",
+            "attachments": "external",
         },
 
         "cs": {
