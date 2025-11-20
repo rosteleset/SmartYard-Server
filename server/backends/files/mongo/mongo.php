@@ -45,7 +45,7 @@
                     $id = $bucket->uploadFromStream(preg_replace('/[\+]/', '_', $realFileName), $this->contentsToStream(""));
                     $tmpfs->addFile($id, $stream);
                 } else {
-                    $extfs = loadBackend($extfs);
+                    $extfs = loadBackend("extfs");
                     if ($extfs) {
                         $id = $bucket->uploadFromStream(preg_replace('/[\+]/', '_', $realFileName), $this->contentsToStream(""));
                         $extfs->addFile($id, $stream);
@@ -69,7 +69,7 @@
                 $db = $this->dbName;
 
                 $tmpfs = loadBackend("tmpfs");
-                $extfs = loadBackend("tmpfs");
+                $extfs = loadBackend("extfs");
 
                 $bucket = $this->mongo->$db->selectGridFSBucket();
 
