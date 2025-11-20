@@ -117,7 +117,7 @@
                             "expire" => $task['expire']
                         ]);
 
-                        if ($file ) {
+                        if ($file) {
                             $this->db->modify("update camera_records set state = 2 where record_id = $recordId");
                             echo "Record download task with id = $recordId was successfully finished!\n";
                             fclose($file);
