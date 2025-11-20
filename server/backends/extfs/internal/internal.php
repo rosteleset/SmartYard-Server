@@ -101,12 +101,51 @@
              * @inheritDoc
              */
 
-            public function cron($part) {
-                if ($part == "daily") {
-                    return true;
+            public function cliUsage() {
+                $usage = parent::cliUsage();
+
+                if (!@$usage["maintenance"]) {
+                    $usage["maintenance"] = [];
                 }
 
-                return true;
+                $usage["maintenance"]["cleanup"] = [
+                    "description" => "Cleanup deleted files",
+                ];
+
+                return $usage;
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+            public function cli($args) {
+                if (array_key_exists("--cleanup", $args)) {
+
+                    $files = loadBackend("files");
+                    $path = @$this->config["backends"]["extfs"]["path"] ?: "/tmp/extfs";
+
+                    $c = 0;
+
+                    if ($files && file_exists($path)) {
+                        $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));
+                        foreach ($iterator as $info) {
+                            $uuid = $info->getFilename();
+                            if ($info->isFile() && !count($files->searchFiles([ "id" => $uuid ]))) {
+                                echo "unused file found $uuid\n";
+                                $c++;
+                                unlink($info->getPath() . "/" . $uuid);
+                            }
+                        }
+
+                    }
+
+                    echo "$c files deleted\n";
+
+                    exit(0);
+                }
+
+                parent::cli($args);
             }
         }
     }

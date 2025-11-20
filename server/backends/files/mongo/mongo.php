@@ -137,6 +137,15 @@
                 $collection = "fs.files";
                 $db = $this->dbName;
 
+                if (@$query["_id"]) {
+                    $query["_id"] = new \MongoDB\BSON\ObjectId($query["_id"]);
+                }
+
+                if (@$query["id"]) {
+                    $query["_id"] = new \MongoDB\BSON\ObjectId($query["id"]);
+                    unset($query["id"]);
+                }
+
                 $cursor = $this->mongo->$db->$collection->find($query, [
                     "sort" => [
                         "filename" => 1,
