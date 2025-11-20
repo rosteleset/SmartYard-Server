@@ -271,12 +271,13 @@
 
         "tt": {
             "backend": "mongo",
-            "attachments": "external",
+            // required extfs backend
+            // "attachments": "external",
         },
 
         "cs": {
             "backend": "internal",
-            // ttl of CSs
+            // ttl of CSs (days)
             "ttl": "3",
         },
 
