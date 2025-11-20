@@ -1003,6 +1003,7 @@
             /**
              * @inheritDoc
              */
+
             public function addArrayValue($issueId, $field, $value) {
                 $db = $this->dbName;
                 $acr = explode("-", $issueId)[0];
@@ -1086,6 +1087,7 @@
             /**
              * @inheritDoc
              */
+
             public function deleteArrayValue($issueId, $field, $value) {
                 $db = $this->dbName;
                 $acr = explode("-", $issueId)[0];

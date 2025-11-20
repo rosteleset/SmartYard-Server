@@ -12,7 +12,7 @@
              * @inheritDoc
              */
 
-            public function addFile($uuid, $stream) {
+            public function putFile($uuid, $stream) {
                 $id = (string)$uuid;
 
                 $path = @$this->config["backends"]["path"] ?: "/tmp/extfs";

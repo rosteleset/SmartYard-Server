@@ -43,12 +43,12 @@
 
                 if ($tmpfs && $metadata && @$metadata["expire"]) {
                     $id = $bucket->uploadFromStream(preg_replace('/[\+]/', '_', $realFileName), $this->contentsToStream(""));
-                    $tmpfs->addFile($id, $stream);
+                    $tmpfs->putFile($id, $stream);
                 } else {
                     $extfs = loadBackend("extfs");
                     if ($extfs && $metadata && @$metadata["external"]) {
                         $id = $bucket->uploadFromStream(preg_replace('/[\+]/', '_', $realFileName), $this->contentsToStream(""));
-                        $extfs->addFile($id, $stream);
+                        $extfs->putFile($id, $stream);
                     } else {
                         $id = $bucket->uploadFromStream(preg_replace('/[\+]/', '_', $realFileName), $stream);
                     }

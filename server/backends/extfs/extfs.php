@@ -21,7 +21,7 @@
              * return boolean
              */
 
-            abstract function addFile($uuid, $stream);
+            abstract function putFile($uuid, $stream);
 
             /**
              * $uuid

@@ -132,8 +132,7 @@
                 return $this->config["api"]["internal"] . "/frs/callback?stream_id=" . $cam[self::CAMERA_ID];
             }
 
-            private function addFaceFrs($data, $event_uuid)
-            {
+            private function addFaceFrs($data, $event_uuid) {
                 $query = "select face_id from frs_faces where face_id = :face_id";
                 $r = $this->db->get($query, [":face_id" => $data[self::P_FACE_ID]], [], [self::PDO_SINGLIFY]);
                 if ($r)
@@ -176,8 +175,8 @@
             /**
              * @inheritDoc
              */
-            public function addStreamFrs($cam, array $faces = [], array $params = [])
-            {
+
+            public function addStreamFrs($cam, array $faces = [], array $params = []) {
                 $method_params = [
                     self::P_STREAM_ID => $cam[self::CAMERA_ID],
                     self::P_URL => $this->camshotUrl($cam),
