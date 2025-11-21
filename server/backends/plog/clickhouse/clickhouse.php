@@ -1416,6 +1416,83 @@
                             }
                         }
 
+                        if ($unit === 'basip') {
+                            $patterns_call = [
+                                // pattern         start  talk  open   call_from_panel
+                                ['call was accepted', true, true, false, 1],
+                                ['call was no accepted', true, false, false, 1],
+                                ['Door 1 opened by call host', false, true, true, 1],
+                            ];
+
+                            foreach ($patterns_call as [$pattern, $flag_start, $flag_talk_started, $flag_door_opened, $now_call_from_panel]) {
+                                unset($now_flat_id);
+                                unset($now_flat_number);
+                                unset($now_call_id);
+                                unset($now_sip_call_id);
+
+                                if (!str_contains($msg, $pattern)) {
+                                    continue;
+                                }
+
+                                // Check if call started from this panel
+                                if ($now_call_from_panel > 0) {
+                                    $call_from_panel = 1;
+                                }
+
+                                $messageParts = array_map('trim', explode(':', $msg));
+                                $sipNumber = null;
+
+                                if (
+                                    $messageParts[5] === 'Outgoing call. call number' ||
+                                    $messageParts[6] === 'Outgoing call. call number'
+                                ) {
+                                    $sipNumber = explode('@', $messageParts[3])[0];
+                                } elseif ($messageParts[5] === 'Door 1 opened by call host') {
+                                    $sipNumber = explode('@', $messageParts[4])[0];
+                                }
+
+                                if ($sipNumber === null) {
+                                    continue;
+                                }
+
+                                $sipNumberLen = strlen($sipNumber);
+
+                                if ($sipNumberLen === 10) {
+                                    $now_flat_id = substr($sipNumber, 1);
+                                } elseif ($sipNumberLen === 8) {
+                                    $prefix = substr($sipNumber, 0, 4);
+                                    $now_flat_number = substr($sipNumber, 4);
+                                }
+
+                                $call_start_lost =
+                                    isset($now_flat_id) && isset($flat_id) && $now_flat_id != $flat_id ||
+                                    isset($now_flat_number) && isset($flat_number) && $now_flat_number != $flat_number;
+
+                                if ($call_start_lost) {
+                                    break;
+                                }
+
+                                $event_data[self::COLUMN_DATE] = $item['date'];
+
+                                if (isset($now_flat_number) && !isset($flat_number)) {
+                                    $flat_number = $now_flat_number;
+                                }
+                                if (isset($now_flat_id) && !isset($flat_id)) {
+                                    $flat_id = $now_flat_id;
+                                }
+                                if ($flag_talk_started) {
+                                    $event_data[self::COLUMN_EVENT] = self::EVENT_ANSWERED_CALL;
+                                }
+                                if ($flag_door_opened) {
+                                    $event_data[self::COLUMN_OPENED] = 1;
+                                }
+                                if ($flag_start) {
+                                    $call_start_found = true;
+                                    break;
+                                }
+                            }
+                        }
+
                         if ($call_start_found) {
                             break;
                         }

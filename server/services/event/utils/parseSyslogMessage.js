@@ -38,10 +38,14 @@ const parseSyslogMessage = (str, unit) => {
     // Rubetek
     const regexRubetek = /<(?<priority>\d{1,3})>(?<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+\d{2}:\d{2}) (?<hostname>\S+) (?<app>\S+) (?<message>.*)$/;
 
+    // Basip
+    const regexBasip = /<(?<priority>\d{1,3})>\s*(?<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|\+\d{2}:\d{2}))\s+(?<hostname>\S+)\s+(?<app>\S+)\s+(?<message>.*)$/;
+
     const partsIETF = regexIETF.exec(str);
     const partsBSD = regexBSB.exec(str);
     // const partsSokolPlus = regexSokolPlus.exec(str);
     const partsRubetek = regexRubetek.exec(str);
+    const partsBasip = regexBasip.exec(str);
 
     if (partsIETF) {
         const [, priority, version, timestamp, hostname, app, pid, msg_id, message] = partsIETF;
@@ -84,6 +88,17 @@ const parseSyslogMessage = (str, unit) => {
 
         return {
             format: 'Rubetek',
+            priority: Number(priority),
+            timestamp: getTimestamp(new Date(timestamp)),
+            hostname,
+            app,
+            message,
+        };
+    } else if (partsBasip) {
+        const [, priority, timestamp, hostname, app, message] = partsBasip;
+
+        return {
+            format: 'BasIP',
             priority: Number(priority),
             timestamp: getTimestamp(new Date(timestamp)),
             hostname,
