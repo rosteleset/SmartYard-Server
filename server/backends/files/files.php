@@ -101,8 +101,7 @@
             public function toGUIDv4($uuid) {
                 $uuid = "10001000" . $uuid;
 
-                $hyphen = chr(45);
-                return substr($uuid,  0,  8) . $hyphen . substr($uuid,  8,  4) . $hyphen . substr($uuid, 12,  4) . $hyphen . substr($uuid, 16,  4) . $hyphen . substr($uuid, 20, 12);
+                return substr($uuid,  0,  8) . "-" . substr($uuid,  8,  4) . "-" . substr($uuid, 12,  4) . "-" . substr($uuid, 16,  4) . "-" . substr($uuid, 20, 12);
             }
 
             /**
