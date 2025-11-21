@@ -521,6 +521,12 @@ function initAll() {
         $("#2faBoxLogo").html("<img class='mb-2' src='img/" + config.logo + "Text.png' width='285px'/>");
     }
 
+    $("#leftSideToggler").on("click", e => {
+        window.open("https://github.com/rosteleset", '_blank').focus();
+        e.preventDefault();
+        return false;
+    });
+
     $(document.body).css("background-color", '#e9ecef');
 
     loadingStart();
