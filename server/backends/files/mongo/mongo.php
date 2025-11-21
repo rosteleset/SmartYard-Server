@@ -41,17 +41,26 @@
 
                 $tmpfs = loadBackend("tmpfs");
 
+                $s = false;
+
                 if ($tmpfs && $metadata && @$metadata["expire"]) {
                     $id = $bucket->uploadFromStream(preg_replace('/[\+]/', '_', $realFileName), $this->contentsToStream(""));
-                    $tmpfs->putFile($id, $stream);
+                    $s = $tmpfs->putFile($id, $stream);
                 } else {
                     $extfs = loadBackend("extfs");
                     if ($extfs && $metadata && @$metadata["external"]) {
                         $id = $bucket->uploadFromStream(preg_replace('/[\+]/', '_', $realFileName), $this->contentsToStream(""));
-                        $extfs->putFile($id, $stream);
+                        $s = $extfs->putFile($id, $stream);
                     } else {
                         $id = $bucket->uploadFromStream(preg_replace('/[\+]/', '_', $realFileName), $stream);
                     }
+                }
+
+                if ($s !== false) {
+                    if (!$metadata) {
+                        $metadata = [];
+                    }
+                    $metadata["realLength"] = $s;
                 }
 
                 if ($metadata) {
@@ -87,9 +96,14 @@
                 }
 
                 $stream = $bucket->openDownloadStream($fileId);
+                $info = $bucket->getFileDocumentForStream($stream);
+
+                if (@$info["metadata"] && @$info["metadata"]["realLength"]) {
+                    $info["length"] = $info["metadata"]["realLength"];
+                }
 
                 return [
-                    "fileInfo" => $bucket->getFileDocumentForStream($stream),
+                    "fileInfo" => $info,
                     "stream" => $tstream ?: ( $estream ?: $stream),
                 ];
             }

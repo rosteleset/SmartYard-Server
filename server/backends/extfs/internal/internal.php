@@ -34,8 +34,10 @@
 
                 $file = fopen($path, "w");
 
+                $s = 0;
+
                 while (!feof($stream)) {
-                    fwrite($file, fread($stream, 1024 * 1024));
+                    $s += fwrite($file, fread($stream, 1024 * 1024));
                 }
 
                 fclose($file);
@@ -43,7 +45,7 @@
 
                 chmod($path, $file_rights);
 
-                return true;
+                return $s;
             }
 
             /**

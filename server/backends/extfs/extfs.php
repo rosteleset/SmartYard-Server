@@ -18,7 +18,7 @@
              * $uuid
              * $stream
              *
-             * return boolean
+             * return boolean|integer
              */
 
             abstract function putFile($uuid, $stream);
