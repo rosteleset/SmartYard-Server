@@ -24,7 +24,7 @@ abstract class domophone extends ip
      */
     public const DEFAULT_PUBLIC_ACCESS_CODE = 10000;
 
-    final public function getConfig(): array
+    public function getConfig(): array
     {
         $builder = new DomophoneConfigurationBuilder();
 

@@ -1,0 +1,30 @@
+{
+    "title": "DUMMY",
+    "vendor": "DUMMY",
+    "model": "DUMMY",
+    "class": "dummy",
+    "eventServer": "dummy",
+    "outputs": 10,
+    "camera": "dummy",
+    "useSmartConfigurator": false,
+    "cmses": [
+        "bk-100",
+        "bk-400",
+        "com-25u",
+        "com-100u",
+        "com-220u",
+        "factorial_8x8",
+        "kad2501",
+        "kad2502",
+        "kkm-100s2",
+        "kkm-105",
+        "kkm-108",
+        "km20-1",
+        "km100-7.1",
+        "km100-7.2",
+        "km100-7.3",
+        "km100-7.5",
+        "kmg-100",
+        "qad-100"
+    ]
+}
