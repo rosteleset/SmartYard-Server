@@ -45,7 +45,7 @@
 
                 chmod($path, $file_rights);
 
-                return true;
+                return $s;
             }
 
             /**
