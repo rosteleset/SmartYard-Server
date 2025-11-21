@@ -10,4 +10,5 @@ export { SputnikCloudService } from "./SputnikCloudService.js";
 export { OmnyWebHookService } from "./OmnyWebHookService.js";
 export { UfanetService } from "./UfanetService.js";
 export { BrovotechService } from "./BrovotechService.js";
+export { SoyuzService } from "./SoyuzService.js";
 export { IFlowWebHookService } from "./IFlowWebHookService.js";
