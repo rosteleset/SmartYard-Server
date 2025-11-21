@@ -172,6 +172,11 @@
                 foreach ($cursor as $document) {
                     $document = object_to_array($document);
                     $document["id"] = (string)$document["_id"]["oid"];
+
+                    if (@$document["metadata"] && @$document["metadata"]["realLength"]) {
+                        $document["length"] = $document["metadata"]["realLength"];
+                    }
+
                     unset($document["_id"]);
                     $files[] = $document;
                 }
