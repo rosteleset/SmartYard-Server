@@ -117,8 +117,8 @@
                                         </div>
                                         <div class="card-body">
                                             <div class="text-bold">Subject</div>
-                                            <hr class="min-max" />
-                                            <div class="subtasks pb-2 min-max">
+                                            <hr class="hr-subject" />
+                                            <div class="subtasks pb-2">
                                                 <div>
                                                     <span id="customCheckbox1" class="pl-0 pr-1 btn btn-tool btn-checkbox" data-checked="0"><i class="far fa-circle"></i></span>
                                                     <span data-for="customCheckbox1" class="btn-checkbox-label text-no-bold">Bug</span>
@@ -140,12 +140,7 @@
                                                     <span data-for="customCheckbox5" class="btn-checkbox-label text-no-bold">Examples</span>
                                                 </div>
                                             </div>
-                                            <div class="pointer subtasks-progress pt-1 pb-1 min-max">
-                                                <div class="progress">
-                                                    <div class="progress-bar progress-bar-danger progress-bar-striped" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
-                                                </div>
-                                            </div>
-                                            <div class="pt-3 pb-1 min-max hidden">
+                                            <div class="pointer subtasks-progress pt-1 pb-1">
                                                 <div class="progress">
                                                     <div class="progress-bar progress-bar-danger progress-bar-striped" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
                                                 </div>
@@ -320,8 +315,19 @@
             "animation": 150,
         });
 
-        $(".subtasks-progress").off("click").on("click", () => {
-            $(".subtasks").toggle();
+        $(".subtasks-progress").off("click").on("click", function () {
+            let pb = $(this);
+            if (pb.hasClass("pointer")) {
+                if (pb.attr("data-minimized") == "true") {
+                    $(".subtasks").show();
+                    $(".hr-subject").show();
+                    pb.attr("data-minimized", "false").removeClass("pt-3").addClass("pt-1");
+                } else {
+                    $(".subtasks").hide();
+                    $(".hr-subject").hide();
+                    pb.attr("data-minimized", "true").addClass("pt-3").removeClass("pt-1");
+                }
+            }
         });
 
         $(".btn-checkbox").off("click").on("click", function () {
@@ -388,10 +394,25 @@
         $(".btn-min-max").off("click").on("click", function () {
             if ($(".btn-min-max").children().first().hasClass("fa-minus")) {
                 $(".btn-min-max").children().first().removeClass("fa-minus").addClass("fa-plus");
+                $(".subtasks-progress").removeClass("pt-1").addClass("pt-3").removeClass("pointer");
+                $(".hr-subject").hide();
+                $(".min-max").hide();
+                $(".subtasks").hide();
             } else {
                 $(".btn-min-max").children().first().addClass("fa-minus").removeClass("fa-plus");
+                let pb = $(".subtasks-progress");
+                if (pb.attr("data-minimized") == "true") {
+                    $(".subtasks").hide();
+                    $(".hr-subject").hide();
+                    pb.attr("data-minimized", "true").addClass("pt-3").removeClass("pt-1");
+                } else {
+                    $(".subtasks").show();
+                    $(".hr-subject").show();
+                    pb.attr("data-minimized", "false").removeClass("pt-3").addClass("pt-1");
+                }
+                pb.addClass("pointer");
+                $(".min-max").show();
             }
-            $(".min-max").toggle();
         });
 
         loadingDone();
