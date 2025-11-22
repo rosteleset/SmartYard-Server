@@ -507,3 +507,19 @@ for (let i in additionalLinks) {
 }
 
 linkify.init();
+
+window.addEventListener("drop", (e) => {
+    if ([...e.dataTransfer.items].some((item) => item.kind === "file")) {
+        e.preventDefault();
+    }
+});
+
+window.addEventListener("dragover", (e) => {
+    let fileItems = [...e.dataTransfer.items].filter(
+        (item) => item.kind === "file",
+    );
+
+    if (fileItems.length > 0) {
+        e.preventDefault();
+    }
+});

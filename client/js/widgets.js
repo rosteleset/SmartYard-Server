@@ -3,7 +3,7 @@ var backToTopTicking = false;
 var windowResizeTicking = false;
 
 function message(message, caption, timeout) {
-    timeout = timeout?timeout:15;
+    timeout = timeout ? timeout : 15;
     toastr.info(message, caption?caption:i18n("message"), {
         "closeButton": true,
         "debug": false,
@@ -23,7 +23,7 @@ function message(message, caption, timeout) {
 }
 
 function warning(message, caption, timeout) {
-    timeout = timeout?timeout:15;
+    timeout = timeout ? timeout : 15;
     toastr.warning(message, caption?caption:i18n("warning"), {
         "closeButton": true,
         "debug": false,
@@ -43,7 +43,7 @@ function warning(message, caption, timeout) {
 }
 
 function error(message, caption, timeout) {
-    timeout = timeout?timeout:15;
+    timeout = timeout ? timeout : 15;
     toastr.error(message, caption?caption:i18n("error"), {
         "closeButton": true,
         "debug": false,
@@ -97,13 +97,13 @@ function mYesNo(body, title, callbackYes, callbackNo, yes, no, timeout) {
 
     $('#yesnoModalLabel').html(title);
     $('#yesnoModalBody').html(body);
-    let t = yes?yes:i18n("yes");
+    let t = yes ? yes : i18n("yes");
     t = t.charAt(0).toUpperCase() + t.substring(1);
     $('#yesnoModalButtonYes').html(t).off('click').on('click', () => {
         $('#yesnoModal').modal('hide');
         if (typeof callbackYes == 'function') callbackYes();
     });
-    t = no?no:i18n("no");
+    t = no ? no : i18n("no");
     t = t.charAt(0).toUpperCase() + t.substring(1);
     $('#yesnoModalButtonNo').html(t).off('click').on('click', () => {
         $('#yesnoModal').modal('hide');

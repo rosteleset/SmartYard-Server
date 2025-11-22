@@ -644,6 +644,7 @@
 
         let h = "";
 
+        h += "<div class='paste-target issue-form'>";
         h += "<div>";
         h += "<table class='mt-2 ml-2' style='width: 100%;'>";
         h += "<tr>";
@@ -990,6 +991,7 @@
 
         h += "<table style='width: 100%; display: none;' class='ml-2' id='issueJournal'>";
         h += "</table>";
+        h += "</div>";
         h += "</div>";
 
         $("#mainForm").html(h);
@@ -1754,6 +1756,60 @@
             }
         })).on("success", () => {
             message(i18n("copied"), i18n("clipboard"), 3);
+        });
+
+        function attach(files) {
+            if (files && files[0] && files.length == 1) {
+                mConfirm(i18n("tt.attachFile"), i18n("confirm"), i18n("tt.attach"), () => {
+                    let file = files[0];
+                    fetch(URL.createObjectURL(file)).then(response => {
+                        return response.blob();
+                    }).then(blob => {
+                        setTimeout(() => {
+                            let reader = new FileReader();
+                            reader.onloadend = () => {
+                                let body = reader.result.split(';base64,')[1];
+                                loadingStart();
+                                POST("tt", "file", false, { issueId: issue.issue.issueId, attachments: [
+                                    {
+                                        name: file.name,
+                                        size: file.size,
+                                        date: file.lastModified,
+                                        type: file.type,
+                                        body: body,
+                                    }
+                                ]}).
+                                fail(FAIL).
+                                fail(loadingDone).
+                                done(() => {
+                                    window.location.href = refreshUrl();
+                                });
+                            };
+                            reader.readAsDataURL(blob);
+                        }, 100);
+                    });
+                });
+            }
+            if (files && files[0] && files.length !== 1) {
+                error(i18n("tt.tooManyFiles"));
+            }
+        }
+
+        $(".issue-form").off("proxy-paste").on("proxy-paste", (e, files) => {
+            attach(files);
+        }).off("drop").on("drop", e => {
+            e.preventDefault();
+            let files = [...e.originalEvent.dataTransfer.items].map((item) => item.getAsFile()).filter((file) => file);
+            attach(files);
+        }).off("dragover").on("dragover", e => {
+            let fileItems = [...e.originalEvent.dataTransfer.items].filter(
+                (item) => item.kind === "file",
+            );
+
+            if (fileItems.length > 0) {
+                e.preventDefault();
+                e.originalEvent.dataTransfer.dropEffect = "copy";
+            }
         });
 
         loadingDone();

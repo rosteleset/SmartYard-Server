@@ -353,6 +353,9 @@
     "select": "Select",
     "selectAll": "All",
     "unselectAll": "Nothing",
+    "tooManyFiles": "Too many files",
+    "attachFile": "Attach file to issue?",
+    "attach": "Attach",
     "methods": {
         "tt": {
             "_title": "Task manager",
