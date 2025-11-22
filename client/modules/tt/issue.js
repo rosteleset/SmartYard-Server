@@ -1760,8 +1760,15 @@
 
         function attach(files) {
             if (files && files[0] && files.length == 1) {
+                let maxSize = parseInt(project.maxFileSize);
+                let file = files[0];
+
+                if (maxSize && file.size > maxSize) {
+                    error(i18n("exceededSize"));
+                    return;
+                }
+
                 mConfirm(i18n("tt.attachFile"), i18n("confirm"), i18n("tt.attach"), () => {
-                    let file = files[0];
                     fetch(URL.createObjectURL(file)).then(response => {
                         return response.blob();
                     }).then(blob => {
@@ -1791,7 +1798,7 @@
                 });
             }
             if (files && files[0] && files.length !== 1) {
-                error(i18n("tt.tooManyFiles"));
+                error(i18n("multiuploadNotSupported"));
             }
         }
 

@@ -355,7 +355,6 @@
     "select": "Выбрать",
     "selectAll": "Все",
     "unselectAll": "Ничего",
-    "tooManyFiles": "Слишком много файлов за один раз",
     "attachFile": "Приложить файл к заявке?",
     "attach": "Приложить",
     "methods": {

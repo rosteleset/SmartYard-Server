@@ -61,12 +61,12 @@ function loadFile(mimeTypes, maxSize, callback, button, quiet) {
             file = files[0];
 
             if (mimeTypes && mimeTypes.indexOf(file.type) === -1) {
-                error("incorrectFileType");
+                error(i18n("incorrectFileType"));
                 return;
             }
 
             if (maxSize && file.size > maxSize) {
-                error("exceededSize");
+                error(i18n("exceededSize"));
                 return;
             }
 
@@ -143,11 +143,11 @@ function loadFiles(mimeTypes, maxSize, callback) {
 
         for (let i in files) {
             if (mimeTypes && mimeTypes.indexOf(files[i].type) === -1) {
-                error("incorrectFileType");
+                error(i18n("incorrectFileType"));
                 return;
             }
             if (maxSize && files[i].size > maxSize) {
-                error("exceededSize");
+                error(i18n("exceededSize"));
                 return;
             }
         }
