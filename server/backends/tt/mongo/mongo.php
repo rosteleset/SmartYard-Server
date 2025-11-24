@@ -936,9 +936,7 @@
                     $meta["issueId"] = $issueId;
                     $meta["attachman"] = $this->login;
 
-                    $ext = $this->config["backends"]["tt"]["attachments"] === "external";
-
-                    if ($ext) {
+                    if ($this->config["backends"]["tt"]["attachments"] === "external") {
                         $meta["external"] = true;
                     }
 
