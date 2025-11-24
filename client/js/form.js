@@ -789,7 +789,7 @@ function cardForm(params) {
         if (params.fields[i].hint) {
             h += `<span class="text-secondary text-xs pl-1">${params.fields[i].hint}`;
             if (params.fields[i].copyable) {
-                h += `<span class='ml-1 form-cc pointer far fa-copy' data-clipboard-text='${params.fields[i].hint}' alt='${i18n("copyToClipboard")}'></span>`;
+                h += `<span class='ml-1 form-cc pointer far fa-copy' data-clipboard-text='${params.fields[i].hint}' title='${i18n("copyToClipboard")}'></span>`;
             }
             h += "</span>";
         }
