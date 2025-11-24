@@ -1364,7 +1364,7 @@
                 if (@$issue["links"]) {
                     $linkedIssues = $this->getIssues($acr, [
                         "issueId" => [
-                            "\$in" => $issue["links"]
+                            '$in' => $issue["links"]
                         ],
                     ], [
                         "issueId",

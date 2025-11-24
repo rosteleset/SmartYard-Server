@@ -199,9 +199,9 @@
                     $old = $this->getIssue($issue["issueId"]);
                     $update = false;
                     if ($old) {
-                        $update = $this->mongo->$db->$project->updateOne([ "issueId" => $issue["issueId"] ], [ "\$set" => $issue ]);
+                        $update = $this->mongo->$db->$project->updateOne([ "issueId" => $issue["issueId"] ], [ '$set' => $issue ]);
                         if (count($unset)) {
-                            $update = $update && $this->mongo->$db->$project->updateOne([ "issueId" => $issue["issueId"] ], [ "\$unset" => $unset ]);
+                            $update = $update && $this->mongo->$db->$project->updateOne([ "issueId" => $issue["issueId"] ], [ '$unset' => $unset ]);
                         }
                     }
                     if ($update) {
@@ -718,7 +718,7 @@
                     ],
                     $type ?
                     [
-                        "\$push" => [
+                        '$push' => [
                             "comments" => [
                                 "body" => $comment,
                                 "created" => time(),
@@ -728,7 +728,7 @@
                             ],
                         ],
                     ] : [
-                        "\$push" => [
+                        '$push' => [
                             "comments" => [
                                 "body" => $comment,
                                 "created" => time(),
@@ -743,7 +743,7 @@
                         "issueId" => $issueId,
                     ],
                     [
-                        "\$set" => [
+                        '$set' => [
                             "updated" => time(),
                         ],
                     ]
@@ -795,7 +795,7 @@
                             "issueId" => $issueId,
                         ],
                         [
-                            "\$set" => [
+                            '$set' => [
                                 "comments.$commentIndex.body" => $comment,
                                 "comments.$commentIndex.created" => time(),
                                 "comments.$commentIndex.author" => $this->login,
@@ -807,7 +807,7 @@
                             "issueId" => $issueId,
                         ],
                         [
-                            "\$set" => [
+                            '$set' => [
                                 "updated" => time(),
                             ],
                         ]
@@ -856,7 +856,7 @@
                                 "issueId" => $issueId,
                             ],
                             [
-                                "\$set" => [
+                                '$set' => [
                                     "updated" => time(),
                                 ],
                             ]
@@ -947,7 +947,7 @@
                                 "issueId" => $issueId,
                             ],
                             [
-                                "\$set" => [
+                                '$set' => [
                                     "updated" => time(),
                                 ],
                             ]
@@ -998,7 +998,7 @@
                                     "issueId" => $issueId,
                                 ],
                                 [
-                                    "\$set" => [
+                                    '$set' => [
                                         "updated" => time(),
                                     ],
                                 ]
@@ -1079,7 +1079,7 @@
                         "issueId" => $issueId,
                     ],
                     [
-                        "\$push" => [
+                        '$push' => [
                             $field => $value,
                         ],
                     ]
@@ -1089,7 +1089,7 @@
                         "issueId" => $issueId,
                     ],
                     [
-                        "\$set" => [
+                        '$set' => [
                             "updated" => time(),
                         ],
                     ]
@@ -1170,7 +1170,7 @@
                         "issueId" => $issueId,
                     ],
                     [
-                        "\$unset" => [
+                        '$unset' => [
                             $field . "." . array_search($value, $issue[$field]) => true,
                         ],
                     ]
@@ -1180,7 +1180,7 @@
                         "issueId" => $issueId,
                     ],
                     [
-                        "\$pull" => [
+                        '$pull' => [
                             $field  => null,
                         ],
                     ]
@@ -1190,7 +1190,7 @@
                         "issueId" => $issueId,
                     ],
                     [
-                        "\$set" => [
+                        '$set' => [
                             "updated" => time(),
                         ],
                     ]
@@ -1199,7 +1199,7 @@
                 if ($result) {
                     $issue = $this->getIssue($issueId);
                     if (!count($issue[$field])) {
-                        $result = $result && $this->mongo->$db->$acr->updateOne([ "issueId" => $issueId ], [ "\$unset" => [ $field => true ] ]);
+                        $result = $result && $this->mongo->$db->$acr->updateOne([ "issueId" => $issueId ], [ '$unset' => [ $field => true ] ]);
                     }
                 }
 
@@ -1224,8 +1224,8 @@
                         if (trim($token)) {
                             $and[] = [
                                 $field => [
-                                    "\$regex" => "^.*" . $token . ".*$",
-                                    "\$options" => "i",
+                                    '$regex' => "^.*" . $token . ".*$",
+                                    '$options' => "i",
                                 ],
                             ];
                         }
@@ -1233,22 +1233,22 @@
 
                     $cursor = $this->mongo->$db->$project->aggregate([
                         [
-                            "\$match" => [
-                                "\$and" => $and,
+                            '$match' => [
+                                '$and' => $and,
                             ],
                         ],
                         [
-                            "\$group" => [
+                            '$group' => [
                                 "_id" => "$" . $field,
                             ],
                         ],
                         [
-                            "\$sort" => [
+                            '$sort' => [
                                 "_id" => 1,
                             ],
                         ],
                         [
-                            "\$project" => [
+                            '$project' => [
                                 $field => 1,
                             ],
                         ],
@@ -1508,10 +1508,10 @@
                     if ($query) {
                         $pipeline = [
                             [
-                                "\$match" => $query,
+                                '$match' => $query,
                             ],
                             [
-                                "\$match" => [
+                                '$match' => [
                                     "issueId" => $issueId
                                 ],
                             ],
