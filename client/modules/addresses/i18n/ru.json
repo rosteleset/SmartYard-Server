@@ -138,7 +138,6 @@
     "whiteRabbit": "&quot;Белый кролик&quot;",
     "sipEnabled": "SIP интерком",
     "sip": "SIP",
-    "webRtc": "WebRTC",
     "sipPassword": "Пароль",
     "cmsType": "Аналоговые линии",
     "cmsA": "Только аудио",

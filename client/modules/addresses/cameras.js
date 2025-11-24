@@ -270,6 +270,13 @@
                     tab: i18n("addresses.secondary"),
                 },
                 {
+                    id: "webrtc",
+                    type: "noyes",
+                    title: i18n("addresses.webrtc"),
+                    placeholder: i18n("addresses.webrtc"),
+                    tab: i18n("addresses.webrtc"),
+                },
+                {
                     id: "comments",
                     type: "text",
                     title: i18n("addresses.comments"),
@@ -682,6 +689,14 @@
                         title: i18n("addresses.monitoring"),
                         placeholder: i18n("addresses.monitoring"),
                         value: camera.monitoring,
+                        tab: i18n("addresses.secondary"),
+                    },
+                    {
+                        id: "webrtc",
+                        type: "noyes",
+                        title: i18n("addresses.webrtc"),
+                        placeholder: i18n("addresses.webrtc"),
+                        value: camera.webrtc,
                         tab: i18n("addresses.secondary"),
                     },
                     {

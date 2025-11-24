@@ -138,7 +138,6 @@
     "whiteRabbit": "\"White Rabbit\"",
     "sipEnabled": "SIP Intercom",
     "sip": "SIP",
-    "webRtc": "WebRTC",
     "sipPassword": "Password",
     "cmsType": "Analog Lines",
     "cmsA": "Audio Only",

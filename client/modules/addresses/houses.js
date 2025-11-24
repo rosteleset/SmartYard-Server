@@ -1197,7 +1197,7 @@
                         },
                         {
                             id: "2",
-                            text: i18n("addresses.webRtc"),
+                            text: i18n("addresses.webrtc"),
                         },
                     ],
                     select: (el, id, prefix) => {
@@ -2479,7 +2479,7 @@
                             },
                             {
                                 id: "2",
-                                text: i18n("addresses.webRtc"),
+                                text: i18n("addresses.webrtc"),
                             },
                         ],
                         select: (el, id, prefix) => {
