@@ -788,6 +788,9 @@ function cardForm(params) {
 
         if (params.fields[i].hint) {
             h += `<span class="text-secondary text-xs pl-1">${params.fields[i].hint}</span>`;
+            if (params.fields[i].copipable) {
+                h += `<span class='form-cc pointer far fa-copy' data-clipboard-text='${params.fields[i].hint}' alt='${i18n("copyToClipboard")}'></span>`;
+            }
         }
 
         h += `</td>`;
@@ -1762,6 +1765,15 @@ function cardForm(params) {
     $(".multiselect-checkbox").off("click").on("click", () => {
         xblur();
     });
+
+    (new ClipboardJS('.form-cc', {
+        text: function(trigger) {
+            return trigger.getAttribute('data-clipboard-text');
+        }
+    })).on("success", () => {
+        message(i18n("copied"), i18n("clipboard"), 3);
+    });
+
 
     if (typeof params.done == "function") {
         params.done(_prefix);
