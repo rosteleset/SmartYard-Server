@@ -4,16 +4,19 @@
      * backends dvrExports namespace
      */
 
-    namespace backends\dvrExports
-    {
-        class mongo extends dvrExports
-        {
-//
+    namespace backends\dvrExports {
+
+        /**
+         * mongo dvrExports class
+         */
+
+        class mongo extends dvrExports {
+
             /**
              * @inheritDoc
              */
-            public function addDownloadRecord($cameraId, $subscriberId, $start, $finish)
-            {
+
+            public function addDownloadRecord($cameraId, $subscriberId, $start, $finish) {
                 $dvr_files_ttl = @$this->config["backends"]["dvrExports"]["dvr_files_ttl"] ?: 259200; // 3 days
 
                 if (!checkInt($cameraId) || !checkInt($subscriberId) || !checkInt($start) || !checkInt($finish)) {
@@ -36,8 +39,8 @@
             /**
              * @inheritDoc
              */
-            public function checkDownloadRecord($cameraId, $subscriberId, $start, $finish)
-            {
+
+            public function checkDownloadRecord($cameraId, $subscriberId, $start, $finish) {
                 if (!checkInt($cameraId) || !checkInt($subscriberId) || !checkInt($start) || !checkInt($finish)) {
                     return false;
                 }
@@ -61,8 +64,8 @@
             /**
              * @inheritDoc
              */
-            public function runDownloadRecordTask($recordId)
-            {
+
+            public function runDownloadRecordTask($recordId) {
                 $config = $this->config;
                 // TODO: добавить удаление старых заданий на скачивание.
 
