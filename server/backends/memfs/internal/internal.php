@@ -13,7 +13,7 @@
              */
 
             public function putFile($uuid, $content) {
-                $id = (string)$uuid;
+                $id = md5((string)$uuid);
 
                 $path = @$this->config["backends"]["memfs"]["path"] ?: "/tmp/memfs";
                 $path_rights = octdec(@(int)$this->config["backends"]["memfs"]["path_rights"] ?: 777);
@@ -44,7 +44,7 @@
              */
 
             public function getFile($uuid) {
-                $id = (string)$uuid;
+                $id = md5((string)$uuid);
 
                 $path = @$this->config["backends"]["memfs"]["path"] ?: "/tmp/memfs";
 

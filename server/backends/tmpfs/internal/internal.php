@@ -13,7 +13,7 @@
              */
 
             public function putFile($uuid, $stream) {
-                $id = (string)$uuid;
+                $id = md5((string)$uuid);
 
                 $path = @$this->config["backends"]["tmpfs"]["path"] ?: "/tmp/tmpfs";
                 $path_rights = octdec(@(int)$this->config["backends"]["tmpfs"]["path_rights"] ?: 777);
@@ -53,7 +53,7 @@
              */
 
             public function getFile($uuid) {
-                $id = (string)$uuid;
+                $id = md5((string)$uuid);
 
                 $path = @$this->config["backends"]["tmpfs"]["path"] ?: "/tmp/tmpfs";
 
@@ -78,7 +78,7 @@
              */
 
             public function deleteFile($uuid) {
-                $id = (string)$uuid;
+                $id = md5((string)$uuid);
 
                 $path = @$this->config["backends"]["tmpfs"]["path"] ?: "/tmp/tmpfs";
 

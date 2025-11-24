@@ -13,9 +13,9 @@
              */
 
             public function putFile($uuid, $stream) {
-                $id = (string)$uuid;
+                $id = md5((string)$uuid);
 
-                $path = @$this->config["backends"]["path"] ?: "/tmp/extfs";
+                $path = @$this->config["backends"]["extfs"]["path"] ?: "/tmp/extfs";
                 $path_rights = octdec(@(int)$this->config["backends"]["extfs"]["path_rights"] ?: 777);
                 $file_rights = octdec(@(int)$this->config["backends"]["extfs"]["file_rights"] ?: 777);
 
@@ -53,7 +53,7 @@
              */
 
             public function getFile($uuid) {
-                $id = (string)$uuid;
+                $id = md5((string)$uuid);
 
                 $path = @$this->config["backends"]["extfs"]["path"] ?: "/tmp/extfs";
 
@@ -78,7 +78,7 @@
              */
 
             public function deleteFile($uuid) {
-                $id = (string)$uuid;
+                $id = md5((string)$uuid);
 
                 $path = @$this->config["backends"]["extfs"]["path"] ?: "/tmp/extfs";
 
@@ -132,7 +132,7 @@
                         $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));
                         foreach ($iterator as $info) {
                             $uuid = $info->getFilename();
-                            if ($info->isFile() && !count($files->searchFiles([ "id" => $uuid ]))) {
+                            if ($info->isFile() && !count($files->searchFiles([ "metadata.md5id" => $uuid ]))) {
                                 echo "unused file found $uuid\n";
                                 $c++;
                                 unlink($info->getPath() . "/" . $uuid);

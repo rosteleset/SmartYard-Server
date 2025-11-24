@@ -50,6 +50,7 @@
                     $extfs = loadBackend("extfs");
                     if ($extfs && $metadata && @$metadata["external"]) {
                         $id = $bucket->uploadFromStream(preg_replace('/[\+]/', '_', $realFileName), $this->contentsToStream(""));
+                        $metadata["md5id"] = md5($id);
                         $s = $extfs->putFile($id, $stream);
                     } else {
                         $id = $bucket->uploadFromStream(preg_replace('/[\+]/', '_', $realFileName), $stream);
@@ -177,6 +178,10 @@
                         $document["length"] = $document["metadata"]["realLength"];
                     }
 
+                    if (@$document["metadata"] && @$document["metadata"]["realUploadDate"]) {
+                        $document["uploadDate"] = $document["metadata"]["realUploadDate"];
+                    }
+
                     unset($document["_id"]);
                     $files[] = $document;
                 }
@@ -245,15 +250,26 @@
              * @inheritDoc
              */
 
-            public function cron($part) {
+            public function cleanup() {
                 $collection = "fs.files";
                 $db = $this->dbName;
 
+                $cursor = $this->mongo->$db->$collection->find([ "metadata.expire" => [ '$lt' => time() ] ]);
+                foreach ($cursor as $document) {
+                    $this->deleteFile($document->_id);
+                }
+
+                return true;
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+            public function cron($part) {
+
                 if ($part == '5min') {
-                    $cursor = $this->mongo->$db->$collection->find([ "metadata.expire" => [ '$lt' => time() ] ]);
-                    foreach ($cursor as $document) {
-                        $this->deleteFile($document->_id);
-                    }
+                    $this->cleanup();
                 }
 
                 return true;
@@ -293,6 +309,16 @@
                     "placeholder" => "index",
                     "description" => "Drop single GridFS index",
                 ];
+
+                $usage["maintenance"]["cleanup"] = [
+                    "description" => "Cleanup GridFS",
+                ];
+
+                if (loadBackend("extfs")) {
+                    $usage["maintenance"]["move-to-extfs"] = [
+                        "description" => "Move files from GridFS to extfs",
+                    ];
+                }
 
                 return $usage;
             }
@@ -396,7 +422,7 @@
                     exit(0);
                 }
 
-                if (array_key_exists($args["--create-index"])) {
+                if (array_key_exists("--create-index", $args)) {
                     $collection = "fs.files";
                     $db = $this->dbName;
 
@@ -425,7 +451,7 @@
                     exit(0);
                 }
 
-                if (array_key_exists($args["--drop-index"])) {
+                if (array_key_exists("--drop-index", $args)) {
                     $collection = "fs.files";
                     $db = $this->dbName;
 
@@ -447,6 +473,60 @@
                     }
 
                     echo "$c indexes dropped\n";
+
+                    exit(0);
+                }
+
+                if (array_key_exists("--cleanup", $args)) {
+                    $this->cleanup();
+
+                    exit(0);
+                }
+
+                if (array_key_exists("--move-to-extfs", $args)) {
+                    if (loadBackend("extfs")) {
+                        $collection = "fs.files";
+                        $db = $this->dbName;
+
+                        $skip = 0;
+                        $step = 1024;
+
+                        $c = 0;
+
+                        do {
+                            $p = 0;
+                            while ($files = $this->searchFiles([
+                                'length' => [
+                                    '$gt' => 0
+                                ],
+                                'metadata.expire' =>  [
+                                    '$exists' => false
+                                ]
+                            ], $skip, $step)) {
+                                $skip += $step;
+                                foreach ($files as $file) {
+                                    if (!@$file["metadata"]) {
+                                        $file["metadata"] = [];
+                                    }
+                                    $file["metadata"]["external"] = true;
+                                    if (@$file["uploadDate"]) {
+                                        $file["metadata"]["realUploadDate"] = $file["uploadDate"];
+                                    }
+                                    $fd = $this->getFile($file["id"])["stream"] ;
+                                    fseek($fd, 0);
+                                    $this->addFile($file["filename"], $fd, $file["metadata"]);
+                                    $this->deleteFile($file["id"]);
+                                    echo ".";
+                                    $c++;
+                                    $p++;
+                                }
+                            }
+                        } while ($p);
+
+                        echo "\n$c files moved\n";
+                    } else {
+                        echo "extfs not available\n";
+                    }
 
                     exit(0);
                 }
