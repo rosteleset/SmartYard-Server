@@ -316,7 +316,17 @@
 
                 if (loadBackend("extfs")) {
                     $usage["maintenance"]["move-to-extfs"] = [
+                        "value" => "string",
                         "description" => "Move files from GridFS to extfs",
+                        "params" => [
+                            [
+                                "query" => [
+                                    "value" => "string",
+                                    "placeholder" => "json-query",
+                                    "optional" => true,
+                                ],
+                            ]
+                        ],
                     ];
                 }
 
@@ -485,6 +495,50 @@
 
                 if (array_key_exists("--move-to-extfs", $args)) {
                     if (loadBackend("extfs")) {
+
+                        $filter = false;
+                        if (array_key_exists("--query", $args)) {
+                            $filter = json_decode($args["--query"], true);
+                        }
+
+                        if ($filter === NULL) {
+                            echo "invalid filter query\n";
+                            exit(1);
+                        }
+
+                        $query = [
+                            '$and' => [
+                                [
+                                    'length' => [
+                                        '$gte' => 0,
+                                    ],
+                                ],
+                                [
+                                    'metadata.expire' =>  [
+                                        '$exists' => false,
+                                    ],
+                                ],
+                                [
+                                    '$or' => [
+                                        [
+                                            'metadata.external' => [
+                                                '$exists' => false,
+                                            ]
+                                        ],
+                                        [
+                                            'metadata.external' => false
+                                        ]
+                                    ]
+                                ]
+                            ]
+                        ];
+
+                        if ($filter) {
+                            $query['$and'][] = [
+                                '$and' => [ $filter ],
+                            ];
+                        }
+
                         $collection = "fs.files";
                         $db = $this->dbName;
 
@@ -495,14 +549,7 @@
 
                         do {
                             $p = 0;
-                            while ($files = $this->searchFiles([
-                                'length' => [
-                                    '$gt' => 0
-                                ],
-                                'metadata.expire' =>  [
-                                    '$exists' => false
-                                ]
-                            ], $skip, $step)) {
+                            while ($files = $this->searchFiles($query, $skip, $step)) {
                                 $skip += $step;
                                 foreach ($files as $file) {
                                     if (!@$file["metadata"]) {
@@ -523,9 +570,13 @@
                             }
                         } while ($p);
 
-                        echo "\n$c files moved\n";
+                        if ($c) {
+                            echo "\n";
+                        }
+
+                        echo "$c files moved\n";
                     } else {
-                        echo "extfs not available\n";
+                        echo "extfs is not available\n";
                     }
 
                     exit(0);
