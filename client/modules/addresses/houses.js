@@ -2467,6 +2467,7 @@
                         placeholder: i18n("addresses.sipEnabled"),
                         value: flat.sipEnabled,
                         hint: parseInt(4000000000) + parseInt(flatId),
+                        copyable: true,
                         options: [
                             {
                                 id: "0",

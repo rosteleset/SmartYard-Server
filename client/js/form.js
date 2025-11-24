@@ -788,7 +788,7 @@ function cardForm(params) {
 
         if (params.fields[i].hint) {
             h += `<span class="text-secondary text-xs pl-1">${params.fields[i].hint}</span>`;
-            if (params.fields[i].copipable) {
+            if (params.fields[i].copyable) {
                 h += `<span class='form-cc pointer far fa-copy' data-clipboard-text='${params.fields[i].hint}' alt='${i18n("copyToClipboard")}'></span>`;
             }
         }
