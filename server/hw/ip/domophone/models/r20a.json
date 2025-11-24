@@ -1,0 +1,11 @@
+{
+    "title": "AKUVOX R20A",
+    "vendor": "AKUVOX",
+    "model": "R20A",
+    "class": "r20a",
+    "eventServer": "akuvox",
+    "outputs": 2,
+    "camera": "akuvox",
+    "useSmartConfigurator": true,
+    "cmses": []
+}
