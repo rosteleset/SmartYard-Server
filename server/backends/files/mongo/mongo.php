@@ -271,7 +271,7 @@
                     $this->cleanup();
                 }
 
-                if ($part == "monthly") {
+                if (@$this->bconfig["autocompact"] && $part == $this->bconfig["autocompact"]) {
                     $db = $this->dbName;
 
                     try {
