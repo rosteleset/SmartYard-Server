@@ -163,8 +163,8 @@
             // your time to live in seconds for temporary data in plog_* tables (hint 86400 - one day)
             "ttl_temp_record": 86400,
 
-            // your time to live in days for camshots (hint 180 - approx. half year)
-            "ttl_camshot_days": 180,
+            // your time to live in days for camshots (hint 60 - approx. two months)
+            "ttl_camshot_days": 60,
 
             // your back time shift in seconds for receiving video shot from media server (hint 3)
             "back_time_shift_video_shot": 3,
