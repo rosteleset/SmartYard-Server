@@ -78,13 +78,6 @@
                         ],
                     ],
                 ];
-
-                $global_cli["#"]["db"]["mongodb-autocompact"] = [
-                    "exec" => [ $this, "autocompact" ],
-                    "value" => "string",
-                    "placeholder" => "database",
-                    "description" => "Enable autocompact for MongoDB database",
-                ];
             }
 
             function init($args) {
@@ -255,34 +248,6 @@
                 }
 
                 maintenance(false);
-
-                exit(0);
-            }
-
-            function autocompact($args) {
-                global $config;
-
-                if (@$config["mongo"]["uri"]) {
-                    $mongo = new \MongoDB\Client($config["mongo"]["uri"]);
-                } else {
-                    $mongo = new \MongoDB\Client();
-                }
-
-                $db = $args["--mongodb-autocompact"];
-
-                try {
-                    $cursor = $mongo->$db->command([ "autoCompact" => true ]);
-                } catch(\Exception $e) {
-                    die($e->getMessage() . "\n");
-                }
-
-                $response = object_to_array($cursor->toArray()[0]);
-
-                if ($response && array_key_exists("bytesFreed", $response)) {
-                    echo "ok: {$response["bytesFreed"]} bytes freed\n";
-                } else {
-                    print_r($response);
-                }
 
                 exit(0);
             }
