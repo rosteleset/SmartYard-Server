@@ -99,7 +99,7 @@
         "files": {
             "backend": "mongo",
             // value must be cron compatible: minutely, 5min, daily, weekly, monthly
-            "autocompact": "monthly",
+            "autocompact": "weekly",
         },
 
         "addresses": {
