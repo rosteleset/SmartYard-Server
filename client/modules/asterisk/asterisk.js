@@ -296,10 +296,12 @@
                 $('#asteriskMenuRight').removeClass("text-secondary text-danger pointer");
                 $('#asteriskMenuRight').parent().removeClass("nav-item-back-hover");
             }
+            $(".sipReady").removeClass("disabled opacity-disabled");
         } else {
             $('#asteriskMenuRight').removeClass("text-success text-danger pointer");
             $('#asteriskMenuRight').addClass("text-secondary");
             $('#asteriskMenuRight').parent().removeClass("nav-item-back-hover");
+            $(".sipReady").addClass("disabled opacity-disabled");
         }
     },
 
