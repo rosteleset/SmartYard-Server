@@ -2,7 +2,6 @@ var version = false;
 var cache = false;
 
 const forceVersioningResources = [
-    "index.css",
     "app.js",
     "form.js",
     "loader.js",
