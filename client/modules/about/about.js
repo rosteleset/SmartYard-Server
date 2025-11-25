@@ -1,6 +1,8 @@
 ({
+    menuItem: false,
+
     init: function () {
-        leftSide("fas fa-fw fa-info-circle", i18n("about.about"), "?#about", "about");
+        this.menuItem = leftSide("fas fa-fw fa-info-circle", i18n("about.about"), "?#about", "about");
         moduleLoaded("about", this);
     },
 
@@ -9,6 +11,10 @@
         $("#altForm").hide();
 
         document.title = i18n("windowTitle") + " :: " + i18n("about.about");
+
+        if (modules.about.menuItem) {
+            $("#" + modules.about.menuItem).children().first().attr("href", "?#about&_=" + Math.random());
+        }
 
         $.get("modules/custom/version?_=" + Math.random()).
         always((x, y) => {
