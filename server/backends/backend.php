@@ -12,23 +12,20 @@
         abstract class backend {
 
             /**
-             * @var object $config link to config structute
+             * @var object $config link to config structure
+             * @var object $bconfig link to backend config structure
              * @var object $db link to default PDO database object
              * @var object $redis link to redis object
-             */
-
-            protected $config, $db, $redis, $login, $uid, $cache = [];
-
-            /**
              * @var string $backend self name
+             * @var string $variant backend variant
              */
 
-            public $backend;
+            protected $config, $bconfig, $db, $redis, $login, $uid, $cache = [], $backend, $variant;
 
             /**
              * default constructor
              *
-             * @param object $config link to config structute
+             * @param object $config link to config structure
              * @param object $db link to default PDO database object
              * @param object $redis link to redis object
              *
@@ -54,6 +51,12 @@
                         $this->uid = loadBackend("users")->getUidByLogin($this->login);
                         break;
                 }
+
+                $class = explode('\\', get_class($this));
+                $this->backend = $class[1];
+                $this->variant = $class[2];
+
+                $this->bconfig = $this->config["backends"][$this->backend];
             }
 
             /**

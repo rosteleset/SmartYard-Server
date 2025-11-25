@@ -68,20 +68,33 @@
              * @inheritDoc
              */
 
-            public function cron($part) {
-                if ($part == "5min") {
-                    $path = @$this->config["backends"]["memfs"]["path"] ?: "/tmp/memfs";
-                    $max_age = @$this->config["backends"]["memfs"]["max_age"] ?: "5min";
-                    $threshold = strtotime("-" . $max_age);
+            public function cleanup() {
+                $c = 0;
 
-                    if (file_exists($path) && $threshold) {
-                        $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));
-                        foreach ($iterator as $info) {
-                            if ($info->isFile() && $threshold >= $info->getMTime()) {
-                                unlink($info->getPath() . "/" . $info->getFilename());
-                            }
+                $path = @$this->config["backends"]["memfs"]["path"] ?: "/tmp/memfs";
+                $max_age = @$this->config["backends"]["memfs"]["max_age"] ?: "5min";
+                $threshold = strtotime("-" . $max_age);
+
+                if (file_exists($path) && $threshold) {
+                    $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));
+                    foreach ($iterator as $info) {
+                        if ($info->isFile() && $threshold >= $info->getMTime()) {
+                            unlink($info->getPath() . "/" . $info->getFilename());
+                            $c++;
                         }
                     }
+                }
+
+                return $c;
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+            public function cron($part) {
+                if ($part == "5min") {
+                    $this->cleanup();
 
                     return true;
                 }

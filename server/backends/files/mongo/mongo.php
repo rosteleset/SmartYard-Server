@@ -267,9 +267,36 @@
              */
 
             public function cron($part) {
-
-                if ($part == '5min') {
+                if ($part == "5min") {
                     $this->cleanup();
+                }
+
+                if ($part == "monthly") {
+                    $db = $this->dbName;
+
+                    try {
+                        $cursor = $this->mongo->$db->command([ "compact" => "fs.chunks", "dryRun" => false, "force" => true ]);
+                    } catch(\Exception $e) {
+                        die($e->getMessage() . "\n");
+                    }
+
+                    $response = object_to_array($cursor->toArray()[0]);
+
+                    if (!$response || !array_key_exists("bytesFreed", $response)) {
+                        print_r($response);
+                    }
+
+                    try {
+                        $cursor = $this->mongo->$db->command([ "compact" => "fs.files", "dryRun" => false, "force" => true ]);
+                    } catch(\Exception $e) {
+                        die($e->getMessage() . "\n");
+                    }
+
+                    $response = object_to_array($cursor->toArray()[0]);
+
+                    if (!$response || !array_key_exists("bytesFreed", $response)) {
+                        print_r($response);
+                    }
                 }
 
                 return true;
@@ -542,15 +569,11 @@
                         $collection = "fs.files";
                         $db = $this->dbName;
 
-                        $skip = 0;
-                        $step = 1024;
-
                         $c = 0;
 
                         do {
                             $p = 0;
-                            while ($files = $this->searchFiles($query, $skip, $step)) {
-                                $skip += $step;
+                            while ($files = $this->searchFiles($query, 0, 1024)) {
                                 foreach ($files as $file) {
                                     if (!@$file["metadata"]) {
                                         $file["metadata"] = [];

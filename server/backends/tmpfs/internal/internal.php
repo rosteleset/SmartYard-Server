@@ -102,20 +102,32 @@
              * @inheritDoc
              */
 
-            public function cron($part) {
-                if ($part == "daily") {
-                    $path = @$this->config["backends"]["tmpfs"]["path"] ?: "/tmp/tmpfs";
-                    $max_age = @$this->config["backends"]["tmpfs"]["max_age"] ?: "1month";
-                    $threshold = strtotime("-" . $max_age);
+            public function cleanup() {
+                $c = 0;
 
-                    if (file_exists($path) && $threshold) {
-                        $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));
-                        foreach ($iterator as $info) {
-                            if ($info->isFile() && $threshold >= $info->getMTime()) {
-                                unlink($info->getPath() . "/" . $info->getFilename());
-                            }
+                $path = @$this->config["backends"]["tmpfs"]["path"] ?: "/tmp/tmpfs";
+                $max_age = @$this->config["backends"]["tmpfs"]["max_age"] ?: "1month";
+                $threshold = strtotime("-" . $max_age);
+
+                if (file_exists($path) && $threshold) {
+                    $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));
+                    foreach ($iterator as $info) {
+                        if ($info->isFile() && $threshold >= $info->getMTime()) {
+                            unlink($info->getPath() . "/" . $info->getFilename());
                         }
                     }
+                }
+
+                return $c;
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+            public function cron($part) {
+                if ($part == "daily") {
+                    $this->cleanup();
 
                     return true;
                 }

@@ -63,6 +63,28 @@
                     "placeholder" => "version",
                     "description" => "Set MongoDB feature compatibility version",
                 ];
+
+                $global_cli["#"]["db"]["mongodb-compact"] = [
+                    "exec" => [ $this, "compact" ],
+                    "value" => "string",
+                    "placeholder" => "database",
+                    "description" => "Force run compact for MongoDB database collection",
+                    "params" => [
+                        [
+                            "collection" => [
+                                "value" => "string",
+                                "placeholder" => "collection",
+                            ],
+                        ],
+                    ],
+                ];
+
+                $global_cli["#"]["db"]["mongodb-autocompact"] = [
+                    "exec" => [ $this, "autocompact" ],
+                    "value" => "string",
+                    "placeholder" => "database",
+                    "description" => "Enable autocompact for MongoDB database",
+                ];
             }
 
             function init($args) {
@@ -170,6 +192,8 @@
             }
 
             function fcv($args) {
+                global $config;
+
                 maintenance(true);
 
                 waitAll();
@@ -188,11 +212,77 @@
                     die($e->getMessage() . "\n");
                 }
 
-                $response = $cursor->toArray()[0];
+                $response = object_to_array($cursor->toArray()[0]);
 
-                echo "ok\n";
+                if ($response && array_key_exists("ok", $response)) {
+                    echo "ok\n";
+                } else {
+                    print_r($response);
+                }
 
                 maintenance(false);
+
+                exit(0);
+            }
+
+            function compact($args) {
+                global $config;
+
+                maintenance(true);
+
+                waitAll();
+
+                if (@$config["mongo"]["uri"]) {
+                    $mongo = new \MongoDB\Client($config["mongo"]["uri"]);
+                } else {
+                    $mongo = new \MongoDB\Client();
+                }
+
+                $db = $args["--mongodb-compact"];
+
+                try {
+                    $cursor = $mongo->$db->command([ "compact" => $args["--collection"], "dryRun" => false, "force" => true ]);
+                } catch(\Exception $e) {
+                    die($e->getMessage() . "\n");
+                }
+
+                $response = object_to_array($cursor->toArray()[0]);
+
+                if ($response && array_key_exists("bytesFreed", $response)) {
+                    echo "ok: {$response["bytesFreed"]} bytes freed\n";
+                } else {
+                    print_r($response);
+                }
+
+                maintenance(false);
+
+                exit(0);
+            }
+
+            function autocompact($args) {
+                global $config;
+
+                if (@$config["mongo"]["uri"]) {
+                    $mongo = new \MongoDB\Client($config["mongo"]["uri"]);
+                } else {
+                    $mongo = new \MongoDB\Client();
+                }
+
+                $db = $args["--mongodb-autocompact"];
+
+                try {
+                    $cursor = $mongo->$db->command([ "autoCompact" => true ]);
+                } catch(\Exception $e) {
+                    die($e->getMessage() . "\n");
+                }
+
+                $response = object_to_array($cursor->toArray()[0]);
+
+                if ($response && array_key_exists("bytesFreed", $response)) {
+                    echo "ok: {$response["bytesFreed"]} bytes freed\n";
+                } else {
+                    print_r($response);
+                }
 
                 exit(0);
             }

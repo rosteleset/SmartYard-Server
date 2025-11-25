@@ -102,6 +102,31 @@
              * @inheritDoc
              */
 
+            public function cleanup() {
+                $files = loadBackend("files");
+                $path = @$this->config["backends"]["extfs"]["path"] ?: "/tmp/extfs";
+
+                $c = 0;
+
+                if ($files && file_exists($path)) {
+                    $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));
+                    foreach ($iterator as $info) {
+                        $uuid = $info->getFilename();
+                        if ($info->isFile() && !count($files->searchFiles([ "metadata.md5id" => $uuid ]))) {
+                            echo "unused file found $uuid\n";
+                            $c++;
+                            unlink($info->getPath() . "/" . $uuid);
+                        }
+                    }
+                }
+
+                return $c;
+            }
+
+            /**
+             * @inheritDoc
+             */
+
             public function cliUsage() {
                 $usage = parent::cliUsage();
 
@@ -110,7 +135,7 @@
                 }
 
                 $usage["maintenance"]["cleanup"] = [
-                    "description" => "Cleanup deleted files",
+                    "description" => "Cleanup incorrectly deleted files",
                 ];
 
                 return $usage;
@@ -122,23 +147,7 @@
 
             public function cli($args) {
                 if (array_key_exists("--cleanup", $args)) {
-
-                    $files = loadBackend("files");
-                    $path = @$this->config["backends"]["extfs"]["path"] ?: "/tmp/extfs";
-
-                    $c = 0;
-
-                    if ($files && file_exists($path)) {
-                        $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));
-                        foreach ($iterator as $info) {
-                            $uuid = $info->getFilename();
-                            if ($info->isFile() && !count($files->searchFiles([ "metadata.md5id" => $uuid ]))) {
-                                echo "unused file found $uuid\n";
-                                $c++;
-                                unlink($info->getPath() . "/" . $uuid);
-                            }
-                        }
-                    }
+                    $c = $this->cleanup();
 
                     echo "$c files deleted\n";
 
