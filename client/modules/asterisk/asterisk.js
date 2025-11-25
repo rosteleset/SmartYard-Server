@@ -291,17 +291,17 @@
                 $('#asteriskMenuRight').removeClass("text-success text-secondary");
                 $('#asteriskMenuRight').addClass("text-danger pointer");
                 $('#asteriskMenuRight').parent().addClass("nav-item-back-hover");
+                $(".sipIdle").removeClass("disabled opacity-disabled");
             } else {
                 $('#asteriskMenuRight').addClass("text-success");
                 $('#asteriskMenuRight').removeClass("text-secondary text-danger pointer");
                 $('#asteriskMenuRight').parent().removeClass("nav-item-back-hover");
             }
-            $(".sipReady").removeClass("disabled opacity-disabled");
         } else {
             $('#asteriskMenuRight').removeClass("text-success text-danger pointer");
             $('#asteriskMenuRight').addClass("text-secondary");
             $('#asteriskMenuRight').parent().removeClass("nav-item-back-hover");
-            $(".sipReady").addClass("disabled opacity-disabled");
+            $(".sipIdle").addClass("disabled opacity-disabled");
         }
     },
 

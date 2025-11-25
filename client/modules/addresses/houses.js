@@ -2866,7 +2866,7 @@
                                     },
                                     {
                                         icon: "fas fa-mobile-alt",
-                                        class: "sipReady",
+                                        class: "sipIdle",
                                         title: i18n("addresses.mobileCall"),
                                         click: flatId => {
                                             if (modules.asterisk && modules.asterisk.ready && !modules.asterisk.currentSession) {
@@ -2881,7 +2881,7 @@
                                     },
                                     {
                                         icon: "fas fa-home",
-                                        class: "sipReady",
+                                        class: "sipIdle",
                                         title: i18n("addresses.flatCall"),
                                         click: flatId => {
                                             let n = 3000000000 + parseInt(flatId);
