@@ -16,7 +16,7 @@ function ver(c) {
                 }
                 version = md5(v1 + "/" + v2 + "/" + v3);
                 lStore("_version", version);
-                $("head").append(`<link rel='stylesheet' id='refreshcss' href='css/index.css?_=${Math.random()}' type='text/css' />`);
+                $("#appcss").attr("href", "css/index.css?_=" + Math.random());
                 if ("serviceWorker" in navigator) {
                     navigator.serviceWorker.getRegistrations().
                     then(r => {
