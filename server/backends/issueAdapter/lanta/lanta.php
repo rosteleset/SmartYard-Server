@@ -2,10 +2,10 @@
 
 // works with the first(default) version of issues
 
-namespace backends\issue_adapter {
+namespace backends\issueAdapter {
 
-    class lanta extends issue_adapter {
-        /*
+    class lanta extends issueAdapter {
+/*
             {
                 "issue": {
                     "description": "Обработать запрос на добавление видеофрагмента из архива видовой видеокамеры Видовая / Чичерина 9/2 (id = 2621) по  парамертам: дата: 12.09.2023, время: 12-59, продолжительность фрагмента: 10 минут. Комментарий  пользователя: test123.",
@@ -23,11 +23,11 @@ namespace backends\issue_adapter {
                     "Менеджеру ВН"
                 ]
             }
-        */
+*/
 
         private function createIssueForDVRFragment($phone, $description, $camera_id, $datetime, $duration, $comment) {
-            /*
-             {
+/*
+            {
                 "project": "RTL",
                 "query": {
                     "catalog": {"$regex": "^\\[9002\\].*"}
@@ -35,11 +35,10 @@ namespace backends\issue_adapter {
                 "sortBy": {"created": -1},
                 "limit": 1,
                 "fields": true
-             }
+            }
+*/
 
-             */
-
-            $prev_issue = $this->getLastOpenedIssue($phone, 9002, $this->config["backends"]["issue_adapter"]["anti_spam_interval"]);
+            $prev_issue = $this->getLastOpenedIssue($phone, 9002, $this->config["backends"]["issueAdapter"]["anti_spam_interval"]);
             if ($prev_issue !== false)
                 return ['isNew' => false, 'issueId' => $prev_issue['issueId']];
 
@@ -75,7 +74,7 @@ namespace backends\issue_adapter {
 
         private function createIssueCallback($phone)
         {
-            $prev_issue = $this->getLastOpenedIssue($phone, 9005, $this->config["backends"]["issue_adapter"]["anti_spam_interval"]);
+            $prev_issue = $this->getLastOpenedIssue($phone, 9005, $this->config["backends"]["issueAdapter"]["anti_spam_interval"]);
             if ($prev_issue !== false)
                 return ['isNew' => false, 'issueId' => $prev_issue['issueId']];
 
@@ -109,7 +108,7 @@ namespace backends\issue_adapter {
 
         private function createIssueForgotEverything($phone)
         {
-            $prev_issue = $this->getLastOpenedIssue($phone, 9005, $this->config["backends"]["issue_adapter"]["anti_spam_interval"]);
+            $prev_issue = $this->getLastOpenedIssue($phone, 9005, $this->config["backends"]["issueAdapter"]["anti_spam_interval"]);
             if ($prev_issue !== false)
                 return ['isNew' => false, 'issueId' => $prev_issue['issueId']];
 
@@ -147,7 +146,7 @@ namespace backends\issue_adapter {
             $name = $params['name'] ?? "";
             $address = $params['address'] ?? "";
 
-            $prev_issue = $this->getLastOpenedIssue($phone, 9007, $this->config["backends"]["issue_adapter"]["anti_spam_interval"], $address);
+            $prev_issue = $this->getLastOpenedIssue($phone, 9007, $this->config["backends"]["issueAdapter"]["anti_spam_interval"], $address);
             if ($prev_issue !== false)
                 return ['isNew' => false, 'issueId' => $prev_issue['issueId']];
 
@@ -169,7 +168,7 @@ namespace backends\issue_adapter {
 
         private function createIssueDeleteAddress($phone, $description, $name, $address, $lat, $lon, $reason)
         {
-            $prev_issue = $this->getLastOpenedIssue($phone, 9005, $this->config["backends"]["issue_adapter"]["anti_spam_interval"]);
+            $prev_issue = $this->getLastOpenedIssue($phone, 9005, $this->config["backends"]["issueAdapter"]["anti_spam_interval"]);
             if ($prev_issue !== false)
                 return ['isNew' => false, 'issueId' => $prev_issue['issueId']];
 
@@ -195,7 +194,7 @@ namespace backends\issue_adapter {
 
         private function createIssueUnavailableServices($phone, $description, $name, $address, $lat, $lon, $services)
         {
-            $prev_issue = $this->getLastOpenedIssue($phone, 9001, $this->config["backends"]["issue_adapter"]["anti_spam_interval"]);
+            $prev_issue = $this->getLastOpenedIssue($phone, 9001, $this->config["backends"]["issueAdapter"]["anti_spam_interval"]);
             if ($prev_issue !== false)
                 return ['isNew' => false, 'issueId' => $prev_issue['issueId']];
 
@@ -221,7 +220,7 @@ namespace backends\issue_adapter {
 
         public function createIssueAvailableWithSharedServices($phone, $description, $name, $address, $lat, $lon, $services)
         {
-            $prev_issue = $this->getLastOpenedIssue($phone, 9006, $this->config["backends"]["issue_adapter"]["anti_spam_interval"]);
+            $prev_issue = $this->getLastOpenedIssue($phone, 9006, $this->config["backends"]["issueAdapter"]["anti_spam_interval"]);
             if ($prev_issue !== false)
                 return ['isNew' => false, 'issueId' => $prev_issue['issueId']];
 
@@ -248,7 +247,7 @@ namespace backends\issue_adapter {
 
         public function createIssueAvailableWithoutSharedServices($phone, $description, $name, $address, $lat, $lon, $services)
         {
-            $prev_issue = $this->getLastOpenedIssue($phone, 9006, $this->config["backends"]["issue_adapter"]["anti_spam_interval"]);
+            $prev_issue = $this->getLastOpenedIssue($phone, 9006, $this->config["backends"]["issueAdapter"]["anti_spam_interval"]);
             if ($prev_issue !== false)
                 return ['isNew' => false, 'issueId' => $prev_issue['issueId']];
 

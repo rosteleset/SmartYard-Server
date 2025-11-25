@@ -2,8 +2,9 @@
 
 // works with the second version of issues
 
-namespace backends\issue_adapter {
-    class teledom extends issue_adapter {
+namespace backends\issueAdapter {
+
+    class teledom extends issueAdapter {
         const ISSUE_REQUEST_CALLBACK = 'requestCallback';
         const ISSUE_REQUEST_FRAGMENT = 'requestFragment';
         const ISSUE_REMOVE_ADDRESS = 'removeAddress';
@@ -95,7 +96,7 @@ namespace backends\issue_adapter {
 
         private function getLastOpenedIssue($phone, $data)
         {
-            $anti_spam_interval = $this->config['backends']['issue_adapter']['anti_spam_interval'];
+            $anti_spam_interval = $this->config['backends']['issueAdapter']['anti_spam_interval'];
             if (!isset($anti_spam_interval) || $anti_spam_interval <= 0)
                 return false;
 
@@ -103,9 +104,9 @@ namespace backends\issue_adapter {
                 return false;
 
             $issueType = $data[self::PARAM_TYPE];
-            $project = $this->config['backends']['issue_adapter'][$issueType][self::F_PROJECT];
-            $workflow = $this->config['backends']['issue_adapter'][$issueType][self::F_WORKFLOW];
-            $catalog = $this->config['backends']['issue_adapter'][$issueType][self::F_CATALOG];
+            $project = $this->config['backends']['issueAdapter'][$issueType][self::F_PROJECT];
+            $workflow = $this->config['backends']['issueAdapter'][$issueType][self::F_WORKFLOW];
+            $catalog = $this->config['backends']['issueAdapter'][$issueType][self::F_CATALOG];
             $address = $data[self::PARAM_INPUT_ADDRESS] ?? null;
             $content = [
                 self::F_PROJECT => $project,
@@ -138,11 +139,11 @@ namespace backends\issue_adapter {
             if (!isset($data[self::PARAM_TYPE]))
                 return false;
 
-            $project = $this->config['backends']['issue_adapter'][$issueType][self::F_PROJECT];
-            $workflow = $this->config['backends']['issue_adapter'][$issueType][self::F_WORKFLOW];
-            $catalog = $this->config['backends']['issue_adapter'][$issueType][self::F_CATALOG];
-            $subject = $this->config['backends']['issue_adapter'][$issueType][self::F_SUBJECT];
-            $assigned = $this->config['backends']['issue_adapter'][$issueType][self::F_ASSIGNED];
+            $project = $this->config['backends']['pter'][$issueType][self::F_PROJECT];
+            $workflow = $this->config['backends']['issueAdapter'][$issueType][self::F_WORKFLOW];
+            $catalog = $this->config['backends']['issueAdapter'][$issueType][self::F_CATALOG];
+            $subject = $this->config['backends']['issueAdapter'][$issueType][self::F_SUBJECT];
+            $assigned = $this->config['backends']['issueAdapter'][$issueType][self::F_ASSIGNED];
             $issue = [
                 self::F_PROJECT => $project,
                 self::F_WORKFLOW => $workflow,
@@ -202,14 +203,14 @@ namespace backends\issue_adapter {
                     break;
 
                 case self::ISSUE_REQUEST_QR_CODE_OFFICE:
-                    $issue[self::CF_QR_DELIVERY] = $this->config['backends']['issue_adapter'][$issueType][self::CF_QR_DELIVERY];
+                    $issue[self::CF_QR_DELIVERY] = $this->config['backends']['issueAdapter'][$issueType][self::CF_QR_DELIVERY];
                     $issue[self::F_DESCRIPTION] = "ФИО: {$data[self::PARAM_USER_NAME]}\n"
                         . "Адрес, введённый пользователем: {$data[self::PARAM_INPUT_ADDRESS]}.\n"
                         . "Клиент подойдет в офис для получения подтверждения.";
                     break;
 
                 case self::ISSUE_REQUEST_QR_CODE_COURIER:
-                    $issue[self::CF_QR_DELIVERY] = $this->config['backends']['issue_adapter'][$issueType][self::CF_QR_DELIVERY];
+                    $issue[self::CF_QR_DELIVERY] = $this->config['backends']['issueAdapter'][$issueType][self::CF_QR_DELIVERY];
                     $issue[self::F_DESCRIPTION] = "ФИО: {$data[self::PARAM_USER_NAME]}\n"
                         . "Адрес, введённый пользователем: {$data[self::PARAM_INPUT_ADDRESS]}.\n"
                         . "Подготовить конверт с QR-кодом. Далее заявку отправить курьеру.";
@@ -247,8 +248,8 @@ namespace backends\issue_adapter {
         public function listConnectIssues($phone): bool|array
         {
             $issueType = self::ISSUE_REQUEST_QR_CODE_COURIER;
-            $project = $this->config['backends']['issue_adapter'][$issueType][self::F_PROJECT];
-            $workflow = $this->config['backends']['issue_adapter'][$issueType][self::F_WORKFLOW];
+            $project = $this->config['backends']['issueAdapter'][$issueType][self::F_PROJECT];
+            $workflow = $this->config['backends']['issueAdapter'][$issueType][self::F_WORKFLOW];
 
             $content = [
                 self::F_PROJECT => $project,
