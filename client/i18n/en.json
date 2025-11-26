@@ -21,6 +21,8 @@
     "forgotLogin": "Back",
     "search": "Search",
     "logout": "Go out",
+    "logoutSingle": "Logout this session",
+    "logoutAll": "Logout all sessions",
     "forgotMessage": "The password restoration link is sent to the specified mailing address",
     "filter": "Filter",
     "pager": "Showing %D entries from %D",
