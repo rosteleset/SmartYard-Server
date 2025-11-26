@@ -2452,6 +2452,7 @@
                                         search: ($.trim(params.search) && params.search !== true) ? $.trim(params.search) : "",
                                     })),
                                     cols: cols,
+                                    class: issues.issues[i].issueId + ((params.scroll == issues.issues[i].issueId) ? " bg-superlightblue" : ""),
                                 });
                             }
 
@@ -2466,6 +2467,7 @@
                         $('html').scrollTop(0);
                     }
                 }
+
                 if (!params.customSearch || params.customSearch === true || !params.filter || params.filter === true || params.filter == "empty") {
                     if (typeof callback === "undefined") {
                         loadingDone();
@@ -2473,10 +2475,13 @@
                         callback();
                     }
                 }
+
                 if (params.scroll) {
-                    $('html, body').animate({
-                        scrollTop: $(`a:contains('${params.scroll}')`).offset().top,
-                    }, 100);
+                    if ($(`.${params.scroll}`).offset().top > $(window).height()) {
+                        $('html, body').animate({
+                            scrollTop: $(`.${params.scroll}`).offset().top - 200,
+                        }, 100);
+                    }
                 }
             }).
             fail(FAIL).
