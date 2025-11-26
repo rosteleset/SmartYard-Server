@@ -1,5 +1,5 @@
-import { SyslogService } from "./index.js";
-import { API, mdTimer } from "../utils/index.js";
+import { SyslogService } from './index.js';
+import { API, mdTimer } from '../utils/index.js';
 
 /**
  * Class representing an event handler for Rubetek devices.
@@ -49,40 +49,35 @@ class RubetekService extends SyslogService {
         }
 
         // Opening a door by RFID key
-        if (msgParts[3] === 'Access allowed by public RFID') {
-            let door = 0;
+        if (msgParts[3]?.includes('Access allowed by public RFID')) {
             const rfid = msgParts[2].padStart(14, '0');
-
-            if (rfid[6] === '0' && rfid[7] === '0') {
-                door = 1;
-            }
-
-            await API.openDoor({ date: date, ip: host, door: door, detail: rfid, by: "rfid" });
+            const door = msgParts[3].includes('exter') ? 1 : 0;
+            await API.openDoor({ date: date, ip: host, door: door, detail: rfid, by: 'rfid' });
         }
 
         // Opening a door by personal code
         if (msgParts[4] === 'Access allowed by apartment code') {
             const code = parseInt(msgParts[2]);
-            await API.openDoor({ date: date, ip: host, detail: code, by: "code" });
+            await API.openDoor({ date: date, ip: host, detail: code, by: 'code' });
         }
 
         // Opening a door by button pressed
         if (msgParts[3] === 'Exit button pressed') {
             let door = 0;
-            let detail = "main";
+            let detail = 'main';
 
             switch (msgParts[2]) {
-                case "Input B":
+                case 'Input B':
                     door = 1;
-                    detail = "second";
+                    detail = 'second';
                     break;
-                case "Input C":
+                case 'Input C':
                     door = 2;
-                    detail = "third";
+                    detail = 'third';
                     break;
             }
 
-            await API.openDoor({ date: date, ip: host, door: door, detail: detail, by: "button" });
+            await API.openDoor({ date: date, ip: host, door: door, detail: detail, by: 'button' });
         }
 
         // All calls are done
