@@ -254,12 +254,15 @@
                 $collection = "fs.files";
                 $db = $this->dbName;
 
+                $c = 0;
+
                 $cursor = $this->mongo->$db->$collection->find([ "metadata.expire" => [ '$lt' => time() ] ]);
                 foreach ($cursor as $document) {
                     $this->deleteFile($document->_id);
+                    $c++;
                 }
 
-                return true;
+                return $c;
             }
 
             /**
@@ -488,7 +491,6 @@
                         $index[$f] = 1;
                         $indexName .= "_" . $f;
                     }
-
 
                     try {
                         $this->mongo->$db->$collection->createIndex($index, [ "name" => "manual_index" . $indexName ]);
