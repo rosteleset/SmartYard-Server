@@ -282,6 +282,9 @@ function timeoutDone() {
 function page404() {
     $("#mainForm").html("");
     $("#altForm").hide();
+    $("#pageError").hide();
+    $("#pageMaintenance").hide();
+    subTop();
     loadingDone();
     document.title = `${i18n("windowTitle")} :: 404`;
     $("#page404").html(`
@@ -297,27 +300,11 @@ function page404() {
     `).show();
 }
 
-function pageMaintenance() {
-    $("#mainForm").html("");
-    $("#altForm").hide();
-    loadingDone();
-    document.title = `${i18n("windowTitle")} :: ${i18n("maintenanceCaption")}`;
-    $("#pageMaintenance").html(`
-        <section class="content">
-            <div class="error-page">
-                <img src="img/maintenance_en.jpg" style="border: none; width: 200px; height: 200px; border-radius: 10px;">
-                <div class="error-content">
-                    <h3><i class="fas fa-exclamation-triangle text-danger mr-3"></i><b>${i18n("maintenanceCaption")}</b></h3>
-                    <p>${i18n("maintenanceMessage")}</p>
-                </div>
-            </div>
-        </section>
-    `).show();
-}
-
 function pageError(error) {
     $("#mainForm").html("");
     $("#altForm").hide();
+    $("#page404").hide();
+    $("#pageMaintenance").hide();
     subTop();
     loadingDone();
     document.title = `${i18n("windowTitle")} :: ${i18n("error")}`;
@@ -328,6 +315,27 @@ function pageError(error) {
                 <div class="error-content">
                     <h3><i class="fas fa-exclamation-triangle text-danger mr-3"></i><b>${i18n("error")}</b></h3>
                     <p>${error?error:i18n("errors.unknown")}</p>
+                </div>
+            </div>
+        </section>
+    `).show();
+}
+
+function pageMaintenance() {
+    $("#mainForm").html("");
+    $("#altForm").hide();
+    $("#page404").hide();
+    $("#pageError").hide();
+    subTop();
+    loadingDone();
+    document.title = `${i18n("windowTitle")} :: ${i18n("maintenanceCaption")}`;
+    $("#pageMaintenance").html(`
+        <section class="content">
+            <div class="error-page">
+                <img src="img/maintenance_en.jpg" style="border: none; width: 200px; height: 200px; border-radius: 10px;">
+                <div class="error-content">
+                    <h3><i class="fas fa-exclamation-triangle text-danger mr-3"></i><b>${i18n("maintenanceCaption")}</b></h3>
+                    <p>${i18n("maintenanceMessage")}</p>
                 </div>
             </div>
         </section>
