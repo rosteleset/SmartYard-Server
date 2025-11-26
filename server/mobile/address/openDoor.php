@@ -55,11 +55,11 @@
 
     $plog = loadBackend('plog');
     $domophone = $households->getDomophone($domophone_id);
-    $openDoorUrls = $domophone['ext']?->doorOpeningUrls ?? [];
+    $doorOpeningUrls = (array)($domophone['ext']?->doorOpeningUrls ?? []);
 
-    // Try opening the door using the openDoorUrls attribute
-    if (isset($openDoorUrls[$door_id])) {
-        $url = $openDoorUrls[$door_id];
+    // Try opening the door using the doorOpeningUrls attribute
+    if (isset($doorOpeningUrls[$door_id])) {
+        $url = $doorOpeningUrls[$door_id];
 
         if (!filter_var($url, FILTER_VALIDATE_URL)) {
             error_log("Door opening URL validation error for intercom id=$domophone_id ($url)");
