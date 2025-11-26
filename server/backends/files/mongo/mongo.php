@@ -343,7 +343,6 @@
 
                 if (loadBackend("extfs")) {
                     $usage["maintenance"]["move-to-extfs"] = [
-                        "value" => "string",
                         "description" => "Move files from GridFS to extfs",
                         "params" => [
                             [
@@ -356,6 +355,21 @@
                         ],
                     ];
                 }
+
+                $usage["maintenance"]["force-expire"] = [
+                    "description" => "Bulk update of fs.files.metadata.expire value",
+                    "value" => "string",
+                    "placeholder" => "date in strtotime format",
+                    "params" => [
+                        [
+                            "query" => [
+                                "value" => "string",
+                                "placeholder" => "json-query",
+                                "optional" => true,
+                            ],
+                        ]
+                    ],
+                ];
 
                 return $usage;
             }
@@ -554,10 +568,10 @@
                                         ],
                                         [
                                             'metadata.external' => false
-                                        ]
-                                    ]
-                                ]
-                            ]
+                                        ],
+                                    ],
+                                ],
+                            ],
                         ];
 
                         if ($filter) {
@@ -597,12 +611,64 @@
                             echo "\n";
                         }
 
-                        echo "$c files moved\n";
+                        echo "$c file(s) moved\n";
                     } else {
                         echo "extfs is not available\n";
                     }
 
                     exit(0);
+                }
+
+                if (array_key_exists("--force-expire", $args)) {
+
+                    $expire = strtotime($args["--force-expire"]);
+
+                    if ($expire) {
+                        $filter = false;
+                        if (array_key_exists("--query", $args)) {
+                            $filter = json_decode($args["--query"], true);
+                        }
+
+                        if ($filter === NULL) {
+                            echo "invalid filter query\n";
+                            exit(1);
+                        }
+
+                        $query = [
+                            '$and' => [
+                                [
+                                    'metadata.expire' =>  [
+                                        '$exists' => true,
+                                    ],
+                                ],
+                                [
+                                    'metadata.expire' => [
+                                        '$ne' => (int)$expire
+                                    ]
+                                ],
+                                [
+                                    'metadata.expire' => [
+                                        '$ne' => (string)$expire
+                                    ]
+                                ],
+                            ],
+                        ];
+
+                        if ($filter) {
+                            $query['$and'][] = [
+                                '$and' => [ $filter ],
+                            ];
+                        }
+
+                        $collection = "fs.files";
+                        $db = $this->dbName;
+
+                        $c = $this->mongo->$db->$collection->updateMany($query, [ '$set' => [ "metadata.expire" => $expire ]]);
+
+                        echo $c->getMatchedCount() . " file(s) matched, " . $c->getModifiedCount() . " file(s) updated\n";
+
+                        exit(0);
+                    }
                 }
 
                 parent::cli($args);
