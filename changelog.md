@@ -15,4 +15,5 @@ added webrtc setting (on/off) for cameras
 ## 2025-11-26
 
 scroll to and hightlight issue when returning from issue to list
+
 --force-expire for files backend
