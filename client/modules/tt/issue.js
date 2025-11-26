@@ -1673,7 +1673,7 @@
 
         $("#stepOf").off("click").on("click", () => {
             loadingStart();
-            modules.tt.selectFilter(filter, Math.floor((index - 1) / modules.tt.defaultIssuesPerPage) * modules.tt.defaultIssuesPerPage, modules.tt.defaultIssuesPerPage, search);
+            modules.tt.selectFilter(filter, Math.floor((index - 1) / modules.tt.defaultIssuesPerPage) * modules.tt.defaultIssuesPerPage, modules.tt.defaultIssuesPerPage, search,  issue.issue.issueId);
         });
 
         $(".gallery-image").off("load").on("load", function () {

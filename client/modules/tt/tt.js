@@ -1318,7 +1318,7 @@
         }
     },
 
-    selectFilter: function (filter, skip, limit, search) {
+    selectFilter: function (filter, skip, limit, search, scroll) {
         if (filter) {
             if (filter[0] !== "#") {
                 lStore("ttIssueFilter:" + $("#ttProjectSelect").val(), filter);
@@ -1331,6 +1331,7 @@
             skip: skip ? skip : 0,
             limit: limit ? limit : modules.tt.defaultIssuesPerPage,
             search: ($.trim(search) && typeof search === "string") ? $.trim(search) : "",
+            scroll: ($.trim(scroll) && typeof scroll === "string") ? $.trim(scroll) : "",
         }, { run: true });
     },
 
@@ -2471,6 +2472,11 @@
                     } else {
                         callback();
                     }
+                }
+                if (params.scroll) {
+                    $('html, body').animate({
+                        scrollTop: $(`a:contains('${params.scroll}')`).offset().top,
+                    }, 100);
                 }
             }).
             fail(FAIL).
