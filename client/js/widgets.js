@@ -290,7 +290,7 @@ function page404() {
     $("#page404").html(`
         <section class="content">
             <div class="error-page">
-                <img src="img/404.png" style="border: none; width: 200px; height: 200px;">
+                <img src="img/404.jpg" style="border: none; width: 100px; height: 100px;">
                 <div class="error-content">
                     <h3><i class="fas fa-exclamation-triangle text-danger mr-3"></i><b>${i18n("errors.404caption")}</b></h3>
                     <p>${i18n("errors.404message")}</p>
@@ -311,7 +311,7 @@ function pageError(error) {
     $("#pageError").html(`
         <section class="content">
             <div class="error-page">
-                <h2 class="headline text-danger mr-4"> Error</h2>
+                <img src="img/error.jpg" style="border: none; width: 100px; height: 100px; border-radius: 10px;">
                 <div class="error-content">
                     <h3><i class="fas fa-exclamation-triangle text-danger mr-3"></i><b>${i18n("error")}</b></h3>
                     <p>${error?error:i18n("errors.unknown")}</p>
@@ -332,7 +332,7 @@ function pageMaintenance() {
     $("#pageMaintenance").html(`
         <section class="content">
             <div class="error-page">
-                <img src="img/maintenance_en.jpg" style="border: none; width: 200px; height: 200px; border-radius: 10px;">
+                <img src="img/maintenance_en.jpg" style="border: none; width: 100px; height: 100px; border-radius: 10px;">
                 <div class="error-content">
                     <h3><i class="fas fa-exclamation-triangle text-danger mr-3"></i><b>${i18n("maintenanceCaption")}</b></h3>
                     <p>${i18n("maintenanceMessage")}</p>
