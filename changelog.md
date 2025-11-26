@@ -10,6 +10,10 @@ fixed issueAdapter backend
 
 added webrtc setting (on/off) for cameras
 
+autocompact parameter for files backend
+
+--mongodb-compact global cli command
+
 <br />
 
 ## 2025-11-26
