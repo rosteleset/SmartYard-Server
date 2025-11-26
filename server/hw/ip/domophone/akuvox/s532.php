@@ -2,14 +2,27 @@
 
 namespace hw\ip\domophone\akuvox;
 
+use hw\Interface\DisplayTextInterface;
+
 /**
  * Represents an Akuvox S532 intercom.
  */
-class s532 extends akuvox
+class s532 extends akuvox implements DisplayTextInterface
 {
     protected static function getMaxUsers(): int
     {
         return 4000; // TODO: check
+    }
+
+    public function getDisplayText(): array
+    {
+        $text = $this->getConfigParams(['Config.DoorSetting.CUSTOMIZED.Text'])[0] ?? null;
+        return $text ? [$text] : [];
+    }
+
+    public function getDisplayTextLinesCount(): int
+    {
+        return 1;
     }
 
     public function setAdminPassword(string $password): void
@@ -17,6 +30,14 @@ class s532 extends akuvox
         $this->setWebPassword($password);
         $this->setRtspPassword($password);
         $this->setApiPassword($password);
+    }
+
+    public function setDisplayText(array $textLines): void
+    {
+        $this->setConfigParams([
+            'Config.DoorSetting.GENERAL.Theme' => '1',
+            'Config.DoorSetting.CUSTOMIZED.Text' => $textLines[0] ?? '',
+        ]);
     }
 
     protected function setApiPassword(string $password): void
