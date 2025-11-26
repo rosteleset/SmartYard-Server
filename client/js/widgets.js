@@ -322,11 +322,12 @@ function pageMaintenance() {
     $("#altForm").hide();
     subTop();
     loadingDone();
+    let daleks_lang = [ "ru", "en" ];
     document.title = `${i18n("windowTitle")} :: ${i18n("maintenanceCaption")}`;
     $("#pageError").html(`
         <section class="content">
             <div class="error-page">
-                <img src="img/maintenance_en.jpg" style="border: none; width: 200px; height: 200px; border-radius: 10px;">
+                <img src="img/maintenance_${daleks_lang[lang.code] ? daleks_lang[lang.code] : "en"}.jpg" style="border: none; width: 200px; height: 200px; border-radius: 10px;">
                 <div class="error-content">
                     <h3><i class="fas fa-exclamation-triangle text-danger mr-3"></i><b>${i18n("maintenanceCaption")}</b></h3>
                     <p>${i18n("maintenanceMessage")}</p>
