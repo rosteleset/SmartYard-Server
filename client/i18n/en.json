@@ -103,5 +103,8 @@
         "permissionDenied": "Access denied",
         "notAcceptable": "Not acceptable",
         "cantStoreData": "Can't store data"
+    },
+    "images": {
+        "maintenance": "maintenance_en.jpg"
     }
 }

@@ -106,5 +106,8 @@
         "permissionDenied": "В доступе отказано",
         "notAcceptable": "Действие невозможно",
         "cantStoreData": "Нет доступа к хранилищу"
+    },
+    "images": {
+        "maintenance": "maintenance_ru.jpg"
     }
 }
