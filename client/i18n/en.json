@@ -83,8 +83,8 @@
     "multiuploadNotSupported": "Too many files",
     "copyToClipboard": "Copy to clipboard",
     "errors": {
-        "404caption": "Oh! Page not found.",
-        "404message": "It seems that we cannot find the page you need. <br /> Try to switch to <a href=\"?#\"> the initial page </a>.",
+        "404caption": "Oh! Page not found",
+        "404message": "It seems that we cannot find the page you need. <br /> Try to switch to <a href=\"?#\"> the initial page </a>",
         "404": "The object was not found",
         "redis": "Redis connection error",
         "notFound": "Nothing found",

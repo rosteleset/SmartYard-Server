@@ -289,8 +289,26 @@ function page404() {
             <div class="error-page">
                 <img src="img/404.png" style="border: none; width: 200px; height: 200px;">
                 <div class="error-content">
-                    <h3><i class="fas fa-exclamation-triangle text-danger"></i>${i18n("errors.404caption")}</h3>
+                    <h3><i class="fas fa-exclamation-triangle text-danger mr-3"></i><b>${i18n("errors.404caption")}</b></h3>
                     <p>${i18n("errors.404message")}</p>
+                </div>
+            </div>
+        </section>
+    `).show();
+}
+
+function pageMaintenance() {
+    $("#mainForm").html("");
+    $("#altForm").hide();
+    loadingDone();
+    document.title = `${i18n("windowTitle")} :: ${i18n("maintenanceCaption")}`;
+    $("#pageMaintenance").html(`
+        <section class="content">
+            <div class="error-page">
+                <img src="img/maintenance_en.png" style="border: none; width: 200px; height: 200px;">
+                <div class="error-content">
+                    <h3><i class="fas fa-exclamation-triangle text-danger mr-3"></i><b>${i18n("maintenanceCaption")}</b></h3>
+                    <p>${i18n("maintenanceMessage")}</p>
                 </div>
             </div>
         </section>
@@ -308,7 +326,7 @@ function pageError(error) {
             <div class="error-page">
                 <h2 class="headline text-danger mr-4"> Error</h2>
                 <div class="error-content">
-                    <h3><i class="fas fa-exclamation-triangle text-danger"></i>${i18n("error")}</h3>
+                    <h3><i class="fas fa-exclamation-triangle text-danger mr-3"></i><b>${i18n("error")}</b></h3>
                     <p>${error?error:i18n("errors.unknown")}</p>
                 </div>
             </div>
