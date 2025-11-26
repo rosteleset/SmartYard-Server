@@ -10,3 +10,5 @@ Fully autonomous server part for quick launch of your intercom and video surveil
 ### [SERVER API](https://rosteleset.github.io/SmartYard-Server/doc/api/) (WiP)
 
 ### [MOBILE API](https://rosteleset.github.io/SmartYard-Server/doc/mobile/) (WiP)
+
+### [Changelog](https://github.com/rosteleset/SmartYard-Server/blob/main/changelog.md) (WiP)
