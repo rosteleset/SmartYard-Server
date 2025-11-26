@@ -219,7 +219,6 @@ function hashChange() {
             }
 
             if (module) {
-                $("#page404").hide();
                 $("#pageError").hide();
                 $("#topMenuLeft").html(`<li id="topMenuLeftCaption" class="ml-3 mr-3 nav-item d-none d-sm-inline-block text-bold text-lg">${i18n(route.split('.')[0] + "." + route.split('.')[0])}</li>`);
                 if (currentModule != module) {
@@ -276,7 +275,6 @@ function ping(server) {
 function showLoginForm() {
     $("#mainForm").html("");
     $("#altForm").hide();
-    $("#page404").hide();
     $("#pageError").hide();
     $("#forgotForm").hide();
     $("#2faForm").hide();
@@ -313,7 +311,6 @@ function showLoginForm() {
 function showForgotPasswordForm() {
     $("#mainForm").html("");
     $("#altForm").hide();
-    $("#page404").hide();
     $("#pageError").hide();
     $("#loginForm").hide();
     $("#2faForm").hide();

@@ -282,12 +282,10 @@ function timeoutDone() {
 function page404() {
     $("#mainForm").html("");
     $("#altForm").hide();
-    $("#pageError").hide();
-    $("#pageMaintenance").hide();
     subTop();
     loadingDone();
     document.title = `${i18n("windowTitle")} :: 404`;
-    $("#page404").html(`
+    $("#pageError").html(`
         <section class="content">
             <div class="error-page">
                 <img src="img/404.jpg" style="border: none; width: 200px; height: 200px;">
@@ -303,8 +301,6 @@ function page404() {
 function pageError(error) {
     $("#mainForm").html("");
     $("#altForm").hide();
-    $("#page404").hide();
-    $("#pageMaintenance").hide();
     subTop();
     loadingDone();
     document.title = `${i18n("windowTitle")} :: ${i18n("error")}`;
@@ -324,12 +320,10 @@ function pageError(error) {
 function pageMaintenance() {
     $("#mainForm").html("");
     $("#altForm").hide();
-    $("#page404").hide();
-    $("#pageError").hide();
     subTop();
     loadingDone();
     document.title = `${i18n("windowTitle")} :: ${i18n("maintenanceCaption")}`;
-    $("#pageMaintenance").html(`
+    $("#pageError").html(`
         <section class="content">
             <div class="error-page">
                 <img src="img/maintenance_en.jpg" style="border: none; width: 200px; height: 200px; border-radius: 10px;">
