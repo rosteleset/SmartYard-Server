@@ -93,7 +93,7 @@
         "404": "Объект не найден",
         "redis": "Ошибка подключения к redis серверу",
         "notFound": "Ничего не найдено",
-        "noGravatar": "[gr]Avatar не найден<br/><a href='https://ru.gravatar.com/' target='_blank' class='text-bold hover'>[Установить]</a>",
+        "noGravatar": "[gr]Avatar не найден<br /><a href='https://ru.gravatar.com/' target='_blank' class='text-bold hover'>[Установить]</a>",
         "unknown": "Неизвестная ошибка",
         "unknownMessage": "Неизвестная ошибка,<br />попробуйте перезагрузить страницу...",
         "cantReadNfcTag": "Невозможно прочитать метку",

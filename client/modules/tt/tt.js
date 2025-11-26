@@ -1164,7 +1164,7 @@
                             for (let i in val) {
                                 let issueId = $.trim(val[i].split("[")[1].split("]")[0]);
                                 let subject = $.trim(val[i].substring(val[i].indexOf("]") + 1));
-                                t += `<a href="?#tt&issue=${encodeURIComponent(issueId)}" class="hoverable">[ ${issueId} ]: ${escapeHTML(subject)}</a><br/>`;
+                                t += `<a href="?#tt&issue=${encodeURIComponent(issueId)}" class="hoverable">[ ${issueId} ]: ${escapeHTML(subject)}</a><br />`;
                             }
 
                             val = t;
@@ -1271,7 +1271,7 @@
                                 } else {
                                     s += '<i class="far fa-fw fa-square mr-1"></i>';
                                 }
-                                s += cf.options[i].optionDisplay + "<br/>";
+                                s += cf.options[i].optionDisplay + "<br />";
                             }
 
                             val = s;
@@ -1766,7 +1766,7 @@
 
                 if (target) {
                     if (!$("#" + issuesListId).length) {
-                        target.append(`<table class="mt-2" style="width: 100%;"><tr><td style="width: 100%;">${filters}<br/><span id='${issuesListId + '-count'}'></span></td><td>${pager(issuesListId)}</td></tr></table><div id="${issuesListId}"></div>`);
+                        target.append(`<table class="mt-2" style="width: 100%;"><tr><td style="width: 100%;">${filters}<br /><span id='${issuesListId + '-count'}'></span></td><td>${pager(issuesListId)}</td></tr></table><div id="${issuesListId}"></div>`);
                     } else {
                         $(`.pager[data-target="${issuesListId}"]`).html(pager(issuesListId));
                     }
@@ -1775,7 +1775,7 @@
                     if (cs) {
                         o += `<table class="mt-2" style="width: 100%;"><tr><td style="width: 100%;"><span id='${issuesListId + '-count'}'></span></td></tr></table>`;
                     } else {
-                        o += `<table class="mt-2" style="width: 100%;"><tr><td style="width: 100%;">${filters}<br/><span id='${issuesListId + '-count'}'></span></td><td>${pager(issuesListId)}</td></tr></table>`;
+                        o += `<table class="mt-2" style="width: 100%;"><tr><td style="width: 100%;">${filters}<br /><span id='${issuesListId + '-count'}'></span></td><td>${pager(issuesListId)}</td></tr></table>`;
                     }
                     o += `<div id="${issuesListId}"></div>`;
                     if (!cs) {

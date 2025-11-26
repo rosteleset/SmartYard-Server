@@ -610,7 +610,7 @@
                         h += "<span>" + modules.cs.colMenu(modules.cs.cols[i]) + "</span>";
                         if (c.logins && c.logins.length) {
                             for (let j in c.logins) {
-                                h += "<br/>";
+                                h += "<br />";
                                 if (response.sheet.sheet.loginClass) {
                                     h += "<span class='" + response.sheet.sheet.loginClass + "'>"
                                 } else {
