@@ -2460,9 +2460,11 @@
                         },
                         append: (!issues.issues || !issues.issues.length) ? i18n("tt.noIssuesAvailable") : '',
                     });
+
                     if ($("#" + issuesListId).height() > $(window).height()) {
                         $(".issuesBottomPager").show();
                     }
+
                     if (!target && !!!(params && params.noScroll && parseInt(params.noScroll) == 1)) {
                         $('html').scrollTop(0);
                     }
@@ -2477,7 +2479,7 @@
                 }
 
                 if (params.scroll) {
-                    if ($(`.${params.scroll}`).offset().top > $(window).height()) {
+                    if ($(`.${params.scroll}`).offset().top + $(`.${params.scroll}`).height() > $(window).height()) {
                         $('html, body').animate({
                             scrollTop: $(`.${params.scroll}`).offset().top - 200,
                         }, 100);
