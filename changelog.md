@@ -1,3 +1,10 @@
+```diff
+- bugfix
++ new
+! important changes
+# removed or deprecated
+```
+
 ## 2025-11-25
 
 ```diff
