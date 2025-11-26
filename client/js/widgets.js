@@ -327,7 +327,7 @@ function pageMaintenance() {
     $("#pageError").html(`
         <section class="content">
             <div class="error-page">
-                <img src="img/maintenance_${(daleks_lang.indexOf[lang._code] >= 0) ? daleks_lang[lang._code] : "en"}.jpg" style="border: none; width: 200px; height: 200px; border-radius: 10px;">
+                <img src="img/maintenance_${(daleks_lang.indexOf(lang._code) >= 0) ? daleks_lang[lang._code] : "en"}.jpg" style="border: none; width: 200px; height: 200px; border-radius: 10px;">
                 <div class="error-content">
                     <h3><i class="fas fa-exclamation-triangle text-danger mr-3"></i><b>${i18n("maintenanceCaption")}</b></h3>
                     <p>${i18n("maintenanceMessage")}</p>
