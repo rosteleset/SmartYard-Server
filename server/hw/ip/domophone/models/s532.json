@@ -7,5 +7,18 @@
     "outputs": 2,
     "camera": "akuvox",
     "useSmartConfigurator": true,
-    "cmses": []
+    "cmses": [
+        "bk-100",
+        "bk-400",
+        "com-25u",
+        "com-100u",
+        "com-220u",
+        "digital",
+        "km20-1",
+        "km100-7.1",
+        "km100-7.2",
+        "km100-7.3",
+        "km100-7.5",
+        "kmg-100"
+    ]
 }

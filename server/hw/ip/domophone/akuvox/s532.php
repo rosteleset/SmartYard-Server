@@ -3,12 +3,32 @@
 namespace hw\ip\domophone\akuvox;
 
 use hw\Interface\DisplayTextInterface;
+use hw\ip\domophone\akuvox\Enums\AnalogType;
 
 /**
  * Represents an Akuvox S532 intercom.
  */
 class s532 extends akuvox implements DisplayTextInterface
 {
+    /**
+     * @var array<string, AnalogType> Mapping of CMS model codes from the DB to their corresponding AnalogType enums.
+     */
+    protected const CMS_MODEL_MAP = [
+        '' => AnalogType::None,
+        'BK-100' => AnalogType::Vizit,
+        'BK-400' => AnalogType::Vizit,
+        'COM-25U' => AnalogType::Metakom,
+        'COM-100U' => AnalogType::Metakom,
+        'COM-220U' => AnalogType::Metakom,
+        'DIGITAL' => AnalogType::Laskomex,
+        'KM20-1' => AnalogType::Eltis,
+        'KM100-7.1' => AnalogType::Eltis,
+        'KM100-7.2' => AnalogType::Eltis,
+        'KM100-7.3' => AnalogType::Eltis,
+        'KM100-7.5' => AnalogType::Eltis,
+        'KMG-100' => AnalogType::Cyfral,
+    ];
+
     protected static function getMaxUsers(): int
     {
         return 4000; // TODO: check
@@ -53,12 +73,28 @@ class s532 extends akuvox implements DisplayTextInterface
         $this->setApiPassword($password);
     }
 
+    public function setCmsModel(string $model = ''): void
+    {
+        $this->setConfigParams(['Config.DoorSetting.ANALOG.Type' => self::CMS_MODEL_MAP[$model]->value]);
+    }
+
     public function setDisplayText(array $textLines): void
     {
         $this->setConfigParams([
             'Config.DoorSetting.GENERAL.Theme' => '1',
             'Config.DoorSetting.CUSTOMIZED.Text' => $textLines[0] ?? '',
         ]);
+    }
+
+    public function transformDbConfig(array $dbConfig): array
+    {
+        $dbConfig['cmsModel'] = self::CMS_MODEL_MAP[$dbConfig['cmsModel']]->value;
+        return $dbConfig;
+    }
+
+    protected function getCmsModel(): string
+    {
+        return $this->getConfigParams(['Config.DoorSetting.ANALOG.Type'])[0] ?? '';
     }
 
     protected function setApiPassword(string $password): void
