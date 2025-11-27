@@ -40,6 +40,12 @@ class s532 extends akuvox implements DisplayTextInterface
         return 1;
     }
 
+    public function prepare(): void
+    {
+        parent::prepare();
+        $this->setHttpsEnabled(false);
+    }
+
     public function setAdminPassword(string $password): void
     {
         $this->setWebPassword($password);
