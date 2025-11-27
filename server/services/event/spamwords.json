@@ -29,7 +29,8 @@
         "Encode",
         "DownloadConfigFile",
         "GetRemoteUserNameByRPID",
-        "GetRemoteDisplayNameByRPID"
+        "GetRemoteDisplayNameByRPID",
+        "audio buf is full"
     ],
     "beward": [
         "RTSP",
