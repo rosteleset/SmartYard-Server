@@ -193,44 +193,53 @@ function modal(body) {
 }
 
 function FAIL(response) {
-    if (response && response.responseJSON && response.responseJSON.error) {
-        if (response.getResponseHeader("x-last-error")) {
-            error(i18n("errors." + response.responseJSON.error, i18n("errors." + response.getResponseHeader("x-last-error"))), i18n("error"), 30);
-        } else {
-            error(i18n("errors." + response.responseJSON.error), i18n("error"), 30);
-        }
-        if (response.responseJSON.error == "tokenNotFound") {
-            lStore("_token", null);
-            setTimeout(() => {
-                window.location.reload();
-            }, 5000);
-            return $.Deferred().reject(response.responseJSON.error);
-        }
+    if (response.getResponseHeader("x-maintenance") == "yes") {
+        error(i18n("maintenanceMessage"), i18n("maintenanceCaption"), 30);
     } else {
-        if (response && response.getResponseHeader("x-last-error")) {
-            error(i18n("errors.unknown" + " [" + i18n("errors." + response.getResponseHeader("x-last-error")) + "]"), i18n("errorCode", response.status), 30);
+        if (response && response.responseJSON && response.responseJSON.error) {
+            if (response.getResponseHeader("x-last-error")) {
+                error(i18n("errors." + response.responseJSON.error, i18n("errors." + response.getResponseHeader("x-last-error"))), i18n("error"), 30);
+            } else {
+                error(i18n("errors." + response.responseJSON.error), i18n("error"), 30);
+            }
+            if (response.responseJSON.error == "tokenNotFound") {
+                lStore("_token", null);
+                setTimeout(() => {
+                    window.location.reload();
+                }, 5000);
+                return $.Deferred().reject(response.responseJSON.error);
+            }
         } else {
-            error(i18n("errors.unknown"), i18n("errorCode", response ? response.status : i18n("unknown")), 30);
+            if (response && response.getResponseHeader("x-last-error")) {
+                error(i18n("errors.unknown" + " [" + i18n("errors." + response.getResponseHeader("x-last-error")) + "]"), i18n("errorCode", response.status), 30);
+            } else {
+                error(i18n("errors.unknown"), i18n("errorCode", response ? response.status : i18n("unknown")), 30);
+            }
         }
     }
 }
 
 function FAILPAGE(response) {
-    if (response && response.responseJSON && response.responseJSON.error) {
-        if (response.getResponseHeader("x-last-error")) {
-            error(i18n("errors." + response.responseJSON.error, i18n("errors." + response.getResponseHeader("x-last-error"))), i18n("error"), 30);
-            pageError(i18n("errors." + response.responseJSON.error, i18n("errors." + response.getResponseHeader("x-last-error"))));
-        } else {
-            error(i18n("errors." + response.responseJSON.error), i18n("error"), 30);
-            pageError(i18n("errors." + response.responseJSON.error));
-        }
+    if (response.getResponseHeader("x-maintenance") == "yes") {
+        error(i18n("maintenanceMessage"), i18n("maintenanceCaption"), 30);
+        pageMaintenance();
     } else {
-        if (response && response.getResponseHeader("x-last-error")) {
-            error(i18n("errors.unknown" + " [" + i18n("errors." + response.getResponseHeader("x-last-error")) + "]"), i18n("errorCode", response.status), 30);
-            pageError(i18n("errors." + response.getResponseHeader("x-last-error")));
+        if (response && response.responseJSON && response.responseJSON.error) {
+            if (response.getResponseHeader("x-last-error")) {
+                error(i18n("errors." + response.responseJSON.error, i18n("errors." + response.getResponseHeader("x-last-error"))), i18n("error"), 30);
+                pageError(i18n("errors." + response.responseJSON.error, i18n("errors." + response.getResponseHeader("x-last-error"))));
+            } else {
+                error(i18n("errors." + response.responseJSON.error), i18n("error"), 30);
+                pageError(i18n("errors." + response.responseJSON.error));
+            }
         } else {
-            error(i18n("errors.unknown"), i18n("errorCode", response ? response.status : i18n("unknown")), 30);
-            pageError();
+            if (response && response.getResponseHeader("x-last-error")) {
+                error(i18n("errors.unknown" + " [" + i18n("errors." + response.getResponseHeader("x-last-error")) + "]"), i18n("errorCode", response.status), 30);
+                pageError(i18n("errors." + response.getResponseHeader("x-last-error")));
+            } else {
+                error(i18n("errors.unknown"), i18n("errorCode", response ? response.status : i18n("unknown")), 30);
+                pageError();
+            }
         }
     }
     loadingDone();

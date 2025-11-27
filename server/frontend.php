@@ -135,6 +135,13 @@
         $db->exec("SET search_path TO " . $config["db"]["schema"] . ", public");
     }
 
+    $maintenance = (int)$db->get("select count(*) as maintenance from core_vars where var_name = 'maintenance'", [], false, [ 'fieldlify', 'silent' ]);
+
+    if ($maintenance) {
+        header("X-Maintenance: yes");
+        response(503);
+    }
+
     $request = explode("?", $_SERVER["REQUEST_URI"])[0];
 
     $frontend = parse_url(@$config["api"]["frontend"]);
