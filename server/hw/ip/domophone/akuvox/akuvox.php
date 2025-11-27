@@ -550,6 +550,17 @@ abstract class akuvox extends domophone
     }
 
     /**
+     * Enables or disables HTTPS access for the web server.
+     *
+     * @param bool $enabled Whether to enable HTTPS. Defaults to true.
+     * @return void
+     */
+    protected function setHttpsEnabled(bool $enabled = true): void
+    {
+        $this->setConfigParams(['Config.Network.WEBSERVER.HttpsEnable' => $enabled ? '1' : '0']);
+    }
+
+    /**
      * Sets the internal RFID reader parameters.
      *
      * @return void
