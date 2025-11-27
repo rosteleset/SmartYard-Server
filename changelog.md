@@ -5,6 +5,12 @@
 # removed or deprecated
 ```
 
+## 2025-11-27
+
+```diff
++ bloking web interface when in maintenance mode
+```
+
 ## 2025-11-26
 
 ```diff

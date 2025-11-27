@@ -195,6 +195,9 @@ function modal(body) {
 function FAIL(response) {
     if (response.getResponseHeader("x-maintenance") == "yes") {
         error(i18n("maintenanceMessage"), i18n("maintenanceCaption"), 30);
+        pageMaintenance();
+        loadingDone();
+        return $.Deferred().reject(i18n("maintenanceCaption"));
     } else {
         if (response && response.responseJSON && response.responseJSON.error) {
             if (response.getResponseHeader("x-last-error")) {
@@ -223,6 +226,8 @@ function FAILPAGE(response) {
     if (response.getResponseHeader("x-maintenance") == "yes") {
         error(i18n("maintenanceMessage"), i18n("maintenanceCaption"), 30);
         pageMaintenance();
+        loadingDone();
+        return $.Deferred().reject(i18n("maintenanceCaption"));
     } else {
         if (response && response.responseJSON && response.responseJSON.error) {
             if (response.getResponseHeader("x-last-error")) {
