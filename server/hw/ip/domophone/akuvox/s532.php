@@ -14,6 +14,21 @@ class s532 extends akuvox implements DisplayTextInterface
         return 4000; // TODO: check
     }
 
+    public function configureSip(
+        string $login,
+        string $password,
+        string $server,
+        int    $port = 5060,
+        bool   $stunEnabled = false,
+        string $stunServer = '',
+        int    $stunPort = 3478,
+    ): void
+    {
+        // With STUN enabled, the device doesn't register with the SIP server (it shows "Failed" in the web interface)
+        $encodedPassword = base64_encode($password);
+        parent::configureSip($login, $encodedPassword, $server, $port, $stunEnabled, $stunServer, $stunPort);
+    }
+
     public function getDisplayText(): array
     {
         $text = $this->getConfigParams(['Config.DoorSetting.CUSTOMIZED.Text'])[0] ?? null;
