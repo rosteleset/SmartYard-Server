@@ -1,6 +1,19 @@
 <?php
 
     /**
+     * @api {get} /api/houses/flat:flatId get flat
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName getFlat
+     * @apiGroup houses
+     *
+     * @apiHeader {String} Authorization authentication token
+     *
+     * @apiSuccess {Object} flat
+     */
+
+/**
      * @api {post} /api/houses/flat add flat
      *
      * @apiVersion 1.0.0
@@ -90,6 +103,14 @@
          */
 
         class flat extends api {
+
+            public static function GET($params) {
+                $households = loadBackend("households");
+
+                $flat = $households->getFlat($params["_id"]);
+
+                return api::ANSWER($flat, ($flat !== false) ? "flat" : "notAcceptable");
+            }
 
             public static function POST($params) {
                 $households = loadBackend("households");

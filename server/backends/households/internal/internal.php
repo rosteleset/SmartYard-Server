@@ -94,7 +94,9 @@
                         "house_domophone_id" => "domophoneId",
                         "matrix" => "matrix"
                     ]);
+
                     $flat["entrances"] = [];
+
                     foreach ($entrances as $e) {
                         $flat["entrances"][] = $e;
                     }
@@ -826,20 +828,14 @@
                         "subscribers_limit" => "subscribersLimit",
                     ], $params);
 
-                    $queue = loadBackend("queue");
-
                     if ($mod !== false && array_key_exists("flat", $params) && array_key_exists("entrances", $params) && array_key_exists("apartmentsAndLevels", $params) && is_array($params["entrances"]) && is_array($params["apartmentsAndLevels"])) {
                         $entrances = $params["entrances"];
                         $apartmentsAndLevels = $params["apartmentsAndLevels"];
 
-                        // TODO: we need to do something about this
-                        if ($queue) {
-                            $queue->changed("flat", $flatId);
-                        }
-
                         if ($this->db->modify("delete from houses_entrances_flats where house_flat_id = $flatId") === false) {
                             return false;
                         }
+
                         for ($i = 0; $i < count($entrances); $i++) {
                             if (!checkInt($entrances[$i])) {
                                 return false;
@@ -853,29 +849,24 @@
                                     }
                                     $lv = @$apartmentsAndLevels[$entrances[$i]]["apartmentLevels"];
                                 }
-                                if ($this->db->modify("insert into houses_entrances_flats (house_entrance_id, house_flat_id, apartment, cms_levels) values (:house_entrance_id, :house_flat_id, :apartment, :cms_levels)", [
+
+                                $mod = $mod & $this->db->modify("insert into houses_entrances_flats (house_entrance_id, house_flat_id, apartment, cms_levels) values (:house_entrance_id, :house_flat_id, :apartment, :cms_levels)", [
                                     ":house_entrance_id" => $entrances[$i],
                                     ":house_flat_id" => $flatId,
                                     ":apartment" => $ap,
                                     ":cms_levels" => $lv,
-                                ]) === false) {
-                                    return false;
-                                }
+                                ]);
                             }
                         }
-
-                        if ($queue) {
-                            $queue->changed("flat", $flatId);
-                        }
-
-                        return true;
                     }
 
-                    if ($queue) {
+                    $queue = loadBackend("queue");
+
+                    if ($mod & $queue) {
                         $queue->changed("flat", $flatId);
                     }
 
-                    return true;
+                    return $mod;
                 } else {
                     setLastError("cantModifyFlat");
                     return false;

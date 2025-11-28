@@ -5,6 +5,13 @@
 # removed or deprecated
 ```
 
+## 2025-11-28
+
+```diff
++ @api {get} /api/houses/flat:flatId get flat
+- minor fixes in households->modifyFlat
+```
+
 ## 2025-11-27
 
 ```diff
