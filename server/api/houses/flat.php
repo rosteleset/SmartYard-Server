@@ -52,7 +52,7 @@
      * @apiHeader {String} Authorization authentication token
      *
      * @apiParam {Number} flatId
-     * @apiBody {String} flat
+     * @apiBody {String} [flat]
      * @apiBody {Number} [floor]
      * @apiBody {String} [code]
      * @apiBody {Object[]} [entrances] if you want to change entrances or apartmentsAndLevels both must be specified

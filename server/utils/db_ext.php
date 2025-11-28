@@ -203,7 +203,7 @@
          */
 
         function modifyEx($query, $map, $params, $options = []) {
-            $mod = false;
+            $mod = 0;
             try {
                 foreach ($map as $db => $param) {
                     if (array_key_exists($param, $params)) {
@@ -211,9 +211,7 @@
                         if ($sth->execute($this->trimParams([
                             $db => $params[$param],
                         ]))) {
-                            if ($sth->rowCount()) {
-                                $mod = true;
-                            }
+                            $mod += $sth->rowCount();
                         }
                     }
                 }

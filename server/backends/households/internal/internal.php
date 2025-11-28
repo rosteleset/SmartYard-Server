@@ -828,7 +828,11 @@
                         "subscribers_limit" => "subscribersLimit",
                     ], $params);
 
-                    if ($mod !== false && array_key_exists("flat", $params) && array_key_exists("entrances", $params) && array_key_exists("apartmentsAndLevels", $params) && is_array($params["entrances"]) && is_array($params["apartmentsAndLevels"])) {
+                    if ($mod !== false && array_key_exists("entrances", $params) && array_key_exists("apartmentsAndLevels", $params) && is_array($params["entrances"]) && is_array($params["apartmentsAndLevels"])) {
+                        if (!array_key_exists("flat", $params)) {
+                            $params["flat"] = $this->getFlat($flatId)["flat"];
+                        }
+
                         $entrances = $params["entrances"];
                         $apartmentsAndLevels = $params["apartmentsAndLevels"];
 
