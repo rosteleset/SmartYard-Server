@@ -97,16 +97,44 @@ class s532 extends akuvox implements DisplayTextInterface
         return $this->getConfigParams(['Config.DoorSetting.ANALOG.Type'])[0] ?? '';
     }
 
+    /**
+     * Return the next user ID.
+     *
+     * @return int|null The next available user ID, or null on failure.
+     */
+    protected function getNextUserId(): ?int
+    {
+        return $this->apiCall('/user/rand')['data']['UserID'] ?? null;
+    }
+
+    /**
+     * Sets the API password.
+     *
+     * @param string $password Raw password value.
+     * @return void
+     */
     protected function setApiPassword(string $password): void
     {
         $this->setConfigParams(['Config.DoorSetting.APIFCGI.Password' => base64_encode($password)]);
     }
 
+    /**
+     * Sets the RTSP password.
+     *
+     * @param string $password Raw password value.
+     * @return void
+     */
     protected function setRtspPassword(string $password): void
     {
         $this->setConfigParams(['Config.DoorSetting.RTSP.Password' => base64_encode($password)]);
     }
 
+    /**
+     * Sets the WEB interface password.
+     *
+     * @param string $password Raw password value.
+     * @return void
+     */
     protected function setWebPassword(string $password): void
     {
         $this->apiCall('', 'POST', [
