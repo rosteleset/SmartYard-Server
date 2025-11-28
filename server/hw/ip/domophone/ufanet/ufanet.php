@@ -94,7 +94,8 @@ abstract class ufanet extends domophone implements
      */
     protected static function getNormalizedRfid(string $code): string
     {
-        return strtolower(ltrim($code, '0'));
+        $trimmedCode = ltrim($code, '0');
+        return strtolower(strlen($trimmedCode) % 2 ? '0' . $trimmedCode : $trimmedCode);
     }
 
     public function addRfid(string $code, int $apartment = 0): void
