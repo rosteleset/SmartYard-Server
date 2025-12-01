@@ -139,7 +139,7 @@ namespace backends\issueAdapter {
             if (!isset($data[self::PARAM_TYPE]))
                 return false;
 
-            $project = $this->config['backends']['pter'][$issueType][self::F_PROJECT];
+            $project = $this->config['backends']['issueAdapter'][$issueType][self::F_PROJECT];
             $workflow = $this->config['backends']['issueAdapter'][$issueType][self::F_WORKFLOW];
             $catalog = $this->config['backends']['issueAdapter'][$issueType][self::F_CATALOG];
             $subject = $this->config['backends']['issueAdapter'][$issueType][self::F_SUBJECT];
