@@ -3,6 +3,7 @@
 namespace hw\ip\domophone\akuvox;
 
 use hw\Interface\DisplayTextInterface;
+use hw\ip\domophone\akuvox\Entities\User;
 use hw\ip\domophone\akuvox\Enums\AnalogType;
 
 /**
@@ -34,6 +35,32 @@ class s532 extends akuvox implements DisplayTextInterface
         return 4000; // TODO: check
     }
 
+    public function addRfid(string $code, int $apartment = 0): void
+    {
+        // TODO
+    }
+
+    public function addRfids(array $rfids): void
+    {
+        // TODO
+    }
+
+    public function configureApartment(
+        int   $apartment,
+        int   $code = 0,
+        array $sipNumbers = [],
+        bool  $cmsEnabled = true,
+        array $cmsLevels = [],
+    ): void
+    {
+        $user = new User($apartment);
+
+        $user->privatePin = $code === 0 ? '' : (string)$code;
+        $user->phoneNum = $sipNumbers[0] ?? '';
+
+        $this->addUser($user);
+    }
+
     public function configureSip(
         string $login,
         string $password,
@@ -58,6 +85,11 @@ class s532 extends akuvox implements DisplayTextInterface
     public function getDisplayTextLinesCount(): int
     {
         return 1;
+    }
+
+    public function getRfids(): array
+    {
+        return [];
     }
 
     public function prepare(): void
@@ -90,6 +122,28 @@ class s532 extends akuvox implements DisplayTextInterface
     {
         $dbConfig['cmsModel'] = self::CMS_MODEL_MAP[$dbConfig['cmsModel']]->value;
         return $dbConfig;
+    }
+
+    /**
+     * Adds a new user with the provided data.
+     *
+     * @param User $user The user entity to create.
+     */
+    protected function addUser(User $user): void
+    {
+        $this->apiCall('', 'POST', [
+            'target' => 'user',
+            'action' => 'add',
+            'data' => [
+                'item' => [$user->toArray()],
+            ],
+        ]);
+    }
+
+    protected function getApartments(): array
+    {
+        // TODO
+        return [];
     }
 
     protected function getCmsModel(): string
