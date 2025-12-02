@@ -106,8 +106,8 @@
                 $c = 0;
 
                 $path = @$this->config["backends"]["tmpfs"]["path"] ?: "/tmp/tmpfs";
-                $max_age = @$this->config["backends"]["tmpfs"]["max_age"] ?: "1month";
-                $threshold = strtotime("-" . $max_age);
+                $ttl_max = @$this->config["backends"]["tmpfs"]["ttl_max"] ?: "1month";
+                $threshold = strtotime("-" . $ttl_max);
 
                 if (file_exists($path) && $threshold) {
                     $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));

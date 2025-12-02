@@ -321,7 +321,7 @@
             "path": "/tmp/tmpfs",
             "path_rights": "777",
             "file_rights": "777",
-            "max_age": "3day",
+            "ttl_max": "3day",
         },
 
         "extfs": {
@@ -336,7 +336,7 @@
             "path": "/tmp/memfs",
             "path_rights": "777",
             "file_rights": "777",
-            "max_age": "15min",
+            "ttl_max": "15min",
         },
     },
 

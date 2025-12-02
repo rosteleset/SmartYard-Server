@@ -72,8 +72,8 @@
                 $c = 0;
 
                 $path = @$this->config["backends"]["memfs"]["path"] ?: "/tmp/memfs";
-                $max_age = @$this->config["backends"]["memfs"]["max_age"] ?: "5min";
-                $threshold = strtotime("-" . $max_age);
+                $ttl_max = @$this->config["backends"]["memfs"]["ttl_max"] ?: "5min";
+                $threshold = strtotime("-" . $ttl_max);
 
                 if (file_exists($path) && $threshold) {
                     $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));
