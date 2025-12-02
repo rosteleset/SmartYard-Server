@@ -6,6 +6,7 @@
 ```
 
 ## 2025-12-02
+
 ```diff
 ! massive refactoring in server/utils/*.php
 ```
