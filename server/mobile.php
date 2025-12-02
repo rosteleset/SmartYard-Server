@@ -19,6 +19,7 @@
     mb_internal_encoding("UTF-8");
 
     require_once "utils/functions.php";
+    require_once "utils/polyfills.php";
     require_once "utils/loader.php";
     require_once "utils/PDOExt.php";
     require_once "utils/purifier.php";

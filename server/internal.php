@@ -7,6 +7,7 @@
     require_once "backends/backend.php";
 
     require_once "utils/functions.php";
+    require_once "utils/polyfills.php";
     require_once "utils/loader.php";
     require_once "utils/PDOExt.php";
     require_once "utils/error.php";

@@ -20,6 +20,7 @@
     }
 
     require_once "utils/functions.php";
+    require_once "utils/polyfills.php";
     require_once "utils/error.php";
     require_once "utils/response.php";
     require_once "utils/loader.php";

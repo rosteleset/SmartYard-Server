@@ -2,13 +2,14 @@
 
     require_once 'vendor/autoload.php';
 
+    require_once "utils/functions.php";
+    require_once "utils/polyfills.php";
     require_once "data/backup_db.php";
     require_once "data/install_clickhouse.php";
     require_once "data/install.php";
     require_once "data/install_tt_mobile_template.php";
     require_once "data/schema.php";
     require_once "hw/autoconfigure_device.php";
-    require_once "utils/functions.php";
     require_once "utils/cleanup.php";
     require_once "utils/clearCache.php";
     require_once "utils/clickhouse.php";
