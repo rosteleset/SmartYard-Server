@@ -3,7 +3,10 @@
 namespace hw\ip\domophone\akuvox;
 
 use hw\Interface\DisplayTextInterface;
-use hw\ip\domophone\akuvox\Entities\User;
+use hw\ip\domophone\akuvox\Entities\{
+    Group,
+    User,
+};
 use hw\ip\domophone\akuvox\Enums\AnalogType;
 
 /**
@@ -53,11 +56,16 @@ class s532 extends akuvox implements DisplayTextInterface
         array $cmsLevels = [],
     ): void
     {
+        // First, add a group for the apartment
+        $group = new Group($apartment);
+        $group->number = $apartment;
+        $this->addGroup($group);
+
+        // Then, add a user representing the apartment
         $user = new User($apartment);
-
-        $user->privatePin = $code === 0 ? '' : (string)$code;
+        $user->privatePin = $code === 0 ? '' : $code;
         $user->phoneNum = $sipNumbers[0] ?? '';
-
+        $user->group = $apartment;
         $this->addUser($user);
     }
 
@@ -122,6 +130,22 @@ class s532 extends akuvox implements DisplayTextInterface
     {
         $dbConfig['cmsModel'] = self::CMS_MODEL_MAP[$dbConfig['cmsModel']]->value;
         return $dbConfig;
+    }
+
+    /**
+     * Adds a new group with the provided data.
+     *
+     * @param Group $group The group entity to create.
+     */
+    protected function addGroup(Group $group): void
+    {
+        $this->apiCall('', 'POST', [
+            'target' => 'group',
+            'action' => 'add',
+            'data' => [
+                'item' => [$group->toArray()],
+            ],
+        ]);
     }
 
     /**
