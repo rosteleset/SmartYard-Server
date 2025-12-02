@@ -4,6 +4,7 @@ namespace hw\ip\domophone\akuvox;
 
 use hw\Interface\DisplayTextInterface;
 use hw\ip\domophone\akuvox\Entities\{
+    Dialplan,
     Group,
     User,
 };
@@ -130,6 +131,22 @@ class s532 extends akuvox implements DisplayTextInterface
     {
         $dbConfig['cmsModel'] = self::CMS_MODEL_MAP[$dbConfig['cmsModel']]->value;
         return $dbConfig;
+    }
+
+    /**
+     * Adds a new dialplan with the provided data.
+     *
+     * @param Dialplan $dialplan The dialplan entity to create.
+     */
+    protected function addDialplan(Dialplan $dialplan): void
+    {
+        $this->apiCall('', 'POST', [
+            'target' => 'dialreplace',
+            'action' => 'add',
+            'data' => [
+                'item' => [$dialplan->toArray()],
+            ],
+        ]);
     }
 
     /**
