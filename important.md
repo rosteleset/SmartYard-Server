@@ -4,7 +4,7 @@ Since version 0.0.18c, rbt/install/systemd/mongodb.service renamed to mongod.ser
 
 # 2025-10-31
 
-Since version 0.0.17, backend dvr_export renamed to  dvrExport (need modify server/config/config.json)
+Since version 0.0.17, backend dvr_export renamed to  dvrExports (need modify server/config/config.json)
 
 Since version 0.0.17, backend issue_adapter renamed to  issueAdapter (need modify server/config/config.json)
 
