@@ -8,31 +8,19 @@
     require_once "data/install_tt_mobile_template.php";
     require_once "data/schema.php";
     require_once "hw/autoconfigure_device.php";
-    require_once "utils/checkint.php";
-    require_once "utils/checkstr.php";
+    require_once "utils/functions.php";
     require_once "utils/cleanup.php";
-    require_once "utils/clear_cache.php";
+    require_once "utils/clearCache.php";
     require_once "utils/clickhouse.php";
-    require_once "utils/db_ext.php";
+    require_once "utils/PDOExt.php";
     require_once "utils/debug.php";
     require_once "utils/email.php";
     require_once "utils/error.php";
-    require_once "utils/format_usage.php";
-    require_once "utils/guidv4.php";
     require_once "utils/i18n.php";
-    require_once "utils/install_crontabs.php";
-    require_once "utils/is_executable.php";
+    require_once "utils/installCrontabs.php";
     require_once "utils/loader.php";
-    require_once "utils/mobile_project.php";
-    require_once "utils/parse_url_ext.php";
-    require_once "utils/purifier.php";
     require_once "utils/reindex.php";
     require_once "utils/response.php";
-    require_once "utils/generate_password.php";
-    require_once "utils/apache_request_headers.php";
-    require_once "utils/mb_levenshtein.php";
-    require_once "utils/array_is_list.php";
-    require_once "utils/object_to_array.php";
 
     require_once "backends/backend.php";
 
@@ -378,7 +366,7 @@
     }
 
     try {
-        $db = new PDO_EXT(@$config["db"]["dsn"], @$config["db"]["username"], @$config["db"]["password"], @$config["db"]["options"]);
+        $db = new PDOExt(@$config["db"]["dsn"], @$config["db"]["username"], @$config["db"]["password"], @$config["db"]["options"]);
     } catch (Exception $e) {
         echo "can't open database " . $config["db"]["dsn"] . "\n\n";
         die($e->getMessage() . "\n\n");

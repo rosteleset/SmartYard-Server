@@ -1,7 +1,7 @@
 <?php
 
 require_once __DIR__ . '/autoload.php';
-require_once __DIR__ . '/../utils/array_diff_assoc_recursive.php';
+require_once __DIR__ . '/../utils/functions.php';
 
 use hw\SmartConfigurator\DbConfigCollector\{
     CameraDbConfigCollector,

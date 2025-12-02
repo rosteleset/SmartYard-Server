@@ -18,18 +18,14 @@
 
     mb_internal_encoding("UTF-8");
 
-    require_once "backends/backend.php";
+    require_once "utils/functions.php";
     require_once "utils/loader.php";
-    require_once "utils/guidv4.php";
-    require_once "utils/db_ext.php";
-    require_once "utils/checkint.php";
-    require_once "utils/checkstr.php";
+    require_once "utils/PDOExt.php";
     require_once "utils/purifier.php";
     require_once "utils/error.php";
-    require_once "utils/apache_request_headers.php";
     require_once "utils/i18n.php";
-    require_once "utils/mb_levenshtein.php";
-    require_once "utils/object_to_array.php";
+
+    require_once "backends/backend.php";
 
     $RBTServices = [
         'internet' => [
@@ -121,7 +117,7 @@
     }
 
     try {
-        $db = new PDO_EXT(@$config["db"]["dsn"], @$config["db"]["username"], @$config["db"]["password"], @$config["db"]["options"]);
+        $db = new PDOExt(@$config["db"]["dsn"], @$config["db"]["username"], @$config["db"]["password"], @$config["db"]["options"]);
     } catch (Exception $e) {
         error_log(print_r($e, true));
 

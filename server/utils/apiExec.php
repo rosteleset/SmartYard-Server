@@ -12,6 +12,7 @@
  * @return false|object|string API response or error object
  * @throws Exception
  */
+
 function apiExec(string $method, string $url, $payload = false, $contentType = false, $token = false, $timeout = 10) {
     $curl = curl_init();
     $headers = [];

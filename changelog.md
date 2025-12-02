@@ -5,6 +5,11 @@
 # removed or deprecated
 ```
 
+## 2025-12-02
+```diff
+! massive refactoring in server/utils/*.php
+```
+
 ## 2025-11-28
 
 ```diff

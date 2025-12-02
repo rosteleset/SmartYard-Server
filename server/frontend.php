@@ -19,27 +19,17 @@
         return;
     }
 
+    require_once "utils/functions.php";
     require_once "utils/error.php";
     require_once "utils/response.php";
-    require_once "utils/guidv4.php";
     require_once "utils/loader.php";
-    require_once "utils/checkint.php";
-    require_once "utils/checkstr.php";
     require_once "utils/email.php";
     require_once "utils/forgot.php";
-    require_once "utils/apache_request_headers.php";
-    require_once "utils/array_key_first.php";
-    require_once "utils/generate_password.php";
-    require_once "utils/clear_cache.php";
+    require_once "utils/clearCache.php";
     require_once "utils/purifier.php";
-    require_once "utils/max_upload_size.php";
-    require_once "utils/db_ext.php";
+    require_once "utils/PDOExt.php";
     require_once "utils/debug.php";
     require_once "utils/i18n.php";
-    require_once "utils/mime_content_type.php";
-    require_once "utils/mb_levenshtein.php";
-    require_once "utils/array_is_list.php";
-    require_once "utils/object_to_array.php";
 
     require_once "backends/backend.php";
 
@@ -123,7 +113,7 @@
     }
 
     try {
-        $db = new PDO_EXT(@$config["db"]["dsn"], @$config["db"]["username"], @$config["db"]["password"], @$config["db"]["options"]);
+        $db = new PDOExt(@$config["db"]["dsn"], @$config["db"]["username"], @$config["db"]["password"], @$config["db"]["options"]);
     } catch (Exception $e) {
         error_log(print_r($e, true));
         response(555, [

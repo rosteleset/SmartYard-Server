@@ -5,17 +5,14 @@
     mb_internal_encoding("UTF-8");
 
     require_once "kamailio/kamailio.php";
+    require_once "utils/functions.php";
     require_once "utils/error.php";
     require_once "utils/loader.php";
-    require_once "utils/checkint.php";
-    require_once "utils/db_ext.php";
-    require_once "utils/api_exec.php";
-    require_once "utils/api_response.php";
+    require_once "utils/PDOExt.php";
+    require_once "utils/apiExec.php";
+    require_once "utils/apiResponse.php";
     require_once "backends/backend.php";
     require_once "utils/i18n.php";
-    require_once "utils/apache_request_headers.php";
-    require_once "utils/mb_levenshtein.php";
-    require_once "utils/object_to_array.php";
 
     use kamailio\kamailio;
 
@@ -31,7 +28,7 @@
     }
 
     try {
-        $db = new PDO_EXT(@$config["db"]["dsn"], @$config["db"]["username"], @$config["db"]["password"], @$config["db"]["options"]);
+        $db = new PDOExt(@$config["db"]["dsn"], @$config["db"]["username"], @$config["db"]["password"], @$config["db"]["options"]);
     } catch (\Exception $err) {
         response(500, false, false, [
             "Can't open database " . $config["db"]["dsn"],

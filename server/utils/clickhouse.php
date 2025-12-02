@@ -4,8 +4,7 @@
         private $host, $port, $username, $password, $database;
         private $sessionId;
 
-        public function __construct($host, $port, $username, $password, $database = 'default')
-        {
+        public function __construct($host, $port, $username, $password, $database = 'default') {
             $this->host = $host;
             $this->port = $port;
             $this->username = $username;
@@ -21,8 +20,8 @@
          *
          * @throws Exception If there is an error during session creation.
          */
-        public function createPersistentSession(int $sessionTimeout = 10)
-        {
+
+        public function createPersistentSession(int $sessionTimeout = 10) {
             $sessionId = uniqid();
 
             $queryParams = [
@@ -42,8 +41,7 @@
             $this->sessionId = $sessionId;
         }
 
-        public function query($query, $outputFormat = '')
-        {
+        public function query($query, $outputFormat = '') {
             return $this->select($query, $outputFormat);
         }
 

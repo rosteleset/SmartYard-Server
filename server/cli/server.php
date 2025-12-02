@@ -26,7 +26,7 @@
 
                 $db = null;
 
-                if (is_executable_pathenv(PHP_BINARY)) {
+                if (isExecutablePathenv(PHP_BINARY)) {
                     $port = 8000;
 
                     if (array_key_exists("--port", $args)) {

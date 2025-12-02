@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * Class PDO_EXT
+     * Class PDOExt
      *
      * Extends the built-in PDO class to provide additional functionality or custom behavior
      * for database interactions.
@@ -10,7 +10,7 @@
      * @extends PDO
      */
 
-    class PDO_EXT extends PDO {
+    class PDOExt extends PDO {
 
         private $dsn;
 

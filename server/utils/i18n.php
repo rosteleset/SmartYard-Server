@@ -1,5 +1,17 @@
 <?php
 
+    /**
+     * Determines the preferred language for the application.
+     *
+     * This function attempts to extract the language code from the "Accept-Language"
+     * HTTP header using Apache request headers. If the header is not present or cannot
+     * be parsed, it falls back to the language specified in the global $config array.
+     * If neither is available, it defaults to "en".
+     *
+     * @global array $config Application configuration array containing language settings.
+     * @return string The detected or default language code (e.g., "en").
+     */
+
     function language() {
         global $config;
 
@@ -10,13 +22,67 @@
         return $al ?: (@$config["language"] ?: "en");
     }
 
+    /**
+     * Determines whether an array is associative.
+     *
+     * Checks if the given array has string keys or non-sequential numeric keys
+     * by comparing it against its re-indexed values.
+     *
+     * @param array $array The array to check.
+     *
+     * @return bool True if the array is associative, false if it's a sequential indexed array.
+     */
+
     function isAssoc($array) {
         return ($array !== array_values($array));
     }
 
+    /**
+     * Translates a message string using the current language.
+     *
+     * Retrieves the current language setting and uses it to translate the provided
+     * message string. Additional arguments can be passed to replace placeholders
+     * within the translated message.
+     *
+     * @param string $msg The message key or string to be translated.
+     * @param mixed ...$args Optional arguments to be used for string replacement
+     *                        in the translated message.
+     *
+     * @return string The translated message with any replacements applied.
+     *
+     * @see i18nL() For the underlying translation logic.
+     * @see language() For retrieving the current language.
+     */
+
     function i18n($msg, ...$args) {
         return i18nL(language(), $msg, ...$args);
     }
+
+    /**
+     * Translates a message key to the corresponding localized string.
+     *
+     * Loads translation strings from JSON language files and optionally merges
+     * custom translations. Supports nested message keys using dot notation.
+     *
+     * @param string|null $l The language code (e.g., 'en', 'fr'). If null or false,
+     *                        uses the default language from language() function.
+     * @param string $msg The message key to translate. Supports dot notation for
+     *                     nested keys (e.g., 'errors.notFound', 'common.welcome').
+     * @param mixed ...$args Variable number of arguments to be interpolated into
+     *                        the translated string using sprintf().
+     *
+     * @return string The translated message string, with any provided arguments
+     *                interpolated. If translation is not found:
+     *                - For error keys: returns the key name
+     *                - For other keys: returns the original message key
+     *
+     * @throws void Dies with error message if language file cannot be loaded.
+     *
+     * @note Language files are expected in /i18n/{lang}.json relative to this file.
+     * @note Custom translations can be provided in /i18n/custom/{lang}.json and
+     *       will be merged recursively with standard translations.
+     * @note Falls back to English language file if specified language is not found.
+     */
 
     function i18nL($l, $msg, ...$args) {
         if (!$l) {
