@@ -89,6 +89,6 @@
     // если такой кусок ещё не запрашивали, то добавляем запрос на скачивание.
     $res = (int)$dvrExports->addDownloadRecord($cameraId, $subscriber["subscriberId"], $from, $to);
     session_write_close();
-    exec("php ". __DIR__."/../../cli.php dvrExports --run-record-download=$res >/dev/null 2>/dev/null &");
+    exec("php " . __DIR__ . "/../../cli.php dvrExports --run-record-download=$res 1>/dev/null 2>/dev/null &");
 
     response(200, $res);
