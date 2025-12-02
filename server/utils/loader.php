@@ -66,7 +66,7 @@
     * @throws Exception
     */
     function loadDevice(string $type, string $model, string $url, string $password, bool $firstTime = false) {
-        require_once __DIR__ . '/parse_url_ext.php';
+        require_once __DIR__ . '/functions.php';
         require_once __DIR__ . '/../hw/autoload.php';
 
         $availableTypes = ['camera', 'domophone'];
