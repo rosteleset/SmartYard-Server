@@ -129,6 +129,17 @@ class s532 extends akuvox implements DisplayTextInterface
         ]);
     }
 
+    public function setDtmfCodes(
+        string $code1 = '1',
+        string $code2 = '2',
+        string $code3 = '3',
+        string $codeCms = '1',
+    ): void
+    {
+        parent::setDtmfCodes($code1, $code2, $code3, $codeCms);
+        $this->setConfigParams(['Config.DoorSetting.ANALOG.DTMF' => $codeCms]);
+    }
+
     public function transformDbConfig(array $dbConfig): array
     {
         $dbConfig['cmsModel'] = self::CMS_MODEL_MAP[$dbConfig['cmsModel']]->value;
