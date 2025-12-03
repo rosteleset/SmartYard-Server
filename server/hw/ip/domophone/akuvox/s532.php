@@ -105,6 +105,8 @@ class s532 extends akuvox implements DisplayTextInterface
     {
         parent::prepare();
         $this->setHttpsEnabled(false);
+        $this->setRelayInversion(true, true);
+        $this->setExternalReader(openRelayB: true);
     }
 
     public function setAdminPassword(string $password): void
@@ -211,6 +213,25 @@ class s532 extends akuvox implements DisplayTextInterface
     protected function setApiPassword(string $password): void
     {
         $this->setConfigParams(['Config.DoorSetting.APIFCGI.Password' => base64_encode($password)]);
+    }
+
+    /**
+     * Sets the inversion mode for relays.
+     *
+     * @param bool $invertA Whether relay A should operate in inverted mode.
+     * @param bool $invertB Whether relay B should operate in inverted mode.
+     * @return void
+     */
+    protected function setRelayInversion(bool $invertA = false, bool $invertB = false): void
+    {
+        $this->apiCall('', 'POST', [
+            'target' => 'relay',
+            'action' => 'set',
+            'data' => [
+                'Config.DoorSetting.RELAY.RelayAType' => $invertA ? '1' : '0',
+                'Config.DoorSetting.RELAY.RelayBType' => $invertB ? '1' : '0',
+            ],
+        ]);
     }
 
     /**
