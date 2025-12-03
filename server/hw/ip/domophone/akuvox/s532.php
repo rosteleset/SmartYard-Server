@@ -194,6 +194,36 @@ class s532 extends akuvox implements DisplayTextInterface
         ]);
     }
 
+    /**
+     * Find a user by identifier.
+     *
+     * @param string $identifier Flat number, personal code, or RFID code to search for.
+     * @return User|null The matched {@see User} object, or null if no unique match is found.
+     */
+    protected function findUser(string $identifier): ?User
+    {
+        // API performs fuzzy search and may return multiple partial matches
+        $response = $this->apiCall('/user/get?' . http_build_query(['NameOrCode' => $identifier]));
+        $items = $response['data']['item'] ?? null;
+
+        if (!is_array($items)) {
+            return null;
+        }
+
+        // Filter manually to ensure strict equality and require exactly one match
+        $matches = array_filter($items, static fn($item) => in_array($identifier, [
+            $item['UserID'] ?? null,
+            $item['PrivatePIN'] ?? null,
+            $item['CardCode'] ?? null,
+        ], true));
+
+        if (count($matches) !== 1) {
+            return null;
+        }
+
+        return User::fromArray(array_values($matches)[0]);
+    }
+
     protected function getApartments(): array
     {
         // TODO
