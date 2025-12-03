@@ -33,7 +33,7 @@
 
             public static function POST($params) {
 
-                $auth = $params["_backends"]["authentication"]->login($params["login"], $params["password"], $params["rememberMe"] && $params["_ua"] && $params["did"], trim($params["_ua"]), trim($params["did"]), $params["_ip"], @$params["oneCode"]);
+                $auth = $params["_backends"]["authentication"]->login($params["login"], $params["password"], @$params["rememberMe"] && $params["_ua"] && @$params["did"], trim($params["_ua"]), trim(@$params["did"]), $params["_ip"], @$params["oneCode"]);
 
                 if ($auth && @$auth["otp"]) {
                     return [
