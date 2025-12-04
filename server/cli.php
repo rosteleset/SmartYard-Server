@@ -4,6 +4,7 @@
 
     require_once "utils/functions.php";
     require_once "utils/polyfills.php";
+    require_once "utils/purifier.php";
     require_once "data/backup_db.php";
     require_once "data/install_clickhouse.php";
     require_once "data/install.php";
