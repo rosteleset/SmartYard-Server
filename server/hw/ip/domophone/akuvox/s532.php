@@ -34,19 +34,51 @@ class s532 extends akuvox implements DisplayTextInterface
         'KMG-100' => AnalogType::Cyfral,
     ];
 
+    /**
+     * @var int The maximum number of user records processed in a single chunk.
+     * Larger chunks (up to ~5000) are possible but may cause the device to freeze.
+     */
+    protected const USERS_CHUNK_SIZE = 1000;
+
+    /**
+     * @var array|null Users scheduled to be added during data sync.
+     */
+    protected ?array $usersToAdd = null;
+
+    /**
+     * @var array|null Users scheduled to be deleted during data sync.
+     */
+    protected ?array $usersToDelete = null;
+
     protected static function getMaxUsers(): int
     {
-        return 4000; // TODO: check
+        return 10000; // Uploading 10,000 users takes about 22 minutes :(
+    }
+
+    /**
+     * Converts an RFID code to the device's standard format.
+     *
+     * @param string $code The raw RFID code.
+     * @return string The normalized RFID code.
+     */
+    protected static function getNormalizedRfid(string $code): string
+    {
+        $trimmedCode = ltrim($code, '0');
+        return strlen($trimmedCode) % 2 ? '0' . $trimmedCode : $trimmedCode;
     }
 
     public function addRfid(string $code, int $apartment = 0): void
     {
-        // TODO
+        $user = new User($code);
+        $user->cardCode = self::getNormalizedRfid($code);
+        $this->usersToAdd[] = $user;
     }
 
     public function addRfids(array $rfids): void
     {
-        // TODO
+        foreach ($rfids as $rfid) {
+            $this->addRfid($rfid);
+        }
     }
 
     public function configureApartment(
@@ -67,7 +99,7 @@ class s532 extends akuvox implements DisplayTextInterface
         $user->privatePin = $code === 0 ? '' : $code;
         $user->phoneNum = $sipNumbers[0] ?? '';
         $user->group = $apartment;
-        $this->addUser($user);
+        $this->usersToAdd[] = $user;
     }
 
     public function configureSip(
@@ -83,6 +115,18 @@ class s532 extends akuvox implements DisplayTextInterface
         // With STUN enabled, the device doesn't register with the SIP server (it shows "Failed" in the web interface)
         $encodedPassword = base64_encode($password);
         parent::configureSip($login, $encodedPassword, $server, $port, $stunEnabled, $stunServer, $stunPort);
+    }
+
+    public function deleteRfid(string $code = ''): void
+    {
+        if ($code === '') {
+            // TODO, or not TODO
+        } else {
+            $user = $this->findUser($code);
+            if ($user !== null) {
+                $this->usersToDelete[] = $user;
+            }
+        }
     }
 
     public function getDisplayText(): array
@@ -140,6 +184,17 @@ class s532 extends akuvox implements DisplayTextInterface
         $this->setConfigParams(['Config.DoorSetting.ANALOG.DTMF' => $codeCms]);
     }
 
+    public function syncData(): void
+    {
+        if ($this->usersToAdd !== null) {
+            $this->addUsers($this->usersToAdd);
+        }
+
+        if ($this->usersToDelete !== null) {
+            $this->deleteUsers($this->usersToDelete);
+        }
+    }
+
     public function transformDbConfig(array $dbConfig): array
     {
         $dbConfig['cmsModel'] = self::CMS_MODEL_MAP[$dbConfig['cmsModel']]->value;
@@ -179,19 +234,43 @@ class s532 extends akuvox implements DisplayTextInterface
     }
 
     /**
-     * Adds a new user with the provided data.
+     * Adds new users to the intercom.
      *
-     * @param User $user The user entity to create.
+     * @param User[] $users Array of {@see User} entities to be added.
      */
-    protected function addUser(User $user): void
+    protected function addUsers(array $users): void
     {
-        $this->apiCall('', 'POST', [
-            'target' => 'user',
-            'action' => 'add',
-            'data' => [
-                'item' => [$user->toArray()],
-            ],
-        ]);
+        foreach (array_chunk($users, self::USERS_CHUNK_SIZE) as $chunk) {
+            $this->apiCall('', 'POST', [
+                'target' => 'user',
+                'action' => 'add',
+                'data' => [
+                    'item' => array_map(fn(User $user) => $user->toArray(), $chunk),
+                ],
+            ]);
+
+            sleep(1);
+        }
+    }
+
+    /**
+     * Deletes users from the intercom.
+     *
+     * @param User[] $users Array of {@see User} entities to be deleted.
+     */
+    protected function deleteUsers(array $users): void
+    {
+        foreach (array_chunk($users, self::USERS_CHUNK_SIZE) as $chunk) {
+            $this->apiCall('', 'POST', [
+                'target' => 'user',
+                'action' => 'del',
+                'data' => [
+                    'item' => array_map(fn(User $user) => ['ID' => $user->id], $chunk),
+                ],
+            ]);
+
+            sleep(1);
+        }
     }
 
     /**
@@ -236,13 +315,14 @@ class s532 extends akuvox implements DisplayTextInterface
     }
 
     /**
-     * Return the next user ID.
-     *
-     * @return int|null The next available user ID, or null on failure.
+     * @return User[]
      */
-    protected function getNextUserId(): ?int
+    protected function getUsers(): array // TODO: with pagination
     {
-        return $this->apiCall('/user/rand')['data']['UserID'] ?? null;
+        return array_map(
+            static fn($userRaw) => User::fromArray($userRaw),
+            $this->apiCall('/user/get')['data']['item'] ?? [],
+        );
     }
 
     /**
