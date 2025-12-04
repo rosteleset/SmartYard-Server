@@ -62,6 +62,7 @@
                             "primaryGroupAcronym" => $user["primary_group_acronym"],
                             "twoFA" => $user["secret"] ? 1 : 0,
                             "serviceAccount" => $user["service_account"],
+                            "sudo" => $user["sudo"],
                         ];
                     }
 
@@ -156,6 +157,7 @@
                                 "primaryGroupAcronym" => $user[0]["primary_group_acronym"],
                                 "twoFA" => $user[0]["secret"] ? 1 : 0,
                                 "serviceAccount" => $user[0]["service_account"],
+                                "sudo" => $user[0]["sudo"],
                             ];
 
                             if ($withGroups) {
@@ -236,6 +238,7 @@
                                 "primaryGroupAcronym" => $users[$i]["primary_group_acronym"],
                                 "twoFA" => $users[$i]["secret"] ? 1 : 0,
                                 "serviceAccount" => $users[$i]["service_account"],
+                                "sudo" => $users[$i]["sudo"],
                             ];
 
                             if (@$groups) {
@@ -386,7 +389,7 @@
              * @inheritDoc
              */
 
-            public function modifyUser($uid, $realName = '', $eMail = '', $phone = '', $tg = '', $notification = 'tgEmail', $enabled = true, $defaultRoute = '', $persistentToken = false, $primaryGroup = -1, $serviceAccount = 0) {
+            public function modifyUser($uid, $realName = '', $eMail = '', $phone = '', $tg = '', $notification = 'tgEmail', $enabled = true, $defaultRoute = '', $persistentToken = false, $primaryGroup = -1, $serviceAccount = 0, $sudo = 0) {
                 if (!checkInt($uid)) {
                     return false;
                 }
@@ -402,7 +405,7 @@
                 try {
                     $a = loadBackend("authorization");
 
-                    $sth = $this->db->prepare("update core_users set real_name = :real_name, e_mail = :e_mail, phone = :phone, tg = :tg, notification = :notification, enabled = :enabled, default_route = :default_route, primary_group = :primary_group, service_account = :service_account where uid = $uid");
+                    $sth = $this->db->prepare("update core_users set real_name = :real_name, e_mail = :e_mail, phone = :phone, tg = :tg, notification = :notification, enabled = :enabled, default_route = :default_route, primary_group = :primary_group, service_account = :service_account, sudo = :sudo where uid = $uid");
 
                     if ($persistentToken && strlen(trim($persistentToken)) === 32 && $uid && $enabled) {
                         $this->redis->set("PERSISTENT:" . trim($persistentToken) . ":" . $uid, json_encode([
@@ -434,6 +437,7 @@
                         ":default_route" => trim($defaultRoute),
                         ":primary_group" => (int)$primaryGroup,
                         ":service_account" => (int)$serviceAccount,
+                        ":sudo" => (int)$sudo,
                     ]);
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));

@@ -948,12 +948,24 @@
                 if ($house) {
                     $house = json_decode($house, true);
 
+                    $region_uuid = $house["data"]["region_fias_id"] ?: $house["data"]["region_uuid"];
+                    $area_uuid = $house["data"]["area_fias_id"] ?: $house["data"]["area_uuid"];
+                    $city_uuid = $house["data"]["city_fias_id"] ?: $house["data"]["city_uuid"];
+                    $settlement_uuid = $house["data"]["settlement_fias_id"] ?: $house["data"]["settlement_uuid"];
+                    $street_uuid = $house["data"]["street_fias_id"] ?: $house["data"]["street_uuid"];
+
+                    $house_uuid = $house["data"]["house_fias_id"] ?: $house["data"]["house_uuid"];
+
+                    if ($area_uuid === $city_uuid) {
+                        $city_uuid = null;
+                    }
+
                     $regionId = null;
 
-                    if ($house["data"]["region_fias_id"]) {
+                    if ($region_uuid) {
                         $regionId = $this->db->get("select address_region_id from addresses_regions where region_uuid = :region_uuid or region = :region",
                             [
-                                "region_uuid" => $house["data"]["region_fias_id"],
+                                "region_uuid" => $region_uuid,
                                 "region" => $house["data"]["region"],
                             ],
                             false,
@@ -962,20 +974,21 @@
                             ]
                         );
                         if (!$regionId) {
-                            $regionId = $this->addRegion($house["data"]["region_fias_id"], $house["data"]["region_iso_code"], $house["data"]["region_with_type"], $house["data"]["region_type"], $house["data"]["region_type_full"], $house["data"]["region"]);
+                            $regionId = $this->addRegion($region_uuid, $house["data"]["region_iso_code"], $house["data"]["region_with_type"], $house["data"]["region_type"], $house["data"]["region_type_full"], $house["data"]["region"]);
                         }
                     }
 
                     if (!$regionId) {
-                        error_log($house["data"]["house_fias_id"] . " no region");
+                        error_log($houseUuid . " no region");
                         return false;
                     }
 
                     $areaId = null;
-                    if ($house["data"]["area_fias_id"]) {
+
+                    if ($area_uuid) {
                         $areaId = $this->db->get("select address_area_id from addresses_areas where area_uuid = :area_uuid or (address_region_id = :address_region_id and area = :area)",
                             [
-                                "area_uuid" => $house["data"]["area_fias_id"],
+                                "area_uuid" => $area_uuid,
                                 "address_region_id" => $regionId,
                                 "area" => $house["data"]["area"],
                             ],
@@ -985,7 +998,7 @@
                             ]
                         );
                         if (!$areaId) {
-                            $areaId = $this->addArea($regionId, $house["data"]["area_fias_id"], $house["data"]["area_with_type"], $house["data"]["area_type"], $house["data"]["area_type_full"], $house["data"]["area"]);
+                            $areaId = $this->addArea($regionId, $area_uuid, $house["data"]["area_with_type"], $house["data"]["area_type"], $house["data"]["area_type_full"], $house["data"]["area"]);
                         }
                     }
 
@@ -993,15 +1006,12 @@
                         $regionId = null;
                     }
 
-                    if ($house["data"]["area_fias_id"] === $house["data"]["city_fias_id"]) {
-                        $house["data"]["city_fias_id"] = null;
-                    }
-
                     $cityId = null;
-                    if ($house["data"]["city_fias_id"]) {
+
+                    if ($city_uuid) {
                         $cityId = $this->db->get("select address_city_id from addresses_cities where city_uuid = :city_uuid or (address_region_id = :address_region_id and city = :city) or (address_area_id = :address_area_id and city = :city)",
                             [
-                                "city_uuid" => $house["data"]["city_fias_id"],
+                                "city_uuid" => $city_uuid,
                                 "address_region_id" => $regionId,
                                 "address_area_id" => $areaId,
                                 "city" => $house["data"]["city"],
@@ -1012,7 +1022,7 @@
                             ]
                         );
                         if (!$cityId) {
-                            $cityId = $this->addCity($regionId, $areaId, $house["data"]["city_fias_id"], $house["data"]["city_with_type"], $house["data"]["city_type"], $house["data"]["city_type_full"], $house["data"]["city"]);
+                            $cityId = $this->addCity($regionId, $areaId, $city_uuid, $house["data"]["city_with_type"], $house["data"]["city_type"], $house["data"]["city_type_full"], $house["data"]["city"]);
                         }
                     }
 
@@ -1021,15 +1031,16 @@
                     }
 
                     if (!$areaId && !$cityId) {
-                        error_log($house["data"]["house_fias_id"] . " no area or city");
+                        error_log($houseUuid . " no area or city");
                         return false;
                     }
 
                     $settlementId = null;
-                    if ($house["data"]["settlement_fias_id"]) {
+
+                    if ($settlement_uuid) {
                         $settlementId = $this->db->get("select address_settlement_id from addresses_settlements where settlement_uuid = :settlement_uuid or (address_area_id = :address_area_id and settlement = :settlement) or (address_city_id = :address_city_id and settlement = :settlement)",
                             [
-                                "settlement_uuid" => $house["data"]["settlement_fias_id"],
+                                "settlement_uuid" => $settlement_uuid,
                                 "address_area_id" => $areaId,
                                 "address_city_id" => $cityId,
                                 "settlement" => $house["data"]["settlement"],
@@ -1040,7 +1051,7 @@
                             ]
                         );
                         if (!$settlementId) {
-                            $settlementId = $this->addSettlement($areaId, $cityId, $house["data"]["settlement_fias_id"], $house["data"]["settlement_with_type"], $house["data"]["settlement_type"], $house["data"]["settlement_type_full"], $house["data"]["settlement"]);
+                            $settlementId = $this->addSettlement($areaId, $cityId, $settlement_uuid, $house["data"]["settlement_with_type"], $house["data"]["settlement_type"], $house["data"]["settlement_type_full"], $house["data"]["settlement"]);
                         }
                     }
 
@@ -1049,15 +1060,16 @@
                     }
 
                     if (!$cityId && !$settlementId) {
-                        error_log($house["data"]["house_fias_id"] . " no city or settlement");
+                        error_log($houseUuid . " no city or settlement");
                         return false;
                     }
 
                     $streetId = null;
-                    if ($house["data"]["street_fias_id"]) {
+
+                    if ($street_uuid) {
                         $streetId = $this->db->get("select address_street_id from addresses_streets where street_uuid = :street_uuid or (address_city_id = :address_city_id and street = :street) or (address_settlement_id = :address_settlement_id and street = :street)",
                             [
-                                "street_uuid" => $house["data"]["street_fias_id"],
+                                "street_uuid" => $street_uuid,
                                 "address_city_id" => $cityId,
                                 "address_settlement_id" => $settlementId,
                                 "street" => $house["data"]["street"],
@@ -1068,7 +1080,7 @@
                             ]
                         );
                         if (!$streetId) {
-                            $streetId = $this->addStreet($cityId, $settlementId, $house["data"]["street_fias_id"], $house["data"]["street_with_type"], $house["data"]["street_type"], $house["data"]["street_type_full"], $house["data"]["street"]);
+                            $streetId = $this->addStreet($cityId, $settlementId, $street_uuid, $house["data"]["street_with_type"], $house["data"]["street_type"], $house["data"]["street_type_full"], $house["data"]["street"]);
                         }
                     }
 
@@ -1077,15 +1089,16 @@
                     }
 
                     if (!$settlementId && !$streetId) {
-                        error_log($house["data"]["house_fias_id"] . " no setllement or street");
+                        error_log($houseUuid . " no setllement or street");
                         return false;
                     }
 
                     $houseId = null;
-                    if ($house["data"]["house_fias_id"]) {
+
+                    if ($house_uuid) {
                         $houseId = $this->db->get("select address_house_id from addresses_houses where house_uuid = :house_uuid or (address_settlement_id = :address_settlement_id and house = :house) or (address_street_id = :address_street_id and house = :house)",
                             [
-                                "house_uuid" => $house["data"]["house_fias_id"],
+                                "house_uuid" => $house_uuid,
                                 "address_settlement_id" => $settlementId,
                                 "address_street_id" => $streetId,
                                 "house" => $house["data"]["house"],
@@ -1096,7 +1109,7 @@
                             ]
                         );
                         if (!$houseId) {
-                            $houseId = $this->addHouse($settlementId, $streetId, $house["data"]["house_fias_id"], $house["data"]["house_type"], $house["data"]["house_type_full"], $house["value"], $house["data"]["house"]);
+                            $houseId = $this->addHouse($settlementId, $streetId, $house_uuid, $house["data"]["house_type"], $house["data"]["house_type_full"], $house["value"], $house["data"]["house"]);
                         }
                     }
 
@@ -1105,7 +1118,7 @@
                     if ($houseId) {
                         return $houseId;
                     } else {
-                        error_log($house["data"]["house_fias_id"] . " no house");
+                        error_log($houseUuid . " no house");
                         return false;
                     }
                 } else {
