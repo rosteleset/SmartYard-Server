@@ -17,6 +17,7 @@
             /**
              * @return mixed
              */
+
             abstract public function getNotes();
 
             /**
@@ -31,9 +32,12 @@
              * @param integer $x
              * @param integer $y
              * @param integer $z
+             * @param integer $fyeo
+             *
              * @return mixed
              */
-            abstract public function addNote($subject, $body, $type, $category, $remind, $icon, $font, $color, $x, $y, $z);
+
+            abstract public function addNote($subject, $body, $type, $category, $remind, $icon, $font, $color, $x, $y, $z, $fyeo);
 
             /**
              * @param integer $id
@@ -48,9 +52,13 @@
              * @param integer $x
              * @param integer $y
              * @param integer $z
+             * @param integer $fyeo
+             *
              * @return mixed
              */
+
             // or
+
             /**
              * @param integer $id
              * @param integer $x
@@ -58,19 +66,23 @@
              * @param integer $z
              * @return mixed
              */
+
             // or
+
             /**
              * @param integer $id
              * @param integer $line
              * @param integer $checked
              * @return mixed
              */
+
             // abstract public function modifyNote($id, ...);
 
             /**
              * @param integer $id
              * @return mixed
              */
+
             abstract public function deleteNote($id);
         }
     }

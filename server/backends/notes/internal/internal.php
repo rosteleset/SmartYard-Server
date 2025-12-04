@@ -33,6 +33,7 @@
                     "position_left" => "x",
                     "position_top" => "y",
                     "position_order" => "z",
+                    "fyeo" => "fyeo",
                 ]);
             }
 
@@ -40,7 +41,7 @@
              * @inheritDoc
              */
 
-            public function addNote($subject, $body, $type, $category, $remind, $icon, $font, $color, $x, $y, $z) {
+            public function addNote($subject, $body, $type, $category, $remind, $icon, $font, $color, $x, $y, $z, $fyeo) {
                 $body = trim($body);
 
                 if (!$body) {
@@ -53,7 +54,7 @@
                     return false;
                 }
 
-                $id = $this->db->insert("insert into notes (create_date, owner, note_subject, note_body, note_type, category, remind, reminded, icon, font, color, position_left, position_top, position_order) values (:create_date, :owner, :note_subject, :note_body, :note_type, :category, :remind, :reminded, :icon, :font, :color, :position_left, :position_top, :position_order)", [
+                $id = $this->db->insert("insert into notes (create_date, owner, note_subject, note_body, note_type, category, remind, reminded, icon, font, color, position_left, position_top, position_order, fyeo) values (:create_date, :owner, :note_subject, :note_body, :note_type, :category, :remind, :reminded, :icon, :font, :color, :position_left, :position_top, :position_order, :fyeo)", [
                     "create_date" => time(),
                     "owner" => $this->login,
                     "note_subject" => $subject ?: null,
@@ -68,6 +69,7 @@
                     "position_left" => $x,
                     "position_top" => $y,
                     "position_order" => $z,
+                    "fyeo" => $fyeo,
                 ]);
 
                 return $notes = $this->db->get("select * from notes where owner = :owner and note_id = :note_id", [
@@ -87,6 +89,7 @@
                     "position_left" => "x",
                     "position_top" => "y",
                     "position_order" => "z",
+                    "fyeo" => "fyeo",
                 ], [
                     "singlify",
                 ]);
@@ -96,7 +99,7 @@
              * @inheritDoc
              */
 
-            public function modifyNote12($id, $subject, $body, $type, $category, $remind, $icon, $font, $color, $x, $y, $z) {
+            public function modifyNote13($id, $subject, $body, $type, $category, $remind, $icon, $font, $color, $x, $y, $z, $fyeo) {
                 $body = trim($body);
 
                 if (!$body || !checkInt($id)) {
@@ -109,7 +112,7 @@
                     return false;
                 }
 
-                return $this->db->modify("update notes set note_subject = :note_subject, note_body = :note_body, note_type = :note_type, category = :category, remind = :remind, reminded = :reminded, icon = :icon, font = :font, color = :color, position_left = :position_left, position_top = :position_top, position_order = :position_order where note_id = :note_id and owner = :owner", [
+                return $this->db->modify("update notes set note_subject = :note_subject, note_body = :note_body, note_type = :note_type, category = :category, remind = :remind, reminded = :reminded, icon = :icon, font = :font, color = :color, position_left = :position_left, position_top = :position_top, position_order = :position_order, fyeo = :fyeo where note_id = :note_id and owner = :owner", [
                     "note_id" => $id,
                     "owner" => $this->login,
                     "note_subject" => $subject ?: null,
@@ -124,6 +127,7 @@
                     "position_left" => $x,
                     "position_top" => $y,
                     "position_order" => $z,
+                    "fyeo" => $fyeo,
                 ]);
             }
 
@@ -196,8 +200,8 @@
 
             public function __call($method, $arguments) {
                 if ($method == 'modifyNote') {
-                    if (count($arguments) == 12) {
-                        return call_user_func_array([ $this, 'modifyNote12' ], $arguments);
+                    if (count($arguments) == 13) {
+                        return call_user_func_array([ $this, 'modifyNote13' ], $arguments);
                     }
                     else
                     if (count($arguments) == 4) {

@@ -27,5 +27,6 @@
     "typeText": "Text",
     "typeMarkdown": "Markdown",
     "typeChecks": "Checkboxes",
-    "type": "Note type"
+    "type": "Note type",
+    "fyeo": "Blur"
 }

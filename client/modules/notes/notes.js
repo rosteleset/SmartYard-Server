@@ -232,7 +232,7 @@
         ]);
     },
 
-    renderNote: function (id, subject, body, type, color, icon, font, remind, z) {
+    renderNote: function (id, subject, body, type, color, icon, font, remind, z, fyeo) {
         let newSticky = `<div id='${id}' class='drag sticky sticky-bg-color-${color}' style='z-index: ${z};'>`;
 
         // TODO: box-shadow: 2px 2px 7px {shadow-color};
@@ -248,11 +248,7 @@
             newSticky += "<hr style='opacity: 50%;' />";
         }
 
-        newSticky += "<div class='body'";
-        if ($.trim(font)) {
-            newSticky += `style='font-family: ${font}'`
-        }
-        newSticky += ">";
+        newSticky += `<div data-id=${id} class='body${parseInt(fyeo) ? ' fyeo' : ''}'${$.trim(font) ? " style='font-family: ${font}'" : ''}>`;
 
         switch (type) {
             case "checks":
@@ -272,6 +268,10 @@
         }
 
         newSticky += '</div><i class="fas fa-fw fa-edit text-primary editSticky"></i>';
+
+        if (parseInt(fyeo)) {
+            newSticky += '<i class="fas fa-fw fa-eye text-danger showFyeo"></i>';
+        }
 
         if (remind) {
             newSticky += '<i class="far fa-fw fa-clock text-small reminder"></i>';
@@ -332,6 +332,11 @@
                             text: i18n("notes.typeChecks")
                         },
                     ]
+                },
+                {
+                    id: "fyeo",
+                    title: i18n("notes.fyeo"),
+                    type: "noyes"
                 },
                 {
                     id: "category",
@@ -408,7 +413,8 @@
                     r.icon,
                     r.font,
                     parseInt(r.remind) > (new Date()).getTime() / 1000,
-                    z + 1
+                    z + 1,
+                    r.fyeo,
                 );
 
                 stickyArea.append(newSticky);
@@ -428,6 +434,7 @@
                 });
 
                 $(".editSticky").off("click").on("click", modules.notes.modifySticky);
+                $(".showFyeo").off("click").on("click", modules.notes.showFyeo);
                 $(".noteCheckbox").off("click").on("click", modules.notes.stickyCheckbox);
 
                 modules.notes.adjustStickiesContainer();
@@ -446,6 +453,7 @@
                     x: parseFloat(x),
                     y: parseFloat(y),
                     z: parseInt(z),
+                    fyeo: parseInt(r.fyeo),
                 }).
                 done(r => {
                     if (r && r.note) {
@@ -558,6 +566,12 @@
                     }
                 ,
                 {
+                    id: "fyeo",
+                    title: i18n("notes.fyeo"),
+                    type: "noyes",
+                    value: modules.notes.notes[id].fyeo,
+                },
+                {
                     id: "category",
                     title: i18n("notes.category"),
                     type: "select2",
@@ -642,6 +656,7 @@
                     modules.notes.notes[id].icon = r.icon;
                     modules.notes.notes[id].font = r.font;
                     modules.notes.notes[id].color = r.color;
+                    modules.notes.notes[id].fyeo = r.fyeo;
 
                     modules.notes.notes[id].x = parseFloat(x);
                     modules.notes.notes[id].y = parseFloat(y);
@@ -658,7 +673,8 @@
                         r.icon,
                         r.font,
                         parseInt(r.remind) > (new Date()).getTime() / 1000,
-                        z
+                        z,
+                        r.fyeo
                     );
 
                     stickyArea.append(newSticky);
@@ -676,6 +692,7 @@
                     });
 
                     $(".editSticky").off("click").on("click", modules.notes.modifySticky);
+                    $(".showFyeo").off("click").on("click", modules.notes.showFyeo);
                     $(".noteCheckbox").off("click").on("click", modules.notes.stickyCheckbox);
 
                     loadingStart();
@@ -692,6 +709,7 @@
                         x: parseFloat(x),
                         y: parseFloat(y),
                         z: parseInt(z),
+                        fyeo: parseInt(r.fyeo),
                     }).
                     fail(FAIL).
                     always(loadingDone);
@@ -700,6 +718,20 @@
                 modules.notes.adjustStickiesContainer();
             },
         });
+    },
+
+    showFyeo: function (e) {
+        let fyeo = $(this);
+        let id = fyeo.parent().attr("id");
+        let body = $(`.sticky .body[data-id="${id}"]`);
+
+        body.removeClass('fyeo');
+        fyeo.hide();
+
+        setTimeout(() => {
+            body.addClass('fyeo');
+            fyeo.show();
+        }, 10000);
     },
 
     stickyCheckbox: function (e) {
@@ -754,7 +786,8 @@
                     modules.notes.notes[id].icon,
                     modules.notes.notes[id].font,
                     parseInt(modules.notes.notes[id].remind) > (new Date()).getTime() / 1000 && !modules.notes.notes[id].reminded,
-                    modules.notes.notes[id].z
+                    modules.notes.notes[id].z,
+                    modules.notes.notes[id].fyeo,
                 );
 
                 stickyArea.append(newSticky);
@@ -774,6 +807,7 @@
         }
 
         $(".editSticky").off("click").on("click", modules.notes.modifySticky);
+        $(".showFyeo").off("click").on("click", modules.notes.showFyeo);
         $(".noteCheckbox").off("click").on("click", modules.notes.stickyCheckbox);
 
         modules.notes.adjustStickiesContainer();

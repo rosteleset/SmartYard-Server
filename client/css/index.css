@@ -651,6 +651,19 @@ select {
   pointer-events: none;
 }
 
+.sticky .showFyeo {
+  cursor: pointer;
+  font-size: 16px;
+  position: absolute;
+  right: 0;
+  bottom: 24px;
+  border-radius: 50%;
+  width: 35px;
+  height: 32px;
+  padding-top: 7px;
+  padding-left: 3px;
+}
+
 .sticky-bg-color-white {
   background-color: rgb(255, 255, 255);
 }
