@@ -928,3 +928,7 @@ code {
 .bg-superlightblue {
   background-color: rgb(60, 141, 188, 0.2)!important;
 }
+
+.fyeo {
+  filter: blur(0.2rem);
+}
