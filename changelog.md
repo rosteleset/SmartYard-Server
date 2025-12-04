@@ -5,6 +5,12 @@
 # removed or deprecated
 ```
 
+## 2025-12-04
+
+```diff
++ fyeo in notes
+```
+
 ## 2025-12-02
 
 ```diff

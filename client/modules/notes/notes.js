@@ -270,7 +270,7 @@
         newSticky += '</div><i class="fas fa-fw fa-edit text-primary editSticky"></i>';
 
         if (parseInt(fyeo)) {
-            newSticky += '<i class="fas fa-fw fa-eye text-danger showFyeo"></i>';
+            newSticky += '<i class="fas fa-fw fa-eye text-info showFyeo"></i>';
         }
 
         if (remind) {
