@@ -82,7 +82,7 @@
         fail(FAIL).
         fail(loadingDone).
         done(() => {
-            if (user.uid == myself.uid) {
+            if (user.uid == myself.realUid) {
                 whoAmI(true);
             }
             message(i18n("users.userWasChanged"));
@@ -176,7 +176,7 @@
 
     modifyMyself: function () {
         loadingStart();
-        GET("user", "personal", myself.uid, true).done(response => {
+        GET("user", "personal", myself.realUid, true).done(response => {
             let cropper = false;
             let croppable = false;
             let avatar = false;
@@ -219,7 +219,7 @@
                         id: "uid",
                         type: "text",
                         readonly: true,
-                        value: myself.uid.toString(),
+                        value: myself.realUid.toString(),
                         title: i18n("users.uid"),
                         tab: i18n("users.primary"),
                     },
@@ -304,7 +304,7 @@
                         type: "password",
                         title: i18n("password"),
                         placeholder: i18n("password"),
-                        hidden: myself.uid.toString() === "0",
+                        hidden: myself.realUid.toString() === "0",
                         validate: (v, prefix) => {
                             return ($.trim(v).length === 0) || ($.trim(v).length >= 8 && $(`#${prefix}password`).val() === $(`#${prefix}confirm`).val());
                         },
@@ -325,7 +325,7 @@
                         type: "password",
                         title: i18n("confirm"),
                         placeholder: i18n("confirm"),
-                        hidden: myself.uid.toString() === "0",
+                        hidden: myself.realUid.toString() === "0",
                         validate: (v, prefix) => {
                             return ($.trim(v).length === 0) || ($.trim(v).length >= 8 && $(`#${prefix}password`).val() === $(`#${prefix}confirm`).val());
                         },
@@ -364,10 +364,10 @@
                     {
                         id: "persistentToken",
                         type: "text",
-                        value: parseInt(myself.uid) ? response.user.persistentToken : '',
+                        value: parseInt(myself.realUid) ? response.user.persistentToken : '',
                         title: i18n("users.persistentToken"),
                         placeholder: i18n("users.persistentToken"),
-                        hidden: !parseInt(myself.uid) || parseInt(response.user.twoFA),
+                        hidden: !parseInt(myself.realUid) || parseInt(response.user.twoFA),
                         button: {
                             class: "fas fa-magic",
                             click: prefix => {
@@ -594,7 +594,7 @@
 
                         checkABtn();
 
-                        GET("user", "avatar", myself.uid, true).
+                        GET("user", "avatar", myself.realUid, true).
                         always(a => {
                             if (a && a.avatar) {
                                 $("#" + prefix + "avatar-image").attr("src", a.avatar);
@@ -946,6 +946,25 @@
                             tab: i18n("users.primary"),
                         },
                         {
+                            id: "sudo",
+                            type: "select",
+                            value: response.user.sudo ? "yes" : "no",
+                            title: i18n("users.sudo"),
+                            readonly: parseInt(myself.uid),
+                            hidden: !parseInt(uid),
+                            options: [
+                                {
+                                    value: "yes",
+                                    text: i18n("yes"),
+                                },
+                                {
+                                    value: "no",
+                                    text: i18n("no"),
+                                },
+                            ],
+                            tab: i18n("users.primary"),
+                        },
+                        {
                             id: "disabled",
                             type: "select",
                             value: response.user.enabled ? "no" : "yes",
@@ -1281,6 +1300,7 @@
                         } else {
                             result.enabled = result.disabled === "no";
                             result.serviceAccount = result.serviceAccount === "yes";
+                            result.sudo = result.sudo === "yes";
                             modules.users.doModifyUser(result);
                         }
                     },

@@ -58,6 +58,7 @@
     "showPassword": "Show / hide password",
     "generatePassword": "Generate password",
     "serviceAccount": "Service account",
+    "sudo": "Administrator",
     "wg": "WG",
     "errors": {
         "invalid2FACredentials": "Invalid authentication code"

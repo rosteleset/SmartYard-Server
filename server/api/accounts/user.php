@@ -54,6 +54,7 @@
      * @apiBody {Number[]} userGroups gids
      * @apiBody {Number} primaryGroup gid
      * @apiBody {Boolean} serviceAccount serviceAccount
+     * @apiBody {Boolean} sudo sudo
      */
 
     /**
@@ -96,7 +97,7 @@
             }
 
             public static function PUT($params) {
-                $success = $params["_backends"]["users"]->modifyUser($params["_id"], $params["realName"], $params["eMail"], $params["phone"], $params["tg"], $params["notification"], $params["enabled"], $params["defaultRoute"], $params["persistentToken"], @$params["primaryGroup"], @$params["serviceAccount"]);
+                $success = $params["_backends"]["users"]->modifyUser($params["_id"], $params["realName"], $params["eMail"], $params["phone"], $params["tg"], $params["notification"], $params["enabled"], $params["defaultRoute"], $params["persistentToken"], @$params["primaryGroup"], @$params["serviceAccount"], @$params["sudo"]);
 
                 if (@$params["avatar"]) {
                     $success = $success && $params["_backends"]["users"]->putAvatar($params["_id"], $params["avatar"]);

@@ -50,20 +50,20 @@
         class personal extends api {
 
             public static function GET($params) {
-                $user = $params["_backends"]["users"]->getUser($params["_uid"], true, true);
+                $user = $params["_backends"]["users"]->getUser($params["_realUid"], true, true);
 
                 return api::ANSWER($user, ($user !== false) ? "user" : "notFound");
             }
 
             public static function PUT($params) {
-                $success = $params["_backends"]["users"]->userPersonal($params["_uid"], $params["realName"], $params["eMail"], $params["phone"], $params["tg"], $params["notification"], $params["defaultRoute"], $params["persistentToken"]);
+                $success = $params["_backends"]["users"]->userPersonal($params["_realUid"], $params["realName"], $params["eMail"], $params["phone"], $params["tg"], $params["notification"], $params["defaultRoute"], $params["persistentToken"]);
 
                 if (@$params["avatar"]) {
-                    $success = $success && $params["_backends"]["users"]->putAvatar($params["_uid"], $params["avatar"]);
+                    $success = $success && $params["_backends"]["users"]->putAvatar($params["_realUid"], $params["avatar"]);
                 }
 
-                if (@$params["password"] && (int)$params["_uid"]) {
-                    $success = $success && $params["_backends"]["users"]->setPassword($params["_uid"], $params["password"]);
+                if (@$params["password"] && (int)$params["_realUid"]) {
+                    $success = $success && $params["_backends"]["users"]->setPassword($params["_realUid"], $params["password"]);
                     return api::ANSWER($success, ($success !== false) ? false : "notAcceptable");
                 } else {
                     return api::ANSWER($success, ($success !== false) ? false : "notAcceptable");

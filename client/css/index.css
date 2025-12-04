@@ -945,3 +945,7 @@ code {
 .fyeo {
   filter: blur(0.2rem);
 }
+
+.sudo {
+  box-shadow: 0 3px 6px rgba(255, 0, 0, .80), 0 3px 6px rgba(0, 0, 0, .23)!important;
+}

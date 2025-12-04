@@ -58,6 +58,7 @@
     "showPassword": "Показать / скрыть пароль",
     "generatePassword": "Сгенерировать пароль",
     "serviceAccount": "Служебный аккаунт",
+    "sudo": "Администратор",
     "wg": "WG",
     "errors": {
         "invalid2FACredentials": "Неверный код авторизации"

@@ -421,6 +421,23 @@
             abstract public function twoFa($uid, $secret = "");
 
             /**
+             * @return mixed
+             */
+
+            public function sudoOn() {
+
+            }
+
+            /**
+             * @return mixed
+             */
+
+            public function sudoOff() {
+                $this->redis->del("SUDO:" . $this->login);
+                return true;
+            }
+
+            /**
              * @inheritDoc
              */
 

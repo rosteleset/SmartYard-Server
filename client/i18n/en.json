@@ -86,6 +86,8 @@
     "copyToClipboard": "Copy to clipboard",
     "maintenanceCaption": "Server in maintenance mode",
     "maintenanceMessage": "Keep calm and patient,<br />everything will be fine soon",
+    "sudo": "Administration mode",
+    "sudoOff": "Exit administration mode",
     "errors": {
         "404caption": "Oh! Page not found",
         "404message": "It seems that we cannot find the page you need,<br />try to switch to <a href=\"?#\"> the initial page </a>",

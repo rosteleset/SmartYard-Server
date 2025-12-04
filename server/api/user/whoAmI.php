@@ -28,9 +28,9 @@
         class whoAmI extends api {
 
             public static function GET($params) {
-                $user = $params["_backends"]["users"]->getUser($params["_uid"]);
+                $user = $params["_backends"]["users"]->getUser($params["_realUid"]);
 
-                $extension = sprintf("7%09d", (int)$params["_uid"]);
+                $extension = sprintf("7%09d", (int)$params["_realUid"]);
                 $cred = $params["_redis"]->get("WEBRTC:" . md5($extension));
                 if (!$cred) {
                     $cred = md5(GUIDv4());
@@ -41,6 +41,12 @@
                 $user["webRtcPassword"] = $cred;
 
                 $user["settings"] = $params["_backends"]["users"]->getSettings();
+
+                if ($params["_redis"]->get("SUDO:" . $user["login"])) {
+                    $user["realUid"] = $user["uid"];
+                    $user["uid"] = 0;
+                    $user["sudoed"] = 1;
+                }
 
                 return api::ANSWER($user, ($user !== false) ? "user" : "notFound");
             }

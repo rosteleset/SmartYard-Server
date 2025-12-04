@@ -43,7 +43,7 @@
                 }
 
                 try {
-                    $users = $this->db->query("select uid, login, real_name, e_mail, phone, tg, enabled, primary_group, acronym primary_group_acronym, notification, secret, service_account from core_users left join core_groups on core_users.primary_group = core_groups.gid order by real_name, login, uid", \PDO::FETCH_ASSOC)->fetchAll();
+                    $users = $this->db->query("select uid, login, real_name, e_mail, phone, tg, enabled, primary_group, acronym primary_group_acronym, notification, secret, service_account, sudo from core_users left join core_groups on core_users.primary_group = core_groups.gid order by real_name, login, uid", \PDO::FETCH_ASSOC)->fetchAll();
                     $_users = [];
 
                     foreach ($users as $user) {
@@ -140,7 +140,7 @@
                 if ($uid >= 0) {
                     // ordinary user
                     try {
-                        $user = $this->db->queryEx("select uid, login, real_name, e_mail, phone, tg, notification, enabled, default_route, primary_group, acronym primary_group_acronym, secret, service_account from core_users left join core_groups on core_users.primary_group = core_groups.gid where uid = $uid");
+                        $user = $this->db->queryEx("select uid, login, real_name, e_mail, phone, tg, notification, enabled, default_route, primary_group, acronym primary_group_acronym, secret, service_account, sudo from core_users left join core_groups on core_users.primary_group = core_groups.gid where uid = $uid");
 
                         if (count($user)) {
                             $_user = [
@@ -217,7 +217,7 @@
 
                     // force fill memory cache
                     try {
-                        $users = $this->db->queryEx("select uid, login, real_name, e_mail, phone, tg, notification, enabled, default_route, primary_group, acronym primary_group_acronym, secret, service_account from core_users left join core_groups on core_users.primary_group = core_groups.gid");
+                        $users = $this->db->queryEx("select uid, login, real_name, e_mail, phone, tg, notification, enabled, default_route, primary_group, acronym primary_group_acronym, secret, service_account, sudo from core_users left join core_groups on core_users.primary_group = core_groups.gid");
 
                         if ($withGroups) {
                             $groups = loadBackend("groups");

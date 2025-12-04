@@ -173,6 +173,13 @@
                         $this->redis->setex($key, $auth["persistent"] ? (7 * 24 * 60 * 60) : (@$this->config["backends"]["authentication"]["token_idle_ttl"] ?: 3600), json_encode($auth));
 
                         if ($users->getUidByLogin($auth["login"]) == $auth["uid"]) {
+
+                            if ($this->redis->get("SUDO:" . $auth["login"])) {
+                                $auth["realUid"] = $auth["uid"];
+                                $auth["uid"] = 0;
+                                $auth["sudoed"] = 1;
+                            }
+
                             return $auth;
                         } else {
                             $this->redis->del($key);

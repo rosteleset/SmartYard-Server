@@ -9,6 +9,7 @@
 
 ```diff
 + fyeo in notes
+! addHouseBMagicy can accept both *_fias_id and *_uuid fields
 ```
 
 ## 2025-12-02

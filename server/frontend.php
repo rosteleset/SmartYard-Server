@@ -289,6 +289,7 @@
 
     if ($http_authorization && $auth) {
         $params["_uid"] = $auth["uid"];
+        $params["_realUid"] = @$auth["realUid"] ?: $auth["uid"];
         $params["_login"] = $auth["login"];
         $params["_token"] = $auth["token"];
 

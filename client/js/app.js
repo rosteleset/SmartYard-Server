@@ -416,6 +416,29 @@ function logout() {
     );
 }
 
+function sudo() {
+    if (myself.sudoed) {
+        mConfirm(i18n("sudoOff") + "?", i18n("confirm"), i18n("logout"), () => {
+            loadingStart();
+            DELETE("user", "sudo", false).
+            then(() => {
+                setTimeout(() => {
+                    window.onhashchange = hashChange;
+                    window.location.reload(true);
+                }, 150);
+            }).
+            fail(FAIL).
+            fail(loadingDone);
+        })
+    } else {
+        if (myself.twoFA) {
+            mYesNo();
+        } else {
+            mYesNo();
+        }
+    }
+}
+
 function forgot() {
     let email = $.trim($("#forgotBoxEMail").val());
 
@@ -437,6 +460,7 @@ function whoAmI(force) {
     return GET("user", "whoAmI", false, force).done(_me => {
         if (_me && _me.user) {
             $(".myNameIs").attr("title", _me.user.realName ? _me.user.realName : _me.user.login);
+
             myself.uid = _me.user.uid;
             myself.login = _me.user.login;
             myself.realName = _me.user.realName;
@@ -445,6 +469,16 @@ function whoAmI(force) {
             myself.webRtcExtension = _me.user.webRtcExtension;
             myself.webRtcPassword = _me.user.webRtcPassword;
             myself.settings = _me.user.settings;
+            myself.twoFA = parseInt(_me.user.twoFA);
+            myself.sudo = parseInt(_me.user.sudo);
+            myself.sudoed = _me.user.sudoed;
+            myself.realUid = parseInt(myself.sudoed) ? parseInt(_me.user.realUid) : _me.user.uid;
+
+            if (myself.sudoed) {
+                $("#sudo").text(i18n("sudoOff"));
+                $(".userAvatar").addClass("sudo");
+            }
+
             myself.groups = {};
 
             if (_me.user.groups) {
@@ -464,7 +498,11 @@ function whoAmI(force) {
                 config.defaultRoute = _me.user.defaultRoute;
             }
 
-            GET("user", "avatar", myself.uid, true).
+            if (parseInt(_me.user.sudo)) {
+                $("#sudo").parent().show();
+            }
+
+            GET("user", "avatar", myself.realUid, true).
             always(a => {
                 if (a && a.avatar) {
                     $(".userAvatar").attr("src", a.avatar);
@@ -479,7 +517,7 @@ function whoAmI(force) {
                             }
                         }).attr("src", gravUrl);
                     } else {
-                        if (parseInt(myself.uid) === 0) {
+                        if (parseInt(myself.realUid) === 0) {
                             $(".userAvatar").attr("src", "img/admin.png");
                         }
                     }
@@ -565,6 +603,8 @@ function initAll() {
     $("#brandTitle").text(i18n("windowTitle"));
     $(".sidebarToggler").attr("title", i18n("windowTitle"));
     $("#logout").text(i18n("logout"));
+
+    $("#sudo").text(i18n("sudo"));
     $("#logoutButton").attr("title", i18n("logout"));
 
     $("#myNotifications").attr("title", i18n("noNotifications"));
@@ -662,7 +702,7 @@ function initAll() {
                                 $("#app").show();
                                 if (config.defaultRoute) {
                                     window.onhashchange = hashChange;
-                                    window.location.href = (config.defaultRoute.charAt(0) == "?")?config.defaultRoute:("?" + config.defaultRoute);
+                                    window.location.href = (config.defaultRoute.charAt(0) == "?") ? config.defaultRoute : ("?" + config.defaultRoute);
                                 } else {
                                     hashChange();
                                     window.onhashchange = hashChange;
