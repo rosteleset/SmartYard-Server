@@ -10,6 +10,7 @@
     "cmses": [
         "bk-100",
         "com-25u",
+        "com-80u",
         "com-100u",
         "com-220u",
         "factorial_8x8",
