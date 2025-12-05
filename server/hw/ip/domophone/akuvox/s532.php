@@ -54,6 +54,11 @@ class s532 extends akuvox implements DisplayTextInterface
      */
     protected ?array $usersToDelete = null;
 
+    /**
+     * @var array|null Users scheduled to be updated during data sync.
+     */
+    protected ?array $usersToUpdate = null;
+
     protected static function getMaxUsers(): int
     {
         return 10000; // Uploading 10,000 users takes about 22 minutes :(
@@ -99,13 +104,22 @@ class s532 extends akuvox implements DisplayTextInterface
         $group->number = $apartment;
         $this->addGroup($group);
 
-        // Then, add a user representing the apartment
-        $user = new User(self::PREFIX_FLAT . '_' . $apartment);
+        $userId = self::PREFIX_FLAT . '_' . $apartment;
+
+        // Create new or use existing user
+        $existingUser = $this->getUserUnique($userId);
+        $user = $existingUser ?? new User($userId);
+
         $user->name = self::PREFIX_FLAT;
         $user->privatePin = $code === 0 ? '' : $code;
         $user->phoneNum = $sipNumbers[0] ?? '';
         $user->group = $apartment;
-        $this->usersToAdd[] = $user;
+
+        if ($existingUser === null) {
+            $this->usersToAdd[] = $user;
+        } else {
+            $this->usersToUpdate[] = $user;
+        }
     }
 
     public function configureSip(
@@ -123,10 +137,22 @@ class s532 extends akuvox implements DisplayTextInterface
         parent::configureSip($login, $encodedPassword, $server, $port, $stunEnabled, $stunServer, $stunPort);
     }
 
+    public function deleteApartment(int $apartment = 0): void
+    {
+        if ($apartment === 0) {
+            // Not sure if this is necessary, full cleaning is not used
+        } else {
+            $user = $this->getUserUnique(self::PREFIX_FLAT . '_' . $apartment);
+            if ($user !== null) {
+                $this->usersToDelete[] = $user;
+            }
+        }
+    }
+
     public function deleteRfid(string $code = ''): void
     {
         if ($code === '') {
-            // TODO, or not TODO
+            // Not sure if this is necessary, full cleaning is not used
         } else {
             $user = $this->getUserUnique(self::getNormalizedRfid($code));
             if ($user !== null) {
@@ -201,11 +227,21 @@ class s532 extends akuvox implements DisplayTextInterface
         if ($this->usersToDelete !== null) {
             $this->deleteUsers($this->usersToDelete);
         }
+
+        if ($this->usersToUpdate !== null) {
+            $this->updateUsers($this->usersToUpdate);
+        }
     }
 
     public function transformDbConfig(array $dbConfig): array
     {
         $dbConfig['cmsModel'] = self::CMS_MODEL_MAP[$dbConfig['cmsModel']]->value;
+
+        // TODO: delete after implementing matrix methods
+        foreach ($dbConfig['apartments'] as &$apartment) {
+            $apartment['cmsEnabled'] = false;
+        }
+
         return $dbConfig;
     }
 
@@ -297,8 +333,22 @@ class s532 extends akuvox implements DisplayTextInterface
 
     protected function getApartments(): array
     {
-        // TODO
-        return [];
+        $flats = [];
+        $flatUsers = $this->findUsers(self::PREFIX_FLAT);
+
+        foreach ($flatUsers as $flatUser) {
+            $flatNumber = (int)str_replace(self::PREFIX_FLAT . '_', '', $flatUser->userId);
+
+            $flats[$flatNumber] = [
+                'apartment' => $flatNumber,
+                'code' => (int)$flatUser->privatePin,
+                'sipNumbers' => [$flatUser->phoneNum],
+                'cmsEnabled' => false,
+                'cmsLevels' => [],
+            ];
+        }
+
+        return $flats;
     }
 
     protected function getCmsModel(): string
@@ -309,7 +359,7 @@ class s532 extends akuvox implements DisplayTextInterface
     /**
      * Returns a unique user by identifier.
      *
-     * @param string $identifier Flat number, personal code, or RFID code to search for.
+     * @param string $identifier User ID, personal code, or RFID code to search for.
      * @return User|null The matched {@see User} object, or null if no users matched or if more than one user matched.
      */
     protected function getUserUnique(string $identifier): ?User
@@ -389,5 +439,25 @@ class s532 extends akuvox implements DisplayTextInterface
                 'newPassword' => base64_encode($password),
             ],
         ]);
+    }
+
+    /**
+     * Updates users on the intercom.
+     *
+     * @param User[] $users Array of {@see User} entities to be updated.
+     */
+    protected function updateUsers(array $users): void
+    {
+        foreach (array_chunk($users, self::USERS_CHUNK_SIZE) as $chunk) {
+            $this->apiCall('', 'POST', [
+                'target' => 'user',
+                'action' => 'set',
+                'data' => [
+                    'item' => array_map(fn(User $user) => $user->toArray(), $chunk),
+                ],
+            ]);
+
+            sleep(1);
+        }
     }
 }
