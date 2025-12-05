@@ -122,7 +122,7 @@ class s532 extends akuvox implements DisplayTextInterface
         if ($code === '') {
             // TODO, or not TODO
         } else {
-            $user = $this->findUser($code);
+            $user = $this->getUserUnique($code);
             if ($user !== null) {
                 $this->usersToDelete[] = $user;
             }
@@ -274,33 +274,17 @@ class s532 extends akuvox implements DisplayTextInterface
     }
 
     /**
-     * Find a user by identifier.
+     * Find users by identifier.
      *
-     * @param string $identifier Flat number, personal code, or RFID code to search for.
-     * @return User|null The matched {@see User} object, or null if no unique match is found.
+     * @param string $identifier User identifier to search for.
+     * @return User[] An array of matched {@see User} objects or empty array if not found or API error occurred.
      */
-    protected function findUser(string $identifier): ?User
+    protected function findUsers(string $identifier): array
     {
         // API performs fuzzy search and may return multiple partial matches
         $response = $this->apiCall('/user/get?' . http_build_query(['NameOrCode' => $identifier]));
-        $items = $response['data']['item'] ?? null;
-
-        if (!is_array($items)) {
-            return null;
-        }
-
-        // Filter manually to ensure strict equality and require exactly one match
-        $matches = array_filter($items, static fn($item) => in_array($identifier, [
-            $item['UserID'] ?? null,
-            $item['PrivatePIN'] ?? null,
-            $item['CardCode'] ?? null,
-        ], true));
-
-        if (count($matches) !== 1) {
-            return null;
-        }
-
-        return User::fromArray(array_values($matches)[0]);
+        $items = $response['data']['item'] ?? [];
+        return array_map(static fn(array $item) => User::fromArray($item), $items);
     }
 
     protected function getApartments(): array
@@ -315,14 +299,28 @@ class s532 extends akuvox implements DisplayTextInterface
     }
 
     /**
-     * @return User[]
+     * Returns a unique user by identifier.
+     *
+     * @param string $identifier Flat number, personal code, or RFID code to search for.
+     * @return User|null The matched {@see User} object, or null if no users matched or if more than one user matched.
      */
-    protected function getUsers(): array // TODO: with pagination
+    protected function getUserUnique(string $identifier): ?User
     {
-        return array_map(
-            static fn($userRaw) => User::fromArray($userRaw),
-            $this->apiCall('/user/get')['data']['item'] ?? [],
-        );
+        $users = $this->findUsers($identifier);
+
+        // Filter manually to ensure strict equality
+        $matches = array_filter($users, static fn(User $user) => in_array($identifier, [
+            $user->userId,
+            $user->privatePin,
+            $user->cardCode,
+        ], true));
+
+        // Require exactly one match
+        if (count($matches) !== 1) {
+            return null;
+        }
+
+        return reset($matches);
     }
 
     /**
