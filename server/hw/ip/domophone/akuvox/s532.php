@@ -40,6 +40,10 @@ class s532 extends akuvox implements DisplayTextInterface
      */
     protected const USERS_CHUNK_SIZE = 1000;
 
+    protected const PREFIX_RFID = 'RFID';
+    protected const PREFIX_FLAT = 'FLAT';
+    protected const PREFIX_CMS = 'CMS';
+
     /**
      * @var array|null Users scheduled to be added during data sync.
      */
@@ -69,7 +73,8 @@ class s532 extends akuvox implements DisplayTextInterface
 
     public function addRfid(string $code, int $apartment = 0): void
     {
-        $user = new User($code);
+        $user = new User(self::PREFIX_RFID . '_' . $code);
+        $user->name = self::PREFIX_RFID;
         $user->cardCode = self::getNormalizedRfid($code);
         $this->usersToAdd[] = $user;
     }
@@ -95,7 +100,8 @@ class s532 extends akuvox implements DisplayTextInterface
         $this->addGroup($group);
 
         // Then, add a user representing the apartment
-        $user = new User($apartment);
+        $user = new User(self::PREFIX_FLAT . '_' . $apartment);
+        $user->name = self::PREFIX_FLAT;
         $user->privatePin = $code === 0 ? '' : $code;
         $user->phoneNum = $sipNumbers[0] ?? '';
         $user->group = $apartment;
@@ -122,7 +128,7 @@ class s532 extends akuvox implements DisplayTextInterface
         if ($code === '') {
             // TODO, or not TODO
         } else {
-            $user = $this->getUserUnique($code);
+            $user = $this->getUserUnique(self::getNormalizedRfid($code));
             if ($user !== null) {
                 $this->usersToDelete[] = $user;
             }
@@ -142,7 +148,9 @@ class s532 extends akuvox implements DisplayTextInterface
 
     public function getRfids(): array
     {
-        return [];
+        $rfidUsers = $this->findUsers(self::PREFIX_RFID);
+        $codes = array_map(static fn(User $user) => str_pad($user->cardCode, 14, '0', STR_PAD_LEFT), $rfidUsers);
+        return array_combine($codes, $codes);
     }
 
     public function prepare(): void
