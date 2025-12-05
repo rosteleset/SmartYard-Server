@@ -80,7 +80,6 @@ final class User extends AbstractEntity
         }
 
         $this->userId = $userId;
-        $this->name = $userId;
     }
 
     protected static function getRequiredField(): string
