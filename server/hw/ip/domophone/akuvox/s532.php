@@ -40,9 +40,9 @@ class s532 extends akuvox implements DisplayTextInterface
      */
     protected const USERS_CHUNK_SIZE = 1000;
 
-    protected const PREFIX_RFID = 'RFID';
-    protected const PREFIX_FLAT = 'FLAT';
-    protected const PREFIX_CMS = 'CMS';
+    protected const USER_ID_PREFIX_RFID = 'RFID';
+    protected const USER_ID_PREFIX_FLAT = 'FLAT';
+    protected const USER_ID_PREFIX_CMS = 'CMS';
 
     /**
      * @var array|null Users scheduled to be added during data sync.
@@ -78,8 +78,8 @@ class s532 extends akuvox implements DisplayTextInterface
 
     public function addRfid(string $code, int $apartment = 0): void
     {
-        $user = new User(self::PREFIX_RFID . '_' . $code);
-        $user->name = self::PREFIX_RFID;
+        $user = new User(self::USER_ID_PREFIX_RFID . '_' . $code);
+        $user->name = self::USER_ID_PREFIX_RFID;
         $user->cardCode = self::getNormalizedRfid($code);
         $this->usersToAdd[] = $user;
     }
@@ -99,18 +99,18 @@ class s532 extends akuvox implements DisplayTextInterface
         array $cmsLevels = [],
     ): void
     {
-        // First, add a group for the apartment
+        // First, add a group for the flat
         $group = new Group($apartment);
         $group->number = $apartment;
         $this->addGroup($group);
 
-        $userId = self::PREFIX_FLAT . '_' . $apartment;
+        $userId = self::USER_ID_PREFIX_FLAT . '_' . $apartment;
 
         // Create new or use existing user
         $existingUser = $this->getUserUnique($userId);
         $user = $existingUser ?? new User($userId);
 
-        $user->name = self::PREFIX_FLAT;
+        $user->name = self::USER_ID_PREFIX_FLAT;
         $user->privatePin = $code === 0 ? '' : $code;
         $user->phoneNum = $sipNumbers[0] ?? '';
         $user->group = $apartment;
@@ -142,7 +142,7 @@ class s532 extends akuvox implements DisplayTextInterface
         if ($apartment === 0) {
             // Not sure if this is necessary, full cleaning is not used
         } else {
-            $user = $this->getUserUnique(self::PREFIX_FLAT . '_' . $apartment);
+            $user = $this->getUserUnique(self::USER_ID_PREFIX_FLAT . '_' . $apartment);
             if ($user !== null) {
                 $this->usersToDelete[] = $user;
             }
@@ -174,7 +174,7 @@ class s532 extends akuvox implements DisplayTextInterface
 
     public function getRfids(): array
     {
-        $rfidUsers = $this->findUsers(self::PREFIX_RFID);
+        $rfidUsers = $this->findUsers(self::USER_ID_PREFIX_RFID);
         $codes = array_map(static fn(User $user) => str_pad($user->cardCode, 14, '0', STR_PAD_LEFT), $rfidUsers);
         return array_combine($codes, $codes);
     }
@@ -334,10 +334,10 @@ class s532 extends akuvox implements DisplayTextInterface
     protected function getApartments(): array
     {
         $flats = [];
-        $flatUsers = $this->findUsers(self::PREFIX_FLAT);
+        $flatUsers = $this->findUsers(self::USER_ID_PREFIX_FLAT);
 
         foreach ($flatUsers as $flatUser) {
-            $flatNumber = (int)str_replace(self::PREFIX_FLAT . '_', '', $flatUser->userId);
+            $flatNumber = (int)str_replace(self::USER_ID_PREFIX_FLAT . '_', '', $flatUser->userId);
 
             $flats[$flatNumber] = [
                 'apartment' => $flatNumber,
