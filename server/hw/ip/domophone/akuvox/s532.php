@@ -2,7 +2,10 @@
 
 namespace hw\ip\domophone\akuvox;
 
-use hw\Interface\DisplayTextInterface;
+use hw\Interface\{
+    DisplayTextInterface,
+    LanguageInterface,
+};
 use hw\ip\domophone\akuvox\Entities\{
     Dialplan,
     Group,
@@ -13,7 +16,7 @@ use hw\ip\domophone\akuvox\Enums\AnalogType;
 /**
  * Represents an Akuvox S532 intercom.
  */
-class s532 extends akuvox implements DisplayTextInterface
+class s532 extends akuvox implements DisplayTextInterface, LanguageInterface
 {
     /**
      * @var array<string, AnalogType> Mapping of CMS model codes from the DB to their corresponding AnalogType enums.
@@ -216,6 +219,21 @@ class s532 extends akuvox implements DisplayTextInterface
     {
         parent::setDtmfCodes($code1, $code2, $code3, $codeCms);
         $this->setConfigParams(['Config.DoorSetting.ANALOG.DTMF' => $codeCms]);
+    }
+
+    public function setLanguage(string $language): void
+    {
+        $lang = match ($language) {
+            'ru' => '3', // Russian
+            'es' => '6', // Spanish
+            'fr' => '9', // French
+            'pl' => '13', // Polish
+            'tr' => '14', // Turkish
+            'et' => '18', // Estonian
+            default => '1', // English
+        };
+
+        $this->setConfigParams(['Config.Settings.LANGUAGE.Type' => $lang]); // LCD language
     }
 
     public function syncData(): void
