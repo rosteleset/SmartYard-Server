@@ -4,7 +4,8 @@ import { API, mdTimer } from '../utils/index.js';
 class AkuvoxService extends SyslogService {
     async handleSyslogMessage(now, host, msg) {
         // Motion detection: start
-        if (msg.includes('Requst SnapShot')) {
+        // TODO: "Requst SnapShot" is an old message, left for backward compatibility
+        if (msg.includes('start motion') || msg.includes('Requst SnapShot')) {
             await API.motionDetection({ date: now, ip: host, motionActive: true });
             await mdTimer({ ip: host });
         }
