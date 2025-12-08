@@ -4,6 +4,7 @@ namespace hw\ip\domophone\akuvox;
 
 use hw\Interface\{
     DisplayTextInterface,
+    FreePassInterface,
     LanguageInterface,
 };
 use hw\ip\domophone\akuvox\Entities\{
@@ -16,7 +17,7 @@ use hw\ip\domophone\akuvox\Enums\AnalogType;
 /**
  * Represents an Akuvox S532 intercom.
  */
-class s532 extends akuvox implements DisplayTextInterface, LanguageInterface
+class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, LanguageInterface
 {
     /**
      * @var array<string, AnalogType> Mapping of CMS model codes from the DB to their corresponding AnalogType enums.
@@ -182,6 +183,16 @@ class s532 extends akuvox implements DisplayTextInterface, LanguageInterface
         return array_combine($codes, $codes);
     }
 
+    public function isFreePassEnabled(): bool
+    {
+        $response = $this->getConfigParams([
+            'Config.DoorSetting.RELAYSCHEDULE.RelayAEnable',
+            'Config.DoorSetting.RELAYSCHEDULE.RelayBEnable',
+        ]);
+
+        return empty($response) || in_array('1', $response, true);
+    }
+
     public function prepare(): void
     {
         parent::prepare();
@@ -219,6 +230,16 @@ class s532 extends akuvox implements DisplayTextInterface, LanguageInterface
     {
         parent::setDtmfCodes($code1, $code2, $code3, $codeCms);
         $this->setConfigParams(['Config.DoorSetting.ANALOG.DTMF' => $codeCms]);
+    }
+
+    public function setFreePassEnabled(bool $enabled): void
+    {
+        $this->setConfigParams([
+            'Config.DoorSetting.RELAYSCHEDULE.RelayAEnable' => $enabled ? '1' : '0',
+            'Config.DoorSetting.RELAYSCHEDULE.RelayASchedule' => '1001/',
+            'Config.DoorSetting.RELAYSCHEDULE.RelayBEnable' => $enabled ? '1' : '0',
+            'Config.DoorSetting.RELAYSCHEDULE.RelayBSchedule' => '1001/',
+        ]);
     }
 
     public function setLanguage(string $language): void
