@@ -19,5 +19,44 @@
              */
 
             abstract public function getDecks();
+
+            /**
+             * @return mixed
+             */
+
+            abstract public function getCards($deck = false);
+
+            /**
+             * $id card uuid
+             *
+             * @return mixed
+             */
+
+            abstract public function getCard($id);
+
+            /**
+             * $card card
+             *
+             * @return mixed
+             */
+
+            abstract public function addCard($card);
+
+            /**
+             * $id card uuid
+             * $card card
+             *
+             * @return mixed
+             */
+
+            abstract public function modifyCard($id, $card);
+
+            /**
+             * $id card uuid
+             *
+             * @return mixed
+             */
+
+            abstract public function deleteCard($id);
         }
     }
