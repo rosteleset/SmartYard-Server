@@ -198,6 +198,7 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
         parent::prepare();
         $this->setHttpsEnabled(false);
         $this->setRelayInversion(true, true);
+        $this->setInputTriggerLevel(onHighC: true, onHighD: true);
         $this->setExternalReader(openRelayB: true);
     }
 
@@ -429,6 +430,34 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
     protected function setApiPassword(string $password): void
     {
         $this->setConfigParams(['Config.DoorSetting.APIFCGI.Password' => base64_encode($password)]);
+    }
+
+    /**
+     * Sets the logic levels that trigger the inputs.
+     *
+     * @param bool $onHighA Whether input A should trigger on high level.
+     * @param bool $onHighB Whether input B should trigger on high level.
+     * @param bool $onHighC Whether input C should trigger on high level.
+     * @param bool $onHighD Whether input D should trigger on high level.
+     * @return void
+     */
+    protected function setInputTriggerLevel(
+        bool $onHighA = false,
+        bool $onHighB = false,
+        bool $onHighC = false,
+        bool $onHighD = false,
+    ): void
+    {
+        $this->apiCall('', 'POST', [
+            'target' => 'input',
+            'action' => 'set',
+            'data' => [
+                'Config.DoorSetting.INPUT.InputTrigger' => $onHighA ? '1' : '0',
+                'Config.DoorSetting.INPUT.InputBTrigger' => $onHighB ? '1' : '0',
+                'Config.DoorSetting.INPUT.InputCTrigger' => $onHighC ? '1' : '0',
+                'Config.DoorSetting.INPUT.InputDTrigger' => $onHighD ? '1' : '0',
+            ],
+        ]);
     }
 
     /**
