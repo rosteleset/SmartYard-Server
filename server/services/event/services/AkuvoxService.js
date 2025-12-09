@@ -36,6 +36,26 @@ class AkuvoxService extends SyslogService {
             }
         }
 
+        // Opening a door by personal code
+        if (msg.includes('OPENDOOR_LOG:Type:PIN')) {
+            const match = msg.match(/KeyCode:(\w+)\s+Relay:(\d+)\s+Status:(\w+)/);
+            if (!match) {
+                return;
+            }
+
+            const [_, code, door, status] = match;
+
+            if (status === 'Successful') {
+                await API.openDoor({
+                    date: now,
+                    ip: host,
+                    door: door - 1,
+                    detail: code,
+                    by: 'code',
+                });
+            }
+        }
+
         // Opening a door by button pressed
         if (msg.includes('OPENDOOR_LOG:Type:INPUT')) {
             await API.openDoor({ date: now, ip: host, door: 0, detail: 'main', by: 'button' });
