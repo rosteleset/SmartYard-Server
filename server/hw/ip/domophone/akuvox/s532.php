@@ -138,6 +138,43 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
         }
     }
 
+    public function configureMatrix(array $matrix): void
+    {
+        $this->clearMatrix();
+
+        foreach ($matrix as $matrixCell) {
+            [
+                'hundreds' => $hundreds,
+                'tens' => $tens,
+                'units' => $units,
+                'apartment' => $apartment,
+            ] = $matrixCell;
+
+            // First, add a group for the apartment if it doesn't already exist
+            $existingGroup = $this->getGroupByName($apartment);
+            if ($existingGroup === null) {
+                $group = new Group($apartment);
+                $group->number = $apartment;
+                $this->groupsToAdd[] = $group;
+            }
+
+            $analogNumber = $hundreds * 100 + $tens * 10 + $units;
+            if ($analogNumber % 100 === 0) {
+                $analogNumber += 100;
+            }
+
+            // Next, create a new user
+            $user = new User(self::USER_ID_PREFIX_CMS . '_' . $apartment);
+
+            $user->name = self::USER_ID_PREFIX_CMS;
+            $user->analogSystem = '1'; // Enable CMS
+            $user->analogNumber = $analogNumber;
+            $user->group = $apartment;
+
+            $this->usersToAdd[] = $user;
+        }
+    }
+
     public function configureSip(
         string $login,
         string $password,
@@ -347,6 +384,17 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
     }
 
     /**
+     * Deletes all CMS users from the intercom
+     *
+     * @return void
+     */
+    protected function clearMatrix(): void
+    {
+        $cmsUsers = $this->findUsers('CMS');
+        $this->deleteUsers($cmsUsers);
+    }
+
+    /**
      * Deletes groups from the intercom.
      *
      * @param Group[] $groups Array of {@see Group} entities to be deleted.
@@ -446,6 +494,12 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
         );
 
         return empty($match) ? null : Group::fromArray(reset($match));
+    }
+
+    protected function getMatrix(): array
+    {
+        // TODO
+        return [];
     }
 
     /**
