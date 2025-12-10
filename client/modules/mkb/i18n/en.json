@@ -1,3 +1,12 @@
 {
-    "mkb": "Mini kanban"
+    "mkb": "Mini kanban",
+    "methods": {
+        "mkb": {
+            "_title": "Kanban",
+            "cards": {
+                "_title": "Kanban",
+                "GET": "Kanban"
+            }
+        }
+    }
 }

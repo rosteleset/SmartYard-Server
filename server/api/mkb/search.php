@@ -1,16 +1,14 @@
 <?php
 
     /**
-     * @api {get} /api/mkb/cards/:deck get cards
+     * @api {get} /api/mkb/search search for cards
      *
      * @apiVersion 1.0.0
      *
-     * @apiName getCards
+     * @apiName searchCards
      * @apiGroup mkb
      *
      * @apiHeader {String} Authorization authentication token
-     *
-     * @apiParam {String} [deck]
      *
      * @apiSuccess {Object[]} cards
      */
@@ -27,16 +25,16 @@
          * mkb method
          */
 
-        class cards extends api {
+        class search extends api {
 
             public static function GET($params) {
                 $mkb = loadBackend("mkb");
 
                 if ($mkb) {
-                    $cards = $mkb->getCards(@params["_id"]);
+                    $search = $mkb->searchCards($params["search"]);
                 }
 
-                return api::ANSWER($mkb, ($mkb !== false) ? "cards" : false);
+                return api::ANSWER($mkb, ($mkb !== false) ? "search" : false);
             }
 
             public static function index() {
@@ -44,7 +42,7 @@
 
                 if ($mkb) {
                     return [
-                        "GET",
+                        "GET" => "#same(mkb,cards,GET)",
                     ];
                 } else {
                     return false;

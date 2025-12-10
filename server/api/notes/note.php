@@ -117,9 +117,9 @@
 
                 if ($notes) {
                     return [
-                        "POST" => "#common",
-                        "PUT" => "#common",
-                        "DELETE" => "#common",
+                        "POST" => "#same(notes,notes,GET)",
+                        "PUT" => "#same(notes,notes,GET)",
+                        "DELETE" => "#same(notes,notes,GET)",
                     ];
                 } else {
                     return false;

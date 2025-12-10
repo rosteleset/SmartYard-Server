@@ -28,5 +28,14 @@
     "typeMarkdown": "MD разметка",
     "typeChecks": "Список",
     "type": "Тип заметки",
-    "fyeo": "Блюр"
+    "fyeo": "Блюр",
+    "methods": {
+        "notes": {
+            "_title": "Заметки",
+            "notes": {
+                "_title": "Заметки",
+                "GET": "Заметки"
+            }
+        }
+    }
 }

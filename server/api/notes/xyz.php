@@ -47,7 +47,7 @@
 
                 if ($notes) {
                     return [
-                        "PUT" => "#common",
+                        "PUT" => "#same(notes,notes,GET)",
                     ];
                 } else {
                     return false;

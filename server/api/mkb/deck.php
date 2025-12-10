@@ -1,61 +1,61 @@
 <?php
 
     /**
-     * @api {get} /api/mkb/card/:id get card
+     * @api {get} /api/mkb/deck/:id get deck
      *
      * @apiVersion 1.0.0
      *
-     * @apiName getCard
+     * @apiName getDeck
      * @apiGroup mkb
      *
      * @apiHeader {String} Authorization authentication token
      *
-     * @apiParam id card id
+     * @apiParam id deck id
      *
-     * @apiSuccess {Object[]} card
+     * @apiSuccess {Object[]} deck
      */
 
     /**
-     * @api {post} /api/mkb/card add card
+     * @api {post} /api/mkb/deck add deck
      *
      * @apiVersion 1.0.0
      *
-     * @apiName addCard
+     * @apiName addDeck
      * @apiGroup mkb
      *
-     * @apiBody card
+     * @apiBody deck
      *
      * @apiHeader {String} Authorization authentication token
      *
-     * @apiSuccess {Object[]} card
+     * @apiSuccess {Object[]} deck
      */
 
     /**
-     * @api {put} /api/mkb/card/:id modify card
+     * @api {put} /api/mkb/deck/:id modify deck
      *
      * @apiVersion 1.0.0
      *
-     * @apiName modifyCard
+     * @apiName modifyDeck
      * @apiGroup mkb
      *
      * @apiHeader {String} Authorization authentication token
      *
-     * @apiBody card
+     * @apiBody deck
      *
-     * @apiSuccess {Object[]} card
+     * @apiSuccess {Object[]} deck
      */
 
     /**
-     * @api {delete} /api/mkb/card/:id delete card
+     * @api {delete} /api/mkb/deck/:id delete deck
      *
      * @apiVersion 1.0.0
      *
-     * @apiName deleteCard
+     * @apiName deleteDeck
      * @apiGroup mkb
      *
      * @apiHeader {String} Authorization authentication token
      *
-     * @apiSuccess {Object[]} card
+     * @apiSuccess {Object[]} deck
      */
 
     /**
@@ -70,46 +70,46 @@
          * mkb method
          */
 
-        class card extends api {
+        class deck extends api {
 
             public static function GET($params) {
                 $mkb = loadBackend("mkb");
 
                 if ($mkb) {
-                    $card = $mkb->getCard(@$params["_id"]);
+                    $deck = $mkb->getDeck(@$params["_id"]);
                 }
 
-                return api::ANSWER($mkb, ($mkb !== false) ? "card" : false);
+                return api::ANSWER($mkb, ($mkb !== false) ? "deck" : false);
             }
 
             public static function POST($params) {
                 $mkb = loadBackend("mkb");
 
                 if ($mkb) {
-                    $card = $mkb->addCard(@$params["card"]);
+                    $deck = $mkb->addDeck(@$params["deck"]);
                 }
 
-                return api::ANSWER($mkb, ($mkb !== false) ? "card" : false);
+                return api::ANSWER($mkb, ($mkb !== false) ? "deck" : false);
             }
 
             public static function PUT($params) {
                 $mkb = loadBackend("mkb");
 
                 if ($mkb) {
-                    $card = $mkb->modifyCard(@$params["_id"], @$params["card"]);
+                    $deck = $mkb->modifyDeck(@$params["_id"], @$params["deck"]);
                 }
 
-                return api::ANSWER($mkb, ($mkb !== false) ? "card" : false);
+                return api::ANSWER($mkb, ($mkb !== false) ? "deck" : false);
             }
 
             public static function DELETE($params) {
                 $mkb = loadBackend("mkb");
 
                 if ($mkb) {
-                    $card = $mkb->deleteCard(@$params["_id"]);
+                    $deck = $mkb->deleteDeck(@$params["_id"]);
                 }
 
-                return api::ANSWER($mkb, ($mkb !== false) ? "card" : false);
+                return api::ANSWER($mkb, ($mkb !== false) ? "deck" : false);
             }
 
             public static function index() {

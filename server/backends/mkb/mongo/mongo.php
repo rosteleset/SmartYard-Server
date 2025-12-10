@@ -91,5 +91,13 @@
             public function deleteCard($id) {
                 return true;
             }
+
+            /**
+             * @inheritDoc
+             */
+
+            public function searchCard($search) {
+                return true;
+            }
         }
     }

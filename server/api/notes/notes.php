@@ -42,7 +42,7 @@
 
                 if ($notes) {
                     return [
-                        "GET" => "#common",
+                        "GET",
                     ];
                 } else {
                     return false;

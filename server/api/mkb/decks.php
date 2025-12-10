@@ -42,7 +42,7 @@
 
                 if ($mkb) {
                     return [
-                        "GET" => "#common",
+                        "GET" => "#same(mkb,cards,GET)",
                     ];
                 } else {
                     return false;

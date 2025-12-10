@@ -28,5 +28,14 @@
     "typeMarkdown": "Markdown",
     "typeChecks": "Checkboxes",
     "type": "Note type",
-    "fyeo": "Blur"
+    "fyeo": "Blur",
+    "methods": {
+        "notes": {
+            "_title": "Notes",
+            "notes": {
+                "_title": "Notes",
+                "GET": "Notes"
+            }
+        }
+    }
 }
