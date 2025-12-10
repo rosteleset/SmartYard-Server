@@ -49,19 +49,29 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
     protected const USER_ID_PREFIX_CMS = 'CMS';
 
     /**
-     * @var array|null Users scheduled to be added during data sync.
+     * @var User[]|null Users scheduled to be added during data sync.
      */
     protected ?array $usersToAdd = null;
 
     /**
-     * @var array|null Users scheduled to be deleted during data sync.
+     * @var User[]|null Users scheduled to be deleted during data sync.
      */
     protected ?array $usersToDelete = null;
 
     /**
-     * @var array|null Users scheduled to be updated during data sync.
+     * @var User[]|null Users scheduled to be updated during data sync.
      */
     protected ?array $usersToUpdate = null;
+
+    /**
+     * @var Group[]|null Groups scheduled to be added during data sync.
+     */
+    protected ?array $groupsToAdd = null;
+
+    /**
+     * @var Group[]|null Groups scheduled to be deleted during data sync.
+     */
+    protected ?array $groupsToDelete = null;
 
     protected static function getMaxUsers(): int
     {
@@ -103,14 +113,16 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
         array $cmsLevels = [],
     ): void
     {
-        // First, add a group for the flat
-        $group = new Group($apartment);
-        $group->number = $apartment;
-        $this->addGroup($group);
+        // First, add a group for the apartment if it doesn't already exist
+        $existingGroup = $this->getGroupByName($apartment);
+        if ($existingGroup === null) {
+            $group = new Group($apartment);
+            $group->number = $apartment;
+            $this->groupsToAdd[] = $group;
+        }
 
+        // Next, create a new user or use an existing one
         $userId = self::USER_ID_PREFIX_FLAT . '_' . $apartment;
-
-        // Create new or use existing user
         $existingUser = $this->getUserUnique($userId);
         $user = $existingUser ?? new User($userId);
 
@@ -149,6 +161,11 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
             $user = $this->getUserUnique(self::USER_ID_PREFIX_FLAT . '_' . $apartment);
             if ($user !== null) {
                 $this->usersToDelete[] = $user;
+            }
+
+            $group = $this->getGroupByName($apartment);
+            if ($group !== null) {
+                $this->groupsToDelete[] = $group;
             }
         }
     }
@@ -271,6 +288,14 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
         if ($this->usersToUpdate !== null) {
             $this->updateUsers($this->usersToUpdate);
         }
+
+        if ($this->groupsToAdd !== null) {
+            $this->addGroups($this->groupsToAdd);
+        }
+
+        if ($this->groupsToDelete !== null) {
+            $this->deleteGroups($this->groupsToDelete);
+        }
     }
 
     public function transformDbConfig(array $dbConfig): array
@@ -302,19 +327,23 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
     }
 
     /**
-     * Adds a new group with the provided data.
+     * Adds new groups to the intercom.
      *
-     * @param Group $group The group entity to create.
+     * @param Group[] $groups Array of {@see Group} entities to be added.
      */
-    protected function addGroup(Group $group): void
+    protected function addGroups(array $groups): void
     {
-        $this->apiCall('', 'POST', [
-            'target' => 'group',
-            'action' => 'add',
-            'data' => [
-                'item' => [$group->toArray()],
-            ],
-        ]);
+        foreach (array_chunk($groups, self::USERS_CHUNK_SIZE) as $chunk) {
+            $this->apiCall('', 'POST', [
+                'target' => 'group',
+                'action' => 'add',
+                'data' => [
+                    'item' => array_map(fn(Group $group) => $group->toArray(), $chunk),
+                ],
+            ]);
+
+            sleep(1);
+        }
     }
 
     /**
@@ -330,6 +359,26 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
                 'action' => 'add',
                 'data' => [
                     'item' => array_map(fn(User $user) => $user->toArray(), $chunk),
+                ],
+            ]);
+
+            sleep(1);
+        }
+    }
+
+    /**
+     * Deletes groups from the intercom.
+     *
+     * @param Group[] $groups Array of {@see Group} entities to be deleted.
+     */
+    protected function deleteGroups(array $groups): void
+    {
+        foreach (array_chunk($groups, self::USERS_CHUNK_SIZE) as $chunk) {
+            $this->apiCall('', 'POST', [
+                'target' => 'group',
+                'action' => 'del',
+                'data' => [
+                    'item' => array_map(fn(Group $group) => ['ID' => $group->id], $chunk),
                 ],
             ]);
 
@@ -394,6 +443,25 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
     protected function getCmsModel(): string
     {
         return $this->getConfigParams(['Config.DoorSetting.ANALOG.Type'])[0] ?? '';
+    }
+
+    /**
+     * Returns a group by its name.
+     *
+     * @param string $name Group name to search for.
+     * @return Group|null The matched {@see Group} object, or null if not found.
+     */
+    protected function getGroupByName(string $name): ?Group
+    {
+        $response = $this->apiCall('/group/get');
+        $items = $response['data']['item'] ?? [];
+
+        $match = array_filter(
+            $items,
+            fn(array $item) => ($item['Name'] ?? null) === $name,
+        );
+
+        return empty($match) ? null : Group::fromArray(reset($match));
     }
 
     /**
