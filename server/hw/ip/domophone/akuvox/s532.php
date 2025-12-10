@@ -39,10 +39,10 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
     ];
 
     /**
-     * @var int The maximum number of user records processed in a single chunk.
+     * @var int The maximum number of records processed in a single chunk.
      * Larger chunks (up to ~5000) are possible but may cause the device to freeze.
      */
-    protected const USERS_CHUNK_SIZE = 1000;
+    protected const ITEMS_CHUNK_SIZE = 1000;
 
     protected const USER_ID_PREFIX_RFID = 'RFID';
     protected const USER_ID_PREFIX_FLAT = 'FLAT';
@@ -333,17 +333,7 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
      */
     protected function addGroups(array $groups): void
     {
-        foreach (array_chunk($groups, self::USERS_CHUNK_SIZE) as $chunk) {
-            $this->apiCall('', 'POST', [
-                'target' => 'group',
-                'action' => 'add',
-                'data' => [
-                    'item' => array_map(fn(Group $group) => $group->toArray(), $chunk),
-                ],
-            ]);
-
-            sleep(1);
-        }
+        $this->executeChunkOperation('group', 'add', $groups, fn(Group $group) => $group->toArray());
     }
 
     /**
@@ -353,17 +343,7 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
      */
     protected function addUsers(array $users): void
     {
-        foreach (array_chunk($users, self::USERS_CHUNK_SIZE) as $chunk) {
-            $this->apiCall('', 'POST', [
-                'target' => 'user',
-                'action' => 'add',
-                'data' => [
-                    'item' => array_map(fn(User $user) => $user->toArray(), $chunk),
-                ],
-            ]);
-
-            sleep(1);
-        }
+        $this->executeChunkOperation('user', 'add', $users, fn(User $user) => $user->toArray());
     }
 
     /**
@@ -373,17 +353,7 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
      */
     protected function deleteGroups(array $groups): void
     {
-        foreach (array_chunk($groups, self::USERS_CHUNK_SIZE) as $chunk) {
-            $this->apiCall('', 'POST', [
-                'target' => 'group',
-                'action' => 'del',
-                'data' => [
-                    'item' => array_map(fn(Group $group) => ['ID' => $group->id], $chunk),
-                ],
-            ]);
-
-            sleep(1);
-        }
+        $this->executeChunkOperation('group', 'del', $groups, fn(Group $group) => ['ID' => $group->id]);
     }
 
     /**
@@ -393,12 +363,26 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
      */
     protected function deleteUsers(array $users): void
     {
-        foreach (array_chunk($users, self::USERS_CHUNK_SIZE) as $chunk) {
+        $this->executeChunkOperation('user', 'del', $users, fn(User $user) => ['ID' => $user->id]);
+    }
+
+    /**
+     * Executes an API operation on entities in chunked batches.
+     *
+     * @param string $target API entity target, e.g. "user" or "group".
+     * @param string $action API operation, e.g. "add", "del", "set".
+     * @param User[]|Group[] $entities List of entities.
+     * @param callable $mapper A function that transforms an entity into an array suitable for the API payload.
+     * @return void
+     */
+    protected function executeChunkOperation(string $target, string $action, array $entities, callable $mapper): void
+    {
+        foreach (array_chunk($entities, self::ITEMS_CHUNK_SIZE) as $chunk) {
             $this->apiCall('', 'POST', [
-                'target' => 'user',
-                'action' => 'del',
+                'target' => $target,
+                'action' => $action,
                 'data' => [
-                    'item' => array_map(fn(User $user) => ['ID' => $user->id], $chunk),
+                    'item' => array_map($mapper, $chunk),
                 ],
             ]);
 
@@ -584,16 +568,6 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
      */
     protected function updateUsers(array $users): void
     {
-        foreach (array_chunk($users, self::USERS_CHUNK_SIZE) as $chunk) {
-            $this->apiCall('', 'POST', [
-                'target' => 'user',
-                'action' => 'set',
-                'data' => [
-                    'item' => array_map(fn(User $user) => $user->toArray(), $chunk),
-                ],
-            ]);
-
-            sleep(1);
-        }
+        $this->executeChunkOperation('user', 'set', $users, fn(User $user) => $user->toArray());
     }
 }
