@@ -21,6 +21,39 @@
             abstract public function getDecks();
 
             /**
+             * $id deck uuid
+             *
+             * @return mixed
+             */
+
+            abstract public function getDeck($id);
+
+            /**
+             * $deck deck
+             *
+             * @return mixed
+             */
+
+            abstract public function addDeck($deck);
+
+            /**
+             * $id deck uuid
+             * $deck deck
+             *
+             * @return mixed
+             */
+
+            abstract public function modifyDeck($id, $deck);
+
+            /**
+             * $id deck uuid
+             *
+             * @return mixed
+             */
+
+            abstract public function deleteDeck($id);
+
+            /**
              * @return mixed
              */
 

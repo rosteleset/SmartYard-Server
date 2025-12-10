@@ -20,6 +20,42 @@
                 return true;
             }
 
+            /**
+             * @inheritDoc
+             */
+
+            public function getDeck($id) {
+                return true;
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+            public function addDeck($deck) {
+                return true;
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+            public function modifyDeck($id, $deck) {
+                return true;
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+            public function deleteDeck($id) {
+                return true;
+            }
+
+            /**
+             * @inheritDoc
+             */
+
             public function getCards($deck = false) {
                 return true;
             }
