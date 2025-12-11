@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {get} /api/mkb/deck/:id get deck
+     * @api {get} /api/mkb/deck/:deckId get deck
      *
      * @apiVersion 1.0.0
      *
@@ -10,9 +10,9 @@
      *
      * @apiHeader {String} Authorization authentication token
      *
-     * @apiParam id deck id
+     * @apiParam {String} deckId deckId
      *
-     * @apiSuccess {Object[]} deck
+     * @apiSuccess {Object} deck
      */
 
     /**
@@ -23,15 +23,15 @@
      * @apiName addDeck
      * @apiGroup mkb
      *
-     * @apiBody deck
-     *
      * @apiHeader {String} Authorization authentication token
      *
-     * @apiSuccess {Object[]} deck
+     * @apiBody deck
+     *
+     * @apiSuccess {Boolean} operationResult
      */
 
     /**
-     * @api {put} /api/mkb/deck/:id modify deck
+     * @api {put} /api/mkb/deck/:deckId modify deck
      *
      * @apiVersion 1.0.0
      *
@@ -40,13 +40,15 @@
      *
      * @apiHeader {String} Authorization authentication token
      *
+     * @apiParam {String} deckId deckId
+     *
      * @apiBody deck
      *
-     * @apiSuccess {Object[]} deck
+     * @apiSuccess {Boolean} operationResult
      */
 
     /**
-     * @api {delete} /api/mkb/deck/:id delete deck
+     * @api {delete} /api/mkb/deck/:deckId delete deck
      *
      * @apiVersion 1.0.0
      *
@@ -55,7 +57,9 @@
      *
      * @apiHeader {String} Authorization authentication token
      *
-     * @apiSuccess {Object[]} deck
+     * @apiParam {String} deckId deckId
+     *
+     * @apiSuccess {Boolean} operationResult
      */
 
     /**

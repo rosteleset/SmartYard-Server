@@ -10,6 +10,8 @@
      *
      * @apiHeader {String} Authorization authentication token
      *
+     * @apiQuery {String} search
+     *
      * @apiSuccess {Object[]} cards
      */
 

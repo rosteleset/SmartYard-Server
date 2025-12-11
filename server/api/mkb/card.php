@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {get} /api/mkb/card/:id get card
+     * @api {get} /api/mkb/card/:cardId get card
      *
      * @apiVersion 1.0.0
      *
@@ -10,9 +10,9 @@
      *
      * @apiHeader {String} Authorization authentication token
      *
-     * @apiParam id card id
+     * @apiParam {String} cardId cardId
      *
-     * @apiSuccess {Object[]} card
+     * @apiSuccess {Object} card
      */
 
     /**
@@ -23,15 +23,15 @@
      * @apiName addCard
      * @apiGroup mkb
      *
-     * @apiBody card
-     *
      * @apiHeader {String} Authorization authentication token
      *
-     * @apiSuccess {Object[]} card
+     * @apiBody card
+     *
+     * @apiSuccess {Boolean} operationResult
      */
 
     /**
-     * @api {put} /api/mkb/card/:id modify card
+     * @api {put} /api/mkb/card/:cardId modify card
      *
      * @apiVersion 1.0.0
      *
@@ -40,13 +40,15 @@
      *
      * @apiHeader {String} Authorization authentication token
      *
+     * @apiParam {String} cardId cardId
+     *
      * @apiBody card
      *
-     * @apiSuccess {Object[]} card
+     * @apiSuccess {Boolean} operationResult
      */
 
     /**
-     * @api {delete} /api/mkb/card/:id delete card
+     * @api {delete} /api/mkb/card/:cardId delete card
      *
      * @apiVersion 1.0.0
      *
@@ -55,7 +57,9 @@
      *
      * @apiHeader {String} Authorization authentication token
      *
-     * @apiSuccess {Object[]} card
+     * @apiParam {String} cardId cardId
+     *
+     * @apiSuccess {Boolean} operationResult
      */
 
     /**
