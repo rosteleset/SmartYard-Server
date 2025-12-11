@@ -256,6 +256,7 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
         $this->setInputTriggerLevel(onHighC: true, onHighD: true);
         $this->setExternalReader(openRelayB: true);
         $this->setAccessGrantedSound();
+        $this->setDirectoryEnabled(false);
     }
 
     public function setAdminPassword(string $password): void
@@ -268,6 +269,11 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
     public function setCmsModel(string $model = ''): void
     {
         $this->setConfigParams(['Config.DoorSetting.ANALOG.Type' => self::CMS_MODEL_MAP[$model]->value]);
+    }
+
+    public function setConciergeNumber(int $sipNumber): void
+    {
+        $this->setConfigParams(['Config.Programable.SOFTKEY01.LocalParam1' => $sipNumber . str_repeat(';', 7)]);
     }
 
     public function setDisplayText(array $textLines): void
@@ -561,6 +567,21 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
     protected function setApiPassword(string $password): void
     {
         $this->setConfigParams(['Config.DoorSetting.APIFCGI.Password' => base64_encode($password)]);
+    }
+
+    /**
+     * Enables or disables the directory view on the intercom screen.
+     *
+     * @param bool $enabled Whether the directory content should be visible or hidden.
+     * @return void
+     */
+    protected function setDirectoryEnabled(bool $enabled = true): void
+    {
+        $this->apiCall('', 'POST', [
+            'target' => 'config',
+            'action' => 'set',
+            'data' => ['Config.DoorSetting.GENERAL.ContactViewShowChild' => $enabled ? '3' : '4'],
+        ]);
     }
 
     /**
