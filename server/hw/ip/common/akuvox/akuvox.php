@@ -2,6 +2,7 @@
 
 namespace hw\ip\common\akuvox;
 
+use CURLFile;
 use DateTime;
 use DateTimeZone;
 use Exception;
@@ -11,7 +12,6 @@ use Exception;
  */
 trait akuvox
 {
-
     public function configureEventServer(string $url): void // Need to reboot after that
     {
         ['host' => $server, 'port' => $port] = parse_url_ext($url);
@@ -106,10 +106,14 @@ trait akuvox
         ]);
 
         if ($payload) {
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
-            curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                'Expect:', // Workaround for the 100-continue expectation
-            ]);
+            if (array_filter($payload, static fn($item) => $item instanceof CURLFile)) {
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+            } else {
+                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+                curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                    'Expect:', // Workaround for the 100-continue expectation
+                ]);
+            }
         }
 
         $res = curl_exec($ch);
