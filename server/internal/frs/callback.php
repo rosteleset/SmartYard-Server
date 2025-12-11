@@ -3,8 +3,6 @@
 use backends\plog\plog;
 use backends\frs\frs;
 
-require_once __DIR__ . '/../../utils/checkint.php';
-
 $frs = loadBackend("frs");
 $households = loadBackend("households");
 
