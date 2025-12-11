@@ -2,6 +2,7 @@
 
 namespace hw\ip\domophone\akuvox;
 
+use CURLFile;
 use hw\Interface\{
     DisplayTextInterface,
     FreePassInterface,
@@ -254,6 +255,7 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
         $this->setRelayInversion(true, true);
         $this->setInputTriggerLevel(onHighC: true, onHighD: true);
         $this->setExternalReader(openRelayB: true);
+        $this->setAccessGrantedSound();
     }
 
     public function setAdminPassword(string $password): void
@@ -525,6 +527,29 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
         }
 
         return reset($matches);
+    }
+
+    /**
+     * Uploads and sets the access-granted sound.
+     *
+     * @param string|null $pathToSound Path to the sound file to upload. If null, a default path is used.
+     * @return void
+     */
+    protected function setAccessGrantedSound(?string $pathToSound = null): void
+    {
+        if ($pathToSound === null) {
+            $pathToSound = __DIR__ . '/assets/sounds/access_granted.wav';
+        }
+
+        if (!file_exists($pathToSound) || !is_file($pathToSound)) {
+            return;
+        }
+
+        $this->apiCall(
+            '/filetool/import?' . http_build_query(['destFile' => 'VoicePrompt', 'index' => 0]),
+            'POST',
+            ['file' => new CURLFile($pathToSound)],
+        );
     }
 
     /**
