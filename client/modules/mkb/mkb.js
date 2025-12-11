@@ -8,7 +8,6 @@
             if (AVAIL("mkb")) {
                 this.menuItem = leftSide("fas fa-fw fa-layer-group", i18n("mkb.mkb"), "?#mkb", "productivity");
             }
-
         }
         moduleLoaded("mkb", this);
     },
