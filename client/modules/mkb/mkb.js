@@ -4,10 +4,8 @@
     c: false,
 
     init: function () {
-        if (parseInt(myself.uid) > 0) {
-            if (AVAIL("mkb")) {
-                this.menuItem = leftSide("fas fa-fw fa-layer-group", i18n("mkb.mkb"), "?#mkb", "productivity");
-            }
+        if (parseInt(myself.uid) && AVAIL("mkb")) {
+            this.menuItem = leftSide("fas fa-fw fa-layer-group", i18n("mkb.mkb"), "?#mkb", "productivity");
         }
         moduleLoaded("mkb", this);
     },
