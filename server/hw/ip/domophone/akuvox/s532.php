@@ -9,7 +9,6 @@ use hw\Interface\{
     LanguageInterface,
 };
 use hw\ip\domophone\akuvox\Entities\{
-    Dialplan,
     Group,
     User,
 };
@@ -69,11 +68,6 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
      */
     protected ?array $groupsToAdd = null;
 
-    /**
-     * @var Group[]|null Groups scheduled to be deleted during data sync.
-     */
-    protected ?array $groupsToDelete = null;
-
     protected static function getMaxUsers(): int
     {
         return 10000; // Uploading 10,000 users takes about 22 minutes :(
@@ -89,6 +83,18 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
     {
         $trimmedCode = ltrim($code, '0');
         return strlen($trimmedCode) % 2 ? '0' . $trimmedCode : $trimmedCode;
+    }
+
+    /**
+     * Extracts apartment number from {@see User} object.
+     *
+     * @param User $user User instance containing userId.
+     * @return int
+     */
+    protected static function extractFlatNumber(User $user): int
+    {
+        $parts = explode('_', $user->userId, 2);
+        return isset($parts[1]) ? (int)$parts[1] : 0;
     }
 
     public function addRfid(string $code, int $apartment = 0): void
@@ -114,15 +120,9 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
         array $cmsLevels = [],
     ): void
     {
-        // First, add a group for the apartment if it doesn't already exist
-        $existingGroup = $this->getGroupByName($apartment);
-        if ($existingGroup === null) {
-            $group = new Group($apartment);
-            $group->number = $apartment;
-            $this->groupsToAdd[] = $group;
-        }
+        $this->ensureGroupExists($apartment);
 
-        // Next, create a new user or use an existing one
+        // Create a new user or use an existing one
         $userId = self::USER_ID_PREFIX_FLAT . '_' . $apartment;
         $existingUser = $this->getUserUnique($userId);
         $user = $existingUser ?? new User($userId);
@@ -151,25 +151,14 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
                 'apartment' => $apartment,
             ] = $matrixCell;
 
-            // First, add a group for the apartment if it doesn't already exist
-            $existingGroup = $this->getGroupByName($apartment);
-            if ($existingGroup === null) {
-                $group = new Group($apartment);
-                $group->number = $apartment;
-                $this->groupsToAdd[] = $group;
-            }
+            $this->ensureGroupExists($apartment);
 
-            $analogNumber = $hundreds * 100 + $tens * 10 + $units;
-            if ($analogNumber % 100 === 0) {
-                $analogNumber += 100;
-            }
-
-            // Next, create a new user
+            // Create a new user
             $user = new User(self::USER_ID_PREFIX_CMS . '_' . $apartment);
 
             $user->name = self::USER_ID_PREFIX_CMS;
             $user->analogSystem = '1'; // Enable CMS
-            $user->analogNumber = $analogNumber;
+            $user->analogNumber = $hundreds * 100 + $tens * 10 + $units; // TODO: digital matrix
             $user->group = $apartment;
 
             $this->usersToAdd[] = $user;
@@ -199,11 +188,6 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
             $user = $this->getUserUnique(self::USER_ID_PREFIX_FLAT . '_' . $apartment);
             if ($user !== null) {
                 $this->usersToDelete[] = $user;
-            }
-
-            $group = $this->getGroupByName($apartment);
-            if ($group !== null) {
-                $this->groupsToDelete[] = $group;
             }
         }
     }
@@ -338,9 +322,7 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
             $this->addGroups($this->groupsToAdd);
         }
 
-        if ($this->groupsToDelete !== null) {
-            $this->deleteGroups($this->groupsToDelete);
-        }
+        $this->cleanupGroups();
     }
 
     public function transformDbConfig(array $dbConfig): array
@@ -353,22 +335,6 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
         }
 
         return $dbConfig;
-    }
-
-    /**
-     * Adds a new dialplan with the provided data.
-     *
-     * @param Dialplan $dialplan The dialplan entity to create.
-     */
-    protected function addDialplan(Dialplan $dialplan): void
-    {
-        $this->apiCall('', 'POST', [
-            'target' => 'dialreplace',
-            'action' => 'add',
-            'data' => [
-                'item' => [$dialplan->toArray()],
-            ],
-        ]);
     }
 
     /**
@@ -392,24 +358,40 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
     }
 
     /**
+     * Removes groups that are not associated with any user.
+     *
+     * @return void
+     */
+    protected function cleanupGroups(): void
+    {
+        $groups = $this->getGroups();
+        $users = array_merge(
+            $this->findUsers(self::USER_ID_PREFIX_FLAT),
+            $this->findUsers(self::USER_ID_PREFIX_CMS),
+        );
+
+        $unusedGroups = array_filter($groups, function (Group $group) use ($users) {
+            foreach ($users as $user) {
+                if ($user->group === $group->number) {
+                    return false;
+                }
+            }
+
+            return true;
+        });
+
+        $this->executeChunkOperation('group', 'del', $unusedGroups, fn(Group $group) => ['ID' => $group->id]);
+    }
+
+    /**
      * Deletes all CMS users from the intercom
      *
      * @return void
      */
     protected function clearMatrix(): void
     {
-        $cmsUsers = $this->findUsers('CMS');
+        $cmsUsers = $this->findUsers(self::USER_ID_PREFIX_CMS);
         $this->deleteUsers($cmsUsers);
-    }
-
-    /**
-     * Deletes groups from the intercom.
-     *
-     * @param Group[] $groups Array of {@see Group} entities to be deleted.
-     */
-    protected function deleteGroups(array $groups): void
-    {
-        $this->executeChunkOperation('group', 'del', $groups, fn(Group $group) => ['ID' => $group->id]);
     }
 
     /**
@@ -420,6 +402,34 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
     protected function deleteUsers(array $users): void
     {
         $this->executeChunkOperation('user', 'del', $users, fn(User $user) => ['ID' => $user->id]);
+    }
+
+    /**
+     * Adds a group for the given flat if it doesn't exist yet.
+     *
+     * @param int $flatNumber Flat number or group name.
+     */
+    protected function ensureGroupExists(int $flatNumber): void
+    {
+        // Check if the group already exists on the device
+        $existingGroup = $this->getGroupByName($flatNumber);
+        if ($existingGroup !== null) {
+            return;
+        }
+
+        // Check if the group is already scheduled for addition
+        if ($this->groupsToAdd !== null) {
+            foreach ($this->groupsToAdd as $group) {
+                if ($group->name === (string)$flatNumber) {
+                    return;
+                }
+            }
+        }
+
+        // Add new group
+        $group = new Group($flatNumber);
+        $group->number = $flatNumber;
+        $this->groupsToAdd[] = $group;
     }
 
     /**
@@ -466,7 +476,7 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
         $flatUsers = $this->findUsers(self::USER_ID_PREFIX_FLAT);
 
         foreach ($flatUsers as $flatUser) {
-            $flatNumber = (int)str_replace(self::USER_ID_PREFIX_FLAT . '_', '', $flatUser->userId);
+            $flatNumber = self::extractFlatNumber($flatUser);
 
             $flats[$flatNumber] = [
                 'apartment' => $flatNumber,
@@ -493,21 +503,50 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
      */
     protected function getGroupByName(string $name): ?Group
     {
-        $response = $this->apiCall('/group/get');
+        $groups = $this->getGroups();
+
+        foreach ($groups as $group) {
+            if ($group->name === $name) {
+                return $group;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns all groups.
+     *
+     * @return Group[] An array of {@see Group} objects.
+     */
+    protected function getGroups(): array
+    {
+        $response = $this->apiCall('/group/get'); // TODO: add caching
         $items = $response['data']['item'] ?? [];
-
-        $match = array_filter(
-            $items,
-            fn(array $item) => ($item['Name'] ?? null) === $name,
-        );
-
-        return empty($match) ? null : Group::fromArray(reset($match));
+        return array_map(static fn(array $item) => Group::fromArray($item), $items);
     }
 
     protected function getMatrix(): array
     {
-        // TODO
-        return [];
+        $matrix = [];
+        $cmsUsers = $this->findUsers(self::USER_ID_PREFIX_CMS);
+
+        foreach ($cmsUsers as $cmsUser) {
+            $analogNumber = $cmsUser->analogNumber;
+
+            $hundreds = intdiv($analogNumber, 100);
+            $tens = intdiv($analogNumber % 100, 10);
+            $units = $analogNumber % 10;
+
+            $matrix[$hundreds . $tens . $units] = [
+                'hundreds' => $hundreds,
+                'tens' => $tens,
+                'units' => $units,
+                'apartment' => self::extractFlatNumber($cmsUser),
+            ];
+        }
+
+        return $matrix;
     }
 
     /**
