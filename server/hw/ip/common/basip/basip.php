@@ -167,6 +167,7 @@ trait basip
     {
 //        $settings = $this->apiCall('/v1/syslog/settings')['server'];
 //        return 'http://' . $settings['server'] . ':' . $settings['port'];
+        return "";
     }
 
     protected function getNtpConfig(): array
