@@ -19,7 +19,7 @@ abstract class ip extends hw
     /**
      * @var string Password to access the device.
      */
-    public string $password;
+    public string w$password;
 
     /**
      * @var string Default password for the device.

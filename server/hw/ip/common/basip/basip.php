@@ -141,10 +141,10 @@ trait basip
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_SSL_VERIFYPEER => false,
             CURLOPT_SSL_VERIFYHOST => false,
-            CURLOPT_HTTPAUTH => CURLAUTH_BASIC,
+            CURLOPT_HTTPAUTH => CURLAUTH_BEARER,
             CURLOPT_UNRESTRICTED_AUTH => true,
             CURLOPT_CUSTOMREQUEST => $method,
-            CURLOPT_USERPWD => "$this->login:$this->password",
+            CURLOPT_XOAUTH2_BEARER => $this->token,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_TIMEOUT => $timeout,
         ]);
@@ -183,5 +183,7 @@ trait basip
         $this->login = 'admin';
         $this->defaultPassword = '123456';
         $this->apiPrefix = '/api';
+        $loginResult = $this->apiCall("/v1/login?username=" . $this->login . "&password=" . md5($this->defaultPassword));
+        $this->token = $loginResult["token"];
     }
 }
