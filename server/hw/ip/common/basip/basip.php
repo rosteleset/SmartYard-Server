@@ -186,6 +186,7 @@ trait basip
         $this->login = 'admin';
         $this->defaultPassword = '123456';
         $this->apiPrefix = '/api';
+        $this->token = null;
         $loginResult = $this->apiCall("/v1/login?username=" . $this->login . "&password=" . md5($this->defaultPassword));
         $this->token = $loginResult["token"];
     }
