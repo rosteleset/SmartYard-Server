@@ -165,8 +165,8 @@ trait basip
 
     protected function getEventServer(): string
     {
-        $settings = $this->apiCall('/v1/syslog/settings')['server'];
-        return 'http://' . $settings['server'] . ':' . $settings['port'];
+//        $settings = $this->apiCall('/v1/syslog/settings')['server'];
+//        return 'http://' . $settings['server'] . ':' . $settings['port'];
     }
 
     protected function getNtpConfig(): array
@@ -187,7 +187,6 @@ trait basip
         $this->defaultPassword = '123456';
         $this->apiPrefix = '/api';
         $this->token = $this->login()['token'];
-        echo "Token: " . $this->token;
     }
 
     protected function login(): array|string
