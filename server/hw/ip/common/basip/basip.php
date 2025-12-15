@@ -186,8 +186,28 @@ trait basip
         $this->login = 'admin';
         $this->defaultPassword = '123456';
         $this->apiPrefix = '/api';
-        $this->token = null;
-        $loginResult = $this->apiCall("/v1/login?username=" . $this->login . "&password=" . md5($this->defaultPassword));
-        $this->token = $loginResult["token"];
+        $this->token = $this->login()['token'];
+    }
+
+    protected function login(): array|string
+    {
+        $req = $this->url . $this->apiPrefix . "/v1/login?username=" . $this->login . "&password=" . md5($this->defaultPassword);
+
+        $ch = curl_init($req);
+
+        curl_setopt_array($ch, [
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_SSL_VERIFYHOST => false,
+            CURLOPT_UNRESTRICTED_AUTH => true,
+            CURLOPT_CUSTOMREQUEST => 'GET',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT => 5,
+        ]);
+
+        $res = curl_exec($ch);
+        curl_close($ch);
+
+        return json_decode($res, true) ?? $res;
     }
 }
