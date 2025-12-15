@@ -549,12 +549,12 @@ abstract class basip extends domophone implements
 
     protected function getDtmfConfig(): array
     {
-//        $code1 = $this->apiCall('/v1/access/general/lock/dtmf/1')['dtmf_code'];
-//        $code2 = $this->apiCall('/v1/access/general/lock/dtmf/2')['dtmf_code'];
+        $code1 = $this->apiCall('/v1/access/general/lock/dtmf/1')['dtmf_code'];
+        $code2 = $this->apiCall('/v1/access/general/lock/dtmf/2')['dtmf_code'];
 
         return [
-            'code1' => 1,
-            'code2' => 2,
+            'code1' => $code1,
+            'code2' => $code2,
             'code3' => '3',
             'codeCms' => '1',
         ];
