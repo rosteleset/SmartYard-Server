@@ -93,13 +93,13 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
      */
     protected static function extractFlatNumber(User $user): int
     {
-        $parts = explode('_', $user->userId, 2);
+        $parts = explode('x', $user->userId, 2);
         return isset($parts[1]) ? (int)$parts[1] : 0;
     }
 
     public function addRfid(string $code, int $apartment = 0): void
     {
-        $user = new User(self::USER_ID_PREFIX_RFID . '_' . $code);
+        $user = new User(self::USER_ID_PREFIX_RFID . 'x' . $code);
         $user->name = self::USER_ID_PREFIX_RFID;
         $user->cardCode = self::getNormalizedRfid($code);
         $this->usersToAdd[] = $user;
@@ -123,7 +123,7 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
         $this->ensureGroupExists($apartment);
 
         // Create a new user or use an existing one
-        $userId = self::USER_ID_PREFIX_FLAT . '_' . $apartment;
+        $userId = self::USER_ID_PREFIX_FLAT . 'x' . $apartment;
         $existingUser = $this->getUserUnique($userId);
         $user = $existingUser ?? new User($userId);
 
@@ -154,7 +154,7 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
             $this->ensureGroupExists($apartment);
 
             // Create a new user
-            $user = new User(self::USER_ID_PREFIX_CMS . '_' . $apartment);
+            $user = new User(self::USER_ID_PREFIX_CMS . 'x' . $apartment);
 
             $user->name = self::USER_ID_PREFIX_CMS;
             $user->analogSystem = '1'; // Enable CMS
@@ -185,7 +185,7 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
         if ($apartment === 0) {
             // Not sure if this is necessary, full cleaning is not used
         } else {
-            $user = $this->getUserUnique(self::USER_ID_PREFIX_FLAT . '_' . $apartment);
+            $user = $this->getUserUnique(self::USER_ID_PREFIX_FLAT . 'x' . $apartment);
             if ($user !== null) {
                 $this->usersToDelete[] = $user;
             }
