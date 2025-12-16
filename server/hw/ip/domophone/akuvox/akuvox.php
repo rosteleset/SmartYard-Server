@@ -293,6 +293,7 @@ abstract class akuvox extends domophone
             'target' => 'relay',
             'action' => 'set',
             'data' => [
+                'Config.DoorSetting.RELAY.DTMFUnlock' => '2', // Assigned the authority for all numbers
                 'Config.DoorSetting.DTMF.Code1' => $code1,
                 'Config.DoorSetting.DTMF.Code2' => $code2,
             ],
