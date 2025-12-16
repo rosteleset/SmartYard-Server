@@ -434,7 +434,21 @@ function sudo() {
         if (myself.twoFA) {
             mYesNo();
         } else {
-            mYesNo();
+            mPassword(i18n("password"), i18n("sudo"), password => {
+                loadingStart();
+                PUT("user", "sudo", false, {
+                    password
+                }).
+                done(r => {
+                    message(i18n("sudoOk", parseInt($.trim(r))));
+                    setTimeout(() => {
+                        window.onhashchange = hashChange;
+                        window.location.reload(true);
+                    }, 1500);
+                }).
+                fail(FAIL).
+                fail(loadingDone);
+            });
         }
     }
 }

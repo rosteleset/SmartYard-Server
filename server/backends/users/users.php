@@ -424,8 +424,32 @@
              * @return mixed
              */
 
-            public function sudoOn() {
+            public function sudoOn($uid, $password) {
+                $timeout = $this->bconfig["sudo_timeout"] ?: 30 * 60;
 
+                $user = $this->getUser($uid);
+
+                $dbPassword = $this->db->get("select password from core_users where login = :login", [
+                    "login" => $this->login,
+                ],
+                [
+                    "password" => "password",
+                ],
+                [
+                    "fieldlify",
+                ]);
+
+                $sudo = (int)$user["sudo"] && password_verify($password, $dbPassword);
+
+                if ($sudo) {
+                    $this->redis->setEx("SUDO:" . $this->login, 30 * 60, 1);
+                }
+
+                if ($sudo) {
+                    return $timeout;
+                }
+
+                return false;
             }
 
             /**

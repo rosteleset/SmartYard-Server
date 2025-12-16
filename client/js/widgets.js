@@ -168,7 +168,7 @@ function mPrompt(prompt, title, value, callback, titleButton, mainButton) {
     if (mainButton) {
         $('#promptModalButton').html(mainButton);
     } else {
-        $('#ptomptModalButton').html(i18n("ok"));
+        $('#promptModalButton').html(i18n("ok"));
     }
     $('#promptModalButton').off('click').on('click', (e) => {
         $('#promptModal').modal('hide');
@@ -179,6 +179,36 @@ function mPrompt(prompt, title, value, callback, titleButton, mainButton) {
     xblur();
     setTimeout(() => {
         $('#promptModalInput').focus();
+    }, 100);
+}
+
+function mPassword(prompt, title, callback, titleButton, mainButton) {
+    $('#passwordModalInput').val("");
+    if (!title) {
+        title = i18n("message");
+    }
+    let l = $('#passwordModalLabel').html(title);
+    if (titleButton) {
+        l.next().remove();
+        l.parent().append($(titleButton));
+    }
+    $('#passwordModalBody').html(prompt);
+    if (mainButton) {
+        $('#passwordModalButton').html(mainButton);
+    } else {
+        $('#passwordModalButton').html(i18n("ok"));
+    }
+    $('#passwordModalButton').off('click').on('click', (e) => {
+        $('#passwordModal').modal('hide');
+        let v = $('#passwordModalInput').val();
+        $('#passwordModalInput').val("");
+        if (typeof callback == 'function') callback(v);
+        e.stopPropagation();
+    });
+    autoZ($('#passwordModal')).modal('show');
+    xblur();
+    setTimeout(() => {
+        $('#passwordModalInput').focus();
     }, 100);
 }
 
