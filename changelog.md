@@ -5,6 +5,12 @@
 # removed or deprecated
 ```
 
+## 2025-12-16
+
+```diff
++ sudo-like administrative mode
+```
+
 ## 2025-12-04
 
 ```diff

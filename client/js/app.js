@@ -432,7 +432,21 @@ function sudo() {
         })
     } else {
         if (myself.twoFA) {
-            mYesNo();
+            mPrompt(i18n("2faCode"), i18n("sudo"), "", code => {
+                loadingStart();
+                PUT("user", "sudo", false, {
+                    code
+                }).
+                done(r => {
+                    message(i18n("sudoOk", parseInt($.trim(r))));
+                    setTimeout(() => {
+                        window.onhashchange = hashChange;
+                        window.location.reload(true);
+                    }, 1500);
+                }).
+                fail(FAIL).
+                fail(loadingDone);
+            });
         } else {
             mPassword(i18n("password"), i18n("sudo"), password => {
                 loadingStart();
