@@ -189,26 +189,7 @@
             let id = $(this).attr("data-card-id");
 
             if (!modules.mkb.calendars[id]) {
-                $(`#dropdown-calendar-${id}`).html(`<span id='calendar-${id}'></span>`).
-                off("click").on("click", e => {
-                    e.stopPropagation();
-                }).
-                off("dragstart").on("dragstart", e => {
-                    e.stopPropagation();
-                }).
-                off("pointerdown").on("pointerdown", e => {
-                    e.stopPropagation();
-                }).
-                off("mousedown").on("mousedown", e => {
-                    e.stopPropagation();
-                }).
-                off("touchstart").on("touchstart", e => {
-                    e.stopPropagation();
-                }).
-                off("dragover").on("dragover", e => {
-                    e.stopPropagation();
-                }).
-                off("dragenter").on("dragenter", e => {
+                $(`#dropdown-calendar-${id}`).html(`<span id='calendar-${id}'></span>`).off("click dragstart pointerdown mousedown touchstart dragover dragenter").on("click dragstart pointerdown mousedown touchstart dragover dragenter", e => {
                     e.stopPropagation();
                 });
 
