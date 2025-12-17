@@ -18,46 +18,46 @@
              * @return mixed
              */
 
-            abstract public function getDecks();
+            abstract public function getDesks();
 
             /**
-             * $id deck uuid
+             * $id desk uuid
              *
              * @return mixed
              */
 
-            abstract public function getDeck($id);
+            abstract public function getDesk($id);
 
             /**
-             * $deck deck
+             * $desk desk
              *
              * @return mixed
              */
 
-            abstract public function addDeck($deck);
+            abstract public function addDesk($desk);
 
             /**
-             * $id deck uuid
-             * $deck deck
+             * $id desk uuid
+             * $desk desk
              *
              * @return mixed
              */
 
-            abstract public function modifyDeck($id, $deck);
+            abstract public function modifyDesk($id, $desk);
 
             /**
-             * $id deck uuid
+             * $id desk uuid
              *
              * @return mixed
              */
 
-            abstract public function deleteDeck($id);
+            abstract public function deleteDesk($id);
 
             /**
              * @return mixed
              */
 
-            abstract public function getCards($deck = false);
+            abstract public function getCards($desk = false);
 
             /**
              * $id card uuid

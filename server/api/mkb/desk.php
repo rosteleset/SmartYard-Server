@@ -1,63 +1,63 @@
 <?php
 
     /**
-     * @api {get} /api/mkb/deck/:deckId get deck
+     * @api {get} /api/mkb/desk/:deskId get desk
      *
      * @apiVersion 1.0.0
      *
-     * @apiName getDeck
+     * @apiName getDesk
      * @apiGroup mkb
      *
      * @apiHeader {String} Authorization authentication token
      *
-     * @apiParam {String} deckId deckId
+     * @apiParam {String} deskId deskId
      *
-     * @apiSuccess {Object} deck
+     * @apiSuccess {Object} desk
      */
 
     /**
-     * @api {post} /api/mkb/deck add deck
+     * @api {post} /api/mkb/desk add desk
      *
      * @apiVersion 1.0.0
      *
-     * @apiName addDeck
+     * @apiName addDesk
      * @apiGroup mkb
      *
      * @apiHeader {String} Authorization authentication token
      *
-     * @apiBody deck
+     * @apiBody desk
      *
      * @apiSuccess {Boolean} operationResult
      */
 
     /**
-     * @api {put} /api/mkb/deck/:deckId modify deck
+     * @api {put} /api/mkb/desk/:deskId modify desk
      *
      * @apiVersion 1.0.0
      *
-     * @apiName modifyDeck
+     * @apiName modifyDesk
      * @apiGroup mkb
      *
      * @apiHeader {String} Authorization authentication token
      *
-     * @apiParam {String} deckId deckId
+     * @apiParam {String} deskId deskId
      *
-     * @apiBody deck
+     * @apiBody desk
      *
      * @apiSuccess {Boolean} operationResult
      */
 
     /**
-     * @api {delete} /api/mkb/deck/:deckId delete deck
+     * @api {delete} /api/mkb/desk/:deskId delete desk
      *
      * @apiVersion 1.0.0
      *
-     * @apiName deleteDeck
+     * @apiName deleteDesk
      * @apiGroup mkb
      *
      * @apiHeader {String} Authorization authentication token
      *
-     * @apiParam {String} deckId deckId
+     * @apiParam {String} deskId deskId
      *
      * @apiSuccess {Boolean} operationResult
      */
@@ -74,46 +74,46 @@
          * mkb method
          */
 
-        class deck extends api {
+        class desk extends api {
 
             public static function GET($params) {
                 $mkb = loadBackend("mkb");
 
                 if ($mkb) {
-                    $deck = $mkb->getDeck(@$params["_id"]);
+                    $desk = $mkb->getDesk(@$params["_id"]);
                 }
 
-                return api::ANSWER($mkb, ($mkb !== false) ? "deck" : false);
+                return api::ANSWER($mkb, ($mkb !== false) ? "desk" : false);
             }
 
             public static function POST($params) {
                 $mkb = loadBackend("mkb");
 
                 if ($mkb) {
-                    $deck = $mkb->addDeck(@$params["deck"]);
+                    $desk = $mkb->addDesk(@$params["desk"]);
                 }
 
-                return api::ANSWER($mkb, ($mkb !== false) ? "deck" : false);
+                return api::ANSWER($mkb, ($mkb !== false) ? "desk" : false);
             }
 
             public static function PUT($params) {
                 $mkb = loadBackend("mkb");
 
                 if ($mkb) {
-                    $deck = $mkb->modifyDeck(@$params["_id"], @$params["deck"]);
+                    $desk = $mkb->modifyDesk(@$params["_id"], @$params["desk"]);
                 }
 
-                return api::ANSWER($mkb, ($mkb !== false) ? "deck" : false);
+                return api::ANSWER($mkb, ($mkb !== false) ? "desk" : false);
             }
 
             public static function DELETE($params) {
                 $mkb = loadBackend("mkb");
 
                 if ($mkb) {
-                    $deck = $mkb->deleteDeck(@$params["_id"]);
+                    $desk = $mkb->deleteDesk(@$params["_id"]);
                 }
 
-                return api::ANSWER($mkb, ($mkb !== false) ? "deck" : false);
+                return api::ANSWER($mkb, ($mkb !== false) ? "desk" : false);
             }
 
             public static function index() {

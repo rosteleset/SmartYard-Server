@@ -16,7 +16,7 @@
              * @inheritDoc
              */
 
-            public function getDecks() {
+            public function getDesks() {
                 return true;
             }
 
@@ -24,7 +24,7 @@
              * @inheritDoc
              */
 
-            public function getDeck($id) {
+            public function getDesk($id) {
                 return true;
             }
 
@@ -32,7 +32,7 @@
              * @inheritDoc
              */
 
-            public function addDeck($deck) {
+            public function addDesk($desk) {
                 return true;
             }
 
@@ -40,7 +40,7 @@
              * @inheritDoc
              */
 
-            public function modifyDeck($id, $deck) {
+            public function modifyDesk($id, $desk) {
                 return true;
             }
 
@@ -48,7 +48,7 @@
              * @inheritDoc
              */
 
-            public function deleteDeck($id) {
+            public function deleteDesk($id) {
                 return true;
             }
 
@@ -56,7 +56,7 @@
              * @inheritDoc
              */
 
-            public function getCards($deck = false) {
+            public function getCards($desk = false) {
                 return true;
             }
 
