@@ -498,7 +498,7 @@ class aa07bd extends domophone implements
     {
         $result = [];
         $totalPages = 1;
-        for ($pageNumber = 1; $pageNumber < $totalPages; $pageNumber++) {
+        for ($pageNumber = 1; $pageNumber <= $totalPages; $pageNumber++) {
             $url = "$endpoint?limit=$limit&page_number=$pageNumber";
             $response = $this->apiCall($url);
             $items = $response['list_items'] ?? [];
