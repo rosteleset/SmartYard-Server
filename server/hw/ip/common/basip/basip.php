@@ -187,7 +187,6 @@ trait basip
         $this->defaultPassword = '123456';
         $this->apiPrefix = '/api';
         $this->token = $this->login()['token'];
-        echo "Token: " . $this->token;
     }
 
     protected function login(): array|string
