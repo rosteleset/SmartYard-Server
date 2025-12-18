@@ -9,7 +9,7 @@ use Exception;
 /**
  * Trait providing common functionality related to BASIP devices.
  */
-trait aaa07bd
+trait aa07Bd
 {
 
     public string $token;
