@@ -502,7 +502,7 @@ class aa07bd extends domophone implements
             $url = "$endpoint?limit=$limit&page_number=$pageNumber";
             $response = $this->apiCall($url);
             $items = $response['list_items'] ?? [];
-            $totalPages = $response['list_option']['total_pages'];
+            $totalPages = $response['list_option']['pagination']['total_pages'];
 
             if (!is_array($items) || $items === []) {
                 break;
