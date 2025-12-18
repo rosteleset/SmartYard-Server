@@ -200,7 +200,7 @@ trait aa07bd
 
     protected function login(): array|string
     {
-        $req = $this->url . $this->apiPrefix . "/v1/login?username=" . $this->login . "&password=" . md5($this->defaultPassword);
+        $req = $this->url . $this->apiPrefix . "/v1/login?username=" . $this->login . "&password=" . md5($this->password);
 
         $ch = curl_init($req);
 
