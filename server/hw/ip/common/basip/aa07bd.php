@@ -192,7 +192,7 @@ trait aa07bd
         $this->defaultPassword = '123456';
         $this->apiPrefix = '/api';
         $loginResult = $this->login()['token'];
-        if ($loginResult["token"]) {
+        if (array_key_exists("token", $loginResult)) {
             $this->token = $loginResult["token"];
         } else {
             throw  new RuntimeException();
