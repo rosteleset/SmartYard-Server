@@ -11,9 +11,6 @@ use Exception;
  */
 trait basip
 {
-
-    public string $token;
-
     /**
      * Get timezone representation for BASIP
      *
