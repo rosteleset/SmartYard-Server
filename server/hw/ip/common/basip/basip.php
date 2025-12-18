@@ -68,7 +68,7 @@ trait basip
         if (
             empty($info['device_serial_number']) ||
             empty($info['device_model']) ||
-//            empty($info['mcu_version']) ||
+            empty($info['mcu_version']) ||
             empty($info['firmware_version'])
         ) {
             return [];
