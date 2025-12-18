@@ -48,6 +48,9 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
     protected const USER_ID_PREFIX_FLAT = 'FLAT';
     protected const USER_ID_PREFIX_CMS = 'CMS';
 
+    protected const GROUP_NAME_DEFAULT = 'Default';
+    protected const GROUP_NAME_CMS_DISABLED = 'CMS_DISABLED';
+
     /**
      * @var User[]|null Users scheduled to be added during data sync.
      */
@@ -130,7 +133,7 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
         $user->name = self::USER_ID_PREFIX_FLAT;
         $user->privatePin = $code === 0 ? '' : $code;
         $user->phoneNum = $sipNumbers[0] ?? '';
-        $user->group = $apartment;
+        $user->group = $cmsEnabled ? $apartment : self::GROUP_NAME_CMS_DISABLED;
 
         if ($existingUser === null) {
             $this->usersToAdd[] = $user;
@@ -241,6 +244,7 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
         $this->setExternalReader(openRelayB: true);
         $this->setAccessGrantedSound();
         $this->setDirectoryEnabled(false);
+        $this->addGroups([new Group(self::GROUP_NAME_CMS_DISABLED)]);
     }
 
     public function setAdminPassword(string $password): void
@@ -328,12 +332,6 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
     public function transformDbConfig(array $dbConfig): array
     {
         $dbConfig['cmsModel'] = self::CMS_MODEL_MAP[$dbConfig['cmsModel']]->value;
-
-        // TODO: delete after implementing matrix methods
-        foreach ($dbConfig['apartments'] as &$apartment) {
-            $apartment['cmsEnabled'] = false;
-        }
-
         return $dbConfig;
     }
 
@@ -371,6 +369,10 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
         );
 
         $unusedGroups = array_filter($groups, function (Group $group) use ($users) {
+            if ($group->name === self::GROUP_NAME_CMS_DISABLED) {
+                return false;
+            }
+
             foreach ($users as $user) {
                 if ($user->group === $group->number) {
                     return false;
@@ -482,7 +484,7 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
                 'apartment' => $flatNumber,
                 'code' => (int)$flatUser->privatePin,
                 'sipNumbers' => [$flatUser->phoneNum],
-                'cmsEnabled' => false,
+                'cmsEnabled' => $flatUser->group !== self::GROUP_NAME_CMS_DISABLED,
                 'cmsLevels' => [],
             ];
         }
