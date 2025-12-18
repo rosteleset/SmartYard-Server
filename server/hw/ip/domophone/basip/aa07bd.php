@@ -14,7 +14,7 @@ use hw\ValueObject\HousePrefix;
 /**
  * Abstract class representing an BasIP intercom.
  */
-abstract class aa07Bd extends domophone implements
+abstract class aa07bd extends domophone implements
     DbConfigUpdaterInterface,
     FreePassInterface,
     HousePrefixInterface,

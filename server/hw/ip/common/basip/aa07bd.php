@@ -12,6 +12,9 @@ use Exception;
 trait aa07Bd
 {
 
+    /**
+     * @var string stored bearer token used for authentication
+     */
     public string $token;
 
     /**
