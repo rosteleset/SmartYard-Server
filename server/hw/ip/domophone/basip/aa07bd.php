@@ -20,7 +20,7 @@ class aa07bd extends domophone implements
     HousePrefixInterface,
     LanguageInterface
 {
-    use \hw\ip\common\basip\basip {
+    use \hw\ip\common\basip\aa07bd {
         transformDbConfig as protected commonTransformDbConfig;
     }
 

@@ -9,7 +9,7 @@ use Exception;
 /**
  * Trait providing common functionality related to BASIP devices.
  */
-trait aa07Bd
+trait aa07bd
 {
 
     /**
