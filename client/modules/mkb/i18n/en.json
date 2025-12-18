@@ -1,5 +1,7 @@
 {
     "mkb": "Mini kanban",
+    "default": "Default",
+    "days": "d",
     "methods": {
         "mkb": {
             "_title": "Kanban",
