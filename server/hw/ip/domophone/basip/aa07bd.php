@@ -497,10 +497,12 @@ abstract class aa07bd extends domophone implements
     protected function fetchAllPages(string $endpoint, int $limit = 50): array
     {
         $result = [];
-
-        for ($pageNumber = 1; ; $pageNumber++) {
+        $totalPages = 1;
+        for ($pageNumber = 1; $pageNumber < $totalPages; $pageNumber++) {
             $url = "$endpoint?limit=$limit&page_number=$pageNumber";
-            $items = $this->apiCall($url)['list_items'] ?? [];
+            $response = $this->apiCall($url);
+            $items = $response['list_items'] ?? [];
+            $totalPages = $response['list_option']['total_pages'];
 
             if (!is_array($items) || $items === []) {
                 break;

@@ -116,7 +116,7 @@ trait aa07Bd
             'is_audio_enabled' => false,
         ]);
 
-        $this->apiCall('/v1/security/password/admin?' . http_build_query($params), 'POST');
+        $this->apiCall('/v1/security/password/webadmin?' . http_build_query($params), 'POST');
     }
 
     public function syncData(): void
