@@ -64,26 +64,22 @@
             });
         });
 
+        $(".subtasks").each(function () {
+            let subtasks = $(this);
+            new Sortable(document.getElementById(subtasks.attr("id")), {
+                "handle": ".custom-checkbox",
+                "animation": 150,
+            });
+        });
+
         new Sortable(document.getElementById("desk"), {
             "handle": ".col-handle",
             "animation": 150,
         });
 
-        $(".btn-checkbox").off("click").on("click", function () {
-            let btn = $(this);
-            if (btn.attr("data-checked") == "1") {
-                btn.attr("data-checked", "0").removeClass("text-success").children().first().addClass("far fa-circle").removeClass("fas fa-check-circle");
-            } else {
-                btn.attr("data-checked", "1").addClass("text-success").children().first().removeClass("far fa-circle").addClass("fas fa-check-circle");
-            }
-        });
-
-        $(".btn-checkbox-label").off("click").on("click", function () {
-            $("#" + $(this).attr("data-for")).trigger("click");
-        });
-
         $(".card-calendar").off("show.bs.dropdown").on("show.bs.dropdown", function () {
             let id = $(this).attr("data-card-id");
+            let d = $(this).attr("data-date");
 
             if (!modules.mkb.calendars[id]) {
                 $(`#dropdown-calendar-${id}`).html(`<span id='calendar-${id}'></span>`).off("click dragstart pointerdown mousedown touchstart dragover dragenter").on("click dragstart pointerdown mousedown touchstart dragover dragenter", e => {
@@ -92,11 +88,11 @@
 
                 modules.mkb.calendars[id] = new VanillaCalendarPro.Calendar(`#calendar-${id}`, {
                     locale: config.defaultLanguage,
-                    selectedMonth: 6,
-                    selectedYear: 2024,
-                    selectedDates: [ '2024-07-22' ],
+                    selectedMonth: date("m", d) - 1,
+                    selectedYear: date("Y", d),
+                    selectedDates: [ date("Y-m-d", d) ],
                     selectionTimeMode: 24,
-                    selectedTime: '12:15',
+                    selectedTime: date("H:i", d),
                 });
 
                 modules.mkb.calendars[id].init();
@@ -156,12 +152,13 @@
             let id = $(this).parent().attr("data-column-id");
 
             cardForm({
-                title: i18n("tt.addFavoriteFilter"),
+                title: i18n("mkb.modifyColumn"),
                 footer: true,
                 borderless: true,
                 topApply: true,
                 apply: i18n("add"),
                 size: "lg",
+                delete: i18n("mkb.deleteColumn"),
                 fields: [
                     {
                         id: "title",
@@ -187,15 +184,15 @@
         let s = '';
 
         if (card.subtasks) {
-            s += `<hr class="hr-subject" data-card-id="${card.id}" /><div class="subtasks pb-2" data-card-id="${card.id}">`;
+            s += `<hr class="hr-subject" data-card-id="${card.id}" /><div id="subtasks-${card.id}" class="subtasks pb-2" data-card-id="${card.id}">`;
 
             let p = 0;
 
             for (let i in card.subtasks) {
                 s += `
-                    <div>
-                        <span id="card-subtask-${i}" class="pl-0 pr-1 btn btn-tool btn-checkbox" data-checked="${card.subtasks[i].checked ? "1" : "0"}"><i class="${card.subtasks[i].checked ? "fas fa-check-circle text-success" : "far fa-circle"}"></i></span>
-                        <span data-for="card-subtask-${i}" class="btn-checkbox-label text-no-bold">${card.subtasks[i].text}</span>
+                    <div class="custom-control custom-checkbox">
+                        <input id="card-subtask-${card.id}-${i}" class="custom-control-input custom-control-input-primary custom-control-input-outline" type="checkbox" ${card.subtasks[i].checked ? "checked" :"" }>
+                        <label for="card-subtask-${card.id}-${i}" class="pl-1 custom-control-label noselect text-no-bold">${card.subtasks[i].text}</label>
                     </div>
                 `;
 
@@ -220,7 +217,7 @@
         if (card.date) {
             let d = Math.ceil((card.date - ((new Date()).getTime() / 1000)) / (60 * 60 * 24));
             c = `
-                <span class="dropdown card-calendar" data-card-id="${card.id}">
+                <span class="dropdown card-calendar" data-card-id="${card.id}" data-date="${card.date}">
                     <span class="btn btn-tool ${(d >= 0) ? "text-success" : "text-danger"} dropdown-toggle dropdown-toggle-no-icon pb-0" data-toggle="dropdown" aria-expanded="false" data-flip="true" style="margin-bottom: -8px;">
                         ${Math.abs(d)} ${i18n("mkb.days")}
                         <ul class="dropdown-menu">
@@ -331,17 +328,49 @@
                                 subtasks: [
                                     {
                                         text: "1",
+                                        checked: true,
                                     },
                                     {
-                                        text: "2",
-                                        checked: true,
+                                        text: "2 lskdjfhlgskjdfhgl ksdhfgl hdf lkshg kdfhg kfhf k ksdfh gkdfh ksjhjdfg ksjdhf ksdfh g",
                                     },
                                     {
                                         text: "3",
-                                        checked: true,
                                     },
                                     {
                                         text: "4",
+                                    },
+                                    {
+                                        text: "5",
+                                    },
+                                    {
+                                        text: "6",
+                                    },
+                                    {
+                                        text: "7",
+                                    },
+                                    {
+                                        text: "8",
+                                    },
+                                    {
+                                        text: "9",
+                                    },
+                                    {
+                                        text: "a",
+                                    },
+                                    {
+                                        text: "b",
+                                    },
+                                    {
+                                        text: "c",
+                                    },
+                                    {
+                                        text: "d",
+                                    },
+                                    {
+                                        text: "e",
+                                    },
+                                    {
+                                        text: "f",
                                     },
                                 ]
                             },

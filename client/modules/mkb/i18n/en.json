@@ -2,6 +2,12 @@
     "mkb": "Mini kanban",
     "default": "Default",
     "days": "d",
+    "addColumn": "Add column",
+    "addDesk": "Add desk",
+    "modifyColumn": "Modify column",
+    "deleteColumn": "Delete column",
+    "title": "Title",
+    "color": "Color",
     "methods": {
         "mkb": {
             "_title": "Kanban",
