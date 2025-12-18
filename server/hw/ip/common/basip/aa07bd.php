@@ -5,6 +5,7 @@ namespace hw\ip\common\basip;
 use DateTime;
 use DateTimeZone;
 use Exception;
+use http\Exception\RuntimeException;
 
 /**
  * Trait providing common functionality related to BASIP devices.
@@ -190,7 +191,12 @@ trait aa07bd
         $this->login = 'admin';
         $this->defaultPassword = '123456';
         $this->apiPrefix = '/api';
-        $this->token = $this->login()['token'];
+        $loginResult = $this->login()['token'];
+        if ($loginResult["token"]) {
+            $this->token = $loginResult["token"];
+        } else {
+            throw  new RuntimeException();
+        }
     }
 
     protected function login(): array|string
