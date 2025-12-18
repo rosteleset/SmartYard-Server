@@ -60,11 +60,11 @@ abstract class ip extends hw
 
         $this->password = $firstTime ? ($this->defaultPassword ?? $password) : $password;
 
+        $this->initConnection();
+
         if (!$this->ping()) {
             throw new Exception("Device at $this->url is unavailable");
         }
-
-        $this->initConnection();
 
         if ($firstTime) {
             $this->prepare();

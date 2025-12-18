@@ -150,7 +150,7 @@ trait aa07bd
             CURLOPT_HTTPAUTH => CURLAUTH_BEARER,
             CURLOPT_UNRESTRICTED_AUTH => true,
             CURLOPT_CUSTOMREQUEST => $method,
-            CURLOPT_XOAUTH2_BEARER => @$this->token,
+            CURLOPT_XOAUTH2_BEARER => $this->token,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_TIMEOUT => $timeout,
         ]);
