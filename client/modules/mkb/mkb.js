@@ -88,10 +88,10 @@
 
                 modules.mkb.calendars[id] = new VanillaCalendarPro.Calendar(`#calendar-${id}`, {
                     locale: config.defaultLanguage,
+                    selectionTimeMode: 24,
                     selectedMonth: date("m", d) - 1,
                     selectedYear: date("Y", d),
                     selectedDates: [ date("Y-m-d", d) ],
-                    selectionTimeMode: 24,
                     selectedTime: date("H:i", d),
                 });
 
