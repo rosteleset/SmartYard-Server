@@ -37,7 +37,7 @@ trait basip
     {
         ['host' => $server, 'port' => $port] = parse_url_ext($url);
 
-        $this->apiCall('/v1/syslog/settings', 'POST', [
+        $this->apiCall('/api/v1/syslog/settings', 'POST', [
             'enabled' => $url !== '',
             'server' => [
                 'port' => $port,
@@ -50,13 +50,13 @@ trait basip
 
     public function configureNtp(string $server, int $port = 123, string $timezone = 'Europe/Moscow'): void
     {
-        $this->apiCall('/v1/network/ntp', 'POST', [
+        $this->apiCall('/api/v1/network/ntp', 'POST', [
             'custom_server' => $server,
             'enabled' => true,
             'use_default' => false,
         ]);
 
-        $this->apiCall('/v1/network/timezone', 'POST', [
+        $this->apiCall('/api/v1/network/timezone', 'POST', [
             'timezone' => self::getOffsetByTimezone($timezone),
         ]);
     }
@@ -84,12 +84,12 @@ trait basip
 
     public function reboot(): void
     {
-        $this->apiCall('/v1/system/reboot/run');
+        $this->apiCall('/api/v1/system/reboot/run');
     }
 
     public function reset(): void
     {
-        $this->apiCall('/v1/system/settings/default', 'POST');
+        $this->apiCall('/api/v1/system/settings/default', 'POST');
     }
 
     public function setAdminPassword(string $password): void
@@ -99,7 +99,7 @@ trait basip
             'newPassword' => $password,
         ];
 
-        $this->apiCall('/v1/device/settings/rtsp', 'POST', [
+        $this->apiCall('/api/v1/device/settings/rtsp', 'POST', [
             'username' => $this->login,
             'password' => $password,
 
@@ -110,7 +110,7 @@ trait basip
             'is_audio_enabled' => false,
         ]);
 
-        $this->apiCall('/v1/security/password/admin?' . http_build_query($params), 'POST');
+        $this->apiCall('/api/v1/security/password/admin?' . http_build_query($params), 'POST');
     }
 
     public function syncData(): void
@@ -162,14 +162,14 @@ trait basip
 
     protected function getEventServer(): string
     {
-        $settings = $this->apiCall('/v1/syslog/settings')['server'];
+        $settings = $this->apiCall('/api/v1/syslog/settings')['server'];
         return 'http://' . $settings['server'] . ':' . $settings['port'];
     }
 
     protected function getNtpConfig(): array
     {
-        $ntp = $this->apiCall('/v1/network/ntp');
-        $timezone = $this->apiCall('/v1/network/timezone');
+        $ntp = $this->apiCall('/api/v1/network/ntp');
+        $timezone = $this->apiCall('/api/v1/network/timezone');
 
         return [
             'server' => $ntp['custom_server'] ?? '',
