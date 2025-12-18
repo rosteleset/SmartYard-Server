@@ -5,7 +5,6 @@ namespace hw\ip\common\basip;
 use DateTime;
 use DateTimeZone;
 use Exception;
-use http\Exception\RuntimeException;
 
 /**
  * Trait providing common functionality related to BASIP devices.
@@ -195,7 +194,7 @@ trait aa07bd
         if ($loginResult && array_key_exists("token", $loginResult)) {
             $this->token = $loginResult["token"];
         } else {
-            throw  new RuntimeException();
+            throw new Exception("Login failed");
         }
     }
 
