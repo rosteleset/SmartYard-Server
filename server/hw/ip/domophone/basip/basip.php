@@ -106,7 +106,7 @@ abstract class basip extends domophone implements
             'registration_interval' => 900, // Max allowed value
             'transport' => 'udp',
             'user' => $login,
-            'user_id' => $login, // Use this field to store password. The password field always says "WebPass".
+            'user_id' => $password, // Use this field to store password. The password field always says "WebPass".
             'stun' => [
                 'ip' => $stunEnabled ? $stunServer : self::DISABLED_STUN_ADDRESS,
                 'port' => $stunPort,
