@@ -634,7 +634,6 @@ abstract class basip extends domophone implements
     {
         $sipSettings = $this->apiCall('/api/v1/device/sip/settings');
 
-        echo json_encode($sipSettings);
         $realmParts = explode(':', $sipSettings['realm'], 2);
 
         return [
