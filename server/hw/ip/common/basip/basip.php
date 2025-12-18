@@ -178,7 +178,7 @@ trait basip
         return [
             'server' => $ntp['custom_server'] ?? '',
             'port' => 123,
-            'timezone' => $timezone['current_timezone'],
+            'timezone' => $timezone['timezone'],
         ];
     }
 
