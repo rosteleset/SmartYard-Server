@@ -238,4 +238,9 @@ class dummy extends domophone
     {
         // Empty implementation
     }
+
+    protected function initConnection(): void
+    {
+        // Empty implementation
+    }
 }

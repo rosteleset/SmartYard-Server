@@ -637,4 +637,9 @@ abstract class beward extends domophone
             $this->supportedCmsList = array_flip($rawCmsList);
         }
     }
+
+    protected function initConnection(): void
+    {
+        // Empty implementation
+    }
 }

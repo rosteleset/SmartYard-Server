@@ -558,4 +558,8 @@ abstract class akuvox extends domophone
     {
         $this->setConfigParams(['Config.DoorSetting.RFCARDDISPLAY.RfidDisplayMode' => '4']); // 8HR
     }
+    protected function initConnection(): void
+    {
+        // Empty implementation
+    }
 }

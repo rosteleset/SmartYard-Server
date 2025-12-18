@@ -733,4 +733,8 @@ abstract class basip extends domophone implements
             $this->apiCall('/v1/device/mode/unit?building=1&unit=1&device=1', 'POST');
         }
     }
+    protected function initConnection(): void
+    {
+        // Empty implementation
+    }
 }

@@ -64,6 +64,8 @@ abstract class ip extends hw
             throw new Exception("Device at $this->url is unavailable");
         }
 
+        $this->initConnection();
+
         if ($firstTime) {
             $this->prepare();
             $this->setAdminPassword($password);

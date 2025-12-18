@@ -1024,4 +1024,9 @@ abstract class rubetek extends domophone implements
         $this->apiCall('/apartments', 'POST', $data);
         $this->dialplans[$id] = $data;
     }
+
+    protected function initConnection(): void
+    {
+        // Empty implementation
+    }
 }
