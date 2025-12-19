@@ -446,6 +446,12 @@ function cardTable(params) {
             rows = allRows;
         }
 
+        if (text) {
+            $(`#${filterInput}-search-button`).children().first().removeClass("fa-filter").addClass("fa-window-close");
+        } else {
+            $(`#${filterInput}-search-button`).children().first().addClass("fa-filter").removeClass("fa-window-close");
+        }
+
         if (apply) {
             doPager(1);
         }
@@ -519,10 +525,15 @@ function cardTable(params) {
             });
             $("#" + filterInput + "-search-button").off("click").on("click", e => {
                 let f = $(e.currentTarget).parent().parent().children().first().val();
+                if (f) {
+                    f = "";
+                }
+                $("#" + filterInput).val(f);
                 doFilter(f, true);
                 if (typeof params.title.filterChange === "function") {
                     params.title.filterChange(f);
                 }
+                $("#" + filterInput).focus();
             });
             if (params && params.title && params.title.filter && params.title.filter !== true) {
                 $("#" + filterInput).val(params.title.filter);

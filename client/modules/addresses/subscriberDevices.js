@@ -202,6 +202,8 @@
     },
 
     renderSubscriberDevices: function (subscriberId) {
+        lStore("addresses.subscriberDevicesFilter", modules.addresses.subscriberDevicesFilter);
+
         loadingStart();
         QUERY("subscribers", "devices", {
             by: "subscriber",
@@ -213,8 +215,12 @@
                 target: "#mainForm",
                 title: {
                     caption: i18n("addresses.devices"),
-                    filter: true,
                     pagerItemsCount: 250,
+                    filter: modules.addresses.subscriberDevicesFilter ? modules.addresses.subscriberDevicesFilter : true,
+                    filterChange: f => {
+                        lStore("addresses.subscriberDevicesFilter", f);
+                        modules.addresses.subscriberDevicesFilter = f;
+                    },
                 },
                 edit: deviceId => {
                     modules.addresses.subscriberDevices.modifyDevice(deviceId, response);

@@ -1985,6 +1985,8 @@
     },
 
     renderCities: function (target, regionId, areaId) {
+        modules.addresses.citiesFilter = lStore("addresses.citiesFilter");
+
         cardTable({
             target,
             title: {
@@ -1995,7 +1997,11 @@
                         modules.addresses.addCity(regionId, areaId);
                     },
                 },
-                filter: true,
+                filter: modules.addresses.citiesFilter ? modules.addresses.citiesFilter : true,
+                filterChange: f => {
+                    lStore("addresses.citiesFilter", f);
+                    modules.addresses.citiesFilter = f;
+                },
             },
             edit: modules.addresses.modifyCity,
             columns: [
@@ -2034,6 +2040,8 @@
     },
 
     renderSettlements: function (target, areaId, cityId) {
+        modules.addresses.settlementsFilter = lStore("addresses.settlementsFilter");
+
         cardTable({
             target,
             title: {
@@ -2044,7 +2052,11 @@
                         modules.addresses.addSettlement(areaId, cityId);
                     },
                 },
-                filter: true,
+                filter: modules.addresses.settlementsFilter ? modules.addresses.settlementsFilter : true,
+                filterChange: f => {
+                    lStore("addresses.settlementsFilter", f);
+                    modules.addresses.settlementsFilter = f;
+                },
             },
             edit: modules.addresses.modifySettlement,
             columns: [
@@ -2083,6 +2095,8 @@
     },
 
     renderStreets: function (target, cityId, settlementId) {
+        lStore("addresses.streetsFilter", modules.addresses.streetsFilter);
+
         cardTable({
             target,
             title: {
@@ -2093,7 +2107,11 @@
                         modules.addresses.addStreet(cityId, settlementId);
                     },
                 },
-                filter: true,
+                filter: modules.addresses.streetsFilter ? modules.addresses.streetsFilter : true,
+                filterChange: f => {
+                    lStore("addresses.streetsFilter", f);
+                    modules.addresses.streetsFilter = f;
+                },
             },
             edit: modules.addresses.modifyStreet,
             columns: [
@@ -2132,6 +2150,8 @@
     },
 
     renderHouses: function (target, settlementId, streetId) {
+        lStore("addresses.housesFilter", modules.addresses.housesFilter);
+
         cardTable({
             target,
             title: {
@@ -2142,7 +2162,11 @@
                         modules.addresses.addHouse(settlementId, streetId);
                     },
                 },
-                filter: true,
+                filter: modules.addresses.housesFilter ? modules.addresses.housesFilter : true,
+                filterChange: f => {
+                    lStore("addresses.housesFilter", f);
+                    modules.addresses.housesFilter = f;
+                },
             },
             edit: modules.addresses.modifyHouse,
             columns: [
@@ -2194,6 +2218,8 @@
     },
 
     renderRegions: function () {
+        lStore("addresses.regionsFilter", modules.addresses.regionsFilter);
+
         loadingStart();
         QUERY("addresses", "addresses", {
             include: "regions",
@@ -2208,7 +2234,11 @@
                         caption: i18n("addresses.addRegion"),
                         click: modules.addresses.addRegion,
                     },
-                    filter: true,
+                    filter: modules.addresses.regionsFilter ? modules.addresses.regionsFilter : true,
+                    filterChange: f => {
+                        lStore("addresses.regionsFilter", f);
+                        modules.addresses.regionsFilter = f;
+                    },
                 },
                 edit: modules.addresses.modifyRegion,
                 columns: [
@@ -2270,6 +2300,8 @@
 
             subTop(modules.addresses.path("region", regionId));
 
+            lStore("addresses.areasFilter", modules.addresses.areasFilter);
+
             cardTable({
                 target: "#mainForm",
                 title: {
@@ -2280,7 +2312,11 @@
                             modules.addresses.addArea(regionId);
                         },
                     },
-                    filter: true,
+                    filter: modules.addresses.areasFilter ? modules.addresses.areasFilter : true,
+                    filterChange: f => {
+                        lStore("addresses.areasFilter", f);
+                        modules.addresses.areasFilter = f;
+                    },
                 },
                 edit: modules.addresses.modifyArea,
                 columns: [

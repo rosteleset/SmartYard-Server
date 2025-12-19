@@ -52,7 +52,7 @@
         action functions
      */
 
-    doAddGroup: function (acronym, name) {
+    doAddGroup: function (acronym, name, params) {
         loadingStart();
         POST("accounts", "group", false, {
             acronym: acronym,
@@ -62,10 +62,12 @@
         done(() => {
             message(i18n("groups.groupWasAdded"));
         }).
-        always(modules.groups.render);
+        always(() => {
+            modules.groups.render(params);
+        });
     },
 
-    doModifyGroup: function (gid, acronym, name, admin) {
+    doModifyGroup: function (gid, acronym, name, admin, params) {
         loadingStart();
         PUT("accounts", "group", gid, {
             acronym: acronym,
@@ -76,24 +78,28 @@
         done(() => {
             message(i18n("groups.groupWasChanged"));
         }).
-        always(modules.groups.render);
+        always(() => {
+            modules.groups.render(params);
+        });
     },
 
-    doDeleteGroup: function (gid) {
+    doDeleteGroup: function (gid, params) {
         loadingStart();
         DELETE("accounts", "group", gid).
         fail(FAIL).
         done(() => {
             message(i18n("groups.groupWasDeleted"));
         }).
-        always(modules.groups.render);
+        always(() => {
+            modules.groups.render(params);
+        });
     },
 
     /*
         UI functions
      */
 
-    addGroup: function () {
+    addGroup: function (params) {
         cardForm({
             title: i18n("groups.add"),
             footer: true,
@@ -120,12 +126,12 @@
                 },
             ],
             callback: function (result) {
-                modules.groups.doAddGroup(result.acronym, result.name);
+                modules.groups.doAddGroup(result.acronym, result.name, params);
             },
         });
     },
 
-    modifyGroup: function (gid) {
+    modifyGroup: function (gid, params) {
         loadingStart();
         modules.users.loadUsers(users => {
             let us = [];
@@ -192,7 +198,7 @@
                         if (result.delete === "yes") {
                             modules.groups.deleteGroup(result.gid);
                         } else {
-                            modules.groups.doModifyGroup(result.gid, result.acronym, result.name, result.admin);
+                            modules.groups.doModifyGroup(result.gid, result.acronym, result.name, result.admin, params);
                         }
                     },
                 });
@@ -204,13 +210,13 @@
         fail(loadingDone);
     },
 
-    deleteGroup: function (gid) {
+    deleteGroup: function (gid, params) {
         mConfirm(i18n("groups.confirmDelete", gid.toString()), i18n("confirm"), `danger:${i18n("groups.delete")}`, () => {
-            modules.groups.doDeleteGroup(gid);
+            modules.groups.doDeleteGroup(gid, params);
         });
     },
 
-    modifyGroupUsers: function (gid) {
+    modifyGroupUsers: function (gid, params) {
         loadingStart();
         GET("accounts", "group", gid).
         done(group => {
@@ -325,7 +331,9 @@
                             done(() => {
                                 message(i18n("groups.groupWasChanged"));
                             }).
-                            always(modules.groups.render);
+                            always(() => {
+                                modules.groups.render(params);
+                            });
                         },
                         cancel: () => {
                             $("#altForm").hide();
@@ -347,7 +355,7 @@
         main form (groups) render function
      */
 
-    render: function () {
+    render: function (params) {
         $("#altForm").hide();
         subTop();
 
@@ -362,6 +370,13 @@
                 }
             }
 
+            if (params.filter && typeof params.filter !== "function") {
+                lStore("groups.filter", params.filter);
+                modules.groups.filter = params.filter;
+            } else {
+                modules.groups.filter = lStore("groups.filter");
+            }
+
             GET("accounts", "groups", false, true).done(response => {
                 cardTable({
                     target: "#mainForm",
@@ -369,11 +384,17 @@
                         caption: i18n("groups.groups"),
                         button: AVAIL("accounts", "group", "POST") ? {
                             caption: i18n("groups.addGroup"),
-                            click: modules.groups.addGroup,
+                            click: () => {
+                                modules.groups.addGroup(params);
+                            },
                         } : false,
-                        filter: true,
+                        filter: modules.groups.filter ? modules.groups.filter : true,
+                        filterChange: f => {
+                            lStore("groups.filter", f);
+                            modules.groups.filter = f;
+                        },
                     },
-                    edit: AVAIL("accounts", "group", "PUT") ? modules.groups.modifyGroup : false,
+                    edit: AVAIL("accounts", "group", "PUT") ? gid => { modules.groups.modifyGroup(gid, params) } : false,
                     startPage: modules.groups.startPage,
                     columns: [
                         {
@@ -450,6 +471,6 @@
     route: function (params) {
         document.title = i18n("windowTitle") + " :: " + i18n("groups.groups");
 
-        modules.groups.render();
+        modules.groups.render(params);
     }
 }).init();
