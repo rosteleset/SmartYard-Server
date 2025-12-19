@@ -18,7 +18,7 @@ namespace backends\cameras {
          * @inheritDoc
          */
 
-        public function getCameras($by = false, $params = false, $withStatus = false) {
+        public function getCameras($by = false, $query = false, $withStatus = false) {
             $q = "select * from cameras order by camera_id";
             $p = false;
 
@@ -26,15 +26,30 @@ namespace backends\cameras {
                 case "id":
                     $q = "select * from cameras where camera_id = :camera_id";
                     $p = [
-                        "camera_id" => $params,
+                        "camera_id" => (int)$query,
                     ];
                     break;
 
                 case "common":
                     $q = "select * from cameras where common = 1";
                     break;
-            }
 
+                case "owned_by_flats":
+                    $q = "select * from cameras where camera_id in (select camera_id from houses_cameras_flats)";
+                    break;
+
+                case "owned_by_houses":
+                    $q = "select * from cameras where camera_id in (select camera_id from houses_cameras_houses)";
+                    break;
+
+                case "owned_by_subscribers":
+                    $q = "select * from cameras where camera_id in (select camera_id from houses_cameras_subscribers)";
+                    break;
+
+                case "not_installed":
+                    $q = "select * from cameras where coalesce(common, 0) = 0 and camera_id not in (select camera_id from houses_cameras_flats) and camera_id not in (select camera_id from houses_cameras_houses) and camera_id not in (select camera_id from houses_cameras_subscribers)";
+                    break;
+            }
 
             $monitoring = loadBackend("monitoring");
 

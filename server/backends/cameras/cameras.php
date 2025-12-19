@@ -16,7 +16,7 @@ namespace backends\cameras {
         /**
          * @return false|array
          */
-        abstract public function getCameras($by = false, $params = false);
+        abstract public function getCameras($by = false, $query = false, $withStatus = false);
 
         /**
          * @param $cameraId

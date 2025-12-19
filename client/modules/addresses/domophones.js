@@ -8,7 +8,7 @@
 
     meta: false,
     startPage: 1,
-    flter: "",
+    filter: "",
 
     doAddDomophone: function (domophone) {
         loadingStart();
@@ -513,6 +513,13 @@
 
         document.title = i18n("windowTitle") + " :: " + i18n("addresses.domophones");
 
+        if (params.filter) {
+            lStore("domophones.filter", params.filter);
+            modules.addresses.domophones.filter = params.filter;
+        } else {
+            modules.addresses.domophones.filter = lStore("domophones.filter");
+        }
+
         GET("houses", "domophones", false, true).
         done(response => {
             modules.addresses.domophones.meta = response.domophones;
@@ -525,15 +532,16 @@
                         caption: i18n("addresses.addDomophone"),
                         click: modules.addresses.domophones.addDomophone,
                     },
-                    filter: params.flter?params.flter:(modules.addresses.domophones.flter?modules.addresses.domophones.flter:true),
+                    filter: modules.addresses.domophones.filter ? modules.addresses.domophones.filter : true,
+                    filterChange: f => {
+                        lStore("domophones.filter", f);
+                        modules.addresses.domophones.filter = f;
+                    },
                 },
                 edit: modules.addresses.domophones.modifyDomophone,
                 startPage: modules.addresses.domophones.startPage,
                 pageChange: p => {
                     modules.addresses.domophones.startPage = p;
-                },
-                filterChange: f => {
-                    modules.addresses.domophones.flter = f;
                 },
                 columns: [
                     {
