@@ -513,7 +513,7 @@
 
         document.title = i18n("windowTitle") + " :: " + i18n("addresses.domophones");
 
-        if (params.filter) {
+        if (params.filter && typeof params.filter !== "function") {
             lStore("domophones.filter", params.filter);
             modules.addresses.domophones.filter = params.filter;
         } else {

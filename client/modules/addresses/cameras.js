@@ -1073,7 +1073,7 @@
 
         document.title = i18n("windowTitle") + " :: " + i18n("addresses.cameras");
 
-        if (params.filter) {
+        if (params.filter && typeof params.filter !== "function") {
             lStore("cameras.filter", params.filter);
             modules.addresses.cameras.filter = params.filter;
         } else {
