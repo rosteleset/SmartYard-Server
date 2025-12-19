@@ -2095,7 +2095,7 @@
     },
 
     renderStreets: function (target, cityId, settlementId) {
-        lStore("addresses.streetsFilter", modules.addresses.streetsFilter);
+        modules.addresses.streetsFilter = lStore("addresses.streetsFilter");
 
         cardTable({
             target,
@@ -2150,7 +2150,7 @@
     },
 
     renderHouses: function (target, settlementId, streetId) {
-        lStore("addresses.housesFilter", modules.addresses.housesFilter);
+        modules.addresses.housesFilter = lStore("addresses.housesFilter");
 
         cardTable({
             target,
@@ -2218,7 +2218,7 @@
     },
 
     renderRegions: function () {
-        lStore("addresses.regionsFilter", modules.addresses.regionsFilter);
+        modules.addresses.regionsFilter = lStore("addresses.regionsFilter");
 
         loadingStart();
         QUERY("addresses", "addresses", {
@@ -2300,7 +2300,7 @@
 
             subTop(modules.addresses.path("region", regionId));
 
-            lStore("addresses.areasFilter", modules.addresses.areasFilter);
+            modules.addresses.areasFilter = lStore("addresses.areasFilter");
 
             cardTable({
                 target: "#mainForm",

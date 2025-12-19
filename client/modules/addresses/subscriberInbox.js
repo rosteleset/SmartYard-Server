@@ -63,6 +63,8 @@
     },
 
     renderSubscriberInbox: function (subscriberId) {
+        modules.addresses.subscriberInboxFilter = lStore("addresses.subscriberInboxFilter");
+
         loadingStart();
 
         GET("inbox", "message", subscriberId, true).
@@ -72,7 +74,6 @@
                 target: "#mainForm",
                 title: {
                     caption: i18n("addresses.messages"),
-                    filter: true,
                     pagerItemsCount: 250,
                     button: {
                         icon: "far fa-fw fa-envelope",
@@ -80,6 +81,11 @@
                         click: () => {
                             modules.addresses.subscriberInbox.sendMessage(subscriberId);
                         },
+                    },
+                    filter: modules.addresses.subscriberInboxFilter ? modules.addresses.subscriberInboxFilter : true,
+                    filterChange: f => {
+                        lStore("addresses.subscriberInboxFilter", f);
+                        modules.addresses.subscriberInboxFilter = f;
                     },
                 },
                 columns: [

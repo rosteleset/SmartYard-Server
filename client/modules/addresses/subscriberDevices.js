@@ -202,7 +202,7 @@
     },
 
     renderSubscriberDevices: function (subscriberId) {
-        lStore("addresses.subscriberDevicesFilter", modules.addresses.subscriberDevicesFilter);
+        modules.addresses.subscriberDevicesFilter = lStore("addresses.subscriberDevicesFilter");
 
         loadingStart();
         QUERY("subscribers", "devices", {
