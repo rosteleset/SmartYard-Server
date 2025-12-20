@@ -1,3 +1,5 @@
+## Legend
+
 ```diff
 - bugfix
 + new
