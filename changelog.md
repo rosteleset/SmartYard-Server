@@ -5,10 +5,15 @@
 # removed or deprecated
 ```
 
+## 2025-12-20
+```diff
++ persistent tables filters in webUI
+```
+
 ## 2025-12-16
 
 ```diff
-+ sudo-like administrative mode
++ sudo-like administrative mode in webUI
 ```
 
 ## 2025-12-04
@@ -34,7 +39,7 @@
 ## 2025-11-27
 
 ```diff
-+ bloking web interface when in maintenance mode
++ bloking webUI interface when in maintenance mode
 ```
 
 ## 2025-11-26
