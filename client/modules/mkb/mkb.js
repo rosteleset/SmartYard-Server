@@ -277,173 +277,181 @@
     },
 
     renderDesk: function () {
-        let desk = lStore("mkbDesk");
+        loadingStart();
 
-        let h = '';
+        GET("mkb", "desks", false, true).
+        done(r1 => {
+            let desk = lStore("mkbDesk");
 
-        for (let i in modules.mkb.desks) {
-            h += '<option>' + escapeHTML(modules.mkb.desks[i]) + '</option>';
-        }
+            let h = '';
 
-        if (!h) {
-            h += '<option>' + escapeHTML(i18n("mkb.default")) + '</option>';
-        }
+            modules.mkb.desks.sort();
 
-        $("#mkbDesks").html(h);
-
-        if (modules.mkb.desks.indexOf(desk) >= 0) {
-            $("#mkbDesks").val(desk);
-        }
-
-        desk = $("#mkbDesks").val();
-        lStore("mkbDesk", desk);
-
-        GET("mkb", "desk", desk, true).
-        done(r => {
-            let h = `
-                <div class="content-wrapper kanban pt-3" style="margin-left: 0px!important; margin-top: 0px!important;">
-                    <section class="content pb-3 pl-0 pr-0">
-                        <div id="desk" class="h-100 kanban-desk" style="display: flex;"></div>
-                    </section>
-                </div>
-            `;
-
-            $("#mainForm").html($.trim(h));
-
-            h = '';
-
-            let desk = {
-                title: 'first desk',
-                columns: [
-                    {
-                        id: md5(guid()),
-                        title: 'first column',
-                        color: 'purple',
-                        cards: [
-                            {
-                                id: md5(guid()),
-                                date: 1765843200,
-                                subject: 'subject',
-                                body: 'lorm ipsum....',
-                                subtasks: [
-                                    {
-                                        text: "1",
-                                        checked: true,
-                                    },
-                                    {
-                                        text: "2 lskdjfhlgskjdfhgl ksdhfgl hdf lkshg kdfhg kfhf k ksdfh gkdfh ksjhjdfg ksjdhf ksdfh g",
-                                    },
-                                    {
-                                        text: "3",
-                                    },
-                                    {
-                                        text: "4",
-                                    },
-                                    {
-                                        text: "5",
-                                    },
-                                    {
-                                        text: "6",
-                                    },
-                                    {
-                                        text: "7",
-                                    },
-                                    {
-                                        text: "8",
-                                    },
-                                    {
-                                        text: "9",
-                                    },
-                                    {
-                                        text: "a",
-                                    },
-                                    {
-                                        text: "b",
-                                    },
-                                    {
-                                        text: "c",
-                                    },
-                                    {
-                                        text: "d",
-                                    },
-                                    {
-                                        text: "e",
-                                    },
-                                    {
-                                        text: "f",
-                                    },
-                                ]
-                            },
-                            {
-                                id: md5(guid()),
-                                date: 1766040807,
-                                subject: 'subject',
-                                body: 'lorm ipsum....',
-                                subtasks: [
-                                    {
-                                        text: "1",
-                                    },
-                                    {
-                                        text: "2",
-                                        checked: true,
-                                    },
-                                    {
-                                        text: "3",
-                                        checked: true,
-                                    },
-                                    {
-                                        text: "4",
-                                    },
-                                ]
-                            },
-                        ],
-                    },
-                    {
-                        id: md5(guid()),
-                        title: 'second column',
-                        color: 'red',
-                        cards: [
-                            {
-                                id: md5(guid()),
-                                date: 1766040807,
-                                subject: 'subject',
-                                body: 'lorm ipsum....',
-                                subtasks: [
-                                    {
-                                        text: "1",
-                                    },
-                                    {
-                                        text: "2",
-                                        checked: true,
-                                    },
-                                    {
-                                        text: "3",
-                                        checked: true,
-                                    },
-                                    {
-                                        text: "4",
-                                    },
-                                ]
-                            },
-                        ],
-                    },
-                ],
-            };
-
-            if (desk.columns) {
-                for (let i in desk.columns) {
-                    h += modules.mkb.renderColumn(desk.columns[i]);
-                }
+            for (let i in modules.mkb.desks) {
+                h += '<option>' + escapeHTML(modules.mkb.desks[i]) + '</option>';
             }
 
-            $("#desk").html($.trim(h));
+            if (!h) {
+                h += '<option>' + escapeHTML(i18n("mkb.default")) + '</option>';
+            }
 
-            modules.mkb.assignHandlers();
+            $("#mkbDesks").html(h);
 
-            loadingDone();
+            if (modules.mkb.desks.indexOf(desk) >= 0) {
+                $("#mkbDesks").val(desk);
+            }
+
+            desk = $("#mkbDesks").val();
+            lStore("mkbDesk", desk);
+
+            GET("mkb", "desk", desk, true).
+            done(r2 => {
+                let h = `
+                    <div class="content-wrapper kanban pt-3" style="margin-left: 0px!important; margin-top: 0px!important;">
+                        <section class="content pb-3 pl-0 pr-0">
+                            <div id="desk" class="h-100 kanban-desk" style="display: flex;"></div>
+                        </section>
+                    </div>
+                `;
+
+                $("#mainForm").html($.trim(h));
+
+                h = '';
+
+                let desk = {
+                    title: 'first desk',
+                    columns: [
+                        {
+                            id: md5(guid()),
+                            title: 'first column',
+                            color: 'purple',
+                            cards: [
+                                {
+                                    id: md5(guid()),
+                                    date: 1765843200,
+                                    subject: 'subject',
+                                    body: 'lorm ipsum....',
+                                    subtasks: [
+                                        {
+                                            text: "1",
+                                            checked: true,
+                                        },
+                                        {
+                                            text: "2 lskdjfhlgskjdfhgl ksdhfgl hdf lkshg kdfhg kfhf k ksdfh gkdfh ksjhjdfg ksjdhf ksdfh g",
+                                        },
+                                        {
+                                            text: "3",
+                                        },
+                                        {
+                                            text: "4",
+                                        },
+                                        {
+                                            text: "5",
+                                        },
+                                        {
+                                            text: "6",
+                                        },
+                                        {
+                                            text: "7",
+                                        },
+                                        {
+                                            text: "8",
+                                        },
+                                        {
+                                            text: "9",
+                                        },
+                                        {
+                                            text: "a",
+                                        },
+                                        {
+                                            text: "b",
+                                        },
+                                        {
+                                            text: "c",
+                                        },
+                                        {
+                                            text: "d",
+                                        },
+                                        {
+                                            text: "e",
+                                        },
+                                        {
+                                            text: "f",
+                                        },
+                                    ]
+                                },
+                                {
+                                    id: md5(guid()),
+                                    date: 1766040807,
+                                    subject: 'subject',
+                                    body: 'lorm ipsum....',
+                                    subtasks: [
+                                        {
+                                            text: "1",
+                                        },
+                                        {
+                                            text: "2",
+                                            checked: true,
+                                        },
+                                        {
+                                            text: "3",
+                                            checked: true,
+                                        },
+                                        {
+                                            text: "4",
+                                        },
+                                    ]
+                                },
+                            ],
+                        },
+                        {
+                            id: md5(guid()),
+                            title: 'second column',
+                            color: 'red',
+                            cards: [
+                                {
+                                    id: md5(guid()),
+                                    date: 1766040807,
+                                    subject: 'subject',
+                                    body: 'lorm ipsum....',
+                                    subtasks: [
+                                        {
+                                            text: "1",
+                                        },
+                                        {
+                                            text: "2",
+                                            checked: true,
+                                        },
+                                        {
+                                            text: "3",
+                                            checked: true,
+                                        },
+                                        {
+                                            text: "4",
+                                        },
+                                    ]
+                                },
+                            ],
+                        },
+                    ],
+                };
+
+                if (desk.columns) {
+                    for (let i in desk.columns) {
+                        h += modules.mkb.renderColumn(desk.columns[i]);
+                    }
+                }
+
+                $("#desk").html($.trim(h));
+
+                modules.mkb.assignHandlers();
+
+                loadingDone();
+            }).
+            fail(FAIL).
+            fail(loadingDone);
         }).
-        fail(FAIL).
-        fail(loadingDone);
+        fail(FAILPAGE);
     },
 
     route: function () {
