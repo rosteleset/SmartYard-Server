@@ -952,7 +952,7 @@
                             type: "select",
                             value: response.user.sudo ? "yes" : "no",
                             title: i18n("users.sudo"),
-                            readonly: parseInt(myself.uid),
+                            readonly: myself.login != "admin",
                             hidden: !parseInt(uid),
                             options: [
                                 {
