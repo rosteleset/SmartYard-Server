@@ -10,7 +10,7 @@
      *
      * @apiHeader {String} Authorization authentication token
      *
-     * @apiBody {String} parent
+     * @apiBody {String} [parent]
      * @apiBody {String} name
      *
      * @apiSuccess {String} tree
@@ -64,7 +64,7 @@
             public static function POST($params) {
                 $households = loadBackend("households");
 
-                $tree = $households->addLeaf($params["parent"], $params["name"]);
+                $tree = $households->addLeaf(@$params["parent"], $params["name"]);
 
                 return api::ANSWER($tree, ($tree !== false) ? "tree" : false);
             }
