@@ -1,105 +1,137 @@
 <?php
 
-/**
- * backends cameras namespace
- */
-
-namespace backends\cameras {
-
-    use backends\backend;
-
     /**
-     * base cameras class
+     * backends cameras namespace
      */
-    abstract class cameras extends backend
-    {
-        /**
-         * @return false|array
-         */
-        abstract public function getCameras($by = false, $query = false, $withStatus = false);
+
+    namespace backends\cameras {
+
+        use backends\backend;
 
         /**
-         * @param $cameraId
-         * @return false|array
+         * base cameras class
          */
+        abstract class cameras extends backend
+        {
+            /**
+             * @return false|array
+             */
+            abstract public function getCameras($by = false, $query = false, $withStatus = false);
 
-        abstract public function getCamera($cameraId);
+            /**
+             * @param $cameraId
+             * @return false|array
+             */
 
-        /**
-         * @param $enabled
-         * @param $model
-         * @param $url
-         * @param $stream
-         * @param $credentials
-         * @param $name
-         * @param $dvrStream
-         * @param $timezone
-         * @param $lat
-         * @param $lon
-         * @param $direction
-         * @param $angle
-         * @param $distance
-         * @param $frs
-         * @param $frsMode
-         * @param $mdArea
-         * @param $rcArea
-         * @param $common
-         * @param $comment
-         * @param $sound
-         * @param $monitoring
-         * @param $webrtc
-         * @param $ext
-         * @param $tree
-         *
-         * @return false|integer
-         */
+            abstract public function getCamera($cameraId);
 
-        abstract public function addCamera($enabled, $model, $url, $stream, $credentials, $name, $dvrStream, $timezone, $lat, $lon, $direction, $angle, $distance, $frs, $frsMode, $mdArea, $rcArea, $common, $comments, $sound, $monitoring, $webrtc, $ext, $tree = '');
+            /**
+             * @param $enabled
+             * @param $model
+             * @param $url
+             * @param $stream
+             * @param $credentials
+             * @param $name
+             * @param $dvrStream
+             * @param $timezone
+             * @param $lat
+             * @param $lon
+             * @param $direction
+             * @param $angle
+             * @param $distance
+             * @param $frs
+             * @param $frsMode
+             * @param $mdArea
+             * @param $rcArea
+             * @param $common
+             * @param $comment
+             * @param $sound
+             * @param $monitoring
+             * @param $webrtc
+             * @param $ext
+             * @param $tree
+             *
+             * @return false|integer
+             */
 
-        /**
-         * @param $cameraId
-         * @param $enabled
-         * @param $model
-         * @param $url
-         * @param $stream
-         * @param $credentials
-         * @param $name
-         * @param $dvrStream
-         * @param $timezone
-         * @param $lat
-         * @param $lon
-         * @param $direction
-         * @param $angle
-         * @param $distance
-         * @param $frs
-         * @param $frsMode
-         * @param $mdArea
-         * @param $rcArea
-         * @param $common
-         * @param $comment
-         * @param $sound
-         * @param $monitoring
-         * @param $webrtc
-         * @param $ext
-         * @param $tree
-         *
-         * @return boolean
-         */
+            abstract public function addCamera($enabled, $model, $url, $stream, $credentials, $name, $dvrStream, $timezone, $lat, $lon, $direction, $angle, $distance, $frs, $frsMode, $mdArea, $rcArea, $common, $comments, $sound, $monitoring, $webrtc, $ext, $tree = '');
 
-        abstract public function modifyCamera($cameraId, $enabled, $model, $url, $stream, $credentials, $name, $dvrStream, $timezone, $lat, $lon, $direction, $angle, $distance, $frs, $frsMode, $mdArea, $rcArea, $common, $comments, $sound, $monitoring, $webrtc, $ext, $tree = '');
+            /**
+             * @param $cameraId
+             * @param $enabled
+             * @param $model
+             * @param $url
+             * @param $stream
+             * @param $credentials
+             * @param $name
+             * @param $dvrStream
+             * @param $timezone
+             * @param $lat
+             * @param $lon
+             * @param $direction
+             * @param $angle
+             * @param $distance
+             * @param $frs
+             * @param $frsMode
+             * @param $mdArea
+             * @param $rcArea
+             * @param $common
+             * @param $comment
+             * @param $sound
+             * @param $monitoring
+             * @param $webrtc
+             * @param $ext
+             * @param $tree
+             *
+             * @return boolean
+             */
 
-        /**
-         * @param $cameraId
-         * @return boolean
-         */
+            abstract public function modifyCamera($cameraId, $enabled, $model, $url, $stream, $credentials, $name, $dvrStream, $timezone, $lat, $lon, $direction, $angle, $distance, $frs, $frsMode, $mdArea, $rcArea, $common, $comments, $sound, $monitoring, $webrtc, $ext, $tree = '');
 
-        abstract public function deleteCamera($cameraId);
+            /**
+             * @param $cameraId
+             * @return boolean
+             */
 
-        /**
-         * @param int $cameraId
-         * @return string|null
-         */
+            abstract public function deleteCamera($cameraId);
 
-        abstract public function getSnapshot(int $cameraId): ?string;
+            /**
+             * @param int $cameraId
+             * @return string|null
+             */
+
+            abstract public function getSnapshot(int $cameraId): ?string;
+
+            /**
+             * @param $parent
+             * @param $name
+             *
+             * @return boolean
+             */
+
+            abstract public function addLeaf($parent, $name);
+
+            /**
+             * @param $tree
+             * @param $name
+             *
+             * @return boolean
+             */
+
+            abstract public function modifyLeaf($tree, $name);
+
+            /**
+             * @param $tree
+             *
+             * @return boolean
+             */
+
+            abstract public function deleteTree($tree);
+
+            /**
+             * @return mixed
+             */
+
+            abstract public function getTree();
+        }
     }
-}

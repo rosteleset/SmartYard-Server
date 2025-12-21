@@ -39,6 +39,7 @@
                     "cameras" => $cameras->getCameras(@$params["by"] ?: false, @$params["query"] ?: false, true),
                     "models" => $configs->getCamerasModels(),
                     "frsServers" => $frs ? $frs->servers() : [],
+                    "tree" => $cameras->getTree(),
                 ];
 
                 return api::ANSWER($response, "cameras");

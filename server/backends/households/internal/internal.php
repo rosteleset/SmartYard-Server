@@ -3848,5 +3848,93 @@
 
                 return true;
             }
+
+            /**
+             * @inheritDoc
+             */
+
+            public function addLeaf($parent, $newName) {
+                if (!checkStr($tree) || !checkStr($name)) {
+                    return false;
+                }
+
+                $tree = $this->db->get("select * from core_devices_tree");
+
+                $depth = count(explode(".", $parent));
+
+                $newLeaf = 0;
+
+                foreach ($tree as $leaf) {
+                    $name = $leaf["name"];
+                    $leaf = $leaf["tree"];
+                    $ct = explode(".", $leaf);
+                    if (count($ct) == $depth + 1) {
+                        if ($name == $newName) {
+                            return false;
+                        }
+                        if ($newLeaf < $ct[count($ct) - 2]) {
+                            $newLeaf = $ct[count($ct) - 2];
+                        }
+                    }
+                }
+
+                $newLeaf++;
+
+                $tree = $parent . $newLeaf . '.';
+
+                $this->db->modify("insert into core_devices_tree (tree, name) values (:tree, :name)", [
+                    "tree" => $tree,
+                    "name" => $newName,
+                ]);
+
+                return $tree;
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+            public function modifyLeaf($tree, $name) {
+                if (!checkStr($tree) || !checkStr($name)) {
+                    return false;
+                }
+
+                return $this->db->modify("update core_devices_tree set name = :name where tree = :tree", [
+                    "tree" => $tree,
+                    "name" => $name,
+                ]);
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+            public function deleteTree($tree) {
+                if (!checkStr($tree)) {
+                    return false;
+                }
+
+                $leafs = $this->db->get("select * from core_devices_tree");
+
+                $c = 0;
+
+                foreach ($leafs as $leaf) {
+                    if (substr($leaf["tree"], 0, strlen($tree)) == $tree) {
+                        $c += $this->db->modify("delete from core_devices_tree where tree = :tree", [
+                            "tree" => $leaf["tree"],
+                        ]);
+                    }
+                }
+
+                return $c;
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+            public function getTree() {
+                return $this->db->get("select * from core_devices_tree");
+            }
         }
     }
