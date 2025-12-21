@@ -49,6 +49,13 @@ namespace backends\cameras {
                 case "not_installed":
                     $q = "select * from cameras where coalesce(common, 0) = 0 and camera_id not in (select camera_id from houses_cameras_flats) and camera_id not in (select camera_id from houses_cameras_houses) and camera_id not in (select camera_id from houses_cameras_subscribers)";
                     break;
+
+                case "tree":
+                    $q = "select * from cameras where tree like concat(:tree, '%')";
+                    $p = [
+                        "tree" => $query,
+                    ];
+                    break;
             }
 
             $monitoring = loadBackend("monitoring");
@@ -139,7 +146,7 @@ namespace backends\cameras {
          * @inheritDoc
          */
 
-        public function addCamera($enabled, $model, $url,  $stream, $credentials, $name, $dvrStream, $timezone, $lat, $lon, $direction, $angle, $distance, $frs, $frsMode, $mdArea, $rcArea, $common, $comments, $sound, $monitoring, $webrtc, $ext) {
+        public function addCamera($enabled, $model, $url,  $stream, $credentials, $name, $dvrStream, $timezone, $lat, $lon, $direction, $angle, $distance, $frs, $frsMode, $mdArea, $rcArea, $common, $comments, $sound, $monitoring, $webrtc, $ext, $tree = '') {
             if (!$model) {
                 return false;
             }
@@ -159,7 +166,7 @@ namespace backends\cameras {
                 return false;
             }
 
-            $cameraId = $this->db->insert("insert into cameras (enabled, model, url, stream, credentials, name, dvr_stream, timezone, lat, lon, direction, angle, distance, frs, frs_mode, md_area, rc_area, common, comments, sound, monitoring, webrtc, ext) values (:enabled, :model, :url, :stream, :credentials, :name, :dvr_stream, :timezone, :lat, :lon, :direction, :angle, :distance, :frs, :frs_mode, :md_area, :rc_area, :common, :comments, :sound, :monitoring, :webrtc, :ext)", [
+            $cameraId = $this->db->insert("insert into cameras (enabled, model, url, stream, credentials, name, dvr_stream, timezone, lat, lon, direction, angle, distance, frs, frs_mode, md_area, rc_area, common, comments, sound, monitoring, webrtc, ext) values (:enabled, :model, :url, :stream, :credentials, :name, :dvr_stream, :timezone, :lat, :lon, :direction, :angle, :distance, :frs, :frs_mode, :md_area, :rc_area, :common, :comments, :sound, :monitoring, :webrtc, :ext, :tree)", [
                 "enabled" => (int)$enabled,
                 "model" => $model,
                 "url" => $url,
@@ -183,6 +190,7 @@ namespace backends\cameras {
                 "monitoring" => (int)$monitoring,
                 "webrtc" => (int)$webrtc,
                 "ext" => json_encode($ext),
+                "tree" => $tree ?: '',
             ]);
 
             $queue = loadBackend("queue");
@@ -199,7 +207,7 @@ namespace backends\cameras {
          * @inheritDoc
          */
 
-        public function modifyCamera($cameraId, $enabled, $model, $url, $stream, $credentials, $name, $dvrStream, $timezone, $lat, $lon, $direction, $angle, $distance, $frs, $frsMode, $mdArea, $rcArea, $common, $comments, $sound, $monitoring, $webrtc, $ext) {
+        public function modifyCamera($cameraId, $enabled, $model, $url, $stream, $credentials, $name, $dvrStream, $timezone, $lat, $lon, $direction, $angle, $distance, $frs, $frsMode, $mdArea, $rcArea, $common, $comments, $sound, $monitoring, $webrtc, $ext, $tree) {
             if (!checkInt($cameraId)) {
                 setLastError("noId");
                 return false;
@@ -226,7 +234,7 @@ namespace backends\cameras {
                 return false;
             }
 
-            $r = $this->db->modify("update cameras set enabled = :enabled, model = :model, url = :url, stream = :stream, credentials = :credentials, name = :name, dvr_stream = :dvr_stream, timezone = :timezone, lat = :lat, lon = :lon, direction = :direction, angle = :angle, distance = :distance, frs = :frs, frs_mode = :frs_mode, md_area = :md_area, rc_area = :rc_area, common = :common, comments = :comments, sound = :sound, monitoring = :monitoring, webrtc = :webrtc, ext = :ext where camera_id = $cameraId", [
+            $r = $this->db->modify("update cameras set enabled = :enabled, model = :model, url = :url, stream = :stream, credentials = :credentials, name = :name, dvr_stream = :dvr_stream, timezone = :timezone, lat = :lat, lon = :lon, direction = :direction, angle = :angle, distance = :distance, frs = :frs, frs_mode = :frs_mode, md_area = :md_area, rc_area = :rc_area, common = :common, comments = :comments, sound = :sound, monitoring = :monitoring, webrtc = :webrtc, ext = :ext, tree = :tree where camera_id = $cameraId", [
                 "enabled" => (int)$enabled,
                 "model" => $model,
                 "url" => $url,
@@ -250,6 +258,7 @@ namespace backends\cameras {
                 "monitoring" => (int)$monitoring,
                 "webrtc" => (int)$webrtc,
                 "ext" => json_encode($ext),
+                "tree" => $tree ?: '',
             ]);
 
             if ($r) {

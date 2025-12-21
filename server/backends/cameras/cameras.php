@@ -22,6 +22,7 @@ namespace backends\cameras {
          * @param $cameraId
          * @return false|array
          */
+
         abstract public function getCamera($cameraId);
 
         /**
@@ -48,10 +49,12 @@ namespace backends\cameras {
          * @param $monitoring
          * @param $webrtc
          * @param $ext
+         * @param $tree
          *
          * @return false|integer
          */
-        abstract public function addCamera($enabled, $model, $url, $stream, $credentials, $name, $dvrStream, $timezone, $lat, $lon, $direction, $angle, $distance, $frs, $frsMode, $mdArea, $rcArea, $common, $comments, $sound, $monitoring, $webrtc, $ext);
+
+        abstract public function addCamera($enabled, $model, $url, $stream, $credentials, $name, $dvrStream, $timezone, $lat, $lon, $direction, $angle, $distance, $frs, $frsMode, $mdArea, $rcArea, $common, $comments, $sound, $monitoring, $webrtc, $ext, $tree = '');
 
         /**
          * @param $cameraId
@@ -78,21 +81,25 @@ namespace backends\cameras {
          * @param $monitoring
          * @param $webrtc
          * @param $ext
+         * @param $tree
          *
          * @return boolean
          */
-        abstract public function modifyCamera($cameraId, $enabled, $model, $url, $stream, $credentials, $name, $dvrStream, $timezone, $lat, $lon, $direction, $angle, $distance, $frs, $frsMode, $mdArea, $rcArea, $common, $comments, $sound, $monitoring, $webrtc, $ext);
+
+        abstract public function modifyCamera($cameraId, $enabled, $model, $url, $stream, $credentials, $name, $dvrStream, $timezone, $lat, $lon, $direction, $angle, $distance, $frs, $frsMode, $mdArea, $rcArea, $common, $comments, $sound, $monitoring, $webrtc, $ext, $tree = '');
 
         /**
          * @param $cameraId
          * @return boolean
          */
+
         abstract public function deleteCamera($cameraId);
 
         /**
          * @param int $cameraId
          * @return string|null
          */
+
         abstract public function getSnapshot(int $cameraId): ?string;
     }
 }
