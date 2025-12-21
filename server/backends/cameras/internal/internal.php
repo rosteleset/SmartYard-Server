@@ -383,6 +383,21 @@
 
                 $newLeaf = 0;
 
+                $f = false;
+
+                if ($parent) {
+                    foreach ($leafs as $leaf) {
+                        if (substr($leaf["tree"], 0, strlen($parent)) == $parent) {
+                            $f = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (!$f) {
+                    return false;
+                }
+
                 foreach ($tree as $leaf) {
                     $name = $leaf["name"];
                     $leaf = $leaf["tree"];
