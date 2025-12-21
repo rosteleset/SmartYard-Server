@@ -374,6 +374,7 @@
 
             public function addLeaf($parent, $newName) {
                 if (!checkStr($tree) || !checkStr($name)) {
+                    setLastError("invalidParams");
                     return false;
                 }
 
@@ -395,6 +396,7 @@
                 }
 
                 if (!$f) {
+                    setLastError("parentNotFound");
                     return false;
                 }
 
@@ -430,6 +432,7 @@
 
             public function modifyLeaf($tree, $name) {
                 if (!checkStr($tree) || !checkStr($name)) {
+                    setLastError("invalidParams");
                     return false;
                 }
 
@@ -445,6 +448,7 @@
 
             public function deleteTree($tree) {
                 if (!checkStr($tree)) {
+                    setLastError("invalidParams");
                     return false;
                 }
 
