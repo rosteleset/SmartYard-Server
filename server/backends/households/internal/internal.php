@@ -3867,7 +3867,7 @@
                 $f = false;
 
                 if ($parent) {
-                    foreach ($leafs as $leaf) {
+                    foreach ($tree as $leaf) {
                         if (substr($leaf["tree"], 0, strlen($parent)) == $parent) {
                             $f = true;
                             break;
