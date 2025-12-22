@@ -70,6 +70,10 @@
      */
 
     function checkStr(&$str, $options = []) {
+        if (is_null($str)) {
+            return $str;
+        }
+
         $str = trim($str);
 
         if (array_key_exists("validChars", $options)) {
