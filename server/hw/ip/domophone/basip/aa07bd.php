@@ -396,7 +396,7 @@ class aa07bd extends domophone implements
     protected function addForward(int $apartmentNumber, array $sipNumbers): void
     {
         //Must be a string array
-        $convertedSipNumbers  = array_map('(string)', $sipNumbers);
+        $convertedSipNumbers  = array_map(fn($value): int => '"'.$value.'"', $sipNumbers);
 
         $forwardItem = [
             'forward_entity_list' => $convertedSipNumbers,
