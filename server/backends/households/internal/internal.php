@@ -1126,7 +1126,8 @@
                         break;
 
                     case "tree":
-                        $q = "select * from houses_domophones where tree like concat(:tree, '%')";
+                        // TODO: dirty hack (typecast), need to fix!
+                        $q = "select * from houses_domophones where tree like concat(:tree::character varying, '%') order by house_domophone_id";
                         $p = $query;
                         break;
                 }
@@ -1219,7 +1220,7 @@
                 }
                 $display = trim(implode("\n", $t));
 
-                $domophoneId = $this->db->insert("insert into houses_domophones (enabled, model, server, url, credentials, dtmf, nat, comments, name, display, video, monitoring, ext, concierge, sos) values (:enabled, :model, :server, :url, :credentials, :dtmf, :nat, :comments, :name, :display, :video, :monitoring, :ext, :concierge, :sos, :tree)", [
+                $domophoneId = $this->db->insert("insert into houses_domophones (enabled, model, server, url, credentials, dtmf, nat, comments, name, display, video, monitoring, ext, concierge, sos, tree) values (:enabled, :model, :server, :url, :credentials, :dtmf, :nat, :comments, :name, :display, :video, :monitoring, :ext, :concierge, :sos, :tree)", [
                     "enabled" => (int)$enabled,
                     "model" => $model,
                     "server" => $server,
@@ -3874,6 +3875,8 @@
                             break;
                         }
                     }
+                } else {
+                    $f = true;
                 }
 
                 if (!$f) {

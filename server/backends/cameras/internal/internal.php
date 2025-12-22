@@ -31,27 +31,28 @@
                         break;
 
                     case "common":
-                        $q = "select * from cameras where common = 1";
+                        $q = "select * from cameras where common = 1 order by camera_id";
                         break;
 
                     case "owned_by_flats":
-                        $q = "select * from cameras where camera_id in (select camera_id from houses_cameras_flats)";
+                        $q = "select * from cameras where camera_id in (select camera_id from houses_cameras_flats) order by camera_id";
                         break;
 
                     case "owned_by_houses":
-                        $q = "select * from cameras where camera_id in (select camera_id from houses_cameras_houses)";
+                        $q = "select * from cameras where camera_id in (select camera_id from houses_cameras_houses) order by camera_id";
                         break;
 
                     case "owned_by_subscribers":
-                        $q = "select * from cameras where camera_id in (select camera_id from houses_cameras_subscribers)";
+                        $q = "select * from cameras where camera_id in (select camera_id from houses_cameras_subscribers) order by camera_id";
                         break;
 
                     case "not_installed":
-                        $q = "select * from cameras where coalesce(common, 0) = 0 and camera_id not in (select camera_id from houses_cameras_flats) and camera_id not in (select camera_id from houses_cameras_houses) and camera_id not in (select camera_id from houses_cameras_subscribers)";
+                        $q = "select * from cameras where coalesce(common, 0) = 0 and camera_id not in (select camera_id from houses_cameras_flats) and camera_id not in (select camera_id from houses_cameras_houses) and camera_id not in (select camera_id from houses_cameras_subscribers) order by camera_id";
                         break;
 
                     case "tree":
-                        $q = "select * from cameras where tree like concat(:tree, '%')";
+                        // TODO: dirty hack (typecast), need to fix!
+                        $q = "select * from cameras where tree like concat(:tree::character varying, '%') order by camera_id";
                         $p = [
                             "tree" => $query,
                         ];
@@ -166,7 +167,7 @@
                     return false;
                 }
 
-                $cameraId = $this->db->insert("insert into cameras (enabled, model, url, stream, credentials, name, dvr_stream, timezone, lat, lon, direction, angle, distance, frs, frs_mode, md_area, rc_area, common, comments, sound, monitoring, webrtc, ext) values (:enabled, :model, :url, :stream, :credentials, :name, :dvr_stream, :timezone, :lat, :lon, :direction, :angle, :distance, :frs, :frs_mode, :md_area, :rc_area, :common, :comments, :sound, :monitoring, :webrtc, :ext, :tree)", [
+                $cameraId = $this->db->insert("insert into cameras (enabled, model, url, stream, credentials, name, dvr_stream, timezone, lat, lon, direction, angle, distance, frs, frs_mode, md_area, rc_area, common, comments, sound, monitoring, webrtc, ext, tree) values (:enabled, :model, :url, :stream, :credentials, :name, :dvr_stream, :timezone, :lat, :lon, :direction, :angle, :distance, :frs, :frs_mode, :md_area, :rc_area, :common, :comments, :sound, :monitoring, :webrtc, :ext, :tree)", [
                     "enabled" => (int)$enabled,
                     "model" => $model,
                     "url" => $url,
@@ -393,6 +394,8 @@
                             break;
                         }
                     }
+                } else {
+                    $f = true;
                 }
 
                 if (!$f) {

@@ -40,7 +40,7 @@
                         loadingStart();
                         setTimeout(() => {
                             window.onhashchange = hashChange;
-                            window.location.reload(true);
+                            window.location.reload();
                         }, 150);
                     }
                 });

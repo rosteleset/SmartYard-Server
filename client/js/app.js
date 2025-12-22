@@ -424,7 +424,7 @@ function sudo() {
             then(() => {
                 setTimeout(() => {
                     window.onhashchange = hashChange;
-                    window.location.reload(true);
+                    window.location.reload();
                 }, 150);
             }).
             fail(FAIL).
@@ -441,7 +441,7 @@ function sudo() {
                     message(i18n("sudoOk", parseInt($.trim(r))));
                     setTimeout(() => {
                         window.onhashchange = hashChange;
-                        window.location.reload(true);
+                        window.location.reload();
                     }, 1500);
                 }).
                 fail(FAIL).
@@ -457,7 +457,7 @@ function sudo() {
                     message(i18n("sudoOk", parseInt($.trim(r))));
                     setTimeout(() => {
                         window.onhashchange = hashChange;
-                        window.location.reload(true);
+                        window.location.reload();
                     }, 1500);
                 }).
                 fail(FAIL).

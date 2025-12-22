@@ -311,7 +311,7 @@
                     fields: fields,
                     callback: modules.tt.issue.doCreateIssue,
                     cancel: () => {
-                        window.location.reload();
+                        window.location.href = refreshUrl();
                     },
                 }).show();
 
@@ -319,7 +319,7 @@
             }).
             fail(FAIL).
             fail(() => {
-                window.location.reload();
+                window.location.href = refreshUrl();
             });
         }
 
@@ -531,7 +531,7 @@
                     }
                     lStore("ttCommentsFilter", h);
                     setTimeout(() => {
-                        window.location.reload();
+                        window.location.href = refreshUrl();
                     }, 50);
                 },
             });

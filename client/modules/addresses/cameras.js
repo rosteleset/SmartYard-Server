@@ -1084,6 +1084,8 @@
         done(response => {
             modules.addresses.cameras.meta = response.cameras;
 
+            modules.addresses.treePath(response.cameras.tree, params.tree);
+
             cardTable({
                 target: "#mainForm",
                 title: {

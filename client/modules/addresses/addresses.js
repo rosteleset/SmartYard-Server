@@ -153,7 +153,7 @@
                         color: r.color,
                     }).
                     done(() => {
-                        window.location.reload();
+                        window.location.href = refreshUrl();
                     }).
                     fail(FAIL).
                     fail(loadingDone);
@@ -167,7 +167,7 @@
                     id: id,
                 }).
                 done(() => {
-                    window.location.reload();
+                    window.location.href = refreshUrl();
                 }).
                 fail(FAIL).
                 fail(loadingDone);
@@ -175,7 +175,7 @@
         }
     },
 
-    path: function (object, id, _link) {
+    addressPath: function (object, id, _link) {
         let sp = "<i class=\"fas fa-xs fa-angle-double-right ml-2 mr-2\"></i>";
 
         function link(target, text, id) {
@@ -303,6 +303,93 @@
             default:
                 return "";
         }
+    },
+
+    treePath: function (tree, leaf) {
+        let h = '';
+
+        for (let i in tree) {
+            if (tree[i].tree[tree[i].tree.length - 1] == ".") {
+                tree[i].tree = tree[i].tree.substr(0, tree[i].tree.length - 1);
+            }
+        }
+
+        let t = buildTreeFromPaths(tree);
+
+        function hh(tree) {
+            let h = '';
+
+            let t = tree.sort((a, b) => {
+                if (a.name > b.name) {
+                    return 1
+                }
+                if (a.name < b.name) {
+                    return -1;
+                }
+                return 0;
+            });
+
+            for (let i in t) {
+                if (tree[i].children.length) {
+                    h += `<li class="dropdown-item pointer submenu mr-4"><i class="far fa-fw fa-bookmark mr-2"></i><span>${i18n("tt.favoriteFilters")}&nbsp;</span></li>`;
+                    h += '<ul class="dropdown-menu">';
+                    h += `<li class="dropdown-item nomenu pointer dtItem font-weight-bold mr-3" data-filter-name="${modules.tt.meta.favoriteFilters[ff].filter}">`;
+                    h += `<li class="dropdown-item nomenu pointer dtItem mr-3" data-filter-name="${modules.tt.meta.favoriteFilters[ff].filter}">`;
+                    h += '</ul>';
+                    h += `</li>`;
+                } else {
+                    if (tree[i].tree + "." == leaf) {
+                        h += `<li class="dropdown-item nomenu pointer dtItem font-weight-bold mr-3" data-tree="${t[i].tree + "."}">`;
+                    } else {
+                        h += `<li class="dropdown-item nomenu pointer dtItem mr-3" data-tree="${t[i].tree + "."}">`;
+                    }
+                    h += '<i class="far fa-fw fa-folder mr-2"></i>';
+                    h += `<span>${t[i].name}&nbsp;</span>`;
+                    h += "</li>";
+                }
+            }
+
+            return h;
+        }
+
+        h += "<span class='dropdown noselect'>";
+        h += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="dtFilterAll" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" data-flip="false"><i class="far fa-fw fa-caret-square-down mr-1"></i>${i18n("addresses.all")}</span>`;
+        h += `<ul class="dropdown-menu" aria-labelledby="dtFilterRoot">`;
+
+        h += hh(t);
+
+        h += "</ul>";
+        h += "</span>";
+        h += "</span>";
+
+        h += `<span style='position: absolute; right: 48px;' class='mr-3'><i class='fas fa-fw fa-plus-square text-success pointer dtAddNode'></i></span>`;
+        h += `<span style='position: absolute; right: 24px;' class='mr-3'><i class='fas fa-fw fa-pen-square text-primary pointer dtEditNode'></i></span>`;
+        h += `<span style='position: absolute; right: 0px;' class='mr-3'><i class='fas fa-fw fa-minus-square text-danger pointer dtDeleteNode'></i></span>`;
+
+        subTop(h);
+
+        $(".dtItem").off("click").on("click", function () {
+            window.location.href = refreshUrl({ set: { tree: $(this).attr("data-tree") } });
+        });
+
+        $(".dtAddNode").off("click").on("click", () => {
+            let parent = $(this).attr("data-parent");
+            mPrompt(i18n("addresses.node"), i18n("addresses.addTreeNode"), "", v => {
+                if ($.trim(v)) {
+                    loadingStart();
+                    POST("cameras", "leaf", false, {
+                        parent: parent ? parent : false,
+                        name: $.trim(v),
+                    }).
+                    done(r => {
+                        message(i18n("addresses.nodeWasAdded"));
+                        window.location.href = refreshUrl({ set: { tree: r.tree } });
+                    }).
+                    fail(FAIL).
+                    fail(loadingDone);
+                }
+            }, false, i18n("add"));
+        });
     },
 
     doAddRegion: function (regionUuid, regionIsoCode, regionWithType, regionType, regionTypeFull, region, timezone) {
@@ -2298,7 +2385,7 @@
                 return;
             }
 
-            subTop(modules.addresses.path("region", regionId));
+            subTop(modules.addresses.addressPath("region", regionId));
 
             modules.addresses.areasFilter = lStore("addresses.areasFilter");
 
@@ -2380,7 +2467,7 @@
                 return;
             }
 
-            subTop(modules.addresses.path("area", areaId));
+            subTop(modules.addresses.addressPath("area", areaId));
 
             modules.addresses.renderCities("#mainForm", false, areaId);
             modules.addresses.renderSettlements("#altForm", areaId, false);
@@ -2410,7 +2497,7 @@
                 return;
             }
 
-            subTop(modules.addresses.path("city", cityId));
+            subTop(modules.addresses.addressPath("city", cityId));
 
             modules.addresses.renderStreets("#mainForm", cityId, false);
             modules.addresses.renderSettlements("#altForm", false, cityId);
@@ -2440,7 +2527,7 @@
                 return;
             }
 
-            subTop(modules.addresses.path("settlement", settlementId));
+            subTop(modules.addresses.addressPath("settlement", settlementId));
 
             modules.addresses.renderStreets("#mainForm", false, settlementId);
             modules.addresses.renderHouses("#altForm", settlementId, false);
@@ -2470,7 +2557,7 @@
                 return;
             }
 
-            subTop(modules.addresses.path("street", streetId));
+            subTop(modules.addresses.addressPath("street", streetId));
 
             modules.addresses.renderHouses("#mainForm", false, streetId);
 
