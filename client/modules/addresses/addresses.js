@@ -308,7 +308,10 @@
     treePath: function (tree, leaf) {
         let h = '';
 
+        let l = [];
+
         for (let i in tree) {
+            l[tree[i].tree] = tree[i].name;
             if (tree[i].tree[tree[i].tree.length - 1] == ".") {
                 tree[i].tree = tree[i].tree.substr(0, tree[i].tree.length - 1);
             }
@@ -316,7 +319,7 @@
 
         let t = buildTreeFromPaths(tree);
 
-        function hh(tree) {
+        function hh(tree, c) {
             let h = '';
 
             let t = tree.sort((a, b) => {
@@ -331,17 +334,16 @@
 
             for (let i in t) {
                 if (tree[i].children.length) {
-                    h += `<li class="dropdown-item pointer submenu mr-4"><i class="far fa-fw fa-bookmark mr-2"></i><span>${i18n("tt.favoriteFilters")}&nbsp;</span></li>`;
+                    h += `<li class="dropdown-item pointer submenu dtItem mr-4" data-tree="${t[i].tree}."><i class="far fa-fw fa-folder mr-2"></i><span>${i18n(t[i].name)}&nbsp;</span></li>`;
                     h += '<ul class="dropdown-menu">';
-                    h += `<li class="dropdown-item nomenu pointer dtItem font-weight-bold mr-3" data-filter-name="${modules.tt.meta.favoriteFilters[ff].filter}">`;
-                    h += `<li class="dropdown-item nomenu pointer dtItem mr-3" data-filter-name="${modules.tt.meta.favoriteFilters[ff].filter}">`;
+                    h += hh(t[i].children);
                     h += '</ul>';
                     h += `</li>`;
                 } else {
                     if (tree[i].tree + "." == leaf) {
-                        h += `<li class="dropdown-item nomenu pointer dtItem font-weight-bold mr-3" data-tree="${t[i].tree + "."}">`;
+                        h += `<li class="dropdown-item nomenu pointer dtItem font-weight-bold mr-3" data-tree="${t[i].tree}.">`;
                     } else {
-                        h += `<li class="dropdown-item nomenu pointer dtItem mr-3" data-tree="${t[i].tree + "."}">`;
+                        h += `<li class="dropdown-item nomenu pointer dtItem mr-3" data-tree="${t[i].tree}.">`;
                     }
                     h += '<i class="far fa-fw fa-folder mr-2"></i>';
                     h += `<span>${t[i].name}&nbsp;</span>`;
@@ -352,15 +354,63 @@
             return h;
         }
 
+        function fh(t, s) {
+            for (let i in t) {
+                if (t[i].tree + "." == s) {
+                    return t[i].children;
+                }
+                if (s.substr(0, t[i].tree.length + 1) == t[i].tree + ".") {
+                    return fh(t[i].children, s);
+                }
+            }
+        }
+
         h += "<span class='dropdown noselect'>";
-        h += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="dtFilterAll" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" data-flip="false"><i class="far fa-fw fa-caret-square-down mr-1"></i>${i18n("addresses.all")}</span>`;
-        h += `<ul class="dropdown-menu" aria-labelledby="dtFilterRoot">`;
+        h += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="dtRoot" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" data-flip="false"><i class="far fa-fw fa-caret-square-down mr-1"></i>${leaf ? l[leaf.split(".")[0] + "."] : i18n("addresses.all")}</span>`;
+        h += `<ul class="dropdown-menu" aria-labelledby="dtRoot">`;
 
         h += hh(t);
 
+        if (t.length) {
+            h += `<li class="dropdown-divider"></li>`;
+            if (leaf) {
+                h += `<li class="dropdown-item nomenu pointer dtItem mr-3" data-tree="">`;
+            } else {
+                h += `<li class="dropdown-item nomenu pointer dtItem font-weight-bold mr-3" data-tree="">`;
+            }
+            h += '<i class="fas fa-fw fa-asterisk mr-2"></i>';
+            h += `<span>${i18n("addresses.all")}&nbsp;</span>`;
+            h += "</li>";
+        }
+
         h += "</ul>";
         h += "</span>";
-        h += "</span>";
+
+        if (leaf) {
+            let p = leaf.split(".");
+            let s = p[0] + ".";
+
+            if (p.length > 2) {
+                h += "<i class='fas fa-xs fa-angle-double-right ml-2 mr-2'></i>";
+                for (let i = 1; i < p.length - 1; i++) {
+                    let f = fh(t, s);
+                    if (f.length) {
+                        s += p[i] + ".";
+                        h += "<span class='dropdown noselect'>";
+                        h += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="dtNode-${md5(s)}" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" data-flip="false"><i class="far fa-fw fa-caret-square-down mr-1"></i>${l[s]}</span>`;
+                        h += `<ul class="dropdown-menu" aria-labelledby="dtNode-${md5(s)}">`;
+
+                        h += hh(f);
+
+                        h += "</ul>";
+                        h += "</span>";
+                        if (i != p.length - 2) {
+                            h += "<i class='fas fa-xs fa-angle-double-right ml-2 mr-2'></i>";
+                        }
+                    }
+                }
+            }
+        }
 
         h += `<span style='position: absolute; right: 48px;' class='mr-3'><i class='fas fa-fw fa-plus-square text-success pointer dtAddNode'></i></span>`;
         h += `<span style='position: absolute; right: 24px;' class='mr-3'><i class='fas fa-fw fa-pen-square text-primary pointer dtEditNode'></i></span>`;
@@ -373,12 +423,11 @@
         });
 
         $(".dtAddNode").off("click").on("click", () => {
-            let parent = $(this).attr("data-parent");
             mPrompt(i18n("addresses.node"), i18n("addresses.addTreeNode"), "", v => {
                 if ($.trim(v)) {
                     loadingStart();
                     POST("cameras", "leaf", false, {
-                        parent: parent ? parent : false,
+                        parent: leaf ? leaf : false,
                         name: $.trim(v),
                     }).
                     done(r => {

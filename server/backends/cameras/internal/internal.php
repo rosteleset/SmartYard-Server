@@ -374,7 +374,7 @@
              */
 
             public function addLeaf($parent, $newName) {
-                if (!checkStr($tree) || !checkStr($name)) {
+                if (!checkStr($newName)) {
                     setLastError("invalidParams");
                     return false;
                 }

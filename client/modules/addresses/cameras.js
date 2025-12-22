@@ -1068,7 +1068,6 @@
     },
 
     route: function (params) {
-        subTop();
         $("#altForm").hide();
 
         document.title = i18n("windowTitle") + " :: " + i18n("addresses.cameras");
