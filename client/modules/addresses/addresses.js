@@ -373,15 +373,16 @@
 
         if (t.length) {
             h += `<li class="dropdown-divider"></li>`;
-            if (leaf) {
-                h += `<li class="dropdown-item nomenu pointer dtItem mr-3" data-tree="">`;
-            } else {
-                h += `<li class="dropdown-item nomenu pointer dtItem font-weight-bold mr-3" data-tree="">`;
-            }
-            h += '<i class="fas fa-fw fa-asterisk mr-2"></i>';
-            h += `<span>${i18n("addresses.all")}&nbsp;</span>`;
-            h += "</li>";
         }
+
+        if (leaf) {
+            h += `<li class="dropdown-item nomenu pointer dtItem mr-3" data-tree="">`;
+        } else {
+            h += `<li class="dropdown-item nomenu pointer dtItem font-weight-bold mr-3" data-tree="">`;
+        }
+        h += '<i class="fas fa-fw fa-asterisk mr-2"></i>';
+        h += `<span>${i18n("addresses.all")}&nbsp;</span>`;
+        h += "</li>";
 
         h += "</ul>";
         h += "</span>";
