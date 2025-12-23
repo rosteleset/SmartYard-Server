@@ -428,7 +428,7 @@ class aa07bd extends domophone implements
             'lock' => 'first',
             'valid' => [
                 'passes' => [
-                    'is_permanent' => true
+                    'is_permanent' => true,
                     'time' => [
                         'is_permanent' => true
                     ],
