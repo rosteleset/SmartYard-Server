@@ -1,9 +1,9 @@
-CREATE TABLE core_devices_tree
+CREATE TABLE houses_devices_tree
 (
     tree TEXT NOT NULL PRIMARY KEY,
     name TEXT
 );
-CREATE INDEX core_devices_tree_name ON core_devices_tree(name);
+CREATE INDEX houses_devices_tree_name ON houses_devices_tree(name);
 
 ALTER TABLE cameras ADD COLUMN tree CHARACTER VARYING DEFAULT '';
 CREATE INDEX cameras_tree ON cameras(tree);

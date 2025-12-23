@@ -454,7 +454,7 @@ function ildc() {
     $(".ildc").css("width", mw);
 }
 
-function buildTreeFromPaths(data, delimiter = '.') {
+function buildTreeFromPaths(data, delimiter = '.', ) {
     let root = [];
 
     data.forEach(item => {
@@ -469,6 +469,7 @@ function buildTreeFromPaths(data, delimiter = '.') {
                     path: folderPath,
                     tree: item.tree,
                     name: item.name,
+                    text: item.text,
                     children: []
                 };
                 currentLevel.push(folder);

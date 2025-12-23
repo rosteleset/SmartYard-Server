@@ -466,12 +466,21 @@
         if (camera) {
             let mdArea, rcArea, image;
 
+            for (let i in modules.addresses.cameras.meta.tree) {
+                if (modules.addresses.cameras.meta.tree[i].tree[modules.addresses.cameras.meta.tree[i].tree.length - 1] == ".") {
+                    modules.addresses.cameras.meta.tree[i].tree = modules.addresses.cameras.meta.tree[i].tree.substr(0, modules.addresses.cameras.meta.tree[i].tree.length - 1);
+                }
+                modules.addresses.cameras.meta.tree[i].text = modules.addresses.cameras.meta.tree[i].name;
+            }
+
+            let t = buildTreeFromPaths(modules.addresses.cameras.meta.tree);
+
             cardForm({
                 title: i18n("addresses.modifyCamera"),
                 footer: true,
                 borderless: true,
                 topApply: true,
-                size: "lg",
+                size: "xl",
                 apply: i18n("edit"),
                 delete: i18n("addresses.deleteCamera"),
                 deleteTab: i18n("addresses.secondary"),
@@ -760,6 +769,129 @@
                         title: false,
                         tab: i18n("addresses.map"),
                         noHover: true,
+                    },
+                    {
+                        id: "tree",
+                        type: "jstree",
+                        title: false,
+                        tab: i18n("addresses.path"),
+                        data: t,
+
+                        addRoot: function (instance) {
+                            POST("houses", "path", treeName, {
+                                text: i18n("addresses.newNode"),
+                            }).done(result => {
+                                if (result && result.nodeId) {
+                                    let node = {
+                                        id: result.nodeId,
+                                        text: i18n("addresses.newNode"),
+                                    };
+                                    instance.jstree().create_node("#", node, 'last', newNode => {
+                                        setTimeout(() => {
+                                            instance.jstree().deselect_all();
+                                            instance.jstree().select_node(newNode);
+                                            instance.jstree().edit(newNode);
+                                        }, 100);
+                                    });
+                                }
+                            }).fail(FAIL);
+                        },
+
+                        add: function (instance) {
+                            let parent = instance.jstree().get_selected();
+                            parent = parent.length ? parent[0] : "#";
+                            POST("houses", "path", (parent === "#") ? treeName : parent, {
+                                text: i18n("addresses.newNode"),
+                            }).done(result => {
+                                if (result && result.nodeId) {
+                                    let node = {
+                                        id: result.nodeId,
+                                        text: i18n("addresses.newNode"),
+                                    };
+                                    modules.addresses.houses.pathNodes[result.nodeId] = i18n("addresses.newNode");
+                                    instance.jstree().create_node(parent, node, 'last', newNode => {
+                                        setTimeout(() => {
+                                            instance.jstree().deselect_all();
+                                            instance.jstree().select_node(newNode);
+                                            instance.jstree().edit(newNode);
+                                        }, 100);
+                                    });
+                                }
+                            }).fail(FAIL);
+                        },
+
+                        rename: function (instance) {
+                            let node = instance.jstree().get_selected();
+                            if (node && node.length) {
+                                node = instance.jstree().get_node(node[0]);
+                                modules.addresses.houses.pathNodes[node.id] = node.text;
+                                setTimeout(() => {
+                                    instance.jstree().edit(node);
+                                }, 100);
+                            }
+                        },
+
+                        renamed: function (e, data) {
+                            if (data && data.obj && data.obj.id && data.text && data.text != modules.addresses.houses.pathNodes[data.obj.id]) {
+                                PUT("houses", "path", data.obj.id, {
+                                    text: data.text,
+                                }).
+                                done(() => {
+                                    modules.addresses.houses.pathNodes[data.obj.id] = data.text;
+                                }).
+                                fail(FAIL);
+                            }
+                        },
+
+                        delete: function (instance) {
+                            let node = instance.jstree().get_selected();
+                            if (node && node.length) {
+                                node = instance.jstree().get_node(node[0]);
+                                mConfirm(i18n("addresses.confirmDeleteNode", escapeHTML(node.text)), i18n("confirm"), `danger:${i18n("addresses.deleteNode")}`, () => {
+                                    DELETE("houses", "path", node.id).
+                                    done(() => {
+                                        instance.jstree().delete_node(node.id);
+                                    }).
+                                    fail(FAIL);
+                                });
+                            }
+                        },
+
+                        search: function (instance, str) {
+                            if (str) {
+                                QUERYID("houses", "path", treeName, { search: str }).
+                                done(result => {
+                                    instance.jstree().settings.core.data = result.tree;
+                                    instance.jstree().refresh();
+                                    setTimeout(() => {
+                                        instance.jstree().search(str);
+                                        instance.jstree().settings.core.data = path;
+                                    }, 100);
+                                }).
+                                fail(FAIL);
+                            } else {
+                                instance.jstree().clear_search();
+
+                                QUERYID("houses", "path", entrance.path ? entrance.path : treeName, {
+                                    withParents: true,
+                                    tree: treeName,
+                                }).
+                                done(result => {
+                                    if (result && result.tree) {
+                                        instance.jstree().settings.core.data = result.tree;
+                                    } else {
+                                        instance.jstree().settings.core.data = [];
+                                    }
+                                    instance.jstree().refresh();
+                                }).
+                                fail(FAIL);
+
+                                setTimeout(() => {
+                                    instance.jstree().select_node(entrance.path);
+                                    instance.jstree().settings.core.data = path;
+                                }, 100);
+                            }
+                        }
                     },
                     {
                         id: "ext",
@@ -1079,7 +1211,7 @@
             modules.addresses.cameras.filter = lStore("cameras.filter");
         }
 
-        GET("cameras", "cameras", false, true).
+        QUERY("cameras", "cameras", { by: (params.tree ? "tree" : false), query: (params.tree ? params.tree : false) }, true).
         done(response => {
             modules.addresses.cameras.meta = response.cameras;
 

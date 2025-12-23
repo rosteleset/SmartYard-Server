@@ -3860,7 +3860,7 @@
                     return false;
                 }
 
-                $tree = $this->db->get("select * from core_devices_tree");
+                $tree = $this->db->get("select * from houses_devices_tree");
 
                 $depth = count(explode(".", $parent));
 
@@ -3902,7 +3902,7 @@
 
                 $tree = $parent . $newLeaf . '.';
 
-                $this->db->modify("insert into core_devices_tree (tree, name) values (:tree, :name)", [
+                $this->db->modify("insert into houses_devices_tree (tree, name) values (:tree, :name)", [
                     "tree" => $tree,
                     "name" => $newName,
                 ]);
@@ -3920,7 +3920,7 @@
                     return false;
                 }
 
-                return $this->db->modify("update core_devices_tree set name = :name where tree = :tree", [
+                return $this->db->modify("update houses_devices_tree set name = :name where tree = :tree", [
                     "tree" => $tree,
                     "name" => $name,
                 ]);
@@ -3936,13 +3936,13 @@
                     return false;
                 }
 
-                $leafs = $this->db->get("select * from core_devices_tree");
+                $leafs = $this->db->get("select * from houses_devices_tree");
 
                 $c = 0;
 
                 foreach ($leafs as $leaf) {
                     if (substr($leaf["tree"], 0, strlen($tree)) == $tree) {
-                        $c += $this->db->modify("delete from core_devices_tree where tree = :tree", [
+                        $c += $this->db->modify("delete from houses_devices_tree where tree = :tree", [
                             "tree" => $leaf["tree"],
                         ]);
                     }
@@ -3956,7 +3956,7 @@
              */
 
             public function getTree() {
-                return $this->db->get("select * from core_devices_tree");
+                return $this->db->get("select * from houses_devices_tree");
             }
         }
     }
