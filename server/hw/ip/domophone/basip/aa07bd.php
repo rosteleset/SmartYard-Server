@@ -429,11 +429,12 @@ class aa07bd extends domophone implements
             'valid' => [
                 'passes' => [
                     'is_permanent' => true,
-                    'max_passes' => null,
-                    'time' => [
-                        'from' => 0,
-                        'is_permanent' => true,
-                        'to' => 2147483647
+                    'max_passes' => 0,
+                    ],
+                'time' => [
+                     'from' => null,
+                     'is_permanent' => true,
+                     'to' => null
                     ],
                 ],
             ],
