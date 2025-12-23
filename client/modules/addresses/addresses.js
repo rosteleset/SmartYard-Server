@@ -319,7 +319,7 @@
 
         let t = buildTreeFromPaths(tree);
 
-        function hh(tree, c) {
+        function hh(tree) {
             let h = '';
 
             let t = tree.sort((a, b) => {
