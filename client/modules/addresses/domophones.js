@@ -23,14 +23,16 @@
         fail(modules.addresses.domophones.route);
     },
 
-    doModifyDomophone: function (domophone) {
+    doModifyDomophone: function (domophone, params) {
         loadingStart();
         PUT("houses", "domophone", domophone.domophoneId, domophone).
         fail(FAIL).
         done(() => {
             message(i18n("addresses.domophoneWasChanged"))
         }).
-        always(modules.addresses.domophones.route);
+        always(() => {
+            modules.addresses.domophones.route(params);
+        });
     },
 
     doDeleteDomophone: function (domophoneId) {
@@ -227,7 +229,7 @@
         });
     },
 
-    modifyDomophone: function (domophoneId) {
+    modifyDomophone: function (domophoneId, params) {
         let models = [];
         let servers = [];
 
@@ -457,7 +459,7 @@
                     if (result.delete === "yes") {
                         modules.addresses.domophones.deleteDomophone(domophoneId);
                     } else {
-                        modules.addresses.domophones.doModifyDomophone(result);
+                        modules.addresses.domophones.doModifyDomophone(result, params);
                     }
                 },
             });
@@ -538,7 +540,9 @@
                         modules.addresses.domophones.filter = f;
                     },
                 },
-                edit: modules.addresses.domophones.modifyDomophone,
+                edit: id => {
+                    modules.addresses.domophones.modifyDomophone(id, params);
+                },
                 startPage: modules.addresses.domophones.startPage,
                 pageChange: p => {
                     modules.addresses.domophones.startPage = p;
@@ -568,38 +572,40 @@
                     let rows = [];
 
                     for (let i in modules.addresses.domophones.meta.domophones) {
-                        rows.push({
-                            uid: modules.addresses.domophones.meta.domophones[i].domophoneId,
-                            cols: [
-                                {
-                                    data: modules.addresses.domophones.meta.domophones[i].domophoneId,
-                                },
-                                {
-                                    data: (modules.addresses.domophones.meta.domophones[i].enabled && modules.addresses.domophones.meta.domophones[i].monitoring)
-                                        ? modules.addresses.domophones.handleDeviceStatus(
-                                            modules.addresses.domophones.meta.domophones[i].status
-                                                ? modules.addresses.domophones.meta.domophones[i].status.status : i18n("addresses.unknown"))
-                                        : modules.addresses.domophones.handleDeviceStatus(i18n("addresses.disabled")),
-                                    nowrap: true,
-                                },
-                                {
-                                    data: modules.addresses.domophones.meta.domophones[i].url,
-                                    nowrap: true,
-                                },
-                                {
-                                    data: modules.addresses.domophones.meta.models[modules.addresses.domophones.meta.domophones[i].model]?.title ?? "&nbsp;",
-                                    nowrap: true,
-                                },
-                                {
-                                    data: modules.addresses.domophones.meta.domophones[i].name ? modules.addresses.domophones.meta.domophones[i].name : "",
-                                    nowrap: true,
-                                },
-                                {
-                                    data: modules.addresses.domophones.meta.domophones[i].comments ? modules.addresses.domophones.meta.domophones[i].comments : "",
-                                    nowrap: true,
-                                },
-                            ],
-                        });
+                        if (!params.id || params.id == modules.addresses.domophones.meta.domophones[i].domophoneId) {
+                            rows.push({
+                                uid: modules.addresses.domophones.meta.domophones[i].domophoneId,
+                                cols: [
+                                    {
+                                        data: modules.addresses.domophones.meta.domophones[i].domophoneId,
+                                    },
+                                    {
+                                        data: (modules.addresses.domophones.meta.domophones[i].enabled && modules.addresses.domophones.meta.domophones[i].monitoring)
+                                            ? modules.addresses.domophones.handleDeviceStatus(
+                                                modules.addresses.domophones.meta.domophones[i].status
+                                                    ? modules.addresses.domophones.meta.domophones[i].status.status : i18n("addresses.unknown"))
+                                            : modules.addresses.domophones.handleDeviceStatus(i18n("addresses.disabled")),
+                                        nowrap: true,
+                                    },
+                                    {
+                                        data: modules.addresses.domophones.meta.domophones[i].url,
+                                        nowrap: true,
+                                    },
+                                    {
+                                        data: modules.addresses.domophones.meta.models[modules.addresses.domophones.meta.domophones[i].model]?.title ?? "&nbsp;",
+                                        nowrap: true,
+                                    },
+                                    {
+                                        data: modules.addresses.domophones.meta.domophones[i].name ? modules.addresses.domophones.meta.domophones[i].name : "",
+                                        nowrap: true,
+                                    },
+                                    {
+                                        data: modules.addresses.domophones.meta.domophones[i].comments ? modules.addresses.domophones.meta.domophones[i].comments : "",
+                                        nowrap: true,
+                                    },
+                                ],
+                            });
+                        }
                     }
 
                     return rows;

@@ -87,6 +87,7 @@
                     "monitoring" => "monitoring",
                     "webrtc" => "webrtc",
                     "ext" => "ext",
+                    "tree" => "tree",
                 ]);
 
                 foreach($cameras as $key => $camera) {
@@ -367,115 +368,6 @@
                     error_log("Error getting snapshot from '{$cameraData['url']}' using device method");
                     return null;
                 }
-            }
-
-            /**
-             * @inheritDoc
-             */
-
-            public function addLeaf($parent, $newName) {
-                if (!checkStr($newName)) {
-                    setLastError("invalidParams");
-                    return false;
-                }
-
-                $tree = $this->db->get("select * from houses_devices_tree");
-
-                $depth = count(explode(".", $parent));
-
-                $newLeaf = 0;
-
-                $f = false;
-
-                if ($parent) {
-                    foreach ($tree as $leaf) {
-                        if (substr($leaf["tree"], 0, strlen($parent)) == $parent) {
-                            $f = true;
-                            break;
-                        }
-                    }
-                } else {
-                    $f = true;
-                }
-
-                if (!$f) {
-                    setLastError("parentNotFound");
-                    return false;
-                }
-
-                foreach ($tree as $leaf) {
-                    $name = $leaf["name"];
-                    $leaf = $leaf["tree"];
-                    $ct = explode(".", $leaf);
-                    if (count($ct) == $depth + 1) {
-                        if ($name == $newName) {
-                            return false;
-                        }
-                        if ($newLeaf < $ct[count($ct) - 2]) {
-                            $newLeaf = $ct[count($ct) - 2];
-                        }
-                    }
-                }
-
-                $newLeaf++;
-
-                $tree = $parent . $newLeaf . '.';
-
-                $this->db->modify("insert into houses_devices_tree (tree, name) values (:tree, :name)", [
-                    "tree" => $tree,
-                    "name" => $newName,
-                ]);
-
-                return $tree;
-            }
-
-            /**
-             * @inheritDoc
-             */
-
-            public function modifyLeaf($tree, $name) {
-                if (!checkStr($tree) || !checkStr($name)) {
-                    setLastError("invalidParams");
-                    return false;
-                }
-
-                return $this->db->modify("update houses_devices_tree set name = :name where tree = :tree", [
-                    "tree" => $tree,
-                    "name" => $name,
-                ]);
-            }
-
-            /**
-             * @inheritDoc
-             */
-
-            public function deleteTree($tree) {
-                if (!checkStr($tree)) {
-                    setLastError("invalidParams");
-                    return false;
-                }
-
-                $leafs = $this->db->get("select * from houses_devices_tree");
-
-                $c = 0;
-
-                foreach ($leafs as $leaf) {
-                    if (substr($leaf["tree"], 0, strlen($tree)) == $tree) {
-                        $c += $this->db->modify("delete from houses_devices_tree where tree = :tree", [
-                            "tree" => $leaf["tree"],
-                        ]);
-                    }
-                }
-
-                return $c;
-            }
-
-            /**
-             * @inheritDoc
-             */
-
-            public function getTree() {
-                return $this->db->get("select * from houses_devices_tree");
             }
         }
     }

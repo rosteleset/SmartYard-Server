@@ -887,7 +887,6 @@
                         },
                         tabActivate: function (prefix, tab) {
                             if (tab == i18n("addresses.map")) {
-                                console.log(1);
                                 modules.addresses.houses.map.invalidateSize();
                             }
                         },
@@ -2016,6 +2015,7 @@
                     tree: treeName,
                 } : null).
                 done(result => {
+                    debugger;
                     if (result && result.tree) {
                         cb(result.tree);
                     } else {
@@ -2995,7 +2995,7 @@
                                         title: i18n("domophone"),
                                         disabled: ! modules.addresses.houses.meta.entrances[i].domophoneId,
                                         click: entranceId => {
-                                            window.location.href = "?#addresses.domophones&domophoneId=" + entrances[entranceId].domophoneId;
+                                            window.location.href = "?#addresses.domophones&id=" + entrances[entranceId].domophoneId;
                                         },
                                     },
                                     {
@@ -3003,7 +3003,7 @@
                                         title: i18n("camera"),
                                         disabled: ! modules.addresses.houses.meta.entrances[i].cameraId,
                                         click: entranceId => {
-                                            window.location.href = "?#addresses.cameras&cameraId=" + entrances[entranceId].cameraId;
+                                            window.location.href = "?#addresses.cameras&id=" + entrances[entranceId].cameraId;
                                         },
                                     },
                                     {
@@ -3094,11 +3094,11 @@
                                 cols: [
                                     {
                                         data: modules.addresses.houses.meta.cameras[i].cameraId ? modules.addresses.houses.meta.cameras[i].cameraId : i18n("addresses.deleted"),
-                                        click: modules.addresses.houses.meta.cameras[i].cameraId ? ("#addresses.cameras&filter=" + modules.addresses.houses.meta.cameras[i].cameraId) : false,
+                                        click: modules.addresses.houses.meta.cameras[i].cameraId ? ("#addresses.cameras&id=" + modules.addresses.houses.meta.cameras[i].cameraId) : false,
                                     },
                                     {
                                         data: modules.addresses.houses.meta.cameras[i].url ? modules.addresses.houses.meta.cameras[i].url : "",
-                                        click: modules.addresses.houses.meta.cameras[i].cameraId ? ("#addresses.cameras&filter=" + modules.addresses.houses.meta.cameras[i].cameraId) : false,
+                                        click: modules.addresses.houses.meta.cameras[i].cameraId ? ("#addresses.cameras&id=" + modules.addresses.houses.meta.cameras[i].cameraId) : false,
                                     },
                                     {
                                         data: modules.addresses.houses.meta.cameras[i].name ? modules.addresses.houses.meta.cameras[i].name : "",

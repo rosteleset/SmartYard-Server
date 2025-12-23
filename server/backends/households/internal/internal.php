@@ -1050,6 +1050,7 @@
                     "ext" => "ext",
                     "concierge" => "concierge",
                     "sos" => "sos",
+                    "tree" => "tree",
                 ];
 
                 switch ($by) {
@@ -1449,6 +1450,7 @@
                     "ext" => "ext",
                     "concierge" => "concierge",
                     "sos" => "sos",
+                    "tree" => "tree",
                 ], [
                     "singlify"
                 ]);

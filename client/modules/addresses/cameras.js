@@ -21,14 +21,16 @@
         always(modules.addresses.cameras.route);
     },
 
-    doModifyCamera: function (camera) {
+    doModifyCamera: function (camera, params) {
         loadingStart();
         PUT("cameras", "camera", camera.cameraId, camera).
         fail(FAIL).
         done(() => {
             message(i18n("addresses.cameraWasChanged"))
         }).
-        always(modules.addresses.cameras.route);
+        always(() => {
+            modules.addresses.cameras.route(params)
+        });
     },
 
     doDeleteCamera: function (cameraId) {
@@ -420,7 +422,7 @@
         });
     },
 
-    modifyCamera: function (cameraId) {
+    modifyCamera: function (cameraId, params) {
         let models = [];
 
         for (let id in modules.addresses.cameras.meta.models) {
@@ -470,7 +472,9 @@
                 if (modules.addresses.cameras.meta.tree[i].tree[modules.addresses.cameras.meta.tree[i].tree.length - 1] == ".") {
                     modules.addresses.cameras.meta.tree[i].tree = modules.addresses.cameras.meta.tree[i].tree.substr(0, modules.addresses.cameras.meta.tree[i].tree.length - 1);
                 }
+                modules.addresses.cameras.meta.tree[i].id = modules.addresses.cameras.meta.tree[i].tree + ".";
                 modules.addresses.cameras.meta.tree[i].text = modules.addresses.cameras.meta.tree[i].name;
+                modules.addresses.cameras.meta.tree[i].state = (modules.addresses.cameras.meta.tree[i].id == camera.tree) ? { selected: true, } : {};
             }
 
             let t = buildTreeFromPaths(modules.addresses.cameras.meta.tree);
@@ -776,7 +780,8 @@
                         title: false,
                         tab: i18n("addresses.path"),
                         data: t,
-
+                        value: camera.tree,
+/*
                         addRoot: function (instance) {
                             POST("houses", "path", treeName, {
                                 text: i18n("addresses.newNode"),
@@ -892,6 +897,7 @@
                                 }, 100);
                             }
                         }
+*/
                     },
                     {
                         id: "ext",
@@ -1150,7 +1156,7 @@
                     if (result.delete === "yes") {
                         modules.addresses.cameras.deleteCamera(cameraId);
                     } else {
-                        modules.addresses.cameras.doModifyCamera(result);
+                        modules.addresses.cameras.doModifyCamera(result, params);
                     }
                 },
             });
@@ -1215,7 +1221,11 @@
         done(response => {
             modules.addresses.cameras.meta = response.cameras;
 
-            modules.addresses.treePath(response.cameras.tree, params.tree);
+            if (response.cameras.tree != "unavailable") {
+                modules.addresses.treePath(response.cameras.tree, params.tree);
+            } else {
+                subTop();
+            }
 
             cardTable({
                 target: "#mainForm",
@@ -1231,7 +1241,9 @@
                         modules.addresses.cameras.filter = f;
                     },
                 },
-                edit: modules.addresses.cameras.modifyCamera,
+                edit: id => {
+                    modules.addresses.cameras.modifyCamera(id, params);
+                },
                 columns: [
                     {
                         title: i18n("addresses.cameraIdList"),
@@ -1260,41 +1272,43 @@
                     let rows = [];
 
                     for (let i in modules.addresses.cameras.meta.cameras) {
-                        rows.push({
-                            uid: modules.addresses.cameras.meta.cameras[i].cameraId,
-                            cols: [
-                                {
-                                    data: modules.addresses.cameras.meta.cameras[i].cameraId,
-                                },
-                                {
-                                    data: (modules.addresses.cameras.meta.cameras[i].enabled && modules.addresses.cameras.meta.cameras[i].monitoring)
-                                        ? modules.addresses.cameras.handleDeviceStatus(
-                                            modules.addresses.cameras.meta.cameras[i].status
-                                                ? modules.addresses.cameras.meta.cameras[i].status.status : i18n("addresses.unknown"))
-                                        : modules.addresses.cameras.handleDeviceStatus(i18n("addresses.disabled")),
-                                    nowrap: true,
-                                },
-                                {
-                                    data: modules.addresses.cameras.meta.cameras[i].url,
-                                    nowrap: true,
-                                },
-                                {
-                                    data: modules.addresses.cameras.meta.cameras[i].common ? i18n("addresses.yes") : i18n("addresses.no"),
-                                    nowrap: true,
-                                },
-                                {
-                                    data: modules.addresses.cameras.meta.models[modules.addresses.cameras.meta.cameras[i].model]?.title ?? "&nbsp;",
-                                    nowrap: true,
-                                },
-                                {
-                                    data: modules.addresses.cameras.meta.cameras[i].name ? modules.addresses.cameras.meta.cameras[i].name : "&nbsp;",
-                                    nowrap: true,
-                                },
-                                {
-                                    data: modules.addresses.cameras.meta.cameras[i].comments ? modules.addresses.cameras.meta.cameras[i].comments : "&nbsp;",
-                                },
-                            ],
-                        });
+                        if (!params.id || params.id == modules.addresses.cameras.meta.cameras[i].cameraId) {
+                            rows.push({
+                                uid: modules.addresses.cameras.meta.cameras[i].cameraId,
+                                cols: [
+                                    {
+                                        data: modules.addresses.cameras.meta.cameras[i].cameraId,
+                                    },
+                                    {
+                                        data: (modules.addresses.cameras.meta.cameras[i].enabled && modules.addresses.cameras.meta.cameras[i].monitoring)
+                                            ? modules.addresses.cameras.handleDeviceStatus(
+                                                modules.addresses.cameras.meta.cameras[i].status
+                                                    ? modules.addresses.cameras.meta.cameras[i].status.status : i18n("addresses.unknown"))
+                                            : modules.addresses.cameras.handleDeviceStatus(i18n("addresses.disabled")),
+                                        nowrap: true,
+                                    },
+                                    {
+                                        data: modules.addresses.cameras.meta.cameras[i].url,
+                                        nowrap: true,
+                                    },
+                                    {
+                                        data: modules.addresses.cameras.meta.cameras[i].common ? i18n("addresses.yes") : i18n("addresses.no"),
+                                        nowrap: true,
+                                    },
+                                    {
+                                        data: modules.addresses.cameras.meta.models[modules.addresses.cameras.meta.cameras[i].model]?.title ?? "&nbsp;",
+                                        nowrap: true,
+                                    },
+                                    {
+                                        data: modules.addresses.cameras.meta.cameras[i].name ? modules.addresses.cameras.meta.cameras[i].name : "&nbsp;",
+                                        nowrap: true,
+                                    },
+                                    {
+                                        data: modules.addresses.cameras.meta.cameras[i].comments ? modules.addresses.cameras.meta.cameras[i].comments : "&nbsp;",
+                                    },
+                                ],
+                            });
+                        }
                     }
 
                     return rows;

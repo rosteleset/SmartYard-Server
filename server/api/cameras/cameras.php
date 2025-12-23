@@ -34,12 +34,13 @@
                 $cameras = loadBackend("cameras");
                 $configs = loadBackend("configs");
                 $frs = loadBackend("frs");
+                $households = loadBackend("households");
 
                 $response = [
                     "cameras" => $cameras->getCameras(@$params["by"] ?: false, @$params["query"] ?: false, true),
                     "models" => $configs->getCamerasModels(),
                     "frsServers" => $frs ? $frs->servers() : [],
-                    "tree" => $cameras->getTree(),
+                    "tree" => $households ? $households->getTree() : "unavailable",
                 ];
 
                 return api::ANSWER($response, "cameras");

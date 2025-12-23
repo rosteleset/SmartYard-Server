@@ -101,37 +101,5 @@
              */
 
             abstract public function getSnapshot(int $cameraId): ?string;
-
-            /**
-             * @param $parent
-             * @param $name
-             *
-             * @return boolean
-             */
-
-            abstract public function addLeaf($parent, $name);
-
-            /**
-             * @param $tree
-             * @param $name
-             *
-             * @return boolean
-             */
-
-            abstract public function modifyLeaf($tree, $name);
-
-            /**
-             * @param $tree
-             *
-             * @return boolean
-             */
-
-            abstract public function deleteTree($tree);
-
-            /**
-             * @return mixed
-             */
-
-            abstract public function getTree();
         }
     }

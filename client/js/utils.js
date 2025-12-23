@@ -470,6 +470,8 @@ function buildTreeFromPaths(data, delimiter = '.', ) {
                     tree: item.tree,
                     name: item.name,
                     text: item.text,
+                    id: item.id,
+                    state: item.state,
                     children: []
                 };
                 currentLevel.push(folder);

@@ -419,7 +419,7 @@
         subTop(h);
 
         $(".dtItem").off("click").on("click", function () {
-            window.location.href = refreshUrl({ set: { tree: $(this).attr("data-tree") } });
+            window.location.href = refreshUrl({ set: { tree: $(this).attr("data-tree") }, exclude: [ "id" ] });
         });
 
         $(".dtAddNode").off("click").on("click", () => {
@@ -432,7 +432,7 @@
                     }).
                     done(r => {
                         message(i18n("addresses.nodeWasAdded"));
-                        window.location.href = refreshUrl({ set: { tree: r.tree } });
+                        window.location.href = refreshUrl({ set: { tree: r.tree }, exclude: [ "id" ] });
                     }).
                     fail(FAIL).
                     fail(loadingDone);
