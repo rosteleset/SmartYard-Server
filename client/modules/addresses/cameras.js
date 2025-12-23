@@ -1068,14 +1068,22 @@
     },
 
     route: function (params) {
-        subTop();
         $("#altForm").hide();
 
         document.title = i18n("windowTitle") + " :: " + i18n("addresses.cameras");
 
+        if (params.filter && typeof params.filter !== "function") {
+            lStore("cameras.filter", params.filter);
+            modules.addresses.cameras.filter = params.filter;
+        } else {
+            modules.addresses.cameras.filter = lStore("cameras.filter");
+        }
+
         GET("cameras", "cameras", false, true).
         done(response => {
             modules.addresses.cameras.meta = response.cameras;
+
+            modules.addresses.treePath(response.cameras.tree, params.tree);
 
             cardTable({
                 target: "#mainForm",
@@ -1085,7 +1093,11 @@
                         caption: i18n("addresses.addCamera"),
                         click: modules.addresses.cameras.addCamera,
                     },
-                    filter: true,
+                    filter: modules.addresses.cameras.filter ? modules.addresses.cameras.filter : true,
+                    filterChange: f => {
+                        lStore("cameras.filter", f);
+                        modules.addresses.cameras.filter = f;
+                    },
                 },
                 edit: modules.addresses.cameras.modifyCamera,
                 columns: [
@@ -1116,8 +1128,6 @@
                     let rows = [];
 
                     for (let i in modules.addresses.cameras.meta.cameras) {
-                        if (params && params.filter && typeof(params.filter) != "function" && params.filter != modules.addresses.cameras.meta.cameras[i].cameraId) continue;
-
                         rows.push({
                             uid: modules.addresses.cameras.meta.cameras[i].cameraId,
                             cols: [

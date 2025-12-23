@@ -13,6 +13,7 @@
  * @param {Function} [params.title.button.click] - Click handler for the button.
  * @param {string} [params.title.caption] - Title text for the card.
  * @param {boolean|string} [params.title.filter] - Enables filter input; if string, sets initial filter value.
+ * @param {Function} [params.title.filterChange] - Callback when filter changes; receives filter string.
  * @param {Object} [params.title.altButton] - Alternative button in the header.
  * @param {string} [params.title.altButton.caption] - Alt button tooltip/caption.
  * @param {string} [params.title.altButton.icon] - FontAwesome icon class for the alt button.
@@ -32,7 +33,6 @@
  * @param {string} [params.dropDownHeader.menu] - Custom HTML for dropdown header.
  * @param {Function} [params.dropDownHeader.click] - Click handler for the dropdown header.
  * @param {Function} [params.pageChange] - Callback when page changes; receives new page number.
- * @param {Function} [params.filterChange] - Callback when filter changes; receives filter string.
  * @param {string|HTMLElement|jQuery} [params.append] - Content to append after the table.
  * @returns {jQuery|string} - If `params.target` is provided, returns the jQuery object for the rendered table; otherwise returns the table's HTML or ID.
  */
@@ -446,6 +446,12 @@ function cardTable(params) {
             rows = allRows;
         }
 
+        if (text) {
+            $(`#${filterInput}-search-button`).children().first().removeClass("fa-filter").addClass("fa-window-close");
+        } else {
+            $(`#${filterInput}-search-button`).children().first().addClass("fa-filter").removeClass("fa-window-close");
+        }
+
         if (apply) {
             doPager(1);
         }
@@ -512,17 +518,22 @@ function cardTable(params) {
                 filterTimeout = setTimeout(() => {
                     let f = $(e.currentTarget).val();
                     doFilter(f, true);
-                    if (typeof params.filterChange === "function") {
-                        params.filterChange(f);
+                    if (typeof params.title.filterChange === "function") {
+                        params.title.filterChange(f);
                     }
                 }, 500);
             });
             $("#" + filterInput + "-search-button").off("click").on("click", e => {
                 let f = $(e.currentTarget).parent().parent().children().first().val();
-                doFilter(f, true);
-                if (typeof params.filterChange === "function") {
-                    params.filterChange(f);
+                if (f) {
+                    f = "";
                 }
+                $("#" + filterInput).val(f);
+                doFilter(f, true);
+                if (typeof params.title.filterChange === "function") {
+                    params.title.filterChange(f);
+                }
+                $("#" + filterInput).focus();
             });
             if (params && params.title && params.title.filter && params.title.filter !== true) {
                 $("#" + filterInput).val(params.title.filter);

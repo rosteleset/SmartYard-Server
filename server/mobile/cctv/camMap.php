@@ -15,79 +15,75 @@
      * @apiSuccess {String} -.url url камеры
      * @apiSuccess {String} -.token токен
      * @apiSuccess {String="t","f"} -.frs подключен FRS
-     * @apiSuccess {String="nimble","flussonic", "macroscop", "trassir"} [-.serverType] тип видео-сервера ('flussonic' by default)
-     * @apiSuccess {String = "fmp4", "mpegts"} [-.hlsMode] режим HLS (used for flussonic only): "fmp4" (default for hevc support), "mpegts" (for flussonic below 21.02 version)
-     */
+     * @apiSuccess {String="nimble","flussonic","macroscop","trassir"} [-.serverType] тип видео-сервера ('flussonic' by default)
+     * @apiSuccess {String="fmp4","mpegts"} [-.hlsMode] режим HLS (used for flussonic only): "fmp4" (default for hevc support), "mpegts" (for flussonic below 21.02 version)
+     * @apiSuccess {object} [-.altCameras] дополнительные камеры
+     * @apiSuccess {String} -.altCameras.cameraId идентификатор камеры
+     * @apiSuccess {String} -.altCameras.url url камеры
+     * @apiSuccess {String} -.altCameras.token токен авторизации на медиа сервере
+     * @apiSuccess {String="t","f"} -.altCameras.frs подключен FRS
+     * @apiSuccess {String="nimble","flussonic","macroscop","trassir"} [-.altCameras.serverType] тип видео-сервера ('flussonic' by default)
+     * @apiSuccess {String="fmp4","mpegts"} [-.altCameras.hlsMode] режим HLS (used for flussonic only): "fmp4" (default for hevc support), "mpegts" (for flussonic below 21.02 version)
+    */
 
     auth();
 
     $ret = [];
 
-    $house_id = (int)@$postdata['houseId'];
     $households = loadBackend("households");
     $cameras = loadBackend("cameras");
+    $dvr = loadBackend("dvr");
 
-    $houses = [];
-    $cams = [];
+    $entrances = [];
 
     foreach ($subscriber['flats'] as $flat) {
-        $houseId = $flat['addressHouseId'];
-
-        if (array_key_exists($houseId, $houses)) {
-            $house = &$houses[$houseId];
-
-        } else {
-            $houses[$houseId] = [];
-            $house = &$houses[$houseId];
-            $house['houseId'] = strval($houseId);
-            $house['doors'] = [];
-        }
-
-        $flatDetail = $households->getFlat($flat['flatId']);
-        foreach ($flatDetail['entrances'] as $entrance) {
-            if (in_array($entrance['entranceId'], $house['doors'])) {
+        $flat_id = $flat['flatId'];
+        $r = $households->getEntrances('flatId', $flat_id);
+        foreach ($r as $entrance) {
+            $entrance_id = strval($entrance['entranceId']);
+            if (array_key_exists($entrance_id, $entrances)) {
                 continue;
             }
 
-            $e = $households->getEntrance($entrance['entranceId']);
+            $cam = $cameras->getCamera($entrance["cameraId"]);
+            if ($cam) {
+                $item = [
+                    'entranceId' => $entrance_id,
+                    'id' => strval($entrance['domophoneId']),
+                    'url' => $dvr->getDVRStreamURLForCam($cam)  ?? '',
+                    'token' => $dvr->getDVRTokenForCam($cam, $subscriber['subscriberId']) ?? '',
+                    'frs' => strlen($cam["frs"]) > 1 ? 't' : 'f',
+                    'serverType' => $dvr->getDVRServerForCam($cam)['type'] ?? 'flussonic',
+                    'hasSound' => boolval($cam['sound']),
+                ];
 
-            if ($e['cameraId'] && !array_key_exists($entrance['entranceId'], $cams)) {
-                $cam = $cameras->getCamera($e["cameraId"]);
-                $cams[$entrance['entranceId']] = $cam;
+                // alternative cameras
+                $alt_cameras = [];
+                for ($i = 1; $i < 8; $i++) {
+                    $cam = $cameras->getCamera($entrance["altCameraId$i"]);
+                    if ($cam) {
+                        $alt_cam = [
+                            'cameraId' => strval($entrance["altCameraId$i"]),
+                            'url' => $dvr->getDVRStreamURLForCam($cam) ?? '',
+                            'token' => $dvr->getDVRTokenForCam($cam, $subscriber['subscriberId']) ?? '',
+                            'frs' => strlen($cam["frs"]) > 1 ? 't' : 'f',
+                            'serverType' => $dvr->getDVRServerForCam($cam)['type'] ?? 'flussonic',
+                            'hasSound' => boolval($cam['sound']),
+                        ];
+                        $alt_cameras[] = $alt_cam;
+                    }
+                }
+                if (count($alt_cameras) > 0) {
+                    $item['altCameras'] = $alt_cameras;
+                }
+
+                $entrances[$entrance_id] = $item;
             }
-
-            $house['doors'][] = $entrance['entranceId'];
-
         }
-
     }
 
-    foreach ($cams as $entrance_id => $cam) {
-        $e = $households->getEntrance($entrance_id);
-        $dvr = loadBackend("dvr")->getDVRServerForCam($cam);
-        $frs = 'f';
-        $cameras = loadBackend("cameras");
-        if ($cameras) {
-            $vstream = $cameras->getCamera($e['cameraId']);
-            $frs = strlen($vstream["frs"]) > 1 ? 't' : 'f';
-        }
-        $item = [
-            'entranceId' => strval($e['entranceId']),
-            'id' => strval($e['domophoneId']),
-            'url' => loadBackend("dvr")->getDVRStreamURLForCam($cam),
-            'token' => loadBackend("dvr")->getDVRTokenForCam($cam, $subscriber['subscriberId']),
-            'frs' => $frs,
-            'serverType' => $dvr['type'],
-            "hasSound" => boolval($cam['sound']),
-        ];
-        if (array_key_exists("hlsMode", $dvr)) {
-            $item["hlsMode"] = $dvr["hlsMode"];
-        }
-        $ret[] = $item;
-    }
-
-    if (count($ret)) {
-        response(200, $ret);
+    if (count($entrances)) {
+        response(200, array_values($entrances));
     } else {
         response();
     }

@@ -424,8 +424,58 @@
              * @return mixed
              */
 
-            public function sudoOn() {
+            public function sudoOn($uid, $password) {
+                $timeout = @$this->bconfig["sudo_timeout"] ?: 30 * 60;
 
+                $user = $this->getUser($uid);
+
+                $dbPassword = $this->db->get("select password from core_users where login = :login", [
+                    "login" => $this->login,
+                ],
+                [
+                    "password" => "password",
+                ],
+                [
+                    "fieldlify",
+                ]);
+
+                if ((int)$user["sudo"] && password_verify($password, $dbPassword)) {
+                    $this->redis->setEx("SUDO:" . $this->login, $timeout, 1);
+                    return $timeout;
+                }
+
+                return false;
+            }
+
+            /**
+             * @return mixed
+             */
+
+            public function sudoOn2fa($uid, $token, $code) {
+                require_once "lib/GoogleAuthenticator/GoogleAuthenticator.php";
+
+                $timeout = @$this->bconfig["sudo_timeout"] ?: 30 * 60;
+
+                $user = $this->getUser($uid);
+
+                $ga = new \PHPGangsta_GoogleAuthenticator();
+
+                $secret = $this->db->get("select secret from core_users where login = :login", [
+                    "login" => $this->login,
+                ],
+                [
+                    "secret" => "secret",
+                ],
+                [
+                    "fieldlify",
+                ]);
+
+                if ((int)$user["sudo"] && $secret && $ga->verifyCode($secret, $code, 2)) {
+                    $this->redis->setEx("SUDO:" . $this->login, $timeout, 1);
+                    return $timeout;
+                }
+
+                return false;
             }
 
             /**
@@ -434,6 +484,7 @@
 
             public function sudoOff() {
                 $this->redis->del("SUDO:" . $this->login);
+
                 return true;
             }
 

@@ -322,6 +322,8 @@
             }
         }
 
+        modules.permissions.filter = lStore("permissions.filter", f);
+
         return cardTable({
             target: tgt,
             title: {
@@ -332,7 +334,11 @@
                     },
                 },
                 caption: group ? i18n("permissions.groups") : i18n("permissions.users"),
-                filter: true,
+                filter: modules.permissions.filter ? modules.permissions.filter : true,
+                filterChange: f => {
+                    lStore("permissions.filter", f);
+                    modules.permissions.filter = f;
+                },
             },
             edit: uid => {
                 uid = uid.split('-');

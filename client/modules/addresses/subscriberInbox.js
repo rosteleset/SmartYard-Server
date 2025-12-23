@@ -63,6 +63,8 @@
     },
 
     renderSubscriberInbox: function (subscriberId) {
+        modules.addresses.subscriberInboxFilter = lStore("addresses.subscriberInboxFilter");
+
         loadingStart();
 
         GET("inbox", "message", subscriberId, true).
@@ -72,7 +74,6 @@
                 target: "#mainForm",
                 title: {
                     caption: i18n("addresses.messages"),
-                    filter: true,
                     pagerItemsCount: 250,
                     button: {
                         icon: "far fa-fw fa-envelope",
@@ -80,6 +81,11 @@
                         click: () => {
                             modules.addresses.subscriberInbox.sendMessage(subscriberId);
                         },
+                    },
+                    filter: modules.addresses.subscriberInboxFilter ? modules.addresses.subscriberInboxFilter : true,
+                    filterChange: f => {
+                        lStore("addresses.subscriberInboxFilter", f);
+                        modules.addresses.subscriberInboxFilter = f;
                     },
                 },
                 columns: [
@@ -151,7 +157,7 @@
             for (let i in a.addresses.houses) {
                 if (a.addresses.houses[i].houseId == params.houseId) {
                     document.title = i18n("windowTitle") + " :: " + a.addresses.houses[i].houseFull + ", " + params.flat;
-                    subTop(modules.addresses.path((parseInt(params.settlementId) ? "settlement" : "street"), parseInt(params.settlementId) ? params.settlementId : params.streetId, true) + "<i class=\"fas fa-xs fa-angle-double-right ml-2 mr-2\"></i>" + `<a href="?#addresses.houses&houseId=${params.houseId}">${a.addresses.houses[i].houseFull}</a>` + '<i class="fas fa-xs fa-angle-double-right ml-2 mr-2"></i>' + `<a href='?#addresses.subscribers&flatId=${params.flatId}&houseId=${params.houseId}&flat=${params.flat}&settlementId=${params.settlementId}&streetId=${params.streetId}'>` +  params.flat + '</a><i class="fas fa-xs fa-angle-double-right ml-2 mr-2"></i>' + params.phone);
+                    subTop(modules.addresses.addressPath((parseInt(params.settlementId) ? "settlement" : "street"), parseInt(params.settlementId) ? params.settlementId : params.streetId, true) + "<i class=\"fas fa-xs fa-angle-double-right ml-2 mr-2\"></i>" + `<a href="?#addresses.houses&houseId=${params.houseId}">${a.addresses.houses[i].houseFull}</a>` + '<i class="fas fa-xs fa-angle-double-right ml-2 mr-2"></i>' + `<a href='?#addresses.subscribers&flatId=${params.flatId}&houseId=${params.houseId}&flat=${params.flat}&settlementId=${params.settlementId}&streetId=${params.streetId}'>` +  params.flat + '</a><i class="fas fa-xs fa-angle-double-right ml-2 mr-2"></i>' + params.phone);
                     break;
                 }
             }

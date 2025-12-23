@@ -89,6 +89,7 @@
 
         "users": {
             "backend": "internal",
+            "sudo_timeout": 1800,
         },
 
         "geocoder": {

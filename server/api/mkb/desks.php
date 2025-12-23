@@ -1,16 +1,16 @@
 <?php
 
     /**
-     * @api {get} /api/mkb/decks get decks
+     * @api {get} /api/mkb/desks get desks
      *
      * @apiVersion 1.0.0
      *
-     * @apiName getDecks
+     * @apiName getDesks
      * @apiGroup mkb
      *
      * @apiHeader {String} Authorization authentication token
      *
-     * @apiSuccess {Object[]} decks
+     * @apiSuccess {Object[]} desks
      */
 
     /**
@@ -25,16 +25,16 @@
          * mkb method
          */
 
-        class decks extends api {
+        class desks extends api {
 
             public static function GET($params) {
                 $mkb = loadBackend("mkb");
 
                 if ($mkb) {
-                    $decks = $mkb->getDecks();
+                    $desks = $mkb->getDesks();
                 }
 
-                return api::ANSWER($mkb, ($mkb !== false) ? "decks" : false);
+                return api::ANSWER($mkb, ($mkb !== false) ? "desks" : false);
             }
 
             public static function index() {

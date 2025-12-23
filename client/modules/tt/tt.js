@@ -1590,7 +1590,7 @@
                 }
 
                 for (let o in filterNames) {
-                    filters += `<span class="dropdown">`;
+                    filters += `<span class="dropdown noselect">`;
                     if (o == 0) {
                         filters += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="ttFilter-${o}" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" data-flip="false" style="margin-left: -4px;"><i class="far fa-fw fa-caret-square-down mr-1"></i>${filterNames[o].trim()}</span>`;
                     } else {
@@ -2310,7 +2310,7 @@
                                                         leftSide: r.leftSide,
                                                     }).
                                                     done(() => {
-                                                        window.location.reload();
+                                                        window.location.href = refreshUrl();
                                                     }).
                                                     fail(FAIL).
                                                     fail(loadingDone);
@@ -2321,7 +2321,7 @@
                                                 loadingStart();
                                                 DELETE("tt", "favoriteFilter", filterName).
                                                 done(() => {
-                                                    window.location.reload();
+                                                    window.location.href = refreshUrl();
                                                 }).
                                                 fail(FAIL).
                                                 fail(loadingDone);

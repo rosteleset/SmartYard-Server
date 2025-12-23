@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {get} /api/mkb/cards/:deck get cards
+     * @api {get} /api/mkb/cards/:desk get cards
      *
      * @apiVersion 1.0.0
      *
@@ -10,7 +10,7 @@
      *
      * @apiHeader {String} Authorization authentication token
      *
-     * @apiParam {String} [deck]
+     * @apiParam {String} [desk]
      *
      * @apiSuccess {Object[]} cards
      */

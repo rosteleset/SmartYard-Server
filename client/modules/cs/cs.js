@@ -17,7 +17,7 @@
 
     init: function () {
         if (parseInt(myself.uid) > 0) {
-            if (AVAIL("cs", "sheets") && AVAIL("tt", "tt")) {
+            if (AVAIL("cs", "sheets") && AVAIL("tt", "tt") && modules.mqtt) {
                 this.menuItem = leftSide("fas fa-fw fa-table", i18n("cs.cs"), navigateUrl("cs"), "tt");
             }
         }

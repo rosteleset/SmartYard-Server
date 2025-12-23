@@ -913,7 +913,7 @@ code {
   margin-left: 2px!important;
 }
 
-.btn-checkbox-label {
+.noselect {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -khtml-user-select: none;

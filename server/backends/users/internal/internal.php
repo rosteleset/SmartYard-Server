@@ -405,7 +405,11 @@
                 try {
                     $a = loadBackend("authorization");
 
-                    $sth = $this->db->prepare("update core_users set real_name = :real_name, e_mail = :e_mail, phone = :phone, tg = :tg, notification = :notification, enabled = :enabled, default_route = :default_route, primary_group = :primary_group, service_account = :service_account, sudo = :sudo where uid = $uid");
+                    if ($this->login == "admin") {
+                        $sth = $this->db->prepare("update core_users set real_name = :real_name, e_mail = :e_mail, phone = :phone, tg = :tg, notification = :notification, enabled = :enabled, default_route = :default_route, primary_group = :primary_group, service_account = :service_account, sudo = :sudo where uid = $uid");
+                    } else {
+                        $sth = $this->db->prepare("update core_users set real_name = :real_name, e_mail = :e_mail, phone = :phone, tg = :tg, notification = :notification, enabled = :enabled, default_route = :default_route, primary_group = :primary_group, service_account = :service_account where uid = $uid");
+                    }
 
                     if ($persistentToken && strlen(trim($persistentToken)) === 32 && $uid && $enabled) {
                         $this->redis->set("PERSISTENT:" . trim($persistentToken) . ":" . $uid, json_encode([
@@ -427,7 +431,7 @@
                         }
                     }
 
-                    return $sth->execute([
+                    $m = [
                         ":real_name" => trim($realName),
                         ":e_mail" => trim($eMail) ? trim($eMail) : null,
                         ":phone" => trim($phone),
@@ -437,8 +441,13 @@
                         ":default_route" => trim($defaultRoute),
                         ":primary_group" => (int)$primaryGroup,
                         ":service_account" => (int)$serviceAccount,
-                        ":sudo" => (int)$sudo,
-                    ]);
+                    ];
+
+                    if ($this->login == "admin") {
+                        $m[":sudo"] = (int)$sudo;
+                    }
+
+                    return $sth->execute($m);
                 } catch (\Exception $e) {
                     error_log(print_r($e, true));
                     return false;
