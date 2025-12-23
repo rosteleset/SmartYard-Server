@@ -2881,7 +2881,7 @@
                                                 loadingDone();
                                             }, 1000);
                                         },
-                                        //disabled: !(modules.asterisk && modules.asterisk.ready && !modules.asterisk.currentSession),
+                                        disabled: !(modules.asterisk && modules.asterisk.ready && !modules.asterisk.currentSession),
                                     },
                                     {
                                         icon: "fas fa-home",
