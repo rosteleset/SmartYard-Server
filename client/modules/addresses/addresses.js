@@ -427,7 +427,7 @@
             mPrompt(i18n("addresses.node"), i18n("addresses.addTreeNode"), "", v => {
                 if ($.trim(v)) {
                     loadingStart();
-                    POST("addresses", "leaf", false, {
+                    POST("houses", "leaf", false, {
                         parent: leaf ? leaf : false,
                         name: $.trim(v),
                     }).
