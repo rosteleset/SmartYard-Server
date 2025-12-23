@@ -658,6 +658,7 @@
                     ]);
 
                     if ($flatId) {
+                        error_log(print_r($entrances, true));
                         for ($i = 0; $i < count($entrances); $i++) {
                             if (!checkInt($entrances[$i])) {
                                 return false;
@@ -1136,7 +1137,7 @@
                 $domophones = $this->db->get($q, $p, $r);
 
                 foreach ($domophones as $key => $domophone) {
-                    $domophones[$key]["ext"] = json_decode($domophone["ext"]);
+                    $domophones[$key]["ext"] = $domophone["ext"] ? json_decode($domophone["ext"]) : "";
                 }
 
                 $monitoring = loadBackend("monitoring");

@@ -193,17 +193,17 @@ function cardTable(params) {
                 h += ` class="${rows[i].class}"`;
             }
             if (typeof rows[i].uid !== "undefined") {
-                h += ` uid="${rows[i].uid}"`;
+                h += ` data-uid="${rows[i].uid}"`;
             }
             h += `>`;
             if (typeof params.edit === "function") {
-                h += `<td class="hoverable pointer ${editClass}" uid="${rows[i].uid}" title="${i18n("edit")}"><i class="far fa-faw fa-edit"></i></td>`;
+                h += `<td class="hoverable pointer ${editClass}" data-uid="${rows[i].uid}" title="${i18n("edit")}"><i class="far fa-faw fa-edit"></i></td>`;
             }
             for (let j in rows[i].cols) {
                 if (rows[i].cols[j].hidden) {
                     continue;
                 }
-                h += `<td rowId="${i}" colId="${j}" uid="${rows[i].uid}"`;
+                h += `<td data-row-id="${i}" colId="${j}" data-uid="${rows[i].uid}"`;
                 if (j == params.columns.length - 1 && !hasDropDowns && params.dropDownHeader) {
                     h += ' colspan="2"';
                 }
@@ -247,12 +247,12 @@ function cardTable(params) {
                         t += " " + rows[i].dropDown.items[0].class;
                     }
                     if (rows[i].dropDown.items[0].disabled || typeof rows[i].dropDown.items[0].click !== "function") {
-                        t += ` disabled opacity-disabled`;
+                        t += ` opacity-disabled click-suppress cursor`;
                     } else {
                         t += ` menuItem-${tableClass}`;
                         o = true;
                     }
-                    t += `" title="${rows[i].dropDown.items[0].title}" rowId="${i}" dropDownId="0" uid="${rows[i].uid}" action="${rows[i].dropDown.items[0].action?rows[i].dropDown.items[0].action:""}">`;
+                    t += `" title="${rows[i].dropDown.items[0].title}" data-row-id="${i}" data-dropdown-id="0" data-uid="${rows[i].uid}" data-action="${rows[i].dropDown.items[0].action ? rows[i].dropDown.items[0].action : ""}">`;
                     t += `<i class="${rows[i].dropDown.items[0].icon} fa-fw"></i>`;
                     t += `</span>`;
                 } else {
@@ -265,7 +265,7 @@ function cardTable(params) {
                         t += `<i class="fa-fw fas fa-bars"></i>`;
                     }
                     t += `</span>`;
-                    t += `<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="${ddId}">`;
+                    t += `<ul class="dropdown-menu dropdown-menu-right noselect click-suppress" aria-labelledby="${ddId}">`;
                     for (let j in rows[i].dropDown.items) {
                         if (rows[i].dropDown.items[j].title === "-") {
                             t += `<li class="dropdown-divider"></li>`;
@@ -275,12 +275,12 @@ function cardTable(params) {
                                 t += " " + rows[i].dropDown.items[j].class;
                             }
                             if (rows[i].dropDown.items[j].disabled || typeof rows[i].dropDown.items[j].click !== "function") {
-                                t += ` disabled opacity-disabled`;
+                                t += ` opacity-disabled click-suppress cursor`;
                             } else {
                                 t += ` menuItem-${tableClass}`;
                                 o = true;
                             }
-                            t += `" rowId="${i}" dropDownId="${j}" uid="${rows[i].uid}" action="${rows[i].dropDown.items[j].action?rows[i].dropDown.items[j].action:""}">`;
+                            t += `" data-row-id="${i}" data-dropdown-id="${j}" data-uid="${rows[i].uid}" data-action="${rows[i].dropDown.items[j].action ? rows[i].dropDown.items[j].action : ""}">`;
                             if (rows[i].dropDown.items[j].icon) {
                                 t += `<i class="${rows[i].dropDown.items[j].icon} fa-fw mr-2"></i>`;
                             } else {
@@ -460,23 +460,31 @@ function cardTable(params) {
     let filterTimeout = false;
 
     function addHandlers() {
-        $(".menuItem-" + tableClass).off("click").on("click", function () {
-            if ($(this).attr("dropDownId") && rows[parseInt($(this).attr("rowId"))].dropDown.items[parseInt($(this).attr("dropDownId"))] && typeof rows[parseInt($(this).attr("rowId"))].dropDown.items[parseInt($(this).attr("dropDownId"))].click === "function") {
-                rows[parseInt($(this).attr("rowId"))].dropDown.items[parseInt($(this).attr("dropDownId"))].click($(this).attr("uid"), $(this).attr("action"));
+        $(".menuItem-" + tableClass).off("click").on("click", function (e) {
+            if ($(this).attr("data-dropdown-id") && rows[parseInt($(this).attr("data-row-id"))].dropDown.items[parseInt($(this).attr("data-dropdown-id"))] && typeof rows[parseInt($(this).attr("data-row-id"))].dropDown.items[parseInt($(this).attr("data-dropdown-id"))].click === "function") {
+                rows[parseInt($(this).attr("data-row-id"))].dropDown.items[parseInt($(this).attr("data-dropdown-id"))].click($(this).attr("data-uid"), $(this).attr("data-action"));
             }
+            let m = $(this).parent().prev().parent();
+            setTimeout(() => {
+                m.dropdown('hide');
+            }, 5);
         });
 
         $("." + clickableClass).off("click").on("click", function () {
-            rows[parseInt($(this).attr("rowId"))].cols[parseInt($(this).attr("colId"))].click($(this).attr("uid"));
+            rows[parseInt($(this).attr("data-row-id"))].cols[parseInt($(this).attr("colId"))].click($(this).attr("data-uid"));
         });
 
         $("." + editClass).off("click").on("click", function () {
-            params.edit($(this).attr("uid"))
+            params.edit($(this).attr("data-uid"))
         });
 
         if (params.dropDownHeader && typeof params.dropDownHeader.click == "function") {
             $("#" + params.dropDownHeader.id).off("click").on("click", params.dropDownHeader.click);
         }
+
+        $(".click-suppress").off("click").on("click", e => {
+            e.originalEvent.stopPropagation();
+        });
     }
 
     if (params.target) {

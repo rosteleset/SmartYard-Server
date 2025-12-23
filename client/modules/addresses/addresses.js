@@ -367,7 +367,7 @@
 
         h += "<span class='dropdown noselect'>";
         h += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="dtRoot" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" data-flip="false"><i class="far fa-fw fa-caret-square-down mr-1"></i>${leaf ? l[leaf.split(".")[0] + "."] : i18n("addresses.all")}</span>`;
-        h += `<ul class="dropdown-menu" aria-labelledby="dtRoot">`;
+        h += `<ul class="dropdown-menu click-suppress" aria-labelledby="dtRoot">`;
 
         h += hh(t);
 
@@ -438,6 +438,11 @@
                     fail(loadingDone);
                 }
             }, false, i18n("add"));
+        });
+
+        $(".click-suppress").off("click").on("click", e => {
+            e.originalEvent.stopPropagation();
+            return false;
         });
     },
 
