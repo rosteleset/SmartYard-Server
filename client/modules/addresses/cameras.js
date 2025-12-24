@@ -1205,7 +1205,7 @@
             modules.addresses.cameras.meta = response.cameras;
 
             if (response.cameras.tree != "unavailable") {
-                modules.addresses.treePath(response.cameras.tree, params.tree);
+                modules.addresses.treePath(response.cameras.tree, params.tree, params.id);
             } else {
                 subTop();
             }
