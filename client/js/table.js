@@ -38,7 +38,14 @@
  */
 
 function cardTable(params) {
-    let h = `<div class="card mt-2">`;
+    let h = '';
+
+    if (params.modal) {
+        h = `<div class="card mb-0">`;
+    } else {
+        h = `<div class="card mt-2">`;
+    }
+
     let filterInput = '';
     let titleButton = '';
     let altButton = '';
@@ -555,4 +562,13 @@ function cardTable(params) {
     } else {
         return params.id ? params.id : h;
     }
+}
+
+function modalTable(params) {
+    params.modal = true;
+    params.target = "#tableModalBody";
+
+    cardTable(params);
+
+    $('#tableModal').modal('show');
 }

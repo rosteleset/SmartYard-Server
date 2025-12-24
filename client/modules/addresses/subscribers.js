@@ -574,7 +574,18 @@
                                     icon: "fas fa-key",
                                     title: i18n("addresses.keys"),
                                     click: subscriberId => {
-                                        window.location.href = "?#addresses.keys&query=" + subscriberId + "&by=1&houseId=" + params.houseId + "&flatId=" + params.flatId + "&phone=" + subscribers[subscriberId] + "&flat=" + params.flat + "&settlementId=" + params.settlementId + "&streetId=" + params.streetId + "&back=1";
+                                        //window.location.href = "?#addresses.keys&query=" + subscriberId + "&by=1&houseId=" + params.houseId + "&flatId=" + params.flatId + "&phone=" + subscribers[subscriberId] + "&flat=" + params.flat + "&settlementId=" + params.settlementId + "&streetId=" + params.streetId + "&back=1";
+                                        modules.addresses.keys.modalKeys({
+                                            query: subscriberId,
+                                            by: 1,
+                                            houseId: params.houseId,
+                                            flatId: params.flatId,
+                                            phone: subscribers[subscriberId],
+                                            flat: params.flat,
+                                            settlementId: params.settlementId,
+                                            streetId: params.streetId,
+                                            back: 1
+                                        });
                                     },
                                 },
                                 {

@@ -129,13 +129,17 @@
                     message(i18n("addresses.keyWasAdded"));
                 }).
                 always(() => {
-                    window.location = refreshUrl();
+                    if (params.modal) {
+                        modules.addresses.keys.modalKeys(params);
+                    } else {
+                        window.location = refreshUrl();
+                    }
                 });
             },
         });
     },
 
-    removeKey: function (keyId) {
+    removeKey: function (keyId, params) {
         mConfirm(i18n("addresses.confirmDeleteKey", keyId), i18n("confirm"), `danger:${i18n("addresses.deleteKey")}`, () => {
             DELETE("subscribers", "key", keyId).
             fail(FAIL).
@@ -144,12 +148,16 @@
                 message(i18n("addresses.keyWasDeleted"));
             }).
             always(() => {
-                window.location = refreshUrl();
+                if (params.modal) {
+                    modules.addresses.keys.modalKeys(params);
+                } else {
+                    window.location = refreshUrl();
+                }
             });
         });
     },
 
-    modifyKey: function (keyId) {
+    modifyKey: function (keyId, params) {
         loadingStart();
         QUERY("subscribers", "keys", {
             by: "keyId",
@@ -206,13 +214,110 @@
                             message(i18n("addresses.keyWasChanged"));
                         }).
                         always(() => {
-                            window.location = refreshUrl();
+                            if (params.modal) {
+                                modules.addresses.keys.modalKeys(params);
+                            } else {
+                                window.location = refreshUrl();
+                            }
                         });
                     },
                 });
             } else {
                 error(i18n("addresses.keyNotFound"));
             }
+        });
+    },
+
+    modalKeys: function (params) {
+        params.modal = true;
+
+        loadingStart();
+        QUERY("subscribers", "keys", {
+            by: params.by ? params.by : "0",
+            query: params.query ? params.query : "0",
+        }, true).
+        fail(FAILPAGE).
+        done(result => {
+            modalTable({
+                title: {
+                    caption: parseInt(params.by) ? i18n("addresses.objectKeys", i18n("addresses.keysType" + parseInt(params.by))) : i18n("addresses.superKeys"),
+                    button: {
+                        caption: i18n("addresses.addKey"),
+                        click: () => {
+                            modules.addresses.keys.addKey(params);
+                        },
+                    },
+                },
+                edit: keyId => {
+                    modules.addresses.keys.modifyKey(keyId, params);
+                },
+                columns: [
+                    {
+                        title: i18n("addresses.keyId"),
+                        nowrap: true,
+                    },
+                    {
+                        title: i18n("addresses.rfId"),
+                        nowrap: true,
+                    },
+                    {
+                        title: i18n("addresses.lastSeen"),
+                        nowrap: true,
+                    },
+                    {
+                        title: i18n("addresses.comments"),
+                        fullWidth: true,
+                    },
+                ],
+                rows: () => {
+                    let rows = [];
+/*
+                    for (let i = 0; i < 100; i++) {
+                        rows.push({
+                            keyId: i
+                        });
+                    }
+*/
+                    for (let i in result.keys) {
+                        rows.push({
+                            uid: result.keys[i].keyId,
+                            cols: [
+                                {
+                                    data: result.keys[i].keyId,
+                                    nowrap: true,
+                                },
+                                {
+                                    data: result.keys[i].rfId,
+                                    nowrap: true,
+                                },
+                                {
+                                    data: result.keys[i].lastSeen ? ttDate(result.keys[i].lastSeen) : "&nbsp;",
+                                    nowrap: true,
+                                },
+                                {
+                                    data: result.keys[i].comments,
+                                },
+                            ],
+                            dropDown: {
+                                items: [
+                                    {
+                                        icon: "fas fa-trash-alt",
+                                        title: i18n("addresses.deleteKey"),
+                                        class: "text-danger",
+                                        click: keyId => {
+                                            modules.addresses.keys.removeKey(keyId, params);
+                                        },
+                                    },
+                                ],
+                            },
+                        });
+                    }
+
+                    return rows;
+                },
+            });
+
+            loadingDone();
         });
     },
 
