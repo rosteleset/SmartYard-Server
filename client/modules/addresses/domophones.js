@@ -73,6 +73,16 @@
             })
         }
 
+        for (let i in modules.addresses.domophones.meta.tree) {
+            if (modules.addresses.domophones.meta.tree[i].tree[modules.addresses.domophones.meta.tree[i].tree.length - 1] == ".") {
+                modules.addresses.domophones.meta.tree[i].tree = modules.addresses.domophones.meta.tree[i].tree.substr(0, modules.addresses.domophones.meta.tree[i].tree.length - 1);
+            }
+            modules.addresses.domophones.meta.tree[i].id = modules.addresses.domophones.meta.tree[i].tree + ".";
+            modules.addresses.domophones.meta.tree[i].text = modules.addresses.domophones.meta.tree[i].name;
+        }
+
+        let t = buildTreeFromPaths(modules.addresses.domophones.meta.tree);
+
         cardForm({
             title: i18n("addresses.addDomophone"),
             footer: true,
@@ -218,6 +228,13 @@
                     tab: i18n("addresses.primary"),
                 },
                 {
+                    id: "tree",
+                    type: "jstree",
+                    title: false,
+                    tab: i18n("addresses.path"),
+                    data: t,
+                },
+                {
                     id: "ext",
                     type: "json",
                     title: false,
@@ -265,6 +282,17 @@
                 break;
             }
         }
+
+        for (let i in modules.addresses.domophones.meta.tree) {
+            if (modules.addresses.domophones.meta.tree[i].tree[modules.addresses.domophones.meta.tree[i].tree.length - 1] == ".") {
+                modules.addresses.domophones.meta.tree[i].tree = modules.addresses.domophones.meta.tree[i].tree.substr(0, modules.addresses.domophones.meta.tree[i].tree.length - 1);
+            }
+            modules.addresses.domophones.meta.tree[i].id = modules.addresses.domophones.meta.tree[i].tree + ".";
+            modules.addresses.domophones.meta.tree[i].text = modules.addresses.domophones.meta.tree[i].name;
+            modules.addresses.domophones.meta.tree[i].state = (modules.addresses.domophones.meta.tree[i].id == domophone.tree) ? { selected: true, } : {};
+        }
+
+        let t = buildTreeFromPaths(modules.addresses.domophones.meta.tree);
 
         if (domophone) {
             cardForm({
@@ -447,6 +475,14 @@
                         value: domophone.monitoring,
                     },
                     {
+                        id: "tree",
+                        type: "jstree",
+                        title: false,
+                        tab: i18n("addresses.path"),
+                        data: t,
+                        value: domophone.tree,
+                    },
+                    {
                         id: "ext",
                         type: "json",
                         title: false,
@@ -511,7 +547,6 @@
 
     route: function (params) {
         $("#altForm").hide();
-        subTop();
 
         document.title = i18n("windowTitle") + " :: " + i18n("addresses.domophones");
 
@@ -522,9 +557,15 @@
             modules.addresses.domophones.filter = lStore("domophones.filter");
         }
 
-        GET("houses", "domophones", false, true).
+        QUERY("houses", "domophones", { by: (params.tree ? "tree" : false), query: (params.tree ? params.tree : false) }, true).
         done(response => {
             modules.addresses.domophones.meta = response.domophones;
+
+            if (response.domophones.tree != "unavailable") {
+                modules.addresses.treePath(response.domophones.tree, params.tree);
+            } else {
+                subTop();
+            }
 
             cardTable({
                 target: "#mainForm",

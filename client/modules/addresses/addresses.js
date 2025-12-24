@@ -414,9 +414,13 @@
             }
         }
 
-        h += `<span style='position: absolute; right: 48px;' class='mr-3'><i class='fas fa-fw fa-plus-square text-success pointer dtAddNode'></i></span>`;
-        h += `<span style='position: absolute; right: 24px;' class='mr-3'><i class='fas fa-fw fa-pen-square text-primary pointer dtEditNode'></i></span>`;
-        h += `<span style='position: absolute; right: 0px;' class='mr-3'><i class='fas fa-fw fa-minus-square text-danger pointer dtDeleteNode'></i></span>`;
+        if (leaf) {
+            h += `<span style='position: absolute; right: 48px;' class='mr-3' title='${i18n("addresses.addTreeNode")}'><i class='fas fa-fw fa-plus-square text-success pointer dtAddNode'></i></span>`;
+            h += `<span style='position: absolute; right: 24px;' class='mr-3' title='${i18n("addresses.editTreeNode")}'><i class='fas fa-fw fa-pen-square text-primary pointer dtEditNode'></i></span>`;
+            h += `<span style='position: absolute; right: 0px;' class='mr-3' title='${i18n("addresses.deleteTreeNode")}'><i class='fas fa-fw fa-minus-square text-danger pointer dtDeleteNode'></i></span>`;
+        } else {
+            h += `<span style='position: absolute; right: 0px;' class='mr-3' title='${i18n("addresses.addTreeNode")}'><i class='fas fa-fw fa-plus-square text-success pointer dtAddNode'></i></span>`;
+        }
 
         subTop(h);
 
@@ -440,6 +444,36 @@
                     fail(loadingDone);
                 }
             }, false, i18n("add"));
+        });
+
+        $(".dtEditNode").off("click").on("click", () => {
+            mPrompt(i18n("addresses.node"), i18n("addresses.editTreeNode"), l[leaf], v => {
+                if ($.trim(v)) {
+                    loadingStart();
+                    PUT("houses", "leaf", leaf, {
+                        name: $.trim(v),
+                    }).
+                    done(() => {
+                        message(i18n("addresses.nodeWasModified"));
+                        window.location.href = refreshUrl({ exclude: [ "id" ] });
+                    }).
+                    fail(FAIL).
+                    fail(loadingDone);
+                }
+            });
+        });
+
+        $(".dtDeleteNode").off("click").on("click", () => {
+            mConfirm(i18n("addresses.confirmDeleteTreeNode", l[leaf]), i18n("confirm"), `danger:${i18n("addresses.deleteTreeNode")}`, () => {
+                    loadingStart();
+                    DELETE("houses", "leaf", leaf).
+                    done(() => {
+                        message(i18n("addresses.nodeWasDeleted"));
+                        window.location.href = refreshUrl({ exclude: [ "id", "tree" ] });
+                    }).
+                    fail(FAIL).
+                    fail(loadingDone);
+            });
         });
 
         $(".click-suppress").off("click").on("click", e => {

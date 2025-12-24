@@ -72,7 +72,7 @@
             public static function PUT($params) {
                 $households = loadBackend("households");
 
-                $success = $households->modifyLeaf($params["_id"]);
+                $success = $households->modifyLeaf($params["_id"], $params["name"]);
 
                 return api::ANSWER($success);
             }

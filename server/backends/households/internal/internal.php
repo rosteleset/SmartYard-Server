@@ -1130,7 +1130,9 @@
                     case "tree":
                         // TODO: dirty hack (typecast), need to fix!
                         $q = "select * from houses_domophones where tree like concat(:tree::character varying, '%') order by house_domophone_id";
-                        $p = $query;
+                        $p = [
+                            "tree" => $query,
+                        ];
                         break;
                 }
 

@@ -36,7 +36,7 @@
                     return api::ERROR();
                 } else {
                     $response = [
-                        "domophones" => $households->getDomophones(@$params["by"] ?: "all", @$params["by"] ?: false, true),
+                        "domophones" => $households->getDomophones(@$params["by"] ?: "all", @$params["query"] ?: false, true),
                         "models" => $configs->getDomophonesModels(),
                         "servers" => $sip->server("all"),
                         "tree" => $households->getTree(),

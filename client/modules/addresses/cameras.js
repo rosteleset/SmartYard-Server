@@ -77,6 +77,16 @@
             });
         }
 
+        for (let i in modules.addresses.cameras.meta.tree) {
+            if (modules.addresses.cameras.meta.tree[i].tree[modules.addresses.cameras.meta.tree[i].tree.length - 1] == ".") {
+                modules.addresses.cameras.meta.tree[i].tree = modules.addresses.cameras.meta.tree[i].tree.substr(0, modules.addresses.cameras.meta.tree[i].tree.length - 1);
+            }
+            modules.addresses.cameras.meta.tree[i].id = modules.addresses.cameras.meta.tree[i].tree + ".";
+            modules.addresses.cameras.meta.tree[i].text = modules.addresses.cameras.meta.tree[i].name;
+        }
+
+        let t = buildTreeFromPaths(modules.addresses.cameras.meta.tree);
+
         cardForm({
             title: i18n("addresses.addCamera"),
             footer: true,
@@ -339,6 +349,13 @@
                     placeholder: i18n("search"),
                     tab: i18n("addresses.map"),
                     noHover: true,
+                },
+                {
+                    id: "tree",
+                    type: "jstree",
+                    title: false,
+                    tab: i18n("addresses.path"),
+                    data: t,
                 },
                 {
                     id: "ext",

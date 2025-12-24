@@ -8,6 +8,7 @@
 ```
 
 ```diff
++ devices (cameras and domophones) tree
 + persistent tables filters in webUI
 + sudo-like administrative mode in webUI
 + fyeo in notes
