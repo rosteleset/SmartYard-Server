@@ -356,6 +356,7 @@
                     title: false,
                     tab: i18n("addresses.path"),
                     data: t,
+                    search: true,
                 },
                 {
                     id: "ext",
@@ -798,6 +799,7 @@
                         tab: i18n("addresses.path"),
                         data: t,
                         value: camera.tree,
+                        search: true,
 /*
                         addRoot: function (instance) {
                             POST("houses", "path", treeName, {
@@ -878,42 +880,6 @@
                                 });
                             }
                         },
-
-                        search: function (instance, str) {
-                            if (str) {
-                                QUERYID("houses", "path", treeName, { search: str }).
-                                done(result => {
-                                    instance.jstree().settings.core.data = result.tree;
-                                    instance.jstree().refresh();
-                                    setTimeout(() => {
-                                        instance.jstree().search(str);
-                                        instance.jstree().settings.core.data = path;
-                                    }, 100);
-                                }).
-                                fail(FAIL);
-                            } else {
-                                instance.jstree().clear_search();
-
-                                QUERYID("houses", "path", entrance.path ? entrance.path : treeName, {
-                                    withParents: true,
-                                    tree: treeName,
-                                }).
-                                done(result => {
-                                    if (result && result.tree) {
-                                        instance.jstree().settings.core.data = result.tree;
-                                    } else {
-                                        instance.jstree().settings.core.data = [];
-                                    }
-                                    instance.jstree().refresh();
-                                }).
-                                fail(FAIL);
-
-                                setTimeout(() => {
-                                    instance.jstree().select_node(entrance.path);
-                                    instance.jstree().settings.core.data = path;
-                                }, 100);
-                            }
-                        }
 */
                     },
                     {

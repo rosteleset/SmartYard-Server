@@ -233,6 +233,7 @@
                     title: false,
                     tab: i18n("addresses.path"),
                     data: t,
+                    search: true,
                 },
                 {
                     id: "ext",
@@ -481,6 +482,7 @@
                         tab: i18n("addresses.path"),
                         data: t,
                         value: domophone.tree,
+                        search: true,
                     },
                     {
                         id: "ext",

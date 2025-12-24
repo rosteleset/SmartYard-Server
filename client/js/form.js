@@ -1672,17 +1672,45 @@ function cardForm(params) {
 
             $(`#${_prefix}${params.fields[i].id}-search`).off("keypress").on("keypress", e => {
                 if (e.keyCode === 13) {
+                    if (window.currentJsTreeTimeout) {
+                        clearTimeout(window.currentJsTreeTimeout);
+                        window.currentJsTreeTimeout = false;
+                    }
                     e.preventDefault();
                     $(`#${_prefix}${params.fields[i].id}-search-button`).click();
                     return false;
+                }
+                if (window.currentJsTreeTimeout) {
+                    clearTimeout(window.currentJsTreeTimeout);
+                    window.currentJsTreeTimeout = false;
+                }
+                window.currentJsTreeTimeout = setTimeout(() => {
+                    $(`#${_prefix}${params.fields[i].id}-search-button`).click();
+                    window.currentJsTreeTimeout = false;
+                }, 500);
+            });
+
+            $(`#${_prefix}${params.fields[i].id}-search`).off("keydown").on("keydown", e => {
+                if (e.keyCode == 8 || e.keyCode == 46) {
+                    if (window.currentJsTreeTimeout) {
+                        clearTimeout(window.currentJsTreeTimeout);
+                        window.currentJsTreeTimeout = false;
+                    }
+                    window.currentJsTreeTimeout = setTimeout(() => {
+                        $(`#${_prefix}${params.fields[i].id}-search-button`).click();
+                        window.currentJsTreeTimeout = false;
+                    }, 500);
                 }
             });
 
             $(`#${_prefix}${params.fields[i].id}-search-button`).off("click").on("click", () => {
                 let str = $.trim($(`#${_prefix}${params.fields[i].id}-search`).val());
-
                 if (str.length >= 3 || str.length == 0) {
-                    params.fields[i].search($(`#${_prefix}${params.fields[i].id}`), str);
+                    if (params.fields[i].search === true) {
+                        $(`#${_prefix}${params.fields[i].id}`).jstree(tree).search(str);
+                    } else {
+                        params.fields[i].search($(`#${_prefix}${params.fields[i].id}`), str);
+                    }
                 }
             });
 
