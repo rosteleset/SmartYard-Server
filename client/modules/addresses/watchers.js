@@ -110,7 +110,7 @@
         if (params.flat && params.houseId && params.flatId) {
             loadingStart();
 
-            modules.addresses.houses.loadHouse(params.houseId, () => {
+            modules.addresses.houses.loadHouse(params.houseId, false, () => {
                 QUERY("addresses", "addresses", {
                     houseId: params.houseId,
                 }).
@@ -120,7 +120,7 @@
                     for (let i in a.addresses.houses) {
                         if (a.addresses.houses[i].houseId == params.houseId) {
                             document.title = i18n("windowTitle") + " :: " + a.addresses.houses[i].houseFull + ", " + params.flat;
-                            subTop(modules.addresses.addressPath((parseInt(params.settlementId) ? "settlement" : "street"), parseInt(params.settlementId) ? params.settlementId:params.streetId, true) + "<i class=\"fas fa-xs fa-angle-double-right ml-2 mr-2\"></i>" + `<a href="?#addresses.houses&houseId=${params.houseId}">${a.addresses.houses[i].houseFull}</a>` + "<i class=\"fas fa-xs fa-angle-double-right ml-2 mr-2\"></i>" + `<a href="#" onclick="modules.addresses.houses.modifyFlat(${params.flatId}); event.preventDefault(); return false;">` + params.flat + "</a>");
+                            subTop(modules.addresses.addressPath((parseInt(params.settlementId) ? "settlement" : "street"), parseInt(params.settlementId) ? params.settlementId:params.streetId, true) + "<i class=\"fas fa-xs fa-angle-double-right ml-2 mr-2\"></i>" + `<a href="?#addresses.houses&houseId=${params.houseId}">${a.addresses.houses[i].house}</a>` + "<i class=\"fas fa-xs fa-angle-double-right ml-2 mr-2\"></i>" + `<a href="#" onclick="modules.addresses.houses.modifyFlat(${params.flatId}); event.preventDefault(); return false;">` + params.flat + "</a>");
                             break;
                         }
                     }

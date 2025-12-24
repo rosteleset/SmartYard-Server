@@ -219,48 +219,12 @@
     route: function (params) {
         $("#altForm").hide();
 
-        if (params.houseId) {
-            QUERY("addresses", "addresses", {
-                houseId: params.houseId,
-            }).
-            done(modules.addresses.addresses).
-            fail(FAIL).
-            done(a => {
-                for (let i in a.addresses.houses) {
-                    if (a.addresses.houses[i].houseId == params.houseId) {
-                        document.title = i18n("windowTitle") + " :: " + a.addresses.houses[i].houseFull + ", " + params.flat;
-
-                        if (modules.addresses.keys.menuItem) {
-                            $("#" + modules.addresses.keys.menuItem).children().first().attr("href", "?#addresses.keys&_=" + Math.random());
-                        }
-
-                        if (params.back) {
-                            let st = '';
-                            // 0 - universal, 1 - subscriber, 2 - flat, 3 - entrance, 4 - house, 5 - company
-                            if (parseInt(params.by) == 1) {
-                                st = modules.addresses.addressPath((parseInt(params.settlementId) ? "settlement" : "street"), parseInt(params.settlementId) ? params.settlementId : params.streetId, true) + "<i class=\"fas fa-xs fa-angle-double-right ml-2 mr-2\"></i>" + `<a href="?#addresses.houses&houseId=${params.houseId}">${a.addresses.houses[i].houseFull}</a>` + '<i class="fas fa-xs fa-angle-double-right ml-2 mr-2"></i>' + `<a href='?#addresses.subscribers&flatId=${params.flatId}&houseId=${params.houseId}&flat=${params.flat}&settlementId=${params.settlementId}&streetId=${params.streetId}'>` +  params.flat + '</a><i class="fas fa-xs fa-angle-double-right ml-2 mr-2"></i>' + params.phone;
-                            }
-                            if (parseInt(params.by) == 2) {
-                                st = modules.addresses.addressPath((parseInt(params.settlementId) ? "settlement" : "street"), parseInt(params.settlementId) ? params.settlementId : params.streetId, true) + "<i class=\"fas fa-xs fa-angle-double-right ml-2 mr-2\"></i>" + `<a href="?#addresses.houses&houseId=${params.houseId}">${a.addresses.houses[i].houseFull}</a>` + '<i class="fas fa-xs fa-angle-double-right ml-2 mr-2"></i>' + `<a href='?#addresses.subscribers&flatId=${params.flatId}&houseId=${params.houseId}&flat=${params.flat}&settlementId=${params.settlementId}&streetId=${params.streetId}'>` +  params.flat + '</a>';
-                            }
-                            subTop(st);
-                        } else {
-                            subTop();
-                        }
-
-                        if (parseInt(params.by)) {
-                            document.title = i18n("windowTitle") + " :: " + i18n("addresses.objectKeys", i18n("addresses.keysType" + parseInt(params.by)));
-                        } else {
-                            document.title = i18n("windowTitle") + " :: " + i18n("addresses.superKeys");
-                        }
-
-                        modules.addresses.keys.renderKeys(params);
-                        break;
-                    }
-                }
-            });
+        if (params.backStr && params.back) {
+            subTop(`<a href="?#${params.back}">${params.backStr}</a>${params.backStrPlus ? (", " + params.backStrPlus) : ""}`);
         } else {
-            modules.addresses.keys.renderKeys(params);
+            subTop();
         }
+
+        modules.addresses.keys.renderKeys(params);
     },
 }).init();

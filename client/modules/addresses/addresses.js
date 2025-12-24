@@ -3,6 +3,7 @@
     favorites: [],
     subModules: [
         "keys",
+        "cms",
         "houses",
         "domophones",
         "cameras",

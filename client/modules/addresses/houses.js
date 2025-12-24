@@ -1978,7 +1978,8 @@
 
     modifyCamera: function (cameraId, houseId) {
         loadingStart();
-        modules.addresses.houses.loadHouse(houseId, () => {
+
+        modules.addresses.houses.loadHouse(houseId, false, () => {
 
             let pathFirst = true;
             let treeName;
@@ -2682,7 +2683,7 @@
         });
     },
 
-    loadHouse: function(houseId, callback) {
+    loadHouse: function(houseId, plus, callback) {
         modules.addresses.houses.houseId = "0";
         modules.addresses.houses.settlementId = "0";
         modules.addresses.houses.streetId = "0";
@@ -2724,7 +2725,10 @@
                                 modules.addresses.meta.houses[i].settlementId ? "settlement" : "street",
                                 modules.addresses.meta.houses[i].settlementId ? modules.addresses.meta.houses[i].settlementId : modules.addresses.meta.houses[i].streetId,
                                 true
-                            ) + "<i class=\"fas fa-xs fa-angle-double-right ml-2 mr-2\"></i>" + modules.addresses.houses.meta.house.houseFull + favorite()
+                            ) +
+                            "<i class=\"fas fa-xs fa-angle-double-right ml-2 mr-2\"></i>" +
+                            (plus ? ("<a href='?#addresses.houses&houseId=" + houseId + "'>" + modules.addresses.houses.meta.house.house + "</a><i class=\"fas fa-xs fa-angle-double-right ml-2 mr-2\"></i>" + plus) : modules.addresses.houses.meta.house.house) +
+                            favorite()
                         );
                         f = true;
                     }
@@ -2770,7 +2774,7 @@
     },
 
     renderHouse: function (houseId) {
-        modules.addresses.houses.loadHouse(houseId, () => {
+        modules.addresses.houses.loadHouse(houseId, false, () => {
             cardTable({
                 target: "#mainForm",
                 title: {
@@ -3039,7 +3043,7 @@
                                         title: i18n("addresses.cms"),
                                         disabled: !modules.addresses.houses.meta.entrances[i].cms || modules.addresses.houses.meta.entrances[i].cms.toString() === "0",
                                         click: entranceId => {
-                                            window.location.href = "?#addresses.houses&show=cms&houseId=" + houseId + "&entranceId=" + entrances[entranceId].entranceId;
+                                            window.location.href = "?#addresses.cms&houseId=" + houseId + "&entranceId=" + entrances[entranceId].entranceId + "&entrance=" + encodeURIComponent(entrances[entranceId].entrance);
                                         },
                                     },
                                     {
@@ -3049,7 +3053,7 @@
                                         icon: "fas fa-key",
                                         title: i18n("addresses.keys"),
                                         click: entranceId => {
-                                            window.location.href = "?#addresses.keys&query=" + entranceId + "&by=3&backStr=" + encodeURIComponent(modules.addresses.houses.meta.house.houseFull + ", " + entrances[entranceId].entrance) + "&back=" + encodeURIComponent(hashParse("hash"));
+                                            window.location.href = "?#addresses.keys&query=" + entranceId + "&by=3&backStr=" + encodeURIComponent(modules.addresses.houses.meta.house.houseFull) + "&backStrPlus=" + encodeURIComponent(entrances[entranceId].entrance) + "&back=" + encodeURIComponent(hashParse("hash"));
                                         },
                                     },
                                 ],
@@ -3209,521 +3213,302 @@
         });
     },
 
-    renderEntranceCMS: function (houseId, entranceId) {
-        GET("houses", "cms", entranceId, true).
-        fail(FAIL).
-        fail(() => {
-            pageError();
-        }).
-        done(response => {
-            let cms_layout = response.cms;
-
-            modules.addresses.houses.loadHouse(houseId, () => {
-                let entrance = false;
-
-                for (let i in modules.addresses.houses.meta.entrances) {
-                    if (modules.addresses.houses.meta.entrances[i].entranceId == entranceId) {
-                        entrance = modules.addresses.houses.meta.entrances[i];
-                        break;
-                    }
-                }
-
-                if (entrance) {
-                    let cms = modules.addresses.houses.meta.cmses[entrance.cms];
-
-                    if (cms) {
-                        let h = `<div class="card mt-2">`;
-
-                        h += `<div class="card-body table-responsive p-0">`;
-
-                        let cmsi = 0;
-
-                        for (let i in cms.cms) {
-                            h += `<hr class="hr-text-white-large ml-3" data-content="${i}">`;
-                            h += `<table class="table table-hover ml-3" style="width: 0%;">`;
-
-                            let maxX = 0;
-                            for (let j in cms.cms[i]) {
-                                maxX = Math.max(maxX, cms.cms[i][j]);
-                            }
-
-                            h += `<thead>`;
-
-                            h += `<th><button type="button" class="btn btn-primary btn-xs cms-magic" data-cms="${cmsi}" title="${i18n("addresses.cmsMagic")}"><i class="fa-fw fas fa-magic"></i></button></th>`;
-
-                            for (let j = 0; j < maxX; j++) {
-                                h += `<th>${i18n("addresses.cmsD")}${j + cms.dozen_start}</th>`;
-                            }
-
-                            h += `</thead>`;
-
-                            h += `<tbody>`;
-
-                            for (let j in cms.cms[i]) {
-                                h += `<tr>`;
-                                h += `<td>${i18n("addresses.cmsU")}${parseInt(j)}</td>`;
-                                for (let k = 0; k < cms.cms[i][j]; k++) {
-                                    h += `<td>`;
-                                    h += `<input class="cmsa form-control form-control-sm pl-1 pr-1" data-cms="${cmsi}" data-dozen="${k}" data-unit="${j}" type="text" style="width: 40px; font-size: 75%; height: calc(1.5rem + 2px);" value="">`
-                                    h += `</td>`;
-                                }
-                                for (let k = cms.cms[i][j]; k < maxX; k++) {
-                                    h += `<td>&nbsp;</td>`;
-                                }
-                                h += `</tr>`;
-                            }
-
-                            h += `</tbody>`;
-                            h += `</table>`;
-
-                            cmsi++;
-                        }
-
-                        h += `<button id="entranceCmsSubmit" class="btn btn-primary ml-3 mb-2 mt-2">${i18n("apply")}</button>`;
-
-                        h += `</div>`;
-                        h += `</div>`;
-
-                        $("#mainForm").html(h);
-
-                        for (let i in cms_layout) {
-                            $(`.cmsa[data-cms='${cms_layout[i].cms}'][data-dozen='${cms_layout[i].dozen}'][data-unit='${cms_layout[i].unit}']`).val(cms_layout[i].apartment);
-                        }
-
-                        $("#entranceCmsSubmit").off("click").on("click", () => {
-                            let cmses = [];
-
-                            $(".cmsa").each(function () {
-                                let cms = $(this).attr("data-cms");
-                                let dozen = $(this).attr("data-dozen");
-                                let unit = $(this).attr("data-unit");
-                                let apartment = parseInt($(this).val());
-                                if (cms && dozen && unit && apartment) {
-                                    cmses.push({
-                                        cms,
-                                        dozen,
-                                        unit,
-                                        apartment,
-                                    });
-                                }
-                            });
-
-                            loadingStart();
-
-                            PUT("houses", "cms", entranceId, {
-                                cms: cmses,
-                            }).
-                            done(() => {
-                                message(i18n("addresses.changesWasSaved"));
-                                modules.addresses.houses.renderEntranceCMS(houseId, entranceId);
-                            }).
-                            fail(FAIL).
-                            fail(loadingDone);
-                        });
-
-                        $(".cms-magic").off("click").on("click", function () {
-                            let cms = $(this).attr("data-cms");
-
-                            cardForm({
-                                title: i18n("addresses.cmsMagic"),
-                                footer: true,
-                                borderless: true,
-                                topApply: true,
-                                apply: i18n("addresses.fill"),
-                                fields: [
-                                    {
-                                        id: "dozenFirst",
-                                        value: $(`.cmsa[data-cms='${cms}']:first`).attr("data-dozen"),
-                                        title: i18n("addresses.dozenFirst"),
-                                        validate: v => {
-                                            return parseInt(v) >= 0;
-                                        },
-                                    },
-                                    {
-                                        id: "unitFirst",
-                                        value: parseInt($(`.cmsa[data-cms='${cms}']:first`).attr("data-unit")) ? parseInt($(`.cmsa[data-cms='${cms}']:first`).attr("data-unit")) : parseInt($(`.cmsa[data-cms='${cms}']:first`).attr("data-unit")) + 1,
-                                        title: i18n("addresses.unitFirst"),
-                                        validate: v => {
-                                            return parseInt(v) >= 0;
-                                        },
-                                    },
-                                    {
-                                        id: "apartmentFirst",
-                                        title: i18n("addresses.apartmentFirst"),
-                                        value: "1",
-                                        validate: v => {
-                                            return parseInt(v) > 0;
-                                        },
-                                    },
-                                    {
-                                        id: "apartmentFillCount",
-                                        title: i18n("addresses.apartmentFillCount"),
-                                        value: $(`.cmsa[data-cms='${cms}']`).length,
-                                        validate: v => {
-                                            return parseInt(v) > 0;
-                                        },
-                                    },
-                                    {
-                                        id: "clearFirst",
-                                        title: i18n("addresses.cmsClearFirst"),
-                                        type: "tristate",
-                                        state0: i18n("no"),
-                                        state1: i18n("addresses.thisMatrix"),
-                                        state2: i18n("addresses.allMatrix"),
-                                    }
-                                ],
-                                callback: result => {
-                                    if (parseInt(result.clearFirst)) {
-                                        if (parseInt(result.clearFirst) == 1) {
-                                            $(`.cmsa[data-cms='${cms}']`).val("");
-                                        } else {
-                                            $(`.cmsa`).val("");
-                                        }
-                                    }
-                                    let d = result.dozenFirst;
-                                    let u = result.unitFirst;
-                                    let a = result.apartmentFirst;
-                                    let i = 0;
-                                    let e = 0;
-                                    while (i < result.apartmentFillCount) {
-                                        let n = $(`.cmsa[data-cms='${cms}'][data-dozen='${d}'][data-unit='${u}']`);
-                                        if (n.length) {
-                                            n.val(a);
-                                            i++;
-                                            a++;
-                                            u++;
-                                            e = 0;
-                                        } else {
-                                            d++;
-                                            if (!$(`.cmsa[data-cms='${cms}'][data-dozen='${d}']`).length) {
-                                                d = $(`.cmsa[data-cms='${cms}']:first`).attr("data-dozen");
-                                            }
-                                            u = parseInt($(`.cmsa[data-cms='${cms}'][data-dozen='${d}']:first`).attr("data-unit"));
-                                            e++;
-                                            if (e > result.apartmentFillCount) {
-                                                break;
-                                            }
-                                        }
-                                    }
-                                },
-                            });
-                        });
-
-                        loadingDone();
-                    } else {
-                        pageError(i18n("addresses.unknownOrInvalidCms"));
-                    }
-                } else {
-                    pageError(i18n("addresses.entranceNotFound"));
-                }
-            });
-        });
-    },
-
     route: function (params) {
         document.title = i18n("windowTitle") + " :: " + i18n("addresses.house");
 
-        if (params.show === "cms" && parseInt(params.entranceId) > 0) {
-            $("#altForm").hide();
+        modules.addresses.topMenu([{
+            title: i18n("addresses.addFlatsWizard"),
+            click: () => {
+                let entrances = [];
 
-            subTop();
-
-            modules.addresses.houses.renderEntranceCMS(params.houseId, params.entranceId);
-        } else {
-            modules.addresses.topMenu([{
-                title: i18n("addresses.addFlatsWizard"),
-                click: () => {
-                    let entrances = [];
-
-                    for (let i in modules.addresses.houses.meta.entrances) {
-                        entrances.push({
-                            id: modules.addresses.houses.meta.entrances[i].entranceId,
-                            text: i18n("addresses.entranceType" + modules.addresses.houses.meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules.addresses.houses.meta.entrances[i].entranceType.substring(1) + "Full") + " " + modules.addresses.houses.meta.entrances[i].entrance,
-                        });
-                    }
-
-                    cardForm({
-                        title: i18n("addresses.addFlats"),
-                        footer: true,
-                        borderless: true,
-                        topApply: true,
-                        size: "lg",
-                        apply: i18n("add"),
-                        fields: [
-                            {
-                                id: "firstFloor",
-                                value: "1",
-                                title: i18n("addresses.firstFloor"),
-                                validate: v => {
-                                    return parseInt(v) >= 0;
-                                },
-                            },
-                            {
-                                id: "firstFlat",
-                                value: "1",
-                                title: i18n("addresses.firstFlat"),
-                                validate: v => {
-                                    return parseInt(v) >= 0;
-                                },
-                            },
-                            {
-                                id: "flatsByFloor",
-                                title: i18n("addresses.flatsByFloor"),
-                                value: "1",
-                                validate: v => {
-                                    return parseInt(v) > 0;
-                                },
-                            },
-                            {
-                                id: "totalFlats",
-                                title: i18n("addresses.totalFlats"),
-                                value: "1",
-                                validate: v => {
-                                    return parseInt(v) > 0;
-                                },
-                            },
-                            {
-                                id: "entrances",
-                                type: "multiselect",
-                                title: i18n("addresses.entrances"),
-                                hidden: entrances.length <= 0,
-                                options: entrances,
-                            },
-                            {
-                                id: "manualBlock",
-                                type: "select",
-                                title: i18n("addresses.manualBlock"),
-                                placeholder: i18n("addresses.manualBlock"),
-                                options: [
-                                    {
-                                        id: "0",
-                                        text: i18n("no"),
-                                    },
-                                    {
-                                        id: "1",
-                                        text: i18n("yes"),
-                                    },
-                                ]
-                            },
-                            {
-                                id: "adminBlock",
-                                type: "select",
-                                title: i18n("addresses.adminBlock"),
-                                placeholder: i18n("addresses.adminBlock"),
-                                options: [
-                                    {
-                                        id: "0",
-                                        text: i18n("no"),
-                                    },
-                                    {
-                                        id: "1",
-                                        text: i18n("yes"),
-                                    },
-                                ]
-                            },
-                            {
-                                id: "plog",
-                                type: "select",
-                                title: i18n("addresses.plog"),
-                                placeholder: i18n("addresses.plog"),
-                                options: [
-                                    {
-                                        id: "0",
-                                        text: i18n("addresses.plogNone"),
-                                    },
-                                    {
-                                        id: "1",
-                                        text: i18n("addresses.plogAll"),
-                                    },
-                                    {
-                                        id: "2",
-                                        text: i18n("addresses.plogOwner"),
-                                    },
-                                    {
-                                        id: "3",
-                                        text: i18n("addresses.adminDisabled"),
-                                    },
-                                ],
-                                value: 1,
-                            },
-                            {
-                                id: "openCode",
-                                type: "noyes",
-                                title: i18n("addresses.openCode"),
-                            },
-                            {
-                                id: "autoOpen",
-                                type: "datetime-local",
-                                sec: true,
-                                title: i18n("addresses.autoOpen"),
-                            },
-                            {
-                                id: "whiteRabbit",
-                                type: "select",
-                                title: i18n("addresses.whiteRabbit"),
-                                placeholder: i18n("addresses.whiteRabbit"),
-                                options: [
-                                    {
-                                        id: "0",
-                                        text: i18n("no"),
-                                    },
-                                    {
-                                        id: "1",
-                                        text: i18n("addresses.1m"),
-                                    },
-                                    {
-                                        id: "2",
-                                        text: i18n("addresses.2m"),
-                                    },
-                                    {
-                                        id: "3",
-                                        text: i18n("addresses.3m"),
-                                    },
-                                    {
-                                        id: "5",
-                                        text: i18n("addresses.5m"),
-                                    },
-                                    {
-                                        id: "7",
-                                        text: i18n("addresses.7m"),
-                                    },
-                                    {
-                                        id: "10",
-                                        text: i18n("addresses.10m"),
-                                    },
-                                ]
-                            },
-                        ],
-                        callback: result => {
-                            let flats = [];
-                            let floor = parseInt(result.firstFloor);
-                            let flatsByFloor = 0;
-                            for (let f = parseInt(result.firstFlat); f < parseInt(result.firstFlat) + parseInt(result.totalFlats); f++) {
-                                flats.push({
-                                    houseId: params.houseId,
-                                    floor: floor,
-                                    flat: f,
-                                    code: md5(guid()),
-                                    entrances: result.entrances,
-                                    apartmentsAndLevels: false,
-                                    manualBlock: result.manualBlock,
-                                    adminBlock: result.adminBlock,
-                                    openCode: parseInt(result.openCode) ? "!" : "00000",
-                                    plog: result.plog,
-                                    autoOpen: result.autoOpen,
-                                    whiteRabbit: result.whiteRabbit,
-                                    sipEnabled: 0,
-                                    sipPassword: "",
-                                });
-                                flatsByFloor++;
-                                if (flatsByFloor >= parseInt(result.flatsByFloor)) {
-                                    flatsByFloor = 0;
-                                    floor++;
-                                }
-                            }
-                            let flatsAdded = 0;
-                            let flat = flats.shift();
-                            if (flat) {
-                                loadingStart();
-                                (function a(flat) {
-                                    POST("houses", "flat", false, flat).
-                                    done(() => {
-                                        flatsAdded++;
-                                    }).
-                                    always(() => {
-                                        flat = flats.shift();
-                                        if (flat) {
-                                            a(flat);
-                                        } else {
-                                            message(i18n("addresses.flatsWasAdded", flatsAdded));
-                                            modules.addresses.houses.renderHouse(params.houseId);
-                                        }
-                                    });
-                                })(flat);
-                            }
-                        },
+                for (let i in modules.addresses.houses.meta.entrances) {
+                    entrances.push({
+                        id: modules.addresses.houses.meta.entrances[i].entranceId,
+                        text: i18n("addresses.entranceType" + modules.addresses.houses.meta.entrances[i].entranceType.substring(0, 1).toUpperCase() + modules.addresses.houses.meta.entrances[i].entranceType.substring(1) + "Full") + " " + modules.addresses.houses.meta.entrances[i].entrance,
                     });
                 }
-            },
-            {
-                title: i18n("addresses.broadcast"),
-                click: function () {
-                    loadingStart();
-                    QUERY("subscribers", "subscribers", {
-                        by: "houseId",
-                        query: params.houseId
-                    }, true).
-                    fail(FAIL).
-                    done(result => {
-                        loadingDone();
-                        if (result && result.subscribers && result.subscribers.length) {
-                            cardForm({
-                                title: i18n("addresses.messageSend"),
-                                footer: true,
-                                borderless: true,
-                                topApply: true,
-                                apply: "addresses.doMessageSend",
-                                size: "lg",
-                                fields: [
-                                    {
-                                        id: "title",
-                                        type: "text",
-                                        title: i18n("addresses.messageTitle"),
-                                        placeholder: i18n("addresses.messageTitle"),
-                                        validate: v => {
-                                            return $.trim(v) !== "";
-                                        }
-                                    },
-                                    {
-                                        id: "body",
-                                        type: "area",
-                                        title: i18n("addresses.messageBody"),
-                                        placeholder: i18n("addresses.messageBody"),
-                                        validate: v => {
-                                            return $.trim(v) !== "";
-                                        }
-                                    },
-                                    {
-                                        id: "action",
-                                        type: "select2",
-                                        title: i18n("addresses.messageAction"),
-                                        options: [
-                                            {
-                                                value: "inbox",
-                                                text: i18n("addresses.messageActionInbox"),
-                                            },
-                                            {
-                                                value: "money",
-                                                text: i18n("addresses.messageActionBalancePlus"),
-                                            },
-                                        ]
-                                    },
-                                ],
-                                callback: msg => {
-                                    let n = 0;
-                                    (function send(r) {
-                                        let subscriber = result.subscribers.pop();
-                                        if (r && r.sent) {
-                                            n += r.sent.count;
-                                        }
-                                        if (subscriber) {
-                                            POST("inbox", "message", subscriber.subscriberId, msg).
-                                            fail(FAIL).
-                                            done(send);
-                                        } else {
-                                            message(i18n("addresses.messagesSent", n));
-                                        }
-                                    })();
-                                },
-                            });
-                        } else {
-                            warning(i18n("addresses.noSubscribersFond"));
-                        }
-                    });
-                },
-            }]);
 
-            modules.addresses.houses.renderHouse(params.houseId);
-        }
+                cardForm({
+                    title: i18n("addresses.addFlats"),
+                    footer: true,
+                    borderless: true,
+                    topApply: true,
+                    size: "lg",
+                    apply: i18n("add"),
+                    fields: [
+                        {
+                            id: "firstFloor",
+                            value: "1",
+                            title: i18n("addresses.firstFloor"),
+                            validate: v => {
+                                return parseInt(v) >= 0;
+                            },
+                        },
+                        {
+                            id: "firstFlat",
+                            value: "1",
+                            title: i18n("addresses.firstFlat"),
+                            validate: v => {
+                                return parseInt(v) >= 0;
+                            },
+                        },
+                        {
+                            id: "flatsByFloor",
+                            title: i18n("addresses.flatsByFloor"),
+                            value: "1",
+                            validate: v => {
+                                return parseInt(v) > 0;
+                            },
+                        },
+                        {
+                            id: "totalFlats",
+                            title: i18n("addresses.totalFlats"),
+                            value: "1",
+                            validate: v => {
+                                return parseInt(v) > 0;
+                            },
+                        },
+                        {
+                            id: "entrances",
+                            type: "multiselect",
+                            title: i18n("addresses.entrances"),
+                            hidden: entrances.length <= 0,
+                            options: entrances,
+                        },
+                        {
+                            id: "manualBlock",
+                            type: "select",
+                            title: i18n("addresses.manualBlock"),
+                            placeholder: i18n("addresses.manualBlock"),
+                            options: [
+                                {
+                                    id: "0",
+                                    text: i18n("no"),
+                                },
+                                {
+                                    id: "1",
+                                    text: i18n("yes"),
+                                },
+                            ]
+                        },
+                        {
+                            id: "adminBlock",
+                            type: "select",
+                            title: i18n("addresses.adminBlock"),
+                            placeholder: i18n("addresses.adminBlock"),
+                            options: [
+                                {
+                                    id: "0",
+                                    text: i18n("no"),
+                                },
+                                {
+                                    id: "1",
+                                    text: i18n("yes"),
+                                },
+                            ]
+                        },
+                        {
+                            id: "plog",
+                            type: "select",
+                            title: i18n("addresses.plog"),
+                            placeholder: i18n("addresses.plog"),
+                            options: [
+                                {
+                                    id: "0",
+                                    text: i18n("addresses.plogNone"),
+                                },
+                                {
+                                    id: "1",
+                                    text: i18n("addresses.plogAll"),
+                                },
+                                {
+                                    id: "2",
+                                    text: i18n("addresses.plogOwner"),
+                                },
+                                {
+                                    id: "3",
+                                    text: i18n("addresses.adminDisabled"),
+                                },
+                            ],
+                            value: 1,
+                        },
+                        {
+                            id: "openCode",
+                            type: "noyes",
+                            title: i18n("addresses.openCode"),
+                        },
+                        {
+                            id: "autoOpen",
+                            type: "datetime-local",
+                            sec: true,
+                            title: i18n("addresses.autoOpen"),
+                        },
+                        {
+                            id: "whiteRabbit",
+                            type: "select",
+                            title: i18n("addresses.whiteRabbit"),
+                            placeholder: i18n("addresses.whiteRabbit"),
+                            options: [
+                                {
+                                    id: "0",
+                                    text: i18n("no"),
+                                },
+                                {
+                                    id: "1",
+                                    text: i18n("addresses.1m"),
+                                },
+                                {
+                                    id: "2",
+                                    text: i18n("addresses.2m"),
+                                },
+                                {
+                                    id: "3",
+                                    text: i18n("addresses.3m"),
+                                },
+                                {
+                                    id: "5",
+                                    text: i18n("addresses.5m"),
+                                },
+                                {
+                                    id: "7",
+                                    text: i18n("addresses.7m"),
+                                },
+                                {
+                                    id: "10",
+                                    text: i18n("addresses.10m"),
+                                },
+                            ]
+                        },
+                    ],
+                    callback: result => {
+                        let flats = [];
+                        let floor = parseInt(result.firstFloor);
+                        let flatsByFloor = 0;
+                        for (let f = parseInt(result.firstFlat); f < parseInt(result.firstFlat) + parseInt(result.totalFlats); f++) {
+                            flats.push({
+                                houseId: params.houseId,
+                                floor: floor,
+                                flat: f,
+                                code: md5(guid()),
+                                entrances: result.entrances,
+                                apartmentsAndLevels: false,
+                                manualBlock: result.manualBlock,
+                                adminBlock: result.adminBlock,
+                                openCode: parseInt(result.openCode) ? "!" : "00000",
+                                plog: result.plog,
+                                autoOpen: result.autoOpen,
+                                whiteRabbit: result.whiteRabbit,
+                                sipEnabled: 0,
+                                sipPassword: "",
+                            });
+                            flatsByFloor++;
+                            if (flatsByFloor >= parseInt(result.flatsByFloor)) {
+                                flatsByFloor = 0;
+                                floor++;
+                            }
+                        }
+                        let flatsAdded = 0;
+                        let flat = flats.shift();
+                        if (flat) {
+                            loadingStart();
+                            (function a(flat) {
+                                POST("houses", "flat", false, flat).
+                                done(() => {
+                                    flatsAdded++;
+                                }).
+                                always(() => {
+                                    flat = flats.shift();
+                                    if (flat) {
+                                        a(flat);
+                                    } else {
+                                        message(i18n("addresses.flatsWasAdded", flatsAdded));
+                                        modules.addresses.houses.renderHouse(params.houseId);
+                                    }
+                                });
+                            })(flat);
+                        }
+                    },
+                });
+            }
+        },
+        {
+            title: i18n("addresses.broadcast"),
+            click: function () {
+                loadingStart();
+                QUERY("subscribers", "subscribers", {
+                    by: "houseId",
+                    query: params.houseId
+                }, true).
+                fail(FAIL).
+                done(result => {
+                    loadingDone();
+                    if (result && result.subscribers && result.subscribers.length) {
+                        cardForm({
+                            title: i18n("addresses.messageSend"),
+                            footer: true,
+                            borderless: true,
+                            topApply: true,
+                            apply: "addresses.doMessageSend",
+                            size: "lg",
+                            fields: [
+                                {
+                                    id: "title",
+                                    type: "text",
+                                    title: i18n("addresses.messageTitle"),
+                                    placeholder: i18n("addresses.messageTitle"),
+                                    validate: v => {
+                                        return $.trim(v) !== "";
+                                    }
+                                },
+                                {
+                                    id: "body",
+                                    type: "area",
+                                    title: i18n("addresses.messageBody"),
+                                    placeholder: i18n("addresses.messageBody"),
+                                    validate: v => {
+                                        return $.trim(v) !== "";
+                                    }
+                                },
+                                {
+                                    id: "action",
+                                    type: "select2",
+                                    title: i18n("addresses.messageAction"),
+                                    options: [
+                                        {
+                                            value: "inbox",
+                                            text: i18n("addresses.messageActionInbox"),
+                                        },
+                                        {
+                                            value: "money",
+                                            text: i18n("addresses.messageActionBalancePlus"),
+                                        },
+                                    ]
+                                },
+                            ],
+                            callback: msg => {
+                                let n = 0;
+                                (function send(r) {
+                                    let subscriber = result.subscribers.pop();
+                                    if (r && r.sent) {
+                                        n += r.sent.count;
+                                    }
+                                    if (subscriber) {
+                                        POST("inbox", "message", subscriber.subscriberId, msg).
+                                        fail(FAIL).
+                                        done(send);
+                                    } else {
+                                        message(i18n("addresses.messagesSent", n));
+                                    }
+                                })();
+                            },
+                        });
+                    } else {
+                        warning(i18n("addresses.noSubscribersFond"));
+                    }
+                });
+            },
+        }]);
+
+        modules.addresses.houses.renderHouse(params.houseId);
     },
 }).init();
