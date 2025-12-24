@@ -254,7 +254,7 @@ function cardTable(params) {
                         t += " " + rows[i].dropDown.items[0].class;
                     }
                     if (rows[i].dropDown.items[0].disabled || typeof rows[i].dropDown.items[0].click !== "function") {
-                        t += ` opacity-disabled click-suppress cursor`;
+                        t += ` disabled opacity-disabled click-suppress cursor`;
                     } else {
                         t += ` menuItem-${tableClass}`;
                         o = true;
@@ -282,7 +282,7 @@ function cardTable(params) {
                                 t += " " + rows[i].dropDown.items[j].class;
                             }
                             if (rows[i].dropDown.items[j].disabled || typeof rows[i].dropDown.items[j].click !== "function") {
-                                t += ` opacity-disabled click-suppress cursor`;
+                                t += ` disabled opacity-disabled click-suppress cursor`;
                             } else {
                                 t += ` menuItem-${tableClass}`;
                                 o = true;
