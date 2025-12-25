@@ -2883,7 +2883,7 @@
                                                     error(i18n("asterisk.dialFail"), i18n("asterisk.outgoingCall"), 5);
                                                 }
                                                 loadingDone();
-                                            }, 1000);
+                                            }, 500);
                                         },
                                         disabled: !(modules.asterisk && modules.asterisk.ready && !modules.asterisk.currentSession),
                                     },
@@ -2902,7 +2902,7 @@
                                                     error(i18n("asterisk.dialFail"), i18n("asterisk.outgoingCall"), 5);
                                                 }
                                                 loadingDone();
-                                            }, 1000);
+                                            }, 500);
                                         },
                                         disabled: !(modules.asterisk && modules.asterisk.ready && !modules.asterisk.currentSession),
                                     },

@@ -280,33 +280,33 @@ function FAILPAGE(response) {
     loadingDone();
 }
 
-function loadingStart() {
-    requestAnimationFrame(() => {
-        document.body.style.cursor = 'wait';
+function loadingStart(callback) {
+    document.body.style.cursor = 'wait';
 
-        autoZ($('#loading').modal({
-            backdrop: 'static',
-            keyboard: false,
-        }));
-    });
+    autoZ($('#loading').modal({
+        backdrop: 'static',
+        keyboard: false,
+    }));
+
+    if (callback) {
+        callback();
+    }
 }
 
 function loadingDone(stayHidden) {
-    requestAnimationFrame(() => {
-        document.body.style.cursor = 'default';
+    document.body.style.cursor = 'default';
 
-        xblur();
+    xblur();
 
-        $('#loading').modal('hide');
+    $('#loading').modal('hide');
 
-        if (stayHidden === true) {
-            $('#app').addClass("invisible");
-        } else {
-            $('#app').removeClass("invisible");
-        }
+    if (stayHidden === true) {
+        $('#app').addClass("invisible");
+    } else {
+        $('#app').removeClass("invisible");
+    }
 
-        $(window).resize();
-    });
+    $(window).resize();
 }
 
 function timeoutStart() {

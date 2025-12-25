@@ -953,3 +953,11 @@ code {
 .sudo {
   box-shadow: 0 3px 6px rgba(255, 0, 0, .80), 0 3px 6px rgba(0, 0, 0, .23)!important;
 }
+
+.rotate {
+  animation: rotate 3s infinite;
+}
+
+@keyframes rotate {
+  100% {transform: rotate(360deg);}
+}
