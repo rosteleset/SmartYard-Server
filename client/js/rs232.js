@@ -4,7 +4,7 @@ var mifare_port = false;
 
 function mobile_nfc_scanner() {
     NFC.scan().then(() => {
-        timeoutStart();
+        loadingStart();
         setTimeout(() => {
             timeoutDone();
             NFC.onreading = null;
@@ -14,14 +14,14 @@ function mobile_nfc_scanner() {
         }, 15000);
         NFC.onerror = () => {
             error(i18n("errors.cantReadNfcTag"));
-            timeoutDone();
+            loadingDone();
             NFC.onreading = null;
             NFC.onerror = null;
             NFC = null;
             NFC = new NDEFReader();
         };
         NFC.onreading = event => {
-            timeoutDone();
+            loadingDone();
             NFC.onreading = null;
             NFC.onerror = null;
             NFC = null;

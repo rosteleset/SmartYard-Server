@@ -309,20 +309,6 @@ function loadingDone(stayHidden) {
     $(window).resize();
 }
 
-function timeoutStart() {
-    autoZ($('#timeout').modal({
-        backdrop: 'static',
-        keyboard: false,
-    }));
-    $('.timeout-animate').each(function () {
-        this.beginElement();
-    });
-}
-
-function timeoutDone() {
-    $('#timeout').modal('hide');
-}
-
 function page404() {
     $("#mainForm").html("");
     $("#altForm").hide();
