@@ -1,4 +1,4 @@
-CREATE TABLE houses_devices_tree
+CREATE TABLE IF NOT EXISTS houses_devices_tree
 (
     tree CHARACTER VARYING NOT NULL PRIMARY KEY,
     name CHARACTER VARYING

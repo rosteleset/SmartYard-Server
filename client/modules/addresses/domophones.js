@@ -564,7 +564,7 @@
             modules.addresses.domophones.meta = response.domophones;
 
             if (response.domophones.tree != "unavailable") {
-                modules.addresses.treePath(response.domophones.tree, params.tree);
+                modules.addresses.treePath(response.domophones.tree, params.tree, params.id);
             } else {
                 subTop();
             }
