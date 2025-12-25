@@ -955,7 +955,7 @@ code {
 }
 
 .rotate {
-  animation: rotate 3s infinite;
+  animation: rotate 2s infinite linear;
 }
 
 @keyframes rotate {
