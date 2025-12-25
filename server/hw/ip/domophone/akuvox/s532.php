@@ -48,8 +48,8 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
     protected const USER_ID_PREFIX_FLAT = 'FLAT';
     protected const USER_ID_PREFIX_CMS = 'CMS';
 
+    protected const FLAG_CMS_DISABLED = '9999';
     protected const GROUP_NAME_DEFAULT = 'Default';
-    protected const GROUP_NAME_CMS_DISABLED = 'CMS_DISABLED';
 
     /**
      * @var User[]|null Users scheduled to be added during data sync.
@@ -67,9 +67,9 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
     protected ?array $usersToUpdate = null;
 
     /**
-     * @var Group[]|null Groups scheduled to be added during data sync.
+     * @var bool Flag set when users are changed, indicating that group synchronization is required.
      */
-    protected ?array $groupsToAdd = null;
+    protected bool $needSyncGroups = false;
 
     protected static function getMaxUsers(): int
     {
@@ -123,8 +123,6 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
         array $cmsLevels = [],
     ): void
     {
-        $this->ensureGroupExists($apartment);
-
         // Create a new user or use an existing one
         $userId = self::USER_ID_PREFIX_FLAT . 'x' . $apartment;
         $existingUser = $this->getUserUnique($userId);
@@ -133,13 +131,21 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
         $user->name = self::USER_ID_PREFIX_FLAT;
         $user->privatePin = $code === 0 ? '' : $code;
         $user->phoneNum = $sipNumbers[0] ?? '';
-        $user->group = $cmsEnabled ? $apartment : self::GROUP_NAME_CMS_DISABLED;
+        $user->group = $apartment;
+
+        /*
+         * This hidden field controls CMS state: if CMS is disabled,
+         * the corresponding CMS user will be moved to the default group during syncGroups().
+         */
+        $user->analogNumber = $cmsEnabled ? '' : self::FLAG_CMS_DISABLED;
 
         if ($existingUser === null) {
             $this->usersToAdd[] = $user;
         } else {
             $this->usersToUpdate[] = $user;
         }
+
+        $this->needSyncGroups = true;
     }
 
     public function configureMatrix(array $matrix): void
@@ -154,9 +160,6 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
                 'apartment' => $apartment,
             ] = $matrixCell;
 
-            $this->ensureGroupExists($apartment);
-
-            // Create a new user
             $user = new User(self::USER_ID_PREFIX_CMS . 'x' . $apartment);
 
             $user->name = self::USER_ID_PREFIX_CMS;
@@ -166,6 +169,8 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
 
             $this->usersToAdd[] = $user;
         }
+
+        $this->needSyncGroups = true;
     }
 
     public function configureSip(
@@ -193,6 +198,8 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
                 $this->usersToDelete[] = $user;
             }
         }
+
+        $this->needSyncGroups = true;
     }
 
     public function deleteRfid(string $code = ''): void
@@ -244,7 +251,6 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
         $this->setExternalReader(openRelayB: true);
         $this->setAccessGrantedSound();
         $this->setDirectoryEnabled(false);
-        $this->addGroups([new Group(self::GROUP_NAME_CMS_DISABLED)]);
     }
 
     public function setAdminPassword(string $password): void
@@ -322,11 +328,10 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
             $this->updateUsers($this->usersToUpdate);
         }
 
-        if ($this->groupsToAdd !== null) {
-            $this->addGroups($this->groupsToAdd);
+        if ($this->needSyncGroups) {
+            $this->syncGroups();
+            $this->needSyncGroups = false;
         }
-
-        $this->cleanupGroups();
     }
 
     public function transformDbConfig(array $dbConfig): array
@@ -356,36 +361,6 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
     }
 
     /**
-     * Removes groups that are not associated with any user.
-     *
-     * @return void
-     */
-    protected function cleanupGroups(): void
-    {
-        $groups = $this->getGroups();
-        $users = array_merge(
-            $this->findUsers(self::USER_ID_PREFIX_FLAT),
-            $this->findUsers(self::USER_ID_PREFIX_CMS),
-        );
-
-        $unusedGroups = array_filter($groups, function (Group $group) use ($users) {
-            if ($group->name === self::GROUP_NAME_CMS_DISABLED) {
-                return false;
-            }
-
-            foreach ($users as $user) {
-                if ($user->group === $group->number) {
-                    return false;
-                }
-            }
-
-            return true;
-        });
-
-        $this->executeChunkOperation('group', 'del', $unusedGroups, fn(Group $group) => ['ID' => $group->id]);
-    }
-
-    /**
      * Deletes all CMS users from the intercom
      *
      * @return void
@@ -397,41 +372,25 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
     }
 
     /**
+     * Deletes groups from the intercom.
+     *
+     * @param Group[] $groups Array of {@see Group} entities to be deleted.
+     * @return void
+     */
+    protected function deleteGroups(array $groups): void
+    {
+        $this->executeChunkOperation('group', 'del', $groups, fn(Group $group) => ['ID' => $group->id]);
+    }
+
+    /**
      * Deletes users from the intercom.
      *
      * @param User[] $users Array of {@see User} entities to be deleted.
+     * @return void
      */
     protected function deleteUsers(array $users): void
     {
         $this->executeChunkOperation('user', 'del', $users, fn(User $user) => ['ID' => $user->id]);
-    }
-
-    /**
-     * Adds a group for the given flat if it doesn't exist yet.
-     *
-     * @param int $flatNumber Flat number or group name.
-     */
-    protected function ensureGroupExists(int $flatNumber): void
-    {
-        // Check if the group already exists on the device
-        $existingGroup = $this->getGroupByName($flatNumber);
-        if ($existingGroup !== null) {
-            return;
-        }
-
-        // Check if the group is already scheduled for addition
-        if ($this->groupsToAdd !== null) {
-            foreach ($this->groupsToAdd as $group) {
-                if ($group->name === (string)$flatNumber) {
-                    return;
-                }
-            }
-        }
-
-        // Add new group
-        $group = new Group($flatNumber);
-        $group->number = $flatNumber;
-        $this->groupsToAdd[] = $group;
     }
 
     /**
@@ -484,7 +443,7 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
                 'apartment' => $flatNumber,
                 'code' => (int)$flatUser->privatePin,
                 'sipNumbers' => [$flatUser->phoneNum],
-                'cmsEnabled' => $flatUser->group !== self::GROUP_NAME_CMS_DISABLED,
+                'cmsEnabled' => $flatUser->analogNumber !== self::FLAG_CMS_DISABLED,
                 'cmsLevels' => [],
             ];
         }
@@ -495,25 +454,6 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
     protected function getCmsModel(): string
     {
         return $this->getConfigParams(['Config.DoorSetting.ANALOG.Type'])[0] ?? '';
-    }
-
-    /**
-     * Returns a group by its name.
-     *
-     * @param string $name Group name to search for.
-     * @return Group|null The matched {@see Group} object, or null if not found.
-     */
-    protected function getGroupByName(string $name): ?Group
-    {
-        $groups = $this->getGroups();
-
-        foreach ($groups as $group) {
-            if ($group->name === $name) {
-                return $group;
-            }
-        }
-
-        return null;
     }
 
     /**
@@ -700,6 +640,75 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
                 'newPassword' => base64_encode($password),
             ],
         ]);
+    }
+
+    /**
+     * Synchronizes groups and CMS users' groups.
+     *
+     * @return void
+     */
+    protected function syncGroups(): void
+    {
+        // Fetch all groups and users from the intercom
+        $groups = $this->getGroups();
+        $flatUsers = $this->findUsers(self::USER_ID_PREFIX_FLAT);
+        $cmsUsers = $this->findUsers(self::USER_ID_PREFIX_CMS);
+
+        // Prepare arrays for processing
+        $allUsers = array_merge($flatUsers, $cmsUsers);
+        $existingGroupNames = array_flip(array_column($groups, 'name'));
+        $userGroupNames = array_flip(array_column($allUsers, 'group'));
+
+        // Identify and create groups that exist for at least one user but not yet in the intercom
+        $groupsToAdd = [];
+        foreach (array_keys($userGroupNames) as $groupName) {
+            if (!isset($existingGroupNames[$groupName])) {
+                $group = new Group($groupName);
+                $group->number = $groupName;
+                $groupsToAdd[] = $group;
+            }
+        }
+
+        // Map CMS users by their flat number for fast lookup
+        $cmsUsersByFlatNumber = [];
+        foreach ($cmsUsers as $cmsUser) {
+            $cmsUsersByFlatNumber[self::extractFlatNumber($cmsUser)] = $cmsUser;
+        }
+
+        /*
+         * Synchronize CMS users' groups based on corresponding flat users:
+         * - Each flat user has a "hidden" field indicating if CMS is enabled or disabled.
+         * - If CMS is disabled, assign the CMS user to the default group.
+         * - If CMS is enabled, assign the CMS user to the group corresponding to the apartment number.
+         * - Only those CMS users whose group differs from the expected one should be updated.
+         */
+        $cmsUsersToUpdate = [];
+        foreach ($flatUsers as $flatUser) {
+            $flatNumber = self::extractFlatNumber($flatUser);
+
+            if (!isset($cmsUsersByFlatNumber[$flatNumber])) {
+                continue;
+            }
+
+            $cmsUser = $cmsUsersByFlatNumber[$flatNumber];
+
+            $expectedGroup = $flatUser->analogNumber === self::FLAG_CMS_DISABLED
+                ? self::GROUP_NAME_DEFAULT
+                : $flatNumber;
+
+            if ($cmsUser->group !== $expectedGroup) {
+                $cmsUser->group = $expectedGroup;
+                $cmsUsersToUpdate[] = $cmsUser;
+            }
+        }
+
+        // Identify groups that have no users assigned and should be deleted
+        $groupsToDelete = array_filter($groups, fn(Group $group) => !isset($userGroupNames[$group->name]));
+
+        // Apply all changes
+        $this->addGroups($groupsToAdd);
+        $this->updateUsers($cmsUsersToUpdate);
+        $this->deleteGroups($groupsToDelete);
     }
 
     /**
