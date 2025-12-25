@@ -568,7 +568,21 @@ function modalTable(params) {
     params.modal = true;
     params.target = "#tableModalBody";
 
+    if (params.caption) {
+        $("#tableModal").draggable({
+            handle: "#tableModalHeader",
+        });
+    }
+
+    $("#tableModalLabel").html(params.caption);
+
     cardTable(params);
+
+    if (params.caption) {
+        $("#tableModalHeader").show();
+    } else {
+        $("#tableModalHeader").hide();
+    }
 
     $('#tableModal').modal('show');
 }

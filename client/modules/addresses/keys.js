@@ -17,6 +17,7 @@
         fail(FAILPAGE).
         done(result => {
             let target = (params.modal ? modalTable : cardTable)({
+                caption: params.caption,
                 target: "#mainForm",
                 title: {
                     caption: parseInt(params.by) ? i18n("addresses.objectKeys", i18n("addresses.keysType" + parseInt(params.by))) : i18n("addresses.superKeys"),
@@ -51,6 +52,14 @@
                 rows: () => {
                     let rows = [];
 
+                    for (let i = 0; i < 100; i++) {
+                        result.keys.push({
+                            keyId: i,
+                            rfId: i,
+                            comments: i,
+                        });
+                    }
+
                     for (let i in result.keys) {
                         rows.push({
                             uid: result.keys[i].keyId,
@@ -68,7 +77,7 @@
                                     nowrap: true,
                                 },
                                 {
-                                    data: result.keys[i].comments,
+                                    data: result.keys[i].comments ? result.keys[i].comments : "&nbsp;",
                                 },
                             ],
                             dropDown: {
