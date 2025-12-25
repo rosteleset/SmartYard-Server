@@ -16,8 +16,8 @@
 
                 foreach ($versions as $v) {
                     if ($pre && $v["prerelease"] || (!$pre && !$v["prerelease"])) {
-                        if ($v["updated_at"] > $latest_updated_at) {
-                            $latest_updated_at = $v["updated_at"];
+                        if ($v["created_at"] > $latest_updated_at) {
+                            $latest_updated_at = $v["created_at"];
                             $latest_tag_name = $v["tag_name"];
                         }
                     }
