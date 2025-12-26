@@ -61,14 +61,34 @@
                 "handle": ".card-handle",
                 "animation": 150,
                 "group": "cols",
+
+                onEnd: e => {
+                    let s = $("#" + e.item.id).offset().top - $("#mainForm").offset().top - 8;
+                    if ($("html").scrollTop() > s) {
+                        $("html").scrollTo(s);
+                    }
+/*
+                    $(`#${e.to.id}`).children().each(function () {
+                        let el = $(this);
+                    });
+*/
+                },
             });
         });
 
         $(".subtasks").each(function () {
             let subtasks = $(this);
             new Sortable(document.getElementById(subtasks.attr("id")), {
-                "handle": ".custom-checkbox",
                 "animation": 150,
+
+                onEnd: e => {
+                    console.log(e);
+/*
+                    $(`#${e.to.id}`).children().each(function () {
+                        let el = $(this);
+                    });
+*/
+                },
             });
         });
 
@@ -120,6 +140,22 @@
                     pb.attr("data-minimized", "true").addClass("pt-3").removeClass("pt-1");
                 }
             }
+        });
+
+        $(".subtask-checkbox").off("change").on("change", function () {
+            let id = $(this).attr("data-card-id");
+            let p = 0, c = 0;
+
+            $(this).parent().parent().children().each(function () {
+                if ($(this).children().first().prop("checked")) {
+                    p++;
+                }
+                c++;
+            });
+
+            p = Math.round((p / c) * 1000) / 10;
+
+            $(`.progressbar-value[data-card-id="${id}"]`).css("width", p + "%").attr("aria-valuenow", p).text(p + "%");
         });
 
         $(".btn-min-max").off("click").on("click", function () {
@@ -191,7 +227,7 @@
             for (let i in card.subtasks) {
                 s += `
                     <div class="custom-control custom-checkbox">
-                        <input id="card-subtask-${card.id}-${i}" class="custom-control-input custom-control-input-primary custom-control-input-outline" type="checkbox" ${card.subtasks[i].checked ? "checked" :"" }>
+                        <input id="card-subtask-${card.id}-${i}" class="subtask-checkbox custom-control-input custom-control-input-primary custom-control-input-outline" type="checkbox"${card.subtasks[i].checked ? " checked " : " " }data-card-id=${card.id}>
                         <label for="card-subtask-${card.id}-${i}" class="pl-1 custom-control-label noselect text-no-bold">${card.subtasks[i].text}</label>
                     </div>
                 `;
@@ -203,7 +239,7 @@
 
             p = Math.round((p / card.subtasks.length) * 1000) / 10;
 
-            s += `</div><div class="pointer subtasks-progress pt-1 pb-1" data-card-id="${card.id}"><div class="progress"><div class="progress-bar progress-bar-danger progress-bar-striped" role="progressbar" style="width: ${p}%" aria-valuenow="${p}" aria-valuemin="0" aria-valuemax="100">${p}%</div></div></div>`;
+            s += `</div><div class="pointer subtasks-progress pt-1 pb-1" data-card-id="${card.id}"><div class="progress"><div class="progress-bar progress-bar-danger progress-bar-striped progressbar-value" role="progressbar" style="width: ${p}%" aria-valuenow="${p}" aria-valuemin="0" aria-valuemax="100" data-card-id="${card.id}">${p}%</div></div></div>`;
         }
 
         let b = '';
@@ -226,15 +262,14 @@
                     </span>
                 </span>
             `;
+        } else {
+            c = "&nbsp;";
         }
 
         let h = `
             <div id="card-${card.id}" class="card card-info card-outline">
-                <div class="card-header card-handle">
-                    <h5 class="card-title">
-                        <span class="btn btn-tool btn-checkbox pl-0" data-checked="0"><i class="far fa-circle"></i></span>
-                        ${c}
-                    </h5>
+                <div class="card-header card-handle pl-1 pr-3">
+                    <h5 class="card-title">${c}</h5>
                     <div class="card-tools">
                         <span class="btn btn-tool text-primary"><i class="fas fa-fw fa-link"></i></span>
                         <span class="btn btn-tool"><i class="fas fa-fw fa-edit"></i></span>
@@ -261,8 +296,8 @@
 
         let h = `
             <div id="card-${column.id}" class="card card-row card-${column.color} kanban-col">
-                <div class="card-header col-handle">
-                    <h3 class="card-title">${column.title}</h3>
+                <div class="card-header col-handle pl-3 pr-3">
+                    <h3 class="card-title pt-1">${column.title}</h3>
                     <div class="card-tools" data-column-id="${column.id}">
                         <span class="btn btn-tool"><i class="far fa-fw fa-clipboard"></i></span>
                         <span class="btn btn-tool"><i class="fas fa-fw fa-plus-circle"></i></span>
