@@ -286,7 +286,11 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
     ): void
     {
         parent::setDtmfCodes($code1, $code2, $code3, $codeCms);
-        $this->setConfigParams(['Config.DoorSetting.ANALOG.DTMF' => $codeCms]);
+
+        $this->setConfigParams([
+            'Config.DoorSetting.ANALOG.DTMF' => $codeCms,
+            'Config.Account1.DTMF.Type' => '2', // Accept only RFC2833 for incoming DTMF
+        ]);
     }
 
     public function setFreePassEnabled(bool $enabled): void
