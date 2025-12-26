@@ -484,6 +484,12 @@ function buildTreeFromPaths(data, delimiter = '.', ) {
     return root;
 }
 
+function sqlLike(text, pattern) {
+    let regexString = pattern.replace(/%/g, '.*').replace(/_/g, '.').replace(/\./g, '\\.');
+    let regex = new RegExp(`^${regexString}$`);
+    return regex.test(text);
+}
+
 Object.defineProperty(Array.prototype, "assoc", {
     value: function (key, target, val) {
         let arr = this;

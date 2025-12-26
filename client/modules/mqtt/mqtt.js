@@ -36,7 +36,7 @@
                 });
 
                 modules.mqtt.subscribe("redis/expire", (topic, payload) => {
-                    if (payload.key == "SUDO:" + myself.login) {
+                    if (payload.key == "SUDO:" + myself.login || sqlLike(payload.key, `AUTH:${lStore("_token")}:%`)) {
                         loadingStart();
                         setTimeout(() => {
                             window.onhashchange = hashChange;
