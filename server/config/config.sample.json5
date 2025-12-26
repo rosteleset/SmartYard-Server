@@ -346,7 +346,8 @@
         "port": 587,
         "username": "<!-- your smtp login here -->",
         "password": "<!-- your smtp password here -->",
-        "from": "RBT"
+        "from": "rbt-do-not-reply@example.com",
+        "from_name": "RBT",
     },
 
     "telegram": {

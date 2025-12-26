@@ -5,23 +5,23 @@
 
     function eMail($config, $to, $subj, $text) {
 
-        if (@$config && @$config["email"]) {
+        if (@$config) {
             $mail = new PHPMailer(true);
 
             try {
                 $mail->SMTPDebug = 0;
                 $mail->CharSet = 'UTF-8';
                 $mail->isSMTP();
-                $mail->Host = $config["email"]["server"];
+                $mail->Host = $config["server"];
                 $mail->SMTPAuth = true;
-                $mail->Username = $config["email"]["username"];
-                $mail->Password = $config["email"]["password"];
+                $mail->Username = $config["username"];
+                $mail->Password = $config["password"];
                 $mail->SMTPSecure = 'tls';
-                $mail->Port = $config["email"]["port"];
+                $mail->Port = $config["port"];
                 if (@$config["from_name"]) {
-                    $mail->setFrom($config["email"]["from"], $config["email"]["from_name"]);
+                    $mail->setFrom($config["from"], $config["from_name"]);
                 } else {
-                    $mail->setFrom($config["email"]["from"], $config["email"]["from"]);
+                    $mail->setFrom($config["from"], $config["from"]);
                 }
                 $mail->addAddress($to);
                 $mail->isHTML(true);

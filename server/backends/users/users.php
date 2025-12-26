@@ -181,7 +181,7 @@
             private function sendTg($tg, $subject, $message, $token) {
                 if ($tg && $token) {
                     try {
-                        $tg = @json_decode(file_get_contents("https://api.telegram.org/bot{$token}/sendMessage?chat_id=" . urlencode($tg) . "&text=" . urlencode($subject . "\n\n" . $message)), true);
+                        $tg = @json_decode(file_get_contents("https://api.telegram.org/bot{$token}/sendMessage?parse_mode=HTML&chat_id=" . urlencode($tg) . "&text=" . urlencode($subject . "\n\n" . $message)), true);
                         return $tg && @$tg["ok"];
                     } catch (\Exception $e) {
                         return false;
@@ -305,20 +305,20 @@
                         if ($this->sendTg(@$user["tg"], $subject, $message, @$this->config["telegram"]["bot"])) {
                             $id = $user["tg"];
                         } else {
-                            if ($this->sendEmail(@$user["login"], @$user["eMail"], $subject, $message, $this->config)) {
+                            if ($this->sendEmail(@$user["login"], @$user["eMail"], $subject, $message, $this->config["email"])) {
                                 $id = $user["eMail"];
                             }
                         }
                     } else
 
                     if ($user["notification"] == "email") {
-                        if ($this->sendEmail(@$user["login"], @$user["eMail"], $subject, $message, $this->config)) {
+                        if ($this->sendEmail(@$user["login"], @$user["eMail"], $subject, $message, $this->config["email"])) {
                             $id = $user["eMail"];
                         }
                     } else
 
                     if ($user["notification"] == "emailTg") {
-                        if ($this->sendEmail(@$user["login"], @$user["eMail"], $subject, $message, $this->config)) {
+                        if ($this->sendEmail(@$user["login"], @$user["eMail"], $subject, $message, $this->config["email"])) {
                             $id = $user["eMail"];
                         } else {
                             if ($this->sendTg(@$user["tg"], $subject, $message, @$this->config["telegram"]["bot"])) {
