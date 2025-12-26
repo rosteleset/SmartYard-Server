@@ -72,8 +72,7 @@ namespace backends\issueAdapter {
                 return ['isNew' => true, 'issueId' => $issue['id']];
         }
 
-        private function createIssueCallback($phone)
-        {
+        private function createIssueCallback($phone) {
             $prev_issue = $this->getLastOpenedIssue($phone, 9005, $this->config["backends"]["issueAdapter"]["anti_spam_interval"]);
             if ($prev_issue !== false)
                 return ['isNew' => false, 'issueId' => $prev_issue['issueId']];
@@ -106,8 +105,7 @@ namespace backends\issueAdapter {
                 return ['isNew' => true, 'issueId' => $issue['id']];
         }
 
-        private function createIssueForgotEverything($phone)
-        {
+        private function createIssueForgotEverything($phone) {
             $prev_issue = $this->getLastOpenedIssue($phone, 9005, $this->config["backends"]["issueAdapter"]["anti_spam_interval"]);
             if ($prev_issue !== false)
                 return ['isNew' => false, 'issueId' => $prev_issue['issueId']];
@@ -140,8 +138,7 @@ namespace backends\issueAdapter {
                 return ['isNew' => true, 'issueId' => $issue['id']];
         }
 
-        private function createIssueConfirmAddress($phone, $description, $name, $address, $lat, $lon)
-        {
+        private function createIssueConfirmAddress($phone, $description, $name, $address, $lat, $lon) {
             $params = $this->extractValuesForConfirmAddress($description);
             $name = $params['name'] ?? "";
             $address = $params['address'] ?? "";
@@ -166,8 +163,7 @@ namespace backends\issueAdapter {
             return $this->createLantaIssue($lat, $lon, $content);
         }
 
-        private function createIssueDeleteAddress($phone, $description, $name, $address, $lat, $lon, $reason)
-        {
+        private function createIssueDeleteAddress($phone, $description, $name, $address, $lat, $lon, $reason) {
             $prev_issue = $this->getLastOpenedIssue($phone, 9005, $this->config["backends"]["issueAdapter"]["anti_spam_interval"]);
             if ($prev_issue !== false)
                 return ['isNew' => false, 'issueId' => $prev_issue['issueId']];
@@ -192,8 +188,7 @@ namespace backends\issueAdapter {
             return $this->createLantaIssue($lat, $lon, $content);
         }
 
-        private function createIssueUnavailableServices($phone, $description, $name, $address, $lat, $lon, $services)
-        {
+        private function createIssueUnavailableServices($phone, $description, $name, $address, $lat, $lon, $services) {
             $prev_issue = $this->getLastOpenedIssue($phone, 9001, $this->config["backends"]["issueAdapter"]["anti_spam_interval"]);
             if ($prev_issue !== false)
                 return ['isNew' => false, 'issueId' => $prev_issue['issueId']];
@@ -218,8 +213,7 @@ namespace backends\issueAdapter {
             return $this->createLantaIssue($lat, $lon, $content);
         }
 
-        public function createIssueAvailableWithSharedServices($phone, $description, $name, $address, $lat, $lon, $services)
-        {
+        public function createIssueAvailableWithSharedServices($phone, $description, $name, $address, $lat, $lon, $services) {
             $prev_issue = $this->getLastOpenedIssue($phone, 9006, $this->config["backends"]["issueAdapter"]["anti_spam_interval"]);
             if ($prev_issue !== false)
                 return ['isNew' => false, 'issueId' => $prev_issue['issueId']];
@@ -245,8 +239,7 @@ namespace backends\issueAdapter {
             return $this->createLantaIssue($lat, $lon, $content);
         }
 
-        public function createIssueAvailableWithoutSharedServices($phone, $description, $name, $address, $lat, $lon, $services)
-        {
+        public function createIssueAvailableWithoutSharedServices($phone, $description, $name, $address, $lat, $lon, $services) {
             $prev_issue = $this->getLastOpenedIssue($phone, 9006, $this->config["backends"]["issueAdapter"]["anti_spam_interval"]);
             if ($prev_issue !== false)
                 return ['isNew' => false, 'issueId' => $prev_issue['issueId']];
@@ -272,8 +265,7 @@ namespace backends\issueAdapter {
             return $this->createLantaIssue($lat, $lon, $content);
         }
 
-        public function listConnectIssues($phone)
-        {
+        public function listConnectIssues($phone) {
             $content = [
                 "project" => "RTL",
                 "query" => [
@@ -320,8 +312,7 @@ namespace backends\issueAdapter {
             return $issues;
         }
 
-        public function commentIssue($issueId, $comment)
-        {
+        public function commentIssue($issueId, $comment) {
             $content = [
                 "issueId" => $issueId,
                 "comment" => $comment,
@@ -344,8 +335,7 @@ namespace backends\issueAdapter {
             return $result[0] ?? false;
         }
 
-        public function closeIssue($issueId)
-        {
+        public function closeIssue($issueId) {
             $content = [
                 "action" => "Закрыть"
             ];
@@ -458,10 +448,11 @@ namespace backends\issueAdapter {
          * @param $lat
          * @param $lon
          * @param array $content
+         *
          * @return mixed
          */
-        private function createLantaIssue($lat, $lon, array $content)
-        {
+
+        private function createLantaIssue($lat, $lon, array $content) {
             if (isset($lat) && isset($lon)) {
                 $cf_geo = [
                     "type" => "Point",
@@ -488,8 +479,7 @@ namespace backends\issueAdapter {
                 return ['isNew' => false, 'issueId' => null];
         }
 
-        private function getLastOpenedIssue($phone, $catalog, $anti_spam_interval, $address = null)
-        {
+        private function getLastOpenedIssue($phone, $catalog, $anti_spam_interval, $address = null) {
             $content = [
                 "project" => "RTL",
                 "query" => [
@@ -523,8 +513,7 @@ namespace backends\issueAdapter {
             return $result['issues']['issues'][0] ?? false;
         }
 
-        public function createIssue($phone, $data)
-        {
+        public function createIssue($phone, $data) {
             $description = $data['issue']['description'];
             $summary = $data['issue']['summary'];
 
@@ -558,8 +547,7 @@ namespace backends\issueAdapter {
             return false;
         }
 
-        public function actionIssue($data)
-        {
+        public function actionIssue($data) {
             $issueId = @$data['key'];
             $action = @$data['action'];
             $customFields = @$data['customFields'];

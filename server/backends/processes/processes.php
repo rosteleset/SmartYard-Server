@@ -12,8 +12,8 @@
         /**
          * base processes class
          */
-        abstract class processes extends backend
-        {
+
+        abstract class processes extends backend {
 //
         }
     }

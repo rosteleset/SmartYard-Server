@@ -30,11 +30,11 @@
                 require_once __DIR__ . '/../../../utils/clickhouse.php';
 
                 $this->clickhouse = new \clickhouse(
-                    @$config['clickhouse']['host']?:'127.0.0.1',
-                    @$config['clickhouse']['port']?:8123,
-                    @$config['clickhouse']['username']?:'default',
-                    @$config['clickhouse']['password']?:'qqq',
-                    @$config['clickhouse']['database']?:'default'
+                    @$config['clickhouse']['host'] ?: '127.0.0.1',
+                    @$config['clickhouse']['port'] ?: 8123,
+                    @$config['clickhouse']['username'] ?: 'default',
+                    @$config['clickhouse']['password'] ?: 'qqq',
+                    @$config['clickhouse']['database'] ?: 'default'
                 );
             }
 

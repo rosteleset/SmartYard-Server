@@ -4,16 +4,16 @@
      * backends plog namespace
      */
 
-    namespace backends\plog
-    {
+    namespace backends\plog {
 
         use backends\backend;
 
         /**
          * base plog class
          */
-        abstract class plog extends backend
-        {
+
+        abstract class plog extends backend {
+
             //типы событий
             const EVENT_UNANSWERED_CALL = 1;
             const EVENT_ANSWERED_CALL = 2;
@@ -55,23 +55,29 @@
              * Получить список дней с событиями
              * @param int $flat_id идентификатор квартиры
              * @param array $filter_events фильтр типов событий
+             *
              * @return false|array
              */
+
             abstract public function getEventsDays(int $flat_id, $filter_events);
 
             /**
              * Получить детальный список событий
              * @param int $flat_id идентификатор квартиры
              * @param string $date день событий
+             *
              * @return false|array
              */
+
             abstract public function getDetailEventsByDay(int $flat_id, string $date);
 
             /**
              * Get event's detail by UUID
              * @param string $uuid
+             *
              * @return false|array
              */
+
             abstract public function getEventDetails(string $uuid);
 
             /**
@@ -79,6 +85,7 @@
              * @param array $event_data данные событий
              * @param array $flat_list список идентификаторов квартир
              */
+
             abstract public function writeEventData($event_data, $flat_list = []);
 
             /**
@@ -86,8 +93,10 @@
              * @param int $domophone_id идентификатор устройства
              * @param false|string $date дата и время события
              * @param false|int $event_id идентификатор события FRS
+             *
              * @return false|object
              */
+
             abstract public function getCamshot(int $domophone_id, int $output, $date, $event_id = false);
 
             /**
@@ -99,6 +108,7 @@
              * @param int $door "выход" устройства
              * @param string $detail детали события в зависимости от типа
              */
+
             abstract public function addDoorOpenData($date, $ip, $sub_id, $event_type, $door, $detail);
 
             /**
@@ -109,6 +119,7 @@
              * @param int $door "выход" устройства
              * @param string $detail детали события в зависимости от типа
              */
+
             abstract public function addDoorOpenDataById($date, $domophone_id, $event_type, $door, $detail);
 
             /**
@@ -117,6 +128,7 @@
              * @param string $sub_id ID устройства
              * @param (int | null) $call_id идентификатор звонка (beward only)
              */
+
             abstract public function addCallDoneData($date, $ip, $sub_id, $call_id);
         }
     }

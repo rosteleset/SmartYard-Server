@@ -7,6 +7,7 @@
     namespace backends\queue {
 
         class internal extends queue {
+
             private const RFID_ACCESS_TYPES = [
                 0 => 'all',
                 1 => 'subscriber',
@@ -25,8 +26,8 @@
             /**
              * @inheritDoc
              */
-            public function getTasks(): array
-            {
+
+            public function getTasks(): array {
                 return $this->db->get("select * from tasks_changes", false, [
                     "task_change_id" => "taskId",
                     "object_type" => "objectType",
@@ -37,8 +38,8 @@
             /**
              * @inheritDoc
              */
-            public function changed($objectType, $objectId)
-            {
+
+            public function changed($objectType, $objectId) {
                 $households = loadBackend("households");
                 $domophones = [];
 
@@ -173,8 +174,7 @@
                 shell_exec(PHP_BINARY . ' ' . $script_filename . $command . " 1>/dev/null 2>&1 &");
             }
 
-            private function autoconfigureCamera($cameraId, $script_filename, $pid)
-            {
+            private function autoconfigureCamera($cameraId, $script_filename, $pid) {
                 $cameras = loadBackend('cameras');
                 $camera = $cameras->getCamera($cameraId);
 

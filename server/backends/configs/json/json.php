@@ -15,8 +15,8 @@
             /**
              * @inheritDoc
              */
-            public function getDomophonesModels()
-            {
+
+            public function getDomophonesModels() {
                 $files = scandir(__DIR__ . "/../../../hw/ip/domophone/models");
 
                 $models = [];
@@ -33,8 +33,8 @@
             /**
              * @inheritDoc
              */
-            public function getCamerasModels()
-            {
+
+            public function getCamerasModels() {
                 $files = scandir(__DIR__ . "/../../../hw/ip/camera/models");
 
                 $models = [];
@@ -51,8 +51,8 @@
             /**
              * @inheritDoc
              */
-            public function getCMSes()
-            {
+
+            public function getCMSes() {
                 $files = scandir(__DIR__ . "/../../../hw/ip/domophone/cmses");
 
                 $cmses = [];

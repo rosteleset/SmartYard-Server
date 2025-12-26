@@ -10,14 +10,13 @@
      * simple monitoring class.
      */
 
-    class simple extends monitoring
-    {
+    class simple extends monitoring {
+
         /**
          * @inheritDoc
          */
 
-        public function deviceStatus($deviceType, $deviceId)
-        {
+        public function deviceStatus($deviceType, $deviceId) {
             switch ($deviceType) {
                 case 'domophone':
                     return [
@@ -37,8 +36,7 @@
          * @inheritDoc
          */
 
-        public function devicesStatus($deviceType, $hosts)
-        {
+        public function devicesStatus($deviceType, $hosts) {
             return false;
         }
 
@@ -46,8 +44,7 @@
          * @inheritDoc
          */
 
-        public function configureMonitoring()
-        {
+        public function configureMonitoring() {
             return false;
         }
     }

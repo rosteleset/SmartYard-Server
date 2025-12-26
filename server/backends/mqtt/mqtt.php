@@ -13,11 +13,12 @@
          */
 
         abstract class mqtt extends backend {
+
             /**
              * @return mixed
              */
-            public function getConfig()
-            {
+
+            public function getConfig() {
                 $cfg = $this->config["backends"]["mqtt"];
                 unset($cfg["backend"]);
                 unset($cfg["agent"]);
@@ -29,8 +30,8 @@
              * @param string $payload
              * @return mixed
              */
-            public function broadcast($topic, $payload)
-            {
+
+            public function broadcast($topic, $payload) {
                 return file_get_contents($this->config["backends"]["mqtt"]["agent"], false, stream_context_create([
                     'http' => [
                         'method' => 'POST',

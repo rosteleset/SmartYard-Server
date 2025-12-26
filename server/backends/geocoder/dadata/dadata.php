@@ -15,6 +15,7 @@ namespace backends\geocoder {
         /**
          * @inheritDoc
          */
+
         public function suggestions($search) {
             if ($search) {
                 $curl = curl_init();

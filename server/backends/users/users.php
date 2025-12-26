@@ -74,6 +74,7 @@
 
             /**
              * @param $login
+             *
              * @return mixed
              */
 
@@ -81,6 +82,7 @@
 
             /**
              * @param $uid
+             *
              * @return mixed
              */
 

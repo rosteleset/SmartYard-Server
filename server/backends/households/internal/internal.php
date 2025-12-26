@@ -916,8 +916,8 @@
             /**
              * @inheritDoc
              */
-            function getSharedEntrances($houseId = false)
-            {
+
+            function getSharedEntrances($houseId = false) {
                 if ($houseId && !checkInt($houseId)) {
                     return false;
                 }
@@ -1406,8 +1406,8 @@
             /**
              * @inheritDoc
              */
-            public function deleteDomophone($domophoneId)
-            {
+
+            public function deleteDomophone($domophoneId) {
                 if (!checkInt($domophoneId)) {
                     setLastError("noId");
                     return false;
@@ -1798,12 +1798,6 @@
 
                 $r = true;
 
-/*
-                $queue = loadBackend("queue");
-                if ($queue) {
-                    $queue->changed("subscriber", $subscriberId);
-                }
-*/
                 if (!$r) {
                     setLastError("cantModifySubscriber");
                 }
@@ -2454,6 +2448,7 @@
             /**
              * @inheritDoc
              */
+
             public function cleanup() {
                 $cameras = loadBackend("cameras");
                 $addresses = loadBackend("addresses");
@@ -3090,8 +3085,8 @@
             /**
              * @inheritDoc
              */
-            public function deleteDevice($deviceId)
-            {
+
+            public function deleteDevice($deviceId) {
                 if (!checkInt($deviceId)) {
                     return false;
                 }

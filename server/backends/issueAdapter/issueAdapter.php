@@ -1,14 +1,14 @@
 <?php
 
 namespace backends\issueAdapter {
+
     use backends\backend;
 
     abstract class issueAdapter extends backend {
         protected $tt_url;
         protected $tt_token;
 
-        public function __construct($config, $db, $redis, $login = false)
-        {
+        public function __construct($config, $db, $redis, $login = false) {
             parent::__construct($config, $db, $redis, $login);
 
             $this->tt_url = $this->config['backends']['issueAdapter']['tt_url'];

@@ -509,7 +509,7 @@
 
                     return $sth->execute([
                         ":real_name" => trim($realName),
-                        ":e_mail" => trim($eMail)?trim($eMail):null,
+                        ":e_mail" => trim($eMail) ? trim($eMail) : null,
                         ":phone" => trim($phone),
                         ":tg" => trim($tg),
                         ":notification" => trim($notification),

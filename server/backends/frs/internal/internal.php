@@ -4,36 +4,34 @@
      * backends frs namespace
      */
 
-    namespace backends\frs
-    {
+    namespace backends\frs {
 
         use Exception;
 
-        class internal extends frs
-        {
+        class internal extends frs {
             const KEY_SYNCING = 'frs_syncing';
             const KEY_FACES = 'frs_ignore_faces';
             const KEY_FACE_UUIDS = 'frs_ignore_face_uuids';
 
             //private methods
-            private function camshotUrl($cam): string
-            {
+
+            private function camshotUrl($cam): string {
                 return $this->config["api"]["internal"] . "/frs/camshot/" . $cam[self::CAMERA_ID];
             }
 
             /**
              * @inheritDoc
              */
-            public function servers()
-            {
+
+            public function servers() {
                 return $this->config["backends"]["frs"]["servers"];
             }
 
             /**
              * @inheritDoc
              */
-            public function getServerByUrl($base_url)
-            {
+
+            public function getServerByUrl($base_url) {
                 foreach ($this->servers() as $server) {
                     if ($server[self::FRS_BASE_URL] === $base_url) {
                         return $server;
@@ -43,8 +41,7 @@
                 return null;
             }
 
-            public function frsServers()
-            {
+            public function frsServers() {
                 $frs_servers = array_filter($this->servers(), function ($item) {
                     return ($item[self::API_TYPE] ?? null) === self::API_FRS || !isset($item[self::API_TYPE]);
                 });
@@ -52,8 +49,7 @@
                 return $frs_servers;
             }
 
-            public function lprsServers()
-            {
+            public function lprsServers() {
                 $lprs_servers = array_filter($this->servers(), function ($item) {
                     return ($item[self::API_TYPE] ?? null) === self::API_LPRS;
                 });
@@ -61,8 +57,7 @@
                 return $lprs_servers;
             }
 
-            private function getAuthToken($base_url)
-            {
+            private function getAuthToken($base_url) {
                 $s = $this->servers();
                 foreach ($s as $server) {
                     if ($server[self::FRS_BASE_URL] === $base_url && isset($server[self::P_AUTH_TOKEN])) {
@@ -78,8 +73,8 @@
             /**
              * @inheritDoc
              */
-            public function apiCallFrs($base_url, $method, $params)
-            {
+
+            public function apiCallFrs($base_url, $method, $params) {
                 $l = strlen($base_url);
                 if ($l <= 1)
                     return false;
@@ -127,8 +122,7 @@
                 }
             }
 
-            private function callbackFrs($cam): string
-            {
+            private function callbackFrs($cam): string {
                 return $this->config["api"]["internal"] . "/frs/callback?stream_id=" . $cam[self::CAMERA_ID];
             }
 
@@ -193,8 +187,8 @@
             /**
              * @inheritDoc
              */
-            public function bestQualityByDateFrs($cam, $date, $event_uuid = "")
-            {
+
+            public function bestQualityByDateFrs($cam, $date, $event_uuid = "") {
                 $dt = date('Y-m-d H:i:s', $date);
                 $frs_server = $this->getServerByUrl($cam[self::CAMERA_FRS]);
                 $api_type = $frs_server[frs::API_TYPE] ?? null;
@@ -214,8 +208,8 @@
             /**
              * @inheritDoc
              */
-            public function bestQualityByEventIdFrs($cam, $event_id, $event_uuid = "")
-            {
+
+            public function bestQualityByEventIdFrs($cam, $event_id, $event_uuid = "") {
                 $method_params = [
                     self::P_STREAM_ID => $cam[self::CAMERA_ID],
                     self::P_EVENT_ID => $event_id
@@ -229,8 +223,8 @@
             /**
              * @inheritDoc
              */
-            public function registerFaceFrs($cam, $event_uuid, $left = 0, $top = 0, $width = 0, $height = 0)
-            {
+
+            public function registerFaceFrs($cam, $event_uuid, $left = 0, $top = 0, $width = 0, $height = 0) {
                 $plog = loadBackend("plog");
                 if (!$plog)
                     return false;
@@ -264,8 +258,8 @@
             /**
              * @inheritDoc
              */
-            public function removeFacesFrs($cam, array $faces)
-            {
+
+            public function removeFacesFrs($cam, array $faces) {
                 $method_params = [
                     self::P_STREAM_ID => $cam[self::CAMERA_ID],
                     self::P_FACE_IDS => $faces
@@ -277,8 +271,8 @@
             /**
              * @inheritDoc
              */
-            public function motionDetectionFrs($cam, bool $is_start)
-            {
+
+            public function motionDetectionFrs($cam, bool $is_start) {
                 $method_params = [
                     self::P_STREAM_ID => $cam[self::CAMERA_ID],
                     self::P_START => $is_start ? "t" : "f"
@@ -292,8 +286,8 @@
             /**
              * @inheritDoc
              */
-            public function cron($part): bool
-            {
+
+            public function cron($part): bool {
                 $result = true;
                 if ($part === @$this->config['backends']['frs']['cron_sync_data_scheduler']) {
                     if (!$this->startSyncing())
@@ -310,8 +304,7 @@
                 return $result;
             }
 
-            private function deleteFaceId($face_id): void
-            {
+            private function deleteFaceId($face_id): void {
                 $query = "delete from frs_links_faces where face_id = :face_id";
                 $this->db->modify($query, [":face_id" => $face_id]);
 
@@ -329,8 +322,7 @@
                 }
             }
 
-            private function startSyncing(): bool
-            {
+            private function startSyncing(): bool {
                 try {
                     $this->redis->sAdd(self::KEY_SYNCING, 1);
                     return true;
@@ -341,8 +333,7 @@
                 return false;
             }
 
-            private function stopSyncing(): bool
-            {
+            private function stopSyncing(): bool {
                 try {
                     $this->redis->del(self::KEY_SYNCING);
                     $this->redis->del(self::KEY_FACES);
@@ -355,8 +346,7 @@
                 return false;
             }
 
-            private function isSyncing(): bool
-            {
+            private function isSyncing(): bool {
                 try {
                     return ($this->redis->exists(self::KEY_SYNCING) === 1);
                 } catch (Exception $e) {
@@ -366,8 +356,7 @@
                 return false;
             }
 
-            private function ignoreSyncingFaceId($face_id): void
-            {
+            private function ignoreSyncingFaceId($face_id): void {
                 if ($this->isSyncing()) {
                     try {
                         $this->redis->sAdd(self::KEY_FACES, $face_id);
@@ -377,8 +366,7 @@
                 }
             }
 
-            private function ignoreSyncingFaceUuid($face_uuid): void
-            {
+            private function ignoreSyncingFaceUuid($face_uuid): void {
                 if ($this->isSyncing()) {
                     try {
                         $this->redis->sAdd(self::KEY_FACE_UUIDS, $face_uuid);
@@ -388,8 +376,7 @@
                 }
             }
 
-            private function checkIgnoredSyncingFace($face_id): bool
-            {
+            private function checkIgnoredSyncingFace($face_id): bool {
                 $result = false;
                 try {
                     $result = $this->redis->sIsMember(self::KEY_FACES, $face_id);
@@ -400,8 +387,7 @@
                 return $result;
             }
 
-            private function getIgnoredSyncingFaces()
-            {
+            private function getIgnoredSyncingFaces() {
                 $result = [];
                 try {
                     $result = $this->redis->sMembers(self::KEY_FACES);
@@ -412,8 +398,7 @@
                 return $result;
             }
 
-            private function getIgnoredSyncingFaceUuids()
-            {
+            private function getIgnoredSyncingFaceUuids() {
                 $result = [];
                 try {
                     $result = $this->redis->sMembers(self::KEY_FACE_UUIDS);
@@ -424,8 +409,7 @@
                 return $result;
             }
 
-            private function syncDataFrs(): bool
-            {
+            private function syncDataFrs(): bool {
                 // we need only FRS API servers
                 $frs_servers = $this->frsServers();
 
@@ -541,16 +525,18 @@
 
                 $query = "
                     select
-                      c.frs,
-                      c.camera_id,
-                      c.rc_area,
-                      c.ext
+                        c.frs,
+                        c.camera_id,
+                        c.rc_area,
+                        c.ext
                     from
-                      cameras c
+                        cameras c
                     where
-                      length(c.frs) > 1
+                        length(c.frs) > 1
                     order by
-                      1, 2";
+                        1, 2
+                ";
+
                 $rbt_data = $this->db->get($query);
                 if ($rbt_data === false) {
                     echo("Query failed: " . print_r($query, true) . PHP_EOL);
@@ -614,24 +600,26 @@
 
                 $query = "
                     select distinct
-                      c.frs,
-                      c.camera_id,
-                      flf.face_id,
-                      ff.face_uuid
+                        c.frs,
+                        c.camera_id,
+                        flf.face_id,
+                        ff.face_uuid
                     from
-                      frs_links_faces flf
-                      left join frs_faces ff
-                        on flf.face_id = ff.face_id
-                      inner join houses_entrances_flats hef
-                        on hef.house_flat_id = flf.flat_id
-                      inner join houses_entrances he
-                        on hef.house_entrance_id = he.house_entrance_id
-                      inner join cameras c
-                        on he.camera_id = c.camera_id
+                        frs_links_faces flf
+                        left join frs_faces ff
+                            on flf.face_id = ff.face_id
+                        inner join houses_entrances_flats hef
+                            on hef.house_flat_id = flf.flat_id
+                        inner join houses_entrances he
+                            on hef.house_entrance_id = he.house_entrance_id
+                        inner join cameras c
+                            on he.camera_id = c.camera_id
                     where
-                       length(c.frs) > 1
+                        length(c.frs) > 1
                     order by
-                      1, 2, 3";
+                        1, 2, 3
+                ";
+
                 $rbt_data = $this->db->get($query);
                 if ($rbt_data === false) {
                     echo("Query failed: " . print_r($query, true) . PHP_EOL);
@@ -729,8 +717,7 @@
                 return true;
             }
 
-            private function syncDataLprs(): bool
-            {
+            private function syncDataLprs(): bool {
                 // we need only LPRS API servers
                 $lprs_servers = $this->lprsServers();
 
@@ -757,19 +744,20 @@
 
                 $query = "
                     select
-                      c.frs,
-                      c.camera_id,
-                      c.rc_area,
-                      c.ext
+                        c.frs,
+                        c.camera_id,
+                        c.rc_area,
+                        c.ext
                     from
-                      cameras c
+                        cameras c
                     where
-                      length(c.frs) > 1
+                        length(c.frs) > 1
                     order by
-                      1, 2";
+                        1, 2
+                ";
+
                 $rbt_data = $this->db->get($query);
-                if ($rbt_data === false)
-                {
+                if ($rbt_data === false) {
                     echo("Query failed: " . print_r($query, true) . PHP_EOL);
                     return false;
                 }
@@ -835,8 +823,7 @@
                 return true;
             }
 
-            private function syncData(): bool
-            {
+            private function syncData(): bool {
                 if (!is_array($this->servers())) {
                     echo("frs section is incorrect." . PHP_EOL);
                     return false;
@@ -851,8 +838,8 @@
             /**
              * @inheritDoc
              */
-            public function attachFaceIdFrs($face_id, $flat_id, $house_subscriber_id): bool
-            {
+
+            public function attachFaceIdFrs($face_id, $flat_id, $house_subscriber_id): bool {
                 $query = "
                     select
                         face_id
@@ -892,8 +879,8 @@
             /**
              * @inheritDoc
              */
-            public function detachFaceIdFrs($face_id, $house_subscriber_id): bool
-            {
+
+            public function detachFaceIdFrs($face_id, $house_subscriber_id): bool {
                 $query = "select flat_id from frs_links_faces where face_id = :face_id and house_subscriber_id = :house_subscriber_id";
                 $r = $this->db->get($query, [
                     ":face_id" => $face_id,
@@ -922,8 +909,8 @@
             /**
              * @inheritDoc
              */
-            public function detachFaceIdFromFlatFrs($face_id, $flat_id): bool
-            {
+
+            public function detachFaceIdFromFlatFrs($face_id, $flat_id): bool {
                 $query = "delete from frs_links_faces where face_id = :face_id and flat_id = :flat_id";
                 $r = $this->db->modify($query, [
                     ":face_id" => $face_id,
@@ -943,8 +930,8 @@
             /**
              * @inheritDoc
              */
-            public function getFlatsByFaceIdFrs($face_id, $entrance_id): array
-            {
+
+            public function getFlatsByFaceIdFrs($face_id, $entrance_id): array {
                 // TODO: perhaps some of this data should be retrieved from households backend
                 $query = "
                     select
@@ -976,8 +963,8 @@
             /**
              * @inheritDoc
              */
-            public function isLikedFlagFrs($flat_id, $subscriber_id, $face_id, $event_uuid, $is_owner): bool
-            {
+
+            public function isLikedFlagFrs($flat_id, $subscriber_id, $face_id, $event_uuid, $is_owner): bool {
                 $is_liked1 = false;
                 if ($event_uuid !== null) {
                     $query = "select face_id from frs_faces where event_uuid = :event_uuid";
@@ -1006,33 +993,37 @@
             /**
              * @inheritDoc
              */
-            public function listFacesFrs($flat_id, $subscriber_id, $is_owner = false): array
-            {
+
+            public function listFacesFrs($flat_id, $subscriber_id, $is_owner = false): array {
                 $query1 = "
                     select distinct
-                      ff.face_id,
-                      ff.face_uuid
+                        ff.face_id,
+                        ff.face_uuid
                     from
-                      frs_links_faces lf
-                      inner join frs_faces ff
+                        frs_links_faces lf
+                        inner join frs_faces ff
                         on lf.face_id = ff.face_id
                     where
-                      lf.flat_id = :flat_id
+                        lf.flat_id = :flat_id
                     order by
-                      ff.face_id";
-                $query2 = "
+                        ff.face_id
+                ";
+
+                        $query2 = "
                     select distinct
-                      ff.face_id,
-                      ff.face_uuid
+                        ff.face_id,
+                        ff.face_uuid
                     from
-                      frs_links_faces lf
-                      inner join frs_faces ff
+                        frs_links_faces lf
+                        inner join frs_faces ff
                         on lf.face_id = ff.face_id
                     where
-                      lf.flat_id = :flat_id
-                      and lf.house_subscriber_id = :subscriber_id
+                        lf.flat_id = :flat_id
+                        and lf.house_subscriber_id = :subscriber_id
                     order by
-                      ff.face_id";
+                        ff.face_id
+                ";
+
                 if ($is_owner) {
                     $query = $query1;
                     $r = $this->db->get($query, [":flat_id" => $flat_id], []);
@@ -1052,8 +1043,8 @@
             /**
              * @inheritDoc
              */
-            public function getRegisteredFaceIdFrs($event_uuid)
-            {
+
+            public function getRegisteredFaceIdFrs($event_uuid) {
                 $query = "select face_id from frs_faces where event_uuid = :event_uuid";
                 $r = $this->db->get($query, [":event_uuid" => $event_uuid], [], [self::PDO_SINGLIFY]);
                 if ($r)
@@ -1065,8 +1056,8 @@
             /**
              * @inheritDoc
              */
-            public function apiCallLprs($base_url, $method, $params)
-            {
+
+            public function apiCallLprs($base_url, $method, $params) {
                 $l = strlen($base_url);
                 if ($l <= 1)
                     return false;

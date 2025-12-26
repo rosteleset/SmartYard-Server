@@ -4,10 +4,9 @@
      * backends processes namespace
      */
 
-    namespace backends\processes
-    {
-        class internal extends processes
-        {
+    namespace backends\processes {
+
+        class internal extends processes {
 //
         }
     }

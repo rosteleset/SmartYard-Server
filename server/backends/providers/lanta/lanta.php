@@ -4,16 +4,15 @@
      * backends providers namespace
      */
 
-    namespace backends\providers
-    {
+    namespace backends\providers {
 
         use http\Message;
 
         /**
          * LanTa's variant of flash calls and sms sending
          */
-        class lanta extends providers
-        {
+
+        class lanta extends providers {
 
             function putSecrets($section, $secrets) {
                 $curl = curl_init();
@@ -33,8 +32,7 @@
                 curl_close($curl);
             }
 
-            public function updateTokens()
-            {
+            public function updateTokens() {
                 $providers = $this->getProviders();
 
                 $common = [];
@@ -73,8 +71,8 @@
             /**
              * @inheritDoc
              */
-            public function getJson()
-            {
+
+            public function getJson() {
                 try {
                     if (file_exists($this->config["backends"]["providers"]["providers.json"])) {
                         return file_get_contents($this->config["backends"]["providers"]["providers.json"]);
@@ -89,8 +87,8 @@
             /**
              * @inheritDoc
              */
-            public function putJson($text)
-            {
+
+            public function putJson($text) {
                 try {
                     json_decode($text);
                     $error = json_last_error();
@@ -111,8 +109,8 @@
             /**
              * @inheritDoc
              */
-            public function getProviders()
-            {
+
+            public function getProviders() {
                 return $this->db->get("select * from providers order by name", false, [
                     "provider_id" => "providerId",
                     "id" => "id",
@@ -128,8 +126,8 @@
             /**
              * @inheritDoc
              */
-            public function addProvider($id, $name, $baseUrl, $logo, $tokenCommon, $tokenSms, $hidden)
-            {
+
+            public function addProvider($id, $name, $baseUrl, $logo, $tokenCommon, $tokenSms, $hidden) {
                 if (!checkInt($hidden)) {
                     return false;
                 }
@@ -159,8 +157,8 @@
             /**
              * @inheritDoc
              */
-            public function modifyProvider($providerId, $id, $name, $baseUrl, $logo, $tokenCommon, $tokenSms, $hidden)
-            {
+
+            public function modifyProvider($providerId, $id, $name, $baseUrl, $logo, $tokenCommon, $tokenSms, $hidden) {
                 if (!checkInt($providerId)) {
                     return false;
                 }
@@ -193,8 +191,8 @@
             /**
              * @inheritDoc
              */
-            public function deleteProvider($providerId)
-            {
+
+            public function deleteProvider($providerId) {
                 if (!checkInt($providerId)) {
                     return false;
                 }

@@ -95,7 +95,7 @@
 
             abstract public function setGroups($uid, $gids);
 
-             /**
+            /**
              * delete user from all groups
              *
              * @param $uid
@@ -109,6 +109,7 @@
              * @param $gid
              * @return mixed
              */
+
             abstract public function addUserToGroup($uid, $gid);
         }
     }

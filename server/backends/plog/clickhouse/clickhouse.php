@@ -12,6 +12,7 @@
         /**
          * clickhouse archive class
          */
+
         class clickhouse extends plog {
 
             private \clickhouse $clickhouse;
@@ -246,12 +247,11 @@
             /**
              * @inheritDoc
              */
-            public function addCallDoneData($date, $ip = null, $sub_id = null, $call_id = null)
-            {
+
+            public function addCallDoneData($date, $ip = null, $sub_id = null, $call_id = null) {
                 $expire = $date + $this->ttl_temp_record;
 
-                $query = "insert into plog_call_done(date, ip, sub_id, call_id, expire)
-                          values(:date, :ip, :sub_id, :call_id, :expire)";
+                $query = "insert into plog_call_done (date, ip, sub_id, call_id, expire) values (:date, :ip, :sub_id, :call_id, :expire)";
 
                 return $this->db->insert($query, [
                     ":date" => $date,
@@ -265,12 +265,11 @@
             /**
              * @inheritDoc
              */
-            public function addDoorOpenData($date, $ip, $sub_id, $event_type, $door, $detail)
-            {
+
+            public function addDoorOpenData($date, $ip, $sub_id, $event_type, $door, $detail) {
                 $expire = time() + $this->ttl_temp_record;
 
-                $query = "insert into plog_door_open(date, ip, sub_id, event, door, detail, expire)
-                          values(:date, :ip, :sub_id, :event, :door, :detail, :expire)";
+                $query = "insert into plog_door_open (date, ip, sub_id, event, door, detail, expire) values (:date, :ip, :sub_id, :event, :door, :detail, :expire)";
 
                 return $this->db->insert($query, [
                     ":date" => $date,
@@ -286,8 +285,8 @@
             /**
              * @inheritDoc
              */
-            public function addDoorOpenDataById($date, $domophone_id, $event_type, $door, $detail)
-            {
+
+            public function addDoorOpenDataById($date, $domophone_id, $event_type, $door, $detail) {
                 $households = loadBackend('households');
                 ['ip' => $ip, 'sub_id' => $sub_id] = $households->getDomophone($domophone_id);
 
@@ -297,8 +296,8 @@
             /**
              * @inheritDoc
              */
-            public function getEventsDays(int $flat_id, $filter_events)
-            {
+
+            public function getEventsDays(int $flat_id, $filter_events) {
                 if ($filter_events) {
                     $query = "
                         select
@@ -346,8 +345,8 @@
             /**
              * @inheritDoc
              */
-            public function getDetailEventsByDay(int $flat_id, string $date)
-            {
+
+            public function getDetailEventsByDay(int $flat_id, string $date) {
                 $query = "
                     select
                         date,
@@ -380,8 +379,8 @@
             /**
              * @inheritDoc
              */
-            public function getEventDetails(string $uuid)
-            {
+
+            public function getEventDetails(string $uuid) {
                 $query = "
                     select
                         date,
@@ -406,8 +405,7 @@
                 return $this->clickhouse->select($query)[0];
             }
 
-            private function getDomophoneId(?string $ip, ?string $sub_id = null): ?int
-            {
+            private function getDomophoneId(?string $ip, ?string $sub_id = null): ?int {
                 $households = loadBackend('households');
 
                 if (!empty($sub_id)) {
@@ -421,8 +419,7 @@
                 return null;
             }
 
-            private function getDomophoneDescription($domophone_id, $domophone_output)
-            {
+            private function getDomophoneDescription($domophone_id, $domophone_output) {
                 $households = loadBackend('households');
                 $result = $households->getEntrances('domophoneId', ['domophoneId' => $domophone_id, 'output' => $domophone_output]);
                 if ($result && $result[0]) {
@@ -437,8 +434,7 @@
             }
 
             //получение списка flat_id по RFID ключу на домофоне
-            private function getFlatIdByRfid($rfid, $domophone_id)
-            {
+            private function getFlatIdByRfid($rfid, $domophone_id) {
                 $households = loadBackend('households');
                 $flats1 = array_map('self::getFlatId', $households->getFlats('rfId', ['rfId' => $rfid]));
                 $flats2 = array_map('self::getFlatId', $households->getFlats('subscriberRfId', ['rfId' => $rfid]));
@@ -447,8 +443,7 @@
             }
 
             //получение списка flat_id по коду открытия на устройстве
-            private function getFlatIdByCode($code, $domophone_id)
-            {
+            private function getFlatIdByCode($code, $domophone_id) {
                 $households = loadBackend('households');
                 $flats1 = array_map('self::getFlatId', $households->getFlats('openCode', ['openCode' => $code]));
                 $flats2 = array_map('self::getFlatId', $households->getFlats('domophoneId', $domophone_id));
@@ -456,8 +451,7 @@
             }
 
             //получение списка flat_id по телефону пользователя на устройстве
-            private function getFlatIdByUserPhone($user_phone, $domophone_id)
-            {
+            private function getFlatIdByUserPhone($user_phone, $domophone_id) {
                 $households = loadBackend('households');
                 $result = $households->getSubscribers('mobile', $user_phone);
                 if ($result && $result[0]) {
@@ -470,8 +464,7 @@
             }
 
             //получение flat_id по номеру квартиры на устройстве
-            private function getFlatIdByNumber($flat_number, $domophone_id)
-            {
+            private function getFlatIdByNumber($flat_number, $domophone_id) {
                 $households = loadBackend('households');
                 $result = $households->getFlats('apartment', ['domophoneId' => $domophone_id, 'flatNumber' => $flat_number]);
                 if ($result && $result[0]) {
@@ -482,8 +475,7 @@
             }
 
             //получение flat_id по префиксу калитки и номеру квартиры
-            private function getFlatIdByPrefixAndNumber($prefix, $flat_number, $domophone_id)
-            {
+            private function getFlatIdByPrefixAndNumber($prefix, $flat_number, $domophone_id) {
                 $households = loadBackend('households');
                 $result = $households->getFlats('flatIdByPrefix', [
                     'prefix' => $prefix,
@@ -498,8 +490,7 @@
             }
 
             // Get flat ID by domophone ID
-            private function getFlatIdByDomophoneId($domophone_id)
-            {
+            private function getFlatIdByDomophoneId($domophone_id) {
                 $households = loadBackend('households');
                 $result = $households->getFlats('domophoneId', $domophone_id);
 
@@ -511,8 +502,7 @@
                 return null;
             }
 
-            private function getEntranceCount($flat_id)
-            {
+            private function getEntranceCount($flat_id) {
                 $households = loadBackend('households');
                 $result = $households->getEntrances('flatId', $flat_id);
                 if ($result)
@@ -536,8 +526,7 @@
                 return $hidden;
             }
 
-            private function processEvents()
-            {
+            private function processEvents() {
                 $end_date = time() - (int)$this->time_shift;  //крайняя дата обработки
 
                 //обработка данных из таблицы plog_door_open

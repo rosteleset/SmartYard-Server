@@ -11,6 +11,7 @@
         /**
          * base addresses class
          */
+
         abstract class households extends backend {
 
             /**
@@ -58,6 +59,7 @@
              * @param $houseId
              * @param $entranceId
              * @param $prefix
+             *
              * @return boolean
              */
 
@@ -91,27 +93,35 @@
             /**
              * @param $entranceId
              * @param $houseId
+             *
              * @return boolean
              */
+
             abstract function deleteEntrance($entranceId, $houseId);
 
             /**
              * @param $entranceId
+             *
              * @return boolean
              */
+
             abstract function destroyEntrance($entranceId);
 
             /**
              * @param $flatId
+             *
              * @return boolean|array
              */
+
             abstract function getFlat($flatId);
 
             /**
              * @param $by
              * @param $params
+             *
              * @return boolean|array
              */
+
             abstract function getFlats($by, $params);
 
             /**
@@ -138,6 +148,7 @@
             /**
              * @param $flatId
              * @param $params
+             *
              * @return boolean
              */
 
@@ -145,6 +156,7 @@
 
             /**
              * @param $flatId
+             *
              * @return boolean
              */
 
@@ -152,27 +164,34 @@
 
             /**
              * @param $flatId
+             *
              * @return boolean
              */
+
             abstract function doorOpened($flatId);
 
             /**
              * @param $houseId
              * @return false|array
              */
+
             abstract function getSharedEntrances($houseId = false);
 
             /**
              * @param $entranceId
+             *
              * @return false|array
              */
+
             abstract public function getCms($entranceId);
 
             /**
              * @param $entranceId
              * @param $cms
+             *
              * @return boolean
              */
+
             abstract public function setCms($entranceId, $cms);
 
             /**
@@ -236,6 +255,7 @@
             /**
              * @param $domophoneId
              * @param $firstTime
+             *
              * @return boolean
              */
 
@@ -249,6 +269,7 @@
 
             /**
              * @param $domophoneId
+             *
              * @return boolean
              */
 
@@ -256,6 +277,7 @@
 
             /**
              * @param $domophoneId
+             *
              * @return false|array
              */
 
@@ -278,6 +300,7 @@
              * @param $last
              * @param bool $flatId
              * @param null $message
+             *
              * @return boolean|integer
              */
 
@@ -286,6 +309,7 @@
             /**
              * @param $subscriberId
              * @param $params
+             *
              * @return boolean
              */
 
@@ -293,6 +317,7 @@
 
             /**
              * @param $subscriberId
+             *
              * @return boolean
              */
 
@@ -301,6 +326,7 @@
             /**
              * @param $flatId
              * @param $subscriberId
+             *
              * @return mixed
              */
 
@@ -319,6 +345,7 @@
             /**
              * @param $by
              * @param $query
+             *
              * @return mixed
              */
 
@@ -346,6 +373,7 @@
 
             /**
              * @param $keyId
+             *
              * @return boolean
              */
 
@@ -353,6 +381,7 @@
 
             /**
              * @param $rfId
+             *
              * @return boolean
              */
 
@@ -360,6 +389,7 @@
 
             /**
              * @param $token
+             *
              * @return boolean
              */
 
@@ -368,6 +398,7 @@
             /**
              * @param $by
              * @param $params
+             *
              * @return array|false
              */
 
@@ -377,6 +408,7 @@
              * @param $to
              * @param $id
              * @param $cameraId
+             *
              * @return mixed
              */
 
@@ -386,6 +418,7 @@
              * @param $from
              * @param $id
              * @param $cameraId
+             *
              * @return mixed
              */
 
@@ -405,6 +438,7 @@
             /**
              * @param $by - "id", "subscriber", "flat", "authToken"
              * @param $query
+             *
              * @return false|array
              */
 
@@ -415,13 +449,16 @@
              * @param $deviceToken
              * @param $platformauthToken
              * @param $authToken
+             *
              * @return boolean|integer
              */
+
             abstract public function addDevice($subscriber, $deviceToken, $platform, $authToken);
 
             /**
              * @param $deviceId
              * @param $params
+             *
              * @return boolean
              */
 
@@ -429,6 +466,7 @@
 
             /**
              * @param $deviceId
+             *
              * @return boolean
              */
 

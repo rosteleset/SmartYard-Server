@@ -228,8 +228,8 @@
             /**
              * @inheritDoc
              */
-            public function addProject($acronym, $project)
-            {
+
+            public function addProject($acronym, $project) {
                 $this->clearCache();
 
                 $acronym = trim($acronym);
@@ -258,8 +258,8 @@
             /**
              * @inheritDoc
              */
-            public function modifyProject($projectId, $acronym, $project, $maxFileSize, $searchSubject, $searchDescription, $searchComments, $assigned)
-            {
+
+            public function modifyProject($projectId, $acronym, $project, $maxFileSize, $searchSubject, $searchDescription, $searchComments, $assigned) {
                 $this->clearCache();
 
                 if (!checkInt($projectId) || !trim($acronym) || !trim($project) || !checkInt($maxFileSize) || !checkInt($searchSubject) || !checkInt($searchDescription) || !checkInt($searchComments) || !checkInt($assigned)) {
@@ -288,8 +288,8 @@
             /**
              * @inheritDoc
              */
-            public function deleteProject($projectId)
-            {
+
+            public function deleteProject($projectId) {
                 $this->clearCache();
 
                 if (!checkInt($projectId)) {
@@ -310,8 +310,8 @@
             /**
              * @inheritDoc
              */
-            public function setProjectWorkflows($projectId, $workflows)
-            {
+
+            public function setProjectWorkflows($projectId, $workflows) {
                 $this->clearCache();
 
                 // TODO: add transaction, commint, rollback
@@ -355,8 +355,8 @@
             /**
              * @inheritDoc
              */
-            public function addProjectFilter($projectId, $filter, $personal)
-            {
+
+            public function addProjectFilter($projectId, $filter, $personal) {
                 $this->clearCache();
 
                 if (!checkInt($projectId) || !checkInt($personal)) {
@@ -387,8 +387,8 @@
             /**
              * @inheritDoc
              */
-            public function deleteProjectFilter($projectFilterId)
-            {
+
+            public function deleteProjectFilter($projectFilterId) {
                 $this->clearCache();
 
                 if (!checkInt($projectFilterId)) {
@@ -401,6 +401,7 @@
             /**
              * @inheritDoc
              */
+
             public function deleteWorkflow($workflow) {
                 $this->clearCache();
 
@@ -414,6 +415,7 @@
             /**
              * @inheritDoc
              */
+
             public function deleteFilter($filter, $owner = false) {
                 $this->clearCache();
 
@@ -429,8 +431,8 @@
             /**
              * @inheritDoc
              */
-            public function getStatuses()
-            {
+
+            public function getStatuses() {
                 $cache = $this->cacheGet("STATUSES");
                 if ($cache) {
                     return $cache;
@@ -460,8 +462,8 @@
             /**
              * @inheritDoc
              */
-            public function addStatus($status, $final)
-            {
+
+            public function addStatus($status, $final) {
                 $final = (int)$final ? 1 : 0;
 
                 $this->clearCache();
@@ -478,8 +480,8 @@
             /**
              * @inheritDoc
              */
-            public function modifyStatus($statusId, $status, $final)
-            {
+
+            public function modifyStatus($statusId, $status, $final) {
                 $final = (int)$final ? 1 : 0;
 
                 $this->clearCache();
@@ -507,8 +509,8 @@
             /**
              * @inheritDoc
              */
-            public function deleteStatus($statusId)
-            {
+
+            public function deleteStatus($statusId) {
                 $this->clearCache();
 
                 if (!checkInt($statusId)) {
@@ -521,8 +523,8 @@
             /**
              * @inheritDoc
              */
-            public function getResolutions()
-            {
+
+            public function getResolutions() {
                 $cache = $this->cacheGet("RESOLUTIONS");
                 if ($cache) {
                     return $cache;
@@ -764,8 +766,8 @@
             /**
              * @inheritDoc
              */
-            public function setProjectCustomFields($projectId, $customFields)
-            {
+
+            public function setProjectCustomFields($projectId, $customFields) {
                 $this->clearCache();
 
                 // TODO: add transaction, commint, rollback
@@ -811,8 +813,8 @@
             /**
              * @inheritDoc
              */
-            public function setProjectCustomFieldsNoJournal($projectId, $customFields)
-            {
+
+            public function setProjectCustomFieldsNoJournal($projectId, $customFields) {
                 $this->clearCache();
 
                 // TODO: add transaction, commint, rollback
@@ -858,8 +860,8 @@
             /**
              * @inheritDoc
              */
-            public function addUserRole($projectId, $uid, $roleId)
-            {
+
+            public function addUserRole($projectId, $uid, $roleId) {
                 $this->clearCache();
 
                 if (!checkInt($projectId) || !checkInt($uid) || !checkInt($roleId)) {
@@ -872,8 +874,8 @@
             /**
              * @inheritDoc
              */
-            public function addGroupRole($projectId, $gid, $roleId)
-            {
+
+            public function addGroupRole($projectId, $gid, $roleId) {
                 $this->clearCache();
 
                 if (!checkInt($projectId) || !checkInt($gid) || !checkInt($roleId)) {
@@ -892,8 +894,8 @@
             /**
              * @inheritDoc
              */
-            public function getRoles()
-            {
+
+            public function getRoles() {
                 $cache = $this->cacheGet("ROLES");
                 if ($cache) {
                     return $cache;
@@ -919,8 +921,8 @@
             /**
              * @inheritDoc
              */
-            public function deleteRole($projectRoleId)
-            {
+
+            public function deleteRole($projectRoleId) {
                 $this->clearCache();
 
                 if (!checkInt($projectRoleId)) {
@@ -940,8 +942,8 @@
             /**
              * @inheritDoc
              */
-            public function setRoleDisplay($roleId, $nameDisplay)
-            {
+
+            public function setRoleDisplay($roleId, $nameDisplay) {
                 $this->clearCache();
 
                 $nameDisplay = trim($nameDisplay);
@@ -1110,8 +1112,8 @@
             /**
              * @inheritDoc
              */
-            public function deleteCustomField($customFieldId)
-            {
+
+            public function deleteCustomField($customFieldId) {
                 $this->clearCache();
 
                 if (!checkInt($customFieldId)) {
@@ -1229,8 +1231,8 @@
             /**
              * @inheritDoc
              */
-            public function deleteTag($tagId)
-            {
+
+            public function deleteTag($tagId) {
                 $this->clearCache();
 
                 if (!checkInt($tagId)) {
@@ -1250,8 +1252,8 @@
             /**
              * @inheritDoc
              */
-            public function myRoles($uid = false)
-            {
+
+            public function myRoles($uid = false) {
                 $key = ($uid !== false)?"MYROLES:$uid":"MYROLES";
 
                 $cache = $this->cacheGet($key);
@@ -1320,8 +1322,8 @@
             /**
              * @inheritDoc
              */
-            public function myGroups($returnGids = false)
-            {
+
+            public function myGroups($returnGids = false) {
                 $groups = loadBackend("groups");
 
                 $g = [];
@@ -1346,8 +1348,8 @@
             /**
              * @inheritDoc
              */
-            public function myPrimaryGroup($returnGids = false)
-            {
+
+            public function myPrimaryGroup($returnGids = false) {
                 $groups = loadBackend("groups");
                 $users = loadBackend("users");
 
@@ -1371,6 +1373,7 @@
             /**
              * @inheritDoc
              */
+
             public function getProjectViewers($projectId) {
                 $key = $projectId?"VIEWERS:$projectId":"VIEWERS";
 
@@ -1544,6 +1547,7 @@
             /**
              * @inheritDoc
              */
+
             public function addCrontab($crontab, $projectId, $filter, $uid, $action) {
                 $this->clearCache();
 
@@ -1563,6 +1567,7 @@
             /**
              * @inheritDoc
              */
+
             public function deleteCrontab($crontabId) {
                 $this->clearCache();
 
@@ -1576,6 +1581,7 @@
             /**
              * @inheritDoc
              */
+
             public function cleanup() {
                 $this->db->modify("delete from tt_issue_custom_fields_options where issue_custom_field_id not in (select issue_custom_field_id from tt_issue_custom_fields)");
                 $this->db->modify("delete from tt_projects_custom_fields where issue_custom_field_id not in (select issue_custom_field_id from tt_issue_custom_fields)");

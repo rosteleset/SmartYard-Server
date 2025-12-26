@@ -60,8 +60,7 @@ namespace backends\issueAdapter {
             self::API_COURIER => self::QR_DELIVERY_COURIER
         ];
 
-        private function getGeo($address): ?array
-        {
+        private function getGeo($address): ?array {
             $geocoder = loadBackend('geocoder');
             $queryResult = @$geocoder->suggestions($address)[0];
             $result = null;
@@ -77,8 +76,7 @@ namespace backends\issueAdapter {
             return $result;
         }
 
-        private function queryIssues($content)
-        {
+        private function queryIssues($content) {
             $result = json_decode(file_get_contents($this->tt_url . "/issues", false, stream_context_create([
                 "http" => [
                     "method" => "POST",
@@ -94,8 +92,7 @@ namespace backends\issueAdapter {
             return $result['issues']['issues'] ?? null;
         }
 
-        private function getLastOpenedIssue($phone, $data)
-        {
+        private function getLastOpenedIssue($phone, $data) {
             $anti_spam_interval = $this->config['backends']['issueAdapter']['anti_spam_interval'];
             if (!isset($anti_spam_interval) || $anti_spam_interval <= 0)
                 return false;
@@ -129,8 +126,7 @@ namespace backends\issueAdapter {
             return $result[0] ?? false;
         }
 
-        public function createIssue($phone, $data): bool|array
-        {
+        public function createIssue($phone, $data): bool|array {
             $prev_issue = $this->getLastOpenedIssue($phone, $data);
             if ($prev_issue !== false)
                 return [self::F_IS_NEW => false, self::F_ISSUE_ID => $prev_issue[self::F_ISSUE_ID]];
@@ -245,8 +241,7 @@ namespace backends\issueAdapter {
                 return ['isNew' => true, 'issueId' => $issue['id']];
         }
 
-        public function listConnectIssues($phone): bool|array
-        {
+        public function listConnectIssues($phone): bool|array {
             $issueType = self::ISSUE_REQUEST_QR_CODE_COURIER;
             $project = $this->config['backends']['issueAdapter'][$issueType][self::F_PROJECT];
             $workflow = $this->config['backends']['issueAdapter'][$issueType][self::F_WORKFLOW];
@@ -279,8 +274,7 @@ namespace backends\issueAdapter {
             return $issues;
         }
 
-        public function commentIssue($issueId, $comment)
-        {
+        public function commentIssue($issueId, $comment) {
             $content = [
                 "issueId" => $issueId,
                 "comment" => $comment,
@@ -303,8 +297,7 @@ namespace backends\issueAdapter {
             return $result[0] ?? false;
         }
 
-        public function actionIssue($data)
-        {
+        public function actionIssue($data) {
             $issueId = @$data['key'];
             $action = @$data['action'];
             $content = [
