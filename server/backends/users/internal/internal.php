@@ -291,9 +291,9 @@
                     if ($sth->execute([
                         ":login" => $login,
                         ":password" => password_hash($password, PASSWORD_DEFAULT),
-                        ":real_name" => $realName?trim($realName):null,
-                        ":e_mail" => $eMail?trim($eMail):null,
-                        ":phone" => $phone?trim($phone):null,
+                        ":real_name" => $realName ? trim($realName) : null,
+                        ":e_mail" => $eMail ? trim($eMail) : null,
+                        ":phone" => $phone ? trim($phone) : null,
                     ])) {
                         $uid = $this->db->lastInsertId();
                         if ($eMail) {
