@@ -39,7 +39,7 @@
                     if (payload.key == "SUDO:" + myself.login || sqlLike(payload.key, `AUTH:${lStore("_token")}:%`)) {
                         loadingStart();
                         setTimeout(() => {
-                            window.onhashchange = hashChange;
+                            window.onhashchange = false;
                             window.location.reload();
                         }, 150);
                     }
