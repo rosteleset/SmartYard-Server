@@ -1,0 +1,11 @@
+{
+    "title": "BASIP AA-07BD",
+    "vendor": "BASIP",
+    "model": "AA-07BD",
+    "class": "aa07bd",
+    "eventServer": "basip",
+    "outputs": 2,
+    "camera": "basip",
+    "useSmartConfigurator": true,
+    "cmses": []
+}

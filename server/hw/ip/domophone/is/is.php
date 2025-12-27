@@ -707,4 +707,9 @@ abstract class is extends domophone implements CmsLevelsInterface, FreePassInter
      * @return array|null The resistance levels parameters or null if CMS levels are not in the correct format.
      */
     abstract protected function getApartmentResistanceParams(array $cmsLevels): ?array;
+
+    protected function initConnection(): void
+    {
+        // Empty implementation
+    }
 }
