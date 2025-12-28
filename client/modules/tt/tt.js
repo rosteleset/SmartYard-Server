@@ -1425,7 +1425,7 @@
             }
 
             if (AVAIL("tt", "customFilter")) {
-                rtd += `<li class="nav-item nav-item-back-hover"><a href="?#tt&filter=empty&customSearch=yes&_=${Math.random()}" class="nav-link pointer" role="button" title="${i18n("tt.customSearch")}"><i class="fab fa-lg fa-fw fa-searchengin"></i></a></li>`;
+                rtd += `<li class="nav-item nav-item-back-hover"><a href="?#tt&filter=empty&customSearch=yes&_=${Math.random()}" class="nav-link pointer" role="button" title="${i18n("tt.customSearch")}"><i class="fas fa-lg fa-fw fa-search-plus"></i></a></li>`;
             }
         }
 
