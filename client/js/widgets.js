@@ -535,5 +535,5 @@ setInterval(() => {
 
     $(".blink-icon.blinking").toggleClass("text-warning");
     $(".blink-icon:not(.blinking)").removeClass("text-warning");
-    $("body").addClass("sidebar-collapse");
+    // $("body").addClass("sidebar-collapse");
 }, 1000);
