@@ -439,22 +439,6 @@
                                     subject: 'subject',
                                     body: 'Ilorm ipsum....',
                                     color: "danger",
-                                    subtasks: [
-                                        {
-                                            text: "1",
-                                        },
-                                        {
-                                            text: "2",
-                                            checked: true,
-                                        },
-                                        {
-                                            text: "3",
-                                            checked: true,
-                                        },
-                                        {
-                                            text: "4",
-                                        },
-                                    ],
                                     tags: [
                                         "Violet"
                                     ],
