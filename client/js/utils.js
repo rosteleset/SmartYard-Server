@@ -488,6 +488,19 @@ function sqlLike(text, pattern) {
     return (new RegExp(`^${pattern.replace(/%/g, '.*').replace(/_/g, '.').replace(/\./g, '\\.')}$`)).test(text);
 }
 
+function systemColor(text) {
+    let m = md5(text);
+    let s = 0;
+
+    for (let i = 0; i < text.length; i++) {
+        s += parseInt(m[i], 16);
+    }
+
+    s = s % (systemColors.length - 1);
+
+    return systemColors[s + 1];
+}
+
 Object.defineProperty(Array.prototype, "assoc", {
     value: function (key, target, val) {
         let arr = this;

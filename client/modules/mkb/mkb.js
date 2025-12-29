@@ -270,9 +270,8 @@
 
         for (let i in card.tags) {
             t += `
-                <span class="badge badge-${card.tags[i].color} kanban-badge pr-1 pl-2">
-                    ${card.tags[i].text}
-                    <i class="fas fa-fw fa-times-circle"></i>
+                <span class="badge bg-${systemColor(card.tags[i])} kanban-badge pr-2 pl-2 mt-1">
+                    ${card.tags[i]}
                 </span>
             `;
         }
@@ -456,6 +455,9 @@
                                             text: "4",
                                         },
                                     ],
+                                    tags: [
+                                        "Violet"
+                                    ],
                                 },
                             ],
                         },
@@ -487,14 +489,14 @@
                                         },
                                     ],
                                     tags: [
-                                        {
-                                            text: "Red",
-                                            color: "danger",
-                                        },
-                                        {
-                                            text: "Green",
-                                            color: "success",
-                                        }
+                                        "tag1",
+                                        "tag2",
+                                        "tag3",
+                                        "tag4",
+                                        "tag5",
+                                        "tag6",
+                                        "tag7",
+                                        "tag8",
                                     ],
                                 },
                             ],

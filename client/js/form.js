@@ -1,3 +1,32 @@
+const systemColors = [
+    // empty
+    "",
+    // theme colors
+    "primary",
+    "secondary",
+    "info",
+    "success",
+    "warning",
+    "danger",
+    // black/white nuances
+    "black",
+    "gray-dark",
+    "gray",
+    "light",
+    // colors
+    "indigo",
+    "lightblue",
+    "navy",
+    "purple",
+    "fuchsia",
+    "pink",
+    "maroon",
+    "orange",
+    "lime",
+    "teal",
+    "olive",
+];
+
 /**
  * Generates and renders a dynamic modal or inline form with various field types, validation, and callbacks.
  *
@@ -275,122 +304,15 @@ function cardForm(params) {
 
         if (params.fields[i].type == "color") {
             params.fields[i].type = "select2";
-            params.fields[i].options = [
-                // empty
-                {
-                    text: i18n("default"),
-                    value: "",
-                    icon: "p-1 fas fa-palette",
-                },
-                // theme colors
-                {
-                    text: i18n("colorPrimary"),
-                    value: "primary",
-                    icon: "p-1 fas fa-palette bg-primary",
-                },
-                {
-                    text: i18n("colorSecondary"),
-                    value: "secondary",
-                    icon: "p-1 fas fa-palette bg-secondary",
-                },
-                {
-                    text: i18n("colorInfo"),
-                    value: "info",
-                    icon: "p-1 fas fa-palette bg-info",
-                },
-                {
-                    text: i18n("colorSuccess"),
-                    value: "success",
-                    icon: "p-1 fas fa-palette bg-success",
-                },
-                {
-                    text: i18n("colorWarning"),
-                    value: "warning",
-                    icon: "p-1 fas fa-palette bg-warning",
-                },
-                {
-                    text: i18n("colorDanger"),
-                    value: "danger",
-                    icon: "p-1 fas fa-palette bg-danger",
-                },
-                // black/white nuances
-                {
-                    text: i18n("colorBlack"),
-                    value: "black",
-                    icon: "p-1 fas fa-palette bg-black",
-                },
-                {
-                    text: i18n("colorGrayDark"),
-                    value: "gray-dark",
-                    icon: "p-1 fas fa-palette bg-gray-dark",
-                },
-                {
-                    text: i18n("colorGray"),
-                    value: "gray",
-                    icon: "p-1 fas fa-palette bg-gray",
-                },
-                {
-                    text: i18n("colorLight"),
-                    value: "light",
-                    icon: "p-1 fas fa-palette bg-light",
-                },
-                // colors
-                {
-                    text: i18n("colorIndigo"),
-                    value: "indigo",
-                    icon: "p-1 fas fa-palette bg-indigo",
-                },
-                {
-                    text: i18n("colorLightblue"),
-                    value: "lightblue",
-                    icon: "p-1 fas fa-palette bg-lightblue",
-                },
-                {
-                    text: i18n("colorNavy"),
-                    value: "navy",
-                    icon: "p-1 fas fa-palette bg-navy",
-                },
-                {
-                    text: i18n("colorPurple"),
-                    value: "purple",
-                    icon: "p-1 fas fa-palette bg-purple",
-                },
-                {
-                    text: i18n("colorFuchsia"),
-                    value: "fuchsia",
-                    icon: "p-1 fas fa-palette bg-fuchsia",
-                },
-                {
-                    text: i18n("colorPink"),
-                    value: "pink",
-                    icon: "p-1 fas fa-palette bg-pink",
-                },
-                {
-                    text: i18n("colorMaroon"),
-                    value: "maroon",
-                    icon: "p-1 fas fa-palette bg-maroon",
-                },
-                {
-                    text: i18n("colorOrange"),
-                    value: "orange",
-                    icon: "p-1 fas fa-palette bg-orange",
-                },
-                {
-                    text: i18n("colorLime"),
-                    value: "lime",
-                    icon: "p-1 fas fa-palette bg-lime",
-                },
-                {
-                    text: i18n("colorTeal"),
-                    value: "teal",
-                    icon: "p-1 fas fa-palette bg-teal",
-                },
-                {
-                    text: i18n("colorOlive"),
-                    value: "olive",
-                    icon: "p-1 fas fa-palette bg-olive",
-                },
-            ];
+            params.fields[i].options = [ ];
+
+            for (let c in systemColors) {
+                params.fields[i].options.push({
+                    text: systemColors[c] ? i18n("color" + systemColors[c][0].toUpperCase() + systemColors[c].substring(1)) : i18n("default"),
+                    value: systemColors[c],
+                    icon: "p-1 fas fa-palette" + (systemColors[c] ? " bg-" + systemColors[c] : ""),
+                });
+            }
         }
 
         if (params.fields[i].type == "icon") {
