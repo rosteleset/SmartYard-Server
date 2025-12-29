@@ -94,4 +94,9 @@ class fake extends camera
     {
         // Empty implementation
     }
+
+    protected function initConnection(): void
+    {
+        // Empty implementation
+    }
 }

@@ -1,9 +1,0 @@
-{
-    "title": "BASIP AA-07BD DOMOPHONE CAMERA",
-    "vendor": "BASIP",
-    "model": false,
-    "version": false,
-    "eventServer": "basip",
-    "class": "aa07bd",
-    "useSmartConfigurator": true
-}

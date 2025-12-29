@@ -376,10 +376,4 @@ abstract class domophone extends ip
      */
     abstract public function setUnlockTime(int $time = 3): void;
 
-    /**
-     * Initialize connection.
-     *
-     * @return void
-     */
-    abstract protected function initConnection(): void;
 }

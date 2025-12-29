@@ -102,4 +102,9 @@ class akuvox extends camera
     {
         return $this->getConfigParams(['Config.DoorSetting.RTSP.OSDText'])[0] ?? '';
     }
+
+    protected function initConnection(): void
+    {
+        // Empty implementation
+    }
 }

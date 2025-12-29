@@ -48,4 +48,9 @@ class basip extends camera
         // Empty implementation
         return '';
     }
+
+    protected function initConnection(): void
+    {
+        // Empty implementation
+    }
 }

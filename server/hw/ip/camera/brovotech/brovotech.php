@@ -449,4 +449,9 @@ class brovotech extends camera
         $this->login = 'admin';
         $this->defaultPassword = '12345';
     }
+
+    protected function initConnection(): void
+    {
+        // Empty implementation
+    }
 }

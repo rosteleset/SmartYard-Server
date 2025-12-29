@@ -449,4 +449,9 @@ class iflow extends camera
         $osd = $this->apiCall('/System/Video/inputs/channels/1');
         return $osd['name'] ?? '';
     }
+
+    protected function initConnection(): void
+    {
+        // Empty implementation
+    }
 }

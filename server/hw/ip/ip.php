@@ -193,4 +193,11 @@ abstract class ip extends hw
      * @return void
      */
     abstract public function setAdminPassword(string $password): void;
+
+    /**
+     * Initialize connection.
+     *
+     * @return void
+     */
+    abstract protected function initConnection(): void;
 }

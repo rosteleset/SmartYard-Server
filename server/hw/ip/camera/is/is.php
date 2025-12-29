@@ -110,4 +110,9 @@ class is extends camera
         $osdParams = $this->apiCall('/v2/camera/osd');
         return $osdParams[0]['text'] ?: $osdParams[1]['text'];
     }
+
+    protected function initConnection(): void
+    {
+        // Empty implementation
+    }
 }
