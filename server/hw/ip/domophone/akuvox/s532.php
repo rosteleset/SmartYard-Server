@@ -6,9 +6,11 @@ use CURLFile;
 use hw\Interface\{
     DisplayTextInterface,
     FreePassInterface,
+    HousePrefixInterface,
     LanguageInterface,
 };
 use hw\ip\domophone\akuvox\Entities\{
+    Dialplan,
     Group,
     User,
 };
@@ -17,7 +19,7 @@ use hw\ip\domophone\akuvox\Enums\AnalogType;
 /**
  * Represents an Akuvox S532 intercom.
  */
-class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, LanguageInterface
+class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, HousePrefixInterface, LanguageInterface
 {
     /**
      * @var array<string, AnalogType> Mapping of CMS model codes from the DB to their corresponding AnalogType enums.
@@ -67,9 +69,9 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
     protected ?array $usersToUpdate = null;
 
     /**
-     * @var bool Flag set when users are changed, indicating that group synchronization is required.
+     * @var bool Flag set when users are changed, indicating that group processing is required.
      */
-    protected bool $needSyncGroups = false;
+    protected bool $needProcessGroups = false;
 
     protected static function getMaxUsers(): int
     {
@@ -145,7 +147,7 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
             $this->usersToUpdate[] = $user;
         }
 
-        $this->needSyncGroups = true;
+        $this->needProcessGroups = true;
     }
 
     public function configureMatrix(array $matrix): void
@@ -170,7 +172,7 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
             $this->usersToAdd[] = $user;
         }
 
-        $this->needSyncGroups = true;
+        $this->needProcessGroups = true;
     }
 
     public function configureSip(
@@ -199,7 +201,7 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
             }
         }
 
-        $this->needSyncGroups = true;
+        $this->needProcessGroups = true;
     }
 
     public function deleteRfid(string $code = ''): void
@@ -223,6 +225,23 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
     public function getDisplayTextLinesCount(): int
     {
         return 1;
+    }
+
+    public function getHousePrefixSupportedFields(): array
+    {
+        return [];
+    }
+
+    public function getHousePrefixes(): array
+    {
+        $dialplans = $this->getDialplans();
+        $prefixes = [];
+
+        foreach ($dialplans as $dialplan) {
+            // TODO
+        }
+
+        return $prefixes;
     }
 
     public function getRfids(): array
@@ -303,6 +322,11 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
         ]);
     }
 
+    public function setHousePrefixes(array $prefixes): void
+    {
+        // TODO: Implement setHousePrefixes() method.
+    }
+
     public function setLanguage(string $language): void
     {
         $lang = match ($language) {
@@ -332,22 +356,48 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
             $this->updateUsers($this->usersToUpdate);
         }
 
-        if ($this->needSyncGroups) {
-            $this->syncGroups();
-            $this->needSyncGroups = false;
+        if ($this->needProcessGroups) {
+            if (empty($this->getHousePrefixes())) {
+                $this->clearGroups();
+            } else {
+                $this->syncGroups();
+            }
+
+            $this->needProcessGroups = false;
         }
     }
 
     public function transformDbConfig(array $dbConfig): array
     {
         $dbConfig['cmsModel'] = self::CMS_MODEL_MAP[$dbConfig['cmsModel']]->value;
+
+        /*
+         * Currently, it is possible to select both a prefix and a CMS and fill in the matrix.
+         * This is likely incorrect, so we reset the matrix to avoid creating extra CMS users.
+         */
+        if (!empty($dbConfig['housePrefixes'])) {
+            $dbConfig['matrix'] = [];
+        }
+
         return $dbConfig;
+    }
+
+    /**
+     * Adds new dialplans to the intercom.
+     *
+     * @param Dialplan[] $dialplans Array of {@see Dialplan} entities to be added.
+     * @return void
+     */
+    protected function addDialplans(array $dialplans): void
+    {
+        $this->executeChunkOperation('dialplan', 'add', $dialplans, fn(Dialplan $dialplan) => $dialplan->toArray());
     }
 
     /**
      * Adds new groups to the intercom.
      *
      * @param Group[] $groups Array of {@see Group} entities to be added.
+     * @return void
      */
     protected function addGroups(array $groups): void
     {
@@ -358,6 +408,7 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
      * Adds new users to the intercom.
      *
      * @param User[] $users Array of {@see User} entities to be added.
+     * @return void
      */
     protected function addUsers(array $users): void
     {
@@ -365,7 +416,20 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
     }
 
     /**
-     * Deletes all CMS users from the intercom
+     * Deletes all groups from the intercom.
+     *
+     * @return void
+     */
+    protected function clearGroups(): void
+    {
+        $this->apiCall('', 'POST', [
+            'target' => 'group',
+            'action' => 'clear',
+        ]);
+    }
+
+    /**
+     * Deletes all CMS users from the intercom.
      *
      * @return void
      */
@@ -373,6 +437,17 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
     {
         $cmsUsers = $this->findUsers(self::USER_ID_PREFIX_CMS);
         $this->deleteUsers($cmsUsers);
+    }
+
+    /**
+     * Deletes dialplans from the intercom.
+     *
+     * @param Dialplan[] $dialplans Array of {@see Dialplan} entities to be deleted.
+     * @return void
+     */
+    protected function deleteDialplans(array $dialplans): void
+    {
+        $this->executeChunkOperation('dialplan', 'del', $dialplans, fn(Dialplan $dialplan) => ['ID' => $dialplan->id]);
     }
 
     /**
@@ -402,7 +477,7 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
      *
      * @param string $target API entity target, e.g. "user" or "group".
      * @param string $action API operation, e.g. "add", "del", "set".
-     * @param User[]|Group[] $entities List of entities.
+     * @param User[]|Group[]|Dialplan[] $entities List of entities.
      * @param callable $mapper A function that transforms an entity into an array suitable for the API payload.
      * @return void
      */
@@ -458,6 +533,18 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
     protected function getCmsModel(): string
     {
         return $this->getConfigParams(['Config.DoorSetting.ANALOG.Type'])[0] ?? '';
+    }
+
+    /**
+     * Returns all dialplans.
+     *
+     * @return Dialplan[] An array of {@see Dialplan} objects.
+     */
+    protected function getDialplans(): array
+    {
+        $response = $this->apiCall('/dialreplace/get'); // TODO: add caching
+        $items = $response['data']['item'] ?? [];
+        return array_map(static fn(array $item) => Dialplan::fromArray($item), $items);
     }
 
     /**
@@ -719,6 +806,7 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, La
      * Updates users on the intercom.
      *
      * @param User[] $users Array of {@see User} entities to be updated.
+     * @return void
      */
     protected function updateUsers(array $users): void
     {
