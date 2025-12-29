@@ -363,8 +363,8 @@
                     );
 
                     return $device->getCamshot();
-                } catch (Exception) {
-                    error_log("Error getting snapshot from '{$cameraData['url']}' using device method");
+                } catch (Exception $e) {
+                    error_log("Error getting snapshot from '{$cameraData['url']}' using device method: ". $e->getMessage());
                     return null;
                 }
             }
