@@ -90,11 +90,9 @@ function mYesNo(body, title, callbackYes, callbackNo, yes, no, timeout) {
     if (mYesNoTimeout) {
         clearTimeout(mYesNoTimeout);
     }
-
     if (!title) {
         title = i18n("confirm");
     }
-
     $('#yesnoModalLabel').html(title);
     $('#yesnoModalBody').html(body);
     let t = yes ? yes : i18n("yes");
@@ -109,10 +107,8 @@ function mYesNo(body, title, callbackYes, callbackNo, yes, no, timeout) {
         $('#yesnoModal').modal('hide');
         if (typeof callbackNo == 'function') callbackNo();
     });
-
     autoZ($('#yesnoModal')).modal('show');
     xblur();
-
     if (timeout) {
         mYesNoTimeout = setTimeout(() => {
             mYesNoTimeout = 0;
@@ -145,7 +141,7 @@ function mAlert(body, title, callback, titleButton, mainButton) {
     } else {
         $('#alertModalButton').html(i18n("ok"));
     }
-    $('#alertModalButton').off('click').on('click', (e) => {
+    $('#alertModalButton').off('click').on('click', e => {
         $('#alertModal').modal('hide');
         if (typeof callback == 'function') callback();
         e.stopPropagation();
@@ -170,7 +166,12 @@ function mPrompt(prompt, title, value, callback, titleButton, mainButton) {
     } else {
         $('#promptModalButton').html(i18n("ok"));
     }
-    $('#promptModalButton').off('click').on('click', (e) => {
+    $("#promptModalInput").off("keypress").on("keypress", e => {
+        if (e.keyCode == 13) {
+            $('#promptModalButton').click();
+        }
+    });
+    $('#promptModalButton').off('click').on('click', e => {
         $('#promptModal').modal('hide');
         if (typeof callback == 'function') callback($('#promptModalInput').val());
         e.stopPropagation();
@@ -198,7 +199,12 @@ function mPassword(prompt, title, callback, titleButton, mainButton) {
     } else {
         $('#passwordModalButton').html(i18n("ok"));
     }
-    $('#passwordModalButton').off('click').on('click', (e) => {
+    $("#passwordModalInput").off("keypress").on("keypress", e => {
+        if (e.keyCode == 13) {
+            $('#passwordModalButton').click();
+        }
+    });
+    $('#passwordModalButton').off('click').on('click', e => {
         $('#passwordModal').modal('hide');
         let v = $('#passwordModalInput').val();
         $('#passwordModalInput').val("");
