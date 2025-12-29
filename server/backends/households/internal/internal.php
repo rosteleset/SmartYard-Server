@@ -1026,6 +1026,9 @@
 
             public function getDomophones($by = "all", $query = -1, $withStatus = false) {
                 $q = "select * from houses_domophones order by house_domophone_id";
+
+                $p = false;
+
                 $r = [
                     "house_domophone_id" => "domophoneId",
                     "enabled" => "enabled",
@@ -1121,9 +1124,15 @@
                             ) order by house_domophone_id
                         ";
                         break;
+
+                    case "tree":
+                        // TODO: dirty hack (typecast), need to fix!
+                        $q = "select * from houses_domophones where tree like concat(:tree::character varying, '%') order by house_domophone_id";
+                        $p = $query;
+                        break;
                 }
 
-                $domophones = $this->db->get($q, false, $r);
+                $domophones = $this->db->get($q, $p, $r);
 
                 foreach ($domophones as $key => $domophone) {
                     $domophones[$key]["ext"] = json_decode($domophone["ext"]);
@@ -1159,7 +1168,7 @@
              * @inheritDoc
              */
 
-            public function addDomophone($enabled, $model, $server, $url,  $credentials, $dtmf, $nat, $comments, $name, $display, $video, $monitoring, $ext, $concierge, $sos) {
+            public function addDomophone($enabled, $model, $server, $url,  $credentials, $dtmf, $nat, $comments, $name, $display, $video, $monitoring, $ext, $concierge, $sos, $tree = '') {
                 if (!$model) {
                     setLastError("moModel");
                     return false;
@@ -1211,7 +1220,7 @@
                 }
                 $display = trim(implode("\n", $t));
 
-                $domophoneId = $this->db->insert("insert into houses_domophones (enabled, model, server, url, credentials, dtmf, nat, comments, name, display, video, monitoring, ext, concierge, sos) values (:enabled, :model, :server, :url, :credentials, :dtmf, :nat, :comments, :name, :display, :video, :monitoring, :ext, :concierge, :sos)", [
+                $domophoneId = $this->db->insert("insert into houses_domophones (enabled, model, server, url, credentials, dtmf, nat, comments, name, display, video, monitoring, ext, concierge, sos, tree) values (:enabled, :model, :server, :url, :credentials, :dtmf, :nat, :comments, :name, :display, :video, :monitoring, :ext, :concierge, :sos, :tree)", [
                     "enabled" => (int)$enabled,
                     "model" => $model,
                     "server" => $server,
@@ -1227,6 +1236,7 @@
                     "ext" => json_encode($ext),
                     "concierge" => $concierge ?: null,
                     "sos" => $sos ?: null,
+                    "tree" => $tree ?: '',
                 ]);
 
                 if ($domophoneId) {
@@ -1246,7 +1256,7 @@
              * @inheritDoc
              */
 
-            public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $dtmf, $firstTime, $nat, $locksAreOpen, $comments, $name, $display, $video, $monitoring, $ext, $concierge, $sos) {
+            public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $dtmf, $firstTime, $nat, $locksAreOpen, $comments, $name, $display, $video, $monitoring, $ext, $concierge, $sos, $tree = '') {
                 if (!checkInt($domophoneId)) {
                     setLastError("noId");
                     return false;
@@ -1314,7 +1324,7 @@
                 }
                 $display = trim(implode("\n", $t));
 
-                $r = $this->db->modify("update houses_domophones set enabled = :enabled, model = :model, server = :server, url = :url, credentials = :credentials, dtmf = :dtmf, first_time = :first_time, nat = :nat, locks_are_open = :locks_are_open, comments = :comments, name = :name, display = :display, video = :video, monitoring = :monitoring, ext = :ext, concierge = :concierge, sos = :sos where house_domophone_id = $domophoneId", [
+                $r = $this->db->modify("update houses_domophones set enabled = :enabled, model = :model, server = :server, url = :url, credentials = :credentials, dtmf = :dtmf, first_time = :first_time, nat = :nat, locks_are_open = :locks_are_open, comments = :comments, name = :name, display = :display, video = :video, monitoring = :monitoring, ext = :ext, concierge = :concierge, sos = :sos, tree = :tree where house_domophone_id = $domophoneId", [
                     "enabled" => (int)$enabled,
                     "model" => $model,
                     "server" => $server,
@@ -1332,6 +1342,7 @@
                     "ext" => json_encode($ext),
                     "concierge" => $concierge ?: null,
                     "sos" => $sos ?: null,
+                    "tree" => $tree ?: '',
                 ]);
 
                 if ($r) {
@@ -3837,6 +3848,115 @@
                 }
 
                 return true;
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+            public function addLeaf($parent, $newName) {
+                if (!checkStr($newName)) {
+                    setLastError("invalidParams");
+                    return false;
+                }
+
+                $tree = $this->db->get("select * from core_devices_tree");
+
+                $depth = count(explode(".", $parent));
+
+                $newLeaf = 0;
+
+                $f = false;
+
+                if ($parent) {
+                    foreach ($tree as $leaf) {
+                        if (substr($leaf["tree"], 0, strlen($parent)) == $parent) {
+                            $f = true;
+                            break;
+                        }
+                    }
+                } else {
+                    $f = true;
+                }
+
+                if (!$f) {
+                    setLastError("parentNotFound");
+                    return false;
+                }
+
+                foreach ($tree as $leaf) {
+                    $name = $leaf["name"];
+                    $leaf = $leaf["tree"];
+                    $ct = explode(".", $leaf);
+                    if (count($ct) == $depth + 1) {
+                        if ($name == $newName) {
+                            return false;
+                        }
+                        if ($newLeaf < $ct[count($ct) - 2]) {
+                            $newLeaf = $ct[count($ct) - 2];
+                        }
+                    }
+                }
+
+                $newLeaf++;
+
+                $tree = $parent . $newLeaf . '.';
+
+                $this->db->modify("insert into core_devices_tree (tree, name) values (:tree, :name)", [
+                    "tree" => $tree,
+                    "name" => $newName,
+                ]);
+
+                return $tree;
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+            public function modifyLeaf($tree, $name) {
+                if (!checkStr($tree) || !checkStr($name)) {
+                    setLastError("invalidParams");
+                    return false;
+                }
+
+                return $this->db->modify("update core_devices_tree set name = :name where tree = :tree", [
+                    "tree" => $tree,
+                    "name" => $name,
+                ]);
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+            public function deleteTree($tree) {
+                if (!checkStr($tree)) {
+                    setLastError("invalidParams");
+                    return false;
+                }
+
+                $leafs = $this->db->get("select * from core_devices_tree");
+
+                $c = 0;
+
+                foreach ($leafs as $leaf) {
+                    if (substr($leaf["tree"], 0, strlen($tree)) == $tree) {
+                        $c += $this->db->modify("delete from core_devices_tree where tree = :tree", [
+                            "tree" => $leaf["tree"],
+                        ]);
+                    }
+                }
+
+                return $c;
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+            public function getTree() {
+                return $this->db->get("select * from core_devices_tree");
             }
         }
     }

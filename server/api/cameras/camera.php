@@ -35,6 +35,7 @@
      * @apiBody {Boolean} monitoring
      * @apiBody {Boolean} webrtc
      * @apiBody {Object} ext
+     * @apiBody {String} tree
      *
      * @apiSuccess {Number} cameraId
      */
@@ -73,6 +74,7 @@
      * @apiBody {Boolean} monitoring
      * @apiBody {Boolean} webrtc
      * @apiBody {Object} ext
+     * @apiBody {String} tree
      *
      * @apiSuccess {Boolean} operationResult
      */
@@ -109,7 +111,7 @@
             public static function POST($params) {
                 $cameras = loadBackend("cameras");
 
-                $cameraId = $cameras->addCamera($params["enabled"], $params["model"], $params["url"], $params["stream"], $params["credentials"], $params["name"], $params["dvrStream"], $params["timezone"], $params["lat"], $params["lon"], $params["direction"], $params["angle"], $params["distance"], $params["frs"], $params["frsMode"], $params["mdArea"], $params["rcArea"], $params["common"], $params["comments"], $params["sound"], $params["monitoring"], $params["webrtc"], $params["ext"]);
+                $cameraId = $cameras->addCamera($params["enabled"], $params["model"], $params["url"], $params["stream"], $params["credentials"], $params["name"], $params["dvrStream"], $params["timezone"], $params["lat"], $params["lon"], $params["direction"], $params["angle"], $params["distance"], $params["frs"], $params["frsMode"], $params["mdArea"], $params["rcArea"], $params["common"], $params["comments"], $params["sound"], $params["monitoring"], $params["webrtc"], $params["ext"], @$params["tree"]);
 
                 return api::ANSWER($cameraId, ($cameraId !== false) ? "cameraId" : false);
             }
@@ -117,7 +119,7 @@
             public static function PUT($params) {
                 $cameras = loadBackend("cameras");
 
-                $success = $cameras->modifyCamera($params["_id"], $params["enabled"], $params["model"], $params["url"], $params["stream"], $params["credentials"], $params["name"], $params["dvrStream"], $params["timezone"], $params["lat"], $params["lon"], $params["direction"], $params["angle"], $params["distance"], $params["frs"], $params["frsMode"], $params["mdArea"], $params["rcArea"], $params["common"], $params["comments"], $params['sound'], $params["monitoring"], $params["webrtc"], $params["ext"]);
+                $success = $cameras->modifyCamera($params["_id"], $params["enabled"], $params["model"], $params["url"], $params["stream"], $params["credentials"], $params["name"], $params["dvrStream"], $params["timezone"], $params["lat"], $params["lon"], $params["direction"], $params["angle"], $params["distance"], $params["frs"], $params["frsMode"], $params["mdArea"], $params["rcArea"], $params["common"], $params["comments"], $params['sound'], $params["monitoring"], $params["webrtc"], $params["ext"], @$params["tree"]);
 
                 return api::ANSWER($success);
             }

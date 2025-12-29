@@ -153,7 +153,7 @@
                         color: r.color,
                     }).
                     done(() => {
-                        window.location.reload();
+                        window.location.href = refreshUrl();
                     }).
                     fail(FAIL).
                     fail(loadingDone);
@@ -167,7 +167,7 @@
                     id: id,
                 }).
                 done(() => {
-                    window.location.reload();
+                    window.location.href = refreshUrl();
                 }).
                 fail(FAIL).
                 fail(loadingDone);
@@ -175,7 +175,7 @@
         }
     },
 
-    path: function (object, id, _link) {
+    addressPath: function (object, id, _link) {
         let sp = "<i class=\"fas fa-xs fa-angle-double-right ml-2 mr-2\"></i>";
 
         function link(target, text, id) {
@@ -303,6 +303,142 @@
             default:
                 return "";
         }
+    },
+
+    treePath: function (tree, leaf) {
+        let h = '';
+
+        let l = [];
+
+        for (let i in tree) {
+            l[tree[i].tree] = tree[i].name;
+            if (tree[i].tree[tree[i].tree.length - 1] == ".") {
+                tree[i].tree = tree[i].tree.substr(0, tree[i].tree.length - 1);
+            }
+        }
+
+        let t = buildTreeFromPaths(tree);
+
+        function hh(tree, c) {
+            let h = '';
+
+            let t = tree.sort((a, b) => {
+                if (a.name > b.name) {
+                    return 1
+                }
+                if (a.name < b.name) {
+                    return -1;
+                }
+                return 0;
+            });
+
+            for (let i in t) {
+                if (tree[i].children.length) {
+                    h += `<li class="dropdown-item pointer submenu dtItem mr-4" data-tree="${t[i].tree}."><i class="far fa-fw fa-folder mr-2"></i><span>${i18n(t[i].name)}&nbsp;</span></li>`;
+                    h += '<ul class="dropdown-menu">';
+                    h += hh(t[i].children);
+                    h += '</ul>';
+                    h += `</li>`;
+                } else {
+                    if (tree[i].tree + "." == leaf) {
+                        h += `<li class="dropdown-item nomenu pointer dtItem font-weight-bold mr-3" data-tree="${t[i].tree}.">`;
+                    } else {
+                        h += `<li class="dropdown-item nomenu pointer dtItem mr-3" data-tree="${t[i].tree}.">`;
+                    }
+                    h += '<i class="far fa-fw fa-folder mr-2"></i>';
+                    h += `<span>${t[i].name}&nbsp;</span>`;
+                    h += "</li>";
+                }
+            }
+
+            return h;
+        }
+
+        function fh(t, s) {
+            for (let i in t) {
+                if (t[i].tree + "." == s) {
+                    return t[i].children;
+                }
+                if (s.substr(0, t[i].tree.length + 1) == t[i].tree + ".") {
+                    return fh(t[i].children, s);
+                }
+            }
+        }
+
+        h += "<span class='dropdown noselect'>";
+        h += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="dtRoot" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" data-flip="false"><i class="far fa-fw fa-caret-square-down mr-1"></i>${leaf ? l[leaf.split(".")[0] + "."] : i18n("addresses.all")}</span>`;
+        h += `<ul class="dropdown-menu" aria-labelledby="dtRoot">`;
+
+        h += hh(t);
+
+        if (t.length) {
+            h += `<li class="dropdown-divider"></li>`;
+            if (leaf) {
+                h += `<li class="dropdown-item nomenu pointer dtItem mr-3" data-tree="">`;
+            } else {
+                h += `<li class="dropdown-item nomenu pointer dtItem font-weight-bold mr-3" data-tree="">`;
+            }
+            h += '<i class="fas fa-fw fa-asterisk mr-2"></i>';
+            h += `<span>${i18n("addresses.all")}&nbsp;</span>`;
+            h += "</li>";
+        }
+
+        h += "</ul>";
+        h += "</span>";
+
+        if (leaf) {
+            let p = leaf.split(".");
+            let s = p[0] + ".";
+
+            if (p.length > 2) {
+                h += "<i class='fas fa-xs fa-angle-double-right ml-2 mr-2'></i>";
+                for (let i = 1; i < p.length - 1; i++) {
+                    let f = fh(t, s);
+                    if (f.length) {
+                        s += p[i] + ".";
+                        h += "<span class='dropdown noselect'>";
+                        h += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary text-bold" id="dtNode-${md5(s)}" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" data-flip="false"><i class="far fa-fw fa-caret-square-down mr-1"></i>${l[s]}</span>`;
+                        h += `<ul class="dropdown-menu" aria-labelledby="dtNode-${md5(s)}">`;
+
+                        h += hh(f);
+
+                        h += "</ul>";
+                        h += "</span>";
+                        if (i != p.length - 2) {
+                            h += "<i class='fas fa-xs fa-angle-double-right ml-2 mr-2'></i>";
+                        }
+                    }
+                }
+            }
+        }
+
+        h += `<span style='position: absolute; right: 48px;' class='mr-3'><i class='fas fa-fw fa-plus-square text-success pointer dtAddNode'></i></span>`;
+        h += `<span style='position: absolute; right: 24px;' class='mr-3'><i class='fas fa-fw fa-pen-square text-primary pointer dtEditNode'></i></span>`;
+        h += `<span style='position: absolute; right: 0px;' class='mr-3'><i class='fas fa-fw fa-minus-square text-danger pointer dtDeleteNode'></i></span>`;
+
+        subTop(h);
+
+        $(".dtItem").off("click").on("click", function () {
+            window.location.href = refreshUrl({ set: { tree: $(this).attr("data-tree") } });
+        });
+
+        $(".dtAddNode").off("click").on("click", () => {
+            mPrompt(i18n("addresses.node"), i18n("addresses.addTreeNode"), "", v => {
+                if ($.trim(v)) {
+                    loadingStart();
+                    POST("cameras", "leaf", false, {
+                        parent: leaf ? leaf : false,
+                        name: $.trim(v),
+                    }).
+                    done(r => {
+                        message(i18n("addresses.nodeWasAdded"));
+                        window.location.href = refreshUrl({ set: { tree: r.tree } });
+                    }).
+                    fail(FAIL).
+                    fail(loadingDone);
+                }
+            }, false, i18n("add"));
+        });
     },
 
     doAddRegion: function (regionUuid, regionIsoCode, regionWithType, regionType, regionTypeFull, region, timezone) {
@@ -1985,6 +2121,8 @@
     },
 
     renderCities: function (target, regionId, areaId) {
+        modules.addresses.citiesFilter = lStore("addresses.citiesFilter");
+
         cardTable({
             target,
             title: {
@@ -1995,7 +2133,11 @@
                         modules.addresses.addCity(regionId, areaId);
                     },
                 },
-                filter: true,
+                filter: modules.addresses.citiesFilter ? modules.addresses.citiesFilter : true,
+                filterChange: f => {
+                    lStore("addresses.citiesFilter", f);
+                    modules.addresses.citiesFilter = f;
+                },
             },
             edit: modules.addresses.modifyCity,
             columns: [
@@ -2034,6 +2176,8 @@
     },
 
     renderSettlements: function (target, areaId, cityId) {
+        modules.addresses.settlementsFilter = lStore("addresses.settlementsFilter");
+
         cardTable({
             target,
             title: {
@@ -2044,7 +2188,11 @@
                         modules.addresses.addSettlement(areaId, cityId);
                     },
                 },
-                filter: true,
+                filter: modules.addresses.settlementsFilter ? modules.addresses.settlementsFilter : true,
+                filterChange: f => {
+                    lStore("addresses.settlementsFilter", f);
+                    modules.addresses.settlementsFilter = f;
+                },
             },
             edit: modules.addresses.modifySettlement,
             columns: [
@@ -2083,6 +2231,8 @@
     },
 
     renderStreets: function (target, cityId, settlementId) {
+        modules.addresses.streetsFilter = lStore("addresses.streetsFilter");
+
         cardTable({
             target,
             title: {
@@ -2093,7 +2243,11 @@
                         modules.addresses.addStreet(cityId, settlementId);
                     },
                 },
-                filter: true,
+                filter: modules.addresses.streetsFilter ? modules.addresses.streetsFilter : true,
+                filterChange: f => {
+                    lStore("addresses.streetsFilter", f);
+                    modules.addresses.streetsFilter = f;
+                },
             },
             edit: modules.addresses.modifyStreet,
             columns: [
@@ -2132,6 +2286,8 @@
     },
 
     renderHouses: function (target, settlementId, streetId) {
+        modules.addresses.housesFilter = lStore("addresses.housesFilter");
+
         cardTable({
             target,
             title: {
@@ -2142,7 +2298,11 @@
                         modules.addresses.addHouse(settlementId, streetId);
                     },
                 },
-                filter: true,
+                filter: modules.addresses.housesFilter ? modules.addresses.housesFilter : true,
+                filterChange: f => {
+                    lStore("addresses.housesFilter", f);
+                    modules.addresses.housesFilter = f;
+                },
             },
             edit: modules.addresses.modifyHouse,
             columns: [
@@ -2194,6 +2354,8 @@
     },
 
     renderRegions: function () {
+        modules.addresses.regionsFilter = lStore("addresses.regionsFilter");
+
         loadingStart();
         QUERY("addresses", "addresses", {
             include: "regions",
@@ -2208,7 +2370,11 @@
                         caption: i18n("addresses.addRegion"),
                         click: modules.addresses.addRegion,
                     },
-                    filter: true,
+                    filter: modules.addresses.regionsFilter ? modules.addresses.regionsFilter : true,
+                    filterChange: f => {
+                        lStore("addresses.regionsFilter", f);
+                        modules.addresses.regionsFilter = f;
+                    },
                 },
                 edit: modules.addresses.modifyRegion,
                 columns: [
@@ -2268,7 +2434,9 @@
                 return;
             }
 
-            subTop(modules.addresses.path("region", regionId));
+            subTop(modules.addresses.addressPath("region", regionId));
+
+            modules.addresses.areasFilter = lStore("addresses.areasFilter");
 
             cardTable({
                 target: "#mainForm",
@@ -2280,7 +2448,11 @@
                             modules.addresses.addArea(regionId);
                         },
                     },
-                    filter: true,
+                    filter: modules.addresses.areasFilter ? modules.addresses.areasFilter : true,
+                    filterChange: f => {
+                        lStore("addresses.areasFilter", f);
+                        modules.addresses.areasFilter = f;
+                    },
                 },
                 edit: modules.addresses.modifyArea,
                 columns: [
@@ -2344,7 +2516,7 @@
                 return;
             }
 
-            subTop(modules.addresses.path("area", areaId));
+            subTop(modules.addresses.addressPath("area", areaId));
 
             modules.addresses.renderCities("#mainForm", false, areaId);
             modules.addresses.renderSettlements("#altForm", areaId, false);
@@ -2374,7 +2546,7 @@
                 return;
             }
 
-            subTop(modules.addresses.path("city", cityId));
+            subTop(modules.addresses.addressPath("city", cityId));
 
             modules.addresses.renderStreets("#mainForm", cityId, false);
             modules.addresses.renderSettlements("#altForm", false, cityId);
@@ -2404,7 +2576,7 @@
                 return;
             }
 
-            subTop(modules.addresses.path("settlement", settlementId));
+            subTop(modules.addresses.addressPath("settlement", settlementId));
 
             modules.addresses.renderStreets("#mainForm", false, settlementId);
             modules.addresses.renderHouses("#altForm", settlementId, false);
@@ -2434,7 +2606,7 @@
                 return;
             }
 
-            subTop(modules.addresses.path("street", streetId));
+            subTop(modules.addresses.addressPath("street", streetId));
 
             modules.addresses.renderHouses("#mainForm", false, streetId);
 

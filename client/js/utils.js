@@ -454,6 +454,33 @@ function ildc() {
     $(".ildc").css("width", mw);
 }
 
+function buildTreeFromPaths(data, delimiter = '.') {
+    let root = [];
+
+    data.forEach(item => {
+        let levels = item.tree ? item.tree.split(delimiter) : [];
+        let currentLevel = root;
+
+        levels.forEach(folderPath => {
+            let folder = currentLevel.find(node => node.path === folderPath);
+
+            if (!folder) {
+                folder = {
+                    path: folderPath,
+                    tree: item.tree,
+                    name: item.name,
+                    children: []
+                };
+                currentLevel.push(folder);
+            }
+
+            currentLevel = folder.children;
+        });
+    });
+
+    return root;
+}
+
 Object.defineProperty(Array.prototype, "assoc", {
     value: function (key, target, val) {
         let arr = this;

@@ -811,7 +811,7 @@
         modules.notes.adjustStickiesContainer();
     },
 
-    route: function (params) {
+    route: function () {
         subTop();
         $("#altForm").hide();
 
@@ -877,7 +877,6 @@
         fail(FAILPAGE).
         always(loadingDone);
     },
-
 /*
     search: function (search) {
         console.log(search);

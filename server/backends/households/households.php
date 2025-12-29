@@ -200,11 +200,12 @@
              * @param $ext
              * @param $concierge
              * @param $sos
+             * @param $tree
              *
              * @return false|integer
              */
 
-            abstract public function addDomophone($enabled, $model, $server, $url, $credentials, $dtmf, $nat, $comments, $name, $display, $video, $monitoring, $ext, $concierge, $sos);
+            abstract public function addDomophone($enabled, $model, $server, $url, $credentials, $dtmf, $nat, $comments, $name, $display, $video, $monitoring, $ext, $concierge, $sos, $tree = '');
 
             /**
              * @param $domophoneId
@@ -225,11 +226,12 @@
              * @param $ext
              * @param $concierge
              * @param $sos
+             * @param $tree
              *
              * @return boolean
              */
 
-            abstract public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $dtmf, $firstTime, $nat, $locksAreOpen, $comments, $name, $display, $video, $monitoring, $ext, $concierge, $sos);
+            abstract public function modifyDomophone($domophoneId, $enabled, $model, $server, $url, $credentials, $dtmf, $firstTime, $nat, $locksAreOpen, $comments, $name, $display, $video, $monitoring, $ext, $concierge, $sos, $tree = '');
 
             /**
              * @param $domophoneId
@@ -626,5 +628,37 @@
              */
 
             abstract public function broadcast($by, $query, $title, $msg, $action = "inbox");
+
+            /**
+             * @param $parent
+             * @param $name
+             *
+             * @return boolean
+             */
+
+            abstract public function addLeaf($parent, $name);
+
+            /**
+             * @param $tree
+             * @param $name
+             *
+             * @return boolean
+             */
+
+            abstract public function modifyLeaf($tree, $name);
+
+            /**
+             * @param $tree
+             *
+             * @return boolean
+             */
+
+            abstract public function deleteTree($tree);
+
+            /**
+             * @return mixed
+             */
+
+            abstract public function getTree();
         }
     }

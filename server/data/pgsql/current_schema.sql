@@ -2,10 +2,10 @@
 -- PostgreSQL database dump
 --
 
-\restrict tOPWQPhBJyHw2xzyK7lRExZbpHI1QQbKMipIKXFhKQvxoe1kvbfR6fA5Ja9vUrB
+\restrict TRZyKC11xO1yBqdeDsDayRekfdDAEGhznasCuu3AKDwwbjDN8ecegEzbdqtr52a
 
--- Dumped from database version 17.6
--- Dumped by pg_dump version 18.0
+-- Dumped from database version 17.7
+-- Dumped by pg_dump version 18.1
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -18,6 +18,15 @@ SET check_function_bodies = false;
 SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
+
+--
+-- Name: public; Type: SCHEMA; Schema: -; Owner: postgres
+--
+
+-- *not* creating schema, since initdb creates it
+
+
+ALTER SCHEMA public OWNER TO postgres;
 
 --
 -- Name: fuzzystrmatch; Type: EXTENSION; Schema: -; Owner: -
@@ -393,7 +402,8 @@ CREATE TABLE public.cameras (
     rc_area character varying,
     frs_mode integer DEFAULT 1,
     ext character varying,
-    monitoring integer DEFAULT 1
+    monitoring integer DEFAULT 1,
+    webrtc integer DEFAULT 0
 );
 
 
@@ -658,7 +668,8 @@ CREATE TABLE public.core_users (
     secret character varying,
     settings character varying,
     avatar character varying,
-    service_account integer DEFAULT 0
+    service_account integer DEFAULT 0,
+    sudo integer DEFAULT 0
 );
 
 
@@ -1580,7 +1591,8 @@ CREATE TABLE public.notes (
     position_left real,
     position_top real,
     position_order integer,
-    note_type character varying
+    note_type character varying,
+    fyeo integer DEFAULT 0
 );
 
 
@@ -3618,13 +3630,6 @@ CREATE INDEX custom_fields_options_custom_field_id ON public.custom_fields_optio
 
 
 --
--- Name: custom_fields_options_uniq; Type: INDEX; Schema: public; Owner: rbt
---
-
-CREATE UNIQUE INDEX custom_fields_options_uniq ON public.custom_fields_options USING btree (custom_field_option_id, option);
-
-
---
 -- Name: custom_fields_values_apply_to; Type: INDEX; Schema: public; Owner: rbt
 --
 
@@ -4304,15 +4309,17 @@ CREATE UNIQUE INDEX tt_tags_uniq ON public.tt_tags USING btree (project_id, tag)
 
 
 --
--- Name: SCHEMA public; Type: ACL; Schema: -; Owner: pg_database_owner
+-- Name: SCHEMA public; Type: ACL; Schema: -; Owner: postgres
 --
 
+REVOKE USAGE ON SCHEMA public FROM PUBLIC;
 GRANT ALL ON SCHEMA public TO rbt;
+GRANT ALL ON SCHEMA public TO PUBLIC;
 
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict tOPWQPhBJyHw2xzyK7lRExZbpHI1QQbKMipIKXFhKQvxoe1kvbfR6fA5Ja9vUrB
+\unrestrict TRZyKC11xO1yBqdeDsDayRekfdDAEGhznasCuu3AKDwwbjDN8ecegEzbdqtr52a
 

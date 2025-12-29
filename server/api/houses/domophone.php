@@ -25,6 +25,7 @@
      * @apiBody {Object} ext
      * @apiBody {String} concierge
      * @apiBody {String} sos
+     * @apiBody {String} tree
      *
      * @apiSuccess {Number} domophoneId
      */
@@ -57,6 +58,7 @@
      * @apiBody {Object} ext
      * @apiBody {String} concierge
      * @apiBody {String} sos
+     * @apiBody {String} tree
      *
      * @apiSuccess {Boolean} operationResult
      */
@@ -94,7 +96,7 @@
             public static function POST($params) {
                 $households = loadBackend("households");
 
-                $domophoneId = $households->addDomophone($params["enabled"], $params["model"], $params["server"], $params["url"], $params["credentials"], $params["dtmf"], $params["nat"], $params["comments"], $params["name"], $params["display"], $params["video"], $params["monitoring"], $params["ext"], $params["concierge"], $params["sos"]);
+                $domophoneId = $households->addDomophone($params["enabled"], $params["model"], $params["server"], $params["url"], $params["credentials"], $params["dtmf"], $params["nat"], $params["comments"], $params["name"], $params["display"], $params["video"], $params["monitoring"], $params["ext"], $params["concierge"], $params["sos"], @$params["tree"]);
 
                 return api::ANSWER($domophoneId, ($domophoneId !== false) ? "domophoneId" : false);
             }
@@ -102,7 +104,7 @@
             public static function PUT($params) {
                 $households = loadBackend("households");
 
-                $success = $households->modifyDomophone($params["_id"], $params["enabled"], $params["model"], $params["server"], $params["url"], $params["credentials"], $params["dtmf"], $params["firstTime"], $params["nat"], $params["locksAreOpen"], $params["comments"], $params["name"], $params["display"], $params["video"], $params["monitoring"], $params["ext"], $params["concierge"], $params["sos"]);
+                $success = $households->modifyDomophone($params["_id"], $params["enabled"], $params["model"], $params["server"], $params["url"], $params["credentials"], $params["dtmf"], $params["firstTime"], $params["nat"], $params["locksAreOpen"], $params["comments"], $params["name"], $params["display"], $params["video"], $params["monitoring"], $params["ext"], $params["concierge"], $params["sos"], @$params["tree"]);
 
                 return api::ANSWER($success);
             }

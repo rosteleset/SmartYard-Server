@@ -34,6 +34,16 @@
                         }
                     }
                 });
+
+                modules.mqtt.subscribe("redis/expire", (topic, payload) => {
+                    if (payload.key == "SUDO:" + myself.login) {
+                        loadingStart();
+                        setTimeout(() => {
+                            window.onhashchange = hashChange;
+                            window.location.reload();
+                        }, 150);
+                    }
+                });
             }).
             fail(FAIL);
         }

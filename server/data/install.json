@@ -280,5 +280,8 @@
     ],
     "88": [
         "v88_sudo.sql"
+    ],
+    "89": [
+        "v89_devices_tree.sql"
     ]
 }

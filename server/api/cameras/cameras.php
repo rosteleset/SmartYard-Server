@@ -10,6 +10,9 @@
      *
      * @apiHeader {String} Authorization authentication token
      *
+     * @apiQuery {String} [by] by
+     * @apiQuery {String} [query] query
+     *
      * @apiSuccess {Object[]} cameras
      */
 
@@ -33,9 +36,10 @@
                 $frs = loadBackend("frs");
 
                 $response = [
-                    "cameras" => $cameras->getCameras(false, false, true),
+                    "cameras" => $cameras->getCameras(@$params["by"] ?: false, @$params["query"] ?: false, true),
                     "models" => $configs->getCamerasModels(),
                     "frsServers" => $frs ? $frs->servers() : [],
+                    "tree" => $cameras->getTree(),
                 ];
 
                 return api::ANSWER($response, "cameras");

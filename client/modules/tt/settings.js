@@ -1324,6 +1324,8 @@
                     }
                 }
 
+                modules.tt.settings.projectFiltersFilter = lStore("tt.projectFiltersFilter");
+
                 cardTable({
                     target: "#altForm",
                     title: {
@@ -1340,7 +1342,11 @@
                                 $("#altForm").hide();
                             },
                         },
-                        filter: true,
+                        filter: modules.tt.settings.projectFiltersFilter ? modules.tt.settings.projectFiltersFilter : true,
+                        filterChange: f => {
+                            lStore("tt.projectFiltersFilter", f);
+                            modules.tt.settings.projectFiltersFilter = f;
+                        },
                     },
                     columns: [
                         {
@@ -2124,7 +2130,10 @@
     },
 
     renderProjects: function () {
+        modules.tt.settings.projectsFilter = lStore("tt.projectsFilter");
+
         loadingStart();
+
         GET("tt", "tt", false, true).
         done(modules.tt.tt).
         done(() => {
@@ -2136,7 +2145,11 @@
                         click: modules.tt.settings.addProject,
                     },
                     caption: i18n("tt.projects"),
-                    filter: true,
+                    filter: modules.tt.settings.projectsFilter ? modules.tt.settings.projectsFilter : true,
+                    filterChange: f => {
+                        lStore("tt.projectsFilter", f);
+                        modules.tt.settings.projectsFilter = f;
+                    },
                 },
                 columns: [
                     {
@@ -2363,7 +2376,10 @@
     },
 
     renderWorkflows: function () {
+        modules.tt.settings.workflowsFilter = lStore("tt.workflowsFilter");
+
         loadingStart();
+
         GET("tt", "tt", false, true).
         done(modules.tt.tt).
         done(() => {
@@ -2375,7 +2391,11 @@
                         caption: i18n("tt.addWorkflow"),
                         click: modules.tt.settings.addWorkflow,
                     },
-                    filter: true,
+                    filter: modules.tt.settings.workflowsFilter ? modules.tt.settings.workflowsFilter : true,
+                    filterChange: f => {
+                        lStore("tt.workflowsFilter", f);
+                        modules.tt.settings.workflowsFilter = f;
+                    },
                 },
                 columns: [
                     {
@@ -2549,7 +2569,10 @@
     },
 
     renderWorkflowLibs: function () {
+        modules.tt.settings.workflowLibsFilter = lStore("tt.workflowLibsFilter");
+
         loadingStart();
+
         GET("tt", "tt", false, true).
         done(modules.tt.tt).
         done(() => {
@@ -2561,7 +2584,11 @@
                         caption: i18n("tt.addWorkflowLib"),
                         click: modules.tt.settings.addWorkflowLib,
                     },
-                    filter: true,
+                    filter: modules.tt.settings.workflowLibsFilter ? modules.tt.settings.workflowLibsFilter : true,
+                    filterChange: f => {
+                        lStore("tt.workflowLibsFilter", f);
+                        modules.tt.settings.workflowLibsFilter = f;
+                    },
                 },
                 columns: [
                     {
@@ -2609,7 +2636,10 @@
     },
 
     renderStatuses: function () {
+        modules.tt.settings.statusesFilter = lStore("tt.statusesFilter");
+
         loadingStart();
+
         GET("tt", "tt", false, true).
         done(modules.tt.tt).
         done(() => {
@@ -2621,7 +2651,11 @@
                         click: modules.tt.settings.addStatus,
                     },
                     caption: i18n("tt.statuses"),
-                    filter: true,
+                    filter: modules.tt.settings.statusesFilter ? modules.tt.settings.statusesFilter : true,
+                    filterChange: f => {
+                        lStore("tt.statusesFilter", f);
+                        modules.tt.settings.statusesFilter = f;
+                    },
                 },
                 columns: [
                     {
@@ -2666,7 +2700,10 @@
     },
 
     renderResolutions: function () {
+        modules.tt.settings.resolutionsFilter = lStore("tt.resolutionsFilter");
+
         loadingStart();
+
         GET("tt", "tt", false, true).
         done(modules.tt.tt).
         done(() => {
@@ -2678,7 +2715,11 @@
                         click: modules.tt.settings.addResolution,
                     },
                     caption: i18n("tt.resolutions"),
-                    filter: true,
+                    filter: modules.tt.settings.resolutionsFilter ? modules.tt.settings.resolutionsFilter : true,
+                    filterChange: f => {
+                        lStore("tt.resolutionsFilter", f);
+                        modules.tt.settings.resolutionsFilter = f;
+                    },
                 },
                 columns: [
                     {
@@ -2716,7 +2757,10 @@
     },
 
     renderRoles: function () {
+        modules.tt.settings.rolesFilter = lStore("tt.rolesFilter");
+
         loadingStart();
+
         GET("tt", "tt", false, true).
         done(modules.tt.tt).
         done(() => {
@@ -2724,7 +2768,11 @@
                 target: "#mainForm",
                 title: {
                     caption: i18n("tt.roles"),
-                    filter: true,
+                    filter: modules.tt.settings.rolesFilter ? modules.tt.settings.rolesFilter : true,
+                    filterChange: f => {
+                        lStore("tt.rolesFilter", f);
+                        modules.tt.settings.rolesFilter = f;
+                    },
                 },
                 columns: [
                     {
@@ -2776,7 +2824,10 @@
     },
 
     renderCustomFields: function () {
+        modules.tt.settings.customFieldsFilter = lStore("tt.customFieldsFilter");
+
         loadingStart();
+
         GET("tt", "tt", false, true).
         done(modules.tt.tt).
         done(() => {
@@ -2788,7 +2839,11 @@
                         click: modules.tt.settings.addCustomField,
                     },
                     caption: i18n("tt.customFields"),
-                    filter: true,
+                    filter: modules.tt.settings.customFieldsFilter ? modules.tt.settings.customFieldsFilter : true,
+                    filterChange: f => {
+                        lStore("tt.customFieldsFilter", f);
+                        modules.tt.settings.customFieldsFilter = f;
+                    },
                 },
                 columns: [
                     {
@@ -3111,6 +3166,8 @@
                     }
                 }
 
+                modules.tt.settings.filtersFilter = lStore("tt.filtersFilter");
+
                 cardTable({
                     target: "#mainForm",
                     title: {
@@ -3119,7 +3176,11 @@
                             click: modules.tt.settings.addFilter,
                         },
                         caption: i18n("tt.filters"),
-                        filter: true,
+                        filter: modules.tt.settings.filtersFilter ? modules.tt.settings.filtersFilter : true,
+                        filterChange: f => {
+                            lStore("tt.filtersFilter", f);
+                            modules.tt.settings.filtersFilter = f;
+                        },
                     },
                     columns: [
                         {
@@ -3395,6 +3456,8 @@
                     filters[i] = modules.tt.meta.filters[i].name + " [" + i + "]";
                 }
 
+                modules.tt.settings.crontabsFilter = lStore("tt.crontabsFilter");
+
                 cardTable({
                     target: "#mainForm",
                     title: {
@@ -3403,7 +3466,11 @@
                             click: modules.tt.settings.addCrontab,
                         },
                         caption: i18n("tt.crontabs"),
-                        filter: true,
+                        filter: modules.tt.settings.crontabsFilter ? modules.tt.settings.crontabsFilter : true,
+                        filterChange: f => {
+                            lStore("tt.crontabsFilter", f);
+                            modules.tt.settings.crontabsFilter = f;
+                        },
                     },
                     columns: [
                         {
@@ -3673,6 +3740,8 @@
                     return 0;
                 });
 
+                modules.tt.settings.viewersFilter = lStore("tt.viewersFilter");
+
                 cardTable({
                     target: "#mainForm",
                     title: {
@@ -3681,7 +3750,11 @@
                             click: modules.tt.settings.addViewer,
                         },
                         caption: i18n("tt.viewers"),
-                        filter: true,
+                        filter: modules.tt.settings.viewersFilter ? modules.tt.settings.viewersFilter : true,
+                        filterChange: f => {
+                            lStore("tt.viewersFilter", f);
+                            modules.tt.settings.viewersFilter = f;
+                        },
                     },
                     columns: [
                         {
@@ -3804,7 +3877,10 @@
     },
 
     renderPrints: function () {
+        modules.tt.settings.printsFilter = lStore("tt.printsFilter");
+
         loadingStart();
+
         GET("tt", "tt", false, true).
         done(modules.tt.tt).
         done(() => {
@@ -3816,7 +3892,11 @@
                         click: modules.tt.settings.addPrint,
                     },
                     caption: i18n("tt.prints"),
-                    filter: true,
+                        filter: modules.tt.settings.printsFilter ? modules.tt.settings.printsFilter : true,
+                        filterChange: f => {
+                            lStore("tt.printsFilter", f);
+                            modules.tt.settings.printsFilter = f;
+                        },
                 },
                 columns: [
                     {

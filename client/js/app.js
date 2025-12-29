@@ -424,7 +424,7 @@ function sudo() {
             then(() => {
                 setTimeout(() => {
                     window.onhashchange = hashChange;
-                    window.location.reload(true);
+                    window.location.reload();
                 }, 150);
             }).
             fail(FAIL).
@@ -432,9 +432,37 @@ function sudo() {
         })
     } else {
         if (myself.twoFA) {
-            mYesNo();
+            mPrompt(i18n("2faCode"), i18n("sudo"), "", code => {
+                loadingStart();
+                PUT("user", "sudo", false, {
+                    code
+                }).
+                done(r => {
+                    message(i18n("sudoOk", parseInt($.trim(r))));
+                    setTimeout(() => {
+                        window.onhashchange = hashChange;
+                        window.location.reload();
+                    }, 1500);
+                }).
+                fail(FAIL).
+                fail(loadingDone);
+            });
         } else {
-            mYesNo();
+            mPassword(i18n("password"), i18n("sudo"), password => {
+                loadingStart();
+                PUT("user", "sudo", false, {
+                    password
+                }).
+                done(r => {
+                    message(i18n("sudoOk", parseInt($.trim(r))));
+                    setTimeout(() => {
+                        window.onhashchange = hashChange;
+                        window.location.reload();
+                    }, 1500);
+                }).
+                fail(FAIL).
+                fail(loadingDone);
+            });
         }
     }
 }
@@ -525,7 +553,7 @@ function whoAmI(force) {
             });
 
             $("#selfSettings").off("click").on("click", () => {
-                modules.users.modifyMyself();
+                modules.users.modifyMyself({});
             });
 
             let userCard = _me.user.login;

@@ -177,6 +177,8 @@
     },
 
     renderCompanies: function () {
+        modules.companies.filter = lStore("companies.filter");
+
         loadingStart();
 
         GET("companies", "companies", false, true).
@@ -193,7 +195,11 @@
                             modules.companies.addCompany();
                         },
                     },
-                    filter: true,
+                    filter: modules.companies.filter ? modules.companies.filter : true,
+                    filterChange: f => {
+                        lStore("companies.filter", f);
+                        modules.companies.filter = f;
+                    },
                 },
                 edit: modules.companies.modifyCompany,
                 columns: [

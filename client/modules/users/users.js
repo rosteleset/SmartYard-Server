@@ -61,7 +61,7 @@
         action functions
      */
 
-    doAddUser: function (login, realName, eMail, phone) {
+    doAddUser: function (login, realName, eMail, phone, params) {
         loadingStart();
         POST("accounts", "user", false, {
             login: login,
@@ -73,10 +73,12 @@
         done(() => {
             message(i18n("users.userWasAdded"));
         }).
-        always(modules.users.render);
+        always(() => {
+            modules.users.render(params);
+        });
     },
 
-    doModifyUser: function (user) {
+    doModifyUser: function (user, params) {
         loadingStart();
         PUT("accounts", "user", user.uid, user).
         fail(FAIL).
@@ -87,14 +89,14 @@
             }
             message(i18n("users.userWasChanged"));
             if (currentPage === "users") {
-                modules.users.render();
+                modules.users.render(params);
             } else {
                 loadingDone();
             }
         });
     },
 
-    doDeleteUser: function (uid) {
+    doDeleteUser: function (uid, params) {
         loadingStart();
         DELETE("accounts", "user", uid).
         fail(FAIL).
@@ -103,14 +105,14 @@
         }).
         always(() => {
             if (currentPage === "users") {
-                modules.users.render();
+                modules.users.render(params);
             } else {
                 loadingDone();
             }
         });
     },
 
-    doModifyMyself: function (user) {
+    doModifyMyself: function (user, params) {
         loadingStart();
         PUT("user", "personal", false, user).
         fail(FAIL).
@@ -119,7 +121,7 @@
             whoAmI(true);
             message(i18n("users.userWasChanged"));
             if (currentPage === "users") {
-                modules.users.render();
+                modules.users.render(params);
             } else {
                 loadingDone();
             }
@@ -130,7 +132,7 @@
         UI functions
      */
 
-    addUser: function () {
+    addUser: function (params) {
         cardForm({
             title: i18n("users.add"),
             footer: true,
@@ -169,12 +171,12 @@
                 },
             ],
             callback: function (result) {
-                modules.users.doAddUser(result.login, result.realName, result.eMail, result.phone);
+                modules.users.doAddUser(result.login, result.realName, result.eMail, result.phone, params);
             },
         });
     },
 
-    modifyMyself: function () {
+    modifyMyself: function (params) {
         loadingStart();
         GET("user", "personal", myself.realUid, true).done(response => {
             let cropper = false;
@@ -678,7 +680,7 @@
                     }
 
                     result.enabled = result.disabled === "no";
-                    modules.users.doModifyMyself(result);
+                    modules.users.doModifyMyself(result, params);
                 },
             });
         }).
@@ -686,7 +688,7 @@
         always(loadingDone);
     },
 
-    modifyUser: function (uid) {
+    modifyUser: function (uid, params) {
 
         function realModifyUser(uid) {
             GET("accounts", "user", uid, true).done(response => {
@@ -950,7 +952,7 @@
                             type: "select",
                             value: response.user.sudo ? "yes" : "no",
                             title: i18n("users.sudo"),
-                            readonly: parseInt(myself.uid),
+                            readonly: myself.login != "admin",
                             hidden: !parseInt(uid),
                             options: [
                                 {
@@ -1296,12 +1298,12 @@
                         }
 
                         if (result.delete === "yes") {
-                            modules.users.deleteUser(result.uid);
+                            modules.users.deleteUser(result.uid, params);
                         } else {
                             result.enabled = result.disabled === "no";
                             result.serviceAccount = result.serviceAccount === "yes";
                             result.sudo = result.sudo === "yes";
-                            modules.users.doModifyUser(result);
+                            modules.users.doModifyUser(result, params);
                         }
                     },
                 });
@@ -1325,9 +1327,9 @@
         }
     },
 
-    deleteUser: function (uid) {
+    deleteUser: function (uid, params) {
         mConfirm(i18n("users.confirmDelete", uid.toString()), i18n("confirm"), `danger:${i18n("users.delete")}`, () => {
-            modules.users.doDeleteUser(uid);
+            modules.users.doDeleteUser(uid, params);
         });
     },
 
@@ -1468,6 +1470,13 @@
                 }
             }
 
+            if (params.filter && typeof params.filter !== "function") {
+                lStore("users.filter", params.filter);
+                modules.users.filter = params.filter;
+            } else {
+                modules.users.filter = lStore("users.filter");
+            }
+
             QUERY("accounts", "users", { withSessions: true, withLast: true }, true).done(response => {
                 modules.users.meta = response.users;
 
@@ -1476,16 +1485,24 @@
                     title: {
                         button: AVAIL("accounts", "user", "POST") ? {
                             caption: i18n("users.addUser"),
-                            click: modules.users.addUser,
+                            click: () => {
+                                modules.users.addUser(params);
+                            },
                         } : undefined,
                         caption: i18n("users.users"),
-                        filter: true,
+                        filter: modules.users.filter ? modules.users.filter : true,
+                        filterChange: f => {
+                            lStore("users.filter", f);
+                            modules.users.filter = f;
+                        },
                     },
                     startPage: modules.users.startPage,
                     pageChange: page => {
                         modules.users.startPage = page;
                     },
-                    edit: modules.users.modifyUser,
+                    edit: uid => {
+                        modules.users.modifyUser(uid, params);
+                    },
                     columns: [
                         {
                             title: i18n("users.uid"),

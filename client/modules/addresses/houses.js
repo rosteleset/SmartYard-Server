@@ -2720,7 +2720,7 @@
                         modules.addresses.houses.settlementId = modules.addresses.meta.houses[i].settlementId?modules.addresses.meta.houses[i].settlementId:0;
                         modules.addresses.houses.streetId = modules.addresses.meta.houses[i].streetId?modules.addresses.meta.houses[i].streetId:0;
                         subTop(
-                            modules.addresses.path(
+                            modules.addresses.addressPath(
                                 modules.addresses.meta.houses[i].settlementId ? "settlement" : "street",
                                 modules.addresses.meta.houses[i].settlementId ? modules.addresses.meta.houses[i].settlementId : modules.addresses.meta.houses[i].streetId,
                                 true

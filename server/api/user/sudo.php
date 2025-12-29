@@ -41,7 +41,11 @@
         class sudo extends api {
 
             public static function PUT($params) {
-                $success = $params["_backends"]["users"]->sudoOn();
+                if (@$params["code"]) {
+                    $success = $params["_backends"]["users"]->sudoOn2fa(@$params["_realUid"], @$params["_token"], @$params["code"]);
+                } else {
+                    $success = $params["_backends"]["users"]->sudoOn(@$params["_realUid"], @$params["password"]);
+                }
 
                 return api::ANSWER($success);
             }
