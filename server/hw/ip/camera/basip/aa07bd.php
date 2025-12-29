@@ -21,7 +21,7 @@ class aa07bd extends camera
     public function getCamshot(): string
     {
         // TODO: too slow (~2 sec)
-        return $this->apiCall('/photo/file', 'GET', [], 5);
+        return $this->apiCall('/v1/photo/file', 'GET', [], 5);
     }
 
     public function setOsdText(string $text = ''): void
