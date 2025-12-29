@@ -161,14 +161,14 @@
         $(".btn-min-max").off("click").on("click", function () {
             let id = $(this).attr("data-card-id");
 
-            if ($(`.btn-min-max[data-card-id="${id}"]`).children().first().hasClass("fa-minus")) {
-                $(`.btn-min-max[data-card-id="${id}"]`).children().first().removeClass("fa-minus").addClass("fa-plus");
+            if ($(`.btn-min-max[data-card-id="${id}"]`).children().first().hasClass("fa-window-minimize")) {
+                $(`.btn-min-max[data-card-id="${id}"]`).children().first().removeClass("fa-window-minimize").addClass("fa-window-restore");
                 $(`.subtasks-progress[data-card-id="${id}"]`).removeClass("pt-1").addClass("pt-3").removeClass("pointer");
                 $(`.hr-subject[data-card-id="${id}"]`).hide();
                 $(`.min-max[data-card-id="${id}"]`).hide();
                 $(`.subtasks[data-card-id="${id}"]`).hide();
             } else {
-                $(`.btn-min-max[data-card-id="${id}"]`).children().first().addClass("fa-minus").removeClass("fa-plus");
+                $(`.btn-min-max[data-card-id="${id}"]`).children().first().addClass("fa-window-minimize").removeClass("fa-window-restore");
                 let pb = $(`.subtasks-progress[data-card-id="${id}"]`);
                 if (pb.attr("data-minimized") == "true") {
                     $(`.subtasks[data-card-id="${id}"]`).hide();
@@ -220,13 +220,13 @@
         let s = '';
 
         if (card.subtasks) {
-            s += `<hr class="hr-subject" data-card-id="${card.id}" /><div id="subtasks-${card.id}" class="subtasks pb-2" data-card-id="${card.id}">`;
+            s += `<hr class="hr-subject" data-card-id="${card.id}" style="${card.subtasksMinimized ? "display: none;" : ""}" /><div id="subtasks-${card.id}" class="subtasks pb-2" data-card-id="${card.id}" style="${card.subtasksMinimized ? "display: none;" : ""}">`;
 
             let p = 0;
 
             for (let i in card.subtasks) {
                 s += `
-                    <div class="custom-control custom-checkbox">
+                    <div class="custom-control custom-checkbox"">
                         <input id="card-subtask-${card.id}-${i}" class="subtask-checkbox custom-control-input custom-control-input-primary custom-control-input-outline" type="checkbox"${card.subtasks[i].checked ? " checked " : " " }data-card-id=${card.id}>
                         <label for="card-subtask-${card.id}-${i}" class="pl-1 custom-control-label noselect text-no-bold">${card.subtasks[i].text}</label>
                     </div>
@@ -239,13 +239,13 @@
 
             p = Math.round((p / card.subtasks.length) * 1000) / 10;
 
-            s += `</div><div class="pointer subtasks-progress pt-1 pb-1" data-card-id="${card.id}"><div class="progress"><div class="progress-bar progress-bar-danger progress-bar-striped progressbar-value" role="progressbar" style="width: ${p}%" aria-valuenow="${p}" aria-valuemin="0" aria-valuemax="100" data-card-id="${card.id}">${p}%</div></div></div>`;
+            s += `</div><div class="${card.cardMinimized ? "" : "pointer"} subtasks-progress ${card.subtasksMinimized ? "pt-3" : "pt-1"} pb-1" data-card-id="${card.id}" data-minimized=${card.subtasksMinimized ? "true" : "false"}><div class="progress"><div class="progress-bar progress-bar-danger progress-bar-striped progressbar-value" role="progressbar" style="width: ${p}%" aria-valuenow="${p}" aria-valuemin="0" aria-valuemax="100" data-card-id="${card.id}">${p}%</div></div></div>`;
         }
 
         let b = '';
 
         if (card.body) {
-            b = `<hr class="min-max" data-card-id="${card.id}" /><div class="min-max" data-card-id="${card.id}">${card.body}</div>`;
+            b = `<hr class="min-max" data-card-id="${card.id}" style="${card.cardMinimized ? "display: none;" : ""}" /><div class="min-max" data-card-id="${card.id}" style="${card.cardMinimized ? "display: none;" : ""}">${card.body}</div>`;
         }
 
         let c = '';
@@ -266,18 +266,34 @@
             c = "&nbsp;";
         }
 
+        let t = "";
+
+        for (let i in card.tags) {
+            t += `
+                <span class="badge badge-${card.tags[i].color} kanban-badge pr-1 pl-2">
+                    ${card.tags[i].text}
+                    <i class="fas fa-fw fa-times-circle"></i>
+                </span>
+            `;
+        }
+
+        if (t) {
+            t = `<div class="mt-2" data-card-id="${card.id}" style="font-size: 75%;">${t}</div>`;
+        }
+
         let h = `
-            <div id="card-${card.id}" class="card card-info card-outline">
+            <div id="card-${card.id}" class="kanban-card card card-${card.color} card-outline">
                 <div class="card-header card-handle pl-1 pr-3">
                     <h5 class="card-title">${c}</h5>
                     <div class="card-tools">
                         <span class="btn btn-tool text-primary"><i class="fas fa-fw fa-link"></i></span>
                         <span class="btn btn-tool"><i class="fas fa-fw fa-edit"></i></span>
-                        <span class="btn btn-tool btn-min-max" data-card-id="${card.id}"><i class="fas fa-fw fa-minus"></i></span>
+                        <span class="btn btn-tool btn-min-max" data-card-id="${card.id}"><i class="fas fa-fw fa-${card.cardMinimized ? "window-restore" : "window-minimize"}"></i></span>
                     </div>
                 </div>
                 <div class="card-body">
                     <div class="text-bold">${card.subject}</div>
+                    ${t}
                     ${s}
                     ${b}
                 </div>
@@ -366,6 +382,9 @@
                                     date: 1765843200,
                                     subject: 'subject',
                                     body: 'lorm ipsum....',
+                                    cardMinimized: true,
+                                    subtasksMinimized: true,
+                                    color: "info",
                                     subtasks: [
                                         {
                                             text: "1",
@@ -413,13 +432,14 @@
                                         {
                                             text: "f",
                                         },
-                                    ]
+                                    ],
                                 },
                                 {
                                     id: md5(guid()),
                                     date: 1766040807,
                                     subject: 'subject',
-                                    body: 'lorm ipsum....',
+                                    body: 'Ilorm ipsum....',
+                                    color: "danger",
                                     subtasks: [
                                         {
                                             text: "1",
@@ -435,7 +455,7 @@
                                         {
                                             text: "4",
                                         },
-                                    ]
+                                    ],
                                 },
                             ],
                         },
@@ -449,6 +469,7 @@
                                     date: 1766040807,
                                     subject: 'subject',
                                     body: 'lorm ipsum....',
+                                    color: "purple",
                                     subtasks: [
                                         {
                                             text: "1",
@@ -464,7 +485,17 @@
                                         {
                                             text: "4",
                                         },
-                                    ]
+                                    ],
+                                    tags: [
+                                        {
+                                            text: "Red",
+                                            color: "danger",
+                                        },
+                                        {
+                                            text: "Green",
+                                            color: "success",
+                                        }
+                                    ],
                                 },
                             ],
                         },
