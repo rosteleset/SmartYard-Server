@@ -9,7 +9,7 @@ use hw\ip\camera\camera;
  */
 class aa07bd extends camera
 {
-    use \hw\ip\common\basip\basip {
+    use \hw\ip\common\basip\aa07bd {
         transformDbConfig as protected commonTransformDbConfig;
     }
 
