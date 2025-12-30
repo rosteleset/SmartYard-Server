@@ -322,7 +322,7 @@
             }
         }
 
-        modules.permissions.filter = lStore("permissions.filter", f);
+        modules.permissions.filter = lStore("permissions.filter");
 
         return cardTable({
             target: tgt,
