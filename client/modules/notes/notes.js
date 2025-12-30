@@ -218,7 +218,7 @@
                 break;
 
             case "markdown":
-                newSticky += convertLinks(DOMPurify.sanitize(cardFormMd.render(body)));
+                newSticky += convertLinks(DOMPurify.sanitize(rbtMdRender(body)));
                 break;
 
             default:

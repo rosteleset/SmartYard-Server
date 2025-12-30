@@ -1,3 +1,5 @@
+const phoneUtil = libphonenumber.PhoneNumberUtil.getInstance();
+
 const additionalLinks = [
     "fb",
     "vless",
@@ -6,7 +8,46 @@ const additionalLinks = [
     "tg",
 ];
 
-var phoneUtil = libphonenumber.PhoneNumberUtil.getInstance();
+const rbtMd = new remarkable.Remarkable({
+    html: true,
+    quotes: '“”‘’',
+
+    highlight: function (str, language) {
+        if (language && hljs.getLanguage(language)) {
+            try {
+                let h = hljs.highlight(str, { language }).value;
+                return h;
+            } catch (err) {
+                console.log(err);
+            }
+        }
+
+        try {
+            return hljs.highlightAuto(str).value;
+        } catch (err) {
+            console.log(err);
+        }
+
+        return ''; // use external default escaping
+    }
+});
+
+rbtMd.core.ruler.enable([
+    'abbr'
+]);
+
+rbtMd.block.ruler.enable([
+    'footnote',
+    'deflist'
+]);
+
+rbtMd.inline.ruler.enable([
+    'footnote_inline',
+    'ins',
+    'mark',
+    'sub',
+    'sup'
+]);
 
 function isEmpty(v) {
     let f = !!v;
@@ -250,11 +291,19 @@ function telify(input) {
 
 function convertLinks(input) {
     // https://linkify.js.org/
+
     let options = {
         defaultProtocol: "https",
         target: "_blank",
     };
-    return linkifyHtml(telify(input), options);
+
+    if (modules.tt && modules.tt.issueRegExp) {
+        return linkifyHtml(telify(input), options).replaceAll(modules.tt.issueRegExp, m => {
+            return `<a target='_blank' href='${navigateUrl('tt', { 'issue': m })}'>${m}</a>`;
+        });
+    } else {
+        return linkifyHtml(telify(input), options);
+    }
 }
 
 function getMonthDifference(startDate, endDate) {
@@ -499,6 +548,10 @@ function systemColor(text) {
     s = s % (systemColors.length - 1);
 
     return systemColors[s + 1];
+}
+
+function rbtMdRender(str) {
+    return rbtMd.render(str);
 }
 
 Object.defineProperty(Array.prototype, "assoc", {

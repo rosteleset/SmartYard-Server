@@ -16,7 +16,7 @@
     },
 
     mdr: function (str) {
-        let f = convertLinks(DOMPurify.sanitize(cardFormMd.render(str)));
+        let f = convertLinks(DOMPurify.sanitize(rbtMdRender(str)));
         return f;
     },
 
@@ -158,9 +158,9 @@
                 footer: true,
                 borderless: true,
                 topApply: true,
-                apply: i18n("add"),
+                apply: i18n("modify"),
                 size: "lg",
-                delete: i18n("mkb.deleteColumn"),
+                delete: i18n("delete"),
                 fields: [
                     {
                         id: "title",
@@ -174,11 +174,70 @@
                         type: "color",
                         value: "lime",
                     },
+                ],
+                callback: r => {
+                    console.log(r);
+                }
+            });
+
+            console.log(id);
+        });
+
+        $(".card-edit").off("click").on("click", function () {
+            let id = $(this).attr("data-card-id");
+
+            cardForm({
+                title: i18n("mkb.modifyCard"),
+                footer: true,
+                borderless: true,
+                topApply: true,
+                apply: i18n("apply"),
+                size: "xl",
+                delete: i18n("delete"),
+                deleteTab: i18n("mkb.card"),
+                fields: [
+                    {
+                        id: "title",
+                        title: i18n("mkb.title"),
+                        tab: i18n("mkb.card"),
+                        type: "text",
+                        value: "",
+                    },
+                    {
+                        id: "color",
+                        title: i18n("mkb.color"),
+                        tab: i18n("mkb.card"),
+                        type: "color",
+                        value: "lime",
+                    },
+                    {
+                        id: "tags",
+                        title: i18n("mkb.tags"),
+                        tab: i18n("mkb.card"),
+                        type: "select2",
+                        multiple: true,
+                        createTags: true,
+                        colorizeTags: true,
+                        tags: true,
+                        value: [ "tag1", "tag2", "tag3" ],
+                        tags: [ "tag1", "tag2", "tag3" ],
+                    },
+                    {
+                        id: "subtasks",
+                        title: false,
+                        tab: i18n("mkb.subtasks"),
+                        noHover: true,
+                        type: "sortable",
+                        options: [],
+                        appendable: "input",
+                        checkable: true,
+                    },
                     {
                         id: "body",
-                        type: "code",
-                        title: false,
+                        title: i18n("mkb.body"),
+                        tab: i18n("mkb.card"),
                         noHover: true,
+                        type: "code",
                         language: "markdown",
                     },
                 ],
@@ -246,7 +305,7 @@
 
         for (let i in card.tags) {
             t += `
-                <span class="badge bg-${systemColor(card.tags[i])} kanban-badge pr-2 pl-2 mt-1">
+                <span class="badge bg-${systemColor(card.tags[i])} kanban-badge pr-2 pl-2 mt-1 pointer" style="border: solid thin #60686f">
                     ${$.trim(escapeHTML(card.tags[i]))}
                 </span>
             `;
@@ -262,7 +321,7 @@
                     <h5 class="card-title">${c}</h5>
                     <div class="card-tools">
                         <span class="btn btn-tool text-primary"><i class="fas fa-fw fa-link"></i></span>
-                        <span class="btn btn-tool"><i class="fas fa-fw fa-edit"></i></span>
+                        <span class="btn btn-tool card-edit" data-card-id="${card.id}"><i class="fas fa-fw fa-edit"></i></span>
                         <span class="btn btn-tool btn-min-max" data-card-id="${card.id}"><i class="fas fa-fw fa-${card.cardMinimized ? "window-restore" : "window-minimize"}"></i></span>
                     </div>
                 </div>

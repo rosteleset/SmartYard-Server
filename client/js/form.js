@@ -1,73 +1,3 @@
-const systemColors = [
-    // empty
-    "",
-    // theme colors
-    "primary",
-    "secondary",
-    "info",
-    "success",
-    "warning",
-    "danger",
-    // black/white nuances
-    "black",
-    "gray-dark",
-    "gray",
-    "light",
-    // colors
-    "indigo",
-    "lightblue",
-    "navy",
-    "purple",
-    "fuchsia",
-    "pink",
-    "maroon",
-    "orange",
-    "lime",
-    "teal",
-    "olive",
-];
-
-const cardFormMd = new remarkable.Remarkable({
-    html: true,
-    quotes: '“”‘’',
-
-    highlight: function (str, language) {
-        if (language && hljs.getLanguage(language)) {
-            try {
-                let h = hljs.highlight(str, { language }).value;
-                return h;
-            } catch (err) {
-                console.log(err);
-            }
-        }
-
-        try {
-            return hljs.highlightAuto(str).value;
-        } catch (err) {
-            console.log(err);
-        }
-
-        return ''; // use external default escaping
-    }
-});
-
-cardFormMd.core.ruler.enable([
-    'abbr'
-]);
-
-cardFormMd.block.ruler.enable([
-    'footnote',
-    'deflist'
-]);
-
-cardFormMd.inline.ruler.enable([
-    'footnote_inline',
-    'ins',
-    'mark',
-    'sub',
-    'sup'
-]);
-
 /**
  * Generates and renders a dynamic modal or inline form with various field types, validation, and callbacks.
  *
@@ -882,10 +812,10 @@ function cardForm(params) {
 
         if (field.appendable == "input") {
             h += `
-                <div class="input-group mb-1">
+                <div class="input-group">
                     <input type="text" class="form-control" id="${_prefix}${params.fields[i].id}-append">
                     <div class="input-group-append">
-                        <div class="input-group-text pointer sortablePlus"><i class="fas fa-fw fa-plus-square text-success"></i></div>
+                        <div class="input-group-text pointer sortablePlus" id="${_prefix}${params.fields[i].id}-append-button"><i class="fas fa-fw fa-plus-square text-success"></i></div>
                     </div>
                 </div>
             `;
@@ -893,7 +823,7 @@ function cardForm(params) {
 
         if (field.appendable == "select2") {
             h += `
-                <div class="input-group mb-1">
+                <div class="input-group">
                     <select class="form-control select2" id="${_prefix}${params.fields[i].id}-append"></select>
                     <div class="input-group-append">
                         <div class="input-group-text pointer sortablePlus"><i class="fas fa-fw fa-plus-square text-success"></i></div>
@@ -906,19 +836,18 @@ function cardForm(params) {
 
         for (let j = 0; j < field.options.length; j++) {
             h += `
-                <div class="input-group ${j ? 'mt-1' : ''}" data-field-option-index="${j}">
-                    <div class="input-group-prepend">
-                        <div class="input-group-text pointer sortableDragItem bold">=</div>
+                <div class="input-group form-sortable-item" data-field-option-index="${j}">
             `;
             if (field.checkable) {
                 h += `
+                    <div class="input-group-prepend">
                         <span class="input-group-text">
                             <input type="checkbox" ${field.options[j].checked ? "checked" : ""}>
                         </span>
+                    </div>
                 `;
             }
             h += `
-                    </div>
                     <input type="text" class="form-control" value="${escapeHTML(field.options[j].text)}" ${!field.editable ? 'readonly' : ''} data-value="${field.options[j].value}">
                     <div class="input-group-append" data-field-option-index=${j}>
                         <div class="input-group-text pointer sortableTrash" data-field-option-index=${j}><i class="far fa-fw fa-trash-alt text-danger" data-field-option-index=${j}></i></div>
@@ -934,7 +863,6 @@ function cardForm(params) {
 
     function sortable(i) {
         new Sortable(document.getElementById(_prefix + params.fields[i].id + "-items"), {
-            "handle": ".sortableDragItem",
             "animation": 150,
 
             onEnd: e => {
@@ -991,6 +919,16 @@ function cardForm(params) {
     }
 
     function assignSortableHandlers(i) {
+        $(`#${_prefix}${params.fields[i].id}-append`).off("keypress").on("keypress", e => {
+            if (e.keyCode == 13) {
+                e.preventDefault();
+                $(`#${_prefix}${params.fields[i].id}-append-button`).click();
+                setTimeout(() => {
+                    $(`#${_prefix}${params.fields[i].id}-append`).focus();
+                }, 100);
+            }
+        });
+
         $(".sortablePlus").off("click").on("click", () => {
             let value = $("#" + _prefix + params.fields[i].id + "-append").val();
             let text = "";
@@ -1360,14 +1298,27 @@ function cardForm(params) {
                 s2p.minimumResultsForSearch = params.fields[i].minimumResultsForSearch;
             }
 
+            s2p.templateSelection = s2FormatS;
+
             if (!params.fields[i].createTags) {
                 s2p.createTag = () => {
                     return undefined;
                 }
             }
 
+            if (params.fields[i].colorizeTags === true) {
+                s2p.templateSelection = function(item, container) {
+                    container.addClass("bg-" + systemColor(item.text));
+                    return $(`<span class="bg-${systemColor(item.text)}">${item.text}</span>`);
+                }
+            }
+
+            if (typeof params.fields[i].colorizeTags == "function") {
+                s2p.templateSelection = params.fields[i].colorizeTags;
+            }
+
             if (params.fields[i].tags) {
-                s2p.tags = true;
+                s2p.tags = params.fields[i].tags;
             }
 
             if (params.fields[i].ajax) {
@@ -1375,7 +1326,6 @@ function cardForm(params) {
             }
 
             s2p.templateResult = s2FormatR;
-            s2p.templateSelection = s2FormatS;
 
             s2p.escapeMarkup = function (m) {
                 return m;
@@ -1487,8 +1437,9 @@ function cardForm(params) {
                         params.fields[i].editor.focus();
                     } else {
                         p.text(i18n("editor"));
+                        let h = $(`#${_prefix}${params.fields[i].id}-div`).height();
                         $(`#${_prefix}${params.fields[i].id}`).hide();
-                        $(`#${_prefix}${params.fields[i].id}-preview`).css("height", $(`#${_prefix}${params.fields[i].id}-div`).height() + "px").html(cardFormMd.render($.trim(params.fields[i].editor.getValue()))).show();
+                        $(`#${_prefix}${params.fields[i].id}-preview`).css("height", h + "px").html(convertLinks(rbtMdRender($.trim(params.fields[i].editor.getValue())))).show();
                     }
                 });
             }

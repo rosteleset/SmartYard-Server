@@ -2,6 +2,35 @@ var backToTopButton = false;
 var backToTopTicking = false;
 var windowResizeTicking = false;
 
+const systemColors = [
+    // empty
+    "",
+    // theme colors
+    "primary",
+    "secondary",
+    "info",
+    "success",
+    "warning",
+    "danger",
+    // black/white nuances
+    "black",
+    "gray-dark",
+    "gray",
+    "light",
+    // colors
+    "indigo",
+    "lightblue",
+    "navy",
+    "purple",
+    "fuchsia",
+    "pink",
+    "maroon",
+    "orange",
+    "lime",
+    "teal",
+    "olive",
+];
+
 function message(message, caption, timeout) {
     timeout = timeout ? timeout : 15;
     toastr.info(message, caption?caption:i18n("message"), {

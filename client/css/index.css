@@ -1010,3 +1010,16 @@ code {
 .kanban-card-body *:last-child {
   margin-bottom: 0px ! important;
 }
+
+.form-sortable-item {
+  margin-bottom: 8px;
+  margin-top: 0px;
+}
+
+.form-sortable-item:last-child {
+  margin-bottom: 0px ! important;
+}
+
+.form-sortable-item:first-child {
+  margin-top: 8px ! important;
+}
