@@ -54,6 +54,11 @@
         ]);
     },
 
+    mdr: function (str) {
+        let f = convertLinks(DOMPurify.sanitize(modules.mkb.md.render(str)));
+        return f;
+    },
+
     assignHandlers: function () {
         $(".card-content").each(function () {
             let col = $(this);
@@ -228,7 +233,7 @@
                 s += `
                     <div class="custom-control custom-checkbox"">
                         <input id="card-subtask-${card.id}-${i}" class="subtask-checkbox custom-control-input custom-control-input-primary custom-control-input-outline" type="checkbox"${card.subtasks[i].checked ? " checked " : " " }data-card-id=${card.id}>
-                        <label for="card-subtask-${card.id}-${i}" class="pl-1 custom-control-label noselect text-no-bold">${card.subtasks[i].text}</label>
+                        <label for="card-subtask-${card.id}-${i}" class="pl-1 custom-control-label noselect text-no-bold">${$.trim(escapeHTML(card.subtasks[i].text))}</label>
                     </div>
                 `;
 
@@ -245,7 +250,10 @@
         let b = '';
 
         if (card.body) {
-            b = `<hr class="min-max" data-card-id="${card.id}" style="${card.cardMinimized ? "display: none;" : ""}" /><div class="min-max" data-card-id="${card.id}" style="${card.cardMinimized ? "display: none;" : ""}">${card.body}</div>`;
+            b = `
+                <hr class="min-max" data-card-id="${card.id}" style="${card.cardMinimized ? "display: none;" : ""}" />
+                <div class="min-max kanban-card-body" data-card-id="${card.id}" style="${card.cardMinimized ? "display: none;" : ""}">${modules.mkb.mdr(card.body)}</div>
+            `;
         }
 
         let c = '';
@@ -271,7 +279,7 @@
         for (let i in card.tags) {
             t += `
                 <span class="badge bg-${systemColor(card.tags[i])} kanban-badge pr-2 pl-2 mt-1">
-                    ${card.tags[i]}
+                    ${$.trim(escapeHTML(card.tags[i]))}
                 </span>
             `;
         }
@@ -291,7 +299,7 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <div class="text-bold">${card.subject}</div>
+                    <div class="text-bold">${$.trim(escapeHTML(card.subject))}</div>
                     ${t}
                     ${s}
                     ${b}
@@ -312,7 +320,7 @@
         let h = `
             <div id="card-${column.id}" class="card card-row card-${column.color} kanban-col">
                 <div class="card-header col-handle pl-3 pr-3">
-                    <h3 class="card-title pt-1">${column.title}</h3>
+                    <h3 class="card-title pt-1 text-bold">${$.trim(escapeHTML(column.title))}</h3>
                     <div class="card-tools" data-column-id="${column.id}">
                         <span class="btn btn-tool"><i class="far fa-fw fa-clipboard"></i></span>
                         <span class="btn btn-tool"><i class="fas fa-fw fa-plus-circle"></i></span>
@@ -437,7 +445,7 @@
                                     id: md5(guid()),
                                     date: 1766040807,
                                     subject: 'subject',
-                                    body: 'Ilorm ipsum....',
+                                    body: '## Ilorm ipsum....\n\ntoday',
                                     color: "danger",
                                     tags: [
                                         "Violet"

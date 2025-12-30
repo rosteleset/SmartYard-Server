@@ -1006,3 +1006,7 @@ code {
 .kanban-badges:last-child {
   margin-right: 0px ! important;
 }
+
+.kanban-card-body *:last-child {
+  margin-bottom: 0px ! important;
+}
