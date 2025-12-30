@@ -231,6 +231,7 @@
                         options: [],
                         appendable: "input",
                         checkable: true,
+                        editable: true,
                     },
                     {
                         id: "body",
