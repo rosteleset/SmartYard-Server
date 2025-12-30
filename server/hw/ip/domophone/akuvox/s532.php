@@ -3,6 +3,7 @@
 namespace hw\ip\domophone\akuvox;
 
 use CURLFile;
+use hw\Enum\HousePrefixField;
 use hw\Interface\{
     DisplayTextInterface,
     FreePassInterface,
@@ -229,7 +230,7 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, Ho
 
     public function getHousePrefixSupportedFields(): array
     {
-        return [];
+        return [HousePrefixField::FirstFlat, HousePrefixField::LastFlat];
     }
 
     public function getHousePrefixes(): array
@@ -324,7 +325,41 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, Ho
 
     public function setHousePrefixes(array $prefixes): void
     {
-        // TODO: Implement setHousePrefixes() method.
+        $existingDialplans = $this->getDialplans();
+        $existingSipNumbers = array_flip(array_column($existingDialplans, 'Replace1'));
+
+        $newSipNumbers = [];
+
+        // Collect SIP numbers that must exist in the dialplans
+        foreach ($prefixes as $prefix) {
+            $prefixPart = str_pad($prefix->number, 4, '0', STR_PAD_LEFT);
+            for ($flat = $prefix->firstFlat->number; $flat <= $prefix->lastFlat->number; $flat++) {
+                $sipNumber = $prefixPart . str_pad($flat, 4, '0', STR_PAD_LEFT);
+                $newSipNumbers[$sipNumber] = ['prefix' => $prefix->number, 'flat' => $flat];
+            }
+        }
+
+        $dialplansToAdd = [];
+        $dialplansToDelete = [];
+
+        // Create dialplans that should be added to the intercom
+        foreach ($newSipNumbers as $sipNumber => $parts) {
+            if (!isset($existingSipNumbers[$sipNumber])) {
+                $dialplan = new Dialplan($parts['prefix'] . '#' . $parts['flat']);
+                $dialplan->replace1 = $sipNumber;
+                $dialplansToAdd[] = $dialplan;
+            }
+        }
+
+        // Collect dialplans that should be removed from the intercom
+        foreach ($existingDialplans as $dialplan) {
+            if (!isset($newSipNumbers[$dialplan->replace1])) {
+                $dialplansToDelete[] = $dialplan;
+            }
+        }
+
+        $this->addDialplans($dialplansToAdd);
+        $this->deleteDialplans($dialplansToDelete);
     }
 
     public function setLanguage(string $language): void
@@ -390,7 +425,7 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, Ho
      */
     protected function addDialplans(array $dialplans): void
     {
-        $this->executeChunkOperation('dialplan', 'add', $dialplans, fn(Dialplan $dialplan) => $dialplan->toArray());
+        $this->executeChunkOperation('dialreplace', 'add', $dialplans, fn(Dialplan $dialplan) => $dialplan->toArray());
     }
 
     /**
@@ -447,7 +482,8 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, Ho
      */
     protected function deleteDialplans(array $dialplans): void
     {
-        $this->executeChunkOperation('dialplan', 'del', $dialplans, fn(Dialplan $dialplan) => ['ID' => $dialplan->id]);
+        $mapper = fn(Dialplan $dialplan) => ['ID' => $dialplan->id];
+        $this->executeChunkOperation('dialreplace', 'del', $dialplans, $mapper);
     }
 
     /**
@@ -542,9 +578,20 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, Ho
      */
     protected function getDialplans(): array
     {
-        $response = $this->apiCall('/dialreplace/get'); // TODO: add caching
-        $items = $response['data']['item'] ?? [];
-        return array_map(static fn(array $item) => Dialplan::fromArray($item), $items);
+        $dialplans = []; // TODO: add caching
+
+        for ($page = 1; ; $page++) {
+            $response = $this->apiCall("/dialreplace/get?page=$page");
+            $items = $response['data']['item'] ?? [];
+
+            if (!is_array($items) || $items === []) {
+                break;
+            }
+
+            $dialplans = [...$dialplans, ...$items];
+        }
+
+        return array_map(static fn(array $dialplan) => Dialplan::fromArray($dialplan), $dialplans);
     }
 
     /**
