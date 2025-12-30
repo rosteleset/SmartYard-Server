@@ -208,6 +208,7 @@
                         title: i18n("mkb.color"),
                         tab: i18n("mkb.card"),
                         type: "color",
+                        noEmpty: true,
                         value: "lime",
                     },
                     {
@@ -223,6 +224,14 @@
                         tags: [ "tag1", "tag2", "tag3" ],
                     },
                     {
+                        id: "body",
+                        title: i18n("mkb.body"),
+                        tab: i18n("mkb.card"),
+                        noHover: true,
+                        type: "code",
+                        language: "markdown",
+                    },
+                    {
                         id: "subtasks",
                         title: false,
                         tab: i18n("mkb.subtasks"),
@@ -232,14 +241,6 @@
                         appendable: "input",
                         checkable: true,
                         editable: true,
-                    },
-                    {
-                        id: "body",
-                        title: i18n("mkb.body"),
-                        tab: i18n("mkb.card"),
-                        noHover: true,
-                        type: "code",
-                        language: "markdown",
                     },
                 ],
                 callback: r => {

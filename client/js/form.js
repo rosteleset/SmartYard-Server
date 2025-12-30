@@ -278,6 +278,7 @@ function cardForm(params) {
             params.fields[i].options = [ ];
 
             for (let c in systemColors) {
+                if (params.fields[i].noEmpty && !systemColors[c]) continue;
                 params.fields[i].options.push({
                     text: systemColors[c] ? i18n("color" + systemColors[c][0].toUpperCase() + systemColors[c].substring(1)) : i18n("default"),
                     value: systemColors[c],
