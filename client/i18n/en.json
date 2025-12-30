@@ -110,6 +110,8 @@
     "colorLime": "Lime",
     "colorTeal": "Teal",
     "colorOlive": "Olive",
+    "preview": "Preview",
+    "editor": "Editor",
     "errors": {
         "404caption": "Oh! Page not found",
         "404message": "It seems that we cannot find the page you need,<br />try to switch to <a href=\"?#\"> the initial page </a>",

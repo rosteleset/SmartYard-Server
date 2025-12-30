@@ -27,6 +27,47 @@ const systemColors = [
     "olive",
 ];
 
+const cardFormMd = new remarkable.Remarkable({
+    html: true,
+    quotes: '“”‘’',
+
+    highlight: function (str, language) {
+        if (language && hljs.getLanguage(language)) {
+            try {
+                let h = hljs.highlight(str, { language }).value;
+                return h;
+            } catch (err) {
+                console.log(err);
+            }
+        }
+
+        try {
+            return hljs.highlightAuto(str).value;
+        } catch (err) {
+            console.log(err);
+        }
+
+        return ''; // use external default escaping
+    }
+});
+
+cardFormMd.core.ruler.enable([
+    'abbr'
+]);
+
+cardFormMd.block.ruler.enable([
+    'footnote',
+    'deflist'
+]);
+
+cardFormMd.inline.ruler.enable([
+    'footnote_inline',
+    'ins',
+    'mark',
+    'sub',
+    'sup'
+]);
+
 /**
  * Generates and renders a dynamic modal or inline form with various field types, validation, and callbacks.
  *
@@ -663,9 +704,12 @@ function cardForm(params) {
 
             case "code":
             case "json":
-                h += `<div id="${_prefix}${params.fields[i].id}-div">`;
-                h += `<pre class="ace-editor form-control modalFormField" id="${_prefix}${params.fields[i].id}">`;
-                h += `</pre>`;
+                h += `<div id="${_prefix}${params.fields[i].id}-div" style="position: relative;">`;
+                h += `<pre class="ace-editor form-control modalFormField" id="${_prefix}${params.fields[i].id}"></pre>`;
+                if (params.fields[i].language == "markdown") {
+                    h += `<div id='${_prefix}${params.fields[i].id}-preview' style='display: none; border: solid thin #ced4da; border-radius: 0.25rem; overflow-y: auto; padding-left: 4px;'></div>`;
+                    h += `<div class='markdown-preview pointer noselect' data-field='${i}' style='font-size: 0.8rem; position: absolute; right: 10px; top: -10px; border: solid thin #ced4da; border-radius: 0.25rem; background: white; padding-left: 4px; padding-right: 4px;'>${i18n("preview")}</div>`;
+                }
                 h += `</div>`;
                 break;
 
@@ -1376,6 +1420,7 @@ function cardForm(params) {
 
         if (params.fields[i].type == "code") {
             let editor = ace.edit(`${_prefix}${params.fields[i].id}`);
+
             if (modules.darkmode && modules.darkmode.isDark())
                 editor.setTheme("ace/theme/one_dark");
             else
@@ -1385,17 +1430,22 @@ function cardForm(params) {
                 enableSnippets: true,
                 enableLiveAutocompletion: false
             });
+
             if (params.fields[i].language) {
                 editor.session.setMode("ace/mode/" + params.fields[i].language);
             }
+
             params.fields[i].editor = editor;
             if (params.fields[i].value) {
                 editor.setValue(params.fields[i].value, -1);
                 editor.clearSelection();
             }
+
             editor.setFontSize(14);
+
             editor.commands.removeCommand("removeline");
             editor.commands.removeCommand("redo");
+
             editor.commands.addCommand({
                 name: "removeline",
                 description: "Remove line",
@@ -1407,6 +1457,7 @@ function cardForm(params) {
                 scrollIntoView: "cursor",
                 multiSelectAction: "forEachLine"
             });
+
             editor.commands.addCommand({
                 name: "redo",
                 description: "Redo",
@@ -1416,12 +1467,33 @@ function cardForm(params) {
                 },
                 exec: function (editor) { editor.redo(); }
             });
+
             let height = params.fields[i].height ? params.fields[i].height : 400;
             $(`#${_prefix}${params.fields[i].id}`).css("height", height + "px").css("resize", "vertical");
             new ResizeObserver(function () {
                 editor.resize();
                 editor.renderer.updateFull();
             }).observe($(`#${_prefix}${params.fields[i].id}`)[0]);
+
+            if (params.fields[i].language == "markdown") {
+                $(".markdown-preview").off("click").on("click", function () {
+                    let p = $(this);
+                    let i = p.attr("data-field");
+
+                    if ($(`#${_prefix}${params.fields[i].id}-preview:visible`).length) {
+                        p.text(i18n("preview"));
+                        $(`#${_prefix}${params.fields[i].id}`).show();
+                        $(`#${_prefix}${params.fields[i].id}-preview`).hide();
+                        params.fields[i].editor.focus();
+                    } else {
+                        p.text(i18n("editor"));
+                        let h = $(`#${_prefix}${params.fields[i].id}-div`).height();
+                        let t = $.trim(params.fields[i].editor.getValue());
+                        $(`#${_prefix}${params.fields[i].id}`).hide();
+                        $(`#${_prefix}${params.fields[i].id}-preview`).css("height", h + "px").html(cardFormMd.render(t)).show();
+                    }
+                });
+            }
         }
 
         if (params.fields[i].type == "json") {

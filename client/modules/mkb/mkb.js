@@ -12,50 +12,11 @@
     },
 
     allLoaded: function () {
-        modules.mkb.md = new remarkable.Remarkable({
-            html: true,
-            quotes: '“”‘’',
-
-            highlight: function (str, language) {
-                if (language && hljs.getLanguage(language)) {
-                    try {
-                        let h = hljs.highlight(str, { language }).value;
-                        return h;
-                    } catch (err) {
-                        console.log(err);
-                    }
-                }
-
-                try {
-                    return hljs.highlightAuto(str).value;
-                } catch (err) {
-                    console.log(err);
-                }
-
-                return ''; // use external default escaping
-            }
-        });
-
-        modules.mkb.md.core.ruler.enable([
-            'abbr'
-        ]);
-
-        modules.mkb.md.block.ruler.enable([
-            'footnote',
-            'deflist'
-        ]);
-
-        modules.mkb.md.inline.ruler.enable([
-            'footnote_inline',
-            'ins',
-            'mark',
-            'sub',
-            'sup'
-        ]);
+        //
     },
 
     mdr: function (str) {
-        let f = convertLinks(DOMPurify.sanitize(modules.mkb.md.render(str)));
+        let f = convertLinks(DOMPurify.sanitize(cardFormMd.render(str)));
         return f;
     },
 
@@ -212,6 +173,13 @@
                         title: i18n("mkb.color"),
                         type: "color",
                         value: "lime",
+                    },
+                    {
+                        id: "body",
+                        type: "code",
+                        title: false,
+                        noHover: true,
+                        language: "markdown",
                     },
                 ],
                 callback: r => {
@@ -462,7 +430,7 @@
                                     id: md5(guid()),
                                     date: 1766040807,
                                     subject: 'subject',
-                                    body: 'lorm ipsum....',
+                                    body: '## IlQ\n\n1\n2\n3\n4\n\n5\n6\n7',
                                     color: "purple",
                                     subtasks: [
                                         {

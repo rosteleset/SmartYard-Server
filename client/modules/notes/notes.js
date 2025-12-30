@@ -188,46 +188,7 @@
     },
 
     allLoaded: function () {
-        modules.notes.md = new remarkable.Remarkable({
-            html: true,
-            quotes: '“”‘’',
-
-            highlight: function (str, language) {
-                if (language && hljs.getLanguage(language)) {
-                    try {
-                        let h = hljs.highlight(str, { language }).value;
-                        return h;
-                    } catch (err) {
-                        console.log(err);
-                    }
-                }
-
-                try {
-                    return hljs.highlightAuto(str).value;
-                } catch (err) {
-                    console.log(err);
-                }
-
-                return ''; // use external default escaping
-            }
-        });
-
-        modules.notes.md.core.ruler.enable([
-            'abbr'
-        ]);
-
-        modules.notes.md.block.ruler.enable([
-            'footnote',
-            'deflist'
-        ]);
-
-        modules.notes.md.inline.ruler.enable([
-            'footnote_inline',
-            'ins',
-            'mark',
-            'sub',
-            'sup'
-        ]);
+        //
     },
 
     renderNote: function (id, subject, body, type, color, icon, font, remind, z, fyeo) {
@@ -257,7 +218,7 @@
                 break;
 
             case "markdown":
-                newSticky += convertLinks(DOMPurify.sanitize(modules.notes.md.render(body)));
+                newSticky += convertLinks(DOMPurify.sanitize(cardFormMd.render(body)));
                 break;
 
             default:
