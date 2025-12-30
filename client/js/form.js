@@ -1487,10 +1487,8 @@ function cardForm(params) {
                         params.fields[i].editor.focus();
                     } else {
                         p.text(i18n("editor"));
-                        let h = $(`#${_prefix}${params.fields[i].id}-div`).height();
-                        let t = $.trim(params.fields[i].editor.getValue());
                         $(`#${_prefix}${params.fields[i].id}`).hide();
-                        $(`#${_prefix}${params.fields[i].id}-preview`).css("height", h + "px").html(cardFormMd.render(t)).show();
+                        $(`#${_prefix}${params.fields[i].id}-preview`).css("height", $(`#${_prefix}${params.fields[i].id}-div`).height() + "px").html(cardFormMd.render($.trim(params.fields[i].editor.getValue()))).show();
                     }
                 });
             }
