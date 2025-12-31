@@ -27,7 +27,9 @@
                 handle: ".card-handle",
                 animation: 150,
                 group: "cols",
+                scroll: true,
                 forceAutoScrollFallback: true,
+                scrollSpeed: 25,
 
                 onEnd: e => {
                     let s = $("#" + e.item.id).offset().top - $("#mainForm").offset().top - 8;
