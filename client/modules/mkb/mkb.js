@@ -310,7 +310,7 @@
 
         for (let i in card.tags) {
             t += `
-                <span class="badge bg-${systemColor(card.tags[i])} kanban-badge pr-2 pl-2 mt-1 pointer" style="border: solid thin #60686f">
+                <span class="badge bg-${systemColor(card.tags[i])} kanban-badge pr-2 pl-2 mt-1 pointer" style="border: solid thin #60686f" title="${$.trim(escapeHTML(card.tags[i]))}">
                     ${$.trim(escapeHTML(card.tags[i]))}
                 </span>
             `;
@@ -325,7 +325,8 @@
                 <div class="card-header card-handle pl-1 pr-3">
                     <h5 class="card-title">${c}</h5>
                     <div class="card-tools">
-                        <span class="btn btn-tool text-primary"><i class="fas fa-fw fa-link"></i></span>
+                        <span class="btn btn-tool"><i class="fas fa-fw fa-paperclip"></i></span>
+                        <span class="btn btn-tool"><i class="far fa-fw fa-comments"></i></span>
                         <span class="btn btn-tool card-edit" data-card-id="${card.id}"><i class="fas fa-fw fa-edit"></i></span>
                         <span class="btn btn-tool btn-min-max" data-card-id="${card.id}"><i class="fas fa-fw fa-${card.cardMinimized ? "window-restore" : "window-minimize"}"></i></span>
                     </div>
@@ -480,7 +481,8 @@
                                     body: '## Ilorm ipsum....\n\ntoday',
                                     color: "danger",
                                     tags: [
-                                        "Violet"
+                                        "Violet",
+                                        "2 lskdjfhlgskjdfhgl ksdhfgl hdf lkshg kdfhg kfhf k asdfh aksjdf lashdf lkajsdhf lashd fkajsdh flakjdshf lkajsdhf lkajdshf lajdsh fksdfh gkdfh ksjhjdfg ksjdhf ksdfh g"
                                     ],
                                 },
                             ],

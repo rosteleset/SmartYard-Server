@@ -1023,3 +1023,14 @@ code {
 .form-sortable-item:first-child {
   margin-top: 8px ! important;
 }
+
+.badge {
+  max-width: 200px ! important;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.bg-black {
+  background-color: black ! important;
+}

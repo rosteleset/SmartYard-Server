@@ -541,7 +541,7 @@ function systemColor(text) {
     let m = md5(text);
     let s = 0;
 
-    for (let i = 0; i < text.length; i++) {
+    for (let i = 0; i < m.length; i++) {
         s += parseInt(m[i], 16);
     }
 
