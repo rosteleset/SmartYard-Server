@@ -864,7 +864,7 @@ function cardForm(params) {
 
     function sortable(i) {
         new Sortable(document.getElementById(_prefix + params.fields[i].id + "-items"), {
-            "animation": 150,
+            animation: 150,
 
             onEnd: e => {
                 let n = 0;

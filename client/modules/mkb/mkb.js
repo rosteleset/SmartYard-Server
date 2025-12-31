@@ -24,9 +24,10 @@
         $(".card-content").each(function () {
             let col = $(this);
             new Sortable(document.getElementById(col.attr("id")), {
-                "handle": ".card-handle",
-                "animation": 150,
-                "group": "cols",
+                handle: ".card-handle",
+                animation: 150,
+                group: "cols",
+                forceAutoScrollFallback: true,
 
                 onEnd: e => {
                     let s = $("#" + e.item.id).offset().top - $("#mainForm").offset().top - 8;
@@ -45,7 +46,7 @@
         $(".subtasks").each(function () {
             let subtasks = $(this);
             new Sortable(document.getElementById(subtasks.attr("id")), {
-                "animation": 150,
+                animation: 150,
 
                 onEnd: e => {
                     console.log(e);
@@ -59,8 +60,8 @@
         });
 
         new Sortable(document.getElementById("desk"), {
-            "handle": ".col-handle",
-            "animation": 150,
+            handle: ".col-handle",
+            animation: 150,
         });
 
         $(".card-calendar").off("show.bs.dropdown").on("show.bs.dropdown", function () {
