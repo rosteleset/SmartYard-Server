@@ -23,7 +23,7 @@
                 h += `<pre class="ace-editor mt-2" id="issueEditor"></pre>`;
                 h += "</div>";
                 if (AVAIL("tt", "json", "PUT")) {
-                    h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="issueSave" class="hoverable saveButton"><i class="fas fa-save pr-2"></i>${i18n("tt.issueSave")}</span></span>`;
+                    h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="issueSave" class="pointer saveButton"><i class="fas fa-save pr-2"></i>${i18n("tt.issueSave")}</span></span>`;
                 }
                 $("#mainForm").html(h);
                 let editor = ace.edit("issueEditor");

@@ -2267,7 +2267,7 @@
             h += `<div id='editorContainer' style='width: 100%; height: ${height}px;'>`;
             h += `<pre class="ace-editor mt-2" id="workflowEditor"></pre>`;
             h += "</div>";
-            h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="workflowSave" class="hoverable saveButton"><i class="fas fa-save pr-2"></i>${i18n("tt.workflowSave")}</span></span>`;
+            h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="workflowSave" class="pointer saveButton"><i class="fas fa-save pr-2"></i>${i18n("tt.workflowSave")}</span></span>`;
             $("#mainForm").html(h);
             let editor = ace.edit("workflowEditor");
             if (modules.darkmode && modules.darkmode.isDark())
@@ -2386,7 +2386,7 @@
             cardTable({
                 target: "#mainForm",
                 title: {
-                    caption: i18n("tt.workflows") + " <a href='?#tt.settings&section=libs' class='ml-3 hoverable pointer'>" + i18n("tt.libs") + "</a>",
+                    caption: i18n("tt.workflows") + " <a href='?#tt.settings&section=libs' class='ml-3 pointer'>" + i18n("tt.libs") + "</a>",
                     button: {
                         caption: i18n("tt.addWorkflow"),
                         click: modules.tt.settings.addWorkflow,
@@ -2460,7 +2460,7 @@
             h += `<div id='editorContainer' style='width: 100%; height: ${height}px;'>`;
             h += `<pre class="ace-editor mt-2" id="libEditor"></pre>`;
             h += "</div>";
-            h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="libSave" class="hoverable saveButton"><i class="fas fa-save pr-2"></i>${i18n("tt.workflowLibSave")}</span></span>`;
+            h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="libSave" class="pointer saveButton"><i class="fas fa-save pr-2"></i>${i18n("tt.workflowLibSave")}</span></span>`;
             $("#mainForm").html(h);
             let editor = ace.edit("libEditor");
             if (modules.darkmode && modules.darkmode.isDark())
@@ -2579,7 +2579,7 @@
             cardTable({
                 target: "#mainForm",
                 title: {
-                    caption: i18n("tt.workflowLibs") + " <a href='?#tt.settings&section=workflows' class='ml-3 hoverable pointer'>" + i18n("tt.workflows") + "</a>",
+                    caption: i18n("tt.workflowLibs") + " <a href='?#tt.settings&section=workflows' class='ml-3 pointer'>" + i18n("tt.workflows") + "</a>",
                     button: {
                         caption: i18n("tt.addWorkflowLib"),
                         click: modules.tt.settings.addWorkflowLib,
@@ -2997,7 +2997,7 @@
                 h += `<pre class="ace-editor mt-2" id="filterEditor"></pre>`;
                 h += "</div>";
                 if (!readOnly) {
-                    h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="filterSave" class="hoverable saveButton"><i class="fas fa-save pr-2"></i>${i18n("tt.filterSave")}</span></span>`;
+                    h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="filterSave" class="pointer saveButton"><i class="fas fa-save pr-2"></i>${i18n("tt.filterSave")}</span></span>`;
                 }
                 $("#mainForm").html(h);
                 let editor = ace.edit("filterEditor");
@@ -3642,7 +3642,7 @@
             h += `<div id='editorContainer' style='width: 100%; height: ${height}px;'>`;
             h += `<pre class="ace-editor mt-2" id="viewerEditor"></pre>`;
             h += "</div>";
-            h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="viewerSave" class="hoverable saveButton"><i class="fas fa-save pr-2"></i>${i18n("tt.viewerSave")}</span></span>`;
+            h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="viewerSave" class="pointer saveButton"><i class="fas fa-save pr-2"></i>${i18n("tt.viewerSave")}</span></span>`;
             $("#mainForm").html(h);
             let editor = ace.edit("viewerEditor");
             if (modules.darkmode && modules.darkmode.isDark())
@@ -4026,7 +4026,7 @@
             h += `<div id='editorContainer' style='width: 100%; height: ${height}px;'>`;
             h += `<pre class="ace-editor mt-2" id="printDataEditor"></pre>`;
             h += "</div>";
-            h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="printDataSave" class="hoverable saveButton"><i class="fas fa-save pr-2"></i>${i18n("tt.printDataSave")}</span></span>`;
+            h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="printDataSave" class="pointer saveButton"><i class="fas fa-save pr-2"></i>${i18n("tt.printDataSave")}</span></span>`;
             $("#mainForm").html(h);
             let editor = ace.edit("printDataEditor");
             if (modules.darkmode && modules.darkmode.isDark())
@@ -4113,7 +4113,7 @@
             h += `<div id='editorContainer' style='width: 100%; height: ${height}px;'>`;
             h += `<pre class="ace-editor mt-2" id="printFormatterEditor"></pre>`;
             h += "</div>";
-            h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="printFormatterSave" class="hoverable saveButton"><i class="fas fa-save pr-2"></i>${i18n("tt.printFormatterSave")}</span></span>`;
+            h += `<span style='position: absolute; right: 35px; top: 35px;'><span id="printFormatterSave" class="pointer saveButton"><i class="fas fa-save pr-2"></i>${i18n("tt.printFormatterSave")}</span></span>`;
             $("#mainForm").html(h);
             let editor = ace.edit("printFormatterEditor");
             if (modules.darkmode && modules.darkmode.isDark())

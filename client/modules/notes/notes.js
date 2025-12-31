@@ -783,7 +783,7 @@
         }
 
         if (parseInt(myself.uid) && AVAIL("notes")) {
-            $("#leftTopDynamic").html(`<li class="nav-item d-none d-sm-inline-block"><span class="hoverable pointer nav-link text-success text-bold createNote">${i18n("notes.createNote")}</span></li>`);
+            $("#leftTopDynamic").html(`<li class="nav-item d-none d-sm-inline-block"><span class="pointer nav-link text-success text-bold createNote">${i18n("notes.createNote")}</span></li>`);
         }
 
         $(".createNote").off("click").on("click", () => {

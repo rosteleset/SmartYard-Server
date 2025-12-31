@@ -1115,7 +1115,7 @@
                         break;
 
                     case "parent":
-                        val = `<span><a class='hoverable text-bold' class='' href='?#tt&issue=${val}'>${val}</a></span>`;
+                        val = `<span><a class='pointer text-bold' class='' href='?#tt&issue=${val}'>${val}</a></span>`;
                         break;
 
                     case "created":
@@ -1759,7 +1759,7 @@
                     cs += `<pre class="ace-editor mt-2" id="filterEditor"></pre>`;
                     cs += "</div>";
                     cs += `<span style='position: absolute; right: 35px; top: 35px;'>`;
-                    cs += `<span id="filterRun" class="hoverable saveButton"><i class="far fa-play-circle pr-2"></i>${i18n("tt.filterRun")}</span>`;
+                    cs += `<span id="filterRun" class="pointer saveButton"><i class="far fa-play-circle pr-2"></i>${i18n("tt.filterRun")}</span>`;
                     cs += `</span>`;
                     cs += '</div>';
                 }

@@ -667,9 +667,9 @@
                 if (issue.actions[i].substring(0, 1) === "!") {
                     if (modules.tt.specialActions.indexOf(issue.actions[i].substring(1)) >= 0) {
                         let a = issue.actions[i].substring(1);
-                        h += `<span class="hoverable text-primary mr-3 tt${a.charAt(0).toUpperCase() + a.substring(1)}">${i18n("tt." + a)}</span>`;
+                        h += `<span class="pointer text-primary mr-3 tt${a.charAt(0).toUpperCase() + a.substring(1)}">${i18n("tt." + a)}</span>`;
                     } else {
-                        h += `<span class="hoverable text-primary mr-3 ttIssueAction">${issue.actions[i].substring(1)}</span>`;
+                        h += `<span class="pointer text-primary mr-3 ttIssueAction">${issue.actions[i].substring(1)}</span>`;
                     }
                     t++;
                 } else
@@ -681,14 +681,14 @@
             }
             if (Object.keys(issue.actions).length - t === 1) {
                 if (modules.tt.specialActions.indexOf(la) >= 0) {
-                    h += `<span class="hoverable text-primary mr-3 tt${la.charAt(0).toUpperCase() + la.substring(1)}">${i18n("tt." + la)}</span>`;
+                    h += `<span class="pointer text-primary mr-3 tt${la.charAt(0).toUpperCase() + la.substring(1)}">${i18n("tt." + la)}</span>`;
                 } else {
-                    h += `<span class="hoverable text-primary mr-3 ttIssueAction">${la}</span>`;
+                    h += `<span class="pointer text-primary mr-3 ttIssueAction">${la}</span>`;
                 }
             } else
             if (t < Object.keys(issue.actions).length) {
                 h += `<span class="dropdown" data-toggle="dropdown">`;
-                h += `<span class="pointer hoverable dropdown-toggle dropdown-toggle-no-icon text-primary mr-3" id="ttIssueAllActions" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" data-flip="false">${i18n("tt.allActions")}</span>`;
+                h += `<span class="pointer pointer dropdown-toggle dropdown-toggle-no-icon text-primary mr-3" id="ttIssueAllActions" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" data-flip="false">${i18n("tt.allActions")}</span>`;
                 h += `<ul class="dropdown-menu" aria-labelledby="ttIssueAllActions">`;
                 let hr = true;
                 for (let i = Object.keys(issue.actions).length - 1; i >= 0; i--) {
@@ -724,7 +724,7 @@
 
         if (issue.print && config.printServer) {
             h += `<span class="dropdown">`;
-            h += `<span class="pointer hoverable dropdown-toggle dropdown-toggle-no-icon text-primary mr-3" id="ttIssuePrint" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">${i18n("tt.print")}</span>`;
+            h += `<span class="pointer dropdown-toggle dropdown-toggle-no-icon text-primary mr-3" id="ttIssuePrint" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false">${i18n("tt.print")}</span>`;
             h += `<ul class="dropdown-menu" aria-labelledby="ttIssuePrint">`;
             for (let i in issue.print) {
                 for (let j in modules.tt.meta.prints) {
@@ -739,15 +739,15 @@
         }
 
         if (AVAIL("cdr", "cdr", "POST") && modules.tt.cdr && modules.tt.cdr.hasCdr(issue.issue) && !modules.tt.issue.callsLoaded) {
-            h += `<span class="hoverable text-primary mr-3 ttCalls">${i18n("tt.calls")}</span>`;
+            h += `<span class="pointer text-primary mr-3 ttCalls">${i18n("tt.calls")}</span>`;
         }
 
         if (issue.showJournal) {
-            h += `<span class="hoverable text-primary mr-3 ttJournal">${i18n("tt.journal")}</span>`;
+            h += `<span class="pointer text-primary mr-3 ttJournal">${i18n("tt.journal")}</span>`;
         }
 
         if (AVAIL("tt", "json", "GET")) {
-            h += `<span class="hoverable text-primary mr-3 ttJSON">JSON</span>`;
+            h += `<span class="pointer text-primary mr-3 ttJSON">JSON</span>`;
         }
 
         h += "</div>";
@@ -759,7 +759,7 @@
             } else {
                 h += "<i class='fas fa-fw fa-chevron-left text-muted'></i>"
             }
-            h += `<span class='hoverable pointer ml-2 mr-2' id='stepOf' title='${i18n("tt.backToList")}'>${index} ${i18n("tt.of")} ${count} </span>`;
+            h += `<span class='pointer ml-2 mr-2' id='stepOf' title='${i18n("tt.backToList")}'>${index} ${i18n("tt.of")} ${count} </span>`;
             if (parseInt(index) < parseInt(count)) {
                 h += "<i id='stepNext' class='fas fa-fw fa-chevron-right pointer'></i>"
             } else {
@@ -873,7 +873,7 @@
             h += '<tbody>';
             for (let i in issue.issue.childrens.issues) {
                 h += "<tr>";
-                h += `<td nowrap><a class='hoverable pl-2 pr-2 ildc' href='?#tt&issue=${issue.issue.childrens.issues[i].issueId}'>${issue.issue.childrens.issues[i].issueId}</a></td>`;
+                h += `<td nowrap><a class='pointer pl-2 pr-2 ildc' href='?#tt&issue=${issue.issue.childrens.issues[i].issueId}'>${issue.issue.childrens.issues[i].issueId}</a></td>`;
                 h += `<td class='pl-2 pr-2 ildc' nowrap>${ttDate(issue.issue.childrens.issues[i].created, true)}</td>`;
                 h += `<td class='pl-2 pr-2 ildc' nowrap>${modules.tt.issueField2Html(issue.issue.childrens.issues[i], "author", undefined, "list")}</td>`;
                 h += `<td class='pl-2 pr-2 ildc' nowrap>${modules.tt.issueField2Html(issue.issue.childrens.issues[i], "status", undefined, "list")}</td>`;
@@ -913,7 +913,7 @@
 
             for (let i in issue.issue.linkedIssues.issues) {
                 h += "<tr>";
-                h += `<td nowrap><a class='hoverable pl-2 pr-2 ildc' href='?#tt&issue=${issue.issue.linkedIssues.issues[i].issueId}'>${issue.issue.linkedIssues.issues[i].issueId}</a></td>`;
+                h += `<td nowrap><a class='pointer pl-2 pr-2 ildc' href='?#tt&issue=${issue.issue.linkedIssues.issues[i].issueId}'>${issue.issue.linkedIssues.issues[i].issueId}</a></td>`;
                 h += `<td class='pl-2 pr-2 ildc' nowrap>${ttDate(issue.issue.linkedIssues.issues[i].created, true)}</td>`;
                 h += `<td class='pl-2 pr-2 ildc' nowrap>${modules.tt.issueField2Html(issue.issue.linkedIssues.issues[i], "author", undefined, "list")}</td>`;
                 h += `<td class='pl-2 pr-2 ildc' nowrap>${modules.tt.issueField2Html(issue.issue.linkedIssues.issues[i], "status", undefined, "list")}</td>`;

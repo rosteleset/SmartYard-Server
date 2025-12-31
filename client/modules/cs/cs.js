@@ -517,6 +517,7 @@
                 let s = response.sheet.sheet.data;
                 let parts = {};
                 let cp;
+
                 for (let i in s) {
                     if (modules.cs.cols.indexOf(s[i].col) < 0 && s[i].col.charAt(0) != "#" && !s[i].hidden) {
                         if (typeof s[i].part == "undefined") {
@@ -585,7 +586,7 @@
                 for (let p in parts) {
                     if (p != cp) {
                         if (parseInt(p) >= 0 || p) {
-                            h += "<tr><td nowrap style='width: 0%'>&nbsp;</td><td style='border: none!important; font-weight: bold;' class='text-primary' colspan='" + maxCols.toString() + "'><span class='hoverable csPart'>" + p + "</span></td></tr>";
+                            h += "<tr><td nowrap style='width: 0%'>&nbsp;</td><td style='border: none ! important; font-weight: bold;' class='text-primary' colspan='" + maxCols.toString() + "'><span class='pointer csPart'>" + p + "</span></td></tr>";
                         }
                         cp = p;
                     }
@@ -603,9 +604,9 @@
                             }
                         }
                         if (c && c.class) {
-                            h += '<td class="' + c.class + '" nowrap style="vertical-align: top!important;">';
+                            h += '<td class="' + c.class + '" nowrap style="vertical-align: top ! important;">';
                         } else {
-                            h += '<td nowrap style="vertical-align: top!important;">';
+                            h += '<td nowrap style="vertical-align: top ! important;">';
                         }
                         h += "<span>" + modules.cs.colMenu(modules.cs.cols[i]) + "</span>";
                         if (c.logins && c.logins.length) {

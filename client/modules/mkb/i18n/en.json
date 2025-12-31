@@ -8,6 +8,13 @@
     "deleteColumn": "Delete column",
     "title": "Title",
     "color": "Color",
+    "attachments": "Attachments",
+    "comments": "Comments",
+    "edit": "Edit",
+    "minimize": "Minimize",
+    "restore": "Restore",
+    "date": "Date",
+    "addCard": "Add card",
     "methods": {
         "mkb": {
             "_title": "Kanban",

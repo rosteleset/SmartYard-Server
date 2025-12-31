@@ -131,13 +131,13 @@
             let id = $(this).attr("data-card-id");
 
             if ($(`.btn-min-max[data-card-id="${id}"]`).children().first().hasClass("fa-window-minimize")) {
-                $(`.btn-min-max[data-card-id="${id}"]`).children().first().removeClass("fa-window-minimize").addClass("fa-window-restore");
+                $(`.btn-min-max[data-card-id="${id}"]`).children().first().removeClass("fa-window-minimize").addClass("fa-window-restore").attr("title", i18n("mkb.restore"));
                 $(`.subtasks-progress[data-card-id="${id}"]`).removeClass("pt-1").addClass("pt-3").removeClass("pointer");
                 $(`.hr-subject[data-card-id="${id}"]`).hide();
                 $(`.min-max[data-card-id="${id}"]`).hide();
                 $(`.subtasks[data-card-id="${id}"]`).hide();
             } else {
-                $(`.btn-min-max[data-card-id="${id}"]`).children().first().addClass("fa-window-minimize").removeClass("fa-window-restore");
+                $(`.btn-min-max[data-card-id="${id}"]`).children().first().addClass("fa-window-minimize").removeClass("fa-window-restore").attr("title", i18n("mkb.minimize"));
                 let pb = $(`.subtasks-progress[data-card-id="${id}"]`);
                 if (pb.attr("data-minimized") == "true") {
                     $(`.subtasks[data-card-id="${id}"]`).hide();
@@ -293,7 +293,7 @@
         if (card.date) {
             let d = Math.ceil((card.date - ((new Date()).getTime() / 1000)) / (60 * 60 * 24));
             c = `
-                <span class="dropdown card-calendar" data-card-id="${card.id}" data-date="${card.date}">
+                <span class="dropdown card-calendar" data-card-id="${card.id}" data-date="${card.date}" title="${i18n("mkb.date")}">
                     <span class="btn btn-tool ${(d >= 0) ? "text-success" : "text-danger"} dropdown-toggle dropdown-toggle-no-icon pb-0" data-toggle="dropdown" aria-expanded="false" data-flip="true" style="margin-bottom: -8px;">
                         ${Math.abs(d)} ${i18n("mkb.days")}
                         <ul class="dropdown-menu">
@@ -325,10 +325,10 @@
                 <div class="card-header card-handle pl-1 pr-3">
                     <h5 class="card-title">${c}</h5>
                     <div class="card-tools">
-                        <span class="btn btn-tool"><i class="fas fa-fw fa-paperclip"></i></span>
-                        <span class="btn btn-tool"><i class="far fa-fw fa-comments"></i></span>
-                        <span class="btn btn-tool card-edit" data-card-id="${card.id}"><i class="fas fa-fw fa-edit"></i></span>
-                        <span class="btn btn-tool btn-min-max" data-card-id="${card.id}"><i class="fas fa-fw fa-${card.cardMinimized ? "window-restore" : "window-minimize"}"></i></span>
+                        <span class="btn btn-tool" title="${i18n("mkb.attachments")}"><i class="fas fa-fw fa-paperclip"></i></span>
+                        <span class="btn btn-tool" title="${i18n("mkb.comments")}"><i class="far fa-fw fa-comments"></i></span>
+                        <span class="btn btn-tool card-edit" title="${i18n("mkb.edit")}" data-card-id="${card.id}"><i class="fas fa-fw fa-edit"></i></span>
+                        <span class="btn btn-tool btn-min-max" title="${card.cardMinimized ? i18n("mkb.restore") : i18n("mkb.minimize")}" data-card-id="${card.id}"><i class="fas fa-fw fa-${card.cardMinimized ? "window-restore" : "window-minimize"}"></i></span>
                     </div>
                 </div>
                 <div class="card-body">
@@ -356,8 +356,8 @@
                     <h3 class="card-title pt-1 text-bold">${$.trim(escapeHTML(column.title))}</h3>
                     <div class="card-tools" data-column-id="${column.id}">
                         <span class="btn btn-tool"><i class="far fa-fw fa-clipboard"></i></span>
-                        <span class="btn btn-tool"><i class="fas fa-fw fa-plus-circle"></i></span>
-                        <span class="btn btn-tool column-edit"><i class="fas fa-fw fa-edit"></i></span>
+                        <span class="btn btn-tool card-add" title="${i18n("mkb.addCard")}"><i class="fas fa-fw fa-plus-circle"></i></span>
+                        <span class="btn btn-tool column-edit" title="${i18n("mkb.edit")}"><i class="fas fa-fw fa-edit"></i></span>
                     </div>
                 </div>
                 <div id="card-body-${column.id}" class="card-body card-content" style="min-height: 100%;">${c}</div>
@@ -576,8 +576,8 @@
 
         if (parseInt(myself.uid) && AVAIL("mkb")) {
             $("#leftTopDynamic").html(`
-                <li class="nav-item d-none d-sm-inline-block"><span class="hoverable pointer nav-link text-success text-bold addDesk">${i18n("mkb.addDesk")}</span></li>
-                <li class="nav-item d-none d-sm-inline-block"><span class="hoverable pointer nav-link text-primary text-bold addColumn">${i18n("mkb.addColumn")}</span></li>
+                <li class="nav-item d-none d-sm-inline-block"><span class="pointer nav-link text-success text-bold addDesk">${i18n("mkb.addDesk")}</span></li>
+                <li class="nav-item d-none d-sm-inline-block"><span class="pointer nav-link text-primary text-bold addColumn">${i18n("mkb.addColumn")}</span></li>
             `);
         }
 

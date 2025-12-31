@@ -8,6 +8,13 @@
     "deleteColumn": "Удалить столбец",
     "title": "Наименование",
     "color": "Цвет",
+    "attachments": "Файлы",
+    "comments": "Комментарии",
+    "edit": "Редактировать",
+    "minimize": "Свернуть",
+    "restore": "Развернуть",
+    "date": "Дата",
+    "addCard": "Добавить карточку",
     "methods": {
         "mkb": {
             "_title": "Канбан",
