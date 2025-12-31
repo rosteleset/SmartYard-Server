@@ -680,7 +680,7 @@ function cardForm(params) {
                 if (params.fields[i].autoload) {
                     setTimeout(() => {
                         $("#" + _prefix + params.fields[i].id + "-add").click();
-                    }, 100);
+                    }, 10);
                 }
                 break;
 
@@ -814,7 +814,7 @@ function cardForm(params) {
         if (field.appendable == "input") {
             h += `
                 <div class="input-group">
-                    <input type="text" class="form-control" id="${_prefix}${params.fields[i].id}-append">
+                    <input type="text" class="form-control" id="${_prefix}${params.fields[i].id}-append" data-input-focus="${_prefix}${params.fields[i].id}">
                     <div class="input-group-append">
                         <div class="input-group-text pointer sortablePlus" id="${_prefix}${params.fields[i].id}-append-button"><i class="fas fa-fw fa-plus-square text-success"></i></div>
                     </div>
@@ -827,7 +827,7 @@ function cardForm(params) {
                 <div class="input-group">
                     <select class="form-control select2" id="${_prefix}${params.fields[i].id}-append"></select>
                     <div class="input-group-append">
-                        <div class="input-group-text pointer sortablePlus"><i class="fas fa-fw fa-plus-square text-success"></i></div>
+                        <div class="input-group-text pointer sortablePlus" id="${_prefix}${params.fields[i].id}-append-button"><i class="fas fa-fw fa-plus-square text-success"></i></div>
                     </div>
                 </div>
             `;
@@ -926,7 +926,7 @@ function cardForm(params) {
                 $(`#${_prefix}${params.fields[i].id}-append-button`).click();
                 setTimeout(() => {
                     $(`#${_prefix}${params.fields[i].id}-append`).focus();
-                }, 100);
+                }, 10);
             }
         });
 
@@ -1170,6 +1170,12 @@ function cardForm(params) {
         $(".select2-selection__rendered:visible").each(function () {
             let s2 = $(this);
             s2.css("width", s2.css("width"));
+            // TODO: FIX IT!!!
+            let id = s2.parent().parent().parent().parent().parent().attr("id");
+            if ($("#" + id + "-append-button").length) {
+                let w = $("#" + id + "-append-button").parent().parent().width() - $("#" + id + "-append-button").outerWidth();
+                s2.parent().parent().parent().css("width", w + "px");
+            }
         });
 
         if (params.title) {
@@ -1178,12 +1184,22 @@ function cardForm(params) {
             });
         }
 
+        let f;
+
         if (autofocus && !focus && !params.noFocus) {
-            $("#" + autofocus).focus();
+            f = autofocus;
         }
 
         if (focus) {
-            $("#" + focus).focus();
+            f = focus;
+        }
+
+        if (f) {
+            if ($(`[data-input-focus="${f}"]`).length) {
+                $(`[data-input-focus="${f}"]`).focus();
+            } else {
+                $("#" + f).focus();
+            }
         }
 
         if (tabs.length && typeof params.tabActivate == "function") {
@@ -1757,16 +1773,36 @@ function cardForm(params) {
             $(".select2-selection__rendered:visible").each(function () {
                 let s2 = $(this);
                 s2.css("width", s2.css("width"));
+                // TODO: FIX IT!!!
+                let id = s2.parent().parent().parent().parent().parent().attr("id");
+                if (id && $("#" + id + "-append-button").length) {
+                    let w = $("#" + id + "-append-button").parent().parent().width() - $("#" + id + "-append-button").outerWidth();
+                    s2.parent().parent().parent().css("width", w + "px");
+                }
             });
+
+            if (!params.noFocus) {
+                for (let f in params.fields) {
+                    if (params.fields[f].tab == tabs[i] && !params.fields[f].readonly && !params.fields[f].disabled && !params.fields[f].hidden) {
+                        if ($(`[data-input-focus="${_prefix + params.fields[f].id}"]`).length) {
+                            $(`[data-input-focus="${_prefix + params.fields[f].id}"]`).focus();
+                        } else {
+                            $(`#${_prefix + params.fields[f].id}`).focus();
+                        }
+                        break;
+                    }
+                }
+            }
+
             if (typeof params.tabActivate == "function") {
                 params.tabActivate(_prefix, tabs[i], i);
             }
-        }, 100);
+        }, 10);
     });
 
     setTimeout(() => {
         $(".checkAll").parent().css("z-index", parseIntEx($(".checkAll").parent().parent().css("z-index")) + 1);
-    }, 100);
+    }, 10);
 
     $(".checkAll").off("click").on("click", function () {
         $(this).parent().parent().children().each(function () {

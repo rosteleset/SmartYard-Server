@@ -356,7 +356,7 @@
                         <span class="btn btn-tool column-edit"><i class="fas fa-fw fa-edit"></i></span>
                     </div>
                 </div>
-                <div id="card-body-${column.id}" class="card-body card-no-scroll card-content" style="min-height: 100%;">${c}</div>
+                <div id="card-body-${column.id}" class="card-body card-content" style="min-height: 100%;">${c}</div>
             </div>
         `;
 
