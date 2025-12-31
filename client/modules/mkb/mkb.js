@@ -121,7 +121,7 @@
 
             p = Math.round((p / c) * 1000) / 10;
 
-            $(`.progressbar-value[data-card-id="${id}"]`).css("width", p + "%").attr("aria-valuenow", p).text(p + "%");
+            $(`.progressbar-value[data-card-id="${id}"]`).css("width", p + "%").attr("aria-valuenow", p).attr("title", p + "%").text(p + "%");
         });
 
         $(".btn-min-max").off("click").on("click", function () {
@@ -273,7 +273,7 @@
 
             p = Math.round((p / card.subtasks.length) * 1000) / 10;
 
-            s += `</div><div class="${card.cardMinimized ? "" : "pointer"} subtasks-progress ${card.subtasksMinimized ? "pt-3" : "pt-1"} pb-1" data-card-id="${card.id}" data-minimized=${card.subtasksMinimized ? "true" : "false"}><div class="progress"><div class="progress-bar progress-bar-danger progress-bar-striped progressbar-value" role="progressbar" style="width: ${p}%" aria-valuenow="${p}" aria-valuemin="0" aria-valuemax="100" data-card-id="${card.id}">${p}%</div></div></div>`;
+            s += `</div><div class="${card.cardMinimized ? "" : "pointer"} subtasks-progress ${card.subtasksMinimized ? "pt-3" : "pt-1"} pb-1" data-card-id="${card.id}" data-minimized=${card.subtasksMinimized ? "true" : "false"} title="${p}%"><div class="progress"><div class="progress-bar progress-bar-danger progress-bar-striped progressbar-value" role="progressbar" style="width: ${p}%" aria-valuenow="${p}" aria-valuemin="0" aria-valuemax="100" data-card-id="${card.id}">${p}%</div></div></div>`;
         }
 
         let b = '';
