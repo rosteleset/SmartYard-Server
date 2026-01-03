@@ -1584,6 +1584,9 @@ function cardForm(params) {
                     animation: 0,
                     multiple: false,
                 },
+                themes: {
+                    responsive: false,
+                },
                 types: {
                     default: {
                         icon: "far fa-fw fa-folder",
