@@ -316,4 +316,9 @@ class rodos extends domophone
         $this->login = 'admin';
         $this->defaultPassword = 'admin';
     }
+
+    protected function initConnection(): void
+    {
+        // Empty implementation
+    }
 }
