@@ -1584,10 +1584,22 @@ function cardForm(params) {
                     animation: 0,
                     multiple: false,
                 },
+                types: {
+                    default: {
+                        icon: "far fa-fw fa-folder",
+                    },
+                    file: {
+                        icon: "fa fa-file",
+                    },
+                    folder: {
+                        icon: "far fa-fw fa-folder-open",
+                    },
+                },
                 plugins: [
-                    "sort",
-                    "search",
                     "changed",
+                    "search",
+                    "sort",
+                    "types",
                 ],
             };
 

@@ -482,7 +482,7 @@
                                     color: "danger",
                                     tags: [
                                         "Violet",
-                                        "2 lskdjfhlgskjdfhgl ksdhfgl hdf lkshg kdfhg kfhf k asdfh aksjdf lashdf lkajsdhf lashd fkajsdh flakjdshf lkajsdhf lkajdshf lajdsh fksdfh gkdfh ksjhjdfg ksjdhf ksdfh g"
+                                        "2"
                                     ],
                                 },
                             ],
