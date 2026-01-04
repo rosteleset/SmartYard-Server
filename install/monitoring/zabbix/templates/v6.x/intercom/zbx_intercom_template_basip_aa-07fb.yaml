@@ -1,0 +1,37 @@
+zzabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: e858e071fe054cdabec002d7d99891e9
+      name: Templates/Intercoms
+  templates:
+    - uuid: 8a918d037ae5428e8a0324f36111faca
+      template: Intercom_BASIP_AA-07FB
+      name: 'Intercom | BASIP AA-07FB by HTTP'
+      description: 'Intercom BASIP AA-07FB by HTTP panel monitoring'
+      vendor:
+        name: SmartYard
+        version: 2026-01
+      templates:
+        - name: 'ICMP Ping'
+      groups:
+        - name: Templates/Intercoms
+      tags:
+        - tag: class
+          value: hardware
+        - tag: target
+          value: basip
+      macros:
+        - macro: '{$HOST_PASSWORD}'
+          value: admin
+          description: 'WEB GUI | API password, default value admin'
+        - macro: '{$HOST_USERNAME}'
+          value: admin
+          description: 'WEB GUI | API username, default value admin'
+      valuemaps:
+        - uuid: aa028cf0c5e64e5ebfbba9016cb65403
+          name: 'SIP registration status'
+          mappings:
+            - value: '0'
+              newvalue: Offline
+            - value: '1'
+              newvalue: Online
