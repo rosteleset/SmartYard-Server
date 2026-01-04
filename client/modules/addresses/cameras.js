@@ -159,6 +159,15 @@
                         return $.trim(v) !== "";
                     },
                     tab: i18n("addresses.primary"),
+                    button: {
+                        class: "fas fa-fw fa-magic",
+                        hint: i18n("addresses.generatePassword"),
+                        click: prefix => {
+                            PWGen.initialize();
+                            let p = PWGen.generate();
+                            $(`#${prefix}credentials`).val(p);
+                        },
+                    },
                 },
                 {
                     id: "name",

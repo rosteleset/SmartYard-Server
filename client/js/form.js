@@ -691,7 +691,7 @@ function cardForm(params) {
             case "jstree":
                 if (params.fields[i].search) {
                     h += `<div class="input-group mb-2">`;
-                    h += `<input id="${_prefix}${params.fields[i].id}-search" id="${_prefix}${params.fields[i].id}-search" type="search" class="form-control modalFormField" style="cursor: text;" autocomplete="off" placeholder="${i18n("search")}">`;
+                    h += `<input id="${_prefix}${params.fields[i].id}-search" id="${_prefix}${params.fields[i].id}-search" type="search" class="form-control modalFormField" style="cursor: text;" autocomplete="off" placeholder="${i18n("search")}" data-input-focus="${_prefix}${params.fields[i].id}">`;
                     h += `<div class="input-group-append">`;
                     h += `<span id="${_prefix}${params.fields[i].id}-search-button" title="${i18n("search")}" class="input-group-text pointer"><i class="fas fa-fw fa-search"></i></span>`;
                     h += `</div>`;
@@ -1460,6 +1460,20 @@ function cardForm(params) {
                     }
                 });
             }
+
+            let f;
+
+            if (autofocus && !focus && !params.noFocus) {
+                f = autofocus;
+            }
+
+            if (focus) {
+                f = focus;
+            }
+
+            if (f && f == `${_prefix}${params.fields[i].id}`) {
+                editor.focus();
+            }
         }
 
         if (params.fields[i].type == "json") {
@@ -1508,6 +1522,20 @@ function cardForm(params) {
                 editor.resize();
                 editor.renderer.updateFull();
             }).observe($(`#${_prefix}${params.fields[i].id}`)[0]);
+
+            let f;
+
+            if (autofocus && !focus && !params.noFocus) {
+                f = autofocus;
+            }
+
+            if (focus) {
+                f = focus;
+            }
+
+            if (f && f == `${_prefix}${params.fields[i].id}`) {
+                editor.focus();
+            }
         }
 
         if (params.fields[i].type == "files") {
@@ -1680,7 +1708,7 @@ function cardForm(params) {
 
             $(`#${_prefix}${params.fields[i].id}-search-button`).off("click").on("click", () => {
                 let str = $.trim($(`#${_prefix}${params.fields[i].id}-search`).val());
-                if (str.length >= 3 || str.length == 0) {
+                if (str.length >= 1 || str.length == 0) {
                     if (params.fields[i].search === true) {
                         $(`#${_prefix}${params.fields[i].id}`).jstree(tree).search(str);
                     } else {
@@ -1799,10 +1827,14 @@ function cardForm(params) {
             if (!params.noFocus) {
                 for (let f in params.fields) {
                     if (params.fields[f].tab == tabs[i] && !params.fields[f].readonly && !params.fields[f].disabled && !params.fields[f].hidden) {
-                        if ($(`[data-input-focus="${_prefix + params.fields[f].id}"]`).length) {
-                            $(`[data-input-focus="${_prefix + params.fields[f].id}"]`).focus();
+                        if (params.fields[f].editor) {
+                            params.fields[f].editor.focus();
                         } else {
-                            $(`#${_prefix + params.fields[f].id}`).focus();
+                            if ($(`[data-input-focus="${_prefix + params.fields[f].id}"]`).length) {
+                                $(`[data-input-focus="${_prefix + params.fields[f].id}"]`).focus();
+                            } else {
+                                $(`#${_prefix + params.fields[f].id}`).focus();
+                            }
                         }
                         break;
                     }

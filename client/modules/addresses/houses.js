@@ -418,8 +418,12 @@
                             treeName = "house" + houseId;
                             break;
 
-                        default:
+                        case "houses":
                             treeName = "houses";
+                            break;
+
+                        default:
+                            treeName = false;
                             break;
                     }
 
@@ -660,6 +664,7 @@
                                 type: "jstree",
                                 title: false,
                                 tab: i18n("addresses.path"),
+                                hidden: !treeName,
                                 data: path,
 
                                 addRoot: function (instance) {
@@ -1412,8 +1417,12 @@
                             treeName = "house" + houseId;
                             break;
 
-                        default:
+                        case "houses":
                             treeName = "houses";
+                            break;
+
+                        default:
+                            treeName = false;
                             break;
                     }
 
@@ -1704,6 +1713,7 @@
                                 type: "jstree",
                                 title: false,
                                 tab: i18n("addresses.path"),
+                                hidden: !treeName,
                                 data: path,
 
                                 addRoot: function (instance) {
@@ -1989,8 +1999,12 @@
                     treeName = "house" + houseId;
                     break;
 
-                default:
+                case "houses":
                     treeName = "houses";
+                    break;
+
+                default:
+                    treeName = false;
                     break;
             }
 
@@ -3065,6 +3079,14 @@
                 },
             });
 
+            let mc;
+
+            if (config.camTree) {
+                mc = function (cameraId) {
+                    modules.addresses.houses.modifyCamera(cameraId, houseId);
+                }
+            }
+
             if (modules.addresses.houses.meta.cameras === false) {
                 $("#altForm").show();
             } else {
@@ -3080,9 +3102,7 @@
                             },
                         },
                     },
-                    edit: cameraId => {
-                        modules.addresses.houses.modifyCamera(cameraId, houseId);
-                    },
+                    edit: mc,
                     columns: [
                         {
                             title: i18n("addresses.cameraIdList"),
