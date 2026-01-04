@@ -67,7 +67,7 @@
                     h += `
                         <li class="nav-item" title="${escapeHTML(title)}" style="margin-top: 3px;">
                             <a href="?#tt&project=${modules.tt.meta.favoriteFilters[i].project}&filter=${modules.tt.meta.favoriteFilters[i].filter}" class="nav-link" onclick="xblur(); lStore('ttIssueFilter:${modules.tt.meta.favoriteFilters[i].project}', '${modules.tt.meta.favoriteFilters[i].filter}'); return true;">
-                                <i class="nav-icon fa-fw ${modules.tt.meta.favoriteFilters[i].icon} text-${modules.tt.meta.favoriteFilters[i].color}"></i>
+                                <i class="nav-icon fa-fw ${modules.tt.meta.favoriteFilters[i].icon} ${(modules.tt.meta.favoriteFilters[i].color.substring(0, 5) == "text-") ? modules.tt.meta.favoriteFilters[i].color : ("text-" + modules.tt.meta.favoriteFilters[i].color)}"></i>
                                 <p class="text-nowrap">${title}</p>
                             </a>
                         </li>
