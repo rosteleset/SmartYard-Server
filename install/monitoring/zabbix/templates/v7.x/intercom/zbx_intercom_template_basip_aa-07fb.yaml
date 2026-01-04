@@ -1,0 +1,24 @@
+zabbix_export:
+  version: '7.2'
+  template_groups:
+    - uuid: 6207024e7115434a8abfd202bf7f283a
+      name: Templates/Intercoms
+  templates:
+    - uuid: 0b2093e5f8354884a4a59ee9a24b7332
+      template: Intercom_BASIP_AA-07FB
+      name: 'Intercom | BASIP AA-07FB by HTTP'
+      description: 'Intercom BASIP AA-07FB by HTTP panel monitoring'
+      vendor:
+        name: SmartYard
+        version: 2026-01
+      templates:
+        - name: 'ICMP Ping'
+      groups:
+        - name: Templates/Intercoms
+      macros:
+        - macro: '{$HOST_PASSWORD}'
+          value: admin
+          description: 'WEB GUI | API password, default value admin'
+        - macro: '{$HOST_USERNAME}'
+          value: admin
+          description: 'WEB GUI | API username, default value admin'
