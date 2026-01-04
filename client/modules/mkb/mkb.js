@@ -130,14 +130,14 @@
         $(".btn-min-max").off("click").on("click", function () {
             let id = $(this).attr("data-card-id");
 
-            if ($(`.btn-min-max[data-card-id="${id}"]`).children().first().hasClass("fa-window-minimize")) {
-                $(`.btn-min-max[data-card-id="${id}"]`).children().first().removeClass("fa-window-minimize").addClass("fa-window-restore").attr("title", i18n("mkb.restore"));
+            if ($(`.btn-min-max[data-card-id="${id}"]`).children().first().hasClass("fa-chevron-down")) {
+                $(`.btn-min-max[data-card-id="${id}"]`).children().first().removeClass("fas fa-chevron-down").addClass("far fa-window-restore").attr("title", i18n("mkb.restore"));
                 $(`.subtasks-progress[data-card-id="${id}"]`).removeClass("pt-1").addClass("pt-3").removeClass("pointer");
                 $(`.hr-subject[data-card-id="${id}"]`).hide();
                 $(`.min-max[data-card-id="${id}"]`).hide();
                 $(`.subtasks[data-card-id="${id}"]`).hide();
             } else {
-                $(`.btn-min-max[data-card-id="${id}"]`).children().first().addClass("fa-window-minimize").removeClass("fa-window-restore").attr("title", i18n("mkb.minimize"));
+                $(`.btn-min-max[data-card-id="${id}"]`).children().first().addClass("fas fa-chevron-down").removeClass("far fa-window-restore").attr("title", i18n("mkb.minimize"));
                 let pb = $(`.subtasks-progress[data-card-id="${id}"]`);
                 if (pb.attr("data-minimized") == "true") {
                     $(`.subtasks[data-card-id="${id}"]`).hide();
@@ -328,7 +328,7 @@
                         <span class="btn btn-tool" title="${i18n("mkb.attachments")}"><i class="fas fa-fw fa-paperclip"></i></span>
                         <span class="btn btn-tool" title="${i18n("mkb.comments")}"><i class="far fa-fw fa-comments"></i></span>
                         <span class="btn btn-tool card-edit" title="${i18n("mkb.edit")}" data-card-id="${card.id}"><i class="fas fa-fw fa-edit"></i></span>
-                        <span class="btn btn-tool btn-min-max" title="${card.cardMinimized ? i18n("mkb.restore") : i18n("mkb.minimize")}" data-card-id="${card.id}"><i class="fas fa-fw fa-${card.cardMinimized ? "window-restore" : "window-minimize"}"></i></span>
+                        <span class="btn btn-tool btn-min-max" title="${card.cardMinimized ? i18n("mkb.restore") : i18n("mkb.minimize")}" data-card-id="${card.id}"><i class="fa-fw ${card.cardMinimized ? "far fa-window-restore" : "fas fa-chevron-down"}"></i></span>
                     </div>
                 </div>
                 <div class="card-body">

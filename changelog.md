@@ -8,6 +8,7 @@
 ```
 
 ```diff
++ camTree settings for webUI, camTree = false - off, "houses" - common for all houses, "perHouse" - per house
 + devices (cameras and domophones) tree
 + persistent tables filters in webUI
 + sudo-like administrative mode in webUI
