@@ -2310,7 +2310,8 @@
                                                         leftSide: r.leftSide,
                                                     }).
                                                     done(() => {
-                                                        window.location.href = refreshUrl();
+                                                        // need to fully reload page to (re)load bookmarks
+                                                        window.location.reload();
                                                     }).
                                                     fail(FAIL).
                                                     fail(loadingDone);
@@ -2321,7 +2322,8 @@
                                                 loadingStart();
                                                 DELETE("tt", "favoriteFilter", filterName).
                                                 done(() => {
-                                                    window.location.href = refreshUrl();
+                                                    // need to fully reload page to (re)load bookmarks
+                                                    window.location.reload();
                                                 }).
                                                 fail(FAIL).
                                                 fail(loadingDone);
