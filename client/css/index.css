@@ -1034,6 +1034,7 @@ code {
 .bg-black {
   background-color: black ! important;
 }
+
 .dropdown-item:focus, .dropdown-item:hover {
   color: #ffffff ! important;
   background-color: #007bff ! important;

@@ -130,14 +130,14 @@
         $(".btn-min-max").off("click").on("click", function () {
             let id = $(this).attr("data-card-id");
 
-            if ($(`.btn-min-max[data-card-id="${id}"]`).children().first().hasClass("fa-chevron-down")) {
-                $(`.btn-min-max[data-card-id="${id}"]`).children().first().removeClass("fas fa-chevron-down").addClass("far fa-window-restore").attr("title", i18n("mkb.restore"));
+            if ($(`.btn-min-max[data-card-id="${id}"]`).children().first().hasClass("fa-compress-arrows-alt")) {
+                $(`.btn-min-max[data-card-id="${id}"]`).children().first().removeClass("fa-compress-arrows-alt").addClass("fa-expand-arrows-alt").attr("title", i18n("mkb.restore"));
                 $(`.subtasks-progress[data-card-id="${id}"]`).removeClass("pt-1").addClass("pt-3").removeClass("pointer");
                 $(`.hr-subject[data-card-id="${id}"]`).hide();
                 $(`.min-max[data-card-id="${id}"]`).hide();
                 $(`.subtasks[data-card-id="${id}"]`).hide();
             } else {
-                $(`.btn-min-max[data-card-id="${id}"]`).children().first().addClass("fas fa-chevron-down").removeClass("far fa-window-restore").attr("title", i18n("mkb.minimize"));
+                $(`.btn-min-max[data-card-id="${id}"]`).children().first().addClass("fa-compress-arrows-alt").removeClass("fa-expand-arrows-alt").attr("title", i18n("mkb.minimize"));
                 let pb = $(`.subtasks-progress[data-card-id="${id}"]`);
                 if (pb.attr("data-minimized") == "true") {
                     $(`.subtasks[data-card-id="${id}"]`).hide();
@@ -263,7 +263,7 @@
 
             for (let i in card.subtasks) {
                 s += `
-                    <div class="custom-control custom-checkbox"">
+                    <div class="custom-control custom-checkbox">
                         <input id="card-subtask-${card.id}-${i}" class="subtask-checkbox custom-control-input custom-control-input-primary custom-control-input-outline" type="checkbox"${card.subtasks[i].checked ? " checked " : " " }data-card-id=${card.id}>
                         <label for="card-subtask-${card.id}-${i}" class="pl-1 custom-control-label noselect text-no-bold">${$.trim(escapeHTML(card.subtasks[i].text))}</label>
                     </div>
@@ -317,7 +317,7 @@
         }
 
         if (t) {
-            t = `<div class="mt-2" data-card-id="${card.id}" style="font-size: 75%;">${t}</div>`;
+            t = `<div class="mt-2 min-max" data-card-id="${card.id}" style="font-size: 75%; ${card.cardMinimized ? "display: none;" : ""}">${t}</div>`;
         }
 
         let h = `
@@ -328,7 +328,7 @@
                         <span class="btn btn-tool" title="${i18n("mkb.attachments")}"><i class="fas fa-fw fa-paperclip"></i></span>
                         <span class="btn btn-tool" title="${i18n("mkb.comments")}"><i class="far fa-fw fa-comments"></i></span>
                         <span class="btn btn-tool card-edit" title="${i18n("mkb.edit")}" data-card-id="${card.id}"><i class="fas fa-fw fa-edit"></i></span>
-                        <span class="btn btn-tool btn-min-max" title="${card.cardMinimized ? i18n("mkb.restore") : i18n("mkb.minimize")}" data-card-id="${card.id}"><i class="fa-fw ${card.cardMinimized ? "far fa-window-restore" : "fas fa-chevron-down"}"></i></span>
+                        <span class="btn btn-tool btn-min-max" title="${card.cardMinimized ? i18n("mkb.restore") : i18n("mkb.minimize")}" data-card-id="${card.id}"><i class="fas fa-fw ${card.cardMinimized ? "fa-expand-arrows-alt" : "fa-compress-arrows-alt"}"></i></span>
                     </div>
                 </div>
                 <div class="card-body">
@@ -425,6 +425,11 @@
                                     cardMinimized: true,
                                     subtasksMinimized: true,
                                     color: "info",
+                                    tags: [
+                                        "1",
+                                        "2",
+                                        "3",
+                                    ],
                                     subtasks: [
                                         {
                                             text: "1",
