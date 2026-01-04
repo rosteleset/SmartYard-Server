@@ -39,7 +39,7 @@
                         h += `
                             <li class="nav-item" title="${escapeHTML(r.favorites[i].title)}" style="margin-top: 3px;">
                                     <a href="${url}" class="nav-link" onclick="xblur(); return true;">
-                                    <i class="nav-icon fa-fw ${r.favorites[i].icon} text-${r.favorites[i].color}"></i>
+                                    <i class="nav-icon fa-fw ${r.favorites[i].icon} ${(r.favorites[i].color.substring(0, 5) == "text-") ? r.favorites[i].color : ("text-" + r.favorites[i].color)}"></i>
                                     <p class="text-nowrap">${escapeHTML(r.favorites[i].title)}</p>
                                 </a>
                             </li>
@@ -99,7 +99,7 @@
                     break;
                 }
             }
-        }
+        } else
         if (object == "city") {
             for (let i in modules.addresses.meta.cities) {
                 if (modules.addresses.meta.cities[i]["cityId"] == id) {
@@ -154,7 +154,8 @@
                         color: r.color,
                     }).
                     done(() => {
-                        window.location.href = refreshUrl();
+                        // need to fully reload page to (re)load bookmarks
+                        window.location.reload();
                     }).
                     fail(FAIL).
                     fail(loadingDone);
@@ -168,7 +169,8 @@
                     id: id,
                 }).
                 done(() => {
-                    window.location.href = refreshUrl();
+                    // need to fully reload page to (re)load bookmarks
+                    window.location.reload();
                 }).
                 fail(FAIL).
                 fail(loadingDone);
