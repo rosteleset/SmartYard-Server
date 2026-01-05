@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {post} /api/tt/catalog get catalog for creation subIssue
+     * @api {post} /api/tt/catalog get catalog for creation issue
      *
      * @apiVersion 1.0.0
      *
@@ -34,9 +34,9 @@
 
                 if ($workflow) {
                     $w = loadBackend("tt")->loadWorkflow($workflow);
-                    if ($w) {
-                        $catalog = $w->getCatalogByIssue($params["issue"]);
 
+                    if ($w) {
+                        $catalog = $w->getWorkflowCatalog(@$params["issue"]);
                         return api::ANSWER($catalog, ($catalog !== false) ? "catalog" : "notAcceptable");
                     }
                 }

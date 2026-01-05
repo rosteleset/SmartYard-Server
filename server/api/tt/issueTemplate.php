@@ -12,6 +12,7 @@
      *
      * @apiParam {String} workflowId
      * @apiQuery {String} catalog
+     * @apiQuery {String} [parent]
      *
      * @apiSuccess {Object} template
      */
@@ -35,9 +36,9 @@
 
                 if ($workflow) {
                     $w = loadBackend("tt")->loadWorkflow($workflow);
-                    if ($w) {
-                        $template = $w->getNewIssueTemplate($params["catalog"]);
 
+                    if ($w) {
+                        $template = $w->getNewIssueTemplate($params["catalog"], @$params["parent"]);
                         return api::ANSWER($template, ($template !== false) ? "template" : "notAcceptable");
                     }
                 }

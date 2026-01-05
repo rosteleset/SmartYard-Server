@@ -191,7 +191,7 @@
                     lStore("ttWorkflow", result.workflow);
                 }
                 loadingStart();
-                window.location.href = navigateUrl("tt.createIssue", { project: result.project, workflow: result.workflow, catalog: result.catalog, parent: (!!parent) ? encodeURIComponent(parent["issueId"]) : "" });
+                navigateUrl("tt.createIssue", { project: result.project, workflow: result.workflow, catalog: result.catalog, parent: !!parent ? parent["issueId"] : false }, { run: true });
                 // modules.tt.createIssueForm(result.project, result.workflow, result.catalog, (!!parent) ? encodeURIComponent(parent["issueId"]) : "");
             },
         });
@@ -209,6 +209,7 @@
             QUERY("tt", "issueTemplate", {
                 _id: workflow,
                 catalog: catalog,
+                parent: parent,
             }, true).
             done(response => {
                 document.title = i18n("windowTitle") + " :: " + i18n("tt.createIssue");
