@@ -262,15 +262,15 @@
         let s = '';
 
         if (card.subtasks) {
-            s += `<hr class="hr-subject" data-card-id="${card.id}" style="${card.subtasksMinimized ? "display: none;" : ""}" /><div id="subtasks-${card.id}" class="subtasks pb-2" data-card-id="${card.id}" style="${card.subtasksMinimized ? "display: none;" : ""}">`;
+            s += `<hr class="hr-subject" data-card-id="${card._id}" style="${card.subtasksMinimized ? "display: none;" : ""}" /><div id="subtasks-${card._id}" class="subtasks pb-2" data-card-id="${card._id}" style="${card.subtasksMinimized ? "display: none;" : ""}">`;
 
             let p = 0;
 
             for (let i in card.subtasks) {
                 s += `
                     <div class="custom-control custom-checkbox">
-                        <input id="card-subtask-${card.id}-${i}" class="subtask-checkbox custom-control-input custom-control-input-primary custom-control-input-outline" type="checkbox"${card.subtasks[i].checked ? " checked " : " " }data-card-id=${card.id}>
-                        <label for="card-subtask-${card.id}-${i}" class="pl-1 custom-control-label noselect text-no-bold">${$.trim(escapeHTML(card.subtasks[i].text))}</label>
+                        <input id="card-subtask-${card._id}-${i}" class="subtask-checkbox custom-control-input custom-control-input-primary custom-control-input-outline" type="checkbox"${card.subtasks[i].checked ? " checked " : " " }data-card-id=${card._id}>
+                        <label for="card-subtask-${card._id}-${i}" class="pl-1 custom-control-label noselect text-no-bold">${$.trim(escapeHTML(card.subtasks[i].text))}</label>
                     </div>
                 `;
 
@@ -281,15 +281,15 @@
 
             p = Math.round((p / card.subtasks.length) * 1000) / 10;
 
-            s += `</div><div class="${card.cardMinimized ? "" : "pointer"} subtasks-progress ${card.subtasksMinimized ? "pt-3" : "pt-1"} pb-1" data-card-id="${card.id}" data-minimized=${card.subtasksMinimized ? "true" : "false"} title="${p}%"><div class="progress"><div class="progress-bar progress-bar-danger progress-bar-striped progressbar-value" role="progressbar" style="width: ${p}%" aria-valuenow="${p}" aria-valuemin="0" aria-valuemax="100" data-card-id="${card.id}">${p}%</div></div></div>`;
+            s += `</div><div class="${card.cardMinimized ? "" : "pointer"} subtasks-progress ${card.subtasksMinimized ? "pt-3" : "pt-1"} pb-1" data-card-id="${card._id}" data-minimized=${card.subtasksMinimized ? "true" : "false"} title="${p}%"><div class="progress"><div class="progress-bar progress-bar-danger progress-bar-striped progressbar-value" role="progressbar" style="width: ${p}%" aria-valuenow="${p}" aria-valuemin="0" aria-valuemax="100" data-card-id="${card._id}">${p}%</div></div></div>`;
         }
 
         let b = '';
 
         if (card.body) {
             b = `
-                <hr class="min-max" data-card-id="${card.id}" style="${card.cardMinimized ? "display: none;" : ""}" />
-                <div class="min-max kanban-card-body" data-card-id="${card.id}" style="${card.cardMinimized ? "display: none;" : ""}">${modules.mkb.mdr(card.body)}</div>
+                <hr class="min-max" data-card-id="${card._id}" style="${card.cardMinimized ? "display: none;" : ""}" />
+                <div class="min-max kanban-card-body" data-card-id="${card._id}" style="${card.cardMinimized ? "display: none;" : ""}">${modules.mkb.mdr(card.body)}</div>
             `;
         }
 
@@ -298,11 +298,11 @@
         if (card.date) {
             let d = Math.ceil((card.date - ((new Date()).getTime() / 1000)) / (60 * 60 * 24));
             c = `
-                <span class="dropdown card-calendar" data-card-id="${card.id}" data-date="${card.date}" title="${i18n("mkb.date")}">
+                <span class="dropdown card-calendar" data-card-id="${card._id}" data-date="${card.date}" title="${i18n("mkb.date")}">
                     <span class="btn btn-tool ${(d >= 0) ? "text-success" : "text-danger"} dropdown-toggle dropdown-toggle-no-icon pb-0" data-toggle="dropdown" aria-expanded="false" data-flip="true" style="margin-bottom: -8px;">
                         ${Math.abs(d)} ${i18n("mkb.days")}
                         <ul class="dropdown-menu">
-                            <li id="dropdown-calendar-${card.id}"></li>
+                            <li id="dropdown-calendar-${card._id}"></li>
                         </ul>
                     </span>
                 </span>
@@ -322,18 +322,18 @@
         }
 
         if (t) {
-            t = `<div class="mt-2 min-max" data-card-id="${card.id}" style="font-size: 75%; ${card.cardMinimized ? "display: none;" : ""}">${t}</div>`;
+            t = `<div class="mt-2 min-max" data-card-id="${card._id}" style="font-size: 75%; ${card.cardMinimized ? "display: none;" : ""}">${t}</div>`;
         }
 
         let h = `
-            <div id="card-${card.id}" class="kanban-card card card-${card.color} card-outline">
+            <div id="card-${card._id}" class="kanban-card card card-${card.color} card-outline">
                 <div class="card-header card-handle pl-1 pr-3">
                     <h5 class="card-title">${c}</h5>
                     <div class="card-tools">
                         <span class="btn btn-tool" title="${i18n("mkb.attachments")}"><i class="fas fa-fw fa-paperclip"></i></span>
                         <span class="btn btn-tool" title="${i18n("mkb.comments")}"><i class="far fa-fw fa-comments"></i></span>
-                        <span class="btn btn-tool card-edit" title="${i18n("mkb.edit")}" data-card-id="${card.id}"><i class="fas fa-fw fa-edit"></i></span>
-                        <span class="btn btn-tool btn-min-max" title="${card.cardMinimized ? i18n("mkb.restore") : i18n("mkb.minimize")}" data-card-id="${card.id}"><i class="fas fa-fw ${card.cardMinimized ? "fa-expand-arrows-alt" : "fa-compress-arrows-alt"}"></i></span>
+                        <span class="btn btn-tool card-edit" title="${i18n("mkb.edit")}" data-card-id="${card._id}"><i class="fas fa-fw fa-edit"></i></span>
+                        <span class="btn btn-tool btn-min-max" title="${card.cardMinimized ? i18n("mkb.restore") : i18n("mkb.minimize")}" data-card-id="${card._id}"><i class="fas fa-fw ${card.cardMinimized ? "fa-expand-arrows-alt" : "fa-compress-arrows-alt"}"></i></span>
                     </div>
                 </div>
                 <div class="card-body">
@@ -371,6 +371,96 @@
         return $.trim(h);
     },
 
+/*
+    desk: {
+        _id: md5(guid()),
+        title: 'first desk',
+        columns: [
+            {
+                _id: md5(guid()),
+                title: 'first column',
+                color: 'purple',
+                cards: [
+                    {
+                        _id: md5(guid()),
+                        date: 1765843200,
+                        subject: 'subject',
+                        body: 'lorm ipsum....',
+                        cardMinimized: true,
+                        subtasksMinimized: true,
+                        color: "info",
+                        tags: [
+                            "1",
+                            "2",
+                            "3",
+                        ],
+                        subtasks: [
+                            {
+                                text: "1",
+                                checked: true,
+                            },
+                            {
+                                text: "2",
+                            },
+                        ],
+                    },
+                    {
+                        _id: md5(guid()),
+                        date: 1766040807,
+                        subject: 'subject',
+                        body: '## Ilorm ipsum....\n\ntoday',
+                        color: "danger",
+                        tags: [
+                            "Violet",
+                            "2"
+                        ],
+                    },
+                ],
+            },
+            {
+                _id: md5(guid()),
+                title: 'second column',
+                color: 'red',
+                cards: [
+                    {
+                        _id: md5(guid()),
+                        date: 1766040807,
+                        subject: 'subject',
+                        body: '## IlQ\n\n1\n2\n3\n4\n\n5\n6\n7',
+                        color: "purple",
+                        subtasks: [
+                            {
+                                text: "1",
+                            },
+                            {
+                                text: "2",
+                                checked: true,
+                            },
+                            {
+                                text: "3",
+                                checked: true,
+                            },
+                            {
+                                text: "4",
+                            },
+                        ],
+                        tags: [
+                            "tag1",
+                            "tag2",
+                            "tag3",
+                            "tag4",
+                            "tag5",
+                            "tag6",
+                            "tag7",
+                            "tag8",
+                        ],
+                    },
+                ],
+            },
+        ],
+    };
+*/
+
     renderDesk: function () {
         loadingStart();
 
@@ -401,158 +491,35 @@
 
             GET("mkb", "desk", desk, true).
             done(r2 => {
-                let h = `
-                    <div class="content-wrapper kanban pt-3" style="margin-left: 0px!important; margin-top: 0px!important;">
-                        <section class="content pb-3 pl-0 pr-0">
-                            <div id="desk" class="h-100 kanban-desk" style="display: flex;"></div>
-                        </section>
-                    </div>
-                `;
+                GET("mkb", "cards", true).
+                done(r3 => {
+                    let h = `
+                        <div class="content-wrapper kanban pt-3" style="margin-left: 0px!important; margin-top: 0px!important;">
+                            <section class="content pb-3 pl-0 pr-0">
+                                <div id="desk" class="h-100 kanban-desk" style="display: flex;"></div>
+                            </section>
+                        </div>
+                    `;
 
-                $("#mainForm").html($.trim(h));
+                    $("#mainForm").html($.trim(h));
 
-                h = '';
+                    h = '';
 
-                let desk = {
-                    title: 'first desk',
-                    columns: [
-                        {
-                            id: md5(guid()),
-                            title: 'first column',
-                            color: 'purple',
-                            cards: [
-                                {
-                                    id: md5(guid()),
-                                    date: 1765843200,
-                                    subject: 'subject',
-                                    body: 'lorm ipsum....',
-                                    cardMinimized: true,
-                                    subtasksMinimized: true,
-                                    color: "info",
-                                    tags: [
-                                        "1",
-                                        "2",
-                                        "3",
-                                    ],
-                                    subtasks: [
-                                        {
-                                            text: "1",
-                                            checked: true,
-                                        },
-                                        {
-                                            text: "2 lskdjfhlgskjdfhgl ksdhfgl hdf lkshg kdfhg kfhf k ksdfh gkdfh ksjhjdfg ksjdhf ksdfh g",
-                                        },
-                                        {
-                                            text: "3",
-                                        },
-                                        {
-                                            text: "4",
-                                        },
-                                        {
-                                            text: "5",
-                                        },
-                                        {
-                                            text: "6",
-                                        },
-                                        {
-                                            text: "7",
-                                        },
-                                        {
-                                            text: "8",
-                                        },
-                                        {
-                                            text: "9",
-                                        },
-                                        {
-                                            text: "a",
-                                        },
-                                        {
-                                            text: "b",
-                                        },
-                                        {
-                                            text: "c",
-                                        },
-                                        {
-                                            text: "d",
-                                        },
-                                        {
-                                            text: "e",
-                                        },
-                                        {
-                                            text: "f",
-                                        },
-                                    ],
-                                },
-                                {
-                                    id: md5(guid()),
-                                    date: 1766040807,
-                                    subject: 'subject',
-                                    body: '## Ilorm ipsum....\n\ntoday',
-                                    color: "danger",
-                                    tags: [
-                                        "Violet",
-                                        "2"
-                                    ],
-                                },
-                            ],
-                        },
-                        {
-                            id: md5(guid()),
-                            title: 'second column',
-                            color: 'red',
-                            cards: [
-                                {
-                                    id: md5(guid()),
-                                    date: 1766040807,
-                                    subject: 'subject',
-                                    body: '## IlQ\n\n1\n2\n3\n4\n\n5\n6\n7',
-                                    color: "purple",
-                                    subtasks: [
-                                        {
-                                            text: "1",
-                                        },
-                                        {
-                                            text: "2",
-                                            checked: true,
-                                        },
-                                        {
-                                            text: "3",
-                                            checked: true,
-                                        },
-                                        {
-                                            text: "4",
-                                        },
-                                    ],
-                                    tags: [
-                                        "tag1",
-                                        "tag2",
-                                        "tag3",
-                                        "tag4",
-                                        "tag5",
-                                        "tag6",
-                                        "tag7",
-                                        "tag8",
-                                    ],
-                                },
-                            ],
-                        },
-                    ],
-                };
-
-                if (desk.columns) {
-                    for (let i in desk.columns) {
-                        h += modules.mkb.renderColumn(desk.columns[i]);
+                    if (desk.columns) {
+                        for (let i in desk.columns) {
+                            h += modules.mkb.renderColumn(desk.columns[i]);
+                        }
                     }
-                }
 
-                $("#desk").html($.trim(h));
+                    $("#desk").html($.trim(h));
 
-                modules.mkb.assignHandlers();
+                    modules.mkb.assignHandlers();
 
-                loadingDone();
+                    loadingDone();
+                }).
+                fail(FAILPAGE);
             }).
-            fail(FAIL).
-            fail(loadingDone);
+            fail(FAILPAGE);
         }).
         fail(FAILPAGE);
     },

@@ -54,10 +54,12 @@
             abstract public function deleteDesk($id);
 
             /**
+             * $query string (desk) or array (cards list)
+             *
              * @return mixed
              */
 
-            abstract public function getCards($desk = false);
+            abstract public function getCards($query);
 
             /**
              * $id card uuid

@@ -48,7 +48,7 @@
                 $mkb = loadBackend("mkb");
 
                 if ($mkb) {
-                    $cards = $mkb->getCards(@params["_id"]);
+                    $cards = $mkb->getCards(@$params["_id"]);
                 }
 
                 return api::ANSWER($mkb, ($mkb !== false) ? "cards" : false);
@@ -58,7 +58,7 @@
                 $mkb = loadBackend("mkb");
 
                 if ($mkb) {
-                    $cards = $mkb->getCards(@params["cards"]);
+                    $cards = $mkb->getCards(@$params["cards"]);
                 }
 
                 return api::ANSWER($mkb, ($mkb !== false) ? "cards" : false);
