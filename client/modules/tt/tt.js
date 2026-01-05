@@ -30,17 +30,13 @@
                 leftSide("fas fa-fw fa-tasks", i18n("tt.tt"), "?#tt.settings", "tt");
                 this.menuItem = false;
             } else {
-                if (AVAIL("tt", "issue", "POST")) {
-                    leftSideClick("far fa-fw fa-plus-square", i18n("tt.createIssue"), "tt", () => {
-                        modules.tt.issue.createIssue($("#ttProjectSelect").val());
-                    });
-                }
                 this.menuItem = leftSide("fas fa-fw fa-tasks", i18n("tt.tt"), "?#tt", "tt");
             }
             GET("tt", "tt", false, true).
             done(modules.tt.tt).
             done(() => {
                 loadSubModules("tt", [
+                    "createIssue",
                     "issue",
                     "settings",
                     "workspaces",
@@ -50,6 +46,7 @@
             fail(FAIL);
         } else {
             loadSubModules("tt", [
+                "createIssue",
                 "issue",
                 "settings",
                 "workspaces",

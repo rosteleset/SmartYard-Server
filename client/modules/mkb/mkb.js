@@ -3,12 +3,16 @@
     md: false,
     desks: [],
     calendars: {},
+    subModules: [
+        "columnTable",
+    ],
 
     init: function () {
         if (parseInt(myself.uid) && AVAIL("mkb")) {
             this.menuItem = leftSide("fas fa-fw fa-layer-group", i18n("mkb.mkb"), "?#mkb", "productivity");
         }
-        moduleLoaded("mkb", this);
+
+        loadSubModules("mkb", JSON.parse(JSON.stringify(this.subModules)), this);
     },
 
     allLoaded: function () {
@@ -524,7 +528,7 @@
         fail(FAILPAGE);
     },
 
-    route: function () {
+    route: function (params) {
         subTop();
 
         $("#altForm").hide();
