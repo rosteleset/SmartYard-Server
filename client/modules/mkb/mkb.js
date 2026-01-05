@@ -469,7 +469,7 @@
         loadingStart();
 
         GET("mkb", "desks", false, true).
-        done(r1 => {
+        done(desks => {
             let desk = lStore("mkbDesk");
 
             let h = '';
@@ -493,35 +493,31 @@
             desk = $("#mkbDesks").val();
             lStore("mkbDesk", desk);
 
-            GET("mkb", "desk", desk, true).
-            done(r2 => {
-                GET("mkb", "cards", true).
-                done(r3 => {
-                    let h = `
-                        <div class="content-wrapper kanban pt-3" style="margin-left: 0px!important; margin-top: 0px!important;">
-                            <section class="content pb-3 pl-0 pr-0">
-                                <div id="desk" class="h-100 kanban-desk" style="display: flex;"></div>
-                            </section>
-                        </div>
-                    `;
+            POST("mkb", "cards", false, cards).
+            done(cards => {
+                let h = `
+                    <div class="content-wrapper kanban pt-3" style="margin-left: 0px!important; margin-top: 0px!important;">
+                        <section class="content pb-3 pl-0 pr-0">
+                            <div id="desk" class="h-100 kanban-desk" style="display: flex;"></div>
+                        </section>
+                    </div>
+                `;
 
-                    $("#mainForm").html($.trim(h));
+                $("#mainForm").html($.trim(h));
 
-                    h = '';
+                h = '';
 
-                    if (desk.columns) {
-                        for (let i in desk.columns) {
-                            h += modules.mkb.renderColumn(desk.columns[i]);
-                        }
+                if (desk.columns) {
+                    for (let i in desk.columns) {
+                        h += modules.mkb.renderColumn(desk.columns[i]);
                     }
+                }
 
-                    $("#desk").html($.trim(h));
+                $("#desk").html($.trim(h));
 
-                    modules.mkb.assignHandlers();
+                modules.mkb.assignHandlers();
 
-                    loadingDone();
-                }).
-                fail(FAILPAGE);
+                loadingDone();
             }).
             fail(FAILPAGE);
         }).

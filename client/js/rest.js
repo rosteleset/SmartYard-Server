@@ -142,16 +142,16 @@ function GET(api, method, id, fresh) {
 /**
  * Sends an AJAX request to the specified API endpoint with authorization and language headers.
  *
- * @param {string} type - The HTTP request method (e.g., "GET", "POST", "PUT", "DELETE").
+ * @param {string} type - The HTTP request method (e.g., "POST", "PUT", "DELETE").
  * @param {string} api - The API resource name.
  * @param {string} method - The API method or action to call.
  * @param {string|number|boolean} [id] - Optional identifier to append to the endpoint URL.
- * @param {Object} [query] - Optional data to send with the request (will be JSON-stringified).
+ * @param {Object} [data] - Optional data parameters to include in the request (will be JSON-stringified).
  *
  * @returns {jqXHR} A jQuery jqXHR object representing the AJAX request.
  */
 
-function AJAX(type, api, method, id, query) {
+function AJAX(type, api, method, id, data) {
     let l = lStore("_lang");
     if (!l) {
         l = config.defaultLanguage;
@@ -167,7 +167,7 @@ function AJAX(type, api, method, id, query) {
         },
         type: type,
         contentType: "json",
-        data: query?JSON.stringify(query):null,
+        data: data ? JSON.stringify(data) : null,
     });
 }
 
@@ -177,13 +177,13 @@ function AJAX(type, api, method, id, query) {
  * @param {string} api - The API endpoint to send the request to.
  * @param {string} method - The method or action to perform.
  * @param {string|number} id - The identifier for the resource.
- * @param {Object} query - The query parameters or data to send with the request.
+ * @param {Object} [data] - Optional data parameters to include in the request.
  *
  * @returns {Promise<any>} The result of the AJAX request.
  */
 
-function POST(api, method, id, query) {
-    return AJAX(arguments.callee.name.toString(), api, method, id, query);
+function POST(api, method, id, data) {
+    return AJAX(arguments.callee.name.toString(), api, method, id, data);
 }
 
 /**
@@ -192,13 +192,13 @@ function POST(api, method, id, query) {
  * @param {string} api - The API endpoint to send the request to.
  * @param {string} method - The method or resource to be accessed or modified.
  * @param {string|number} id - The identifier for the resource.
- * @param {Object} query - The query parameters or data to be sent with the request.
+ * @param {Object} [data] - Optional data parameters to include in the request.
  *
  * @returns {*} The result of the AJAX call.
  */
 
-function PUT(api, method, id, query) {
-    return AJAX(arguments.callee.name.toString(), api, method, id, query);
+function PUT(api, method, id, data) {
+    return AJAX(arguments.callee.name.toString(), api, method, id, data);
 }
 
 /**
@@ -207,11 +207,11 @@ function PUT(api, method, id, query) {
  * @param {string} api - The base API URL or endpoint.
  * @param {string} method - The specific API method or resource to target.
  * @param {string|number} id - The identifier for the resource to delete.
- * @param {Object} [query] - Optional query parameters to include in the request.
+ * @param {Object} [data] - Optional data parameters to include in the request.
  *
  * @returns {Promise<any>} The result of the AJAX call.
  */
 
-function DELETE(api, method, id, query) {
-    return AJAX(arguments.callee.name.toString(), api, method, id, query);
+function DELETE(api, method, id, data) {
+    return AJAX(arguments.callee.name.toString(), api, method, id, data);
 }

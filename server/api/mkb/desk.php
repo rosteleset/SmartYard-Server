@@ -1,21 +1,6 @@
 <?php
 
     /**
-     * @api {get} /api/mkb/desk/:deskId get desk
-     *
-     * @apiVersion 1.0.0
-     *
-     * @apiName getDesk
-     * @apiGroup mkb
-     *
-     * @apiHeader {String} Authorization authentication token
-     *
-     * @apiParam {String} deskId deskId
-     *
-     * @apiSuccess {Object} desk
-     */
-
-    /**
      * @api {post} /api/mkb/desk add desk
      *
      * @apiVersion 1.0.0
@@ -121,7 +106,6 @@
 
                 if ($mkb) {
                     return [
-                        "GET" => "#same(mkb,cards,GET)",
                         "POST" => "#same(mkb,cards,GET)",
                         "PUT" => "#same(mkb,cards,GET)",
                         "DELETE" => "#same(mkb,cards,GET)",

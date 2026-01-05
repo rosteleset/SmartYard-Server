@@ -21,14 +21,6 @@
             abstract public function getDesks();
 
             /**
-             * $id desk uuid
-             *
-             * @return mixed
-             */
-
-            abstract public function getDesk($id);
-
-            /**
              * $desk desk
              *
              * @return mixed
@@ -37,13 +29,12 @@
             abstract public function addDesk($desk);
 
             /**
-             * $id desk uuid
              * $desk desk
              *
              * @return mixed
              */
 
-            abstract public function modifyDesk($id, $desk);
+            abstract public function modifyDesk($desk);
 
             /**
              * $id desk uuid

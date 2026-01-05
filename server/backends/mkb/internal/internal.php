@@ -43,7 +43,7 @@
                 if (@$json["_id"]) {
                     $id = $json["_id"];
                     unset($json["_id"]);
-                    $this->mongo->$db->$login->replaceOne([ "_id" => new \MongoDB\BSON\ObjectID($id) ], $json, [ "upsert" => true ]);
+                    $id = $this->mongo->$db->$login->replaceOne([ "_id" => new \MongoDB\BSON\ObjectID($id) ], $json, [ "upsert" => true ]);
                 } else {
                     $id = object_to_array($this->mongo->$db->$login->insertOne($json)->getInsertedId())["oid"];
                 }
@@ -104,15 +104,9 @@
              */
 
             public function getDesks() {
-                return true;
-            }
-
-            /**
-             * @inheritDoc
-             */
-
-            public function getDesk($id) {
-                return true;
+                return $desks = $this->get([
+                    "type" => "desk",
+                ]);
             }
 
             /**
@@ -120,6 +114,18 @@
              */
 
             public function addDesk($desk) {
+                $desks = $this->getDesks();
+
+                foreach ($desks as $d) {
+                    if ($d["name"] == $desk["name"]) {
+                        return false;
+                    }
+                }
+
+                $desk["type"] = "desk";
+
+                $this->put($desk);
+
                 return true;
             }
 
@@ -127,8 +133,10 @@
              * @inheritDoc
              */
 
-            public function modifyDesk($id, $desk) {
-                return true;
+            public function modifyDesk($desk) {
+                $desk["type"] = "desk";
+
+                return $this->put($desk);
             }
 
             /**
@@ -136,7 +144,7 @@
              */
 
             public function deleteDesk($id) {
-                return true;
+                return $this->delete([ "type" => "desk", "_id" => $id ]);
             }
 
             /**
