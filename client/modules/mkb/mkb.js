@@ -493,6 +493,8 @@
             desk = $("#mkbDesks").val();
             lStore("mkbDesk", desk);
 
+            let cards = [];
+
             POST("mkb", "cards", false, cards).
             done(cards => {
                 let h = `

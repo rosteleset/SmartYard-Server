@@ -1,6 +1,5 @@
 ({
     init: function () {
-        console.log(1);
         moduleLoaded("mkb.columnTable", this);
     },
 
