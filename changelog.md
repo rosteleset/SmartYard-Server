@@ -8,6 +8,7 @@
 ```
 
 ```diff
+! backend tt type "mongo" renamed to "internal" (need modify server/config/config.json)
 + camTree settings for webUI, camTree = false - off, "houses" - common for all houses, "perHouse" - per house
 + devices (cameras and domophones) tree
 + persistent tables filters in webUI

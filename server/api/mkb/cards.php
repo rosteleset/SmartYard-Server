@@ -10,7 +10,22 @@
      *
      * @apiHeader {String} Authorization authentication token
      *
-     * @apiParam {String} [desk]
+     * @apiParam {String} desk
+     *
+     * @apiSuccess {Object[]} cards
+     */
+
+    /**
+     * @api {post} /api/mkb/cards get cards
+     *
+     * @apiVersion 1.0.0
+     *
+     * @apiName getCards
+     * @apiGroup mkb
+     *
+     * @apiHeader {String} Authorization authentication token
+     *
+     * @apiBody {String[]} cards
      *
      * @apiSuccess {Object[]} cards
      */
@@ -39,12 +54,23 @@
                 return api::ANSWER($mkb, ($mkb !== false) ? "cards" : false);
             }
 
+            public static function POST($params) {
+                $mkb = loadBackend("mkb");
+
+                if ($mkb) {
+                    $cards = $mkb->getCards(@params["cards"]);
+                }
+
+                return api::ANSWER($mkb, ($mkb !== false) ? "cards" : false);
+            }
+
             public static function index() {
                 $mkb = loadBackend("mkb");
 
                 if ($mkb) {
                     return [
                         "GET",
+                        "POST" => "#same(mkb,cards,GET)",
                     ];
                 } else {
                     return false;

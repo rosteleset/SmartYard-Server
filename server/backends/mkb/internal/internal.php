@@ -7,10 +7,10 @@
     namespace backends\mkb {
 
         /**
-         * mongo mkb class
+         * internal mkb class
          */
 
-        class mongo extends mkb {
+        class internal extends mkb {
 
             /**
              * @inheritDoc

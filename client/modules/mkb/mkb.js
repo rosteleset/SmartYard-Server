@@ -21,30 +21,6 @@
     },
 
     assignHandlers: function () {
-        $(".card-content").each(function () {
-            let col = $(this);
-            new Sortable(document.getElementById(col.attr("id")), {
-                handle: ".card-handle",
-                animation: 150,
-                group: "cols",
-                scroll: true,
-                forceAutoScrollFallback: true,
-                scrollSpeed: 25,
-
-                onEnd: e => {
-                    let s = $("#" + e.item.id).offset().top - $("#mainForm").offset().top - 8;
-                    if ($("html").scrollTop() > s) {
-                        $("html").scrollTo(s);
-                    }
-/*
-                    $(`#${e.to.id}`).children().each(function () {
-                        let el = $(this);
-                    });
-*/
-                },
-            });
-        });
-
         $(".subtasks").each(function () {
             let subtasks = $(this);
             new Sortable(document.getElementById(subtasks.attr("id")), {
@@ -61,9 +37,38 @@
             });
         });
 
+        $(".card-content").each(function () {
+            let col = $(this);
+            new Sortable(document.getElementById(col.attr("id")), {
+                handle: ".card-handle",
+                animation: 150,
+                group: "cols",
+                scroll: true,
+                forceAutoScrollFallback: true,
+                scrollSpeed: 25,
+
+                onEnd: e => {
+                    let s = $("#" + e.item.id).offset().top - $("#mainForm").offset().top - 8;
+                    if ($("html").scrollTop() > s) {
+                        $("html").scrollTo(s);
+                    }
+
+                    $(`#${e.to.id}`).children().each(function () {
+                        console.log($(this).attr("id"));
+                    });
+                },
+            });
+        });
+
         new Sortable(document.getElementById("desk"), {
             handle: ".col-handle",
             animation: 150,
+
+            onEnd: e => {
+                $("#desk").children().each(function () {
+                    console.log($(this).attr("id"));
+                });
+            },
         });
 
         $(".card-calendar").off("show.bs.dropdown").on("show.bs.dropdown", function () {
@@ -351,11 +356,10 @@
         }
 
         let h = `
-            <div id="card-${column.id}" class="card card-row card-${column.color} kanban-col">
+            <div id="column-${column.id}" class="card card-row card-${column.color} kanban-col">
                 <div class="card-header col-handle pl-3 pr-3">
                     <h3 class="card-title pt-1 text-bold">${$.trim(escapeHTML(column.title))}</h3>
                     <div class="card-tools" data-column-id="${column.id}">
-                        <span class="btn btn-tool"><i class="far fa-fw fa-clipboard"></i></span>
                         <span class="btn btn-tool card-add" title="${i18n("mkb.addCard")}"><i class="fas fa-fw fa-plus-circle"></i></span>
                         <span class="btn btn-tool column-edit" title="${i18n("mkb.edit")}"><i class="fas fa-fw fa-edit"></i></span>
                     </div>

@@ -273,8 +273,8 @@
         },
 
         "tt": {
-            "backend": "mongo",
-            // required extfs backend
+            "backend": "internal",
+            // for "attachments": "external" required extfs backend
             // "attachments": "external",
         },
 
