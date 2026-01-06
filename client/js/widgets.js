@@ -422,18 +422,12 @@ function leftSide(button, title, target, group, wisibleOnlyWhenActive) {
 
     let style;
 
-    if (mainSidebarFirst) {
-        style = "margin-top: 11px;"
-    } else {
-        style = "margin-top: 3px;";
-    }
-
     if (wisibleOnlyWhenActive && target !== "#" + route.split('.')[0]) {
         style += "display: none;";
     }
 
     $("#leftside-menu").append(`
-        <li id="${id}" class="nav-item${wisibleOnlyWhenActive?" wisibleOnlyWhenActive":""}" data-target="${target}" title="${escapeHTML(title)}" style="${style}">
+        <li id="${id}" class="leftsidebar-button nav-item${wisibleOnlyWhenActive?" wisibleOnlyWhenActive":""}" data-target="${target}" title="${escapeHTML(title)}" style="${style}">
             <a href="${target}" data-href="${target}" class="nav-link ${(target === "#" + (route ? route.split('.')[0] : "")) ? "active" : ""}">
                 <i class="${button} nav-icon"></i>
                 <p class="text-nowrap">${title}</p>
@@ -465,7 +459,7 @@ function leftSideClick(button, title, group, click) {
     }
 
     $("#leftside-menu").append(`
-        <li id="${id}" class="nav-item" title="${escapeHTML(title)}" style="${style}">
+        <li id="${id}" class="leftsidebar-button nav-item" title="${escapeHTML(title)}" style="${style}">
             <a class="nav-link" href="#" onclick="xblur(); return false;">
                 <i class="${button} nav-icon"></i>
                 <p class="text-nowrap">${title}</p>

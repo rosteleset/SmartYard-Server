@@ -3,7 +3,11 @@
 
     init: function () {
         this.menuItem = leftSide("fas fa-fw fa-info-circle", i18n("about.about"), "?#about", "about");
-        moduleLoaded("about", this);
+        if (AVAIL("server", "systemInfo")) {
+            loadSubModules("about", [ "systemInfo" ], this);
+        } else {
+            moduleLoaded("about", this);
+        }
     },
 
     route: function () {

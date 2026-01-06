@@ -1039,3 +1039,27 @@ code {
   color: #ffffff ! important;
   background-color: #007bff ! important;
 }
+
+.leftsidebar-button {
+  margin-top: 3px;
+}
+
+.leftsidebar-button:first-child {
+  margin-top: 11px ! important;
+}
+
+.rbt-grid-col:first-child {
+  padding-left: 0px ! important;
+}
+
+.rbt-grid-col:last-child {
+  padding-right: 0px ! important;
+}
+
+.rbt-acc-row {
+  margin-bottom: 0.25rem;
+}
+
+.rbt-acc-row:last-child {
+  margin-bottom: 0px ! important;
+}

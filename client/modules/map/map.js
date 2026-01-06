@@ -77,7 +77,7 @@
         document.title = i18n("windowTitle") + " :: " + i18n("map.map");
 
         $("#altForm").hide();
-        $("#mainForm").html(`<div id='mapContainer' style='width: 100%; height: ${height}px; border: solid thin #dee2e6;' class='mt-2 resizable'></div>`);
+        $("#mainForm").html(`<div id='mapContainer' style='width: 100%; height: ${height}px; border: solid thin #dee2e6; border-radius: .25rem' class='mt-2 resizable'></div>`);
 
         modules.map.map = L.map('mapContainer', { editable: true });
 

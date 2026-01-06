@@ -3,7 +3,7 @@
         if (AVAIL("tt", "issue", "POST")) {
             $("#" + leftSideClick("far fa-fw fa-plus-square", i18n("tt.createIssue"), "tt", () => {
                 modules.tt.createIssue.createIssue($("#ttProjectSelect").val());
-            })).after($("#" + modules.tt.menuItem).css("margin-top", "3px")).css("margin-top", "11px");
+            })).after($("#" + modules.tt.menuItem));
         }
         moduleLoaded("tt.createIssue", this);
     },
