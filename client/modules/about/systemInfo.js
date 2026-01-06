@@ -59,9 +59,10 @@
             }
 
             for (let i in r.systemInfo.network) {
+                if (i == "lo") continue;
                 network += `
                     <div class="rbt-acc-row" style="border: solid thin #dfdfdf; border-radius: 3px;">
-                        <div class="pointer p-2 network" data-network="${i}" style="border-radius: 3px;">${i}</div>
+                        <div class="pointer p-2 network" data-network="${i}" style="border-radius: 3px; position: relative;">${i}<div class="p-2" style="position: absolute; right: 0px; top: 0px;">${r.systemInfo.network[i]["IP Address"]}</div></div>
                         <div class="network-details p-3" data-network="${i}" style="display: none;">
                             <hr class="pt-0 mt-0" />
                             <div class="row">
