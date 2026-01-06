@@ -19,6 +19,14 @@
         "saLink",
     ],
 
+    subModules: [
+        "createIssue",
+        "issue",
+        "settings",
+        "workspaces",
+        "json",
+    ],
+
     issueRegExp: false,
 
     init: function () {
@@ -35,23 +43,11 @@
             GET("tt", "tt", false, true).
             done(modules.tt.tt).
             done(() => {
-                loadSubModules("tt", [
-                    "createIssue",
-                    "issue",
-                    "settings",
-                    "workspaces",
-                    "json",
-                ], this);
+                loadSubModules("tt", this.subModules, this);
             }).
             fail(FAIL);
         } else {
-            loadSubModules("tt", [
-                "createIssue",
-                "issue",
-                "settings",
-                "workspaces",
-                "json",
-            ], this);
+            loadSubModules("tt", this.subModules, this);
         }
     },
 

@@ -1,6 +1,8 @@
 ({
     menuItem: false,
+
     favorites: [],
+
     subModules: [
         "keys",
         "cms",
