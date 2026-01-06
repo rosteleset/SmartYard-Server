@@ -47,21 +47,25 @@
             public static function GET($params) {
                 $mkb = loadBackend("mkb");
 
+                $cards = false;
+
                 if ($mkb) {
                     $cards = $mkb->getCards(@$params["_id"]);
                 }
 
-                return api::ANSWER($mkb, ($mkb !== false) ? "cards" : false);
+                return api::ANSWER($cards, $cards ? "cards" : false);
             }
 
             public static function POST($params) {
                 $mkb = loadBackend("mkb");
 
+                $cards = false;
+
                 if ($mkb) {
                     $cards = $mkb->getCards(@$params["cards"]);
                 }
 
-                return api::ANSWER($mkb, ($mkb !== false) ? "cards" : false);
+                return api::ANSWER($cards, $cards ? "cards" : false);
             }
 
             public static function index() {

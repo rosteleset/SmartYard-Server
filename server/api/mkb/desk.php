@@ -64,41 +64,49 @@
             public static function GET($params) {
                 $mkb = loadBackend("mkb");
 
+                $desk = false;
+
                 if ($mkb) {
                     $desk = $mkb->getDesk(@$params["_id"]);
                 }
 
-                return api::ANSWER($mkb, ($mkb !== false) ? "desk" : false);
+                return api::ANSWER($desk, $desk ? "desk" : false);
             }
 
             public static function POST($params) {
                 $mkb = loadBackend("mkb");
 
+                $result = false;
+
                 if ($mkb) {
-                    $desk = $mkb->addDesk(@$params["desk"]);
+                    $result = $mkb->addDesk(@$params["desk"]);
                 }
 
-                return api::ANSWER($mkb, ($mkb !== false) ? "desk" : false);
+                return api::ANSWER(!!$result);
             }
 
             public static function PUT($params) {
                 $mkb = loadBackend("mkb");
 
+                $result = false;
+
                 if ($mkb) {
-                    $desk = $mkb->modifyDesk(@$params["_id"], @$params["desk"]);
+                    $result = $mkb->modifyDesk(@$params["_id"], @$params["desk"]);
                 }
 
-                return api::ANSWER($mkb, ($mkb !== false) ? "desk" : false);
+                return api::ANSWER(!!$result);
             }
 
             public static function DELETE($params) {
                 $mkb = loadBackend("mkb");
 
+                $result = false;
+
                 if ($mkb) {
-                    $desk = $mkb->deleteDesk(@$params["_id"]);
+                    $result = $mkb->deleteDesk(@$params["_id"]);
                 }
 
-                return api::ANSWER($mkb, ($mkb !== false) ? "desk" : false);
+                return api::ANSWER(!!$result);
             }
 
             public static function index() {

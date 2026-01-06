@@ -69,13 +69,12 @@
             abstract public function addCard($card);
 
             /**
-             * $id card uuid
              * $card card
              *
              * @return mixed
              */
 
-            abstract public function modifyCard($id, $card);
+            abstract public function modifyCard($card);
 
             /**
              * $id card uuid

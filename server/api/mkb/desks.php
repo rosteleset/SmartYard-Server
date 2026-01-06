@@ -30,11 +30,13 @@
             public static function GET($params) {
                 $mkb = loadBackend("mkb");
 
+                $desks = false;
+
                 if ($mkb) {
                     $desks = $mkb->getDesks();
                 }
 
-                return api::ANSWER($mkb, ($mkb !== false) ? "desks" : false);
+                return api::ANSWER($desks, $desks ? "desks" : false);
             }
 
             public static function index() {

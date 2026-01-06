@@ -31,7 +31,7 @@
      */
 
     /**
-     * @api {put} /api/mkb/card/:cardId modify card
+     * @api {put} /api/mkb/card modify card
      *
      * @apiVersion 1.0.0
      *
@@ -39,8 +39,6 @@
      * @apiGroup mkb
      *
      * @apiHeader {String} Authorization authentication token
-     *
-     * @apiParam {String} cardId cardId
      *
      * @apiBody card
      *
@@ -79,41 +77,49 @@
             public static function GET($params) {
                 $mkb = loadBackend("mkb");
 
+                $card = false;
+
                 if ($mkb) {
                     $card = $mkb->getCard(@$params["_id"]);
                 }
 
-                return api::ANSWER($mkb, ($mkb !== false) ? "card" : false);
+                return api::ANSWER($card, $card ? "card" : false);
             }
 
             public static function POST($params) {
                 $mkb = loadBackend("mkb");
 
+                $result = false;
+
                 if ($mkb) {
-                    $card = $mkb->addCard(@$params["card"]);
+                    $result = $mkb->addCard(@$params["card"]);
                 }
 
-                return api::ANSWER($mkb, ($mkb !== false) ? "card" : false);
+                return api::ANSWER(!!$result);
             }
 
             public static function PUT($params) {
                 $mkb = loadBackend("mkb");
 
+                $result = false;
+
                 if ($mkb) {
-                    $card = $mkb->modifyCard(@$params["_id"], @$params["card"]);
+                    $result = $mkb->modifyCard(@$params["_id"], @$params["card"]);
                 }
 
-                return api::ANSWER($mkb, ($mkb !== false) ? "card" : false);
+                return api::ANSWER(!!$result);
             }
 
             public static function DELETE($params) {
                 $mkb = loadBackend("mkb");
 
+                $result = false;
+
                 if ($mkb) {
-                    $card = $mkb->deleteCard(@$params["_id"]);
+                    $result = $mkb->deleteCard(@$params["_id"]);
                 }
 
-                return api::ANSWER($mkb, ($mkb !== false) ? "card" : false);
+                return api::ANSWER(!!$result);
             }
 
             public static function index() {

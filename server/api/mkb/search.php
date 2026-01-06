@@ -32,11 +32,13 @@
             public static function GET($params) {
                 $mkb = loadBackend("mkb");
 
+                $cards = false;
+
                 if ($mkb) {
-                    $search = $mkb->searchCards($params["search"]);
+                    $cards = $mkb->searchCards($params["search"]);
                 }
 
-                return api::ANSWER($mkb, ($mkb !== false) ? "search" : false);
+                return api::ANSWER($cards, $cards ? "cards" : false);
             }
 
             public static function index() {

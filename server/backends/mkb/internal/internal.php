@@ -175,7 +175,7 @@
              * @inheritDoc
              */
 
-            public function modifyCard($id, $card) {
+            public function modifyCard($card) {
                 return true;
             }
 
