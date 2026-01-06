@@ -32,7 +32,7 @@
                 }
                 disk += `
                     <div class="rbt-acc-row" style="border: solid thin #dfdfdf; border-radius: 3px;">
-                        <div class="pointer p-2 disk ${c}" data-disk="${i}" style="border-radius: 3px;">${i}</div>
+                        <div class="pointer p-2 disk ${c}" data-disk="${i}" style="border-radius: 3px; position: relative;">${i}<div class="p-2" style="position: absolute; right: 0px; top: 0px;">${r.systemInfo.disk[i].Usage}</div></div>
                         <div class="disk-details p-3" data-disk="${i}" style="display: none;">
                             <hr class="pt-0 mt-0" />
                             <div class="row">
