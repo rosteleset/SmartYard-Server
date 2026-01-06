@@ -95,6 +95,7 @@
                             if (count($parts) >= 6) {
                                 $mount = $parts[5];
                                 $disks[$mount] = [
+                                    'Device' => $parts[0],
                                     'Total' => formatBytes((int)$parts[1]),
                                     'Used' => formatBytes((int)$parts[2]),
                                     'Available' => formatBytes((int)$parts[3]),

@@ -19,7 +19,6 @@
 
         GET("server", "systemInfo", false, true).
         done(r => {
-            console.log(r);
             let h = "", disk = "", network = "", processes = "";
 
             for (let i in r.systemInfo.disk) {
@@ -32,7 +31,7 @@
                 }
                 disk += `
                     <div class="rbt-acc-row" style="border: solid thin #dfdfdf; border-radius: 3px;">
-                        <div class="pointer p-2 disk ${c}" data-disk="${i}" style="border-radius: 3px; position: relative;">${i}<div class="p-2" style="position: absolute; right: 0px; top: 0px;">${r.systemInfo.disk[i].Usage}</div></div>
+                        <div class="pointer p-2 disk ${c}" data-disk="${i}" style="border-radius: 3px; position: relative;">${i}<br />${r.systemInfo.disk[i].Device}<div class="p-2 pt-3" style="position: absolute; right: 0px; top: 0px;">${r.systemInfo.disk[i].Usage}</div></div>
                         <div class="disk-details p-3" data-disk="${i}" style="display: none;">
                             <hr class="pt-0 mt-0" />
                             <div class="row">
@@ -117,7 +116,7 @@
             processes += "</table>";
 
             h += `
-                <div class="container-fluid mt-2">
+                <div class="container-fluid mt-2 noselect">
                     <div class="row">
                         <div class="col rbt-grid-col">
                             <div class="card card-info card-outline">

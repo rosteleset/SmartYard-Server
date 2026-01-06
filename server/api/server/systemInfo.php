@@ -40,7 +40,7 @@
             public static function index() {
                 if (loadBackend("systemInfo")) {
                     return [
-                        "GET" => "#common",
+                        "GET",
                     ];
                 } else {
                     return false;
