@@ -147,7 +147,7 @@
 
                 function getProcessList() {
                     $processes = [];
-                    $ps = shell_exec('ps aux --sort=-%cpu');
+                    $ps = shell_exec('ps aux --sort=-%cpu | grep -v "ps aux"');
                     if (!$ps) return ['Process List' => 'Not available'];
                     $lines = explode("\n", $ps);
                     array_shift($lines); // Remove header line

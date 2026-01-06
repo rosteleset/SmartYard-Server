@@ -89,7 +89,7 @@
             }
 
             n = 0;
-            processes += "<table style='width: 100%'>";
+            processes += "<table style='width: 100%;'>";
 
             processes += `
                 <tr>
