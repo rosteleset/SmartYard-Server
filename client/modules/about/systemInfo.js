@@ -95,6 +95,7 @@
             processes += `
                 <tr>
                     <th class="p-2">${i18n("about.pid")}</th>
+                    <th class="p-2">${i18n("about.user")}</th>
                     <th class="p-2">${i18n("about.cpu")}</th>
                     <th class="p-2">${i18n("about.memory")}</th>
                     <th class="p-2">${i18n("about.command")}</th>
@@ -105,6 +106,7 @@
                 processes += `
                     <tr>
                         <td class="p-2">${r.systemInfo.processes[i].PID}</td>
+                        <td class="p-2">${r.systemInfo.processes[i].User}</td>
                         <td class="p-2">${r.systemInfo.processes[i].CPU}</td>
                         <td class="p-2">${r.systemInfo.processes[i].Memory}</td>
                         <td class="p-2">${r.systemInfo.processes[i].Command}</td>

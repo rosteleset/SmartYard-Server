@@ -27,6 +27,7 @@
     "tx": "Передано",
     "pid": "Процесс",
     "command": "Команда",
+    "user": "Пользователь",
     "text": [
         "",
         "<b>RoBoT - RBT (SmartYard-Server)</b>",

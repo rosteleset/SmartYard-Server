@@ -27,6 +27,7 @@
     "tx": "TX data",
     "pid": "PID",
     "command": "Command",
+    "user": "Login",
     "text": [
         "",
         "<b>RoBoT - RBT (SmartYard-Server)</b>",
