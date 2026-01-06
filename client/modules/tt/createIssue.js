@@ -1,6 +1,6 @@
 ({
     init: function () {
-        if (AVAIL("tt", "issue", "POST")) {
+        if (AVAIL("tt", "issue", "POST") && modules.tt.menuItem) {
             $("#" + leftSideClick("far fa-fw fa-plus-square", i18n("tt.createIssue"), "tt", () => {
                 modules.tt.createIssue.createIssue($("#ttProjectSelect").val());
             })).after($("#" + modules.tt.menuItem));
