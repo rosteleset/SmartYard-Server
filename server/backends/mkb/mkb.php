@@ -83,13 +83,5 @@
              */
 
             abstract public function deleteCard($id);
-
-            /**
-             * $search search
-             *
-             * @return mixed
-             */
-
-            abstract public function searchCard($search);
         }
     }
