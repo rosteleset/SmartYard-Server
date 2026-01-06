@@ -116,7 +116,7 @@
             processes += "</table>";
 
             h += `
-                <div class="container-fluid mt-2 mb-2 noselect">
+                <div class="container-fluid mt-2 noselect">
                     <div class="row">
                         <div class="col rbt-grid-col">
                             <div class="card card-info card-outline">
@@ -250,7 +250,7 @@
                     </div>
                     <div class="row">
                         <div class="col rbt-grid-col">
-                            <div class="card card-navy card-outline">
+                            <div class="card card-navy card-outline mb-2">
                                 <div class="card-header">
                                     <h5 class="card-title text-bold">${i18n("about.processes")}</h5>
                                 </div>
