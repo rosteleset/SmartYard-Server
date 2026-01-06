@@ -20,7 +20,7 @@
     "15min": "15 min",
     "disk": "Disk usage",
     "network": "Network",
-    "processes": "Processes (TOP25)",
+    "processes": "Processes (TOP%s)",
     "ip": "IP address",
     "mac": "MAC address",
     "rx": "RX data",

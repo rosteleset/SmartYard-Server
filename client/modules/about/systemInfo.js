@@ -89,7 +89,7 @@
                 `;
             }
 
-            n = 0;
+            n = 1;
             processes += "<table style='width: 100%;'>";
 
             processes += `
@@ -112,8 +112,8 @@
                         <td class="p-2">${r.systemInfo.processes[i].Command}</td>
                     <tr/>
                 `;
+                if (n >= 15) break;
                 n++;
-                if (n > 25) break;
             }
 
             processes += "</table>";
@@ -255,7 +255,7 @@
                         <div class="col rbt-grid-col">
                             <div class="card card-navy card-outline mb-2">
                                 <div class="card-header">
-                                    <h5 class="card-title text-bold">${i18n("about.processes")}</h5>
+                                    <h5 class="card-title text-bold">${i18n("about.processes", n)}</h5>
                                 </div>
                                 <div class="card-body">
                                     ${processes}
