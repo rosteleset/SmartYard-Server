@@ -1063,3 +1063,7 @@ code {
 .rbt-acc-row:last-child {
   margin-bottom: 0px ! important;
 }
+
+.pt-35 {
+  padding-top: 1.25rem ! important;
+}
