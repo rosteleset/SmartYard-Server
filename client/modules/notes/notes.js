@@ -790,7 +790,7 @@
             modules.notes.createNote();
         });
 
-        $("#mainForm").html("<div id='stickiesTable'><div style='overflow-x: hidden; overflow-y: hidden;' class='p-0 m-0 mt-2'><div id='stickiesContainer' style='position: relative;' class='p-0 m-0 resizable mouseEvents dots'></div></div></div>");
+        $("#mainForm").html("<div id='stickiesTable'><div style='overflow-x: hidden; overflow-y: hidden;' class='p-0 m-0 mt-2 mb-1'><div id='stickiesContainer' style='position: relative;' class='p-0 m-0 resizable mouseEvents dots'></div></div></div>");
 
         let s = $("#stickiesContainer");
 
