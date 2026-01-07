@@ -835,6 +835,10 @@ function cardForm(params) {
 
         h += `<div id="${_prefix}${params.fields[i].id}-items">`;
 
+        if (field.value) {
+            field.options = field.value;
+        }
+
         for (let j = 0; j < field.options.length; j++) {
             h += `
                 <div class="input-group form-sortable-item" data-field-option-index="${j}">
