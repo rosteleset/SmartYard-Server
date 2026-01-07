@@ -1080,7 +1080,6 @@ code {
   padding: 10px;
   border: solid thin #dee2e6;
   border-radius: .25rem;
-  box-shaadow: 0 0 1px rgba(0, 0, 0, .125), 0 1px 3px rgba(0, 0, 0, .2);
 }
 
 .aside-right-body {
