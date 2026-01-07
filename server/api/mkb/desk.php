@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {post} /api/mkb/desk add desk
+     * @api {post} /api/mkb/desk add/modify desk
      *
      * @apiVersion 1.0.0
      *
@@ -16,24 +16,7 @@
      */
 
     /**
-     * @api {put} /api/mkb/desk/:deskId modify desk
-     *
-     * @apiVersion 1.0.0
-     *
-     * @apiName modifyDesk
-     * @apiGroup mkb
-     *
-     * @apiHeader {String} Authorization authentication token
-     *
-     * @apiParam {String} deskId deskId
-     *
-     * @apiBody desk
-     *
-     * @apiSuccess {Boolean} operationResult
-     */
-
-    /**
-     * @api {delete} /api/mkb/desk/:deskId delete desk
+     * @api {delete} /api/mkb/desk/:name delete desk
      *
      * @apiVersion 1.0.0
      *
@@ -42,7 +25,7 @@
      *
      * @apiHeader {String} Authorization authentication token
      *
-     * @apiParam {String} deskId deskId
+     * @apiParam {String} name desk name
      *
      * @apiSuccess {Boolean} operationResult
      */
@@ -61,37 +44,13 @@
 
         class desk extends api {
 
-            public static function GET($params) {
-                $mkb = loadBackend("mkb");
-
-                $desk = false;
-
-                if ($mkb) {
-                    $desk = $mkb->getDesk(@$params["_id"]);
-                }
-
-                return api::ANSWER($desk, $desk ? "desk" : false);
-            }
-
             public static function POST($params) {
                 $mkb = loadBackend("mkb");
 
                 $result = false;
 
                 if ($mkb) {
-                    $result = $mkb->addDesk(@$params["desk"]);
-                }
-
-                return api::ANSWER(!!$result);
-            }
-
-            public static function PUT($params) {
-                $mkb = loadBackend("mkb");
-
-                $result = false;
-
-                if ($mkb) {
-                    $result = $mkb->modifyDesk(@$params["_id"], @$params["desk"]);
+                    $result = $mkb->upsertDesk(@$params["desk"]);
                 }
 
                 return api::ANSWER(!!$result);
@@ -114,9 +73,8 @@
 
                 if ($mkb) {
                     return [
-                        "POST" => "#same(mkb,cards,GET)",
-                        "PUT" => "#same(mkb,cards,GET)",
-                        "DELETE" => "#same(mkb,cards,GET)",
+                        "POST" => "#same(mkb,cards,POST)",
+                        "DELETE" => "#same(mkb,cards,POST)",
                     ];
                 } else {
                     return false;

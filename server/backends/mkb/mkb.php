@@ -26,23 +26,15 @@
              * @return mixed
              */
 
-            abstract public function addDesk($desk);
+            abstract public function upsertDesk($desk);
 
             /**
-             * $desk desk
+             * $name desk name
              *
              * @return mixed
              */
 
-            abstract public function modifyDesk($desk);
-
-            /**
-             * $id desk uuid
-             *
-             * @return mixed
-             */
-
-            abstract public function deleteDesk($id);
+            abstract public function deleteDesk($name);
 
             /**
              * $query string (desk) or array (cards list)
@@ -66,15 +58,7 @@
              * @return mixed
              */
 
-            abstract public function addCard($card);
-
-            /**
-             * $card card
-             *
-             * @return mixed
-             */
-
-            abstract public function modifyCard($card);
+            abstract public function upsertCard($card);
 
             /**
              * $id card uuid

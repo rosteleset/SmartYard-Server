@@ -1,21 +1,6 @@
 <?php
 
     /**
-     * @api {get} /api/mkb/cards/:desk get cards
-     *
-     * @apiVersion 1.0.0
-     *
-     * @apiName getCards
-     * @apiGroup mkb
-     *
-     * @apiHeader {String} Authorization authentication token
-     *
-     * @apiParam {String} desk
-     *
-     * @apiSuccess {Object[]} cards
-     */
-
-    /**
      * @api {post} /api/mkb/cards get cards
      *
      * @apiVersion 1.0.0
@@ -25,7 +10,7 @@
      *
      * @apiHeader {String} Authorization authentication token
      *
-     * @apiBody {String[]} cards
+     * @apiBody {Object} query
      *
      * @apiSuccess {Object[]} cards
      */
@@ -44,25 +29,13 @@
 
         class cards extends api {
 
-            public static function GET($params) {
-                $mkb = loadBackend("mkb");
-
-                $cards = false;
-
-                if ($mkb) {
-                    $cards = $mkb->getCards(@$params["_id"]);
-                }
-
-                return api::ANSWER($cards, $cards ? "cards" : false);
-            }
-
             public static function POST($params) {
                 $mkb = loadBackend("mkb");
 
                 $cards = false;
 
                 if ($mkb) {
-                    $cards = $mkb->getCards(@$params["cards"]);
+                    $cards = $mkb->getCards(@$params["query"]);
                 }
 
                 return api::ANSWER($cards, $cards ? "cards" : false);
@@ -73,8 +46,7 @@
 
                 if ($mkb) {
                     return [
-                        "GET",
-                        "POST" => "#same(mkb,cards,GET)",
+                        "POST",
                     ];
                 } else {
                     return false;

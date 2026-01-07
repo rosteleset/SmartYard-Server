@@ -36,14 +36,19 @@
              * @param
              */
 
-            private function put($json) {
+            private function put($json, $key = "_id") {
                 $db = $this->dbName;
                 $login = $this->login;
 
-                if (@$json["_id"]) {
-                    $id = $json["_id"];
-                    unset($json["_id"]);
-                    $id = $this->mongo->$db->$login->replaceOne([ "_id" => new \MongoDB\BSON\ObjectID($id) ], $json, [ "upsert" => true ]);
+                if (@$json[$key]) {
+                    $id = $json[$key];
+                    if ($key == "_id") {
+                        $_id = new \MongoDB\BSON\ObjectID($id);
+                        unset($json["_id"]);
+                    } else {
+                        $_id = $id;
+                    }
+                    $this->mongo->$db->$login->replaceOne([ $key => $_id ], $json, [ "upsert" => true ]);
                 } else {
                     $id = object_to_array($this->mongo->$db->$login->insertOne($json)->getInsertedId())["oid"];
                 }
@@ -113,14 +118,8 @@
              * @inheritDoc
              */
 
-            public function addDesk($desk) {
+            public function upsertDesk($desk) {
                 $desks = $this->getDesks();
-
-                foreach ($desks as $d) {
-                    if ($d["name"] == $desk["name"]) {
-                        return false;
-                    }
-                }
 
                 $desk["type"] = "desk";
 
@@ -133,18 +132,8 @@
              * @inheritDoc
              */
 
-            public function modifyDesk($desk) {
-                $desk["type"] = "desk";
-
-                return $this->put($desk);
-            }
-
-            /**
-             * @inheritDoc
-             */
-
-            public function deleteDesk($id) {
-                return $this->delete([ "type" => "desk", "_id" => $id ]);
+            public function deleteDesk($name) {
+                return $this->delete([ "type" => "desk", "name" => $name ]);
             }
 
             /**
@@ -167,15 +156,7 @@
              * @inheritDoc
              */
 
-            public function addCard($card) {
-                return true;
-            }
-
-            /**
-             * @inheritDoc
-             */
-
-            public function modifyCard($card) {
+            public function upsertCard($card) {
                 return true;
             }
 

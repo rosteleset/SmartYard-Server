@@ -15,12 +15,18 @@
     "restore": "Restore",
     "date": "Date",
     "addCard": "Add card",
+    "editDesk": "Rename desk",
+    "deleteDesk": "Delete desk",
+    "confirmDeleteDesk": "Delete desk \"%s\"?",
+    "confirmDeleteColumn": "Delete column \"%s\"? (cards will not be deleted)",
+    "desk": "Desk",
+    "id": "#",
     "methods": {
         "mkb": {
             "_title": "Kanban",
             "cards": {
                 "_title": "Kanban",
-                "GET": "Kanban"
+                "POST": "Kanban"
             }
         }
     }

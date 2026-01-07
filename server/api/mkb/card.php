@@ -16,26 +16,11 @@
      */
 
     /**
-     * @api {post} /api/mkb/card add card
+     * @api {post} /api/mkb/card add/modify card
      *
      * @apiVersion 1.0.0
      *
      * @apiName addCard
-     * @apiGroup mkb
-     *
-     * @apiHeader {String} Authorization authentication token
-     *
-     * @apiBody card
-     *
-     * @apiSuccess {Boolean} operationResult
-     */
-
-    /**
-     * @api {put} /api/mkb/card modify card
-     *
-     * @apiVersion 1.0.0
-     *
-     * @apiName modifyCard
      * @apiGroup mkb
      *
      * @apiHeader {String} Authorization authentication token
@@ -92,19 +77,7 @@
                 $result = false;
 
                 if ($mkb) {
-                    $result = $mkb->addCard(@$params["card"]);
-                }
-
-                return api::ANSWER(!!$result);
-            }
-
-            public static function PUT($params) {
-                $mkb = loadBackend("mkb");
-
-                $result = false;
-
-                if ($mkb) {
-                    $result = $mkb->modifyCard(@$params["_id"], @$params["card"]);
+                    $result = $mkb->upsertCard(@$params["card"]);
                 }
 
                 return api::ANSWER(!!$result);
@@ -127,10 +100,9 @@
 
                 if ($mkb) {
                     return [
-                        "GET" => "#same(mkb,cards,GET)",
-                        "POST" => "#same(mkb,cards,GET)",
-                        "PUT" => "#same(mkb,cards,GET)",
-                        "DELETE" => "#same(mkb,cards,GET)",
+                        "GET" => "#same(mkb,cards,POST)",
+                        "POST" => "#same(mkb,cards,POST)",
+                        "DELETE" => "#same(mkb,cards,POST)",
                     ];
                 } else {
                     return false;

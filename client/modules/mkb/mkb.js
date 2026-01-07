@@ -3,6 +3,7 @@
     md: false,
     desks: [],
     calendars: {},
+
     subModules: [
         "columnTable",
     ],
@@ -165,34 +166,78 @@
         $(".column-edit").off("click").on("click", function () {
             let id = $(this).parent().attr("data-column-id");
 
+            let desk = modules.mkb.desk();
+
+            let column = {};
+
+            for (let i in desk.columns) {
+                if (desk.columns[i]._id == id) {
+                    column = desk.columns[i];
+                    break;
+                }
+            }
+
             cardForm({
                 title: i18n("mkb.modifyColumn"),
                 footer: true,
                 borderless: true,
                 topApply: true,
-                apply: i18n("modify"),
+                apply: i18n("edit"),
                 size: "lg",
                 delete: i18n("delete"),
                 fields: [
                     {
+                        id: "id",
+                        title: i18n("mkb.id"),
+                        type: "text",
+                        value: column._id,
+                        readonly: true,
+                    },
+                    {
                         id: "title",
                         title: i18n("mkb.title"),
                         type: "text",
-                        value: "",
+                        value: column.title,
                     },
                     {
                         id: "color",
                         title: i18n("mkb.color"),
                         type: "color",
-                        value: "lime",
+                        value: column.color,
                     },
                 ],
                 callback: r => {
-                    console.log(r);
+                    for (let i in desk.columns) {
+                        if (desk.columns[i]._id == id) {
+                            if (r.delete == "yes") {
+                                mConfirm(i18n("mkb.confirmDeleteColumn", r.title), i18n("confirm"), i18n("delete"), () => {
+                                    desk.columns.splice(i, 1);
+
+                                    loadingStart();
+                                    POST("mkb", "desk", false, { desk }).
+                                    done(() => {
+                                        modules.mkb.renderDesk();
+                                    }).
+                                    fail(FAIL).
+                                    fail(loadingDone);
+                                });
+                            } else {
+                                desk.columns[i].title = r.title;
+                                desk.columns[i].color = r.color;
+
+                                loadingStart();
+                                POST("mkb", "desk", false, { desk }).
+                                done(() => {
+                                    modules.mkb.renderDesk();
+                                }).
+                                fail(FAIL).
+                                fail(loadingDone);
+                            }
+                            break;
+                        }
+                    }
                 }
             });
-
-            console.log(id);
         });
 
         $(".card-edit").off("click").on("click", function () {
@@ -360,15 +405,15 @@
         }
 
         let h = `
-            <div id="column-${column.id}" class="card card-row card-${column.color} kanban-col">
+            <div id="column-${column._id}" class="card card-row card-${column.color} kanban-col">
                 <div class="card-header col-handle pl-3 pr-3">
                     <h3 class="card-title pt-1 text-bold">${$.trim(escapeHTML(column.title))}</h3>
-                    <div class="card-tools" data-column-id="${column.id}">
+                    <div class="card-tools" data-column-id="${column._id}">
                         <span class="btn btn-tool card-add" title="${i18n("mkb.addCard")}"><i class="fas fa-fw fa-plus-circle"></i></span>
                         <span class="btn btn-tool column-edit" title="${i18n("mkb.edit")}"><i class="fas fa-fw fa-edit"></i></span>
                     </div>
                 </div>
-                <div id="card-body-${column.id}" class="card-body card-content" style="min-height: 100%;">${c}</div>
+                <div id="card-body-${column._id}" class="card-body card-content" style="min-height: 100%;">${c}</div>
             </div>
         `;
 
@@ -469,19 +514,37 @@
         loadingStart();
 
         GET("mkb", "desks", false, true).
-        done(desks => {
+        done(r => {
+            modules.mkb.desks = [];
+
+            if (r && r.desks) {
+                modules.mkb.desks = r.desks;
+            }
+
             let desk = lStore("mkbDesk");
 
             let h = '';
 
-            modules.mkb.desks.sort();
+            modules.mkb.desks.sort((a, b) => {
+                if (a.name > b.name) {
+                    return 1;
+                }
+                if (a.name < b.name) {
+                    return -1;
+                }
+                return 0;
+            });
 
             for (let i in modules.mkb.desks) {
-                h += '<option>' + escapeHTML(modules.mkb.desks[i]) + '</option>';
+                h += '<option>' + escapeHTML(modules.mkb.desks[i].name) + '</option>';
             }
 
             if (!h) {
                 h += '<option>' + escapeHTML(i18n("mkb.default")) + '</option>';
+                modules.mkb.desks.push({
+                    name: i18n("mkb.default"),
+                    columns: [],
+                });
             }
 
             $("#mkbDesks").html(h);
@@ -493,10 +556,10 @@
             desk = $("#mkbDesks").val();
             lStore("mkbDesk", desk);
 
-            let cards = [];
+            POST("mkb", "cards", false, { desk }).
+            done(r => {
+                desk = modules.mkb.desk();
 
-            POST("mkb", "cards", false, cards).
-            done(cards => {
                 let h = `
                     <div class="content-wrapper kanban pt-3" style="margin-left: 0px!important; margin-top: 0px!important;">
                         <section class="content pb-3 pl-0 pr-0">
@@ -526,6 +589,22 @@
         fail(FAILPAGE);
     },
 
+    desk: function () {
+        let desk = {
+            name: lStore("mkbDesk"),
+            columns: [],
+        };
+
+        for (let i in modules.mkb.desks) {
+            if (modules.mkb.desks[i].name == lStore("mkbDesk")) {
+                desk = modules.mkb.desks[i];
+                break;
+            }
+        }
+
+        return desk;
+    },
+
     route: function (params) {
         subTop();
 
@@ -536,6 +615,9 @@
         let rtd = '';
 
         rtd += '<form autocomplete="off"><div class="form-inline ml-3 mr-3"><div class="input-group input-group-sm mt-1"><select id="mkbDesks" class="form-control select-arrow right-top-select top-input"></select></div></div></form>';
+
+        rtd += `<li class="nav-item nav-item-back-hover"><span class="editDesk nav-link pointer" role="button" title="${i18n("mkb.editDesk")}"><i class="fas fa-lg fa-fw fa-pen-square"></i></span></li>`;
+        rtd += `<li class="nav-item nav-item-back-hover"><span class="deleteDesk nav-link pointer" role="button" title="${i18n("mkb.deleteDesk")}"><i class="fas fa-lg fa-fw fa-minus-square"></i></span></li>`;
 
         $("#rightTopDynamic").html(rtd);
 
@@ -560,6 +642,89 @@
         }
 
         modules.mkb.renderDesk();
+
+        $(".addDesk").off("click").on("click", () => {
+            mPrompt(i18n("mkb.desk"), i18n("mkb.addDesk"), "", desk => {
+                loadingStart();
+                POST("mkb", "desk", false, { desk: { name: desk, columns: [] } }).
+                done(() => {
+                    lStore("mkbDesk", desk);
+                    modules.mkb.renderDesk();
+                }).
+                fail(FAIL).
+                fail(loadingDone);
+            });
+        });
+
+        $(".editDesk").off("click").on("click", () => {
+            let desk = modules.mkb.desk();
+
+            mPrompt(i18n("mkb.desk"), i18n("mkb.addDesk"), desk.name, newName => {
+                loadingStart();
+                desk.name = newName;
+                POST("mkb", "desk", false, { desk }).
+                done(() => {
+                    lStore("mkbDesk", newName);
+                    modules.mkb.renderDesk();
+                }).
+                fail(FAIL).
+                fail(loadingDone);
+            });
+        });
+
+        $(".deleteDesk").off("click").on("click", () => {
+            mConfirm(i18n("mkb.confirmDeleteDesk", lStore("mkbDesk")), i18n("confirm"), i18n("delete"), () => {
+                loadingStart();
+                DELETE("mkb", "desk", lStore("mkbDesk")).
+                done(modules.mkb.renderDesk).
+                fail(FAIL).
+                fail(loadingDone);
+            });
+        });
+
+        $(".addColumn").off("click").on("click", () => {
+            cardForm({
+                title: i18n("mkb.addColumn"),
+                footer: true,
+                borderless: true,
+                topApply: true,
+                apply: i18n("add"),
+                fields: [
+                    {
+                        id: "title",
+                        title: i18n("mkb.title"),
+                        type: "text",
+                        value: "",
+                        validate: a => {
+                            return !!$.trim(a);
+                        }
+                    },
+                    {
+                        id: "color",
+                        title: i18n("mkb.color"),
+                        type: "color",
+                        value: "lime",
+                    },
+                ],
+                callback: r => {
+                    let desk = modules.mkb.desk();
+
+                    desk.columns.push({
+                        _id: guid(),
+                        title: r.title,
+                        color: r.color,
+                    });
+
+                    loadingStart();
+                    POST("mkb", "desk", false, { desk }).
+                    done(() => {
+                        modules.mkb.renderDesk();
+                    }).
+                    fail(FAIL).
+                    fail(loadingDone);
+                }
+            });
+        });
     },
 /*
     search: function (search) {

@@ -44,7 +44,7 @@
 
                 if ($mkb) {
                     return [
-                        "GET" => "#same(mkb,cards,GET)",
+                        "GET" => "#same(mkb,cards,POST)",
                     ];
                 } else {
                     return false;
