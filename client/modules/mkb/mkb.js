@@ -431,7 +431,7 @@
                         appendable: "input",
                         checkable: true,
                         editable: true,
-                        options: modules.mkb.cards[id].subtasks,
+                        value: modules.mkb.cards[id].subtasks,
                     },
                 ],
                 callback: r => {
