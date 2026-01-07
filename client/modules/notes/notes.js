@@ -783,14 +783,14 @@
         }
 
         if (parseInt(myself.uid) && AVAIL("notes")) {
-            $("#leftTopDynamic").html(`<li class="nav-item d-none d-sm-inline-block"><span class="pointer nav-link text-success text-bold createNote">${i18n("notes.createNote")}</span></li>`);
+            $("#leftTopDynamic").html(`<li class="nav-item d-none d-sm-inline-block"><span class="pointer nav-link text-primary text-bold createNote">${i18n("notes.createNote")}</span></li>`);
         }
 
         $(".createNote").off("click").on("click", () => {
             modules.notes.createNote();
         });
 
-        $("#mainForm").html("<div id='stickiesTable'><div style='overflow-x: scroll; overflow-y: hidden;' class='p-0 m-0 mt-3'><div id='stickiesContainer' style='position: relative;' class='p-0 m-0 resizable mouseEvents dots'></div></div></div>");
+        $("#mainForm").html("<div id='stickiesTable'><div style='overflow-x: scroll; overflow-y: hidden;' class='p-0 m-0 mt-2'><div id='stickiesContainer' style='position: relative;' class='p-0 m-0 resizable mouseEvents dots'></div></div></div>");
 
         let s = $("#stickiesContainer");
 

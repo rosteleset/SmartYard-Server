@@ -638,11 +638,9 @@ select {
 }
 
 .sticky {
-  -moz-box-shadow: 2px 2px 2px #696969;
-  -webkit-box-shadow: 2px 2px 2px #696969;
-  box-shadow: 2px 2px 2px #696969;
+  box-shadow: 0 0 1px rgba(0, 0, 0, .125), 0 1px 3px rgba(0, 0, 0, .2);
   border-radius: 5px;
-  border: solid thin gray;
+  border: solid thin lightgray;
   display: inline-block;
   padding: 1rem;
   position: absolute;
@@ -874,7 +872,7 @@ code {
 }
 
 .dots {
-  background-image: radial-gradient(lightgray 1px, transparent 0);
+  background-image: radial-gradient(rgba(211, 211, 211, 0.3) 1px, transparent 0);
   background-size: 10px 10px;
   background-position: -4px -4px;
 }
