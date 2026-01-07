@@ -2,6 +2,7 @@
     menuItem: false,
     md: false,
     desks: [],
+    deskNames: [],
     cards: {},
     calendars: {},
 
@@ -282,6 +283,9 @@
                         title: i18n("mkb.subject"),
                         tab: i18n("mkb.card"),
                         type: "text",
+                        validate: a => {
+                            return !!$.trim(a);
+                        }
                     },
                     {
                         id: "color",
@@ -298,7 +302,6 @@
                         multiple: true,
                         createTags: true,
                         colorizeTags: true,
-                        tags: true,
                         tags: tags,
                     },
                     {
@@ -391,6 +394,9 @@
                         tab: i18n("mkb.card"),
                         type: "text",
                         value: modules.mkb.cards[id].subject,
+                        validate: a => {
+                            return !!$.trim(a);
+                        }
                     },
                     {
                         id: "color",
@@ -408,7 +414,6 @@
                         multiple: true,
                         createTags: true,
                         colorizeTags: true,
-                        tags: true,
                         value: modules.mkb.cards[id].tags,
                         tags: tags,
                     },
@@ -572,96 +577,6 @@
         return $.trim(h);
     },
 
-/*
-    desk: {
-        _id: md5(guid()),
-        title: 'first desk',
-        columns: [
-            {
-                _id: md5(guid()),
-                title: 'first column',
-                color: 'purple',
-                cards: [
-                    {
-                        _id: md5(guid()),
-                        date: 1765843200,
-                        subject: 'subject',
-                        body: 'lorm ipsum....',
-                        cardMinimized: true,
-                        subtasksMinimized: true,
-                        color: "info",
-                        tags: [
-                            "1",
-                            "2",
-                            "3",
-                        ],
-                        subtasks: [
-                            {
-                                text: "1",
-                                checked: true,
-                            },
-                            {
-                                text: "2",
-                            },
-                        ],
-                    },
-                    {
-                        _id: md5(guid()),
-                        date: 1766040807,
-                        subject: 'subject',
-                        body: '## Ilorm ipsum....\n\ntoday',
-                        color: "danger",
-                        tags: [
-                            "Violet",
-                            "2"
-                        ],
-                    },
-                ],
-            },
-            {
-                _id: md5(guid()),
-                title: 'second column',
-                color: 'red',
-                cards: [
-                    {
-                        _id: md5(guid()),
-                        date: 1766040807,
-                        subject: 'subject',
-                        body: '## IlQ\n\n1\n2\n3\n4\n\n5\n6\n7',
-                        color: "purple",
-                        subtasks: [
-                            {
-                                text: "1",
-                            },
-                            {
-                                text: "2",
-                                checked: true,
-                            },
-                            {
-                                text: "3",
-                                checked: true,
-                            },
-                            {
-                                text: "4",
-                            },
-                        ],
-                        tags: [
-                            "tag1",
-                            "tag2",
-                            "tag3",
-                            "tag4",
-                            "tag5",
-                            "tag6",
-                            "tag7",
-                            "tag8",
-                        ],
-                    },
-                ],
-            },
-        ],
-    };
-*/
-
     renderDesk: function () {
         loadingStart();
 
@@ -688,22 +603,24 @@
             });
 
             for (let i in modules.mkb.desks) {
-                h += '<option>' + escapeHTML(modules.mkb.desks[i].name) + '</option>';
+                if (modules.mkb.desks[i].name == lStore("mkbDesk")) {
+                    h += '<option selected>' + escapeHTML(modules.mkb.desks[i].name) + '</option>';
+                } else {
+                    h += '<option>' + escapeHTML(modules.mkb.desks[i].name) + '</option>';
+                }
+                modules.mkb.deskNames.push(modules.mkb.desks[i].name);
             }
 
             if (!h) {
-                h += '<option>' + escapeHTML(i18n("mkb.default")) + '</option>';
+                h += '<option selected>' + escapeHTML(i18n("mkb.default")) + '</option>';
                 modules.mkb.desks.push({
                     name: i18n("mkb.default"),
                     columns: [],
                 });
+                modules.mkb.deskNames.push(i18n("mkb.default"));
             }
 
             $("#mkbDesks").html(h);
-
-            if (modules.mkb.desks.indexOf(desk) >= 0) {
-                $("#mkbDesks").val(desk);
-            }
 
             desk = $("#mkbDesks").val();
             lStore("mkbDesk", desk);
@@ -803,14 +720,16 @@
 
         $(".addDesk").off("click").on("click", () => {
             mPrompt(i18n("mkb.desk"), i18n("mkb.addDesk"), "", desk => {
-                loadingStart();
-                POST("mkb", "desk", false, { desk: { name: desk, columns: [] } }).
-                done(() => {
-                    lStore("mkbDesk", desk);
-                    modules.mkb.renderDesk();
-                }).
-                fail(FAIL).
-                fail(loadingDone);
+                if ($.trim(desk) && modules.mkb.deskNames.indexOf($.trim(desk)) < 0) {
+                    loadingStart();
+                    POST("mkb", "desk", false, { desk: { name: desk, columns: [] } }).
+                    done(() => {
+                        lStore("mkbDesk", desk);
+                        modules.mkb.renderDesk();
+                    }).
+                    fail(FAIL).
+                    fail(loadingDone);
+                }
             });
         });
 
@@ -818,15 +737,17 @@
             let desk = modules.mkb.desk();
 
             mPrompt(i18n("mkb.desk"), i18n("mkb.addDesk"), desk.name, newName => {
-                loadingStart();
-                desk.name = newName;
-                POST("mkb", "desk", false, { desk }).
-                done(() => {
-                    lStore("mkbDesk", newName);
-                    modules.mkb.renderDesk();
-                }).
-                fail(FAIL).
-                fail(loadingDone);
+                if ($.trim(newName)) {
+                    loadingStart();
+                    desk.name = newName;
+                    POST("mkb", "desk", false, { desk }).
+                    done(() => {
+                        lStore("mkbDesk", newName);
+                        modules.mkb.renderDesk();
+                    }).
+                    fail(FAIL).
+                    fail(loadingDone);
+                }
             });
         });
 
