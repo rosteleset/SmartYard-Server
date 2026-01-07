@@ -6,7 +6,8 @@
     "addDesk": "Добавить стол",
     "modifyColumn": "Изменить столбец",
     "deleteColumn": "Удалить столбец",
-    "title": "Наименование",
+    "title": "Заголовок",
+    "subject": "Заголовок",
     "color": "Цвет",
     "attachments": "Файлы",
     "comments": "Комментарии",
@@ -21,6 +22,11 @@
     "confirmDeleteDesk": "Удалить стол \"%s\"?",
     "confirmDeleteColumn": "Удалить столбец \"%s\"? (карточки удалены НЕ будут)",
     "id": "#",
+    "tags": "Тэги",
+    "body": "Описание",
+    "card": "Карточка",
+    "subtasks": "Подзадачи",
+    "modifyCard": "Редактирование карточки",
     "methods": {
         "mkb": {
             "_title": "Канбан",

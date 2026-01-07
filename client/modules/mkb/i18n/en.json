@@ -7,6 +7,7 @@
     "modifyColumn": "Modify column",
     "deleteColumn": "Delete column",
     "title": "Title",
+    "subject": "Subject",
     "color": "Color",
     "attachments": "Attachments",
     "comments": "Comments",
@@ -21,6 +22,11 @@
     "confirmDeleteColumn": "Delete column \"%s\"? (cards will not be deleted)",
     "desk": "Desk",
     "id": "#",
+    "tags": "Tags",
+    "body": "Body",
+    "card": "Card",
+    "subtasks": "Subtasks",
+    "modifyCard": "Modify card",
     "methods": {
         "mkb": {
             "_title": "Kanban",

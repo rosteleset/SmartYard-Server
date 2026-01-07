@@ -45,14 +45,6 @@
             abstract public function getCards($query);
 
             /**
-             * $id card uuid
-             *
-             * @return mixed
-             */
-
-            abstract public function getCard($id);
-
-            /**
              * $card card
              *
              * @return mixed

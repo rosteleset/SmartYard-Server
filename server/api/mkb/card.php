@@ -1,21 +1,6 @@
 <?php
 
     /**
-     * @api {get} /api/mkb/card/:cardId get card
-     *
-     * @apiVersion 1.0.0
-     *
-     * @apiName getCard
-     * @apiGroup mkb
-     *
-     * @apiHeader {String} Authorization authentication token
-     *
-     * @apiParam {String} cardId cardId
-     *
-     * @apiSuccess {Object} card
-     */
-
-    /**
      * @api {post} /api/mkb/card add/modify card
      *
      * @apiVersion 1.0.0
@@ -59,18 +44,6 @@
 
         class card extends api {
 
-            public static function GET($params) {
-                $mkb = loadBackend("mkb");
-
-                $card = false;
-
-                if ($mkb) {
-                    $card = $mkb->getCard(@$params["_id"]);
-                }
-
-                return api::ANSWER($card, $card ? "card" : false);
-            }
-
             public static function POST($params) {
                 $mkb = loadBackend("mkb");
 
@@ -80,7 +53,7 @@
                     $result = $mkb->upsertCard(@$params["card"]);
                 }
 
-                return api::ANSWER(!!$result);
+                return api::ANSWER($result);
             }
 
             public static function DELETE($params) {
@@ -100,7 +73,6 @@
 
                 if ($mkb) {
                     return [
-                        "GET" => "#same(mkb,cards,POST)",
                         "POST" => "#same(mkb,cards,POST)",
                         "DELETE" => "#same(mkb,cards,POST)",
                     ];

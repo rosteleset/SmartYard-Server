@@ -119,13 +119,9 @@
              */
 
             public function upsertDesk($desk) {
-                $desks = $this->getDesks();
-
                 $desk["type"] = "desk";
 
-                $this->put($desk);
-
-                return true;
+                return $this->put($desk);
             }
 
             /**
@@ -141,15 +137,9 @@
              */
 
             public function getCards($query) {
-                return true;
-            }
+                $query["type"] = "card";
 
-            /**
-             * @inheritDoc
-             */
-
-            public function getCard($id) {
-                return true;
+                return $this->get($query);
             }
 
             /**
@@ -157,7 +147,9 @@
              */
 
             public function upsertCard($card) {
-                return true;
+                $card["type"] = "card";
+
+                return $this->put($card);
             }
 
             /**

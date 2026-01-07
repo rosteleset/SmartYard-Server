@@ -2,6 +2,7 @@
     menuItem: false,
     md: false,
     desks: [],
+    cards: {},
     calendars: {},
 
     subModules: [
@@ -204,12 +205,13 @@
                         title: i18n("mkb.color"),
                         type: "color",
                         value: column.color,
+                        noEmpty: true,
                     },
                 ],
                 callback: r => {
                     for (let i in desk.columns) {
                         if (desk.columns[i]._id == id) {
-                            if (r.delete == "yes") {
+                            if (r.delete) {
                                 mConfirm(i18n("mkb.confirmDeleteColumn", r.title), i18n("confirm"), i18n("delete"), () => {
                                     desk.columns.splice(i, 1);
 
@@ -240,25 +242,46 @@
             });
         });
 
-        $(".card-edit").off("click").on("click", function () {
-            let id = $(this).attr("data-card-id");
+        $(".card-add").off("click").on("click", function () {
+            let id = $(this).parent().attr("data-column-id");
+
+            let desk = modules.mkb.desk();
+
+            let column;
+
+            for (let i in desk.columns) {
+                if (desk.columns[i]._id == id) {
+                    column = i;
+                    break;
+                }
+            }
+
+            let tags = [];
+
+            for (let i in modules.mkb.cards) {
+                for (let j in modules.mkb.cards[i].tags) {
+                    tags.push(modules.mkb.cards[i].tags[j]);
+                }
+            }
+
+            tags = tags.filter((v, i, a) => {
+                return a.indexOf(v) === i;
+            });
 
             cardForm({
-                title: i18n("mkb.modifyCard"),
+                title: i18n("mkb.addCard"),
                 footer: true,
                 borderless: true,
                 topApply: true,
                 apply: i18n("apply"),
                 size: "xl",
-                delete: i18n("delete"),
                 deleteTab: i18n("mkb.card"),
                 fields: [
                     {
-                        id: "title",
-                        title: i18n("mkb.title"),
+                        id: "subject",
+                        title: i18n("mkb.subject"),
                         tab: i18n("mkb.card"),
                         type: "text",
-                        value: "",
                     },
                     {
                         id: "color",
@@ -266,7 +289,6 @@
                         tab: i18n("mkb.card"),
                         type: "color",
                         noEmpty: true,
-                        value: "lime",
                     },
                     {
                         id: "tags",
@@ -277,8 +299,7 @@
                         createTags: true,
                         colorizeTags: true,
                         tags: true,
-                        value: [ "tag1", "tag2", "tag3" ],
-                        tags: [ "tag1", "tag2", "tag3", "2 lskdjfhlgskjdfhgl ksdhfgl hdf lkshg kdfhg kfhf k asdfh aksjdf lashdf lkajsdhf lashd fkajsdh flakjdshf lkajsdhf lkajdshf lajdsh fksdfh gkdfh ksjhjdfg ksjdhf ksdfh g" ],
+                        tags: tags,
                     },
                     {
                         id: "body",
@@ -301,7 +322,138 @@
                     },
                 ],
                 callback: r => {
-                    console.log(r);
+                    r.desk = lStore("mkbDesk");
+                    r.date = Math.round((new Date()).getTime() / 1000);
+
+                    loadingStart();
+                    POST("mkb", "card", false, { card: r }).
+                    done(a => {
+                        r._id = $.trim(a);
+
+                        if (!desk.columns[column].cards) {
+                            desk.columns[column].cards = [];
+                        }
+
+                        desk.columns[column].cards.push(r._id);
+
+                        POST("mkb", "desk", false, { desk }).
+                        done(() => {
+                            $(`#card-body-${id}`).append($(modules.mkb.renderCard(r)));
+                            modules.mkb.cards[r._id] = r;
+                            modules.mkb.assignHandlers();
+                            loadingDone();
+                        }).
+                        fail(FAIL).
+                        fail(loadingDone);
+                    }).
+                    fail(FAIL).
+                    fail(loadingDone);
+                }
+            });
+        });
+
+        $(".card-edit").off("click").on("click", function () {
+            let id = $(this).attr("data-card-id");
+
+            let tags = [];
+
+            for (let i in modules.mkb.cards) {
+                for (let j in modules.mkb.cards[i].tags) {
+                    tags.push(modules.mkb.cards[i].tags[j]);
+                }
+            }
+
+            tags = tags.filter((v, i, a) => {
+                return a.indexOf(v) === i;
+            });
+
+            cardForm({
+                title: i18n("mkb.modifyCard"),
+                footer: true,
+                borderless: true,
+                topApply: true,
+                apply: i18n("apply"),
+                size: "xl",
+                delete: i18n("delete"),
+                deleteTab: i18n("mkb.card"),
+                fields: [
+                    {
+                        id: "_id",
+                        title: i18n("mkb.id"),
+                        tab: i18n("mkb.card"),
+                        type: "text",
+                        readonly: true,
+                        value: modules.mkb.cards[id]._id,
+                    },
+                    {
+                        id: "subject",
+                        title: i18n("mkb.subject"),
+                        tab: i18n("mkb.card"),
+                        type: "text",
+                        value: modules.mkb.cards[id].subject,
+                    },
+                    {
+                        id: "color",
+                        title: i18n("mkb.color"),
+                        tab: i18n("mkb.card"),
+                        type: "color",
+                        noEmpty: true,
+                        value: modules.mkb.cards[id].color,
+                    },
+                    {
+                        id: "tags",
+                        title: i18n("mkb.tags"),
+                        tab: i18n("mkb.card"),
+                        type: "select2",
+                        multiple: true,
+                        createTags: true,
+                        colorizeTags: true,
+                        tags: true,
+                        value: modules.mkb.cards[id].tags,
+                        tags: tags,
+                    },
+                    {
+                        id: "body",
+                        title: i18n("mkb.body"),
+                        tab: i18n("mkb.card"),
+                        noHover: true,
+                        type: "code",
+                        language: "markdown",
+                        value: modules.mkb.cards[id].body,
+                    },
+                    {
+                        id: "subtasks",
+                        title: false,
+                        tab: i18n("mkb.subtasks"),
+                        noHover: true,
+                        type: "sortable",
+                        options: [],
+                        appendable: "input",
+                        checkable: true,
+                        editable: true,
+                        options: modules.mkb.cards[id].subtasks,
+                    },
+                ],
+                callback: r => {
+                    if (r.delete) {
+
+                    } else {
+                        modules.mkb.cards[id].subject = r.subject;
+                        modules.mkb.cards[id].color = r.color;
+                        modules.mkb.cards[id].tags = r.tags;
+                        modules.mkb.cards[id].body = r.body;
+                        modules.mkb.cards[id].subtasks = r.subtasks;
+
+                        loadingStart();
+                        POST("mkb", "card", false, { card: modules.mkb.cards[id] }).
+                        done(() => {
+                            $(`#card-${id}`).replaceWith($(modules.mkb.renderCard(modules.mkb.cards[id])));
+                            modules.mkb.assignHandlers();
+                            loadingDone();
+                        }).
+                        fail(FAIL).
+                        fail(loadingDone);
+                    }
                 }
             });
         });
@@ -310,7 +462,7 @@
     renderCard: function (card) {
         let s = '';
 
-        if (card.subtasks) {
+        if (card.subtasks && card.subtasks.length) {
             s += `<hr class="hr-subject" data-card-id="${card._id}" style="${card.subtasksMinimized ? "display: none;" : ""}" /><div id="subtasks-${card._id}" class="subtasks pb-2" data-card-id="${card._id}" style="${card.subtasksMinimized ? "display: none;" : ""}">`;
 
             let p = 0;
@@ -401,7 +553,7 @@
         let c = '';
 
         for (let i in column.cards) {
-            c += modules.mkb.renderCard(column.cards[i]);
+            c += modules.mkb.renderCard(modules.mkb.cards[column.cards[i]]);
         }
 
         let h = `
@@ -560,6 +712,12 @@
             done(r => {
                 desk = modules.mkb.desk();
 
+                modules.mkb.cards = {};
+
+                for (let i in r.cards) {
+                    modules.mkb.cards[r.cards[i]._id] = r.cards[i];
+                }
+
                 let h = `
                     <div class="content-wrapper kanban pt-3" style="margin-left: 0px!important; margin-top: 0px!important;">
                         <section class="content pb-3 pl-0 pr-0">
@@ -703,7 +861,7 @@
                         id: "color",
                         title: i18n("mkb.color"),
                         type: "color",
-                        value: "lime",
+                        noEmpty: true,
                     },
                 ],
                 callback: r => {
