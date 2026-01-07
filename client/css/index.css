@@ -1074,8 +1074,11 @@ code {
 }
 
 .aside-right {
-  height: calc(100vh - 75px) ! important;
+  position: fixed ! important;
+  right: 10px ! important;
+  top: 75px ! important;
   width: calc(100vw / 1.3) ! important;
+  height: calc(100vh - 95px) ! important;
   background-color: white;
   padding: 10px;
   border: solid thin #dee2e6;

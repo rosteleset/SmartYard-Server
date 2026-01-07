@@ -699,6 +699,7 @@
 
         rtd += '<form autocomplete="off"><div class="form-inline ml-3 mr-3"><div class="input-group input-group-sm mt-1"><select id="mkbDesks" class="form-control select-arrow right-top-select top-input"></select></div></div></form>';
 
+        rtd += `<li class="nav-item nav-item-back-hover"><span class="addDesk nav-link pointer" role="button" title="${i18n("mkb.addDesk")}"><i class="fas fa-lg fa-fw fa-plus-square"></i></span></li>`;
         rtd += `<li class="nav-item nav-item-back-hover"><span class="editDesk nav-link pointer" role="button" title="${i18n("mkb.editDesk")}"><i class="fas fa-lg fa-fw fa-pen-square"></i></span></li>`;
         rtd += `<li class="nav-item nav-item-back-hover"><span class="deleteDesk nav-link pointer" role="button" title="${i18n("mkb.deleteDesk")}"><i class="fas fa-lg fa-fw fa-minus-square"></i></span></li>`;
 
@@ -719,7 +720,6 @@
 
         if (parseInt(myself.uid) && AVAIL("mkb")) {
             $("#leftTopDynamic").html(`
-                <li class="nav-item d-none d-sm-inline-block"><span class="pointer nav-link text-success text-bold addDesk">${i18n("mkb.addDesk")}</span></li>
                 <li class="nav-item d-none d-sm-inline-block"><span class="pointer nav-link text-primary text-bold addColumn">${i18n("mkb.addColumn")}</span></li>
             `);
         }
