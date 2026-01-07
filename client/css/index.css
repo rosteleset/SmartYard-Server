@@ -3,6 +3,7 @@
 body {
   overflow: -moz-scrollbars-vertical;
   overflow-y: scroll ! important;
+  background-color: #f4f6f9 ! important;
 }
 
 body::-webkit-scrollbar {
@@ -938,7 +939,7 @@ code {
 }
 
 .kanban-col {
-  min-height: calc(100vh - 90px);
+  min-height: calc(100vh - 75px);
 }
 
 .card-no-scroll {
@@ -1035,6 +1036,10 @@ code {
   background-color: black ! important;
 }
 
+.text-black {
+  color: black ! important;
+}
+
 .dropdown-item:focus, .dropdown-item:hover {
   color: #ffffff ! important;
   background-color: #007bff ! important;
@@ -1066,4 +1071,20 @@ code {
 
 .pt-35 {
   padding-top: 1.25rem ! important;
+}
+
+.aside-right {
+  height: calc(100vh - 75px) ! important;
+  width: calc(100vw / 1.3) ! important;
+  background-color: white;
+  padding: 10px;
+  border: solid thin #dee2e6;
+  border-radius: .25rem;
+  box-shaadow: 0 0 1px rgba(0, 0, 0, .125), 0 1px 3px rgba(0, 0, 0, .2);
+}
+
+.aside-right-body {
+  height: 100%;
+  width: 100%;
+  overflow-y: scroll;
 }

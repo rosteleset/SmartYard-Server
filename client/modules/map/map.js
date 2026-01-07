@@ -77,7 +77,7 @@
         document.title = i18n("windowTitle") + " :: " + i18n("map.map");
 
         $("#altForm").hide();
-        $("#mainForm").html(`<div id='mapContainer' style='width: 100%; height: ${height}px; border: solid thin #dee2e6; border-radius: .25rem' class='mt-2 resizable'></div>`);
+        $("#mainForm").html(`<div id='mapContainer' style='width: 100%; height: ${height}px; border: solid thin #dee2e6; border-radius: .25rem; box-shadow: 0 0 1px rgba(0, 0, 0, .125), 0 1px 3px rgba(0, 0, 0, .2);' class='mt-2 resizable'></div>`);
 
         modules.map.map = L.map('mapContainer', { editable: true });
 

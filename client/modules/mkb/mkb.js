@@ -355,7 +355,7 @@
             });
         });
 
-        $(".card-edit").off("click").on("click", function () {
+        $(".cardEdit").off("click").on("click", function () {
             let id = $(this).attr("data-card-id");
 
             let tags = [];
@@ -462,6 +462,12 @@
                 }
             });
         });
+
+        $(".cardComments").off("click").on("click", function () {
+            setTimeout(() => {
+                $("#aside-right").modal("show");
+            }, 25);
+        });
     },
 
     renderCard: function (card) {
@@ -536,9 +542,10 @@
                 <div class="card-header card-handle pl-1 pr-3">
                     <h5 class="card-title">${c}</h5>
                     <div class="card-tools">
+                        <span class="btn btn-tool text-black loading" title="${i18n("mkb.loading")}" style="cursor: default ! important; display: none;" data-card-id="${card._id}"><i class="fas fa-fw fa-spinner rotate"></i></span>
                         <span class="btn btn-tool" title="${i18n("mkb.attachments")}"><i class="fas fa-fw fa-paperclip"></i></span>
-                        <span class="btn btn-tool" title="${i18n("mkb.comments")}"><i class="far fa-fw fa-comments"></i></span>
-                        <span class="btn btn-tool card-edit" title="${i18n("mkb.edit")}" data-card-id="${card._id}"><i class="fas fa-fw fa-edit"></i></span>
+                        <span class="btn btn-tool cardComments" title="${i18n("mkb.comments")}"><i class="far fa-fw fa-comments"></i></span>
+                        <span class="btn btn-tool cardEdit" title="${i18n("mkb.edit")}" data-card-id="${card._id}"><i class="fas fa-fw fa-edit"></i></span>
                         <span class="btn btn-tool btn-min-max" title="${card.cardMinimized ? i18n("mkb.restore") : i18n("mkb.minimize")}" data-card-id="${card._id}"><i class="fas fa-fw ${card.cardMinimized ? "fa-expand-arrows-alt" : "fa-compress-arrows-alt"}"></i></span>
                     </div>
                 </div>
@@ -566,6 +573,7 @@
                 <div class="card-header col-handle pl-3 pr-3">
                     <h3 class="card-title pt-1 text-bold">${$.trim(escapeHTML(column.title))}</h3>
                     <div class="card-tools" data-column-id="${column._id}">
+                        <span class="btn btn-tool column-table" title="${i18n("mkb.tableView")}"><i class="fas fa-fw fa-table"></i></span>
                         <span class="btn btn-tool card-add" title="${i18n("mkb.addCard")}"><i class="fas fa-fw fa-plus-circle"></i></span>
                         <span class="btn btn-tool column-edit" title="${i18n("mkb.edit")}"><i class="fas fa-fw fa-edit"></i></span>
                     </div>
@@ -636,8 +644,8 @@
                 }
 
                 let h = `
-                    <div class="content-wrapper kanban pt-3" style="margin-left: 0px!important; margin-top: 0px!important;">
-                        <section class="content pb-3 pl-0 pr-0">
+                    <div class="content-wrapper kanban pt-2" style="margin-left: 0px!important; margin-top: 0px!important;">
+                        <section class="content pb-2 pl-0 pr-0">
                             <div id="desk" class="h-100 kanban-desk" style="display: flex;"></div>
                         </section>
                     </div>
@@ -680,7 +688,7 @@
         return desk;
     },
 
-    route: function (params) {
+    route: function () {
         subTop();
 
         $("#altForm").hide();
