@@ -18,7 +18,7 @@
     "addCard": "Add card",
     "editDesk": "Rename desk",
     "deleteDesk": "Delete desk",
-    "confirmDeleteDesk": "Delete desk \"%s\"?",
+    "confirmDeleteDesk": "Delete desk \"%s\"? (cards will not be deleted)",
     "confirmDeleteColumn": "Delete column \"%s\"? (cards will not be deleted)",
     "desk": "Desk",
     "id": "#",
