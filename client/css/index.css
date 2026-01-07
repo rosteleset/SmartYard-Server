@@ -872,7 +872,7 @@ code {
 }
 
 .dots {
-  background-image: radial-gradient(rgba(211, 211, 211, 0.3) 1px, transparent 0);
+  background-image: radial-gradient(rgb(235, 235, 235) 1px, transparent 0);
   background-size: 10px 10px;
   background-position: -4px -4px;
 }

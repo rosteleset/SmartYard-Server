@@ -27,6 +27,7 @@
     "card": "Card",
     "subtasks": "Subtasks",
     "modifyCard": "Modify card",
+    "tableView": "Table mode",
     "methods": {
         "mkb": {
             "_title": "Kanban",

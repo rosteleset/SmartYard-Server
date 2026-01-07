@@ -538,7 +538,7 @@
         }
 
         let h = `
-            <div id="card-${card._id}" class="kanban-card card card-${card.color} card-outline">
+            <div id="card-${card._id}" class="kanban-card card card-${card.color} card-outline noselect">
                 <div class="card-header card-handle pl-1 pr-3">
                     <h5 class="card-title">${c}</h5>
                     <div class="card-tools">
