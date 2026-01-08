@@ -109,9 +109,7 @@
              */
 
             public function getDesks() {
-                return $desks = $this->get([
-                    "type" => "desk",
-                ]);
+                return $desks = $this->get([ "type" => "desk" ]);
             }
 
             /**
@@ -157,7 +155,7 @@
              */
 
             public function deleteCard($id) {
-                return true;
+                return $this->delete([ "type" => "card", "_id" => $id ]);
             }
         }
     }
