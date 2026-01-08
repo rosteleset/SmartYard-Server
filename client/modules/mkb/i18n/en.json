@@ -28,6 +28,7 @@
     "subtasks": "Subtasks",
     "modifyCard": "Modify card",
     "tableView": "Table mode",
+    "renameDesk": "Rename desk",
     "methods": {
         "mkb": {
             "_title": "Kanban",

@@ -901,7 +901,7 @@
         $(".editDesk").off("click").on("click", () => {
             let desk = modules.mkb.desk();
 
-            mPrompt(i18n("mkb.desk"), i18n("mkb.addDesk"), desk.name, newName => {
+            mPrompt(i18n("mkb.desk"), i18n("mkb.renameDesk"), desk.name, newName => {
                 if ($.trim(newName)) {
                     loadingStart();
                     desk.name = newName;
