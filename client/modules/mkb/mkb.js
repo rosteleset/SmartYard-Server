@@ -532,7 +532,7 @@
                         <div id='mkbCommentPreviewToggle' class='pointer noselect' style='font-size: 0.8rem; position: absolute; right: 10px; top: -10px; border: solid thin #ced4da; border-radius: 0.25rem; background: white; padding-left: 4px; padding-right: 4px;'>
                             ${i18n("preview")}
                         </div>
-                        <div id='mkbCommentAdd' class='pointer noselect' title='Ctrl+Enter' style='font-size: 0.8rem; position: absolute; right: 10px; bottom: -10px; border: solid thin #ced4da; border-radius: 0.25rem; background: white; padding-left: 4px; padding-right: 4px;'>
+                        <div id='mkbCommentAdd' class='pointer noselect bg-primary text-bold' title='Ctrl+Enter' style='font-size: 0.8rem; position: absolute; right: 10px; bottom: -10px; border: solid thin #ced4da; border-radius: 0.25rem; padding-left: 4px; padding-right: 4px;'>
                             ${i18n("add")}
                         </div>
                     </div>
