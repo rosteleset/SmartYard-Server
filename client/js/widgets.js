@@ -485,7 +485,7 @@ $(document).on('select2:open', '.select2', function () {
     }, 5);
 });
 
-$(document).off("scroll").on("scroll", () => {
+$(document).on("scroll", () => {
     if (backToTopTicking) {
         clearTimeout(backToTopTicking);
     }
@@ -504,7 +504,7 @@ $(document).off("scroll").on("scroll", () => {
     }, 150);
 });
 
-$(window).off("resize").on("resize", () => {
+$(window).on("resize", () => {
     if (windowResizeTicking) {
         clearTimeout(windowResizeTicking);
     }
@@ -562,5 +562,4 @@ setInterval(() => {
 
     $(".blink-icon.blinking").toggleClass("text-warning");
     $(".blink-icon:not(.blinking)").removeClass("text-warning");
-    // $("body").addClass("sidebar-collapse");
 }, 1000);
