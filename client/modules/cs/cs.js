@@ -582,7 +582,7 @@
                 modules.cs.rows.sort(sf);
 
                 let h = '';
-                h += '<table width="100%" class="mt-3 table table-hover table-bordered" id="csSheet">';
+                h += '<table width="100%" class="mt-2 table table-hover table-bordered" id="csSheet" style="border: solid thin #dee2e6; border-radius: .25rem; box-shadow: 0 0 1px rgba(0, 0, 0, .125), 0 1px 3px rgba(0, 0, 0, .2);">';
                 for (let p in parts) {
                     if (p != cp) {
                         if (parseInt(p) >= 0 || p) {

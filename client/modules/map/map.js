@@ -69,15 +69,16 @@
     },
 
     route: function (params) {
-        let height = $(window).height() - mainFormTop;
+        let height = mainFormTop;
+
         if ($('#subTop:visible').length) {
-            height -= $('#subTop').height();
+            height += $('#subTop').height();
         }
 
         document.title = i18n("windowTitle") + " :: " + i18n("map.map");
 
         $("#altForm").hide();
-        $("#mainForm").html(`<div id='mapContainer' style='width: 100%; height: ${height}px; border: solid thin #dee2e6; border-radius: .25rem; box-shadow: 0 0 1px rgba(0, 0, 0, .125), 0 1px 3px rgba(0, 0, 0, .2);' class='mt-2 resizable'></div>`);
+        $("#mainForm").html(`<div id='mapContainer' style='width: 100%; height: calc(100vh - ${height}px); border: solid thin #dee2e6; border-radius: .25rem; box-shadow: 0 0 1px rgba(0, 0, 0, .125), 0 1px 3px rgba(0, 0, 0, .2);' class='mt-2'></div>`);
 
         modules.map.map = L.map('mapContainer', { editable: true });
 
@@ -184,14 +185,6 @@
             cluster.addTo(modules.map.map);
             modules.map.map.fitBounds(cluster.getBounds());
         }
-
-        $("#mapContainer").off("windowResized").on("windowResized", () => {
-            let height = $(window).height() - mainFormTop;
-            if ($('#subTop:visible').length) {
-                height -= $('#subTop').height();
-            }
-            $("#mapContainer").css("height", height + "px");
-        });
 
         loadingDone();
     },

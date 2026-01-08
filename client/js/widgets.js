@@ -98,6 +98,9 @@ function mConfirm(body, title, button, callback) {
     $('#confirmModalLabel').html(title);
     $('#confirmModalBody').html(body);
     let bc = 'btn-primary';
+    if (!button) {
+        button = i18n("confirm")
+    }
     button = button.split(':');
     if (button.length === 2) {
         bc = 'btn-' + button[0];
@@ -111,6 +114,9 @@ function mConfirm(body, title, button, callback) {
     });
     autoZ($('#confirmModal')).modal('show');
     xblur();
+    $("#confirmModalHeader").parent().draggable({
+        handle: "#confirmModalHeader",
+    });
 }
 
 let mYesNoTimeout = 0;
@@ -144,11 +150,14 @@ function mYesNo(body, title, callbackYes, callbackNo, yes, no, timeout) {
             $('#yesnoModal').modal('hide');
         }, timeout);
     }
+    $("#yesnoModalHeader").parent().draggable({
+        handle: "#yesnoModalHeader",
+    });
 }
 
 function mAlert(body, title, callback, titleButton, mainButton) {
     if (!title) {
-        title = i18n("message");
+        title = i18n("alert");
     }
     if (title.toLowerCase().indexOf(i18n("error").toLowerCase()) >= 0) {
         title = '<span class="text-danger">' + title + '</span>';
@@ -177,11 +186,14 @@ function mAlert(body, title, callback, titleButton, mainButton) {
     });
     autoZ($('#alertModal')).modal('show');
     xblur();
+    $("#alertModalHeader").parent().draggable({
+        handle: "#alertModalHeader",
+    });
 }
 
 function mPrompt(prompt, title, value, callback, titleButton, mainButton) {
     if (!title) {
-        title = i18n("message");
+        title = i18n("prompt");
     }
     let l = $('#promptModalLabel').html(title);
     if (titleButton) {
@@ -210,12 +222,15 @@ function mPrompt(prompt, title, value, callback, titleButton, mainButton) {
     setTimeout(() => {
         $('#promptModalInput').focus();
     }, 100);
+    $("#promptModalHeader").parent().draggable({
+        handle: "#promptModalHeader",
+    });
 }
 
 function mPassword(prompt, title, callback, titleButton, mainButton) {
     $('#passwordModalInput').val("");
     if (!title) {
-        title = i18n("message");
+        title = i18n("password");
     }
     let l = $('#passwordModalLabel').html(title);
     if (titleButton) {
@@ -245,6 +260,9 @@ function mPassword(prompt, title, callback, titleButton, mainButton) {
     setTimeout(() => {
         $('#passwordModalInput').focus();
     }, 100);
+    $("#passwordModalHeader").parent().draggable({
+        handle: "#passwordModalHeader",
+    });
 }
 
 function modal(body) {

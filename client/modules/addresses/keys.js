@@ -52,14 +52,6 @@
                 rows: () => {
                     let rows = [];
 
-                    for (let i = 0; i < 100; i++) {
-                        result.keys.push({
-                            keyId: i,
-                            rfId: i,
-                            comments: i,
-                        });
-                    }
-
                     for (let i in result.keys) {
                         rows.push({
                             uid: result.keys[i].keyId,

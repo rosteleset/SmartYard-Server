@@ -569,7 +569,7 @@ function modalTable(params) {
     params.target = "#tableModalBody";
 
     if (params.caption) {
-        $("#tableModal").draggable({
+        $("#tableModalBody").parent().parent().draggable({
             handle: "#tableModalHeader",
         });
     }

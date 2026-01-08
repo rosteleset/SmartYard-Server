@@ -121,6 +121,9 @@ function loadFile(mimeTypes, maxSize, callback, button, quiet) {
     if (!quiet) {
         autoZ($('#uploadModal')).modal('show');
         xblur();
+        $("#uploadModalBody").parent().draggable({
+            handle: "#uploadModalHeader",
+        });
     }
 
     $("#chooseFileToUpload").click();
