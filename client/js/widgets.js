@@ -114,7 +114,7 @@ function mConfirm(body, title, button, callback) {
     });
     autoZ($('#confirmModal')).modal('show');
     xblur();
-    $("#confirmModalHeader").parent().draggable({
+    $("#confirmModalHeader").parent().parent().draggable({
         handle: "#confirmModalHeader",
     });
 }
@@ -150,7 +150,7 @@ function mYesNo(body, title, callbackYes, callbackNo, yes, no, timeout) {
             $('#yesnoModal').modal('hide');
         }, timeout);
     }
-    $("#yesnoModalHeader").parent().draggable({
+    $("#yesnoModalHeader").parent().parent().draggable({
         handle: "#yesnoModalHeader",
     });
 }
@@ -186,7 +186,7 @@ function mAlert(body, title, callback, titleButton, mainButton) {
     });
     autoZ($('#alertModal')).modal('show');
     xblur();
-    $("#alertModalHeader").parent().draggable({
+    $("#alertModalHeader").parent().parent().draggable({
         handle: "#alertModalHeader",
     });
 }
@@ -222,7 +222,7 @@ function mPrompt(prompt, title, value, callback, titleButton, mainButton) {
     setTimeout(() => {
         $('#promptModalInput').focus();
     }, 100);
-    $("#promptModalHeader").parent().draggable({
+    $("#promptModalHeader").parent().parent().draggable({
         handle: "#promptModalHeader",
     });
 }
@@ -260,7 +260,7 @@ function mPassword(prompt, title, callback, titleButton, mainButton) {
     setTimeout(() => {
         $('#passwordModalInput').focus();
     }, 100);
-    $("#passwordModalHeader").parent().draggable({
+    $("#passwordModalHeader").parent().parent().draggable({
         handle: "#passwordModalHeader",
     });
 }

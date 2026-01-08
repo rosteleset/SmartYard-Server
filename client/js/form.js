@@ -97,7 +97,7 @@ function cardForm(params) {
     if (params.target) {
         h += `<div class="card mt-2">`;
     } else {
-        h += `<div class="card mt-0 mb-0" style="max-height: calc(100vh - (100vh / 10));">`;
+        h += `<div class="card mt-0 mb-0" style="max-height: calc(100vh - 200px);">`;
         $("#modalBody").parent().removeClass("modal-sm modal-lg modal-xl");
         if ([ "sm", "lg", "xl" ].indexOf(params.size) >= 0) {
             $("#modalBody").parent().addClass("modal-" + params.size);
@@ -703,7 +703,9 @@ function cardForm(params) {
                         autofocus = _prefix + params.fields[i].id + "-search";
                     };
                 }
+                // TODO: Do something with this!!! (max-height)
                 h += `<div name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" class="overflow-y-auto p-2" style="max-height: 400px; min-height: 400px; height: 400px; overflow-y: auto!important; position: relative; border: solid thin lightgray; border-radius: 3px;"></div>`;
+                // TODO: Do something with this!!! (max-height)
                 if (params.fields[i].add || params.fields[i].rename || params.fields[i].delete) {
                     h += `<div class="mt-2">`;
                     h += `<button id="${_prefix}${params.fields[i].id}-clear" type="button" class="btn btn-secondary mr-2" title="${i18n("clearSelection")}"><i class="fas fa-fw fa-eraser"></i></button>`;
