@@ -269,6 +269,8 @@
                 return a.indexOf(v) === i;
             });
 
+            tags.sort();
+
             cardForm({
                 title: i18n("mkb.addCard"),
                 footer: true,
@@ -328,6 +330,8 @@
                     r.desk = lStore("mkbDesk");
                     r.date = Math.round((new Date()).getTime() / 1000);
 
+                    r.tags.sort();
+
                     loadingStart();
                     POST("mkb", "card", false, { card: r }).
                     done(a => {
@@ -369,6 +373,8 @@
             tags = tags.filter((v, i, a) => {
                 return a.indexOf(v) === i;
             });
+
+            tags.sort();
 
             cardForm({
                 title: i18n("mkb.modifyCard"),
@@ -443,6 +449,8 @@
                     if (r.delete) {
 
                     } else {
+                        r.tags.sort();
+
                         modules.mkb.cards[id].subject = r.subject;
                         modules.mkb.cards[id].color = r.color;
                         modules.mkb.cards[id].tags = r.tags;
