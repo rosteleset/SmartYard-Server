@@ -87,6 +87,16 @@ server {
                 fastcgi_pass unix:/var/run/php/php-fpm.sock;
         }
 
+        location /ud {
+                rewrite ^.*$ /ud.php last;
+        }
+
+        location = /ud.php {
+                root /opt/rbt/server;
+                include snippets/fastcgi-php.conf;
+                fastcgi_pass unix:/var/run/php/php-fpm.sock;
+        }
+
         location /mobile {
                 if ($request_method = 'OPTIONS') {
                         add_header 'Access-Control-Allow-Origin' '*';

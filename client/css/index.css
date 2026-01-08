@@ -1074,7 +1074,7 @@ code {
   position: fixed ! important;
   right: 10px ! important;
   top: 75px ! important;
-  width: calc(100vw / 1.3) ! important;
+  width: calc(100vw / 2) ! important;
   height: calc(100vh - 95px) ! important;
   background-color: white;
   padding: 10px;
@@ -1085,5 +1085,4 @@ code {
 .aside-right-body {
   height: 100%;
   width: 100%;
-  overflow-y: scroll;
 }

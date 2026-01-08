@@ -464,8 +464,157 @@
         });
 
         $(".cardComments").off("click").on("click", function () {
+            let id = $(this).attr("data-card-id");
+
             setTimeout(() => {
+                let h = '';
+
+                h += `
+                    <div style='width: 100%; height: calc(100vh - 329px) ! important;'>
+                        <div id='mkbCommentsCaption' class='text-bold'><div class="mt-1 mb-2">${modules.mkb.cards[id].subject}</div><hr class="p-0 m-0"/></div>
+                        <div id='mkbComments' class='resizable' style='width: 100%; height: 100px; margin-top: 10px; overflow-y: auto;'>
+                            <span class="ml-2">123</span><br />
+                            123<br />
+                            123<br />
+                            123<br />
+                            123<br />
+                            123<br />
+                            123<br />
+                            123<br />
+                            123<br />
+                            123<br />
+                            123<br />
+                            123<br />
+                            123<br />
+                            123<br />
+                            123<br />
+                            123<br />
+                            123<br />
+                            123<br />
+                            123<br />
+                            123<br />
+                            123<br />
+                            123<br />
+                            123<br />
+                            123<br />
+                            123<br />
+                            123<br />
+                            123<br />
+                            123<br />
+                            123<br />
+                            123<br />
+                            123<br />
+                            123<br />
+                            123<br />
+                            123<br />
+                            123<br />
+                            123<br />
+                            123<br />
+                            123<br />
+                            123<br />
+                            123<br />
+                            123<br />
+                            123<br />
+                            123<br />
+                            123<br />
+                            123<br />
+                            123<br />
+                            123<br />
+                            123<br />
+                            123<br />
+                            123<br />
+                            123<br />
+                        </div>
+                    </div>
+                    <div style='width: 100%; height: 200px; position: relative;'>
+                        <pre class='ace-editor' id='mkbComment'></pre>
+                        <div id='mkbCommentPreview' style='display: none; border: solid thin #ced4da; border-radius: 0.25rem; overflow-y: auto; padding-left: 4px; padding-top: 4px;'></div>
+                        <div id='mkbCommentPreviewToggle' class='pointer noselect' style='font-size: 0.8rem; position: absolute; right: 10px; top: -10px; border: solid thin #ced4da; border-radius: 0.25rem; background: white; padding-left: 4px; padding-right: 4px;'>
+                            ${i18n("preview")}
+                        </div>
+                        <div id='mkbCommentAdd' class='pointer noselect' title='Ctrl+Enter' style='font-size: 0.8rem; position: absolute; right: 10px; bottom: -10px; border: solid thin #ced4da; border-radius: 0.25rem; background: white; padding-left: 4px; padding-right: 4px;'>
+                            ${i18n("add")}
+                        </div>
+                    </div>
+                `;
+
+                $("#aside-right-body").html(h);
+
+                let editor = ace.edit("mkbComment");
+
+                if (modules.darkmode && modules.darkmode.isDark()) {
+                    editor.setTheme("ace/theme/one_dark");
+                } else {
+                    editor.setTheme("ace/theme/chrome");
+                }
+
+                editor.setOptions({
+                    enableBasicAutocompletion: true,
+                    enableSnippets: true,
+                    enableLiveAutocompletion: false
+                });
+
+                editor.session.setMode("ace/mode/markdown");
+
+                editor.setFontSize(14);
+
+                editor.commands.removeCommand("removeline");
+                editor.commands.removeCommand("redo");
+
+                editor.commands.addCommand({
+                    name: "removeline",
+                    description: "Remove line",
+                    bindKey: {
+                        win: "Ctrl-Y",
+                        mac: "Cmd-Y"
+                    },
+                    exec: function (editor) { editor.removeLines(); },
+                    scrollIntoView: "cursor",
+                    multiSelectAction: "forEachLine"
+                });
+
+                editor.commands.addCommand({
+                    name: "redo",
+                    description: "Redo",
+                    bindKey: {
+                        win: "Ctrl-Shift-Z",
+                        mac: "Command-Shift-Z"
+                    },
+                    exec: function (editor) { editor.redo(); }
+                });
+
+                editor.commands.addCommand({
+                    name: "add",
+                    description: "Add",
+                    bindKey: {
+                        win: "Ctrl-Enter",
+                        mac: "Command-Enter"
+                    },
+                    exec: function (editor) { console.log(1123); }
+                });
+
+                $("#mkbCommentPreviewToggle").off("click").on("click", function () {
+                    if ($("#mkbCommentPreview:visible").length) {
+                        $("#mkbCommentPreviewToggle").text(i18n("preview"));
+                        $("#mkbComment").show();
+                        $("#mkbCommentPreview").hide();
+                        editor.focus();
+                    } else {
+                        $("#mkbCommentPreviewToggle").text(i18n("editor"));
+                        $("#mkbComment").hide();
+                        $("#mkbCommentPreview").css("height", "200px").html(convertLinks(rbtMdRender($.trim(editor.getValue())))).show();
+                    }
+                });
+
                 $("#aside-right").modal("show");
+
+                $("#mkbComments").css("height", ($("#mkbCommentsCaption").parent().outerHeight() - $("#mkbCommentsCaption").outerHeight() - 24) + "px");
+
+                $("#mkbComments").off("windowResized").on("windowResized", () => {
+                    $("#mkbComments").css("height", ($("#mkbCommentsCaption").parent().outerHeight() - $("#mkbCommentsCaption").outerHeight() - 24) + "px");
+                });
+
+                editor.focus();
             }, 25);
         });
     },
@@ -544,7 +693,7 @@
                     <div class="card-tools">
                         <span class="btn btn-tool text-black loading" title="${i18n("mkb.loading")}" style="cursor: default ! important; display: none;" data-card-id="${card._id}"><i class="fas fa-fw fa-spinner rotate"></i></span>
                         <span class="btn btn-tool" title="${i18n("mkb.attachments")}"><i class="fas fa-fw fa-paperclip"></i></span>
-                        <span class="btn btn-tool cardComments" title="${i18n("mkb.comments")}"><i class="far fa-fw fa-comments"></i></span>
+                        <span class="btn btn-tool cardComments" title="${i18n("mkb.comments")}" data-card-id="${card._id}"><i class="far fa-fw fa-comments"></i></span>
                         <span class="btn btn-tool cardEdit" title="${i18n("mkb.edit")}" data-card-id="${card._id}"><i class="fas fa-fw fa-edit"></i></span>
                         <span class="btn btn-tool btn-min-max" title="${card.cardMinimized ? i18n("mkb.restore") : i18n("mkb.minimize")}" data-card-id="${card._id}"><i class="fas fa-fw ${card.cardMinimized ? "fa-expand-arrows-alt" : "fa-compress-arrows-alt"}"></i></span>
                     </div>

@@ -486,44 +486,42 @@ $(document).on('select2:open', '.select2', function () {
 });
 
 $(document).off("scroll").on("scroll", () => {
-    if (!backToTopTicking) {
-        window.requestAnimationFrame(() => {
-            if ($('html').scrollTop() < 16) {
-                if (backToTopButton) {
-                    backToTopButton = false;
-                    $(".back-to-top").hide();
-                }
-            } else {
-                if (!backToTopButton) {
-                    backToTopButton = true;
-                    $(".back-to-top").show();
-                }
-            }
-            backToTopTicking = false;
-        });
-        backToTopTicking = true;
+    if (backToTopTicking) {
+        clearTimeout(backToTopTicking);
     }
+    backToTopTicking = setTimeout(() => {
+        if ($('html').scrollTop() < 16) {
+            if (backToTopButton) {
+                backToTopButton = false;
+                $(".back-to-top").hide();
+            }
+        } else {
+            if (!backToTopButton) {
+                backToTopButton = true;
+                $(".back-to-top").show();
+            }
+        }
+    }, 150);
 });
 
 $(window).off("resize").on("resize", () => {
-    if (!windowResizeTicking) {
-        window.requestAnimationFrame(() => {
-            if ($("#editorContainer:visible").length) {
-                if (!$("#editorContainer").attr("data-fh")) {
-                    let height = $(window).height() - mainFormTop;
-                    if ($('#subTop:visible').length) {
-                        height -= $('#subTop').height();
-                    }
-                    $("#editorContainer").css("height", height + "px");
-                }
-            }
-            if ($(".resizable:visible").length) {
-                $(".resizable:visible").trigger("windowResized");
-            }
-            windowResizeTicking = false;
-        });
-        windowResizeTicking = true;
+    if (windowResizeTicking) {
+        clearTimeout(windowResizeTicking);
     }
+    windowResizeTicking = setTimeout(() => {
+        if ($("#editorContainer:visible").length) {
+            if (!$("#editorContainer").attr("data-fh")) {
+                let height = $(window).height() - mainFormTop;
+                if ($('#subTop:visible').length) {
+                    height -= $('#subTop').height();
+                }
+                $("#editorContainer").css("height", height + "px");
+            }
+        }
+        if ($(".resizable:visible").length) {
+            $(".resizable:visible").trigger("windowResized");
+        }
+    }, 150);
 });
 
 $(document).on("paste", e => {
