@@ -1105,14 +1105,15 @@ code {
 
 .aside-right {
   position: fixed ! important;
-  right: 10px ! important;
-  top: 75px ! important;
+  right: 0px ! important;
+  top: 56px ! important;
   width: calc(100vw / 2) ! important;
-  height: calc(100vh - 95px) ! important;
+  height: calc(100vh - 55px) ! important;
   background-color: white;
   padding: 10px;
   border: solid thin #dee2e6;
-  border-radius: .25rem;
+  border-top-left-radius: .25rem;
+  border-bottom-left-radius: .25rem;
 }
 
 .aside-right-body {

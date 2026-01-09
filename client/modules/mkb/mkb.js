@@ -482,7 +482,7 @@
                         ${date("H:i", modules.mkb.cards[id].comments[i].date)}
                     </div>
                     <div class='noselect bg-white border-no-shadow pl-2 pr-2' style='font-size: 0.7rem; position: absolute; left: 56px; top: -10px;'>
-                        ${modules.mkb.cards[id].comments[i].author}
+                        ${modules.users.login2name(modules.mkb.cards[id].comments[i].author)}
                     </div>
                     <div class='pointer noselect bg-danger border-no-shadow pl-1 pr-1 deleteComment' style='font-size: 0.7rem; position: absolute; right: 6px; top: -10px;'>
                         <i class='fas fa-fw fa-trash-alt'></i>
@@ -509,8 +509,8 @@
                                     h += '</div>';
                                 }
                                 f = false;
-                                h += '<div class="commentsDay">';
-                                h += `<div class="mb-4"><hr class='hr-text-white-no-padding' data-content='${d}' style='margin-block: 8px ! important;' /></div>`;
+                                h += '<div class="commentsDay kanban-card-body mb-3">';
+                                h += `<div class="mb-4"><hr class='hr-text-white-no-padding' data-content='${d}' style='margin-block: 0px ! important;' /></div>`;
                             }
                             h += `
                                 <div class="ml-2 mb-3 mr-2 p-2 pt-3 kanban-card-body border-no-shadow comment" data-comment-index="${i}" style="position: relative;">
@@ -565,10 +565,12 @@
             setTimeout(() => {
                 let h = '';
 
+                let zb = 406;
+
                 h += `
-                    <div style='width: 100%; height: calc(100vh - 329px) ! important;'>
-                        <div id='mkbCommentsCaption' class='text-bold'><div class="mt-2 mb-2">${modules.mkb.cards[id].subject}</div></div>
-                        <div id='mkbComments' class='resizable' style='width: 100%; height: 100px; overflow-y: auto;'>
+                    <div style='width: 100%; height: calc(100vh - ${zb}px) ! important;'>
+                        <div id='mkbCommentsCaption' class='text-bold'><div class="mt-2 mb-3">${modules.mkb.cards[id].subject}</div></div>
+                        <div id='mkbComments' class='mb-4 kanban-card-body' style='width: 100%; height: 100px; overflow-y: auto;'>
                         ${comments()}
                         </div>
                     </div>
@@ -663,11 +665,9 @@
 
                 $("#aside-right").modal("show");
 
-                $("#mkbComments").css("height", ($("#mkbCommentsCaption").parent().outerHeight() - $("#mkbCommentsCaption").outerHeight() - 24) + "px");
+                let z = zb - 24 - $("#mkbCommentsCaption").outerHeight();
 
-                $("#mkbComments").off("windowResized").on("windowResized", () => {
-                    $("#mkbComments").css("height", ($("#mkbCommentsCaption").parent().outerHeight() - $("#mkbCommentsCaption").outerHeight() - 24) + "px");
-                });
+                $("#mkbComments").css("height", `calc(100vh - ${z}px`);
 
                 $("#mkbCommentCancel").off("click").on("click", () => {
                     $(`.comment[data-comment-index="${ci}"]`).html(comment(ci));
@@ -952,129 +952,132 @@
     },
 
     route: function () {
-        subTop();
+        modules.users.loadUsers(() => {
+            subTop();
 
-        $("#altForm").hide();
+            $("#altForm").hide();
 
-        document.title = i18n("windowTitle") + " :: " + i18n("mkb.mkb");
+            document.title = i18n("windowTitle") + " :: " + i18n("mkb.mkb");
 
-        let rtd = '';
+            let rtd = '';
 
-        rtd += '<form autocomplete="off"><div class="form-inline ml-3 mr-3"><div class="input-group input-group-sm mt-1"><select id="mkbDesks" class="form-control select-arrow right-top-select top-input"></select></div></div></form>';
+            rtd += '<form autocomplete="off"><div class="form-inline ml-3 mr-3"><div class="input-group input-group-sm mt-1"><select id="mkbDesks" class="form-control select-arrow right-top-select top-input"></select></div></div></form>';
 
-        rtd += `<li class="nav-item nav-item-back-hover"><span class="addDesk nav-link pointer" role="button" title="${i18n("mkb.addDesk")}"><i class="fas fa-lg fa-fw fa-plus-square"></i></span></li>`;
-        rtd += `<li class="nav-item nav-item-back-hover"><span class="editDesk nav-link pointer" role="button" title="${i18n("mkb.editDesk")}"><i class="fas fa-lg fa-fw fa-pen-square"></i></span></li>`;
-        rtd += `<li class="nav-item nav-item-back-hover"><span class="deleteDesk nav-link pointer" role="button" title="${i18n("mkb.deleteDesk")}"><i class="fas fa-lg fa-fw fa-minus-square"></i></span></li>`;
+            rtd += `<li class="nav-item nav-item-back-hover"><span class="addDesk nav-link pointer" role="button" title="${i18n("mkb.addDesk")}"><i class="fas fa-lg fa-fw fa-plus-square"></i></span></li>`;
+            rtd += `<li class="nav-item nav-item-back-hover"><span class="editDesk nav-link pointer" role="button" title="${i18n("mkb.editDesk")}"><i class="fas fa-lg fa-fw fa-pen-square"></i></span></li>`;
+            rtd += `<li class="nav-item nav-item-back-hover"><span class="deleteDesk nav-link pointer" role="button" title="${i18n("mkb.deleteDesk")}"><i class="fas fa-lg fa-fw fa-minus-square"></i></span></li>`;
 
-        $("#rightTopDynamic").html(rtd);
+            $("#rightTopDynamic").html(rtd);
 
-        $("#mkbDesks").off("change").on("change", () => {
-            lStore("mkbDesk", $("#mkbDesks").val());
+            $("#mkbDesks").off("change").on("change", () => {
+                lStore("mkbDesk", $("#mkbDesks").val());
+                modules.mkb.renderDesk();
+            });
+
+            if (modules.mkb.desks.indexOf(i18n("mkb.default")) < 0) {
+                modules.mkb.desks.push(i18n("mkb.default"));
+            }
+
+            if (modules.mkb.menuItem) {
+                $("#" + modules.mkb.menuItem).children().first().attr("href", navigateUrl("mkb"));
+            }
+
+            if (parseInt(myself.uid) && AVAIL("mkb")) {
+                $("#leftTopDynamic").html(`
+                    <li class="nav-item d-none d-sm-inline-block"><span class="pointer nav-link text-primary text-bold addColumn">${i18n("mkb.addColumn")}</span></li>
+                `);
+            }
+
             modules.mkb.renderDesk();
-        });
 
-        if (modules.mkb.desks.indexOf(i18n("mkb.default")) < 0) {
-            modules.mkb.desks.push(i18n("mkb.default"));
-        }
+            $(".addDesk").off("click").on("click", () => {
+                mPrompt(i18n("mkb.desk"), i18n("mkb.addDesk"), "", desk => {
+                    if ($.trim(desk) && modules.mkb.deskNames.indexOf($.trim(desk)) < 0) {
+                        loadingStart();
+                        POST("mkb", "desk", false, { desk: { name: desk, columns: [] } }).
+                        done(() => {
+                            lStore("mkbDesk", desk);
+                            modules.mkb.renderDesk();
+                        }).
+                        fail(FAIL).
+                        fail(loadingDone);
+                    }
+                });
+            });
 
-        if (modules.mkb.menuItem) {
-            $("#" + modules.mkb.menuItem).children().first().attr("href", navigateUrl("mkb"));
-        }
+            $(".editDesk").off("click").on("click", () => {
+                let desk = modules.mkb.desk();
 
-        if (parseInt(myself.uid) && AVAIL("mkb")) {
-            $("#leftTopDynamic").html(`
-                <li class="nav-item d-none d-sm-inline-block"><span class="pointer nav-link text-primary text-bold addColumn">${i18n("mkb.addColumn")}</span></li>
-            `);
-        }
+                mPrompt(i18n("mkb.desk"), i18n("mkb.renameDesk"), desk.name, newName => {
+                    if ($.trim(newName)) {
+                        loadingStart();
+                        desk.name = newName;
+                        POST("mkb", "desk", false, { desk }).
+                        done(() => {
+                            lStore("mkbDesk", newName);
+                            modules.mkb.renderDesk();
+                        }).
+                        fail(FAIL).
+                        fail(loadingDone);
+                    }
+                });
+            });
 
-        modules.mkb.renderDesk();
-
-        $(".addDesk").off("click").on("click", () => {
-            mPrompt(i18n("mkb.desk"), i18n("mkb.addDesk"), "", desk => {
-                if ($.trim(desk) && modules.mkb.deskNames.indexOf($.trim(desk)) < 0) {
+            $(".deleteDesk").off("click").on("click", () => {
+                mConfirm(i18n("mkb.confirmDeleteDesk", lStore("mkbDesk")), i18n("confirm"), i18n("delete"), () => {
                     loadingStart();
-                    POST("mkb", "desk", false, { desk: { name: desk, columns: [] } }).
-                    done(() => {
-                        lStore("mkbDesk", desk);
-                        modules.mkb.renderDesk();
-                    }).
+                    DELETE("mkb", "desk", lStore("mkbDesk")).
+                    done(modules.mkb.renderDesk).
                     fail(FAIL).
                     fail(loadingDone);
-                }
+                });
             });
-        });
 
-        $(".editDesk").off("click").on("click", () => {
-            let desk = modules.mkb.desk();
+            $(".addColumn").off("click").on("click", () => {
+                cardForm({
+                    title: i18n("mkb.addColumn"),
+                    footer: true,
+                    borderless: true,
+                    topApply: true,
+                    apply: i18n("add"),
+                    fields: [
+                        {
+                            id: "title",
+                            title: i18n("mkb.title"),
+                            type: "text",
+                            value: "",
+                            validate: a => {
+                                return !!$.trim(a);
+                            }
+                        },
+                        {
+                            id: "color",
+                            title: i18n("mkb.color"),
+                            type: "color",
+                            noEmpty: true,
+                        },
+                    ],
+                    callback: r => {
+                        let desk = modules.mkb.desk();
 
-            mPrompt(i18n("mkb.desk"), i18n("mkb.renameDesk"), desk.name, newName => {
-                if ($.trim(newName)) {
-                    loadingStart();
-                    desk.name = newName;
-                    POST("mkb", "desk", false, { desk }).
-                    done(() => {
-                        lStore("mkbDesk", newName);
-                        modules.mkb.renderDesk();
-                    }).
-                    fail(FAIL).
-                    fail(loadingDone);
-                }
+                        desk.columns.push({
+                            _id: guid(),
+                            title: r.title,
+                            color: r.color,
+                        });
+
+                        loadingStart();
+                        POST("mkb", "desk", false, { desk }).
+                        done(() => {
+                            modules.mkb.renderDesk();
+                        }).
+                        fail(FAIL).
+                        fail(loadingDone);
+                    }
+                });
             });
-        });
-
-        $(".deleteDesk").off("click").on("click", () => {
-            mConfirm(i18n("mkb.confirmDeleteDesk", lStore("mkbDesk")), i18n("confirm"), i18n("delete"), () => {
-                loadingStart();
-                DELETE("mkb", "desk", lStore("mkbDesk")).
-                done(modules.mkb.renderDesk).
-                fail(FAIL).
-                fail(loadingDone);
-            });
-        });
-
-        $(".addColumn").off("click").on("click", () => {
-            cardForm({
-                title: i18n("mkb.addColumn"),
-                footer: true,
-                borderless: true,
-                topApply: true,
-                apply: i18n("add"),
-                fields: [
-                    {
-                        id: "title",
-                        title: i18n("mkb.title"),
-                        type: "text",
-                        value: "",
-                        validate: a => {
-                            return !!$.trim(a);
-                        }
-                    },
-                    {
-                        id: "color",
-                        title: i18n("mkb.color"),
-                        type: "color",
-                        noEmpty: true,
-                    },
-                ],
-                callback: r => {
-                    let desk = modules.mkb.desk();
-
-                    desk.columns.push({
-                        _id: guid(),
-                        title: r.title,
-                        color: r.color,
-                    });
-
-                    loadingStart();
-                    POST("mkb", "desk", false, { desk }).
-                    done(() => {
-                        modules.mkb.renderDesk();
-                    }).
-                    fail(FAIL).
-                    fail(loadingDone);
-                }
-            });
-        });
+        }).
+        fail(FAILPAGE);
     },
 /*
     search: function (search) {
