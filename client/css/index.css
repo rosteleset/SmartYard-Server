@@ -1,5 +1,19 @@
 @charset "UTF-8";
 
+::-webkit-scrollbar {
+  background: lightgray;
+  height: 8px;
+  width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+}
+
+::-webkit-scrollbar-track {
+  background: lightgray;
+}
+
 body {
   overflow: -moz-scrollbars-vertical;
   overflow-y: scroll ! important;
@@ -7,7 +21,7 @@ body {
 }
 
 body::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
   height: 10px;
 }
 
@@ -53,20 +67,6 @@ body.dark-mode .nodec:hover {
 
 body.dark-mode .hr-text::after .hr-text-white::after .hr-text-pointer::after hr-text-white-large::after hr-text-pointer-white-large::after {
   background-color: #454d55;
-}
-
-::-webkit-scrollbar {
-  background: lightgray;
-  height: 8px;
-  width: 8px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #94a3b8;
-}
-
-::-webkit-scrollbar-track {
-  background: lightgray;
 }
 
 #toast-container > div {
@@ -358,6 +358,39 @@ select {
   position: relative;
   display: inline-block;
   padding-left: 12px;
+  padding-right: 10px;
+  line-height: 1.5em;
+  color: #000;
+  background-color: white;
+}
+
+.hr-text-white-no-padding {
+  line-height: 1em;
+  position: relative;
+  outline: 0;
+  border: 0;
+  color: black;
+  text-align: left;
+  height: 1.5em;
+  opacity: 0.5;
+  font-size: 8pt;
+}
+
+.hr-text-white-no-padding::before {
+  content: "";
+  background: linear-gradient(to left, transparent, rgb(128 128 128 / 75%));
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 100%;
+  height: 1px;
+}
+
+.hr-text-white-no-padding::after {
+  content: attr(data-content);
+  position: relative;
+  display: inline-block;
+  padding-left: 0px;
   padding-right: 10px;
   line-height: 1.5em;
   color: #000;
@@ -1091,4 +1124,17 @@ code {
   border: solid thin #dee2e6 ! important;
   border-radius: .25rem ! important;
   box-shadow: 0 0 1px rgba(0, 0, 0, .125), 0 1px 3px rgba(0, 0, 0, .2) ! important;
+}
+
+.border-no-shadow {
+  border: solid thin #dee2e6 ! important;
+  border-radius: .25rem ! important;
+}
+
+.td-last-no-right-border {
+  border-right: solid thin #dde1e5;
+}
+
+.td-last-no-right-border:last-child {
+  border-right: none ! important;
 }

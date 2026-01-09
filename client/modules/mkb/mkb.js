@@ -473,82 +473,129 @@
 
         $(".cardComments").off("click").on("click", function () {
             let id = $(this).attr("data-card-id");
+            let ci = -1;
+            let editor;
+
+            function comment(i) {
+                return `
+                    <div class='noselect ${modules.mkb.cards[id].comments[i].modified ? "bg-warning" : "bg-info"} border-no-shadow pl-2 pr-2' style='font-size: 0.7rem; position: absolute; left: 6px; top: -10px;'>
+                        ${date("H:i", modules.mkb.cards[id].comments[i].date)}
+                    </div>
+                    <div class='noselect bg-white border-no-shadow pl-2 pr-2' style='font-size: 0.7rem; position: absolute; left: 56px; top: -10px;'>
+                        ${modules.mkb.cards[id].comments[i].author}
+                    </div>
+                    <div class='pointer noselect bg-danger border-no-shadow pl-1 pr-1 deleteComment' style='font-size: 0.7rem; position: absolute; right: 6px; top: -10px;'>
+                        <i class='fas fa-fw fa-trash-alt'></i>
+                    </div>
+                    <div class='pointer noselect bg-primary border-no-shadow pl-1 pr-1 modifyComment' style='font-size: 0.7rem; position: absolute; right: 36px; top: -10px;'>
+                        <i class='fas fa-fw fa-pencil-alt'></i>
+                    </div>
+                    ${convertLinks(rbtMdRender(modules.mkb.cards[id].comments[i].comment))}
+                `;
+            }
+
+            function comments() {
+                let h = '';
+                let f = true;
+
+                if (modules.mkb.cards[id].comments && modules.mkb.cards[id].comments.length) {
+                    let d = "";
+                    for (let i in modules.mkb.cards[id].comments) {
+                        if (modules.mkb.cards[id].comments[i]) {
+                            let x = date("Y-m-d", modules.mkb.cards[id].comments[i].date);
+                            if (x != d) {
+                                d = x;
+                                if (!f) {
+                                    h += '</div>';
+                                }
+                                f = false;
+                                h += '<div class="commentsDay">';
+                                h += `<div class="mb-4"><hr class='hr-text-white-no-padding' data-content='${d}' style='margin-block: 8px ! important;' /></div>`;
+                            }
+                            h += `
+                                <div class="ml-2 mb-3 mr-2 p-2 pt-3 kanban-card-body border-no-shadow comment" data-comment-index="${i}" style="position: relative;">
+                                ${comment(i)}
+                                </div>
+                            `;
+                        }
+                    }
+                }
+
+                return h;
+            }
+
+            function assignHandlers() {
+                $(".modifyComment").off("click").on("click", function () {
+                    ci = $(this).parent().attr("data-comment-index");
+
+                    $(`.comment`).css("border-color", "#dee2e6");
+                    $(`.comment[data-comment-index="${ci}"]`).attr("style", "position: relative; border-color: #007bff ! important;");
+                    $("#mkbCommentCancel").css("right", $("#mkbCommentAdd").outerWidth() + 20).show();
+
+                    editor.setValue(modules.mkb.cards[id].comments[ci].comment);
+                    editor.clearSelection();
+                    editor.focus();
+
+                    $("#mkbCommentAdd").html(i18n("edit"));
+                });
+
+                $(".deleteComment").off("click").on("click", function () {
+                    let i = $(this).parent().attr("data-comment-index");
+                    modules.mkb.cards[id].comments.splice(i, 1);
+                    $(`.loading[data-card-id="${id}"]`).show();
+                    POST("mkb", "card", false, { card: modules.mkb.cards[id] }).
+                    fail(FAIL).
+                    always(() => {
+                        $(`.comment[data-comment-index="${i}"]`).remove();
+                        let j = 0;
+                        $(".comment").each(function () {
+                            $(this).attr("data-comment-index", j);
+                            j++;
+                        });
+                        $(".commentsDay").each(function () {
+                            if ($(this).children().length <= 1) {
+                                $(this).remove();
+                            }
+                        });
+                        $(`.loading[data-card-id="${id}"]`).hide();
+                    });
+                });
+            }
 
             setTimeout(() => {
                 let h = '';
 
                 h += `
                     <div style='width: 100%; height: calc(100vh - 329px) ! important;'>
-                        <div id='mkbCommentsCaption' class='text-bold'><div class="mt-1 mb-2">${modules.mkb.cards[id].subject}</div><hr class="p-0 m-0"/></div>
-                        <div id='mkbComments' class='resizable' style='width: 100%; height: 100px; margin-top: 10px; overflow-y: auto;'>
-                            <span class="ml-2">123</span><br />
-                            123<br />
-                            123<br />
-                            123<br />
-                            123<br />
-                            123<br />
-                            123<br />
-                            123<br />
-                            123<br />
-                            123<br />
-                            123<br />
-                            123<br />
-                            123<br />
-                            123<br />
-                            123<br />
-                            123<br />
-                            123<br />
-                            123<br />
-                            123<br />
-                            123<br />
-                            123<br />
-                            123<br />
-                            123<br />
-                            123<br />
-                            123<br />
-                            123<br />
-                            123<br />
-                            123<br />
-                            123<br />
-                            123<br />
-                            123<br />
-                            123<br />
-                            123<br />
-                            123<br />
-                            123<br />
-                            123<br />
-                            123<br />
-                            123<br />
-                            123<br />
-                            123<br />
-                            123<br />
-                            123<br />
-                            123<br />
-                            123<br />
-                            123<br />
-                            123<br />
-                            123<br />
-                            123<br />
-                            123<br />
-                            123<br />
-                            123<br />
+                        <div id='mkbCommentsCaption' class='text-bold'><div class="mt-2 mb-2">${modules.mkb.cards[id].subject}</div></div>
+                        <div id='mkbComments' class='resizable' style='width: 100%; height: 100px; overflow-y: auto;'>
+                        ${comments()}
                         </div>
                     </div>
                     <div style='width: 100%; height: 200px; position: relative;'>
                         <pre class='ace-editor' id='mkbComment'></pre>
                         <div id='mkbCommentPreview' style='display: none; border: solid thin #ced4da; border-radius: 0.25rem; overflow-y: auto; padding-left: 4px; padding-top: 4px;'></div>
-                        <div id='mkbCommentPreviewToggle' class='pointer noselect' style='font-size: 0.8rem; position: absolute; right: 10px; top: -10px; border: solid thin #ced4da; border-radius: 0.25rem; background: white; padding-left: 4px; padding-right: 4px;'>
+                        <div id='mkbCommentPreviewToggle' class='pointer noselect bg-white pl-2 pr-2 border-no-shadow' style='font-size: 0.8rem; position: absolute; right: 10px; top: -10px;'>
                             ${i18n("preview")}
                         </div>
-                        <div id='mkbCommentAdd' class='pointer noselect bg-primary text-bold' title='Ctrl+Enter' style='font-size: 0.8rem; position: absolute; right: 10px; bottom: -10px; border: solid thin #ced4da; border-radius: 0.25rem; padding-left: 4px; padding-right: 4px;'>
+                        <div id='mkbCommentAdd' class='pointer noselect bg-primary text-bold pl-2 pr-2 border-no-shadow' title='Ctrl+Enter' style='font-size: 0.8rem; position: absolute; right: 10px; bottom: -10px;'>
                             ${i18n("add")}
+                        </div>
+                        <div id='mkbCommentCancel' class='pointer noselect bg-danger pl-2 pr-2 border-no-shadow' title='Esc' style='font-size: 0.8rem; position: absolute; right: 100px; bottom: -10px; display: none;'>
+                            ${i18n("cancel")}
                         </div>
                     </div>
                 `;
 
                 $("#aside-right-body").html(h);
 
-                let editor = ace.edit("mkbComment");
+                assignHandlers();
+
+                setTimeout(() => {
+                    $("#mkbComments").scrollTo($("#mkbComments").get(0).scrollHeight);
+                }, 25);
+
+                editor = ace.edit("mkbComment");
 
                 if (modules.darkmode && modules.darkmode.isDark()) {
                     editor.setTheme("ace/theme/one_dark");
@@ -598,7 +645,7 @@
                         win: "Ctrl-Enter",
                         mac: "Command-Enter"
                     },
-                    exec: function (editor) { console.log(1123); }
+                    exec: () => { $("#mkbCommentAdd").click(); }
                 });
 
                 $("#mkbCommentPreviewToggle").off("click").on("click", function () {
@@ -620,6 +667,65 @@
 
                 $("#mkbComments").off("windowResized").on("windowResized", () => {
                     $("#mkbComments").css("height", ($("#mkbCommentsCaption").parent().outerHeight() - $("#mkbCommentsCaption").outerHeight() - 24) + "px");
+                });
+
+                $("#mkbCommentCancel").off("click").on("click", () => {
+                    $(`.comment[data-comment-index="${ci}"]`).html(comment(ci));
+                    $(`.comment`).css("border-color", "#dee2e6");
+                    assignHandlers();
+                    editor.setValue("");
+                    editor.clearSelection();
+                    editor.focus();
+                    ci = -1;
+                    $("#mkbCommentAdd").html(i18n("add"));
+                    $("#mkbCommentCancel").hide();
+                });
+
+                $("#mkbCommentAdd").off("click").on("click", () => {
+                    if (!$.trim(editor.getValue())) {
+                        return;
+                    }
+
+                    if (!modules.mkb.cards[id].comments) {
+                        modules.mkb.cards[id].comments = [];
+                    }
+
+                    if (ci >= 0) {
+                        modules.mkb.cards[id].comments[ci] = {
+                            date: Math.round((new Date()).getTime() / 1000),
+                            comment: editor.getValue(),
+                            modified: true,
+                            author: myself.login,
+                        };
+                    } else {
+                        modules.mkb.cards[id].comments.push({
+                            date: Math.round((new Date()).getTime() / 1000),
+                            comment: editor.getValue(),
+                            modified: false,
+                            author: myself.login,
+                        });
+                    }
+
+                    $(`.loading[data-card-id="${id}"]`).show();
+                    POST("mkb", "card", false, { card: modules.mkb.cards[id] }).
+                    fail(FAIL).
+                    always(() => {
+                        if (ci >= 0) {
+                            $(`.comment[data-comment-index="${ci}"]`).html(comment(ci));
+                            $(`.comment[data-comment-index="${ci}"]`).css("border-color", "#dee2e6");
+                        } else {
+                            $("#mkbComments").html(comments());
+                            $("#mkbComments").scrollTo($("#mkbComments").get(0).scrollHeight);
+                        }
+                        editor.setValue("");
+                        editor.clearSelection();
+                        editor.focus();
+                        ci = -1;
+                        $("#mkbCommentAdd").html(i18n("add"));
+                        $("#mkbCommentCancel").hide();
+                        assignHandlers();
+                        $(`.loading[data-card-id="${id}"]`).hide();
+                    });
                 });
 
                 editor.focus();

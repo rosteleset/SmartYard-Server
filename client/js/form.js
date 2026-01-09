@@ -1498,15 +1498,21 @@ function cardForm(params) {
                 enableSnippets: true,
                 enableLiveAutocompletion: false
             });
+
             editor.session.setMode("ace/mode/json");
+
             params.fields[i].editor = editor;
+
             if (params.fields[i].value) {
                 editor.setValue(JSON.stringify(params.fields[i].value, null, 4), -1);
                 editor.clearSelection();
             }
+
             editor.setFontSize(14);
+
             editor.commands.removeCommand("removeline");
             editor.commands.removeCommand("redo");
+
             editor.commands.addCommand({
                 name: "removeline",
                 description: "Remove line",
@@ -1518,6 +1524,7 @@ function cardForm(params) {
                 scrollIntoView: "cursor",
                 multiSelectAction: "forEachLine"
             });
+
             editor.commands.addCommand({
                 name: "redo",
                 description: "Redo",
@@ -1527,8 +1534,10 @@ function cardForm(params) {
                 },
                 exec: function (editor) { editor.redo(); }
             });
+
             let height = params.fields[i].height ? params.fields[i].height : 400;
             $(`#${_prefix}${params.fields[i].id}`).css("height", height + "px").css("resize", "vertical");
+
             new ResizeObserver(function () {
                 editor.resize();
                 editor.renderer.updateFull();

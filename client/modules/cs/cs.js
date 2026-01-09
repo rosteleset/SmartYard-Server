@@ -582,16 +582,18 @@
                 modules.cs.rows.sort(sf);
 
                 let h = '';
-                h += '<table width="100%" class="mt-2 table table-hover table-bordered border-with-shadow" id="csSheet">';
+                h += '<div class="card mt-2">';
+                h += '<div class="card-body p-0">';
+                h += '<table width="100%" class="table table-hover" id="csSheet">';
                 for (let p in parts) {
                     if (p != cp) {
                         if (parseInt(p) >= 0 || p) {
-                            h += "<tr><td nowrap style='width: 0%'>&nbsp;</td><td style='border: none ! important; font-weight: bold;' class='text-primary' colspan='" + maxCols.toString() + "'><span class='pointer csPart'>" + p + "</span></td></tr>";
+                            h += "<tr><td nowrap style='width: 0%; border-top: none; border-left: none;'>&nbsp;</td><td style='border: none ! important; font-weight: bold;' class='text-primary pl-0' colspan='" + maxCols.toString() + "'><span class='pointer csPart'>" + p + "</span></td></tr>";
                         }
                         cp = p;
                     }
                     h += '<tr>';
-                    h += '<td nowrap style="width: 0%">&nbsp;</td>';
+                    h += '<td nowrap style="width: 0%; border: none;">&nbsp;</td>';
                     let cCols = 0;
                     for (let i in modules.cs.cols) {
                         if (parts[p].indexOf(modules.cs.cols[i]) < 0) {
@@ -604,9 +606,9 @@
                             }
                         }
                         if (c && c.class) {
-                            h += '<td class="' + c.class + '" nowrap style="vertical-align: top ! important;">';
+                            h += '<td class="td-last-no-right-border ' + c.class + '" nowrap style="vertical-align: top ! important;">';
                         } else {
-                            h += '<td nowrap style="vertical-align: top ! important;">';
+                            h += '<td class="td-last-no-right-border" nowrap style="vertical-align: top ! important;">';
                         }
                         h += "<span>" + modules.cs.colMenu(modules.cs.cols[i]) + "</span>";
                         if (c.logins && c.logins.length) {
@@ -633,9 +635,9 @@
                     for (let i in modules.cs.rows) {
                         h += '<tr>';
                         if (response.sheet.sheet.timeClass) {
-                            h += '<td class="timeCell ' + response.sheet.sheet.timeClass + '" nowrap style="width: 0%">' + escapeHTML(modules.cs.rows[i]) + '</td>';
+                            h += '<td class="td-last-no-right-border timeCell ' + response.sheet.sheet.timeClass + '" nowrap style="width: 0%;">' + escapeHTML(modules.cs.rows[i]) + '</td>';
                         } else {
-                            h += '<td class="timeCell" nowrap style="width: 0%">' + escapeHTML(modules.cs.rows[i]) + '</td>';
+                            h += '<td class="td-last-no-right-border timeCell" nowrap style="width: 0%;">' + escapeHTML(modules.cs.rows[i]) + '</td>';
                         }
                         cCols = 0;
                         for (let j in modules.cs.cols) {
@@ -657,15 +659,15 @@
                                             let uid = md5($("#csSheet").val() + ":" + $("#csDate").val() + ":" + modules.cs.cols[j] + ":" + modules.cs.rows[i]);
                                             if (!modules.cs.cellExpired(modules.cs.currentSheet.sheet.date, rs[l])) {
                                                 if (modules.cs.currentSheet && modules.cs.currentSheet.sheet && modules.cs.currentSheet.sheet.specialRows && modules.cs.currentSheet.sheet.specialRows.indexOf(rs[l]) >= 0) {
-                                                    h += '<td class="' + modules.cs.currentSheet.sheet.specialRowClass + ' cs-data-cell pointer" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '">';
+                                                    h += '<td class="td-last-no-right-border ' + modules.cs.currentSheet.sheet.specialRowClass + ' cs-data-cell pointer" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '">';
                                                 } else {
-                                                    h += '<td class="cs-data-cell pointer" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '">';
+                                                    h += '<td class="td-last-no-right-border cs-data-cell pointer" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '">';
                                                 }
                                             } else {
                                                 if (response.sheet.sheet.emptyClass) {
-                                                    h += '<td class="' + response.sheet.sheet.emptyClass + '" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '">';
+                                                    h += '<td class="td-last-no-right-border ' + response.sheet.sheet.emptyClass + '" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '">';
                                                 } else {
-                                                    h += '<td data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '">';
+                                                    h += '<td data-col="td-last-no-right-border ' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '">';
                                                 }
                                             }
                                             if (modules.cs.issuesInSheet[uid]) {
@@ -681,22 +683,24 @@
                             }
                             if (!f) {
                                 if (response.sheet.sheet.emptyClass) {
-                                    h += '<td class="' + response.sheet.sheet.emptyClass + '" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '"></td>';
+                                    h += '<td class="td-last-no-right-border ' + response.sheet.sheet.emptyClass + '" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '"></td>';
                                 } else {
-                                    h += '<td data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '"></td>';
+                                    h += '<td data-col="td-last-no-right-border ' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '"></td>';
                                 }
                             }
                             cCols++;
                         }
                         if (cCols < maxCols) {
                             for (let i = 0; i < maxCols - cCols; i++) {
-                                h += "<td>&nbsp;</td>";
+                                h += "<td class='td-last-no-right-border'>&nbsp;</td>";
                             }
                         }
                         h += '</tr>';
                     }
                 }
                 h += '</table>';
+                h += '</div>';
+                h += '</div>';
 
                 $("#mainForm").html(h);
 
