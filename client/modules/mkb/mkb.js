@@ -568,7 +568,7 @@
 
                 h += `
                     <div style='width: 100%;'>
-                        <div id='mkbCommentsCaption' class='text-bold'><div class="mt-2 mb-3">${modules.mkb.cards[id].subject}</div></div>
+                        <div id='mkbCommentsCaption' class='text-bold'><div class="ml-2 mt-2 mb-3">${modules.mkb.cards[id].subject}</div></div>
                         <div id='mkbComments' class='mb-4 kanban-card-body' style='width: 100%; height: 100px; overflow-y: auto;'>
                         ${comments()}
                         </div>
