@@ -558,6 +558,7 @@
                             }
                         });
                         $(`.loading[data-card-id="${id}"]`).hide();
+                        editor.focus();
                     });
                 });
             }
@@ -565,10 +566,8 @@
             setTimeout(() => {
                 let h = '';
 
-                let zb = 406;
-
                 h += `
-                    <div style='width: 100%; height: calc(100vh - ${zb}px) ! important;'>
+                    <div style='width: 100%;'>
                         <div id='mkbCommentsCaption' class='text-bold'><div class="mt-2 mb-3">${modules.mkb.cards[id].subject}</div></div>
                         <div id='mkbComments' class='mb-4 kanban-card-body' style='width: 100%; height: 100px; overflow-y: auto;'>
                         ${comments()}
@@ -587,15 +586,21 @@
                             ${i18n("cancel")}
                         </div>
                     </div>
+                    <div id="mkbResizer" style="position: absolute; left: -21px; top: calc(100vh / 2 - 150px); color: lightgray; width: 40px; text-align: center; padding-top: 100px; padding-bottom: 100px; cursor: w-resize;"><i class="fas fa-grip-lines-vertical"></i></div>
                 `;
 
                 $("#aside-right-body").html(h);
+
+                $(".aside-right").resizableAside({
+                    resizeWidthFrom: "left",
+                    handleSelector: "#mkbResizer",
+                });
 
                 assignHandlers();
 
                 setTimeout(() => {
                     $("#mkbComments").scrollTo($("#mkbComments").get(0).scrollHeight);
-                }, 25);
+                }, 5);
 
                 editor = ace.edit("mkbComment");
 
@@ -665,7 +670,7 @@
 
                 $("#aside-right").modal("show");
 
-                let z = zb - 24 - $("#mkbCommentsCaption").outerHeight();
+                let z = 406 - 24 - $("#mkbCommentsCaption").outerHeight();
 
                 $("#mkbComments").css("height", `calc(100vh - ${z}px`);
 
