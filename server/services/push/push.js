@@ -419,14 +419,10 @@ app.get('/push', function (req, res) {
 
         data.dtmf = req.query.dtmf ? req.query.dtmf : '1';
 
-        if (req.query.turn) {
-            data.turn = req.query.turn;
-            data.turnTransport = req.query.turnTransport;
-        }
-
         if (req.query.stun) {
             data.stun = req.query.stun;
-            data.stunTransport = req.query.stunTransport;
+            // TODO deprecated, must be removed
+            data.stunTransport = 'udp';
         }
 
         if (req.query.platform === 'ios') {

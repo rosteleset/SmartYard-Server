@@ -32,5 +32,4 @@
         'pass' => $hash,
         'dial' => '429999',
         'stun' => 'stun:stun.l.google.com:19302',
-        'stunTransport' => 'udp',
     ]);

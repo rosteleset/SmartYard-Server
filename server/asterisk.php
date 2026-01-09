@@ -494,7 +494,6 @@
                     $stun = $sip->stun($_params["extension"]);
                     if ($stun) {
                         $_params["stun"] = $stun;
-                        $_params["stunTransport"] = "udp";
                     }
 
                     $isdn->push($_params);

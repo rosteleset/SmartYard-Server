@@ -45,11 +45,8 @@ With a voice call to the device, PUSH posts containing the following data are se
     "pass": "310b2883c53024644bcd8355fe846b67",
     "dtmf": "1",
     "stun": "stun:stun.l.google.com:19302",
+    // TODO deprecated, must be removed
     "stunTransport": "udp",
-    "turn": "turn:37.235.209.140:3478",
-    "turnTransport": "udp",
-    "turnUsername": "test",
-    "turnPassword": "123123",
     "image": "https://yourserver.yourdomain/shot/e4bb3f86073a270ec8d9291c10d26dfe.jpg",
     "live": "https://yourserver.yourdomain/live/e4bb3f86073a270ec8d9291c10d26dfe/image.jpg",
     "timestamp": "1231231",
