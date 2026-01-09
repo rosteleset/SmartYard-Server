@@ -586,7 +586,7 @@
                             ${i18n("cancel")}
                         </div>
                     </div>
-                    <div id="mkbResizer" style="position: absolute; left: -21px; top: calc(100vh / 2 - 150px); color: lightgray; width: 40px; text-align: center; padding-top: 100px; padding-bottom: 100px; cursor: w-resize;"><i class="fas fa-grip-lines-vertical"></i></div>
+                    <div id="mkbResizer" style="position: absolute; left: -21px; top: calc(100vh / 2 - 150px); color: lightgray; width: 40px; text-align: center; padding-top: 100px; padding-bottom: 100px; cursor: w-resize;"><i class="fas fa-grip-vertical"></i></div>
                 `;
 
                 $("#aside-right-body").html(h);
