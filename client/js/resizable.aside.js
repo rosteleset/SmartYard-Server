@@ -123,7 +123,7 @@ Licensed under MIT License
 
                 if (!opt.onDrag || opt.onDrag(e, $el, newWidth, newHeight, opt) !== false) {
                     if (opt.resizeWidth) {
-                        $el.attr("style", "width: " + newWidth + "px ! important;");
+                        $el.attr("style", "width: " + newWidth + "px ! important; min-width: calc(100vw / 3) ! important; max-width: calc(100vw - 100px) ! important;");
                     }
                 }
             }
