@@ -1086,3 +1086,9 @@ code {
   height: 100%;
   width: 100%;
 }
+
+.border-with-shadow {
+  border: solid thin #dee2e6 ! important;
+  border-radius: .25rem ! important;
+  box-shadow: 0 0 1px rgba(0, 0, 0, .125), 0 1px 3px rgba(0, 0, 0, .2) ! important;
+}
