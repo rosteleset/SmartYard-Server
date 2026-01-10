@@ -966,7 +966,7 @@
             s += `
                 </div>
                 <div class="${card.cardMinimized ? "" : "pointer"} subtasksProgress ${(card.subtasksMinimized || card.cardMinimized) ? "pt-3" : "pt-1"} pb-1" data-card-id="${card._id}" data-minimized=${card.subtasksMinimized ? "true" : "false"} title="${p}%">
-                    <div class="progress">
+                    <div class="progress" style="border-radius: 4px;">
                         <div class="progress-bar progress-bar-striped progressbar-value" role="progressbar" style="width: ${p}%" aria-valuenow="${p}" aria-valuemin="0" aria-valuemax="100" data-card-id="${card._id}">
                             ${p}%
                         </div>
@@ -1322,11 +1322,10 @@
         }).
         fail(FAILPAGE);
     },
-/*
+
     search: function (search) {
         POST("mkb", "cards", false, { query: { $text: { $search: search } } }).done(console.log)
 
         console.log(search);
     }
-*/
 }).init();
