@@ -29,6 +29,8 @@
     "modifyCard": "Modify card",
     "tableView": "Table mode",
     "renameDesk": "Rename desk",
+    "archive": "Move to archive",
+    "confirmDeleteCard": "Delete card \"%s\"?",
     "methods": {
         "mkb": {
             "_title": "Kanban",

@@ -155,6 +155,17 @@
              */
 
             public function deleteCard($id) {
+                $desks = $this->getDesks();
+
+                foreach ($desks as $i => $desk) {
+                    foreach ($desk["columns"] as $j => $column) {
+                        if ($c = array_search($id, $column["cards"]) !== false) {
+                            array_splice($desks[$i]["columns"][$j]["cards"], $c, 1);
+                            $this->upsertDesk($desks[$i]);
+                        }
+                    }
+                }
+
                 return $this->delete([ "type" => "card", "_id" => $id ]);
             }
         }

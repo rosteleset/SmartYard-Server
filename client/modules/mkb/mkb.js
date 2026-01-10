@@ -504,18 +504,18 @@
             modules.mkb.updateCard(id);
         });
 
-        $(".btn-min-max").off("click").on("click", function () {
+        $(".cardMinMax").off("click").on("click", function () {
             let id = $(this).attr("data-card-id");
 
-            if ($(`.btn-min-max[data-card-id="${id}"]`).children().first().hasClass("fa-compress-arrows-alt")) {
-                $(`.btn-min-max[data-card-id="${id}"]`).children().first().removeClass("fa-compress-arrows-alt").addClass("fa-expand-arrows-alt").attr("title", i18n("mkb.restore"));
+            if ($(`.cardMinMax[data-card-id="${id}"]`).children().first().hasClass("fa-compress-arrows-alt")) {
+                $(`.cardMinMax[data-card-id="${id}"]`).children().first().removeClass("fa-compress-arrows-alt").addClass("fa-expand-arrows-alt").attr("title", i18n("mkb.restore"));
                 $(`.subtasks-progress[data-card-id="${id}"]`).removeClass("pt-1").addClass("pt-3").removeClass("pointer");
                 $(`.hr-subject[data-card-id="${id}"]`).hide();
                 $(`.min-max[data-card-id="${id}"]`).hide();
                 $(`.subtasks[data-card-id="${id}"]`).hide();
                 modules.mkb.cards[id].cardMinimized = true;
             } else {
-                $(`.btn-min-max[data-card-id="${id}"]`).children().first().addClass("fa-compress-arrows-alt").removeClass("fa-expand-arrows-alt").attr("title", i18n("mkb.minimize"));
+                $(`.cardMinMax[data-card-id="${id}"]`).children().first().addClass("fa-compress-arrows-alt").removeClass("fa-expand-arrows-alt").attr("title", i18n("mkb.minimize"));
                 let pb = $(`.subtasks-progress[data-card-id="${id}"]`);
                 if (pb.attr("data-minimized") == "true") {
                     $(`.subtasks[data-card-id="${id}"]`).hide();
@@ -816,7 +816,13 @@
                 ],
                 callback: r => {
                     if (r.delete) {
-
+                        mConfirm(i18n("mkb.confirmDeleteCard", r.subject), i18n("confirm"), i18n("delete"), () => {
+                            loadingStart();
+                            DELETE("mkb", "card", r._id).
+                            done(modules.mkb.renderDesk).
+                            fail(FAIL).
+                            fail(loadingDone);
+                        });
                     } else {
                         r.tags.sort();
 
@@ -882,6 +888,10 @@
             } else {
                 $(".kanban-card").show();
             }
+        });
+
+        $("cardArchive").off("click").on("click", function () {
+            //
         });
     },
 
@@ -987,10 +997,11 @@
                     <h5 class="card-title">${c}</h5>
                     <div class="card-tools">
                         <span class="btn btn-tool text-black loading" title="${i18n("mkb.loading")}" style="cursor: default ! important; display: none;" data-card-id="${card._id}"><i class="fas fa-fw fa-spinner rotate"></i></span>
-                        <span class="btn btn-tool" title="${i18n("mkb.attachments")}"><i class="fas fa-fw fa-paperclip"></i></span>
+                        <span class="btn btn-tool cardAttachments" title="${i18n("mkb.attachments")}"><i class="fas fa-fw fa-paperclip"></i></span>
                         <span class="btn btn-tool cardComments ${(card.comments && card.comments.length) ? " text-success" : ""}" title="${i18n("mkb.comments")}" data-card-id="${card._id}"><i class="${(card.comments && card.comments.length) ? "fas" : "far"} fa-fw fa-comments"></i></span>
+                        <span class="btn btn-tool cardArchive" title="${i18n("mkb.archive")}"><i class="fas fa-fw fa-archive"></i></span>
                         <span class="btn btn-tool cardEdit" title="${i18n("mkb.edit")}" data-card-id="${card._id}"><i class="fas fa-fw fa-edit"></i></span>
-                        <span class="btn btn-tool btn-min-max" title="${card.cardMinimized ? i18n("mkb.restore") : i18n("mkb.minimize")}" data-card-id="${card._id}"><i class="fas fa-fw ${card.cardMinimized ? "fa-expand-arrows-alt" : "fa-compress-arrows-alt"}"></i></span>
+                        <span class="btn btn-tool cardMinMax" title="${card.cardMinimized ? i18n("mkb.restore") : i18n("mkb.minimize")}" data-card-id="${card._id}"><i class="fas fa-fw ${card.cardMinimized ? "fa-expand-arrows-alt" : "fa-compress-arrows-alt"}"></i></span>
                     </div>
                 </div>
                 <div class="card-body" data-card-id="${card._id}">
@@ -1009,7 +1020,9 @@
         let c = '';
 
         for (let i in column.cards) {
-            c += modules.mkb.renderCard(modules.mkb.cards[column.cards[i]]);
+            if (modules.mkb.cards[column.cards[i]]) {
+                c += modules.mkb.renderCard(modules.mkb.cards[column.cards[i]]);
+            }
         }
 
         let h = `
