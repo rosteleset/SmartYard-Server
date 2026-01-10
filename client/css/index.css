@@ -1140,3 +1140,7 @@ code {
 .td-last-no-right-border:last-child {
   border-right: none ! important;
 }
+
+.content-wrapper.kanban .card.card-row {
+  width: 400px;
+}
