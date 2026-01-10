@@ -925,11 +925,13 @@
         $(".cardDone").off("click").on("click", function () {
             let id = $(this).attr("data-card-id");
 
-            if ($(`.cardDone[data-card-Id]`).hasClass("text-success")) {
-                $(`.cardDone[data-card-Id]`).removeClass("text-success");
+            console.log(id);
+
+            if ($(`.cardDone[data-card-id="${id}"]`).hasClass("text-success")) {
+                $(`.cardDone[data-card-id="${id}"]`).removeClass("text-success");
                 modules.mkb.cards[id].done = false;
             } else {
-                $(`.cardDone[data-card-Id]`).addClass("text-success");
+                $(`.cardDone[data-card-id="${id}"]`).addClass("text-success");
                 modules.mkb.cards[id].done = true;
             }
 
