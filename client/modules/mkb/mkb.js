@@ -373,7 +373,7 @@
             });
         });
 
-        $(".card-content").each(function () {
+        $(".cardContent").each(function () {
             let col = $(this);
             new Sortable(document.getElementById(col.attr("id")), {
                 handle: ".card-handle",
@@ -394,7 +394,7 @@
             onEnd: modules.mkb.reassembleDesk,
         });
 
-        $(".card-calendar").off("show.bs.dropdown").on("show.bs.dropdown", function () {
+        $(".cardCalendar").off("show.bs.dropdown").on("show.bs.dropdown", function () {
             let id = $(this).attr("data-card-id");
             let d = $(this).attr("data-date");
 
@@ -423,7 +423,7 @@
                     if (modules.mkb.calendars[id].context.selectedDates.length) {
                         modules.mkb.cards[id].date = strtotime($.trim(modules.mkb.calendars[id].context.selectedDates) + " " + modules.mkb.calendars[id].context.selectedTime);
 
-                        let s = $(`.card-calendar[data-card-id="${id}"]`);
+                        let s = $(`.cardCalendar[data-card-id="${id}"]`);
 
                         let d = Math.ceil((modules.mkb.cards[id].date - ((new Date()).getTime() / 1000)) / (60 * 60 * 24));
 
@@ -439,7 +439,7 @@
                     } else {
                         modules.mkb.cards[id].date = false;
 
-                        let s = $(`.card-calendar[data-card-id="${id}"]`);
+                        let s = $(`.cardCalendar[data-card-id="${id}"]`);
 
                         s.attr("data-date", false);
 
@@ -450,7 +450,7 @@
 
                     loadingStart();
                     setTimeout(() => {
-                        $(`.card-calendar[data-card-id="${id}"]`).dropdown("hide");
+                        $(`.cardCalendar[data-card-id="${id}"]`).dropdown("hide");
 
                         modules.mkb.updateCard(id);
 
@@ -460,7 +460,7 @@
             }
         });
 
-        $(".subtasks-progress").off("click").on("click", function () {
+        $(".subtasksProgress").off("click").on("click", function () {
             let pb = $(this);
             let id = pb.attr("data-card-id");
 
@@ -481,7 +481,7 @@
             }
         });
 
-        $(".subtask-checkbox").off("change").on("change", function () {
+        $(".subtaskCheckbox").off("change").on("change", function () {
             let id = $(this).attr("data-card-id");
             let p = 0, i = 0;
 
@@ -512,14 +512,14 @@
 
             if ($(`.cardMinMax[data-card-id="${id}"]`).children().first().hasClass("fa-compress-arrows-alt")) {
                 $(`.cardMinMax[data-card-id="${id}"]`).children().first().removeClass("fa-compress-arrows-alt").addClass("fa-expand-arrows-alt").attr("title", i18n("mkb.restore"));
-                $(`.subtasks-progress[data-card-id="${id}"]`).removeClass("pt-1").addClass("pt-3").removeClass("pointer");
+                $(`.subtasksProgress[data-card-id="${id}"]`).removeClass("pt-1").addClass("pt-3").removeClass("pointer");
                 $(`.hr-subject[data-card-id="${id}"]`).hide();
                 $(`.min-max[data-card-id="${id}"]`).hide();
                 $(`.subtasks[data-card-id="${id}"]`).hide();
                 modules.mkb.cards[id].cardMinimized = true;
             } else {
                 $(`.cardMinMax[data-card-id="${id}"]`).children().first().addClass("fa-compress-arrows-alt").removeClass("fa-expand-arrows-alt").attr("title", i18n("mkb.minimize"));
-                let pb = $(`.subtasks-progress[data-card-id="${id}"]`);
+                let pb = $(`.subtasksProgress[data-card-id="${id}"]`);
                 if (pb.attr("data-minimized") == "true") {
                     $(`.subtasks[data-card-id="${id}"]`).hide();
                     $(`.hr-subject[data-card-id="${id}"]`).hide();
@@ -537,7 +537,7 @@
             modules.mkb.updateCard(id, true);
         });
 
-        $(".column-edit").off("click").on("click", function () {
+        $(".columnEdit").off("click").on("click", function () {
             let id = $(this).parent().attr("data-column-id");
 
             let desk = modules.mkb.desk();
@@ -616,7 +616,7 @@
             });
         });
 
-        $(".card-add").off("click").on("click", function () {
+        $(".cardAdd").off("click").on("click", function () {
             let id = $(this).parent().attr("data-column-id");
 
             let desk = modules.mkb.desk();
@@ -921,6 +921,20 @@
             fail(FAIL).
             fail(loadingDone);
         });
+
+        $(".cardDone").off("click").on("click", function () {
+            let id = $(this).attr("data-card-id");
+
+            if ($(`.cardDone[data-card-Id]`).hasClass("text-success")) {
+                $(`.cardDone[data-card-Id]`).removeClass("text-success");
+                modules.mkb.cards[id].done = false;
+            } else {
+                $(`.cardDone[data-card-Id]`).addClass("text-success");
+                modules.mkb.cards[id].done = true;
+            }
+
+            modules.mkb.updateCard(id, true);
+        });
     },
 
     renderCard: function (card) {
@@ -937,7 +951,7 @@
             for (let i in card.subtasks) {
                 s += `
                     <div class="custom-control custom-checkbox">
-                        <input id="card-subtask-${card._id}-${i}" class="subtask-checkbox custom-control-input custom-control-input-primary custom-control-input-outline" type="checkbox"${card.subtasks[i].checked ? " checked " : " " }data-card-id=${card._id}>
+                        <input id="card-subtask-${card._id}-${i}" class="subtaskCheckbox custom-control-input custom-control-input-primary custom-control-input-outline" type="checkbox"${card.subtasks[i].checked ? " checked " : " " }data-card-id=${card._id}>
                         <label for="card-subtask-${card._id}-${i}" class="pl-1 custom-control-label noselect text-no-bold">${$.trim(escapeHTML(card.subtasks[i].text))}</label>
                     </div>
                 `;
@@ -951,7 +965,7 @@
 
             s += `
                 </div>
-                <div class="${card.cardMinimized ? "" : "pointer"} subtasks-progress ${(card.subtasksMinimized || card.cardMinimized) ? "pt-3" : "pt-1"} pb-1" data-card-id="${card._id}" data-minimized=${card.subtasksMinimized ? "true" : "false"} title="${p}%">
+                <div class="${card.cardMinimized ? "" : "pointer"} subtasksProgress ${(card.subtasksMinimized || card.cardMinimized) ? "pt-3" : "pt-1"} pb-1" data-card-id="${card._id}" data-minimized=${card.subtasksMinimized ? "true" : "false"} title="${p}%">
                     <div class="progress">
                         <div class="progress-bar progress-bar-striped progressbar-value" role="progressbar" style="width: ${p}%" aria-valuenow="${p}" aria-valuemin="0" aria-valuemax="100" data-card-id="${card._id}">
                             ${p}%
@@ -975,8 +989,8 @@
         if (card.date) {
             let d = Math.ceil((card.date - ((new Date()).getTime() / 1000)) / (60 * 60 * 24));
             c = `
-                <span class="dropdown card-calendar" data-card-id="${card._id}" data-date="${card.date}" title="${i18n("mkb.date")}">
-                    <span class="btn btn-tool ${(d >= 0) ? "text-success" : "text-danger"} dropdown-toggle dropdown-toggle-no-icon pb-0" data-toggle="dropdown" aria-expanded="false" data-flip="true" style="margin-bottom: -7px;">
+                <span class="dropdown cardCalendar" data-card-id="${card._id}" data-date="${card.date}" title="${i18n("mkb.date")}">
+                    <span class="btn btn-tool ${(d >= 0) ? "text-success" : "text-danger"} dropdown-toggle dropdown-toggle-no-icon pb-0" data-toggle="dropdown" aria-expanded="false" data-flip="true" style="margin-top: -12px;">
                         <span>${Math.abs(d)} ${i18n("mkb.days")}</span>
                         <ul class="dropdown-menu">
                             <li id="dropdown-calendar-${card._id}"></li>
@@ -986,8 +1000,8 @@
             `;
         } else {
             c = `
-                <span class="dropdown card-calendar" data-card-id="${card._id}" data-date="false" title="${i18n("mkb.date")}">
-                    <span class="btn btn-tool dropdown-toggle dropdown-toggle-no-icon pb-0" data-toggle="dropdown" aria-expanded="false" data-flip="true" style="margin-bottom: -7px;">
+                <span class="dropdown cardCalendar" data-card-id="${card._id}" data-date="false" title="${i18n("mkb.date")}">
+                    <span class="btn btn-tool dropdown-toggle dropdown-toggle-no-icon pb-0" data-toggle="dropdown" aria-expanded="false" data-flip="true" style="margin-top: -12px;">
                         <span><i class="far fa-fw fa-calendar"></i></span>
                         <ul class="dropdown-menu">
                             <li id="dropdown-calendar-${card._id}"></li>
@@ -1022,7 +1036,10 @@
         let h = `
             <div id="card-${card._id}" data-card-id="${card._id}" class="kanban-card card card-${card.color} card-outline noselect" style="${(modules.mkb.tags.length && !v) ? "display: none;" : ""}">
                 <div class="card-header card-handle pl-1 pr-3">
-                    <h5 class="card-title">${c}</h5>
+                    <h5 class="card-title">
+                        <span class="btn btn-tool cardDone ${card.done ? "text-success" : ""}" title="${i18n("mkb.done")}" data-card-id="${card._id}" style="padding-right: 0px; padding-top: 8px;"><i class="fas fa-fw fa-check-circle"></i></span>
+                        ${c}
+                    </h5>
                     <div class="card-tools">
                         <span class="btn btn-tool text-black loading" title="${i18n("mkb.loading")}" style="cursor: default ! important; display: none;" data-card-id="${card._id}"><i class="fas fa-fw fa-spinner rotate"></i></span>
                         <span class="btn btn-tool cardAttachments" title="${i18n("mkb.attachments")}"><i class="fas fa-fw fa-paperclip"></i></span>
@@ -1062,11 +1079,11 @@
                     <h3 class="card-title pt-1 text-bold">${$.trim(escapeHTML(column.title))}</h3>
                     <div class="card-tools" data-column-id="${column._id}">
                         <span class="btn btn-tool column-table" title="${i18n("mkb.tableView")}"><i class="fas fa-fw fa-table"></i></span>
-                        <span class="btn btn-tool card-add" title="${i18n("mkb.addCard")}"><i class="fas fa-fw fa-plus-circle"></i></span>
-                        <span class="btn btn-tool column-edit" title="${i18n("mkb.edit")}"><i class="fas fa-fw fa-edit"></i></span>
+                        <span class="btn btn-tool cardAdd" title="${i18n("mkb.addCard")}"><i class="fas fa-fw fa-plus-circle"></i></span>
+                        <span class="btn btn-tool columnEdit" title="${i18n("mkb.edit")}"><i class="fas fa-fw fa-edit"></i></span>
                     </div>
                 </div>
-                <div id="card-body-${column._id}" class="card-body card-content" style="min-height: 100%;">${c}</div>
+                <div id="card-body-${column._id}" class="card-body cardContent" style="min-height: 100%;">${c}</div>
             </div>
         `;
 
