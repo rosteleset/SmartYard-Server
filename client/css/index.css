@@ -18,6 +18,7 @@ body {
   overflow: -moz-scrollbars-vertical;
   overflow-y: scroll ! important;
   background-color: #f4f6f9 ! important;
+  min-width: 1024px ! important;
 }
 
 body::-webkit-scrollbar {

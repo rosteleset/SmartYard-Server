@@ -368,7 +368,7 @@
                         i++;
                     });
 
-                    modules.mkb.updateCard(id);
+                    modules.mkb.updateCard(id, true);
                 },
             });
         });
@@ -477,7 +477,7 @@
                     modules.mkb.cards[id].subtasksMinimized = true;
                 }
 
-                modules.mkb.updateCard(id);
+                modules.mkb.updateCard(id, true);
             }
         });
 
@@ -504,7 +504,7 @@
 
             $(`.progressbar-value[data-card-id="${id}"]`).css("width", p + "%").attr("aria-valuenow", p).attr("title", p + "%").text(p + "%");
 
-            modules.mkb.updateCard(id);
+            modules.mkb.updateCard(id, true);
         });
 
         $(".cardMinMax").off("click").on("click", function () {
@@ -534,7 +534,7 @@
                 modules.mkb.cards[id].cardMinimized = false;
             }
 
-            modules.mkb.updateCard(id);
+            modules.mkb.updateCard(id, true);
         });
 
         $(".column-edit").off("click").on("click", function () {
