@@ -395,7 +395,10 @@
             let d = $(this).attr("data-date");
 
             if (!modules.mkb.calendars[id]) {
-                $(`#dropdown-calendar-${id}`).html(`<span id='calendar-${id}'></span>`).off("click dragstart pointerdown mousedown touchstart dragover dragenter").on("click dragstart pointerdown mousedown touchstart dragover dragenter", e => {
+                $(`#dropdown-calendar-${id}`).
+                html(`<span id='calendar-${id}'></span><div style="text-align: center;"><input class="btn btn-primary cardCalendarApply" type="button" value="${i18n("apply")}" data-card-id="${id}" /></div>`).
+                off("click dragstart pointerdown mousedown touchstart dragover dragenter").
+                on("click dragstart pointerdown mousedown touchstart dragover dragenter", e => {
                     e.stopPropagation();
                 });
 
@@ -409,41 +412,48 @@
                 });
 
                 modules.mkb.calendars[id].init();
+
+                $(".cardCalendarApply").off("click").on("click", function () {
+                    let id = $(this).attr("data-card-id");
+
+                    if (modules.mkb.calendars[id].context.selectedDates.length) {
+                        modules.mkb.cards[id].date = strtotime($.trim(modules.mkb.calendars[id].context.selectedDates) + " " + modules.mkb.calendars[id].context.selectedTime);
+
+                        let s = $(`.card-calendar[data-card-id="${id}"]`);
+
+                        let d = Math.ceil((modules.mkb.cards[id].date - ((new Date()).getTime() / 1000)) / (60 * 60 * 24));
+
+                        s.attr("data-date", modules.mkb.cards[id].date);
+
+                        if (d >= 0) {
+                            s.children().first().removeClass("text-danger").addClass("text-success");
+                        } else {
+                            s.children().first().addClass("text-danger").removeClass("text-success");
+                        }
+
+                        s.children().first().children().first().html(Math.abs(d) + " " + i18n("mkb.days"));
+                    } else {
+                        modules.mkb.cards[id].date = false;
+
+                        let s = $(`.card-calendar[data-card-id="${id}"]`);
+
+                        s.attr("data-date", false);
+
+                        s.children().first().removeClass("text-danger").removeClass("text-success");
+
+                        s.children().first().children().first().html("<i class='far fa-fw fa-calendar'></i>");
+                    }
+
+                    loadingStart();
+                    setTimeout(() => {
+                        $(`.card-calendar[data-card-id="${id}"]`).dropdown("hide");
+
+                        modules.mkb.updateCard(id);
+
+                        loadingDone();
+                    }, 100);
+                });
             }
-        });
-
-        $(".card-calendar").off("hide.bs.dropdown").on("hide.bs.dropdown", function () {
-            let id = $(this).attr("data-card-id");
-
-            if (modules.mkb.calendars[id].context.selectedDates.length) {
-                modules.mkb.cards[id].date = strtotime($.trim(modules.mkb.calendars[id].context.selectedDates) + " " + modules.mkb.calendars[id].context.selectedTime);
-
-                let s = $(`.card-calendar[data-card-id="${id}"]`);
-
-                let d = Math.ceil((modules.mkb.cards[id].date - ((new Date()).getTime() / 1000)) / (60 * 60 * 24));
-
-                s.attr("data-date", modules.mkb.cards[id].date);
-
-                if (d >= 0) {
-                    s.children().first().removeClass("text-danger").addClass("text-success");
-                } else {
-                    s.children().first().addClass("text-danger").removeClass("text-success");
-                }
-
-                s.children().first().children().first().html(Math.abs(d) + " " + i18n("mkb.days"));
-            } else {
-                modules.mkb.cards[id].date = false;
-
-                let s = $(`.card-calendar[data-card-id="${id}"]`);
-
-                s.attr("data-date", false);
-
-                s.children().first().removeClass("text-danger").removeClass("text-success");
-
-                s.children().first().children().first().html("<i class='far fa-fw fa-calendar'></i>");
-            }
-
-            modules.mkb.updateCard(id);
         });
 
         $(".subtasks-progress").off("click").on("click", function () {
@@ -891,7 +901,7 @@
             let d = Math.ceil((card.date - ((new Date()).getTime() / 1000)) / (60 * 60 * 24));
             c = `
                 <span class="dropdown card-calendar" data-card-id="${card._id}" data-date="${card.date}" title="${i18n("mkb.date")}">
-                    <span class="btn btn-tool ${(d >= 0) ? "text-success" : "text-danger"} dropdown-toggle dropdown-toggle-no-icon pb-0" data-toggle="dropdown" aria-expanded="false" data-flip="true" style="margin-bottom: -8px;">
+                    <span class="btn btn-tool ${(d >= 0) ? "text-success" : "text-danger"} dropdown-toggle dropdown-toggle-no-icon pb-0" data-toggle="dropdown" aria-expanded="false" data-flip="true" style="margin-bottom: -7px;">
                         <span>${Math.abs(d)} ${i18n("mkb.days")}</span>
                         <ul class="dropdown-menu">
                             <li id="dropdown-calendar-${card._id}"></li>
@@ -902,7 +912,7 @@
         } else {
             c = `
                 <span class="dropdown card-calendar" data-card-id="${card._id}" data-date="false" title="${i18n("mkb.date")}">
-                    <span class="btn btn-tool dropdown-toggle dropdown-toggle-no-icon pb-0" data-toggle="dropdown" aria-expanded="false" data-flip="true" style="margin-bottom: -8px;">
+                    <span class="btn btn-tool dropdown-toggle dropdown-toggle-no-icon pb-0" data-toggle="dropdown" aria-expanded="false" data-flip="true" style="margin-bottom: -7px;">
                         <span><i class="far fa-fw fa-calendar"></i></span>
                         <ul class="dropdown-menu">
                             <li id="dropdown-calendar-${card._id}"></li>
