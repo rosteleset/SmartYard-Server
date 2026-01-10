@@ -36,6 +36,315 @@
         });
     },
 
+    reassembleDesk: function () {
+        let desk = modules.mkb.desk();
+        let cols = {};
+
+        for (let i in desk.columns) {
+            cols[desk.columns[i]._id] = {
+                _id: desk.columns[i]._id,
+                title: desk.columns[i].title,
+                color: desk.columns[i].color,
+            };
+        }
+
+        let newColumns = [];
+
+        $("#desk").children().each(function () {
+            let col = $(this);
+            let newCards = [];
+            col.children().first().next().children().each(function () {
+                newCards.push($(this).attr("data-card-id"));
+            });
+            cols[col.attr("data-column-id")].cards = newCards;
+            newColumns.push(cols[col.attr("data-column-id")]);
+        });
+
+        desk.columns = newColumns;
+
+        document.body.style.cursor = 'wait';
+        POST("mkb", "desk", false, { desk }).
+        fail(FAIL).
+        always(() => {
+            document.body.style.cursor = 'default';
+        });
+    },
+
+    cardComments: function (id) {
+        let ci = -1;
+        let editor;
+
+        function comment(i) {
+            return `
+                <div class='noselect ${modules.mkb.cards[id].comments[i].modified ? "bg-warning" : "bg-info"} border-no-shadow pl-2 pr-2' style='font-size: 0.7rem; position: absolute; left: 6px; top: -10px;'>
+                    ${date("H:i", modules.mkb.cards[id].comments[i].date)}
+                </div>
+                <div class='noselect bg-white border-no-shadow pl-2 pr-2' style='font-size: 0.7rem; position: absolute; left: 56px; top: -10px;'>
+                    ${modules.users.login2name(modules.mkb.cards[id].comments[i].author)}
+                </div>
+                <div class='pointer noselect bg-danger border-no-shadow pl-1 pr-1 deleteComment' style='font-size: 0.7rem; position: absolute; right: 6px; top: -10px;'>
+                    <i class='fas fa-fw fa-trash-alt'></i>
+                </div>
+                <div class='pointer noselect bg-primary border-no-shadow pl-1 pr-1 modifyComment' style='font-size: 0.7rem; position: absolute; right: 36px; top: -10px;'>
+                    <i class='fas fa-fw fa-pencil-alt'></i>
+                </div>
+                ${convertLinks(rbtMdRender(modules.mkb.cards[id].comments[i].comment))}
+            `;
+        }
+
+        function comments() {
+            let h = '';
+            let f = true;
+
+            if (modules.mkb.cards[id].comments && modules.mkb.cards[id].comments.length) {
+                let d = "";
+                for (let i in modules.mkb.cards[id].comments) {
+                    if (modules.mkb.cards[id].comments[i]) {
+                        let x = date("Y-m-d", modules.mkb.cards[id].comments[i].date);
+                        if (x != d) {
+                            d = x;
+                            if (!f) {
+                                h += '</div>';
+                            }
+                            f = false;
+                            h += '<div class="commentsDay kanban-card-body mb-3">';
+                            h += `<div class="mb-4"><hr class='hr-text-white-no-padding' data-content='${d}' style='margin-block: 0px ! important;' /></div>`;
+                        }
+                        h += `
+                            <div class="ml-2 mb-3 mr-2 p-2 pt-3 kanban-card-body border-no-shadow comment" data-comment-index="${i}" style="position: relative;">
+                            ${comment(i)}
+                            </div>
+                        `;
+                    }
+                }
+            }
+
+            return h;
+        }
+
+        function assignHandlers() {
+            $(".modifyComment").off("click").on("click", function () {
+                ci = $(this).parent().attr("data-comment-index");
+
+                $(`.comment`).css("border-color", "#dee2e6");
+                $(`.comment[data-comment-index="${ci}"]`).attr("style", "position: relative; border-color: #007bff ! important;");
+                $("#mkbCommentCancel").css("right", $("#mkbCommentAdd").outerWidth() + 20).show();
+
+                editor.setValue(modules.mkb.cards[id].comments[ci].comment);
+                editor.clearSelection();
+                editor.focus();
+
+                $("#mkbCommentAdd").html(i18n("edit"));
+            });
+
+            $(".deleteComment").off("click").on("click", function () {
+                let i = $(this).parent().attr("data-comment-index");
+                modules.mkb.cards[id].comments.splice(i, 1);
+                $(`.loading[data-card-id="${id}"]`).show();
+                POST("mkb", "card", false, { card: modules.mkb.cards[id] }).
+                fail(FAIL).
+                always(() => {
+                    $(`.comment[data-comment-index="${i}"]`).remove();
+                    let j = 0;
+                    $(".comment").each(function () {
+                        $(this).attr("data-comment-index", j);
+                        j++;
+                    });
+                    $(".commentsDay").each(function () {
+                        if ($(this).children().length <= 1) {
+                            $(this).remove();
+                        }
+                    });
+
+                    if (modules.mkb.cards[id].comments.length) {
+                        $(`.cardComments[data-card-id="${id}"]`).addClass("text-success").children().first().removeClass("far").addClass("fas");
+                    } else {
+                        $(`.cardComments[data-card-id="${id}"]`).removeClass("text-success").children().first().removeClass("fas").addClass("far");
+                    }
+
+                    $(`.loading[data-card-id="${id}"]`).hide();
+                    editor.focus();
+                });
+            });
+        }
+
+        setTimeout(() => {
+            let h = '';
+
+            h += `
+                <div style='width: 100%;'>
+                    <div id='mkbCommentsCaption' class='text-bold'><div class="ml-2 mt-2 mb-3">${modules.mkb.cards[id].subject}</div></div>
+                    <div id='mkbComments' class='mb-4 kanban-card-body' style='width: 100%; height: 100px; overflow-y: auto;'>
+                    ${comments()}
+                    </div>
+                </div>
+                <div style='width: 100%; height: 200px; position: relative;'>
+                    <pre class='ace-editor' id='mkbComment'></pre>
+                    <div id='mkbCommentPreview' style='display: none; border: solid thin #ced4da; border-radius: 0.25rem; overflow-y: auto; padding-left: 4px; padding-top: 4px;'></div>
+                    <div id='mkbCommentPreviewToggle' class='pointer noselect bg-white pl-2 pr-2 border-no-shadow' style='font-size: 0.8rem; position: absolute; right: 10px; top: -10px;'>
+                        ${i18n("preview")}
+                    </div>
+                    <div id='mkbCommentAdd' class='pointer noselect bg-primary text-bold pl-2 pr-2 border-no-shadow' title='Ctrl+Enter' style='font-size: 0.8rem; position: absolute; right: 10px; bottom: -10px;'>
+                        ${i18n("add")}
+                    </div>
+                    <div id='mkbCommentCancel' class='pointer noselect bg-danger pl-2 pr-2 border-no-shadow' title='Esc' style='font-size: 0.8rem; position: absolute; right: 100px; bottom: -10px; display: none;'>
+                        ${i18n("cancel")}
+                    </div>
+                </div>
+                <div id="mkbResizer" style="position: absolute; left: -101px; top: calc(100vh / 2 - 150px); color: lightgray; text-align: center; padding-left: 90px; padding-top: 100px; padding-bottom: 100px; cursor: w-resize;">
+                    <i class="fas fa-grip-vertical p-1 bg-white border-no-shadow" style="color: lightgray ! important;"></i>
+                </div>
+            `;
+
+            $("#aside-right-body").html(h);
+
+            $(".aside-right").resizableAside({
+                resizeWidthFrom: "left",
+                handleSelector: "#mkbResizer",
+            });
+
+            assignHandlers();
+
+            setTimeout(() => {
+                $("#mkbComments").scrollTo($("#mkbComments").get(0).scrollHeight);
+            }, 5);
+
+            editor = ace.edit("mkbComment");
+
+            if (modules.darkmode && modules.darkmode.isDark()) {
+                editor.setTheme("ace/theme/one_dark");
+            } else {
+                editor.setTheme("ace/theme/chrome");
+            }
+
+            editor.setOptions({
+                enableBasicAutocompletion: true,
+                enableSnippets: true,
+                enableLiveAutocompletion: false
+            });
+
+            editor.session.setMode("ace/mode/markdown");
+
+            editor.setFontSize(14);
+
+            editor.commands.removeCommand("removeline");
+            editor.commands.removeCommand("redo");
+
+            editor.commands.addCommand({
+                name: "removeline",
+                description: "Remove line",
+                bindKey: {
+                    win: "Ctrl-Y",
+                    mac: "Cmd-Y"
+                },
+                exec: function (editor) { editor.removeLines(); },
+                scrollIntoView: "cursor",
+                multiSelectAction: "forEachLine"
+            });
+
+            editor.commands.addCommand({
+                name: "redo",
+                description: "Redo",
+                bindKey: {
+                    win: "Ctrl-Shift-Z",
+                    mac: "Command-Shift-Z"
+                },
+                exec: function (editor) { editor.redo(); }
+            });
+
+            editor.commands.addCommand({
+                name: "add",
+                description: "Add",
+                bindKey: {
+                    win: "Ctrl-Enter",
+                    mac: "Command-Enter"
+                },
+                exec: () => { $("#mkbCommentAdd").click(); }
+            });
+
+            $("#mkbCommentPreviewToggle").off("click").on("click", function () {
+                if ($("#mkbCommentPreview:visible").length) {
+                    $("#mkbCommentPreviewToggle").text(i18n("preview"));
+                    $("#mkbComment").show();
+                    $("#mkbCommentPreview").hide();
+                    editor.focus();
+                } else {
+                    $("#mkbCommentPreviewToggle").text(i18n("editor"));
+                    $("#mkbComment").hide();
+                    $("#mkbCommentPreview").css("height", "200px").html(convertLinks(rbtMdRender($.trim(editor.getValue())))).show();
+                }
+            });
+
+            $("#aside-right").modal("show");
+
+            let z = 406 - 24 - $("#mkbCommentsCaption").outerHeight();
+
+            $("#mkbComments").css("height", `calc(100vh - ${z}px`);
+
+            $("#mkbCommentCancel").off("click").on("click", () => {
+                $(`.comment[data-comment-index="${ci}"]`).html(comment(ci));
+                $(`.comment`).css("border-color", "#dee2e6");
+                assignHandlers();
+                editor.setValue("");
+                editor.clearSelection();
+                editor.focus();
+                ci = -1;
+                $("#mkbCommentAdd").html(i18n("add"));
+                $("#mkbCommentCancel").hide();
+            });
+
+            $("#mkbCommentAdd").off("click").on("click", () => {
+                if (!$.trim(editor.getValue())) {
+                    return;
+                }
+
+                if (!modules.mkb.cards[id].comments) {
+                    modules.mkb.cards[id].comments = [];
+                }
+
+                if (ci >= 0) {
+                    modules.mkb.cards[id].comments[ci] = {
+                        date: Math.round((new Date()).getTime() / 1000),
+                        comment: editor.getValue(),
+                        modified: true,
+                        author: myself.login,
+                    };
+                } else {
+                    modules.mkb.cards[id].comments.push({
+                        date: Math.round((new Date()).getTime() / 1000),
+                        comment: editor.getValue(),
+                        modified: false,
+                        author: myself.login,
+                    });
+                }
+
+                $(`.loading[data-card-id="${id}"]`).show();
+                POST("mkb", "card", false, { card: modules.mkb.cards[id] }).
+                fail(FAIL).
+                always(() => {
+                    if (ci >= 0) {
+                        $(`.comment[data-comment-index="${ci}"]`).html(comment(ci));
+                        $(`.comment[data-comment-index="${ci}"]`).css("border-color", "#dee2e6");
+                    } else {
+                        $("#mkbComments").html(comments());
+                        $("#mkbComments").scrollTo($("#mkbComments").get(0).scrollHeight);
+                    }
+                    editor.setValue("");
+                    editor.clearSelection();
+                    editor.focus();
+                    ci = -1;
+                    $("#mkbCommentAdd").html(i18n("add"));
+                    $("#mkbCommentCancel").hide();
+                    assignHandlers();
+                    $(`.cardComments[data-card-id="${id}"]`).addClass("text-success").children().first().removeClass("far").addClass("fas");
+                    $(`.loading[data-card-id="${id}"]`).hide();
+                });
+            });
+
+            editor.focus();
+        }, 25);
+    },
+
     assignHandlers: function () {
         $(".subtasks").each(function () {
             let subtasks = $(this);
@@ -70,35 +379,7 @@
                 forceAutoScrollFallback: true,
                 scrollSpeed: 25,
 
-                onEnd: () => {
-                    let desk = modules.mkb.desk();
-                    let cols = {};
-
-                    for (let i in desk.columns) {
-                        cols[desk.columns[i]._id] = {
-                            _id: desk.columns[i]._id,
-                            title: desk.columns[i].title,
-                            color: desk.columns[i].color,
-                        };
-                    }
-
-                    let newColumns = [];
-
-                    $("#desk").children().each(function () {
-                        let col = $(this);
-                        let newCards = [];
-                        col.children().first().next().children().each(function () {
-                            newCards.push($(this).attr("data-card-id"));
-                        });
-                        cols[col.attr("data-column-id")].cards = newCards;
-                        newColumns.push(cols[col.attr("data-column-id")]);
-                    });
-
-                    desk.columns = newColumns;
-
-                    POST("mkb", "desk", false, { desk }).
-                    fail(FAIL);
-                },
+                onEnd: modules.mkb.reassembleDesk,
             });
         });
 
@@ -106,35 +387,7 @@
             handle: ".col-handle",
             animation: 150,
 
-            onEnd: () => {
-                let desk = modules.mkb.desk();
-                let cols = {};
-
-                for (let i in desk.columns) {
-                    cols[desk.columns[i]._id] = {
-                        _id: desk.columns[i]._id,
-                        title: desk.columns[i].title,
-                        color: desk.columns[i].color,
-                    };
-                }
-
-                let newColumns = [];
-
-                $("#desk").children().each(function () {
-                    let col = $(this);
-                    let newCards = [];
-                    col.children().first().next().children().each(function () {
-                        newCards.push($(this).attr("data-card-id"));
-                    });
-                    cols[col.attr("data-column-id")].cards = newCards;
-                    newColumns.push(cols[col.attr("data-column-id")]);
-                });
-
-                desk.columns = newColumns;
-
-                POST("mkb", "desk", false, { desk }).
-                fail(FAIL);
-            },
+            onEnd: modules.mkb.reassembleDesk,
         });
 
         $(".card-calendar").off("show.bs.dropdown").on("show.bs.dropdown", function () {
@@ -162,7 +415,35 @@
         $(".card-calendar").off("hide.bs.dropdown").on("hide.bs.dropdown", function () {
             let id = $(this).attr("data-card-id");
 
-            console.log(modules.mkb.calendars[id].context.selectedTime, modules.mkb.calendars[id].context.selectedDates);
+            if (modules.mkb.calendars[id].context.selectedDates.length) {
+                modules.mkb.cards[id].date = strtotime($.trim(modules.mkb.calendars[id].context.selectedDates) + " " + modules.mkb.calendars[id].context.selectedTime);
+
+                let s = $(`.card-calendar[data-card-id="${id}"]`);
+
+                let d = Math.ceil((modules.mkb.cards[id].date - ((new Date()).getTime() / 1000)) / (60 * 60 * 24));
+
+                s.attr("data-date", modules.mkb.cards[id].date);
+
+                if (d >= 0) {
+                    s.children().first().removeClass("text-danger").addClass("text-success");
+                } else {
+                    s.children().first().addClass("text-danger").removeClass("text-success");
+                }
+
+                s.children().first().children().first().html(Math.abs(d) + " " + i18n("mkb.days"));
+            } else {
+                modules.mkb.cards[id].date = false;
+
+                let s = $(`.card-calendar[data-card-id="${id}"]`);
+
+                s.attr("data-date", false);
+
+                s.children().first().removeClass("text-danger").removeClass("text-success");
+
+                s.children().first().children().first().html("<i class='far fa-fw fa-calendar'></i>");
+            }
+
+            modules.mkb.updateCard(id);
         });
 
         $(".subtasks-progress").off("click").on("click", function () {
@@ -549,271 +830,11 @@
         });
 
         $(".cardComments").off("click").on("click", function () {
-            let id = $(this).attr("data-card-id");
-            let ci = -1;
-            let editor;
+            modules.mkb.cardComments($(this).attr("data-card-id"));
+        });
 
-            function comment(i) {
-                return `
-                    <div class='noselect ${modules.mkb.cards[id].comments[i].modified ? "bg-warning" : "bg-info"} border-no-shadow pl-2 pr-2' style='font-size: 0.7rem; position: absolute; left: 6px; top: -10px;'>
-                        ${date("H:i", modules.mkb.cards[id].comments[i].date)}
-                    </div>
-                    <div class='noselect bg-white border-no-shadow pl-2 pr-2' style='font-size: 0.7rem; position: absolute; left: 56px; top: -10px;'>
-                        ${modules.users.login2name(modules.mkb.cards[id].comments[i].author)}
-                    </div>
-                    <div class='pointer noselect bg-danger border-no-shadow pl-1 pr-1 deleteComment' style='font-size: 0.7rem; position: absolute; right: 6px; top: -10px;'>
-                        <i class='fas fa-fw fa-trash-alt'></i>
-                    </div>
-                    <div class='pointer noselect bg-primary border-no-shadow pl-1 pr-1 modifyComment' style='font-size: 0.7rem; position: absolute; right: 36px; top: -10px;'>
-                        <i class='fas fa-fw fa-pencil-alt'></i>
-                    </div>
-                    ${convertLinks(rbtMdRender(modules.mkb.cards[id].comments[i].comment))}
-                `;
-            }
+        $(".card-badge").off("click").on("click", function () {
 
-            function comments() {
-                let h = '';
-                let f = true;
-
-                if (modules.mkb.cards[id].comments && modules.mkb.cards[id].comments.length) {
-                    let d = "";
-                    for (let i in modules.mkb.cards[id].comments) {
-                        if (modules.mkb.cards[id].comments[i]) {
-                            let x = date("Y-m-d", modules.mkb.cards[id].comments[i].date);
-                            if (x != d) {
-                                d = x;
-                                if (!f) {
-                                    h += '</div>';
-                                }
-                                f = false;
-                                h += '<div class="commentsDay kanban-card-body mb-3">';
-                                h += `<div class="mb-4"><hr class='hr-text-white-no-padding' data-content='${d}' style='margin-block: 0px ! important;' /></div>`;
-                            }
-                            h += `
-                                <div class="ml-2 mb-3 mr-2 p-2 pt-3 kanban-card-body border-no-shadow comment" data-comment-index="${i}" style="position: relative;">
-                                ${comment(i)}
-                                </div>
-                            `;
-                        }
-                    }
-                }
-
-                return h;
-            }
-
-            function assignHandlers() {
-                $(".modifyComment").off("click").on("click", function () {
-                    ci = $(this).parent().attr("data-comment-index");
-
-                    $(`.comment`).css("border-color", "#dee2e6");
-                    $(`.comment[data-comment-index="${ci}"]`).attr("style", "position: relative; border-color: #007bff ! important;");
-                    $("#mkbCommentCancel").css("right", $("#mkbCommentAdd").outerWidth() + 20).show();
-
-                    editor.setValue(modules.mkb.cards[id].comments[ci].comment);
-                    editor.clearSelection();
-                    editor.focus();
-
-                    $("#mkbCommentAdd").html(i18n("edit"));
-                });
-
-                $(".deleteComment").off("click").on("click", function () {
-                    let i = $(this).parent().attr("data-comment-index");
-                    modules.mkb.cards[id].comments.splice(i, 1);
-                    $(`.loading[data-card-id="${id}"]`).show();
-                    POST("mkb", "card", false, { card: modules.mkb.cards[id] }).
-                    fail(FAIL).
-                    always(() => {
-                        $(`.comment[data-comment-index="${i}"]`).remove();
-                        let j = 0;
-                        $(".comment").each(function () {
-                            $(this).attr("data-comment-index", j);
-                            j++;
-                        });
-                        $(".commentsDay").each(function () {
-                            if ($(this).children().length <= 1) {
-                                $(this).remove();
-                            }
-                        });
-                        $(`.loading[data-card-id="${id}"]`).hide();
-                        editor.focus();
-                    });
-                });
-            }
-
-            setTimeout(() => {
-                let h = '';
-
-                h += `
-                    <div style='width: 100%;'>
-                        <div id='mkbCommentsCaption' class='text-bold'><div class="ml-2 mt-2 mb-3">${modules.mkb.cards[id].subject}</div></div>
-                        <div id='mkbComments' class='mb-4 kanban-card-body' style='width: 100%; height: 100px; overflow-y: auto;'>
-                        ${comments()}
-                        </div>
-                    </div>
-                    <div style='width: 100%; height: 200px; position: relative;'>
-                        <pre class='ace-editor' id='mkbComment'></pre>
-                        <div id='mkbCommentPreview' style='display: none; border: solid thin #ced4da; border-radius: 0.25rem; overflow-y: auto; padding-left: 4px; padding-top: 4px;'></div>
-                        <div id='mkbCommentPreviewToggle' class='pointer noselect bg-white pl-2 pr-2 border-no-shadow' style='font-size: 0.8rem; position: absolute; right: 10px; top: -10px;'>
-                            ${i18n("preview")}
-                        </div>
-                        <div id='mkbCommentAdd' class='pointer noselect bg-primary text-bold pl-2 pr-2 border-no-shadow' title='Ctrl+Enter' style='font-size: 0.8rem; position: absolute; right: 10px; bottom: -10px;'>
-                            ${i18n("add")}
-                        </div>
-                        <div id='mkbCommentCancel' class='pointer noselect bg-danger pl-2 pr-2 border-no-shadow' title='Esc' style='font-size: 0.8rem; position: absolute; right: 100px; bottom: -10px; display: none;'>
-                            ${i18n("cancel")}
-                        </div>
-                    </div>
-                    <div id="mkbResizer" style="position: absolute; left: -101px; top: calc(100vh / 2 - 150px); color: lightgray; text-align: center; padding-left: 90px; padding-top: 100px; padding-bottom: 100px; cursor: w-resize;">
-                        <i class="fas fa-grip-vertical p-1 bg-white border-no-shadow" style="color: lightgray ! important;"></i>
-                    </div>
-                `;
-
-                $("#aside-right-body").html(h);
-
-                $(".aside-right").resizableAside({
-                    resizeWidthFrom: "left",
-                    handleSelector: "#mkbResizer",
-                });
-
-                assignHandlers();
-
-                setTimeout(() => {
-                    $("#mkbComments").scrollTo($("#mkbComments").get(0).scrollHeight);
-                }, 5);
-
-                editor = ace.edit("mkbComment");
-
-                if (modules.darkmode && modules.darkmode.isDark()) {
-                    editor.setTheme("ace/theme/one_dark");
-                } else {
-                    editor.setTheme("ace/theme/chrome");
-                }
-
-                editor.setOptions({
-                    enableBasicAutocompletion: true,
-                    enableSnippets: true,
-                    enableLiveAutocompletion: false
-                });
-
-                editor.session.setMode("ace/mode/markdown");
-
-                editor.setFontSize(14);
-
-                editor.commands.removeCommand("removeline");
-                editor.commands.removeCommand("redo");
-
-                editor.commands.addCommand({
-                    name: "removeline",
-                    description: "Remove line",
-                    bindKey: {
-                        win: "Ctrl-Y",
-                        mac: "Cmd-Y"
-                    },
-                    exec: function (editor) { editor.removeLines(); },
-                    scrollIntoView: "cursor",
-                    multiSelectAction: "forEachLine"
-                });
-
-                editor.commands.addCommand({
-                    name: "redo",
-                    description: "Redo",
-                    bindKey: {
-                        win: "Ctrl-Shift-Z",
-                        mac: "Command-Shift-Z"
-                    },
-                    exec: function (editor) { editor.redo(); }
-                });
-
-                editor.commands.addCommand({
-                    name: "add",
-                    description: "Add",
-                    bindKey: {
-                        win: "Ctrl-Enter",
-                        mac: "Command-Enter"
-                    },
-                    exec: () => { $("#mkbCommentAdd").click(); }
-                });
-
-                $("#mkbCommentPreviewToggle").off("click").on("click", function () {
-                    if ($("#mkbCommentPreview:visible").length) {
-                        $("#mkbCommentPreviewToggle").text(i18n("preview"));
-                        $("#mkbComment").show();
-                        $("#mkbCommentPreview").hide();
-                        editor.focus();
-                    } else {
-                        $("#mkbCommentPreviewToggle").text(i18n("editor"));
-                        $("#mkbComment").hide();
-                        $("#mkbCommentPreview").css("height", "200px").html(convertLinks(rbtMdRender($.trim(editor.getValue())))).show();
-                    }
-                });
-
-                $("#aside-right").modal("show");
-
-                let z = 406 - 24 - $("#mkbCommentsCaption").outerHeight();
-
-                $("#mkbComments").css("height", `calc(100vh - ${z}px`);
-
-                $("#mkbCommentCancel").off("click").on("click", () => {
-                    $(`.comment[data-comment-index="${ci}"]`).html(comment(ci));
-                    $(`.comment`).css("border-color", "#dee2e6");
-                    assignHandlers();
-                    editor.setValue("");
-                    editor.clearSelection();
-                    editor.focus();
-                    ci = -1;
-                    $("#mkbCommentAdd").html(i18n("add"));
-                    $("#mkbCommentCancel").hide();
-                });
-
-                $("#mkbCommentAdd").off("click").on("click", () => {
-                    if (!$.trim(editor.getValue())) {
-                        return;
-                    }
-
-                    if (!modules.mkb.cards[id].comments) {
-                        modules.mkb.cards[id].comments = [];
-                    }
-
-                    if (ci >= 0) {
-                        modules.mkb.cards[id].comments[ci] = {
-                            date: Math.round((new Date()).getTime() / 1000),
-                            comment: editor.getValue(),
-                            modified: true,
-                            author: myself.login,
-                        };
-                    } else {
-                        modules.mkb.cards[id].comments.push({
-                            date: Math.round((new Date()).getTime() / 1000),
-                            comment: editor.getValue(),
-                            modified: false,
-                            author: myself.login,
-                        });
-                    }
-
-                    $(`.loading[data-card-id="${id}"]`).show();
-                    POST("mkb", "card", false, { card: modules.mkb.cards[id] }).
-                    fail(FAIL).
-                    always(() => {
-                        if (ci >= 0) {
-                            $(`.comment[data-comment-index="${ci}"]`).html(comment(ci));
-                            $(`.comment[data-comment-index="${ci}"]`).css("border-color", "#dee2e6");
-                        } else {
-                            $("#mkbComments").html(comments());
-                            $("#mkbComments").scrollTo($("#mkbComments").get(0).scrollHeight);
-                        }
-                        editor.setValue("");
-                        editor.clearSelection();
-                        editor.focus();
-                        ci = -1;
-                        $("#mkbCommentAdd").html(i18n("add"));
-                        $("#mkbCommentCancel").hide();
-                        assignHandlers();
-                        $(`.loading[data-card-id="${id}"]`).hide();
-                    });
-                });
-
-                editor.focus();
-            }, 25);
         });
     },
 
@@ -871,7 +892,7 @@
             c = `
                 <span class="dropdown card-calendar" data-card-id="${card._id}" data-date="${card.date}" title="${i18n("mkb.date")}">
                     <span class="btn btn-tool ${(d >= 0) ? "text-success" : "text-danger"} dropdown-toggle dropdown-toggle-no-icon pb-0" data-toggle="dropdown" aria-expanded="false" data-flip="true" style="margin-bottom: -8px;">
-                        ${Math.abs(d)} ${i18n("mkb.days")}
+                        <span>${Math.abs(d)} ${i18n("mkb.days")}</span>
                         <ul class="dropdown-menu">
                             <li id="dropdown-calendar-${card._id}"></li>
                         </ul>
@@ -879,14 +900,23 @@
                 </span>
             `;
         } else {
-            c = "&nbsp;";
+            c = `
+                <span class="dropdown card-calendar" data-card-id="${card._id}" data-date="false" title="${i18n("mkb.date")}">
+                    <span class="btn btn-tool dropdown-toggle dropdown-toggle-no-icon pb-0" data-toggle="dropdown" aria-expanded="false" data-flip="true" style="margin-bottom: -8px;">
+                        <span><i class="far fa-fw fa-calendar"></i></span>
+                        <ul class="dropdown-menu">
+                            <li id="dropdown-calendar-${card._id}"></li>
+                        </ul>
+                    </span>
+                </span>
+            `;
         }
 
         let t = "";
 
         for (let i in card.tags) {
             t += `
-                <span class="badge bg-${systemColor(card.tags[i])} kanban-badge pr-2 pl-2 mt-1 pointer" style="border: solid thin #60686f" title="${$.trim(escapeHTML(card.tags[i]))}">
+                <span class="badge card-badge bg-${systemColor(card.tags[i])} kanban-badge pr-2 pl-2 mt-1 pointer" style="border: solid thin #60686f" title="${$.trim(escapeHTML(card.tags[i]))}">
                     ${$.trim(escapeHTML(card.tags[i]))}
                 </span>
             `;
@@ -903,7 +933,7 @@
                     <div class="card-tools">
                         <span class="btn btn-tool text-black loading" title="${i18n("mkb.loading")}" style="cursor: default ! important; display: none;" data-card-id="${card._id}"><i class="fas fa-fw fa-spinner rotate"></i></span>
                         <span class="btn btn-tool" title="${i18n("mkb.attachments")}"><i class="fas fa-fw fa-paperclip"></i></span>
-                        <span class="btn btn-tool cardComments" title="${i18n("mkb.comments")}" data-card-id="${card._id}"><i class="far fa-fw fa-comments"></i></span>
+                        <span class="btn btn-tool cardComments ${(card.comments && card.comments.length) ? " text-success" : ""}" title="${i18n("mkb.comments")}" data-card-id="${card._id}"><i class="${(card.comments && card.comments.length) ? "fas" : "far"} fa-fw fa-comments"></i></span>
                         <span class="btn btn-tool cardEdit" title="${i18n("mkb.edit")}" data-card-id="${card._id}"><i class="fas fa-fw fa-edit"></i></span>
                         <span class="btn btn-tool btn-min-max" title="${card.cardMinimized ? i18n("mkb.restore") : i18n("mkb.minimize")}" data-card-id="${card._id}"><i class="fas fa-fw ${card.cardMinimized ? "fa-expand-arrows-alt" : "fa-compress-arrows-alt"}"></i></span>
                     </div>
