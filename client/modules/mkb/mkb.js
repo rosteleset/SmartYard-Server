@@ -925,8 +925,6 @@
         $(".cardDone").off("click").on("click", function () {
             let id = $(this).attr("data-card-id");
 
-            console.log(id);
-
             if ($(`.cardDone[data-card-id="${id}"]`).hasClass("text-success")) {
                 $(`.cardDone[data-card-id="${id}"]`).removeClass("text-success");
                 modules.mkb.cards[id].done = false;
@@ -1327,7 +1325,5 @@
 
     search: function (search) {
         POST("mkb", "cards", false, { query: { $text: { $search: search } } }).done(console.log)
-
-        console.log(search);
     }
 }).init();
