@@ -1305,6 +1305,8 @@
     },
 /*
     search: function (search) {
+        POST("mkb", "cards", false, { query: { $text: { $search: search } } }).done(console.log)
+
         console.log(search);
     }
 */

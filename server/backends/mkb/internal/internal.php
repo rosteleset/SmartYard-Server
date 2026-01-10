@@ -97,9 +97,15 @@
                 $db = $this->dbName;
                 $login = $this->login;
 
-                if (@$query["_id"]) {
-                    $query["_id"] = new \MongoDB\BSON\ObjectID($query["_id"]);
+                if (!$query) {
+                    $query = [];
                 }
+
+                array_walk_recursive($query, function (&$value, $key) {
+                    if ($key === '_id') {
+                        $value = new \MongoDB\BSON\ObjectID($value);
+                    }
+                });
 
                 $this->mongo->$db->$login->deleteMany($query);
 
@@ -146,6 +152,7 @@
                     "body",
                     "desk",
                     "date",
+                    "done",
                 ];
 
                 foreach ($fields as $i) {
