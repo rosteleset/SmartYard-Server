@@ -1050,7 +1050,7 @@
                     </div>
                 </div>
                 <div class="card-body" data-card-id="${card._id}">
-                    <div class="text-bold">${$.trim(escapeHTML(card.subject))}</div>
+                    <div>${$.trim(escapeHTML(card.subject))}</div>
                     ${t}
                     ${s}
                     ${b}
