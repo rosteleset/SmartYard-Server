@@ -64,13 +64,15 @@
                 $db = $this->dbName;
                 $login = $this->login;
 
-                if (@$query["_id"]) {
-                    $query["_id"] = new \MongoDB\BSON\ObjectID($query["_id"]);
-                }
-
                 if (!$query) {
                     $query = [];
                 }
+
+                array_walk_recursive($query, function (&$value, $key) {
+                    if ($key === '_id') {
+                        $value = new \MongoDB\BSON\ObjectID($value);
+                    }
+                });
 
                 if (!$options) {
                     $options = [];
@@ -105,6 +107,74 @@
             }
 
             /**
+             * list indexes
+             */
+
+            private function listIndexes() {
+                $db = $this->dbName;
+                $login = $this->login;
+
+                return array_map(function ($indexInfo) {
+                    return [ 'v' => $indexInfo->getVersion(), 'key' => $indexInfo->getKey(), 'name' => $indexInfo->getName() ];
+                }, iterator_to_array($this->mongo->$db->$login->listIndexes()));
+            }
+
+            /**
+             * create indexes
+             */
+
+            private function createIndexes($collection) {
+                $db = $this->dbName;
+
+                $fullText = [
+                    "subject" => "text",
+                    "body" => "text",
+                    "tags" => "text",
+                    "comments.body" => "text",
+                    "subtasks.id" => "text",
+                    "subtasks.text" => "text",
+                    "subtasks.value" => "text",
+                ];
+
+                $this->mongo->$db->$collection->createIndex($fullText, [ "default_language" => @$this->config["language"] ?: "en", "name" => "fullText" ]);
+
+                $fields = [
+                    "type",
+                    "name",
+                    "subject",
+                    "color",
+                    "body",
+                    "desk",
+                    "date",
+                ];
+
+                foreach ($fields as $i) {
+                    $this->mongo->$db->$collection->createIndex([ $i => 1 ], [ "name" => "index_" . $i, ]);
+                }
+
+                return true;
+            }
+
+            /**
+             * is collection exists
+             */
+
+            private function collectionExists($collection) {
+                $db = $this->dbName;
+
+                $exists = false;
+
+                foreach ($this->mongo->$db->listCollections() as $collectionInfo) {
+                    if ($collectionInfo->getName() === $collection) {
+                        $exists = true;
+                        break;
+                    }
+                }
+
+                return $exists;
+            }
+
+            /**
              * @inheritDoc
              */
 
@@ -119,7 +189,15 @@
             public function upsertDesk($desk) {
                 $desk["type"] = "desk";
 
-                return $this->put($desk);
+                $exists = $this->collectionExists($this->login);
+
+                $r = $this->put($desk);
+
+                if (!$exists) {
+                    $this->createIndexes($this->login);
+                }
+
+                return $r;
             }
 
             /**
@@ -147,7 +225,15 @@
             public function upsertCard($card) {
                 $card["type"] = "card";
 
-                return $this->put($card);
+                $exists = $this->collectionExists($this->login);
+
+                $r = $this->put($card);
+
+                if (!$exists) {
+                    $this->createIndexes($this->login);
+                }
+
+                return $r;
             }
 
             /**

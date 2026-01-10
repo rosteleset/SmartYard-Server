@@ -4,6 +4,7 @@
     desks: [],
     deskNames: [],
     cards: {},
+    deskCards: [],
     calendars: {},
     tags: [],
 
@@ -89,7 +90,7 @@
                 <div class='pointer noselect bg-primary border-no-shadow pl-1 pr-1 modifyComment' style='font-size: 0.7rem; position: absolute; right: 36px; top: -10px;'>
                     <i class='fas fa-fw fa-pencil-alt'></i>
                 </div>
-                ${convertLinks(rbtMdRender(modules.mkb.cards[id].comments[i].comment))}
+                ${convertLinks(rbtMdRender(modules.mkb.cards[id].comments[i].body))}
             `;
         }
 
@@ -131,7 +132,7 @@
                 $(`.comment[data-comment-index="${ci}"]`).attr("style", "position: relative; border-color: #007bff ! important;");
                 $("#mkbCommentCancel").css("right", $("#mkbCommentAdd").outerWidth() + 20).show();
 
-                editor.setValue(modules.mkb.cards[id].comments[ci].comment);
+                editor.setValue(modules.mkb.cards[id].comments[ci].body);
                 editor.clearSelection();
                 editor.focus();
 
@@ -306,14 +307,14 @@
                 if (ci >= 0) {
                     modules.mkb.cards[id].comments[ci] = {
                         date: Math.round((new Date()).getTime() / 1000),
-                        comment: editor.getValue(),
+                        body: editor.getValue(),
                         modified: true,
                         author: myself.login,
                     };
                 } else {
                     modules.mkb.cards[id].comments.push({
                         date: Math.round((new Date()).getTime() / 1000),
-                        comment: editor.getValue(),
+                        body: editor.getValue(),
                         modified: false,
                         author: myself.login,
                     });
@@ -558,11 +559,12 @@
                 delete: i18n("delete"),
                 fields: [
                     {
-                        id: "id",
+                        id: "_id",
                         title: i18n("mkb.id"),
                         type: "text",
                         value: column._id,
                         readonly: true,
+                        hidden: true,
                     },
                     {
                         id: "title",
@@ -760,8 +762,9 @@
                         title: i18n("mkb.id"),
                         tab: i18n("mkb.card"),
                         type: "text",
-                        readonly: true,
                         value: modules.mkb.cards[id]._id,
+                        readonly: true,
+                        hidden: true,
                     },
                     {
                         id: "subject",
@@ -890,8 +893,31 @@
             }
         });
 
-        $("cardArchive").off("click").on("click", function () {
-            //
+        $(".cardArchive").off("click").on("click", function () {
+            let id = $(this).attr("data-card-id");
+
+            loadingStart();
+
+            let desk = modules.mkb.desk();
+
+            for (let i in desk.columns) {
+                if ((j = desk.columns[i].cards.indexOf(id)) >= 0) {
+                    desk.columns[i].cards.splice(j, 1);
+                    break;
+                }
+            }
+
+            modules.mkb.cards[id].desk = false;
+
+            POST("mkb", "card", false, { card: modules.mkb.cards[id] }).
+            done(() => {
+                POST("mkb", "desk", false, { desk }).
+                done(modules.mkb.renderDesk).
+                fail(FAIL).
+                fail(loadingDone);
+            }).
+            fail(FAIL).
+            fail(loadingDone);
         });
     },
 
@@ -999,7 +1025,7 @@
                         <span class="btn btn-tool text-black loading" title="${i18n("mkb.loading")}" style="cursor: default ! important; display: none;" data-card-id="${card._id}"><i class="fas fa-fw fa-spinner rotate"></i></span>
                         <span class="btn btn-tool cardAttachments" title="${i18n("mkb.attachments")}"><i class="fas fa-fw fa-paperclip"></i></span>
                         <span class="btn btn-tool cardComments ${(card.comments && card.comments.length) ? " text-success" : ""}" title="${i18n("mkb.comments")}" data-card-id="${card._id}"><i class="${(card.comments && card.comments.length) ? "fas" : "far"} fa-fw fa-comments"></i></span>
-                        <span class="btn btn-tool cardArchive" title="${i18n("mkb.archive")}"><i class="fas fa-fw fa-archive"></i></span>
+                        <span class="btn btn-tool cardArchive" title="${i18n("mkb.archive")}" data-card-id="${card._id}"><i class="fas fa-fw fa-archive"></i></span>
                         <span class="btn btn-tool cardEdit" title="${i18n("mkb.edit")}" data-card-id="${card._id}"><i class="fas fa-fw fa-edit"></i></span>
                         <span class="btn btn-tool cardMinMax" title="${card.cardMinimized ? i18n("mkb.restore") : i18n("mkb.minimize")}" data-card-id="${card._id}"><i class="fas fa-fw ${card.cardMinimized ? "fa-expand-arrows-alt" : "fa-compress-arrows-alt"}"></i></span>
                     </div>
@@ -1019,9 +1045,12 @@
     renderColumn: function (column) {
         let c = '';
 
+        modules.mkb.deskCards = [];
+
         for (let i in column.cards) {
             if (modules.mkb.cards[column.cards[i]]) {
                 c += modules.mkb.renderCard(modules.mkb.cards[column.cards[i]]);
+                modules.mkb.deskCards.push(column.cards[i]);
             }
         }
 
@@ -1090,7 +1119,7 @@
             desk = $("#mkbDesks").val();
             lStore("mkbDesk", desk);
 
-            POST("mkb", "cards", false, { desk }).
+            POST("mkb", "cards", false, { query: { desk } }).
             done(r => {
                 desk = modules.mkb.desk();
 
