@@ -29,8 +29,10 @@
         return f;
     },
 
-    updateCard: function (id) {
-        $(`.loading[data-card-id="${id}"]`).show();
+    updateCard: function (id, busy) {
+        if (busy) {
+            $(`.loading[data-card-id="${id}"]`).show();
+        }
         POST("mkb", "card", false, { card: modules.mkb.cards[id] }).
         fail(FAIL).
         always(() => {
@@ -951,7 +953,7 @@
                 </div>
                 <div class="${card.cardMinimized ? "" : "pointer"} subtasks-progress ${(card.subtasksMinimized || card.cardMinimized) ? "pt-3" : "pt-1"} pb-1" data-card-id="${card._id}" data-minimized=${card.subtasksMinimized ? "true" : "false"} title="${p}%">
                     <div class="progress">
-                        <div class="progress-bar progress-bar-danger progress-bar-striped progressbar-value" role="progressbar" style="width: ${p}%" aria-valuenow="${p}" aria-valuemin="0" aria-valuemax="100" data-card-id="${card._id}">
+                        <div class="progress-bar progress-bar-striped progressbar-value" role="progressbar" style="width: ${p}%" aria-valuenow="${p}" aria-valuemin="0" aria-valuemax="100" data-card-id="${card._id}">
                             ${p}%
                         </div>
                     </div>
