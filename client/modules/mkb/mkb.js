@@ -5,6 +5,7 @@
     deskNames: [],
     cards: {},
     calendars: {},
+    tags: [],
 
     subModules: [
         "columnTable",
@@ -843,8 +844,44 @@
             modules.mkb.cardComments($(this).attr("data-card-id"));
         });
 
-        $(".card-badge").off("click").on("click", function () {
+        $(".cardTag").off("click").on("click", function () {
+            let tag = $(this).attr("title");
 
+            if (modules.mkb.tags.indexOf(tag) >= 0) {
+                modules.mkb.tags.splice(modules.mkb.tags.indexOf(tag), 1);
+            } else {
+                modules.mkb.tags.push(tag);
+            }
+
+            $(".cardTag").css("border-width", "thin");
+
+            if (modules.mkb.tags.length) {
+                for (let i in modules.mkb.tags) {
+                    $(`.cardTag[title="${modules.mkb.tags[i]}"]`).css("border-width", "medium");
+                }
+
+                $(".kanban-card").attr("data-card-filtered", "false");
+
+                for (let i in modules.mkb.cards) {
+                    let v = false;
+
+                    for (let j in modules.mkb.tags) {
+                        if (modules.mkb.cards[i].tags.indexOf(modules.mkb.tags[j]) >= 0) {
+                            v = true;
+                            break;
+                        }
+                    }
+
+                    if (v) {
+                        $("#card-" + i).attr("data-card-filtered", "true");
+                    }
+                }
+
+                $('.kanban-card[data-card-filtered="false"]').hide();
+                $('.kanban-card[data-card-filtered="true"]').show();
+            } else {
+                $(".kanban-card").show();
+            }
         });
     },
 
@@ -923,21 +960,29 @@
         }
 
         let t = "";
+        let v = false;
 
         for (let i in card.tags) {
             t += `
-                <span class="badge card-badge bg-${systemColor(card.tags[i])} kanban-badge pr-2 pl-2 mt-1 pointer" style="border: solid thin #60686f" title="${$.trim(escapeHTML(card.tags[i]))}">
+                <span class="badge cardTag bg-${systemColor(card.tags[i])} kanban-badge pr-2 pl-2 mt-1 pointer" style="border: solid ${modules.mkb.tags.indexOf(card.tags[i]) >= 0 ? "medium" : "thin"} #60686f" title="${$.trim(escapeHTML(card.tags[i]))}">
                     ${$.trim(escapeHTML(card.tags[i]))}
                 </span>
             `;
+
+            for (let j in modules.mkb.tags) {
+                if (card.tags[i] == modules.mkb.tags[j]) {
+                    v = true;
+                    break;
+                }
+            }
         }
 
         if (t) {
-            t = `<div class="mt-2 min-max" data-card-id="${card._id}" style="font-size: 75%; ${card.cardMinimized ? "display: none;" : ""}">${t}</div>`;
+            t = `<div class="mt-2 min-max" data-card-id="${card._id}" style="font-size: 75%; display: flex; align-items: center; ${card.cardMinimized ? "display: none;" : ""}">${t}</div>`;
         }
 
         let h = `
-            <div id="card-${card._id}" data-card-id="${card._id}" class="kanban-card card card-${card.color} card-outline noselect">
+            <div id="card-${card._id}" data-card-id="${card._id}" class="kanban-card card card-${card.color} card-outline noselect" style="${(modules.mkb.tags.length && !v) ? "display: none;" : ""}">
                 <div class="card-header card-handle pl-1 pr-3">
                     <h5 class="card-title">${c}</h5>
                     <div class="card-tools">
@@ -948,7 +993,7 @@
                         <span class="btn btn-tool btn-min-max" title="${card.cardMinimized ? i18n("mkb.restore") : i18n("mkb.minimize")}" data-card-id="${card._id}"><i class="fas fa-fw ${card.cardMinimized ? "fa-expand-arrows-alt" : "fa-compress-arrows-alt"}"></i></span>
                     </div>
                 </div>
-                <div class="card-body">
+                <div class="card-body" data-card-id="${card._id}">
                     <div class="text-bold">${$.trim(escapeHTML(card.subject))}</div>
                     ${t}
                     ${s}
@@ -1106,6 +1151,7 @@
             $("#rightTopDynamic").html(rtd);
 
             $("#mkbDesks").off("change").on("change", () => {
+                modules.mkb.tags = [];
                 lStore("mkbDesk", $("#mkbDesks").val());
                 modules.mkb.renderDesk();
             });
