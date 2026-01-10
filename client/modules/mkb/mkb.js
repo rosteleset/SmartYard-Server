@@ -27,6 +27,15 @@
         return f;
     },
 
+    updateCard: function (id) {
+        $(`.loading[data-card-id="${id}"]`).show();
+        POST("mkb", "card", false, { card: modules.mkb.cards[id] }).
+        fail(FAIL).
+        always(() => {
+            $(`.loading[data-card-id="${id}"]`).hide();
+        });
+    },
+
     assignHandlers: function () {
         $(".subtasks").each(function () {
             let subtasks = $(this);
@@ -34,12 +43,19 @@
                 animation: 150,
 
                 onEnd: e => {
-                    console.log(e);
-/*
-                    $(`#${e.to.id}`).children().each(function () {
-                        let el = $(this);
+                    let id = e.to.dataset["cardId"];
+
+                    let i = 0;
+                    $(`.subtasks[data-card-id="${id}"]`).children().each(function () {
+                        let t = $.trim($(this).children().first().next().text());
+                        modules.mkb.cards[id].subtasks[i].id = t;
+                        modules.mkb.cards[id].subtasks[i].text = t;
+                        modules.mkb.cards[id].subtasks[i].value = t;
+                        modules.mkb.cards[id].subtasks[i].checked = $(this).children().first().prop("checked");
+                        i++;
                     });
-*/
+
+                    modules.mkb.updateCard(id);
                 },
             });
         });
@@ -54,15 +70,34 @@
                 forceAutoScrollFallback: true,
                 scrollSpeed: 25,
 
-                onEnd: e => {
-                    let s = $("#" + e.item.id).offset().top - $("#mainForm").offset().top - 8;
-                    if ($("html").scrollTop() > s) {
-                        $("html").scrollTo(s);
+                onEnd: () => {
+                    let desk = modules.mkb.desk();
+                    let cols = {};
+
+                    for (let i in desk.columns) {
+                        cols[desk.columns[i]._id] = {
+                            _id: desk.columns[i]._id,
+                            title: desk.columns[i].title,
+                            color: desk.columns[i].color,
+                        };
                     }
 
-                    $(`#${e.to.id}`).children().each(function () {
-                        console.log($(this).attr("id"));
+                    let newColumns = [];
+
+                    $("#desk").children().each(function () {
+                        let col = $(this);
+                        let newCards = [];
+                        col.children().first().next().children().each(function () {
+                            newCards.push($(this).attr("data-card-id"));
+                        });
+                        cols[col.attr("data-column-id")].cards = newCards;
+                        newColumns.push(cols[col.attr("data-column-id")]);
                     });
+
+                    desk.columns = newColumns;
+
+                    POST("mkb", "desk", false, { desk }).
+                    fail(FAIL);
                 },
             });
         });
@@ -71,10 +106,34 @@
             handle: ".col-handle",
             animation: 150,
 
-            onEnd: e => {
+            onEnd: () => {
+                let desk = modules.mkb.desk();
+                let cols = {};
+
+                for (let i in desk.columns) {
+                    cols[desk.columns[i]._id] = {
+                        _id: desk.columns[i]._id,
+                        title: desk.columns[i].title,
+                        color: desk.columns[i].color,
+                    };
+                }
+
+                let newColumns = [];
+
                 $("#desk").children().each(function () {
-                    console.log($(this).attr("id"));
+                    let col = $(this);
+                    let newCards = [];
+                    col.children().first().next().children().each(function () {
+                        newCards.push($(this).attr("data-card-id"));
+                    });
+                    cols[col.attr("data-column-id")].cards = newCards;
+                    newColumns.push(cols[col.attr("data-column-id")]);
                 });
+
+                desk.columns = newColumns;
+
+                POST("mkb", "desk", false, { desk }).
+                fail(FAIL);
             },
         });
 
@@ -115,28 +174,42 @@
                     $(`.subtasks[data-card-id="${id}"]`).show();
                     $(`.hr-subject[data-card-id="${id}"]`).show();
                     pb.attr("data-minimized", "false").removeClass("pt-3").addClass("pt-1");
+                    modules.mkb.cards[id].subtasksMinimized = false;
                 } else {
                     $(`.subtasks[data-card-id="${id}"]`).hide();
                     $(`.hr-subject[data-card-id="${id}"]`).hide();
                     pb.attr("data-minimized", "true").addClass("pt-3").removeClass("pt-1");
+                    modules.mkb.cards[id].subtasksMinimized = true;
                 }
+
+                modules.mkb.updateCard(id);
             }
         });
 
         $(".subtask-checkbox").off("change").on("change", function () {
             let id = $(this).attr("data-card-id");
-            let p = 0, c = 0;
+            let p = 0, i = 0;
 
             $(this).parent().parent().children().each(function () {
-                if ($(this).children().first().prop("checked")) {
+                let c = $(this).children().first().prop("checked");
+                let t = $.trim($(this).children().first().next().text());
+
+                if (c) {
                     p++;
                 }
-                c++;
+
+                modules.mkb.cards[id].subtasks[i].id = t;
+                modules.mkb.cards[id].subtasks[i].text = t;
+                modules.mkb.cards[id].subtasks[i].value = t;
+                modules.mkb.cards[id].subtasks[i].checked = c;
+                i++;
             });
 
-            p = Math.round((p / c) * 1000) / 10;
+            p = Math.round((p / i) * 1000) / 10;
 
             $(`.progressbar-value[data-card-id="${id}"]`).css("width", p + "%").attr("aria-valuenow", p).attr("title", p + "%").text(p + "%");
+
+            modules.mkb.updateCard(id);
         });
 
         $(".btn-min-max").off("click").on("click", function () {
@@ -148,6 +221,7 @@
                 $(`.hr-subject[data-card-id="${id}"]`).hide();
                 $(`.min-max[data-card-id="${id}"]`).hide();
                 $(`.subtasks[data-card-id="${id}"]`).hide();
+                modules.mkb.cards[id].cardMinimized = true;
             } else {
                 $(`.btn-min-max[data-card-id="${id}"]`).children().first().addClass("fa-compress-arrows-alt").removeClass("fa-expand-arrows-alt").attr("title", i18n("mkb.minimize"));
                 let pb = $(`.subtasks-progress[data-card-id="${id}"]`);
@@ -162,7 +236,10 @@
                 }
                 pb.addClass("pointer");
                 $(`.min-max[data-card-id="${id}"]`).show();
+                modules.mkb.cards[id].cardMinimized = false;
             }
+
+            modules.mkb.updateCard(id);
         });
 
         $(".column-edit").off("click").on("click", function () {
@@ -744,7 +821,10 @@
         let s = '';
 
         if (card.subtasks && card.subtasks.length) {
-            s += `<hr class="hr-subject" data-card-id="${card._id}" style="${card.subtasksMinimized ? "display: none;" : ""}" /><div id="subtasks-${card._id}" class="subtasks pb-2" data-card-id="${card._id}" style="${card.subtasksMinimized ? "display: none;" : ""}">`;
+            s += `
+                <hr class="hr-subject" data-card-id="${card._id}" style="${(card.subtasksMinimized || card.cardMinimized) ? "display: none;" : ""}" />
+                <div id="subtasks-${card._id}" class="subtasks pb-2" data-card-id="${card._id}" style="${(card.subtasksMinimized || card.cardMinimized) ? "display: none;" : ""}">
+            `;
 
             let p = 0;
 
@@ -763,7 +843,16 @@
 
             p = Math.round((p / card.subtasks.length) * 1000) / 10;
 
-            s += `</div><div class="${card.cardMinimized ? "" : "pointer"} subtasks-progress ${card.subtasksMinimized ? "pt-3" : "pt-1"} pb-1" data-card-id="${card._id}" data-minimized=${card.subtasksMinimized ? "true" : "false"} title="${p}%"><div class="progress"><div class="progress-bar progress-bar-danger progress-bar-striped progressbar-value" role="progressbar" style="width: ${p}%" aria-valuenow="${p}" aria-valuemin="0" aria-valuemax="100" data-card-id="${card._id}">${p}%</div></div></div>`;
+            s += `
+                </div>
+                <div class="${card.cardMinimized ? "" : "pointer"} subtasks-progress ${(card.subtasksMinimized || card.cardMinimized) ? "pt-3" : "pt-1"} pb-1" data-card-id="${card._id}" data-minimized=${card.subtasksMinimized ? "true" : "false"} title="${p}%">
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-danger progress-bar-striped progressbar-value" role="progressbar" style="width: ${p}%" aria-valuenow="${p}" aria-valuemin="0" aria-valuemax="100" data-card-id="${card._id}">
+                            ${p}%
+                        </div>
+                    </div>
+                </div>
+            `;
         }
 
         let b = '';
@@ -808,7 +897,7 @@
         }
 
         let h = `
-            <div id="card-${card._id}" class="kanban-card card card-${card.color} card-outline noselect">
+            <div id="card-${card._id}" data-card-id="${card._id}" class="kanban-card card card-${card.color} card-outline noselect">
                 <div class="card-header card-handle pl-1 pr-3">
                     <h5 class="card-title">${c}</h5>
                     <div class="card-tools">
@@ -839,7 +928,7 @@
         }
 
         let h = `
-            <div id="column-${column._id}" class="card card-row card-${column.color} kanban-col">
+            <div id="column-${column._id}" data-column-id="${column._id}" class="card card-row card-${column.color} kanban-col">
                 <div class="card-header col-handle pl-3 pr-3">
                     <h3 class="card-title pt-1 text-bold">${$.trim(escapeHTML(column.title))}</h3>
                     <div class="card-tools" data-column-id="${column._id}">
