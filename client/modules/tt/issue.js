@@ -1478,6 +1478,26 @@
         loadingDone();
     },
 
+    route: function (params) {
+        loadingStart();
+
+        GET("tt", "issue", params["issue"], true).
+        done(r => {
+            if (modules.groups) {
+                modules.users.loadUsers(() => {
+                    modules.groups.loadGroups(() => {
+                        modules.tt.issue.renderIssue(r.issue, params["filter"], params["search"]);
+                    });
+                });
+            } else {
+                modules.users.loadUsers(() => {
+                    modules.tt.issue.renderIssue(r.issue, params["filter"], params["search"]);
+                });
+            }
+        }).
+        fail(FAILPAGE);
+    },
+
     search: function (s) {
         modules.tt.search(s);
     }

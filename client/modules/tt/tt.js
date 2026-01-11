@@ -2391,7 +2391,7 @@
                                     {
                                         data: i + skip + 1,
                                         nowrap: true,
-                                        click: navigateUrl("tt", {
+                                        click: navigateUrl("tt.issue", {
                                             issue: issues.issues[i]["issueId"],
                                             filter: filterName ? filterName : "",
                                             search: ($.trim(params.search) && params.search !== true) ? $.trim(params.search) : "",
@@ -2433,7 +2433,7 @@
                                         cols.push({
                                             data: modules.tt.issueField2Html(issues.issues[i], pKeys[j], undefined, "list", filterName),
                                             nowrap: true,
-                                            click: navigateUrl("tt", {
+                                            click: navigateUrl("tt.issue", {
                                                 issue: issues.issues[i]["issueId"],
                                                 filter: filterName ? filterName : "",
                                                 search: ($.trim(params.search) && params.search !== true) ? $.trim(params.search) : "",
@@ -2692,54 +2692,41 @@
         }
 
         if (params["issue"]) {
-            GET("tt", "issue", params["issue"], true).
-            done(r => {
-                if (modules.groups) {
-                    modules.users.loadUsers(() => {
-                        modules.groups.loadGroups(() => {
-                            modules.tt.issue.renderIssue(r.issue, params["filter"], params["search"]);
-                        });
-                    });
-                } else {
-                    modules.users.loadUsers(() => {
-                        modules.tt.issue.renderIssue(r.issue, params["filter"], params["search"]);
-                    });
-                }
-            }).
-            fail(FAILPAGE);
-        } else {
-            document.title = i18n("windowTitle") + " :: " + i18n("tt.filters");
+            navigateUrl("tt.issue", { issue: params["issue"] }, { run: true });
+            return;
+        }
 
-            if (modules.tt.menuItem) {
-                if (params  && params.filter && params.filter[0] == "#") {
-                    $("#" + modules.tt.menuItem).children().first().attr("href", navigateUrl("tt", false, {
-                        exclude: [
-                            "customSearch"
-                        ]
-                    }));
-                } else {
-                    $("#" + modules.tt.menuItem).children().first().attr("href", refreshUrl({
-                        exclude: [
-                            "customSearch",
-                        ],
-                        set: {
-                            "noScroll": 1,
-                        },
-                    }));
-                }
-            }
+        document.title = i18n("windowTitle") + " :: " + i18n("tt.filters");
 
-            if (modules.groups) {
-                modules.users.loadUsers(() => {
-                    modules.groups.loadGroups(() => {
-                        modules.tt.renderIssues(params);
-                    });
-                });
+        if (modules.tt.menuItem) {
+            if (params  && params.filter && params.filter[0] == "#") {
+                $("#" + modules.tt.menuItem).children().first().attr("href", navigateUrl("tt", false, {
+                    exclude: [
+                        "customSearch"
+                    ]
+                }));
             } else {
-                modules.users.loadUsers(() => {
+                $("#" + modules.tt.menuItem).children().first().attr("href", refreshUrl({
+                    exclude: [
+                        "customSearch",
+                    ],
+                    set: {
+                        "noScroll": 1,
+                    },
+                }));
+            }
+        }
+
+        if (modules.groups) {
+            modules.users.loadUsers(() => {
+                modules.groups.loadGroups(() => {
                     modules.tt.renderIssues(params);
                 });
-            }
+            });
+        } else {
+            modules.users.loadUsers(() => {
+                modules.tt.renderIssues(params);
+            });
         }
     },
 
