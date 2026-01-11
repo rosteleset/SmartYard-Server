@@ -678,7 +678,7 @@ select {
 
 .sticky {
   border-radius: 5px;
-  border: solid thin gray;
+  border: solid thin rgba(128, 128, 128, 0.728);
   display: inline-block;
   padding: 1rem;
   position: absolute;
