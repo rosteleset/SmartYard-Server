@@ -36,6 +36,7 @@
     "progress": "Выполнено",
     "archived": "В архиве",
     "showCounts": "Показаны карточки с %s по %s из %s",
+    "searchResults": "Результаты поиска",
     "methods": {
         "mkb": {
             "_title": "Канбан",
