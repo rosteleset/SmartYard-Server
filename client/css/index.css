@@ -678,11 +678,13 @@ select {
 
 .sticky {
   border-radius: 5px;
-  border: solid thin lightgray;
+  border: solid thin gray;
   display: inline-block;
   padding: 1rem;
   position: absolute;
   min-width: 12.5rem;
+  -webkit-box-shadow: 2px 2px 2px #696969;
+  box-shadow: 2px 2px 2px #696969;
 }
 
 .sticky .caption {
