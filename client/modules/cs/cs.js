@@ -588,7 +588,7 @@
                 for (let p in parts) {
                     if (p != cp) {
                         if (parseInt(p) >= 0 || p) {
-                            h += "<tr><td nowrap style='width: 0%; border-top: none; border-left: none;'>&nbsp;</td><td style='border: none ! important; font-weight: bold;' class='text-primary pl-0' colspan='" + maxCols.toString() + "'><span class='pointer csPart'>" + p + "</span></td></tr>";
+                            h += "<tr><td nowrap style='width: 0%; border-top: none; border-left: none;'>&nbsp;</td><td style='border: none !important; font-weight: bold;' class='text-primary pl-0' colspan='" + maxCols.toString() + "'><span class='pointer csPart'>" + p + "</span></td></tr>";
                         }
                         cp = p;
                     }
@@ -606,9 +606,9 @@
                             }
                         }
                         if (c && c.class) {
-                            h += '<td class="td-last-no-right-border ' + c.class + '" nowrap style="vertical-align: top ! important;">';
+                            h += '<td class="td-last-no-right-border ' + c.class + '" nowrap style="vertical-align: top !important;">';
                         } else {
-                            h += '<td class="td-last-no-right-border" nowrap style="vertical-align: top ! important;">';
+                            h += '<td class="td-last-no-right-border" nowrap style="vertical-align: top !important;">';
                         }
                         h += "<span>" + modules.cs.colMenu(modules.cs.cols[i]) + "</span>";
                         if (c.logins && c.logins.length) {

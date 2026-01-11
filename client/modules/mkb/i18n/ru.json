@@ -31,6 +31,7 @@
     "renameDesk": "Переименовать стол",
     "archive": "Перенести в архив",
     "confirmDeleteCard": "Удалить карточку \"%s\"?",
+    "cardsArchive": "Архив",
     "methods": {
         "mkb": {
             "_title": "Канбан",
