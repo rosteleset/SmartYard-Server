@@ -130,7 +130,7 @@
         if (str) {
             if (modules.tt.issueRegExp) {
                 return convertLinks(nl2br($.trim(escapeHTML(str)))).replaceAll(modules.tt.issueRegExp, m => {
-                    return `<a target='_blank' href='${navigateUrl('tt', { 'issue': m })}'>${m}</a>`;
+                    return `<a target='_blank' href='${navigateUrl('tt.issue', { 'issue': m })}'>${m}</a>`;
                 });
             } else {
                 return convertLinks(nl2br($.trim(escapeHTML(str))));
