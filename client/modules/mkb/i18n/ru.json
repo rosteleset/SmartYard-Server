@@ -32,6 +32,7 @@
     "archive": "Перенести в архив",
     "confirmDeleteCard": "Удалить карточку \"%s\"?",
     "cardsArchive": "Архив",
+    "cardsAll": "Все карточки",
     "methods": {
         "mkb": {
             "_title": "Канбан",

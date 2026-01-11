@@ -2,6 +2,7 @@
     meta: {},
 
     defaultIssuesPerPage: lStore("defaultIssuesPerPage") ? lStore("defaultIssuesPerPage") : 50,
+    // how many PAGER buttons to show
     defaultPagerItemsCount: 10,
     menuItem: false,
 

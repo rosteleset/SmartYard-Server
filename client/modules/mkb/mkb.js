@@ -1042,6 +1042,10 @@
         $(".cardsArchive").off("click").on("click", () => {
             console.log("archive");
         });
+
+        $(".cardsAll").off("click").on("click", () => {
+            console.log("all");
+        });
     },
 
     renderCard: function (card) {
@@ -1268,7 +1272,6 @@
                 }
 
                 h += `
-                                <div title="${i18n("mkb.addColumn")}" style="padding-left: 8px; padding-top: 14px;"><i class="fas fa-fw fa-plus-circle addColumn pointer text-success"></i></div>
                             </div>
                         </section>
                     </div>
@@ -1335,7 +1338,9 @@
 
             if (parseInt(myself.uid) && AVAIL("mkb")) {
                 $("#leftTopDynamic").html(`
-                    <li class="nav-item d-none d-sm-inline-block"><span class="pointer nav-link text-secondary text-bold cardsArchive">${i18n("mkb.cardsArchive")}</span></li>
+                    <li class="nav-item d-none d-sm-inline-block pointer pl-3 pr-3 addColumn" title="${i18n("mkb.addColumn")}"><i class="fas fa-fw fa-plus-circle text-primary"></i></li>
+                    <li class="nav-item d-none d-sm-inline-block pointer pl-3 pr-3 cardsArchive" title="${i18n("mkb.cardsArchive")}"><i class="fas fa-fw fa-archive text-secondary"></i></li>
+                    <li class="nav-item d-none d-sm-inline-block pointer pl-3 pr-3 cardsAll" title="${i18n("mkb.cardsAll")}"><i class="far fa-fw fa-list-alt text-secondary"></i></li>
                 `);
             }
 
