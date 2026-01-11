@@ -32,13 +32,14 @@
             public static function POST($params) {
                 $mkb = loadBackend("mkb");
 
-                $cards = false;
-
                 if ($mkb) {
-                    $cards = $mkb->getCards(@$params["query"]);
+                    return api::ANSWER([
+                        "cards" => $mkb->getCards(@$params["query"], @$params["sort"] ?: [ "date" => 1 ], @$params["skip"], @$params["limit"]),
+                        "count" => $mkb->countCards(@$params["query"]),
+                    ], "__asis__");
                 }
 
-                return api::ANSWER($cards, $cards ? "cards" : false);
+                return api::ERROR();
             }
 
             public static function index() {

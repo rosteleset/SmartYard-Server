@@ -950,9 +950,9 @@
 
             for (let i in card.subtasks) {
                 s += `
-                    <div class="custom-control custom-checkbox">
+                    <div class="custom-control custom-checkbox noselect">
                         <input id="card-subtask-${card._id}-${i}" class="subtaskCheckbox custom-control-input custom-control-input-primary custom-control-input-outline" type="checkbox"${card.subtasks[i].checked ? " checked " : " " }data-card-id=${card._id}>
-                        <label for="card-subtask-${card._id}-${i}" class="pl-1 custom-control-label noselect text-no-bold">${$.trim(escapeHTML(card.subtasks[i].text))}</label>
+                        <label for="card-subtask-${card._id}-${i}" class="pl-1 custom-control-label text-no-bold">${$.trim(escapeHTML(card.subtasks[i].text))}</label>
                     </div>
                 `;
 
@@ -1034,7 +1034,7 @@
         }
 
         let h = `
-            <div id="card-${card._id}" data-card-id="${card._id}" class="kanban-card card card-${card.color} card-outline noselect" style="${(modules.mkb.tags.length && !v) ? "display: none;" : ""}">
+            <div id="card-${card._id}" data-card-id="${card._id}" class="kanban-card card card-${card.color} card-outline" style="${(modules.mkb.tags.length && !v) ? "display: none;" : ""}">
                 <div class="card-header card-handle pl-1 pr-3">
                     <h5 class="card-title">
                         <span class="btn btn-tool cardDone ${card.done ? "text-success" : ""}" title="${i18n("mkb.done")}" data-card-id="${card._id}" style="padding-right: 0px; padding-top: 8px;"><i class="fas fa-fw fa-check-circle"></i></span>
@@ -1324,6 +1324,6 @@
     },
 
     search: function (search) {
-        POST("mkb", "cards", false, { query: { $text: { $search: search } } }).done(console.log)
+        POST("mkb", "cards", false, { query: { $text: { $search: search } }, skip: 0, limit: 1 }).done(console.log)
     }
 }).init();

@@ -37,12 +37,20 @@
             abstract public function deleteDesk($name);
 
             /**
-             * $query string (desk) or array (cards list)
+             * $query array
              *
              * @return mixed
              */
 
-            abstract public function getCards($query);
+            abstract public function getCards($query, $sort, $skip, $limit);
+
+            /**
+             * $query array
+             *
+             * @return mixed
+             */
+
+            abstract public function countCards($query);
 
             /**
              * $card card

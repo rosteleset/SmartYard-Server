@@ -90,6 +90,27 @@
             }
 
             /**
+             * count json
+             */
+
+            private function count($query = false) {
+                $db = $this->dbName;
+                $login = $this->login;
+
+                if (!$query) {
+                    $query = [];
+                }
+
+                array_walk_recursive($query, function (&$value, $key) {
+                    if ($key === '_id') {
+                        $value = new \MongoDB\BSON\ObjectID($value);
+                    }
+                });
+
+                return $this->mongo->$db->$login->countDocuments($query);
+            }
+
+            /**
              * delete json
              */
 
@@ -219,10 +240,34 @@
              * @inheritDoc
              */
 
-            public function getCards($query) {
+            public function getCards($query, $sort, $skip, $limit) {
                 $query["type"] = "card";
 
-                return $this->get($query);
+                $options = [];
+
+                if ($sort) {
+                    $options["sort"] = $sort;
+                }
+
+                if ($skip) {
+                    $options["skip"] = $skip;
+                }
+
+                if ($limit) {
+                    $options["limit"] = $limit;
+                }
+
+                return $this->get($query, $options);
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+            public function countCards($query) {
+                $query["type"] = "card";
+
+                return $this->count($query);
             }
 
             /**
