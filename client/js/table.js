@@ -43,7 +43,7 @@ function cardTable(params) {
     if (params.modal) {
         h = `<div class="card mb-0">`;
     } else {
-        h = `<div class="card mt-2">`;
+        h = `<div class="card mt-2 mb-2">`;
     }
 
     let filterInput = '';
@@ -275,7 +275,11 @@ function cardTable(params) {
                     t += `<ul class="dropdown-menu dropdown-menu-right noselect click-suppress" aria-labelledby="${ddId}">`;
                     for (let j in rows[i].dropDown.items) {
                         if (rows[i].dropDown.items[j].title === "-") {
-                            t += `<li class="dropdown-divider"></li>`;
+                            if (rows[i].dropDown.items[j].hint) {
+                                t += `<li class="dropdown-divider hr-text-white" data-content="${rows[i].dropDown.items[j].hint}"></li>`;
+                            } else {
+                                t += `<li class="dropdown-divider"></li>`;
+                            }
                         } else {
                             t += `<li class="pointer dropdown-item`;
                             if (rows[i].dropDown.items[j].class) {

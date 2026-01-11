@@ -33,6 +33,9 @@
     "confirmDeleteCard": "Удалить карточку \"%s\"?",
     "cardsArchive": "Архив",
     "cardsAll": "Все карточки",
+    "progress": "Выполнено",
+    "archived": "В архиве",
+    "showCounts": "Показаны карточки с %s по %s из %s",
     "methods": {
         "mkb": {
             "_title": "Канбан",

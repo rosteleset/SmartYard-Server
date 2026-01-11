@@ -70,25 +70,55 @@
 
         let h = '';
 
-        POST("mkb", "cards", false, { query: { $text: { $search: params.search } }, skip, limit }).
+        let query;
+        let title;
+
+        if (params.search) {
+            query = {
+                $text: {
+                    $search: params.search
+                }
+            };
+            title = i18n("mkb.searchResults");
+        }
+
+        if (params.all) {
+            query = {};
+            title = i18n("mkb.cardsAll");
+        }
+
+        if (params.archive) {
+            query = {
+                desk: false,
+            };
+            title = i18n("mkb.archived");
+        }
+
+        POST("mkb", "cards", false, { query, skip, limit }).
         done(r => {
             h += `
-                <table class="mt-2" style="width: 100%;"><tr><td style="width: 100%;">?</td><td>${pager(r.count)}</td></tr></table>
+                <table class="mt-2" style="width: 100%;"><tr><td style="width: 100%;"><span class="text-bold">${title}</span><br /><span class="small">${i18n("mkb.showCounts", parseInt(skip) ? (parseInt(skip) + 1) : (r.count ? '1' : '0'), parseInt(skip) + r.cards.length, r.count)}</span></td><td>${pager(r.count)}</td></tr></table>
                 <div id="cards"></div>
-                <table class="mt-2 cardsBottomPager" style="width: 100%;"><tr><td style="width: 100%;">?</td><td>${pager(r.count)}</td></tr></table>
+                <table class="cardsBottomPager mt-2" style="width: 100%; display: none;"><tr><td style="width: 100%;"><span class="text-bold">&nbsp;</span><br /><span class="small">&nbsp;</span></td><td>${pager(r.count)}</td></tr></table>
             `;
 
             $("#mainForm").html(h);
 
             cardTable({
                 target: "#cards",
-                title: {
-                    caption: i18n("mkb.cards"),
-                },
                 edit: modules.mkb.modifyCard,
                 columns: [
                     {
+                        title: "#",
+                    },
+                    {
                         title: i18n("mkb.date"),
+                    },
+                    {
+                        title: i18n("mkb.desk"),
+                    },
+                    {
+                        title: i18n("mkb.progress"),
                     },
                     {
                         title: i18n("mkb.subject"),
@@ -99,17 +129,92 @@
                     let rows = [];
 
                     for (let i in r.cards) {
+                        let progress = '-';
+
+                        if (r.cards[i].subtasks && r.cards[i].subtasks.length) {
+                            let p = 0;
+
+                            for (let j in r.cards[i].subtasks) {
+                                if (r.cards[i].subtasks[j].checked) {
+                                    p++;
+                                }
+                            }
+
+                            progress = (Math.round((p / r.cards[i].subtasks.length) * 1000) / 10) + "%";
+                        }
+
+                        modules.mkb.cards[r.cards[i]._id] = r.cards[i];
+
                         rows.push({
                             uid: r.cards[i]._id,
                             cols: [
+                                {
+                                    data: parseInt(i) + skip + 1,
+                                },
                                 {
                                     data: date("Y-m-d", r.cards[i].date),
                                     nowrap: true,
                                 },
                                 {
+                                    data: r.cards[i].desk ? r.cards[i].desk : i18n("mkb.archived"),
+                                    nowrap: true,
+                                },
+                                {
+                                    data: progress,
+                                    nowrap: true,
+                                },
+                                {
                                     data: r.cards[i].subject,
+                                    ellipses: true,
                                 },
                             ],
+                            dropDown: {
+                                items: [
+                                    {
+                                        icon: "fas fa-comments",
+                                        title: i18n("mkb.comments"),
+                                        click: id => {
+                                            modules.mkb.cardComments(id);
+                                        },
+                                    },
+                                    {
+                                        icon: "fas fa-edit",
+                                        title: i18n("mkb.edit"),
+                                        click: id => {
+                                            modules.mkb.cardEdit(id, () => {
+                                                modules.mkb.columnTable.renderCards(params);
+                                            });
+                                        },
+                                    },
+                                    {
+                                        icon: "fas fa-eye",
+                                        title: i18n("addresses.watchers"),
+                                        click: cardId => {
+                                        },
+                                    },
+                                    {
+                                        title: "-",
+                                        hint: "123",
+                                    },
+                                    {
+                                        icon: "fas fa-mobile-alt",
+                                        class: "sipIdle",
+                                        title: i18n("addresses.mobileCall"),
+                                        click: cardId => {
+                                        },
+                                    },
+                                    {
+                                        title: "-",
+                                    },
+                                    {
+                                        icon: "fas fa-home",
+                                        class: "sipIdle",
+                                        title: i18n("addresses.flatCall"),
+                                        click: cardId => {
+                                        },
+                                    },
+                                ],
+                            },
                         });
                     }
 

@@ -1773,7 +1773,7 @@
                     }
                     o += `<div id="${issuesListId}"></div>`;
                     if (!cs) {
-                        o += `<table class="mb-2 issuesBottomPager" style="width: 100%; display: none;"><tr><td style="width: 100%;">&nbsp;</td><td>${pager(issuesListId)}</td></tr></table>`;
+                        o += `<table class="mb-2 mt-2 issuesBottomPager" style="width: 100%; display: none;"><tr><td style="width: 100%;">&nbsp;<br /><span class="small">&nbsp;</span></td><td>${pager(issuesListId)}</td></tr></table>`;
                     }
                     $("#mainForm").html(o);
                 }

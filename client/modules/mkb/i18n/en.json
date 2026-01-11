@@ -33,6 +33,9 @@
     "confirmDeleteCard": "Delete card \"%s\"?",
     "cardsArchive": "Archive",
     "cardsAll": "All cards",
+    "progress": "Progress",
+    "archived": "Archived",
+    "showCounts": "Showing cards from %s to %s from %s",
     "methods": {
         "mkb": {
             "_title": "Kanban",

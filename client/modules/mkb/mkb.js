@@ -77,17 +77,126 @@
     cardLoadingStart: function (id) {
         $(`.cardLoading[data-card-id="${id}"]`).show();
         $(`.cardDone[data-card-id="${id}"]`).hide();
-        setTimeout(() => {
-            $(document.body).addClass("cursor-wait");
-        }, 25);
+        $(document.body).addClass("cursor-wait");
     },
 
-    cardLoadingDone: function (id) {
-        setTimeout(() => {
-            $(document.body).removeClass("cursor-wait");
-            $(`.cardLoading[data-card-id="${id}"]`).hide();
-            $(`.cardDone[data-card-id="${id}"]`).show();
-        }, 500);
+    cardLoadingDone: function (id,) {
+        $(document.body).removeClass("cursor-wait");
+        $(`.cardLoading[data-card-id="${id}"]`).hide();
+        $(`.cardDone[data-card-id="${id}"]`).show();
+    },
+
+    cardEdit: function (id, done) {
+        let tags = [];
+
+        for (let i in modules.mkb.cards) {
+            for (let j in modules.mkb.cards[i].tags) {
+                tags.push(modules.mkb.cards[i].tags[j]);
+            }
+        }
+
+        tags = tags.filter((v, i, a) => {
+            return a.indexOf(v) === i;
+        });
+
+        tags.sort();
+
+        cardForm({
+            title: i18n("mkb.modifyCard"),
+            footer: true,
+            borderless: true,
+            topApply: true,
+            apply: i18n("apply"),
+            size: "xl",
+            delete: i18n("delete"),
+            deleteTab: i18n("mkb.card"),
+            fields: [
+                {
+                    id: "_id",
+                    title: i18n("mkb.id"),
+                    tab: i18n("mkb.card"),
+                    type: "text",
+                    value: modules.mkb.cards[id]._id,
+                    readonly: true,
+                    hidden: true,
+                },
+                {
+                    id: "subject",
+                    title: i18n("mkb.subject"),
+                    tab: i18n("mkb.card"),
+                    type: "text",
+                    value: modules.mkb.cards[id].subject,
+                    validate: a => {
+                        return !!$.trim(a);
+                    }
+                },
+                {
+                    id: "color",
+                    title: i18n("mkb.color"),
+                    tab: i18n("mkb.card"),
+                    type: "color",
+                    noEmpty: true,
+                    value: modules.mkb.cards[id].color,
+                },
+                {
+                    id: "tags",
+                    title: i18n("mkb.tags"),
+                    tab: i18n("mkb.card"),
+                    type: "select2",
+                    multiple: true,
+                    createTags: true,
+                    colorizeTags: true,
+                    value: modules.mkb.cards[id].tags,
+                    tags: tags,
+                },
+                {
+                    id: "body",
+                    title: i18n("mkb.body"),
+                    tab: i18n("mkb.card"),
+                    noHover: true,
+                    type: "code",
+                    language: "markdown",
+                    value: modules.mkb.cards[id].body,
+                },
+                {
+                    id: "subtasks",
+                    title: false,
+                    tab: i18n("mkb.subtasks"),
+                    noHover: true,
+                    type: "sortable",
+                    options: [],
+                    appendable: "input",
+                    checkable: true,
+                    editable: true,
+                    value: modules.mkb.cards[id].subtasks,
+                },
+            ],
+            callback: r => {
+                if (r.delete) {
+                    mConfirm(i18n("mkb.confirmDeleteCard", r.subject), i18n("confirm"), i18n("delete"), () => {
+                        loadingStart();
+                        DELETE("mkb", "card", r._id).
+                        done(modules.mkb.renderDesk).
+                        fail(FAIL).
+                        fail(loadingDone);
+                    });
+                } else {
+                    r.tags.sort();
+
+                    modules.mkb.cards[id].subject = r.subject;
+                    modules.mkb.cards[id].color = r.color;
+                    modules.mkb.cards[id].tags = r.tags;
+                    modules.mkb.cards[id].body = r.body;
+                    modules.mkb.cards[id].subtasks = r.subtasks;
+
+                    loadingStart();
+                    POST("mkb", "card", false, { card: modules.mkb.cards[id] }).
+                    done(done).
+                    fail(FAIL).
+                    fail(loadingDone);
+                }
+            }
+        });
     },
 
     cardComments: function (id) {
@@ -193,7 +302,13 @@
 
             h += `
                 <div style='width: 100%;'>
-                    <div id='mkbCommentsCaption' class='text-bold'><div class="ml-2 mt-2 mb-3">${modules.mkb.cards[id].subject}</div></div>
+                    <div id='mkbCommentsCaption' class='text-bold'><div class="ml-2 mt-2 mb-3 mr-2" title="${escapeHTML(modules.mkb.cards[id].subject)}">
+                        <div class="ellipses-parent">
+                            <div class="ellipses-children">
+                                ${escapeHTML(modules.mkb.cards[id].subject)}
+                            </div>
+                        </div>
+                    </div>
                     <div id='mkbComments' class='mb-4 kanban-card-body' style='width: 100%; height: 100px; overflow-y: auto;'>
                     ${comments()}
                     </div>
@@ -297,7 +412,7 @@
 
             $("#aside-right").modal("show");
 
-            let z = 406 - 24 - $("#mkbCommentsCaption").outerHeight();
+            let z = 406 - 24 - $("#mkbCommentsCaption").children().first().outerHeight(); // $("#mkbCommentsCaption").outerHeight();
 
             $("#mkbComments").css("height", `calc(100vh - ${z}px`);
 
@@ -751,119 +866,10 @@
         $(".cardEdit").off("click").on("click", function () {
             let id = $(this).attr("data-card-id");
 
-            let tags = [];
-
-            for (let i in modules.mkb.cards) {
-                for (let j in modules.mkb.cards[i].tags) {
-                    tags.push(modules.mkb.cards[i].tags[j]);
-                }
-            }
-
-            tags = tags.filter((v, i, a) => {
-                return a.indexOf(v) === i;
-            });
-
-            tags.sort();
-
-            cardForm({
-                title: i18n("mkb.modifyCard"),
-                footer: true,
-                borderless: true,
-                topApply: true,
-                apply: i18n("apply"),
-                size: "xl",
-                delete: i18n("delete"),
-                deleteTab: i18n("mkb.card"),
-                fields: [
-                    {
-                        id: "_id",
-                        title: i18n("mkb.id"),
-                        tab: i18n("mkb.card"),
-                        type: "text",
-                        value: modules.mkb.cards[id]._id,
-                        readonly: true,
-                        hidden: true,
-                    },
-                    {
-                        id: "subject",
-                        title: i18n("mkb.subject"),
-                        tab: i18n("mkb.card"),
-                        type: "text",
-                        value: modules.mkb.cards[id].subject,
-                        validate: a => {
-                            return !!$.trim(a);
-                        }
-                    },
-                    {
-                        id: "color",
-                        title: i18n("mkb.color"),
-                        tab: i18n("mkb.card"),
-                        type: "color",
-                        noEmpty: true,
-                        value: modules.mkb.cards[id].color,
-                    },
-                    {
-                        id: "tags",
-                        title: i18n("mkb.tags"),
-                        tab: i18n("mkb.card"),
-                        type: "select2",
-                        multiple: true,
-                        createTags: true,
-                        colorizeTags: true,
-                        value: modules.mkb.cards[id].tags,
-                        tags: tags,
-                    },
-                    {
-                        id: "body",
-                        title: i18n("mkb.body"),
-                        tab: i18n("mkb.card"),
-                        noHover: true,
-                        type: "code",
-                        language: "markdown",
-                        value: modules.mkb.cards[id].body,
-                    },
-                    {
-                        id: "subtasks",
-                        title: false,
-                        tab: i18n("mkb.subtasks"),
-                        noHover: true,
-                        type: "sortable",
-                        options: [],
-                        appendable: "input",
-                        checkable: true,
-                        editable: true,
-                        value: modules.mkb.cards[id].subtasks,
-                    },
-                ],
-                callback: r => {
-                    if (r.delete) {
-                        mConfirm(i18n("mkb.confirmDeleteCard", r.subject), i18n("confirm"), i18n("delete"), () => {
-                            loadingStart();
-                            DELETE("mkb", "card", r._id).
-                            done(modules.mkb.renderDesk).
-                            fail(FAIL).
-                            fail(loadingDone);
-                        });
-                    } else {
-                        r.tags.sort();
-
-                        modules.mkb.cards[id].subject = r.subject;
-                        modules.mkb.cards[id].color = r.color;
-                        modules.mkb.cards[id].tags = r.tags;
-                        modules.mkb.cards[id].body = r.body;
-                        modules.mkb.cards[id].subtasks = r.subtasks;
-
-                        loadingStart();
-                        POST("mkb", "card", false, { card: modules.mkb.cards[id] }).
-                        done(() => {
-                            $(`#card-${id}`).replaceWith($(modules.mkb.renderCard(modules.mkb.cards[id])));
-                            modules.mkb.assignHandlers();
-                            loadingDone();
-                        }).
-                        fail(FAIL).
-                        fail(loadingDone);
-                    }
-                }
+            modules.mkb.cardEdit(id, () => {
+                $(`#card-${id}`).replaceWith($(modules.mkb.renderCard(modules.mkb.cards[id])));
+                modules.mkb.assignHandlers();
+                loadingDone();
             });
         });
 
@@ -1040,11 +1046,11 @@
         });
 
         $(".cardsArchive").off("click").on("click", () => {
-            console.log("archive");
+            navigateUrl("mkb.columnTable", { archive: true }, { run: true });
         });
 
         $(".cardsAll").off("click").on("click", () => {
-            console.log("all");
+            navigateUrl("mkb.columnTable", { all: true }, { run: true });
         });
     },
 
