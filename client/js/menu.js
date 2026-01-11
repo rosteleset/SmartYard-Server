@@ -51,10 +51,12 @@ function menu(config) {
 
     for (let i in config.items) {
         if (config.items[i].text == "-") {
-            if (config.items[i].hint) {
-                h += `<li class="dropdown-divider hr-text-white" data-content="${config.items[i].hint}"></li>`;
-            } else {
-                h += `<li class="dropdown-divider"></li>`;
+            if (i != config.items.length) {
+                if (config.items[i].hint) {
+                    h += `<li class="dropdown-divider hr-text-white" data-content="${config.items[i].hint}"></li>`;
+                } else {
+                    h += `<li class="dropdown-divider"></li>`;
+                }
             }
         } else {
             let c = '';

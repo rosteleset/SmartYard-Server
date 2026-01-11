@@ -191,31 +191,8 @@
                                             },
                                         },
                                         {
-                                            icon: "fas fa-eye",
-                                            title: i18n("addresses.watchers"),
-                                            click: cardId => {
-                                            },
-                                        },
-                                        {
                                             title: "-",
                                             hint: "123",
-                                        },
-                                        {
-                                            icon: "fas fa-mobile-alt",
-                                            class: "sipIdle",
-                                            title: i18n("addresses.mobileCall"),
-                                            click: cardId => {
-                                            },
-                                        },
-                                        {
-                                            title: "-",
-                                        },
-                                        {
-                                            icon: "fas fa-home",
-                                            class: "sipIdle",
-                                            title: i18n("addresses.flatCall"),
-                                            click: cardId => {
-                                            },
                                         },
                                     ],
                                 },
