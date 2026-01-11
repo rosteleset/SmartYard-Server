@@ -9,7 +9,7 @@
     tags: [],
 
     subModules: [
-        "columnTable",
+        "table",
     ],
 
     init: function () {
@@ -1046,11 +1046,11 @@
         });
 
         $(".cardsArchive").off("click").on("click", () => {
-            navigateUrl("mkb.columnTable", { archive: true }, { run: true });
+            navigateUrl("mkb.table", { archive: true }, { run: true });
         });
 
         $(".cardsAll").off("click").on("click", () => {
-            navigateUrl("mkb.columnTable", { all: true }, { run: true });
+            navigateUrl("mkb.table", { all: true }, { run: true });
         });
     },
 
@@ -1356,6 +1356,6 @@
     },
 
     search: function (search) {
-        navigateUrl("mkb.columnTable", { search }, { run: true });
+        navigateUrl("mkb.table", { search }, { run: true });
     }
 }).init();

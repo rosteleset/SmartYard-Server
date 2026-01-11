@@ -4,7 +4,7 @@
     defaulCardsPerPage: 50,
 
     init: function () {
-        moduleLoaded("mkb.columnTable", this);
+        moduleLoaded("mkb.table", this);
     },
 
     renderCards: function (params) {
@@ -18,23 +18,23 @@
 
             let page = Math.floor(skip / limit) + 1;
             let pages = Math.ceil(count / limit);
-            let delta = Math.floor(modules.mkb.columnTable.defaultPagerItemsCount / 2);
+            let delta = Math.floor(modules.mkb.table.defaultPagerItemsCount / 2);
 
             let first, last;
 
-            if (pages <= modules.mkb.columnTable.defaultPagerItemsCount) {
+            if (pages <= modules.mkb.table.defaultPagerItemsCount) {
                 first = 1;
                 last = pages;
             } else {
                 if (page <= delta) {
                     first = 1;
-                    last = modules.mkb.columnTable.defaultPagerItemsCount;
+                    last = modules.mkb.table.defaultPagerItemsCount;
                 } else {
                     first = page - delta + 1;
-                    last = first + modules.mkb.columnTable.defaultPagerItemsCount - 1;
+                    last = first + modules.mkb.table.defaultPagerItemsCount - 1;
                     if (last > pages) {
                         last = pages;
-                        first = last - modules.mkb.columnTable.defaultPagerItemsCount + 1;
+                        first = last - modules.mkb.table.defaultPagerItemsCount + 1;
                     }
                 }
             }
@@ -182,7 +182,7 @@
                                         title: i18n("mkb.edit"),
                                         click: id => {
                                             modules.mkb.cardEdit(id, () => {
-                                                modules.mkb.columnTable.renderCards(params);
+                                                modules.mkb.table.renderCards(params);
                                             });
                                         },
                                     },
@@ -225,7 +225,7 @@
             $(".mkbPager").off("click").on("click", function () {
                 params.skip = Math.max(0, (parseInt($(this).attr("data-page")) - 1) * limit);
                 params.limit = limit;
-                modules.mkb.columnTable.renderCards(params);
+                modules.mkb.table.renderCards(params);
             });
 
             if ($("#cards").height() > $(window).height()) {
@@ -245,11 +245,11 @@
         document.title = i18n("windowTitle") + " :: " + i18n("mkb.mkb");
 
         modules.users.loadUsers(() => {
-            modules.mkb.columnTable.renderCards(params);
+            modules.mkb.table.renderCards(params);
         });
     },
 
     search: function (search) {
-        navigateUrl("mkb.columnTable", { search }, { run: true });
+        navigateUrl("mkb.table", { search }, { run: true });
     },
 }).init();
