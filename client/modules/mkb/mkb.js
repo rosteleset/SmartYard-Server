@@ -1159,6 +1159,7 @@
                         ${c}
                     </h5>
                     <div class="card-tools">
+                        <!-- TODO -->
                         <span class="btn btn-tool cardAttachments pr-0 pl-0" title="${i18n("mkb.attachments")}" style="display: none;"><i class="fas fa-fw fa-paperclip"></i></span>
                         <span class="btn btn-tool cardComments pr-0 ${(card.comments && card.comments.length) ? " text-success" : ""}" title="${i18n("mkb.comments")}" data-card-id="${card._id}"><i class="${(card.comments && card.comments.length) ? "fas" : "far"} fa-fw fa-comments"></i></span>
                         <span class="btn btn-tool cardArchive pr-0" title="${i18n("mkb.archive")}" data-card-id="${card._id}"><i class="fas fa-fw fa-archive"></i></span>
