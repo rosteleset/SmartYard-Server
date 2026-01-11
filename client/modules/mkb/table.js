@@ -94,145 +94,151 @@
             title = i18n("mkb.archived");
         }
 
-        POST("mkb", "cards", false, { query, skip, limit }).
-        done(r => {
-            h += `
-                <table class="mt-2" style="width: 100%;"><tr><td style="width: 100%;"><span class="text-bold">${title}</span><br /><span class="small">${i18n("mkb.showCounts", parseInt(skip) ? (parseInt(skip) + 1) : (r.count ? '1' : '0'), parseInt(skip) + r.cards.length, r.count)}</span></td><td>${pager(r.count)}</td></tr></table>
-                <div id="cards"></div>
-                <table class="cardsBottomPager mt-2" style="width: 100%; display: none;"><tr><td style="width: 100%;"><span class="text-bold">&nbsp;</span><br /><span class="small">&nbsp;</span></td><td>${pager(r.count)}</td></tr></table>
-            `;
+        GET("mkb", "desks", false, true).
+        done(d => {
+            console.log(d);
 
-            $("#mainForm").html(h);
+            POST("mkb", "cards", false, { query, skip, limit }).
+            done(r => {
+                h += `
+                    <table class="mt-2" style="width: 100%;"><tr><td style="width: 100%;"><span class="text-bold">${title}</span><br /><span class="small">${i18n("mkb.showCounts", parseInt(skip) ? (parseInt(skip) + 1) : (r.count ? '1' : '0'), parseInt(skip) + r.cards.length, r.count)}</span></td><td>${pager(r.count)}</td></tr></table>
+                    <div id="cards"></div>
+                    <table class="cardsBottomPager mt-2" style="width: 100%; display: none;"><tr><td style="width: 100%;"><span class="text-bold">&nbsp;</span><br /><span class="small">&nbsp;</span></td><td>${pager(r.count)}</td></tr></table>
+                `;
 
-            cardTable({
-                target: "#cards",
-                edit: modules.mkb.modifyCard,
-                columns: [
-                    {
-                        title: "#",
-                    },
-                    {
-                        title: i18n("mkb.date"),
-                    },
-                    {
-                        title: i18n("mkb.desk"),
-                    },
-                    {
-                        title: i18n("mkb.progress"),
-                    },
-                    {
-                        title: i18n("mkb.subject"),
-                        fullWidth: true,
-                    },
-                ],
-                rows: () => {
-                    let rows = [];
+                $("#mainForm").html(h);
 
-                    for (let i in r.cards) {
-                        let progress = '-';
+                cardTable({
+                    target: "#cards",
+                    edit: modules.mkb.modifyCard,
+                    columns: [
+                        {
+                            title: "#",
+                        },
+                        {
+                            title: i18n("mkb.date"),
+                        },
+                        {
+                            title: i18n("mkb.desk"),
+                        },
+                        {
+                            title: i18n("mkb.progress"),
+                        },
+                        {
+                            title: i18n("mkb.subject"),
+                            fullWidth: true,
+                        },
+                    ],
+                    rows: () => {
+                        let rows = [];
 
-                        if (r.cards[i].subtasks && r.cards[i].subtasks.length) {
-                            let p = 0;
+                        for (let i in r.cards) {
+                            let progress = '-';
 
-                            for (let j in r.cards[i].subtasks) {
-                                if (r.cards[i].subtasks[j].checked) {
-                                    p++;
+                            if (r.cards[i].subtasks && r.cards[i].subtasks.length) {
+                                let p = 0;
+
+                                for (let j in r.cards[i].subtasks) {
+                                    if (r.cards[i].subtasks[j].checked) {
+                                        p++;
+                                    }
                                 }
+
+                                progress = (Math.round((p / r.cards[i].subtasks.length) * 1000) / 10) + "%";
                             }
 
-                            progress = (Math.round((p / r.cards[i].subtasks.length) * 1000) / 10) + "%";
-                        }
+                            modules.mkb.cards[r.cards[i]._id] = r.cards[i];
 
-                        modules.mkb.cards[r.cards[i]._id] = r.cards[i];
-
-                        rows.push({
-                            uid: r.cards[i]._id,
-                            cols: [
-                                {
-                                    data: parseInt(i) + skip + 1,
-                                },
-                                {
-                                    data: date("Y-m-d", r.cards[i].date),
-                                    nowrap: true,
-                                },
-                                {
-                                    data: r.cards[i].desk ? r.cards[i].desk : i18n("mkb.archived"),
-                                    nowrap: true,
-                                },
-                                {
-                                    data: progress,
-                                    nowrap: true,
-                                },
-                                {
-                                    data: r.cards[i].subject,
-                                    ellipses: true,
-                                },
-                            ],
-                            dropDown: {
-                                items: [
+                            rows.push({
+                                uid: r.cards[i]._id,
+                                cols: [
                                     {
-                                        icon: "fas fa-comments",
-                                        title: i18n("mkb.comments"),
-                                        click: id => {
-                                            modules.mkb.cardComments(id);
-                                        },
+                                        data: parseInt(i) + skip + 1,
                                     },
                                     {
-                                        icon: "fas fa-edit",
-                                        title: i18n("mkb.edit"),
-                                        click: id => {
-                                            modules.mkb.cardEdit(id, () => {
-                                                modules.mkb.table.renderCards(params);
-                                            });
-                                        },
+                                        data: date("Y-m-d", r.cards[i].date),
+                                        nowrap: true,
                                     },
                                     {
-                                        icon: "fas fa-eye",
-                                        title: i18n("addresses.watchers"),
-                                        click: cardId => {
-                                        },
+                                        data: r.cards[i].desk ? r.cards[i].desk : i18n("mkb.archived"),
+                                        nowrap: true,
                                     },
                                     {
-                                        title: "-",
-                                        hint: "123",
+                                        data: progress,
+                                        nowrap: true,
                                     },
                                     {
-                                        icon: "fas fa-mobile-alt",
-                                        class: "sipIdle",
-                                        title: i18n("addresses.mobileCall"),
-                                        click: cardId => {
-                                        },
-                                    },
-                                    {
-                                        title: "-",
-                                    },
-                                    {
-                                        icon: "fas fa-home",
-                                        class: "sipIdle",
-                                        title: i18n("addresses.flatCall"),
-                                        click: cardId => {
-                                        },
+                                        data: r.cards[i].subject,
+                                        ellipses: true,
                                     },
                                 ],
-                            },
-                        });
-                    }
+                                dropDown: {
+                                    items: [
+                                        {
+                                            icon: "fas fa-comments",
+                                            title: i18n("mkb.comments"),
+                                            click: id => {
+                                                modules.mkb.cardComments(id);
+                                            },
+                                        },
+                                        {
+                                            icon: "fas fa-edit",
+                                            title: i18n("mkb.edit"),
+                                            click: id => {
+                                                modules.mkb.cardEdit(id, () => {
+                                                    modules.mkb.table.renderCards(params);
+                                                });
+                                            },
+                                        },
+                                        {
+                                            icon: "fas fa-eye",
+                                            title: i18n("addresses.watchers"),
+                                            click: cardId => {
+                                            },
+                                        },
+                                        {
+                                            title: "-",
+                                            hint: "123",
+                                        },
+                                        {
+                                            icon: "fas fa-mobile-alt",
+                                            class: "sipIdle",
+                                            title: i18n("addresses.mobileCall"),
+                                            click: cardId => {
+                                            },
+                                        },
+                                        {
+                                            title: "-",
+                                        },
+                                        {
+                                            icon: "fas fa-home",
+                                            class: "sipIdle",
+                                            title: i18n("addresses.flatCall"),
+                                            click: cardId => {
+                                            },
+                                        },
+                                    ],
+                                },
+                            });
+                        }
 
-                    return rows;
-                },
-            });
+                        return rows;
+                    },
+                });
 
-            $(".mkbPager").off("click").on("click", function () {
-                params.skip = Math.max(0, (parseInt($(this).attr("data-page")) - 1) * limit);
-                params.limit = limit;
-                modules.mkb.table.renderCards(params);
-            });
+                $(".mkbPager").off("click").on("click", function () {
+                    params.skip = Math.max(0, (parseInt($(this).attr("data-page")) - 1) * limit);
+                    params.limit = limit;
+                    modules.mkb.table.renderCards(params);
+                });
 
-            if ($("#cards").height() > $(window).height()) {
-                $(".cardsBottomPager").show();
-            }
+                if ($("#cards").height() > $(window).height()) {
+                    $(".cardsBottomPager").show();
+                }
 
-            loadingDone();
+                loadingDone();
+            }).
+            fail(FAILPAGE);
         }).
         fail(FAILPAGE);
     },
