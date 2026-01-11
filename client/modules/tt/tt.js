@@ -2686,6 +2686,11 @@
             $("#altForm").hide();
         }
 
+        if (!parseInt(myself.uid)) {
+            navigateUrl("tt.settings", false, { run: true });
+            return;
+        }
+
         if (params["issue"]) {
             GET("tt", "issue", params["issue"], true).
             done(r => {
@@ -2703,6 +2708,8 @@
             }).
             fail(FAILPAGE);
         } else {
+            document.title = i18n("windowTitle") + " :: " + i18n("tt.filters");
+
             if (modules.tt.menuItem) {
                 if (params  && params.filter && params.filter[0] == "#") {
                     $("#" + modules.tt.menuItem).children().first().attr("href", navigateUrl("tt", false, {
@@ -2722,22 +2729,16 @@
                 }
             }
 
-            document.title = i18n("windowTitle") + " :: " + i18n("tt.filters");
-
-            if (parseInt(myself.uid)) {
-                if (modules.groups) {
-                    modules.users.loadUsers(() => {
-                        modules.groups.loadGroups(() => {
-                            modules.tt.renderIssues(params);
-                        });
-                    });
-                } else {
-                    modules.users.loadUsers(() => {
+            if (modules.groups) {
+                modules.users.loadUsers(() => {
+                    modules.groups.loadGroups(() => {
                         modules.tt.renderIssues(params);
                     });
-                }
+                });
             } else {
-                navigateUrl("tt.settings", false, { run: true });
+                modules.users.loadUsers(() => {
+                    modules.tt.renderIssues(params);
+                });
             }
         }
     },
