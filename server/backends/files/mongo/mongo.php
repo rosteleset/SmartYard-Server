@@ -537,6 +537,9 @@
                 }
 
                 if (array_key_exists("--move-to-extfs", $args)) {
+                    $collection = "fs.files";
+                    $db = $this->dbName;
+
                     if (loadBackend("extfs")) {
 
                         $filter = false;
@@ -582,9 +585,6 @@
                             ];
                         }
 
-                        $collection = "fs.files";
-                        $db = $this->dbName;
-
                         $c = 0;
 
                         do {
@@ -607,11 +607,16 @@
                                     $p++;
                                 }
                             }
+                            // TODO (?)
+                            $this->mongo->$db->command([ "compact" => "fs.chunks", "dryRun" => false, "force" => true ]);
                         } while ($p);
 
                         if ($c) {
                             echo "\n";
                         }
+
+                        // TODO (?)
+                        $this->mongo->$db->command([ "compact" => "fs.chunks", "dryRun" => false, "force" => true ]);
 
                         echo "$c file(s) moved\n";
                     } else {
