@@ -13,7 +13,7 @@
      * @apiSuccess {Object} flat
      */
 
-/**
+    /**
      * @api {post} /api/houses/flat add flat
      *
      * @apiVersion 1.0.0
@@ -140,6 +140,7 @@
 
             public static function index() {
                 return [
+                    "GET" => "#same(addresses,house,GET)",
                     "POST" => "#same(addresses,house,PUT)",
                     "PUT" => "#same(addresses,house,PUT)",
                     "DELETE" => "#same(addresses,house,PUT)",
