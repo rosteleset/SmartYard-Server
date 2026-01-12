@@ -38,12 +38,15 @@
     "showCounts": "Showing cards from %s to %s from %s",
     "searchResults": "Search results",
     "moveTo": "Move to",
+    "desks": "Desks",
+    "column": "Column",
+    "done": "Done",
     "methods": {
         "mkb": {
             "_title": "Kanban",
             "cards": {
                 "_title": "Kanban",
-                "POST": "Kanban"
+                "GET": "Kanban"
             }
         }
     }

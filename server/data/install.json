@@ -283,5 +283,8 @@
     ],
     "89": [
         "v89_devices_tree.sql"
+    ],
+    "90": [
+        "v90_sip_alt.sql"
     ]
 }

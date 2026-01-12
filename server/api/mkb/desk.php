@@ -73,8 +73,8 @@
 
                 if ($mkb) {
                     return [
-                        "POST" => "#same(mkb,cards,POST)",
-                        "DELETE" => "#same(mkb,cards,POST)",
+                        "POST" => "#same(mkb,cards,GET)",
+                        "DELETE" => "#same(mkb,cards,GET)",
                     ];
                 } else {
                     return false;

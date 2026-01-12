@@ -43,7 +43,8 @@
                         login,
                         password,
                         cars,
-                        subscribers_limit
+                        subscribers_limit,
+                        sip_alt
                     from
                         houses_flats
                     where
@@ -70,6 +71,7 @@
                     "password" => "password",
                     "cars" => "cars",
                     "subscribers_limit" => "subscribersLimit",
+                    "sip_alt" => "sipAlt",
                 ],
                 [
                     "singlify"
@@ -632,7 +634,7 @@
              * @inheritDoc
              */
 
-            function addFlat($houseId, $floor, $flat, $code, $entrances, $apartmentsAndLevels, $manualBlock, $adminBlock, $openCode, $plog, $autoOpen, $whiteRabbit, $sipEnabled, $sipPassword) {
+            function addFlat($houseId, $floor, $flat, $code, $entrances, $apartmentsAndLevels, $manualBlock, $adminBlock, $openCode, $plog, $autoOpen, $whiteRabbit, $sipEnabled, $sipPassword, $sipAlt) {
                 $autoOpen = (int)$autoOpen;
 
                 if (checkInt($houseId) && trim($flat) && checkInt($manualBlock) && checkInt($adminBlock) && checkInt($whiteRabbit) && checkInt($sipEnabled) && checkInt($plog) && checkInt($autoOpen)) {
@@ -642,7 +644,7 @@
                         $openCode = 11000 + rand(0, 88999);
                     }
 
-                    $flatId = $this->db->insert("insert into houses_flats (address_house_id, floor, flat, code, manual_block, admin_block, open_code, plog, auto_open, white_rabbit, sip_enabled, sip_password, cms_enabled) values (:address_house_id, :floor, :flat, :code, :manual_block, :admin_block, :open_code, :plog, :auto_open, :white_rabbit, :sip_enabled, :sip_password, 1)", [
+                    $flatId = $this->db->insert("insert into houses_flats (address_house_id, floor, flat, code, manual_block, admin_block, open_code, plog, auto_open, white_rabbit, sip_enabled, sip_password, cms_enabled, sip_alt) values (:address_house_id, :floor, :flat, :code, :manual_block, :admin_block, :open_code, :plog, :auto_open, :white_rabbit, :sip_enabled, :sip_password, 1, :sip_alt)", [
                         ":address_house_id" => $houseId,
                         ":floor" => (int)$floor,
                         ":flat" => $flat,
@@ -655,6 +657,7 @@
                         ":white_rabbit" => $whiteRabbit,
                         ":sip_enabled" => $sipEnabled,
                         ":sip_password" => $sipPassword,
+                        ":sip_alt" => $sipAlt,
                     ]);
 
                     if ($flatId) {
@@ -827,6 +830,7 @@
                         "password" => "password",
                         "cars" => "cars",
                         "subscribers_limit" => "subscribersLimit",
+                        "sip_alt" => "sipAlt",
                     ], $params);
 
                     if ($mod !== false && array_key_exists("entrances", $params) && array_key_exists("apartmentsAndLevels", $params) && is_array($params["entrances"]) && is_array($params["apartmentsAndLevels"])) {

@@ -102,8 +102,25 @@
                 modules.mkb.desks = d.desks;
             }
 
-            POST("mkb", "cards", false, { query, skip, limit }).
+            QUERY("mkb", "cards", false, { query, skip, limit }).
             done(r => {
+                let cl = [];
+
+
+                for (let i in r.cards) {
+                    let c = false;
+                    for (let j in d.desks) {
+                        if (d.desks[j].columns && d.desks[j].columns.length) {
+                            if (d.desks[j].columns[j].cards && d.desks[j].columns[j].cards.length && d.desks[j].columns[j].cards.indexOf(r.cards[i]._id) >= 0) {
+                                c = d.desks[j].columns[j].title;
+                            }
+                        }
+                    }
+                    if (c) {
+                        cl[r.cards[i]._id] = c;
+                    }
+                }
+
                 h += `
                     <table class="mt-2" style="width: 100%;"><tr><td style="width: 100%;"><span class="text-bold">${title}</span><br /><span class="small">${i18n("mkb.showCounts", parseInt(skip) ? (parseInt(skip) + 1) : (r.count ? '1' : '0'), parseInt(skip) + r.cards.length, r.count)}</span></td><td>${pager(r.count)}</td></tr></table>
                     <div id="cards"></div>
@@ -167,7 +184,13 @@
                             title: i18n("mkb.date"),
                         },
                         {
+                            title: i18n("mkb.done"),
+                        },
+                        {
                             title: i18n("mkb.desk"),
+                        },
+                        {
+                            title: i18n("mkb.column"),
                         },
                         {
                             title: i18n("mkb.progress"),
@@ -218,7 +241,25 @@
                                         },
                                     },
                                     {
+                                        data: r.cards[i].done ? i18n("yes") : i18n("no"),
+                                        nowrap: true,
+                                        click: id => {
+                                            modules.mkb.cardEdit(id, () => {
+                                                modules.mkb.table.renderCards(params);
+                                            });
+                                        },
+                                    },
+                                    {
                                         data: r.cards[i].desk ? r.cards[i].desk : i18n("mkb.archived"),
+                                        nowrap: true,
+                                        click: id => {
+                                            modules.mkb.cardEdit(id, () => {
+                                                modules.mkb.table.renderCards(params);
+                                            });
+                                        },
+                                    },
+                                    {
+                                        data: cl[r.cards[i]._id] ? cl[r.cards[i]._id] : "-",
                                         nowrap: true,
                                         click: id => {
                                             modules.mkb.cardEdit(id, () => {
@@ -278,6 +319,26 @@
         $("#altForm").hide();
 
         document.title = i18n("windowTitle") + " :: " + i18n("mkb.mkb");
+
+        if (parseInt(myself.uid) && AVAIL("mkb")) {
+            $("#leftTopDynamic").html(`
+                <li class="nav-item d-none d-sm-inline-block pointer pl-3 pr-3 mkb" title="${i18n("mkb.mkb")}"><i class="fas fa-fw fa-layer-group text-primary"></i></li>
+                <li class="nav-item d-none d-sm-inline-block pointer pl-3 pr-3 cardsArchive" title="${i18n("mkb.cardsArchive")}"><i class="fas fa-fw fa-archive text-secondary"></i></li>
+                <li class="nav-item d-none d-sm-inline-block pointer pl-3 pr-3 cardsAll" title="${i18n("mkb.cardsAll")}"><i class="far fa-fw fa-list-alt text-secondary"></i></li>
+            `);
+        }
+
+        $(".mkb").off("click").on("click", () => {
+            navigateUrl("mkb", false, { run: true });
+        });
+
+        $(".cardsArchive").off("click").on("click", () => {
+            navigateUrl("mkb.table", { archive: true }, { run: true });
+        });
+
+        $(".cardsAll").off("click").on("click", () => {
+            navigateUrl("mkb.table", { all: true }, { run: true });
+        });
 
         modules.users.loadUsers(() => {
             modules.mkb.table.renderCards(params);

@@ -454,6 +454,7 @@ function handleOtherCases(context, extension)
     local flatId = false
     local flatNumber = false
     local sipEnabled = false
+    local sipAlt = false
 
     -- is it domophone "1XXXXX"?
     if from:len() == 6 and tonumber(from:sub(1, 1)) == 1 then
@@ -476,6 +477,7 @@ function handleOtherCases(context, extension)
                 logDebug("ordinal call")
                 flat = dm("flat", flatId)
                 sipEnabled = flat.sipEnabled
+                sipAlt = flat.sipAlt
                 for i, e in ipairs(flat.entrances) do
                     if flat.entrances[i].domophoneId == domophoneId then
                         flatNumber = flat.entrances[i].apartment
@@ -495,6 +497,7 @@ function handleOtherCases(context, extension)
                     flat = flats[1]
                     flatId = flat.flatId
                     sipEnabled = flat.sipEnabled
+                    sipAlt = flat.sipAlt
                 end
             end
         end
@@ -504,6 +507,7 @@ function handleOtherCases(context, extension)
     logDebug("flatId: " .. inspect(flatId))
     logDebug("flatNumber: " .. inspect(flatNumber))
     logDebug("sipEnabled: " .. inspect(sipEnabled))
+    logDebug("sipAlt: " .. inspect(sipAlt))
 
     if domophoneId and flatId and flatNumber then
         logDebug("incoming ring from ip panel #" .. domophoneId .. " -> " .. flatId .. " (" .. flatNumber .. ")")
@@ -541,6 +545,10 @@ function handleOtherCases(context, extension)
             -- SIP intercom(s)
             if sipEnabled == 1 then
                 dest = dest .. "&Local/" .. string.format("4%09d", flatId)
+            end
+
+            if sipAlt ~= cjson.null and sipAlt ~= nil and sipAlt ~= "" then
+                dest = dest .. "&" .. sipAlt
             end
 
             if dest:sub(1, 1) == '&' then

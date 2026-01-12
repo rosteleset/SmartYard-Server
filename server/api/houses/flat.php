@@ -37,6 +37,7 @@
      * @apiBody {Number} whiteRabbit
      * @apiBody {Boolean} sipEnabled
      * @apiBody {String} sipPassword
+     * @apiBody {String} sipAlt
      *
      * @apiSuccess {Number} flatId
      */
@@ -71,6 +72,7 @@
      * @apiBody {String} [password]
      * @apiBody {String} [cars]
      * @apiBody {Number} [subscribersLimit]
+     * @apiBody {String} sipAlt
      *
      * @apiSuccess {Boolean} operationResult
      */
@@ -115,7 +117,7 @@
             public static function POST($params) {
                 $households = loadBackend("households");
 
-                $flatId = $households->addFlat($params["houseId"], $params["floor"], $params["flat"], $params["code"], $params["entrances"], $params["apartmentsAndLevels"], $params["manualBlock"], $params["adminBlock"], $params["openCode"], $params["plog"], $params["autoOpen"], $params["whiteRabbit"], $params["sipEnabled"], $params["sipPassword"]);
+                $flatId = $households->addFlat($params["houseId"], $params["floor"], $params["flat"], $params["code"], $params["entrances"], $params["apartmentsAndLevels"], $params["manualBlock"], $params["adminBlock"], $params["openCode"], $params["plog"], $params["autoOpen"], $params["whiteRabbit"], $params["sipEnabled"], $params["sipPassword"], $params["sipAlt"]);
 
                 return api::ANSWER($flatId, ($flatId !== false) ? "flatId" : "notAcceptable");
             }

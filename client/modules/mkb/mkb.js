@@ -232,12 +232,15 @@
         for (let i in modules.mkb.desks) {
             if (modules.mkb.desks[i].name == name) {
                 if (!modules.mkb.desks[i].columns) {
-                    modules.mkb.desks[i].columns = [{
+                    modules.mkb.desks[i].columns = [];
+                }
+                if (!modules.mkb.desks[i].columns.length) {
+                    modules.mkb.desks[i].columns.push({
                         _id: guid(),
                         title: i18n("mkb.default"),
                         color: "secondary",
                         cards: [],
-                    }];
+                    });
                 }
                 d1 = i;
             }
@@ -1379,7 +1382,7 @@
 
             let rtd = '';
 
-            rtd += '<form autocomplete="off"><div class="form-inline ml-3 mr-3"><div class="input-group input-group-sm mt-1"><select id="mkbDesks" class="form-control select-arrow right-top-select top-input"></select></div></div></form>';
+            rtd += `<form autocomplete="off"><div class="form-inline ml-3 mr-3"><div class="input-group input-group-sm mt-1" title="${i18n("mkb.desks")}"><select id="mkbDesks" class="form-control select-arrow right-top-select top-input"></select></div></div></form>`;
 
             rtd += `<li class="nav-item nav-item-back-hover"><span class="addDesk nav-link pointer" role="button" title="${i18n("mkb.addDesk")}"><i class="fas fa-lg fa-fw fa-plus-square"></i></span></li>`;
             rtd += `<li class="nav-item nav-item-back-hover"><span class="editDesk nav-link pointer" role="button" title="${i18n("mkb.editDesk")}"><i class="fas fa-lg fa-fw fa-pen-square"></i></span></li>`;

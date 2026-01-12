@@ -1145,13 +1145,13 @@
                     type: "datetime-local",
                     sec: true,
                     title: i18n("addresses.autoOpen"),
-                    tab: i18n("addresses.primary"),
+                    // tab: i18n("addresses.primary"),
                 },
                 {
                     id: "whiteRabbit",
                     type: "select",
                     title: i18n("addresses.whiteRabbit"),
-                    tab: i18n("addresses.primary"),
+                    // tab: i18n("addresses.primary"),
                     placeholder: i18n("addresses.whiteRabbit"),
                     options: [
                         {
@@ -1188,7 +1188,7 @@
                     id: "sipEnabled",
                     type: "select",
                     title: i18n("addresses.sipEnabled"),
-                    tab: i18n("addresses.primary"),
+                    // tab: i18n("addresses.primary"),
                     placeholder: i18n("addresses.sipEnabled"),
                     options: [
                         {
@@ -1216,7 +1216,7 @@
                     id: "sipPassword",
                     type: "text",
                     title: i18n("addresses.sipPassword"),
-                    tab: i18n("addresses.primary"),
+                    // tab: i18n("addresses.primary"),
                     placeholder: i18n("addresses.sipPassword"),
                     hidden: true,
                     validate: (v, prefix) => {
@@ -1233,6 +1233,13 @@
                             $("#" + prefix + "sipPassword").val(PWGen.generate());
                         }
                     }
+                },
+                {
+                    id: "sipAlt",
+                    type: "text",
+                    title: i18n("addresses.sipAlt"),
+                    // tab: i18n("addresses.primary"),
+                    placeholder: i18n("addresses.sipAlt"),
                 },
             ];
 
@@ -2526,6 +2533,13 @@
                                 $("#" + prefix + "sipPassword").val(PWGen.generate());
                             }
                         }
+                    },
+                    {
+                        id: "sipAlt",
+                        type: "text",
+                        title: i18n("addresses.sipAlt"),
+                        placeholder: i18n("addresses.sipAlt"),
+                        value: flat.sipAlt,
                     },
                     {
                         id: "cars",
