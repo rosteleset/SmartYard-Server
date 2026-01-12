@@ -1130,7 +1130,7 @@
                 s += `
                     <div class="custom-control custom-checkbox noselect">
                         <input id="card-subtask-${card._id}-${i}" class="subtaskCheckbox custom-control-input custom-control-input-primary custom-control-input-outline" type="checkbox"${card.subtasks[i].checked ? " checked " : " " }data-card-id=${card._id}>
-                        <label for="card-subtask-${card._id}-${i}" class="pl-1 custom-control-label text-no-bold">${$.trim(escapeHTML(card.subtasks[i].text))}</label>
+                        <label for="card-subtask-${card._id}-${i}" class="pl-1 custom-control-label text-no-bold">${convertLinks(DOMPurify.sanitize(card.subtasks[i].text))}</label>
                     </div>
                 `;
 
@@ -1229,7 +1229,7 @@
                     </div>
                 </div>
                 <div class="card-body" data-card-id="${card._id}">
-                    <div>${$.trim(escapeHTML(card.subject))}</div>
+                    <div>${convertLinks(DOMPurify.sanitize(card.subject))}</div>
                     ${t}
                     ${s}
                     ${b}
