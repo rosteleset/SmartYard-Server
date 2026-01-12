@@ -469,6 +469,7 @@ function handleOtherCases(context, extension)
         domophoneId = tonumber(from:sub(2))
 
         -- sokol's crutch
+        -- TODO: delete after fixing SIP numbers for flats
         if extension:len() < 5 then
             logDebug("bad extension, replacing...")
             local flats = dm("apartment", {
@@ -494,12 +495,23 @@ function handleOtherCases(context, extension)
             end
         else
             logDebug("more than one house, has prefix")
-            flatNumber = tonumber(extension:sub(5))
-            if flatNumber ~= nil then
+
+            local prefix
+
+            local hashPosition = extension:find('#')
+            if hashPosition then -- With # delimiter (Akuvox S532)
+                prefix = tonumber(extension:sub(1, hashPosition - 1))
+                flatNumber = tonumber(extension:sub(hashPosition + 1))
+            else -- Default XXXXYYYY format
+                prefix = tonumber(extension:sub(1, 4))
+                flatNumber = tonumber(extension:sub(5))
+            end
+
+            if flatNumber ~= nil and prefix ~= nil then
                 local flats = dm("flatIdByPrefix", {
                     domophoneId = domophoneId,
                     flatNumber = flatNumber,
-                    prefix = tonumber(extension:sub(1, 4)),
+                    prefix = prefix,
                 })
                 if #flats == 1 then
                     flat = flats[1]
