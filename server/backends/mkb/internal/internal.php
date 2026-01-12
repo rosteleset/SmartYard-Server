@@ -137,13 +137,12 @@
              * list indexes
              */
 
-            private function listIndexes() {
+            private function listIndexes($collection) {
                 $db = $this->dbName;
-                $login = $this->login;
 
                 return array_map(function ($indexInfo) {
                     return [ 'v' => $indexInfo->getVersion(), 'key' => $indexInfo->getKey(), 'name' => $indexInfo->getName() ];
-                }, iterator_to_array($this->mongo->$db->$login->listIndexes()));
+                }, iterator_to_array($this->mongo->$db->$collection->listIndexes()));
             }
 
             /**
@@ -180,7 +179,7 @@
                     $this->mongo->$db->$collection->createIndex([ $i => 1 ], [ "name" => "index_" . $i, ]);
                 }
 
-                return true;
+                return count($fields) + 1;
             }
 
             /**
@@ -305,6 +304,72 @@
                 }
 
                 return $this->delete([ "type" => "card", "_id" => $id ]);
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+            public function cliUsage() {
+                $usage = parent::cliUsage();
+
+                if (!@$usage["indexes"]) {
+                    $usage["indexes"] = [];
+                }
+
+                $usage["indexes"]["create-indexes"] = [
+                    "description" => "Create default MKB indexes",
+                    "value" => "string",
+                    "placeholder" => "login",
+                ];
+
+                $usage["indexes"]["drop-indexes"] = [
+                    "description" => "Drop default MKB indexes",
+                    "value" => "string",
+                    "placeholder" => "login",
+                ];
+
+                return $usage;
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+            public function cli($args) {
+                if (array_key_exists("--create-indexes", $args) && $args["--create-indexes"]) {
+                    $c = $this->createIndexes($args["--create-indexes"]);
+
+                    if ($c === true) {
+                        $c = 0;
+                    }
+
+                    echo "$c indexes created\n";
+
+                    exit(0);
+                }
+
+                if (array_key_exists("--drop-indexes", $args) && $args["--drop-indexes"]) {
+                    $db = $this->dbName;
+                    $login = $args["--drop-indexes"];
+
+                    $indexes = $this->listIndexes($args["--drop-indexes"]);
+
+                    $c = 0;
+
+                    foreach ($indexes as $index) {
+                        if ($index["name"] != "_id_") {
+                            $this->mongo->$db->$login->dropIndex($index["name"]);
+                            $c++;
+                        }
+                    }
+
+                    echo "$c indexes dropped\n";
+
+                    exit(0);
+                }
+
+                parent::cli($args);
             }
         }
     }

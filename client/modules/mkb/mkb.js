@@ -199,6 +199,85 @@
         });
     },
 
+    cardArchive: function (id, done) {
+        loadingStart();
+
+        let desk = modules.mkb.desk();
+
+        for (let i in desk.columns) {
+            if ((j = desk.columns[i].cards.indexOf(id)) >= 0) {
+                desk.columns[i].cards.splice(j, 1);
+                break;
+            }
+        }
+
+        modules.mkb.cards[id].desk = false;
+
+        POST("mkb", "card", false, { card: modules.mkb.cards[id] }).
+        done(() => {
+            POST("mkb", "desk", false, { desk }).
+            done(done).
+            fail(FAIL).
+            fail(loadingDone);
+        }).
+        fail(FAIL).
+        fail(loadingDone);
+    },
+
+    cardMove: function (id, name, done) {
+        loadingStart();
+
+        let d1, d2 = -1;
+
+        for (let i in modules.mkb.desks) {
+            if (modules.mkb.desks[i].name == name) {
+                if (!modules.mkb.desks[i].columns) {
+                    modules.mkb.desks[i].columns = [{
+                        _id: guid(),
+                        title: i18n("mkb.default"),
+                        color: "secondary",
+                        cards: [],
+                    }];
+                }
+                d1 = i;
+            }
+            if (modules.mkb.desks[i].columns && modules.mkb.desks[i].columns.length) {
+                for (let j in modules.mkb.desks[i].columns) {
+                    if (!modules.mkb.desks[i].columns[j].cards) {
+                        modules.mkb.desks[i].columns[j].cards = [];
+                    }
+                    if ((c = modules.mkb.desks[i].columns[j].cards.indexOf(id)) >= 0) {
+                        modules.mkb.desks[i].columns[j].cards.splice(c, 1);
+                        d2 = i;
+                    }
+                }
+            }
+        }
+
+        modules.mkb.desks[d1].columns[0].cards.push(id);
+
+        modules.mkb.cards[id].desk = name;
+
+        POST("mkb", "card", false, { card: modules.mkb.cards[id] }).
+        done(() => {
+            POST("mkb", "desk", false, { desk:  modules.mkb.desks[d1] }).
+            done(() => {
+                if (d2 >= 0 && d2 != d1) {
+                    POST("mkb", "desk", false, { desk:  modules.mkb.desks[d2] }).
+                    done(done).
+                    fail(FAIL).
+                    fail(loadingDone);
+                } else {
+                    done();
+                }
+            }).
+            fail(FAIL).
+            fail(loadingDone);
+        }).
+        fail(FAIL).
+        fail(loadingDone);
+    },
+
     cardComments: function (id) {
         let ci = -1;
         let editor;
@@ -920,28 +999,7 @@
         $(".cardArchive").off("click").on("click", function () {
             let id = $(this).attr("data-card-id");
 
-            loadingStart();
-
-            let desk = modules.mkb.desk();
-
-            for (let i in desk.columns) {
-                if ((j = desk.columns[i].cards.indexOf(id)) >= 0) {
-                    desk.columns[i].cards.splice(j, 1);
-                    break;
-                }
-            }
-
-            modules.mkb.cards[id].desk = false;
-
-            POST("mkb", "card", false, { card: modules.mkb.cards[id] }).
-            done(() => {
-                POST("mkb", "desk", false, { desk }).
-                done(modules.mkb.renderDesk).
-                fail(FAIL).
-                fail(loadingDone);
-            }).
-            fail(FAIL).
-            fail(loadingDone);
+            modules.mkb.cardArchive(id, modules.mkb.renderDesk)
         });
 
         $(".cardDone").off("click").on("click", function () {

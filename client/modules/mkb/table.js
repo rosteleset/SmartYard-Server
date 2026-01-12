@@ -96,7 +96,11 @@
 
         GET("mkb", "desks", false, true).
         done(d => {
-            console.log(d);
+            modules.mkb.desks = [];
+
+            if (d && d.desks) {
+                modules.mkb.desks = d.desks;
+            }
 
             POST("mkb", "cards", false, { query, skip, limit }).
             done(r => {
@@ -107,6 +111,50 @@
                 `;
 
                 $("#mainForm").html(h);
+
+                let dropDownItems = [
+                    {
+                        icon: "fas fa-edit",
+                        title: i18n("mkb.edit"),
+                        click: id => {
+                            modules.mkb.cardEdit(id, () => {
+                                modules.mkb.table.renderCards(params);
+                            });
+                        },
+                    },
+                    {
+                        icon: "fas fa-comments",
+                        title: i18n("mkb.comments"),
+                        click: id => {
+                            modules.mkb.cardComments(id);
+                        },
+                    },
+                    {
+                        title: "-",
+                        hint: i18n("mkb.moveTo"),
+                    },
+                    {
+                        icon: "fas fa-archive",
+                        title: i18n("mkb.cardsArchive"),
+                        click: id => {
+                            modules.mkb.cardArchive(id, () => {
+                                modules.mkb.table.renderCards(params);
+                            });
+                        },
+                    },
+                ];
+
+                for (let i in d.desks) {
+                    dropDownItems.push({
+                        icon: "fas fa-layer-group",
+                        title: d.desks[i].name,
+                        click: id => {
+                            modules.mkb.cardMove(id, d.desks[i].name, () => {
+                                modules.mkb.table.renderCards(params);
+                            });
+                        },
+                    })
+                }
 
                 cardTable({
                     target: "#cards",
@@ -154,47 +202,51 @@
                                 cols: [
                                     {
                                         data: parseInt(i) + skip + 1,
+                                        click: id => {
+                                            modules.mkb.cardEdit(id, () => {
+                                                modules.mkb.table.renderCards(params);
+                                            });
+                                        },
                                     },
                                     {
                                         data: date("Y-m-d", r.cards[i].date),
                                         nowrap: true,
+                                        click: id => {
+                                            modules.mkb.cardEdit(id, () => {
+                                                modules.mkb.table.renderCards(params);
+                                            });
+                                        },
                                     },
                                     {
                                         data: r.cards[i].desk ? r.cards[i].desk : i18n("mkb.archived"),
                                         nowrap: true,
+                                        click: id => {
+                                            modules.mkb.cardEdit(id, () => {
+                                                modules.mkb.table.renderCards(params);
+                                            });
+                                        },
                                     },
                                     {
                                         data: progress,
                                         nowrap: true,
+                                        click: id => {
+                                            modules.mkb.cardEdit(id, () => {
+                                                modules.mkb.table.renderCards(params);
+                                            });
+                                        },
                                     },
                                     {
                                         data: r.cards[i].subject,
                                         ellipses: true,
+                                        click: id => {
+                                            modules.mkb.cardEdit(id, () => {
+                                                modules.mkb.table.renderCards(params);
+                                            });
+                                        },
                                     },
                                 ],
                                 dropDown: {
-                                    items: [
-                                        {
-                                            icon: "fas fa-comments",
-                                            title: i18n("mkb.comments"),
-                                            click: id => {
-                                                modules.mkb.cardComments(id);
-                                            },
-                                        },
-                                        {
-                                            icon: "fas fa-edit",
-                                            title: i18n("mkb.edit"),
-                                            click: id => {
-                                                modules.mkb.cardEdit(id, () => {
-                                                    modules.mkb.table.renderCards(params);
-                                                });
-                                            },
-                                        },
-                                        {
-                                            title: "-",
-                                            hint: "123",
-                                        },
-                                    ],
+                                    items: dropDownItems,
                                 },
                             });
                         }

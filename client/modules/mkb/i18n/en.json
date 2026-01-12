@@ -37,6 +37,7 @@
     "archived": "Archived",
     "showCounts": "Showing cards from %s to %s from %s",
     "searchResults": "Search results",
+    "moveTo": "Move to",
     "methods": {
         "mkb": {
             "_title": "Kanban",

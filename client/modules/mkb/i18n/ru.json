@@ -37,6 +37,7 @@
     "archived": "В архиве",
     "showCounts": "Показаны карточки с %s по %s из %s",
     "searchResults": "Результаты поиска",
+    "moveTo": "Переместить в (на)",
     "methods": {
         "mkb": {
             "_title": "Канбан",
