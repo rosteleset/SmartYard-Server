@@ -3,11 +3,10 @@
 namespace hw\ip\domophone\akuvox;
 
 use CURLFile;
-use hw\Enum\HousePrefixField;
 use hw\Interface\{
     DisplayTextInterface,
     FreePassInterface,
-    HousePrefixInterface,
+    GateModeInterface,
     LanguageInterface,
 };
 use hw\ip\domophone\akuvox\Entities\{
@@ -20,7 +19,7 @@ use hw\ip\domophone\akuvox\Enums\AnalogType;
 /**
  * Represents an Akuvox S532 intercom.
  */
-class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, HousePrefixInterface, LanguageInterface
+class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, GateModeInterface, LanguageInterface
 {
     /**
      * @var array<string, AnalogType> Mapping of CMS model codes from the DB to their corresponding AnalogType enums.
@@ -51,6 +50,7 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, Ho
     protected const USER_ID_PREFIX_FLAT = 'FLAT';
     protected const USER_ID_PREFIX_CMS = 'CMS';
 
+    protected const FLAG_GATE_MODE_ENABLED = 'GATE_MODE';
     protected const FLAG_CMS_DISABLED = '9999';
     protected const GROUP_NAME_DEFAULT = 'Default';
 
@@ -228,23 +228,6 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, Ho
         return 1;
     }
 
-    public function getHousePrefixSupportedFields(): array
-    {
-        return [HousePrefixField::FirstFlat, HousePrefixField::LastFlat];
-    }
-
-    public function getHousePrefixes(): array
-    {
-        $dialplans = $this->getDialplans();
-        $prefixes = [];
-
-        foreach ($dialplans as $dialplan) {
-            // TODO
-        }
-
-        return $prefixes;
-    }
-
     public function getRfids(): array
     {
         $rfidUsers = $this->findUsers(self::USER_ID_PREFIX_RFID);
@@ -260,6 +243,11 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, Ho
         ]);
 
         return empty($response) || in_array('1', $response, true);
+    }
+
+    public function isGateModeEnabled(): bool
+    {
+        return $this->getConfigParams(['Config.DoorSetting.DEVICENODE.Location'])[0] === self::FLAG_GATE_MODE_ENABLED;
     }
 
     public function prepare(): void
@@ -323,43 +311,12 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, Ho
         ]);
     }
 
-    public function setHousePrefixes(array $prefixes): void
+    public function setGateModeEnabled(bool $enabled): void
     {
-        $existingDialplans = $this->getDialplans();
-        $existingSipNumbers = array_flip(array_column($existingDialplans, 'Replace1'));
-
-        $newSipNumbers = [];
-
-        // Collect SIP numbers that must exist in the dialplans
-        foreach ($prefixes as $prefix) {
-            $prefixPart = str_pad($prefix->number, 4, '0', STR_PAD_LEFT);
-            for ($flat = $prefix->firstFlat->number; $flat <= $prefix->lastFlat->number; $flat++) {
-                $sipNumber = $prefixPart . str_pad($flat, 4, '0', STR_PAD_LEFT);
-                $newSipNumbers[$sipNumber] = ['prefix' => $prefix->number, 'flat' => $flat];
-            }
-        }
-
-        $dialplansToAdd = [];
-        $dialplansToDelete = [];
-
-        // Create dialplans that should be added to the intercom
-        foreach ($newSipNumbers as $sipNumber => $parts) {
-            if (!isset($existingSipNumbers[$sipNumber])) {
-                $dialplan = new Dialplan($parts['prefix'] . '#' . $parts['flat']);
-                $dialplan->replace1 = $sipNumber;
-                $dialplansToAdd[] = $dialplan;
-            }
-        }
-
-        // Collect dialplans that should be removed from the intercom
-        foreach ($existingDialplans as $dialplan) {
-            if (!isset($newSipNumbers[$dialplan->replace1])) {
-                $dialplansToDelete[] = $dialplan;
-            }
-        }
-
-        $this->addDialplans($dialplansToAdd);
-        $this->deleteDialplans($dialplansToDelete);
+        $this->setConfigParams([
+            // Use this field as a flag indicating that gate mode is enabled
+            'Config.DoorSetting.DEVICENODE.Location' => $enabled ? self::FLAG_GATE_MODE_ENABLED : '',
+        ]);
     }
 
     public function setLanguage(string $language): void
@@ -392,7 +349,7 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, Ho
         }
 
         if ($this->needProcessGroups) {
-            if (empty($this->getHousePrefixes())) {
+            if ($this->isGateModeEnabled()) {
                 $this->clearGroups();
             } else {
                 $this->syncGroups();
@@ -410,22 +367,11 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, Ho
          * Currently, it is possible to select both a prefix and a CMS and fill in the matrix.
          * This is likely incorrect, so we reset the matrix to avoid creating extra CMS users.
          */
-        if (!empty($dbConfig['housePrefixes'])) {
+        if ($dbConfig['gateModeEnabled']) {
             $dbConfig['matrix'] = [];
         }
 
         return $dbConfig;
-    }
-
-    /**
-     * Adds new dialplans to the intercom.
-     *
-     * @param Dialplan[] $dialplans Array of {@see Dialplan} entities to be added.
-     * @return void
-     */
-    protected function addDialplans(array $dialplans): void
-    {
-        $this->executeChunkOperation('dialreplace', 'add', $dialplans, fn(Dialplan $dialplan) => $dialplan->toArray());
     }
 
     /**
@@ -472,18 +418,6 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, Ho
     {
         $cmsUsers = $this->findUsers(self::USER_ID_PREFIX_CMS);
         $this->deleteUsers($cmsUsers);
-    }
-
-    /**
-     * Deletes dialplans from the intercom.
-     *
-     * @param Dialplan[] $dialplans Array of {@see Dialplan} entities to be deleted.
-     * @return void
-     */
-    protected function deleteDialplans(array $dialplans): void
-    {
-        $mapper = fn(Dialplan $dialplan) => ['ID' => $dialplan->id];
-        $this->executeChunkOperation('dialreplace', 'del', $dialplans, $mapper);
     }
 
     /**
@@ -569,29 +503,6 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, Ho
     protected function getCmsModel(): string
     {
         return $this->getConfigParams(['Config.DoorSetting.ANALOG.Type'])[0] ?? '';
-    }
-
-    /**
-     * Returns all dialplans.
-     *
-     * @return Dialplan[] An array of {@see Dialplan} objects.
-     */
-    protected function getDialplans(): array
-    {
-        $dialplans = []; // TODO: add caching
-
-        for ($page = 1; ; $page++) {
-            $response = $this->apiCall("/dialreplace/get?page=$page");
-            $items = $response['data']['item'] ?? [];
-
-            if (!is_array($items) || $items === []) {
-                break;
-            }
-
-            $dialplans = [...$dialplans, ...$items];
-        }
-
-        return array_map(static fn(array $dialplan) => Dialplan::fromArray($dialplan), $dialplans);
     }
 
     /**
