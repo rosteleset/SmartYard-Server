@@ -1,0 +1,14 @@
+{
+    ...
+    "modules": [
+        ...
+        "addresses",
+        ...
+    ],
+    "customSubModules": {
+        "addresses": [
+            "translations"
+        ]
+    },
+    ...
+}
