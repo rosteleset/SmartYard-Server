@@ -18,7 +18,7 @@
 + persistent tables filters in webUI
 + sudo-like administrative mode in webUI
 + fyeo in notes
-! addHouseBMagicy can accept both *_fias_id and *_uuid fields
+! addHouseByMagic can accept both *_fias_id and *_uuid fields
 ! massive refactoring in server/utils/*.php
 + @api {get} /api/houses/flat:flatId get flat
 - minor fixes in households->modifyFlat
