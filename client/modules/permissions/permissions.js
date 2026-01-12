@@ -73,16 +73,30 @@
         }
 
         let a = [];
+
         a.push({
             value: "",
             text: "-",
         });
+
         for (let i in modules.permissions.methods) {
             a.push({
                 value: i,
-                text: (lang.methods[i] && lang.methods[i]["_title"])?lang.methods[i]["_title"]:i,
+                text: (lang.methods[i] && lang.methods[i]["_title"]) ? lang.methods[i]["_title"] : i,
             });
         }
+
+
+        a.sort((a, b) => {
+            if (a.text > b.text) {
+                return 1;
+            }
+            if (a.text < b.text) {
+                return -1;
+            }
+            return 0;
+        });
+
         cardForm({
             title: i18n("permissions.add"),
             footer: true,
@@ -91,10 +105,10 @@
             size: "lg",
             fields: [
                 {
-                    id: group?"gid":"uid",
+                    id: group ? "gid" : "uid",
                     type: "select2",
                     title: group ? i18n("groups.group") : i18n("users.login"),
-                    options: group?g:u,
+                    options: group ? g : u,
                 },
                 {
                     id: "api",
@@ -113,9 +127,19 @@
                             for (let i in modules.permissions.methods[api]) {
                                 m.push({
                                     id: i,
-                                    text: (lang.methods[api] && lang.methods[api][i])?lang.methods[api][i]["_title"]:i,
+                                    text: (lang.methods[api] && lang.methods[api][i]) ? lang.methods[api][i]["_title"] : i,
                                 })
                             }
+
+                            m.sort((a, b) => {
+                                if (a.text > b.text) {
+                                    return 1;
+                                }
+                                if (a.text < b.text) {
+                                    return -1;
+                                }
+                                return 0;
+                            });
                         }
                         $(`#${prefix}method`).html("").select2({
                             data: m,
@@ -143,14 +167,34 @@
                             for (let i in modules.permissions.methods[api][method]) {
                                 a.push({
                                     id: modules.permissions.methods[api][method][i],
-                                    text: (lang.methods[api] && lang.methods[api][method] && lang.methods[api][method][i])?lang.methods[api][method][i]:i,
+                                    text: (lang.methods[api] && lang.methods[api][method] && lang.methods[api][method][i]) ? lang.methods[api][method][i] : i,
                                     selected: true,
                                 });
                                 d.push({
                                     id: modules.permissions.methods[api][method][i],
-                                    text: (lang.methods[api] && lang.methods[api][method] && lang.methods[api][method][i])?lang.methods[api][method][i]:i,
+                                    text: (lang.methods[api] && lang.methods[api][method] && lang.methods[api][method][i]) ? lang.methods[api][method][i] : i,
                                 });
                             }
+
+                            a.sort((a, b) => {
+                                if (a.text > b.text) {
+                                    return 1;
+                                }
+                                if (a.text < b.text) {
+                                    return -1;
+                                }
+                                return 0;
+                            });
+
+                            d.sort((a, b) => {
+                                if (a.text > b.text) {
+                                    return 1;
+                                }
+                                if (a.text < b.text) {
+                                    return -1;
+                                }
+                                return 0;
+                            });
                         }
                         $(`#${prefix}actionAllow`).html("").select2({
                             data: a,
@@ -353,7 +397,7 @@
                 for (let i in modules.permissions.methods[uid[1]][uid[2]]) {
                     o.push({
                         value: modules.permissions.methods[uid[1]][uid[2]][i],
-                        text: (lang.methods[uid[1]] && lang.methods[uid[1]][uid[2]] && lang.methods[uid[1]][uid[2]][i])?lang.methods[uid[1]][uid[2]][i]:i,
+                        text: (lang.methods[uid[1]] && lang.methods[uid[1]][uid[2]] && lang.methods[uid[1]][uid[2]][i]) ? lang.methods[uid[1]][uid[2]][i] : i,
                     });
                 }
                 modules.permissions.editRights(
@@ -489,11 +533,11 @@
                         for (let k in _m.methods[i][j]) {
                             m[_m.methods[i][j][k]] = {
                                 api: i,
-                                api_text: (lang.methods[i] && lang.methods[i]._title)?lang.methods[i]._title:i,
+                                api_text: (lang.methods[i] && lang.methods[i]._title) ? lang.methods[i]._title : i,
                                 method: j,
-                                method_text: (lang.methods[i] && lang.methods[i][j] && lang.methods[i][j]._title)?lang.methods[i][j]._title:j,
+                                method_text: (lang.methods[i] && lang.methods[i][j] && lang.methods[i][j]._title) ? lang.methods[i][j]._title : j,
                                 action: k,
-                                action_text: (lang.methods[i] && lang.methods[i][j] && lang.methods[i][j][k])?lang.methods[i][j][k]:k,
+                                action_text: (lang.methods[i] && lang.methods[i][j] && lang.methods[i][j][k]) ? lang.methods[i][j][k] : k,
                             };
                         }
                     }

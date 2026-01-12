@@ -24,7 +24,7 @@
                 foreach ($methods as $method) {
                     if ($method != "." && $method != ".." && substr($method, -4) == ".php" && is_file(__DIR__ . "/../api/$api/$method")) {
                         $method = substr($method, 0, -4);
-                        if (file_exists(__DIR__ .  "../api/$api/custom/$method.php")) {
+                        if (file_exists(__DIR__ .  "/../api/$api/custom/$method.php")) {
                             $file = __DIR__ . "/../api/$api/custom/$method.php";
                             $class = "\\api\\$api\\custom\\$method";
                         } else {

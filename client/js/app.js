@@ -815,14 +815,16 @@ function loadModule() {
                 if (!lang.errors) {
                     lang.errors = {};
                 }
-                lang.errors = {...lang.errors, ...i18n.errors};
+                // lang.errors = {...lang.errors, ...i18n.errors};
+                lang.error = mergeDeep(lang.errors, i18n.errors);
                 delete i18n.errors;
             }
             if (i18n.methods) {
                 if (!lang.methods) {
                     lang.methods = {};
                 }
-                lang.methods = {...lang.methods, ...i18n.methods};
+                // lang.methods = {...lang.methods, ...i18n.methods};
+                lang.methods = mergeDeep(lang.methods, i18n.methods);
                 delete i18n.methods;
             }
             lang[module] = i18n;
@@ -834,17 +836,20 @@ function loadModule() {
                         if (!lang.errors) {
                             lang.errors = {};
                         }
-                        lang.errors = {...lang.errors, ...i18n.errors};
+                        // lang.errors = {...lang.errors, ...i18n.errors};
+                        lang.error = mergeDeep(lang.errors, i18n.errors);
                         delete i18n.errors;
                     }
                     if (i18n.methods) {
                         if (!lang.methods) {
                             lang.methods = {};
                         }
-                        lang.methods = {...lang.methods, ...i18n.methods};
+                        // lang.methods = {...lang.methods, ...i18n.methods};
+                        lang.methods = mergeDeep(lang.methods, i18n.methods);
                         delete i18n.methods;
                     }
-                    lang[module] = {...lang[module], ...i18n};
+                    // lang[module] = {...lang[module], ...i18n};
+                    lang[module] = mergeDeep(lang[module], i18n);
                 }).always(() => {
                     $.getScript("modules/" + module + "/" + module + ".js?ver=" + version)
                     .fail(() => {
