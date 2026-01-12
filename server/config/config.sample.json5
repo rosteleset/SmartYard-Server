@@ -3,13 +3,13 @@
 
     "api": {
         "api": "https://example.com/api",
-        "frontend": "https://example.com/frontend",
         "asterisk": "http://127.0.0.1/asterisk",
+        "frontend": "https://example.com/frontend",
         "internal": "http://127.0.0.1/internal",
         "mobile": "https://example.com/mobile",
-        "wh": "https://example.com/wh",
-        "ud363": "https://example.com/ud363",
         "kamailio": "http://127.0.0.1/kamailio",
+        "ud363": "https://example.com/ud363",
+        "wh": "https://example.com/wh",
     },
 
     "mobile": {
