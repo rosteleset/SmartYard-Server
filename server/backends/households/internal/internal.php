@@ -346,8 +346,6 @@
 
                         $t = [];
 
-                        print_r($cf);
-
                         foreach ($cf as $i) {
                             if ((int)$i) {
                                 $t[] = (int)$i;
@@ -661,7 +659,6 @@
                     ]);
 
                     if ($flatId) {
-                        error_log(print_r($entrances, true));
                         for ($i = 0; $i < count($entrances); $i++) {
                             if (!checkInt($entrances[$i])) {
                                 return false;
