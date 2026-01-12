@@ -10,8 +10,8 @@
      *
      * @apiBody {String} login
      * @apiBody {String} password
-     * @apiBody {String} rememberMe
-     * @apiBody {String} did
+     * @apiBody {String} [rememberMe]
+     * @apiBody {String} [did]
      * @apiBody {String} [oneCode]
      *
      * @apiSuccess {Object} login or otp results
