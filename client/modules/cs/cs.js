@@ -1498,7 +1498,7 @@
                         });
                     });
                 } else {
-                    $("#mainForm").html(i18n("cs.notFound"));
+                    $("#mainForm").html(`<div class="mt-2">${i18n("cs.notFound")}</div>`);
                     modules.cs.idle = true;
                     loadingDone();
                 }
