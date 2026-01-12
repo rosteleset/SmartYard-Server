@@ -7,6 +7,8 @@
 # removed or deprecated
 ```
 
+## 2026-01-14 0.0.20
+
 ```diff
 + simple kanban
 + simple system info dashboard
