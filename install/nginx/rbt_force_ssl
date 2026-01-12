@@ -106,11 +106,11 @@ server {
                 fastcgi_pass unix:/var/run/php/php-fpm.sock;
         }
 
-        location /ud {
-                rewrite ^.*$ /ud.php last;
+        location /ud363 {
+                rewrite ^.*$ /ud363.php last;
         }
 
-        location = /ud.php {
+        location = /ud363.php {
                 root /opt/rbt/server;
                 include snippets/fastcgi-php.conf;
                 fastcgi_pass unix:/var/run/php/php-fpm.sock;

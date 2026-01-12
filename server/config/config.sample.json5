@@ -8,6 +8,7 @@
         "internal": "http://127.0.0.1/internal",
         "mobile": "https://example.com/mobile",
         "wh": "https://example.com/wh",
+        "ud363": "https://example.com/ud363",
         "kamailio": "http://127.0.0.1/kamailio",
     },
 
