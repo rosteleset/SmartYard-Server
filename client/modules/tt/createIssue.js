@@ -289,14 +289,14 @@
                 let ky = {};
 
                 for (let i in response.template.fields) {
-                    let fx = ((typeof response.template.fields[i] == "string")?response.template.fields[i]:i).toString();
+                    let fx = ((typeof response.template.fields[i] == "string") ? response.template.fields[i] : i).toString();
                     if (fx.charAt(0) == '%') {
                         fx = fx.split('%');
                         kx[fx[1]] = fx[2];
-                        ky[fx[2]] = (typeof response.template.fields[i] == "string")?false:response.template.fields[i];
+                        ky[fx[2]] = (typeof response.template.fields[i] == "string") ? false : response.template.fields[i];
                     } else {
                         kx.push(fx);
-                        ky[fx] = (typeof response.template.fields[i] == "string")?false:response.template.fields[i];
+                        ky[fx] = (typeof response.template.fields[i] == "string") ? false : response.template.fields[i];
                     }
                 }
 

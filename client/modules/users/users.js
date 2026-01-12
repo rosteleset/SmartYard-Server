@@ -913,7 +913,7 @@
                         {
                             id: "persistentToken",
                             type: "text",
-                            value: parseInt(uid)?response.user.persistentToken:'',
+                            value: parseInt(uid) ? response.user.persistentToken : '',
                             title: i18n("users.persistentToken"),
                             placeholder: i18n("users.persistentToken"),
                             hidden: !parseInt(uid) || parseInt(response.user.twoFA),

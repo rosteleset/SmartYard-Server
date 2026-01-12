@@ -282,7 +282,7 @@
                                     data: response.providers[i].name,
                                 },
                                 {
-                                    data: parseInt(response.providers[i].hidden)?i18n("yes"):i18n("no"),
+                                    data: parseInt(response.providers[i].hidden) ? i18n("yes") : i18n("no"),
                                 },
                             ],
                         });

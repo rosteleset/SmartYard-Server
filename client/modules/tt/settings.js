@@ -906,21 +906,21 @@
                         id: "editable",
                         type: "noyes",
                         title: i18n("tt.editable"),
-                        value: (cf.format && cf.format.split(" ").includes("editable"))?"1":"0",
+                        value: (cf.format && cf.format.split(" ").includes("editable")) ? "1" : "0",
                         hidden: cf.type !== "select",
                     },
                     {
                         id: "multiple",
                         type: "noyes",
                         title: i18n("tt.multiple"),
-                        value: (cf.format && cf.format.split(" ").includes("multiple"))?"1":"0",
+                        value: (cf.format && cf.format.split(" ").includes("multiple")) ? "1" : "0",
                         hidden: cf.type === "virtual" || cf.type === "text" || cf.type === "geo" || cf.type === "array",
                     },
                     {
                         id: "suggestions",
                         type: "noyes",
                         title: i18n("tt.suggestions"),
-                        value: (cf.format && cf.format.split(" ").includes("suggestions"))?"1":"0",
+                        value: (cf.format && cf.format.split(" ").includes("suggestions")) ? "1" : "0",
                         hidden: cf.type !== "select",
                     },
                     {
@@ -1175,7 +1175,7 @@
         for (let i in modules.tt.meta.workflows) {
             workflows.push({
                 id: i,
-                text: modules.tt.meta.workflows[i].name?((modules.tt.meta.workflows[i].name.charAt(0) == "#")?modules.tt.meta.workflows[i].name.substring(1):modules.tt.meta.workflows[i].name):i,
+                text: modules.tt.meta.workflows[i].name?((modules.tt.meta.workflows[i].name.charAt(0) == "#") ? modules.tt.meta.workflows[i].name.substring(1) : modules.tt.meta.workflows[i].name):i,
             });
         }
 
@@ -1222,7 +1222,7 @@
             p.push({
                 id: i,
                 text: personals[i],
-                icon: "fas fa-fw " + ((parseInt(i) > 1000000)?"fa-users":"fa-user"),
+                icon: "fas fa-fw " + ((parseInt(i) > 1000000) ? "fa-users" : "fa-user"),
             });
         }
 
@@ -3800,7 +3800,7 @@
                                         nowrap: true,
                                     },
                                     {
-                                        data: (r.viewers[i].field.substring(0, 4) == "_cf_")?cf[r.viewers[i].field]:i18n("tt." + r.viewers[i].field),
+                                        data: (r.viewers[i].field.substring(0, 4) == "_cf_") ? cf[r.viewers[i].field] : i18n("tt." + r.viewers[i].field),
                                         nowrap: true,
                                     },
                                     {
@@ -4032,7 +4032,7 @@
             "mode": "data",
         }, true).
         done(v => {
-            let code = (v && v.data)?v.data:`//function data (issue, callback) {\n\tcallback(issue);\n//}\n`;
+            let code = (v && v.data) ? v.data : `//function data (issue, callback) {\n\tcallback(issue);\n//}\n`;
             let height = $(window).height() - mainFormTop;
             let h = '';
             h += `<div id='editorContainer' style='width: 100%; height: ${height}px;'>`;
@@ -4122,7 +4122,7 @@
             "mode": "formatter",
         }, true).
         done(v => {
-            let code = (v && v.formatter)?v.formatter:"";
+            let code = (v && v.formatter) ? v.formatter : "";
             let height = $(window).height() - mainFormTop;
             let h = '';
             h += `<div id='editorContainer' style='width: 100%; height: ${height}px;'>`;
