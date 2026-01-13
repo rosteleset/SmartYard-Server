@@ -231,7 +231,7 @@
                     $mongo = new \MongoDB\Client();
                 }
 
-                $db = $args["--mongodb-compact"];
+                $db = @$args["--mongodb-compact"];
 
                 try {
                     $cursor = $mongo->$db->command([ "compact" => $args["--collection"], "dryRun" => false, "force" => true ]);
