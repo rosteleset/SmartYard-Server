@@ -1201,7 +1201,7 @@
             c = `
                 <span class="dropdown cardCalendar" data-card-id="${card._id}" data-date="${card.date}" title="${i18n("mkb.date")}">
                     <span class="btn btn-tool ${(d >= 0) ? "text-success" : "text-danger"} dropdown-toggle dropdown-toggle-no-icon pb-0" data-toggle="dropdown" aria-expanded="false" data-flip="true" style="margin-top: -12px;">
-                        <span>${Math.abs(d)} ${i18n("mkb.days")}</span>
+                        <span class="text-bold">${Math.abs(d)} ${i18n("mkb.days")}</span>
                         <ul class="dropdown-menu">
                             <li id="dropdown-calendar-${card._id}"></li>
                         </ul>
@@ -1212,7 +1212,7 @@
             c = `
                 <span class="dropdown cardCalendar" data-card-id="${card._id}" data-date="false" title="${i18n("mkb.date")}">
                     <span class="btn btn-tool dropdown-toggle dropdown-toggle-no-icon pb-0" data-toggle="dropdown" aria-expanded="false" data-flip="true" style="margin-top: -12px;">
-                        <span><i class="far fa-fw fa-calendar"></i></span>
+                        <span class="text-bold"><i class="far fa-fw fa-calendar"></i></span>
                         <ul class="dropdown-menu">
                             <li id="dropdown-calendar-${card._id}"></li>
                         </ul>
