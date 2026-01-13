@@ -503,7 +503,7 @@
                 break;
 
             case 'Disabled':
-                statusClass = 'bg-lightblue';
+                statusClass = 'bg-gray-dark';
                 break;
 
             case 'Other':
