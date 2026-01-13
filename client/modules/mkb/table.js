@@ -181,8 +181,11 @@
                     let c = false;
                     for (let j in d.desks) {
                         if (d.desks[j].columns && d.desks[j].columns.length) {
-                            if (d.desks[j].columns[j].cards && d.desks[j].columns[j].cards.length && d.desks[j].columns[j].cards.indexOf(r.cards[i]._id) >= 0) {
-                                c = d.desks[j].columns[j].title;
+                            for (k in d.desks[j].columns) {
+                                if (d.desks[j].columns[k].cards && d.desks[j].columns[k].cards.length && d.desks[j].columns[k].cards.indexOf(r.cards[i]._id) >= 0) {
+                                    c = d.desks[j].columns[k].title;
+                                    break;
+                                }
                             }
                         }
                     }
@@ -280,7 +283,7 @@
                                         },
                                     },
                                     {
-                                        data: r.cards[i].desk ? r.cards[i].desk : i18n("mkb.archived"),
+                                        data: r.cards[i].desk ? r.cards[i].desk : "-",
                                         nowrap: true,
                                         click: id => {
                                             modules.mkb.cardEdit(id, () => {
