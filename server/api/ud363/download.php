@@ -24,10 +24,10 @@
         use api\api;
 
         /**
-         * file method
+         * download method
          */
 
-        class file extends api {
+        class download extends api {
 
             public static function GET($params) {
                 return true;

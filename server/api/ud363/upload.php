@@ -43,10 +43,10 @@
         use api\api;
 
         /**
-         * file method
+         * upload method
          */
 
-        class file extends api {
+        class upload extends api {
 
             public static function GET($params) {
                 return true;
