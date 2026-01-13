@@ -599,50 +599,6 @@ select {
   padding-right: 3px;
 }
 
-.status-container {
-  display: flex;
-  justify-content: center;
-}
-
-.status-indicator {
-  margin-top: 5px;
-  width: 15px;
-  height: 15px;
-  border-radius: 50%;
-}
-
-.status-ok {
-  background-color: green;
-}
-
-.status-offline {
-  background-color: red;
-}
-
-.status-sip-failure {
-  background-color: orange;
-}
-
-.status-disabled {
-  background-color: mediumpurple;
-}
-
-.status-unknown {
-  background-color: darkgrey;
-}
-
-.status-disabled {
-  background-color: lightgrey;
-}
-
-.status-dvr-err {
-  background-color: deeppink;
-}
-
-.status-other-error {
-  background-color: deepskyblue;
-}
-
 .top-input {
   width: 200px !important;
 }

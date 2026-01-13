@@ -491,37 +491,42 @@
 
         switch (status) {
             case 'OK':
-                statusClass = 'bg-success';
+                statusClass = 'fa-check-circle text-success';
                 break;
 
             case 'Offline':
-                statusClass = 'bg-danger';
+                statusClass = 'fa-times-circle text-danger';
                 break;
 
             case 'SIP error':
-                statusClass = 'bg-orange';
+                statusClass = 'fa-minus-circle text-orange';
+                break;
+
+            case 'DVR error':
+                statusClass = 'fa-minus-circle text-orange';
                 break;
 
             case 'Disabled':
-                statusClass = 'bg-gray-dark';
+                statusClass = 'fa-stop-circle text-secondary';
                 break;
 
             case 'Other':
-                statusClass = 'bg-warning';
+                statusClass = 'fa-dot-circle text-warning';
                 break;
 
             default:
                 if (status == i18n("addresses.disabled")) {
-                    statusClass = 'bg-gray-dark';
+                    statusClass = 'fa-stop-circle text-secondary';
                     status = i18n("addresses.disabled")
                 } else {
-                    statusClass = 'bg-lightgray';
+                    statusClass = 'fa-question-circle text-info';
                     status = i18n("addresses.unknown")
                 }
         }
+
         return `
-            <div class="status-container">
-                <span class="status-indicator ${statusClass}" title="${status}"></span>
+            <div class="text-center">
+                <i class="far fa-fw ${statusClass}" title="${status}"></i>
             </div>
         `;
     },
