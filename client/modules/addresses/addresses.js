@@ -491,26 +491,31 @@
 
         switch (status) {
             case 'OK':
-                statusClass = 'status-ok';
+                statusClass = 'bg-success';
                 break;
+
             case 'Offline':
-                statusClass = 'status-offline';
+                statusClass = 'bg-danger';
                 break;
+
             case 'SIP error':
-                statusClass = 'status-sip-failure';
+                statusClass = 'bg-orange';
                 break;
+
             case 'Disabled':
-                statusClass = 'status-disabled';
+                statusClass = 'bg-lightblue';
                 break;
+
             case 'Other':
-                statusClass = 'status-other-error';
+                statusClass = 'bg-warning';
                 break;
+
             default:
                 if (status == i18n("addresses.disabled")) {
-                    statusClass = 'status-disabled';
+                    statusClass = 'bg-gray-dark';
                     status = i18n("addresses.disabled")
                 } else {
-                    statusClass = 'status-unknown';
+                    statusClass = 'bg-lightgray';
                     status = i18n("addresses.unknown")
                 }
         }
