@@ -166,7 +166,7 @@
                     id: "date",
                     title: i18n("mkb.date"),
                     tab: i18n("mkb.card"),
-                    type: "datetime-local",
+                    type: "date",
                     sec: true,
                     value: modules.mkb.cards[id].date,
                 },
@@ -647,11 +647,11 @@
 
                 modules.mkb.calendars[id] = new VanillaCalendarPro.Calendar(`#calendar-${id}`, {
                     locale: config.defaultLanguage,
-                    selectionTimeMode: 24,
+                    // selectionTimeMode: 24,
                     selectedMonth: date("m", d) - 1,
                     selectedYear: date("Y", d),
                     selectedDates: [ date("Y-m-d", d) ],
-                    selectedTime: date("H:i", d),
+                    // selectedTime: date("H:i", d),
                 });
 
                 modules.mkb.calendars[id].init();
@@ -660,7 +660,8 @@
                     let id = $(this).attr("data-card-id");
 
                     if (modules.mkb.calendars[id].context.selectedDates.length) {
-                        modules.mkb.cards[id].date = strtotime($.trim(modules.mkb.calendars[id].context.selectedDates) + " " + modules.mkb.calendars[id].context.selectedTime);
+                        // modules.mkb.cards[id].date = strtotime($.trim(modules.mkb.calendars[id].context.selectedDates) + " " + modules.mkb.calendars[id].context.selectedTime);
+                        modules.mkb.cards[id].date = strtotime($.trim(modules.mkb.calendars[id].context.selectedDates));
 
                         let s = $(`.cardCalendar[data-card-id="${id}"]`);
 
