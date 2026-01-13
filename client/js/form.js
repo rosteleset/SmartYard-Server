@@ -137,26 +137,28 @@ function cardForm(params) {
     h += `<tbody>`;
 
     if (params.delete) {
-        let d = {
-            id: "delete",
-            type: "select",
-            value: "",
-            title: params.delete,
-            options: [
-                {
-                    value: "",
-                    text: "",
-                },
-                {
-                    value: "yes",
-                    text: i18n("yes"),
-                },
-            ],
+        if (!params.footer || typeof params.cancel === "function") {
+            let d = {
+                id: "delete",
+                type: "select",
+                value: "",
+                title: params.delete,
+                options: [
+                    {
+                        value: "",
+                        text: "",
+                    },
+                    {
+                        value: "yes",
+                        text: i18n("yes"),
+                    },
+                ],
+            }
+            if (params.deleteTab) {
+                d.tab = params.deleteTab;
+            }
+            params.fields.push(d);
         }
-        if (params.deleteTab) {
-            d.tab = params.deleteTab;
-        }
-        params.fields.push(d);
     }
 
     let first = " no-border-top";
@@ -759,6 +761,10 @@ function cardForm(params) {
         h += `<button type="button" class="btn btn-primary modalFormOk">${i18n(params.apply)}</button>`;
         if (typeof params.cancel === "function") {
             h += `<button type="button" class="btn btn-default float-right modalFormCancel">${i18n("cancel")}</button>`;
+        } else {
+            if (params.delete) {
+                h += `<button type="button" class="btn btn-danger float-right modalFormDelete">${params.delete}</button>`;
+            }
         }
         h += `</td>`;
         h += `</tr>`;
@@ -1083,7 +1089,9 @@ function cardForm(params) {
         $(".modalFormField").removeClass("is-invalid");
         $(".select2-invalid").removeClass("select2-invalid");
         $(".border-color-invalid").removeClass("border-color-invalid");
+
         let invalid = [];
+
         if (!params.delete || $(`#${_prefix}delete`).val() !== "yes") {
             for (let i in params.fields) {
                 if (params.fields[i].id === "-") continue;
@@ -1099,17 +1107,20 @@ function cardForm(params) {
                 }
             }
         }
+
         if (invalid.length === 0) {
             if (typeof params.callback === "function") {
                 let result = {};
+
                 for (let i in params.fields) {
                     if (params.fields[i].id === "-") continue;
                     result[params.fields[i].id] = getVal(i);
                 }
-                if (!params.target) {
-                    $('#modal').modal('hide');
-                }
+
                 params.callback(result);
+            }
+            if (!params.target) {
+                $('#modal').modal('hide');
             }
         } else {
             let t = false;
@@ -1121,19 +1132,24 @@ function cardForm(params) {
                     case "select2":
                         $(`#${_prefix}${params.fields[invalid[i]].id}`).parent().addClass("select2-invalid");
                         break;
+
                     case "rich":
                         $(`#${_prefix}${params.fields[invalid[i]].id}`).next().addClass("border-color-invalid");
                         break;
+
                     case "multiselect":
                         $(`#${_prefix}${params.fields[invalid[i]].id}`).addClass("border-color-invalid");
                         break;
+
                     case "code":
                     case "json":
                         $(`#${_prefix}${params.fields[invalid[i]].id}`).addClass("border-color-invalid");
                         break;
+
                     case "sortable":
                         $(`#${_prefix}${params.fields[invalid[i]].id}`).addClass("border-color-invalid");
                         break;
+
                     default:
                         $(`#${_prefix}${params.fields[invalid[i]].id}`).addClass("is-invalid");
                         break;
@@ -1142,6 +1158,15 @@ function cardForm(params) {
                     $(`#jsform-content-tab-${md5(t)}`).click();
                 }
             }
+        }
+    }
+
+    function del() {
+        if (typeof params.callback === "function") {
+            params.callback({ delete: "yes" });
+        }
+        if (!params.target) {
+            $('#modal').modal('hide');
         }
     }
 
@@ -1216,6 +1241,7 @@ function cardForm(params) {
     $("#" + _prefix + "form").submit(function(e) { e.preventDefault(); });
 
     $(".modalFormOk").off("click").on("click", ok);
+    $(".modalFormDelete").off("click").on("click", del);
     $(".modalFormCancel").off("click").on("click", cancel);
 
     $(".cardFormSelectWithRotate").off("click").on("click", function () {
