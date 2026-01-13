@@ -1081,7 +1081,7 @@
         });
 
         $(".deleteDesk").off("click").on("click", () => {
-            mConfirm(i18n("mkb.confirmDeleteDesk", lStore("mkbDesk")), i18n("confirm"), "danger:" + i18n("delete"), () => {
+            mConfirm(i18n("mkb.confirmDeleteDesk", lStore("mkbDesk")), i18n("confirm"), `danger:${i18n("delete")}`, () => {
                 loadingStart();
                 DELETE("mkb", "desk", lStore("mkbDesk")).
                 done(modules.mkb.renderDesk).

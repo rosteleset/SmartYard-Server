@@ -580,7 +580,7 @@
                 }
 
                 if (r.delete) {
-                    mConfirm(i18n("notes.deleteNote"), i18n("confirm"), i18n("delete"), () => {
+                    mConfirm(i18n("notes.deleteNote"), i18n("confirm"), `danger:${i18n("delete")}`, () => {
                         loadingStart();
                         DELETE("notes", "note", modules.notes.notes[id].id).
                         done(() => {

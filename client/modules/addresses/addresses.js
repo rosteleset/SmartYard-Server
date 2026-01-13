@@ -164,7 +164,7 @@
                 },
             });
         } else {
-            mConfirm(i18n("addresses.removeFavorite") + "?", title, i18n("remove"), () => {
+            mConfirm(i18n("addresses.removeFavorite") + "?", title, `danger:${i18n("remove")}`, () => {
                 loadingStart();
                 DELETE("addresses", "favorites", false, {
                     object: object,

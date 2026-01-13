@@ -187,7 +187,7 @@
 
             $("#deleteWorkspace").off("click").on("click", () => {
                 if (currentWorkspace) {
-                    mConfirm(i18n("tt.confirmWorkspaceDelete", currentWorkspace), i18n("confirm"), i18n("delete"), () => {
+                    mConfirm(i18n("tt.confirmWorkspaceDelete", currentWorkspace), i18n("confirm"), `danger:${i18n("delete")}`, () => {
                         loadingStart();
                         DELETE("files", "file", false, {
                             type: "workspace",

@@ -2360,7 +2360,7 @@
                                         navigateUrl("tt", { filter: filterName, customSearch: "yes" }, { run: true });
                                     }
                                     if (id == "customFilterDelete") {
-                                        mConfirm(i18n("tt.filterDelete", modules.tt.meta.filters[filterName].name), i18n("confirm"), i18n("delete"), () => {
+                                        mConfirm(i18n("tt.filterDelete", modules.tt.meta.filters[filterName].name), i18n("confirm"), `danger:${i18n("delete")}`, () => {
                                             loadingStart();
                                             DELETE("tt", "customFilter", filterName, { "project": currentProject }).
                                             done(() => {

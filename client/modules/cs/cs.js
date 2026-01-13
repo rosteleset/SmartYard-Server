@@ -1432,7 +1432,7 @@
 
                 $("#deleteCSsheet").off("click").on("click", () => {
                     if ($("#csSheet").val() && $("#csDate").val()) {
-                        mConfirm(i18n("cs.confirmDeleteSheet", $("#csSheet").val(), $("#csDate").val()), i18n("confirm"), i18n("delete"), () => {
+                        mConfirm(i18n("cs.confirmDeleteSheet", $("#csSheet").val(), $("#csDate").val()), i18n("confirm"), `danger:${i18n("delete")}`, () => {
                             loadingStart();
                             DELETE("cs", "sheet", false, {
                                 sheet: $("#csSheet").val(),

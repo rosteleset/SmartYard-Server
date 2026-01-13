@@ -1106,7 +1106,7 @@
 
         $(".deleteFile").off("click").on("click", function () {
             let file = $.trim($(this).parent().next().text());
-            mConfirm(i18n("tt.deleteFile", file), i18n("confirm"), i18n("delete"), () => {
+            mConfirm(i18n("tt.deleteFile", file), i18n("confirm"), `danger:${i18n("delete")}`, () => {
                 loadingStart();
                 DELETE("tt", "file", false, {
                     issueId: issue.issue.issueId,
@@ -1150,7 +1150,7 @@
         });
 
         $(".ttSaDelete").off("click").on("click", () => {
-            mConfirm(i18n("tt.confirmDeleteIssue", issue.issue.issueId), i18n("confirm"), i18n("delete"), () => {
+            mConfirm(i18n("tt.confirmDeleteIssue", issue.issue.issueId), i18n("confirm"), `danger:${i18n("delete")}`, () => {
                 loadingStart();
                 DELETE("tt", "issue", issue.issue.issueId).
                 fail(FAIL).
