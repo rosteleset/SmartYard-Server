@@ -1163,40 +1163,6 @@
         });
     },
 
-    handleDeviceStatus: function (status) {
-        let statusClass;
-        switch (status) {
-            case 'OK':
-                statusClass = 'status-ok';
-                break;
-            case 'Offline':
-                statusClass = 'status-offline';
-                break;
-            case 'Disabled':
-                statusClass = 'status-disabled';
-                break;
-            case 'DVR error':
-                statusClass = 'status-dvr-err';
-                break;
-            case 'Other':
-                statusClass = 'status-other-error';
-                break;
-            default:
-                if (status == i18n("addresses.disabled")) {
-                    statusClass = 'status-disabled';
-                    status = i18n("addresses.disabled")
-                } else {
-                    statusClass = 'status-unknown';
-                    status = i18n("addresses.unknown")
-                }
-        }
-        return `
-            <div class="status-container">
-                <span class="status-indicator ${statusClass}" title="${status}"></span>
-            </div>
-        `;
-    },
-
     route: function (params) {
         $("#altForm").hide();
 
@@ -1273,10 +1239,10 @@
                                     },
                                     {
                                         data: (modules.addresses.cameras.meta.cameras[i].enabled && modules.addresses.cameras.meta.cameras[i].monitoring)
-                                            ? modules.addresses.cameras.handleDeviceStatus(
+                                            ? modules.addresses.handleDeviceStatus(
                                                 modules.addresses.cameras.meta.cameras[i].status
                                                     ? modules.addresses.cameras.meta.cameras[i].status.status : i18n("addresses.unknown"))
-                                            : modules.addresses.cameras.handleDeviceStatus(i18n("addresses.disabled")),
+                                            : modules.addresses.handleDeviceStatus(i18n("addresses.disabled")),
                                         nowrap: true,
                                     },
                                     {

@@ -486,6 +486,41 @@
         });
     },
 
+    handleDeviceStatus: function (status) {
+        let statusClass;
+
+        switch (status) {
+            case 'OK':
+                statusClass = 'status-ok';
+                break;
+            case 'Offline':
+                statusClass = 'status-offline';
+                break;
+            case 'SIP error':
+                statusClass = 'status-sip-failure';
+                break;
+            case 'Disabled':
+                statusClass = 'status-disabled';
+                break;
+            case 'Other':
+                statusClass = 'status-other-error';
+                break;
+            default:
+                if (status == i18n("addresses.disabled")) {
+                    statusClass = 'status-disabled';
+                    status = i18n("addresses.disabled")
+                } else {
+                    statusClass = 'status-unknown';
+                    status = i18n("addresses.unknown")
+                }
+        }
+        return `
+            <div class="status-container">
+                <span class="status-indicator ${statusClass}" title="${status}"></span>
+            </div>
+        `;
+    },
+
     doAddRegion: function (regionUuid, regionIsoCode, regionWithType, regionType, regionTypeFull, region, timezone) {
         loadingStart();
         POST("addresses", "region", false, {

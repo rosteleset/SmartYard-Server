@@ -521,41 +521,6 @@
         });
     },
 
-    handleDeviceStatus: function (status) {
-        let statusClass;
-
-        switch (status) {
-            case 'OK':
-                statusClass = 'status-ok';
-                break;
-            case 'Offline':
-                statusClass = 'status-offline';
-                break;
-            case 'SIP error':
-                statusClass = 'status-sip-failure';
-                break;
-            case 'Disabled':
-                statusClass = 'status-disabled';
-                break;
-            case 'Other':
-                statusClass = 'status-other-error';
-                break;
-            default:
-                if (status == i18n("addresses.disabled")) {
-                    statusClass = 'status-disabled';
-                    status = i18n("addresses.disabled")
-                } else {
-                    statusClass = 'status-unknown';
-                    status = i18n("addresses.unknown")
-                }
-        }
-        return `
-            <div class="status-container">
-                <span class="status-indicator ${statusClass}" title="${status}"></span>
-            </div>
-        `;
-    },
-
     route: function (params) {
         $("#altForm").hide();
 
@@ -633,10 +598,10 @@
                                     },
                                     {
                                         data: (modules.addresses.domophones.meta.domophones[i].enabled && modules.addresses.domophones.meta.domophones[i].monitoring)
-                                            ? modules.addresses.domophones.handleDeviceStatus(
+                                            ? modules.addresses.handleDeviceStatus(
                                                 modules.addresses.domophones.meta.domophones[i].status
                                                     ? modules.addresses.domophones.meta.domophones[i].status.status : i18n("addresses.unknown"))
-                                            : modules.addresses.domophones.handleDeviceStatus(i18n("addresses.disabled")),
+                                            : modules.addresses.handleDeviceStatus(i18n("addresses.disabled")),
                                         nowrap: true,
                                     },
                                     {
