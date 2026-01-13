@@ -1113,6 +1113,10 @@
         $(".cardsAll").off("click").on("click", () => {
             navigateUrl("mkb.table", { all: true }, { run: true });
         });
+
+        $(".columnTable").off("click").on("click", function () {
+            navigateUrl("mkb.table", { column: $(this).parent().attr("data-column-id"), desk: modules.mkb.desk().name }, { run: true });
+        });
     },
 
     renderCard: function (card) {
@@ -1257,7 +1261,7 @@
                 <div class="card-header col-handle pl-3 pr-3">
                     <h3 class="card-title pt-1 text-bold">${$.trim(escapeHTML(column.title))}</h3>
                     <div class="card-tools" data-column-id="${column._id}">
-                        <span class="btn btn-tool column-table pr-0 pl-0" title="${i18n("mkb.tableView")}"><i class="fas fa-fw fa-table"></i></span>
+                        <span class="btn btn-tool column-table columnTable pr-0 pl-0" title="${i18n("mkb.tableView")}"><i class="fas fa-fw fa-table"></i></span>
                         <span class="btn btn-tool cardAdd pr-0" title="${i18n("mkb.addCard")}"><i class="fas fa-fw fa-plus-circle"></i></span>
                         <span class="btn btn-tool columnEdit" title="${i18n("mkb.edit")}"><i class="fas fa-fw fa-edit"></i></span>
                     </div>

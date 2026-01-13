@@ -70,36 +70,58 @@
 
         let h = '';
 
-        let query;
-        let title;
-
-        if (params.search) {
-            query = {
-                $text: {
-                    $search: params.search
-                }
-            };
-            title = i18n("mkb.searchResults");
-        }
-
-        if (params.all) {
-            query = {};
-            title = i18n("mkb.cardsAll");
-        }
-
-        if (params.archive) {
-            query = {
-                desk: false,
-            };
-            title = i18n("mkb.archived");
-        }
-
         GET("mkb", "desks", false, true).
         done(d => {
+            let filter = false;
+            let query;
+            let title;
+            let columns = {};
+
             modules.mkb.desks = [];
 
             if (d && d.desks) {
                 modules.mkb.desks = d.desks;
+            }
+
+            for (let i in d.desks) {
+                if (d.desks[i].columns && d.desks[i].columns.length) {
+                    for (let j in d.desks[i].columns) {
+                        columns[d.desks[i].columns[j]._id] = d.desks[i].columns[j].title;
+                    }
+                }
+            }
+
+            if (params.search) {
+                query = {
+                    $text: {
+                        $search: params.search
+                    }
+                };
+                title = i18n("mkb.searchResults");
+            }
+
+            if (params.all) {
+                query = {};
+                title = i18n("mkb.cardsAll");
+            }
+
+            if (params.archive) {
+                query = {
+                    desk: false,
+                };
+                title = i18n("mkb.archived");
+            }
+
+            if (params.desk) {
+                query = {
+                    desk: params.table,
+                };
+                if (params.column) {
+                    // title = params.desk + "<i class=\"fas fa-xs fa-angle-double-right ml-2 mr-2\"></i>" + columns[params.column];
+                    title = columns[params.column];
+                } else {
+                    title = params.desk;
+                }
             }
 
             QUERY("mkb", "cards", false, { query, skip, limit }).
@@ -170,7 +192,18 @@
                                 modules.mkb.table.renderCards(params);
                             });
                         },
-                    })
+                    });
+                    if (d.desks.columns) {
+                        for (let j in d.desks[i].columns) {
+                            if (params.column == d.desks[i].columns[j]._id) {
+                                if (d.desks[i].columns[j].cards && d.desks[i].columns[j].cards.length) {
+                                    filter = d.desks[i].columns[j].cards;
+                                } else {
+                                    filter = [];
+                                }
+                            }
+                        }
+                    }
                 }
 
                 cardTable({
@@ -204,6 +237,10 @@
                         let rows = [];
 
                         for (let i in r.cards) {
+                            if (filter && filter.indexOf(r.cards[i]._id) < 0) {
+                                continue;
+                            }
+
                             let progress = '-';
 
                             if (r.cards[i].subtasks && r.cards[i].subtasks.length) {
@@ -277,13 +314,8 @@
                                         },
                                     },
                                     {
-                                        data: r.cards[i].subject,
+                                        data: convertLinks(DOMPurify.sanitize(r.cards[i].subject)),
                                         ellipses: true,
-                                        click: id => {
-                                            modules.mkb.cardEdit(id, () => {
-                                                modules.mkb.table.renderCards(params);
-                                            });
-                                        },
                                     },
                                 ],
                                 dropDown: {
