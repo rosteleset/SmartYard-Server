@@ -83,9 +83,57 @@
                 modules.mkb.desks = d.desks;
             }
 
+            let dropDownItems = [
+                {
+                    icon: "fas fa-edit",
+                    title: i18n("mkb.edit"),
+                    click: id => {
+                        modules.mkb.cardEdit(id, () => {
+                            modules.mkb.table.renderCards(params);
+                        });
+                    },
+                },
+                {
+                    icon: "fas fa-comments",
+                    title: i18n("mkb.comments"),
+                    click: id => {
+                        modules.mkb.cardComments(id);
+                    },
+                },
+                {
+                    title: "-",
+                    hint: i18n("mkb.moveTo"),
+                },
+                {
+                    icon: "fas fa-archive",
+                    title: i18n("mkb.cardsArchive"),
+                    click: id => {
+                        modules.mkb.cardArchive(id, () => {
+                            modules.mkb.table.renderCards(params);
+                        });
+                    },
+                },
+            ];
+
             for (let i in d.desks) {
+                dropDownItems.push({
+                    icon: "fas fa-layer-group",
+                    title: d.desks[i].name,
+                    click: id => {
+                        modules.mkb.cardMove(id, d.desks[i].name, () => {
+                            modules.mkb.table.renderCards(params);
+                        });
+                    },
+                });
                 if (d.desks[i].columns && d.desks[i].columns.length) {
                     for (let j in d.desks[i].columns) {
+                        if (params.column == d.desks[i].columns[j]._id) {
+                            if (d.desks[i].columns[j].cards && d.desks[i].columns[j].cards.length) {
+                                filter = d.desks[i].columns[j].cards;
+                            } else {
+                                filter = [];
+                            }
+                        }
                         columns[d.desks[i].columns[j]._id] = d.desks[i].columns[j].title;
                     }
                 }
@@ -150,61 +198,6 @@
                 `;
 
                 $("#mainForm").html(h);
-
-                let dropDownItems = [
-                    {
-                        icon: "fas fa-edit",
-                        title: i18n("mkb.edit"),
-                        click: id => {
-                            modules.mkb.cardEdit(id, () => {
-                                modules.mkb.table.renderCards(params);
-                            });
-                        },
-                    },
-                    {
-                        icon: "fas fa-comments",
-                        title: i18n("mkb.comments"),
-                        click: id => {
-                            modules.mkb.cardComments(id);
-                        },
-                    },
-                    {
-                        title: "-",
-                        hint: i18n("mkb.moveTo"),
-                    },
-                    {
-                        icon: "fas fa-archive",
-                        title: i18n("mkb.cardsArchive"),
-                        click: id => {
-                            modules.mkb.cardArchive(id, () => {
-                                modules.mkb.table.renderCards(params);
-                            });
-                        },
-                    },
-                ];
-
-                for (let i in d.desks) {
-                    dropDownItems.push({
-                        icon: "fas fa-layer-group",
-                        title: d.desks[i].name,
-                        click: id => {
-                            modules.mkb.cardMove(id, d.desks[i].name, () => {
-                                modules.mkb.table.renderCards(params);
-                            });
-                        },
-                    });
-                    if (d.desks.columns) {
-                        for (let j in d.desks[i].columns) {
-                            if (params.column == d.desks[i].columns[j]._id) {
-                                if (d.desks[i].columns[j].cards && d.desks[i].columns[j].cards.length) {
-                                    filter = d.desks[i].columns[j].cards;
-                                } else {
-                                    filter = [];
-                                }
-                            }
-                        }
-                    }
-                }
 
                 cardTable({
                     target: "#cards",
