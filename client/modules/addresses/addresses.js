@@ -524,11 +524,7 @@
                 }
         }
 
-        return `
-            <div class="text-center">
-                <i class="far fa-fw ${statusClass}" title="${status}"></i>
-            </div>
-        `;
+        return `<i class="far fa-fw ${statusClass}" title="${status}"></i>`;
     },
 
     doAddRegion: function (regionUuid, regionIsoCode, regionWithType, regionType, regionTypeFull, region, timezone) {

@@ -597,6 +597,7 @@
                                         data: modules.addresses.domophones.meta.domophones[i].domophoneId,
                                     },
                                     {
+                                        class: "text-center",
                                         data: (modules.addresses.domophones.meta.domophones[i].enabled && modules.addresses.domophones.meta.domophones[i].monitoring)
                                             ? modules.addresses.handleDeviceStatus(
                                                 modules.addresses.domophones.meta.domophones[i].status

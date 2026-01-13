@@ -1238,6 +1238,7 @@
                                         data: modules.addresses.cameras.meta.cameras[i].cameraId,
                                     },
                                     {
+                                        class: "text-center",
                                         data: (modules.addresses.cameras.meta.cameras[i].enabled && modules.addresses.cameras.meta.cameras[i].monitoring)
                                             ? modules.addresses.handleDeviceStatus(
                                                 modules.addresses.cameras.meta.cameras[i].status

@@ -214,7 +214,7 @@ function cardTable(params) {
                 if (j == params.columns.length - 1 && !hasDropDowns && params.dropDownHeader) {
                     h += ' colspan="2"';
                 }
-                let clss = '';
+                let clss = rows[i].cols[j].class ? (rows[i].cols[j].class + " ") : "";
                 if (typeof rows[i].cols[j].click === "function") {
                     clss = `hoverable ${clickableClass} `;
                 }
