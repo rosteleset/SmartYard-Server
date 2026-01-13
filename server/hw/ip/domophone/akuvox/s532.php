@@ -167,7 +167,7 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, Ga
 
             $user->name = self::USER_ID_PREFIX_CMS;
             $user->analogSystem = '1'; // Enable CMS
-            $user->analogNumber = $hundreds * 100 + $tens * 10 + $units; // TODO: digital matrix
+            $user->analogNumber = $hundreds * 100 + $tens * 10 + $units;
             $user->group = $apartment;
 
             $this->usersToAdd[] = $user;
@@ -512,7 +512,7 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, Ga
      */
     protected function getGroups(): array
     {
-        $response = $this->apiCall('/group/get'); // TODO: add caching
+        $response = $this->apiCall('/group/get');
         $items = $response['data']['item'] ?? [];
         return array_map(static fn(array $item) => Group::fromArray($item), $items);
     }
@@ -521,13 +521,45 @@ class s532 extends akuvox implements DisplayTextInterface, FreePassInterface, Ga
     {
         $matrix = [];
         $cmsUsers = $this->findUsers(self::USER_ID_PREFIX_CMS);
+        $cmsModel = $this->getCmsModel();
 
         foreach ($cmsUsers as $cmsUser) {
             $analogNumber = $cmsUser->analogNumber;
 
-            $hundreds = intdiv($analogNumber, 100);
-            $tens = intdiv($analogNumber % 100, 10);
-            $units = $analogNumber % 10;
+            switch (AnalogType::tryFrom($cmsModel)) {
+                case AnalogType::Laskomex:
+                    $hundreds = 0;
+                    $tens = intdiv($analogNumber, 10);
+                    $units = $analogNumber % 10;
+
+                    if ($units === 0) {
+                        $units = 10;
+                        $tens--;
+                    }
+
+                    break;
+                case AnalogType::Metakom:
+                    $hundreds = intdiv($analogNumber, 100);
+                    $tens = intdiv($analogNumber % 100, 10);
+                    $units = $analogNumber % 10;
+
+                    if ($units === 0) {
+                        $units = 10;
+                        $tens--;
+
+                        if ($tens < 0) {
+                            $tens = 9;
+                            $hundreds--;
+                        }
+                    }
+
+                    break;
+                default:
+                    $hundreds = intdiv($analogNumber, 100);
+                    $tens = intdiv($analogNumber % 100, 10);
+                    $units = $analogNumber % 10;
+                    break;
+            }
 
             $matrix[$hundreds . $tens . $units] = [
                 'hundreds' => $hundreds,
