@@ -116,7 +116,7 @@ function cardForm(params) {
         }
         h += params.title;
         h += `</h3>`;
-        h += `<button type="button" class="btn btn-danger btn-xs btn-tool-rbt-right ml-2 float-right modalFormCancel" data-dismiss="modal" title="${i18n("cancel")}"><i class="far fa-fw fa-times-circle"></i></button>`;
+        h += `<button type="button" class="btn btn-default btn-xs btn-tool-rbt-right ml-2 float-right modalFormCancel" data-dismiss="modal" title="${i18n("cancel")}"><i class="far fa-fw fa-times-circle"></i></button>`;
         h += `</div>`;
     }
 
@@ -1163,7 +1163,16 @@ function cardForm(params) {
 
     function del() {
         if (typeof params.callback === "function") {
-            params.callback({ delete: "yes" });
+            let result = {};
+
+            for (let i in params.fields) {
+                if (params.fields[i].id === "-") continue;
+                result[params.fields[i].id] = getVal(i);
+            }
+
+            result.delete = "yes";
+
+            params.callback(result);
         }
         if (!params.target) {
             $('#modal').modal('hide');
