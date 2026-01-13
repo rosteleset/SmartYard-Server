@@ -1007,7 +1007,7 @@
                         always(modules.tt.settings.renderCustomFields);
                     }
                 },
-                cancel: function () {
+                cancel: () => {
                     $("#altForm").hide();
                 }
             }).show();
