@@ -40,7 +40,7 @@
         });
     },
 
-    reassembleDesk: function () {
+    reassembleDesk: function (id) {
         let desk = modules.mkb.desk();
         let cols = {};
 
@@ -66,11 +66,17 @@
 
         desk.columns = newColumns;
 
+        if (id) {
+            modules.mkb.cardLoadingStart(id);
+        }
         document.body.style.cursor = 'wait';
         POST("mkb", "desk", false, { desk }).
         fail(FAIL).
         always(() => {
             document.body.style.cursor = 'default';
+            if (id) {
+                modules.mkb.cardLoadingDone(id);
+            }
         });
     },
 
@@ -596,7 +602,9 @@
                 forceAutoScrollFallback: true,
                 scrollSpeed: 25,
 
-                onEnd: modules.mkb.reassembleDesk,
+                onEnd: e => {
+                    modules.mkb.reassembleDesk($(e.item).attr("data-card-id"));
+                },
             });
         });
 
