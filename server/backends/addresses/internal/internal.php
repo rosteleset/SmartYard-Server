@@ -942,19 +942,19 @@
              * @inheritDoc
              */
 
-            function addHouseByMagic($houseUuid) {
-                $house = $this->redis->get("house_" . $houseUuid);
+            function addHouseByMagic($uuid) {
+                $house = $this->redis->get("house_" . $uuid);
 
                 if ($house) {
                     $house = json_decode($house, true);
 
-                    $region_uuid = $house["data"]["region_fias_id"] ?: $house["data"]["region_uuid"];
-                    $area_uuid = $house["data"]["area_fias_id"] ?: $house["data"]["area_uuid"];
-                    $city_uuid = $house["data"]["city_fias_id"] ?: $house["data"]["city_uuid"];
-                    $settlement_uuid = $house["data"]["settlement_fias_id"] ?: $house["data"]["settlement_uuid"];
-                    $street_uuid = $house["data"]["street_fias_id"] ?: $house["data"]["street_uuid"];
+                    $region_uuid = @$house["data"]["region_fias_id"] ?: $house["data"]["region_uuid"];
+                    $area_uuid = @$house["data"]["area_fias_id"] ?: $house["data"]["area_uuid"];
+                    $city_uuid = @$house["data"]["city_fias_id"] ?: $house["data"]["city_uuid"];
+                    $settlement_uuid = @$house["data"]["settlement_fias_id"] ?: $house["data"]["settlement_uuid"];
+                    $street_uuid = @$house["data"]["street_fias_id"] ?: $house["data"]["street_uuid"];
 
-                    $house_uuid = $house["data"]["house_fias_id"] ?: $house["data"]["house_uuid"];
+                    $house_uuid = @$house["data"]["house_fias_id"] ?: $house["data"]["house_uuid"];
 
                     if ($area_uuid === $city_uuid) {
                         $city_uuid = null;
@@ -979,7 +979,7 @@
                     }
 
                     if (!$regionId) {
-                        error_log($houseUuid . " no region");
+                        error_log($uuid . " no region");
                         return false;
                     }
 
@@ -1031,7 +1031,7 @@
                     }
 
                     if (!$areaId && !$cityId) {
-                        error_log($houseUuid . " no area or city");
+                        error_log($uuid . " no area or city");
                         return false;
                     }
 
@@ -1060,7 +1060,7 @@
                     }
 
                     if (!$cityId && !$settlementId) {
-                        error_log($houseUuid . " no city or settlement");
+                        error_log($uuid . " no city or settlement");
                         return false;
                     }
 
@@ -1089,7 +1089,7 @@
                     }
 
                     if (!$settlementId && !$streetId) {
-                        error_log($houseUuid . " no setllement or street");
+                        error_log($uuid . " no setllement or street");
                         return false;
                     }
 
@@ -1118,7 +1118,7 @@
                     if ($houseId) {
                         return $houseId;
                     } else {
-                        error_log($houseUuid . " no house");
+                        error_log($uuid . " no house");
                         return false;
                     }
                 } else {
