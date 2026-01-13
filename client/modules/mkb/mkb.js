@@ -156,6 +156,21 @@
                     tags: tags,
                 },
                 {
+                    id: "done",
+                    title: i18n("mkb.done"),
+                    tab: i18n("mkb.card"),
+                    type: "yesno",
+                    value: modules.mkb.cards[id].done ? "1" : "0",
+                },
+                {
+                    id: "date",
+                    title: i18n("mkb.date"),
+                    tab: i18n("mkb.card"),
+                    type: "datetime-local",
+                    sec: true,
+                    value: modules.mkb.cards[id].date,
+                },
+                {
                     id: "body",
                     title: i18n("mkb.body"),
                     tab: i18n("mkb.card"),
@@ -189,11 +204,15 @@
                 } else {
                     r.tags.sort();
 
+                    r.done = parseInt(r.done);
+
                     modules.mkb.cards[id].subject = r.subject;
                     modules.mkb.cards[id].color = r.color;
                     modules.mkb.cards[id].tags = r.tags;
                     modules.mkb.cards[id].body = r.body;
                     modules.mkb.cards[id].subtasks = r.subtasks;
+                    modules.mkb.cards[id].done = r.done;
+                    modules.mkb.cards[id].date = r.date;
 
                     loadingStart();
                     POST("mkb", "card", false, { card: modules.mkb.cards[id] }).
