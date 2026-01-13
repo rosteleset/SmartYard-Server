@@ -203,7 +203,7 @@
                     });
                 } else {
                     r.tags.sort();
-                    r.done = parseInt(r.done);
+                    r.done = !!parseInt(r.done);
 
                     modules.mkb.cards[id].subject = r.subject;
                     modules.mkb.cards[id].color = r.color;
