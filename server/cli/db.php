@@ -221,33 +221,38 @@
             function compact($args) {
                 global $config;
 
-                maintenance(true);
-
-                waitAll();
-
-                if (@$config["mongo"]["uri"]) {
-                    $mongo = new \MongoDB\Client($config["mongo"]["uri"]);
-                } else {
-                    $mongo = new \MongoDB\Client();
-                }
-
                 $db = @$args["--mongodb-compact"];
+                $collection = @$args["--collection"];
 
-                try {
-                    $cursor = $mongo->$db->command([ "compact" => $args["--collection"], "dryRun" => false, "force" => true ]);
-                } catch(\Exception $e) {
-                    die($e->getMessage() . "\n");
-                }
+                if ($db && $collection) {
+                    maintenance(true);
 
-                $response = object_to_array($cursor->toArray()[0]);
+                    waitAll();
 
-                if ($response && array_key_exists("bytesFreed", $response)) {
-                    echo "ok: {$response["bytesFreed"]} bytes freed\n";
+                    if (@$config["mongo"]["uri"]) {
+                        $mongo = new \MongoDB\Client($config["mongo"]["uri"]);
+                    } else {
+                        $mongo = new \MongoDB\Client();
+                    }
+
+                    try {
+                        $cursor = $mongo->$db->command([ "compact" => $collection, "dryRun" => false, "force" => true ]);
+                    } catch(\Exception $e) {
+                        die($e->getMessage() . "\n");
+                    }
+
+                    $response = object_to_array($cursor->toArray()[0]);
+
+                    if ($response && array_key_exists("bytesFreed", $response)) {
+                        echo "ok: {$response["bytesFreed"]} bytes freed\n";
+                    } else {
+                        print_r($response);
+                    }
+
+                    maintenance(false);
                 } else {
-                    print_r($response);
+                    cliUsage();
                 }
-
-                maintenance(false);
 
                 exit(0);
             }
