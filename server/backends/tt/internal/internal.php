@@ -894,12 +894,19 @@
 
                     if (@$attachment["body"]) {
                         $attachments[$i]["body"] = base64_decode($attachment["body"]);
+                        if (strlen(@$attachments[$i]["body"]) <= 0 || strlen(@$attachments[$i]["body"]) > $project["maxFileSize"]) {
+                            return false;
+                        }
                     } else
                     if (@$attachment["url"]) {
                         $attachments[$i]["body"] = @file_get_contents($attachment["url"]);
-                    }
-
-                    if (strlen(@$attachments[$i]["body"]) <= 0 || strlen(@$attachments[$i]["body"]) > $project["maxFileSize"]) {
+                        if (strlen(@$attachments[$i]["body"]) <= 0 || strlen(@$attachments[$i]["body"]) > $project["maxFileSize"]) {
+                            return false;
+                        }
+                    } else
+                    if (@$attachment["ud363"]) {
+//
+                    } else {
                         return false;
                     }
                 }
@@ -926,8 +933,15 @@
                         $meta["external"] = true;
                     }
 
+                    $stream = false;
+
+                    if ($attachment["body"]) {
+                        $stream = $files->contentsToStream($attachment["body"]);
+                    }
+
                     if (!(
-                        $files->addFile($attachment["name"], $files->contentsToStream($attachment["body"]), $meta) &&
+                        $stream &&
+                        $files->addFile($attachment["name"], $stream, $meta) &&
                         $this->mongo->$db->$acr->updateOne(
                             [
                                 "issueId" => $issueId,
@@ -2098,7 +2112,7 @@
             public function deleteFilter($filter, $owner = false) {
                 $this->clearCache();
 
-                parent::deleteFilter($filter);
+                parent::deleteFilter($filter, $owner);
 
                 $this->db->modify("delete from tt_projects_filters where filter = :filter", [
                     "filter" => $filter,

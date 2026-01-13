@@ -340,6 +340,19 @@
             "file_rights": "777",
             "ttl_max": "15min",
         },
+
+        "systemInfo": {
+            "backend": "internal"
+        },
+
+        "ud363": {
+            "backend": "internal",
+            "path": "/tmp/tmpfs",
+            "path_rights": "777",
+            "file_rights": "777",
+            "ttl_max_upload": "1day",
+            "ttl_max_download": "1week"
+        }
     },
 
     "email": {

@@ -976,11 +976,11 @@
                 modules.mkb.tags.push(tag);
             }
 
-            $(".cardTag").css("border-width", "thin");
-
             if (modules.mkb.tags.length) {
+                $(".cardTag").css("opacity", "50%");
+
                 for (let i in modules.mkb.tags) {
-                    $(`.cardTag[title="${modules.mkb.tags[i]}"]`).css("border-width", "medium");
+                    $(`.cardTag[title="${modules.mkb.tags[i]}"]`).css("opacity", "100%");
                 }
 
                 $(".kanban-card").attr("data-card-filtered", "false");
@@ -1003,6 +1003,7 @@
                 $('.kanban-card[data-card-filtered="false"]').hide();
                 $('.kanban-card[data-card-filtered="true"]').show();
             } else {
+                $(".cardTag").css("opacity", "100%");
                 $(".kanban-card").show();
             }
         });
@@ -1206,7 +1207,7 @@
 
         for (let i in card.tags) {
             t += `
-                <span class="badge cardTag bg-${systemColor(card.tags[i])} kanban-badge pr-2 pl-2 mt-1 pointer" style="border: solid ${modules.mkb.tags.indexOf(card.tags[i]) >= 0 ? "medium" : "thin"} #60686f" title="${$.trim(escapeHTML(card.tags[i]))}">
+                <span class="badge cardTag bg-${systemColor(card.tags[i])} kanban-badge pr-2 pl-2 mt-1 pointer noselect" style="border: solid ${modules.mkb.tags.indexOf(card.tags[i]) >= 0 ? "medium" : "thin"} #60686f" title="${$.trim(escapeHTML(card.tags[i]))}">
                     ${$.trim(escapeHTML(card.tags[i]))}
                 </span>
             `;
