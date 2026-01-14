@@ -544,15 +544,15 @@ $(window).on("resize", () => {
 
 $(document).on("paste", e => {
     if ($(".paste-target:visible").length) {
-        e.preventDefault();
         if (!e.originalEvent.clipboardData.files.length) {
             return;
         }
+        e.preventDefault();
         let files = [];
         Array.from(e.originalEvent.clipboardData.files).forEach(file => {
             files.push(file);
         });
-        $(".paste-target:visible").trigger("proxy-paste", [files]);
+        $(".paste-target:visible").trigger("proxy-paste", [ files ]);
     }
 });
 
