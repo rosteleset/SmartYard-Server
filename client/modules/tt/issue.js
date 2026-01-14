@@ -1311,7 +1311,7 @@
 
         $("#stepPrev").off("click").on("click", () => {
             loadingStart();
-            window.location.href = navigateUrl("tt", {
+            window.location.href = navigateUrl("tt.issue", {
                 issue: prev,
                 filter: filter,
                 search: search,
@@ -1320,7 +1320,7 @@
 
         $("#stepNext").off("click").on("click", () => {
             loadingStart();
-            window.location.href = navigateUrl("tt", {
+            window.location.href = navigateUrl("tt.issue", {
                 issue: next,
                 filter: filter,
                 search: search,
