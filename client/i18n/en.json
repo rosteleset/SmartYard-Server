@@ -88,7 +88,7 @@
     "maintenanceMessage": "Keep calm and patient,<br />everything will be fine soon",
     "sudo": "Administration mode",
     "sudoOff": "Exit administration mode",
-    "sudoOk": "Administrative rights granted for %s second(s)",
+    "sudoOk": "Administrative rights granted for %s minute(s)",
     "colorPrimary": "Primary",
     "colorSecondary": "Secondary",
     "colorInfo": "Info",

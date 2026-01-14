@@ -438,11 +438,8 @@ function sudo() {
                     code
                 }).
                 done(r => {
-                    message(i18n("sudoOk", parseInt($.trim(r))));
-                    setTimeout(() => {
-                        window.onhashchange = hashChange;
-                        window.location.reload();
-                    }, 1500);
+                    window.onhashchange = hashChange;
+                    window.location.reload();
                 }).
                 fail(FAIL).
                 fail(loadingDone);
@@ -454,11 +451,8 @@ function sudo() {
                     password
                 }).
                 done(r => {
-                    message(i18n("sudoOk", parseInt($.trim(r))));
-                    setTimeout(() => {
-                        window.onhashchange = hashChange;
-                        window.location.reload();
-                    }, 1500);
+                    window.onhashchange = hashChange;
+                    window.location.reload();
                 }).
                 fail(FAIL).
                 fail(loadingDone);
@@ -501,6 +495,10 @@ function whoAmI(force) {
             myself.sudo = parseInt(_me.user.sudo);
             myself.sudoed = _me.user.sudoed;
             myself.realUid = parseInt(myself.sudoed) ? parseInt(_me.user.realUid) : _me.user.uid;
+
+            if (myself.sudoed) {
+                message(i18n("sudoOk", parseInt(myself.sudoed / 60)));
+            }
 
             if (myself.sudoed) {
                 $("#sudo").text(i18n("sudoOff"));
