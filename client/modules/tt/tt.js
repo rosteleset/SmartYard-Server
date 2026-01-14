@@ -2686,7 +2686,7 @@
         }
 
         if (params["issue"]) {
-            navigateUrl("tt.issue", { issue: params["issue"] }, { run: true });
+            navigateUrl("tt.issue", params, { run: true });
             return;
         }
 
