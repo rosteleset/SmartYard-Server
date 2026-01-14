@@ -1,9 +1,8 @@
 ({
     init: function () {
         if (AVAIL("tt", "issue", "POST") && modules.tt.menuItem) {
-            $("#" + leftSideClick("far fa-fw fa-plus-square", i18n("tt.createIssue"), "tt", () => {
-                modules.tt.createIssue.createIssue($("#ttProjectSelect").val());
-            })).after($("#" + modules.tt.menuItem));
+            $("#" + leftSide("far fa-fw fa-plus-square", i18n("tt.createIssue"), navigateUrl("tt.createIssue", false, { exclude: [ "_" ]}), "tt")).
+            after($("#" + modules.tt.menuItem));
         }
         moduleLoaded("tt.createIssue", this);
     },
@@ -194,6 +193,9 @@
                 navigateUrl("tt.createIssue", { project: result.project, workflow: result.workflow, catalog: result.catalog, parent: !!parent ? parent["issueId"] : false }, { run: true });
                 // modules.tt.createIssueForm(result.project, result.workflow, result.catalog, (!!parent) ? encodeURIComponent(parent["issueId"]) : "");
             },
+            cancel: () => {
+                window.history.back();
+            }
         });
     },
 
@@ -360,7 +362,12 @@
         GET("tt", "tt", false, true).
         done(modules.tt.tt).
         done(() => {
-            modules.tt.createIssue.createIssueForm(params.project, params.workflow, params.catalog, params.parent);
+            if (params.project && params.workflow) {
+                modules.tt.createIssue.createIssueForm(params.project, params.workflow, params.catalog, params.parent);
+            } else {
+                loadingDone();
+                modules.tt.createIssue.createIssue($("#ttProjectSelect").val() ? $("#ttProjectSelect").val() : lStore("ttProject"));
+            }
         }).
         fail(FAIL).
         fail(loadingDone);

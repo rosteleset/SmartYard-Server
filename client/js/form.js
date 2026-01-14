@@ -1086,6 +1086,7 @@ function cardForm(params) {
     }
 
     function ok() {
+        $("#modal").off("hidden.bs.modal");
         $(".modalFormField").removeClass("is-invalid");
         $(".select2-invalid").removeClass("select2-invalid");
         $(".border-color-invalid").removeClass("border-color-invalid");
@@ -1162,6 +1163,7 @@ function cardForm(params) {
     }
 
     function del() {
+        $("#modal").off("hidden.bs.modal");
         if (typeof params.callback === "function") {
             let result = {};
 
@@ -1180,11 +1182,12 @@ function cardForm(params) {
     }
 
     function cancel() {
-        if (!params.target) {
-            $('#modal').modal('hide');
-        }
+        $("#modal").off("hidden.bs.modal");
         if (typeof params.cancel === "function") {
             params.cancel();
+        }
+        if (!params.target) {
+            $('#modal').modal('hide');
         }
     }
 
@@ -1252,6 +1255,8 @@ function cardForm(params) {
     $(".modalFormOk").off("click").on("click", ok);
     $(".modalFormDelete").off("click").on("click", del);
     $(".modalFormCancel").off("click").on("click", cancel);
+
+    $("#modal").off("hidden.bs.modal").on("hidden.bs.modal", cancel);
 
     $(".cardFormSelectWithRotate").off("click").on("click", function () {
         let select = $("#" + $(this).attr("data-for"));

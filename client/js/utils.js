@@ -438,7 +438,7 @@ function navigateUrl(route, params, options) {
         loadingStart();
         window.location.href = "?#" + route + "&" + $.param(params);
     } else {
-        return "?#" + route + "&" + $.param(params);
+        return "?#" + route + ((params && Object.keys(params).length) ? ("&" + $.param(params)) : "");
     }
 }
 

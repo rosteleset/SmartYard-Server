@@ -1475,6 +1475,7 @@
 
         GET("tt", "issue", params["issue"], true).
         done(r => {
+            $("#altForm").hide();
             if (modules.groups) {
                 modules.users.loadUsers(() => {
                     modules.groups.loadGroups(() => {
