@@ -1311,20 +1311,12 @@
 
         $("#stepPrev").off("click").on("click", () => {
             loadingStart();
-            window.location.href = navigateUrl("tt.issue", {
-                issue: prev,
-                filter: filter,
-                search: search,
-            });
+            navigateUrl("tt.issue", { issue: prev, filter: filter, search: search, }, { run: true });
         });
 
         $("#stepNext").off("click").on("click", () => {
             loadingStart();
-            window.location.href = navigateUrl("tt.issue", {
-                issue: next,
-                filter: filter,
-                search: search,
-            });
+            navigateUrl("tt.issue", { issue: next, filter: filter, search: search, }, { run: true });
         });
 
         $("#stepOf").off("click").on("click", () => {
