@@ -2729,7 +2729,7 @@
         if (s) {
             let i = new RegExp("^[a-zA-Z]{2,}-[0-9]{1,}$");
             if (i.test(s)) {
-                navigateUrl("tt", { issue: s.toUpperCase(), search: s.toUpperCase() }, { run: true });
+                navigateUrl("tt.issue", { issue: s.toUpperCase(), search: s.toUpperCase() }, { run: true });
             } else {
                 modules.tt.selectFilter("#search", 0, modules.tt.defaultIssuesPerPage, s);
             }
