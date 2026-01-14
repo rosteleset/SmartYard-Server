@@ -177,7 +177,7 @@
                             if ($this->redis->get("SUDO:" . $auth["login"])) {
                                 $auth["realUid"] = $auth["uid"];
                                 $auth["uid"] = 0;
-                                $auth["sudoed"] = 1;
+                                $auth["sudoed"] = $this->redis->ttl("SUDO:" . $auth["login"]);
                             }
 
                             return $auth;

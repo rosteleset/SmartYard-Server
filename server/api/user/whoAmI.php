@@ -45,7 +45,7 @@
                 if ($params["_redis"]->get("SUDO:" . $user["login"])) {
                     $user["realUid"] = $user["uid"];
                     $user["uid"] = 0;
-                    $user["sudoed"] = 1;
+                    $user["sudoed"] = $params["_redis"]->ttl("SUDO:" . $user["login"]);
                 }
 
                 return api::ANSWER($user, ($user !== false) ? "user" : "notFound");
