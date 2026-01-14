@@ -579,17 +579,14 @@
                         }
                         accountsUsers(g, m);
                     }).
-                    fail(FAIL).
-                    fail(loadingDone);
+                    fail(FAILPAGE);
                 } else {
                     accountsUsers(false, m);
                 }
             }).
-            fail(FAIL).
-            fail(loadingDone);
+            fail(FAILPAGE);
         }).
-        fail(FAIL).
-        fail(loadingDone);
+        fail(FAILPAGE);
     },
 
     route: function (params) {

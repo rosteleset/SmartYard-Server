@@ -814,7 +814,7 @@ function loadModule() {
                     lang.errors = {};
                 }
                 // lang.errors = {...lang.errors, ...i18n.errors};
-                lang.error = mergeDeep(lang.errors, i18n.errors);
+                lang.errors = mergeDeep(lang.errors, i18n.errors);
                 delete i18n.errors;
             }
             if (i18n.methods) {
@@ -835,7 +835,7 @@ function loadModule() {
                             lang.errors = {};
                         }
                         // lang.errors = {...lang.errors, ...i18n.errors};
-                        lang.error = mergeDeep(lang.errors, i18n.errors);
+                        lang.errors = mergeDeep(lang.errors, i18n.errors);
                         delete i18n.errors;
                     }
                     if (i18n.methods) {
