@@ -416,9 +416,10 @@
                 }).
                 done(r => {
                     if (r && r.note) {
-                        let id = "note-" + $.trim(r.note.id);
-                        sticky.attr("id", id);
-                        modules.notes.notes[id] = r.note;
+                        let newId = "note-" + $.trim(r.note.id);
+                        sticky.attr("id", newId);
+                        $(`.sticky .body[data-id="${id}"]`).attr("data-id", newId);
+                        modules.notes.notes[newId] = r.note;
                     }
                 }).
                 fail(FAIL).
