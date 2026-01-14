@@ -128,13 +128,7 @@
 
     issuesLinks: function (str) {
         if (str) {
-            if (modules.tt.issueRegExp) {
-                return convertLinks(nl2br($.trim(escapeHTML(str)))).replaceAll(modules.tt.issueRegExp, m => {
-                    return `<a target='_blank' href='${navigateUrl('tt.issue', { 'issue': m })}'>${m}</a>`;
-                });
-            } else {
-                return convertLinks(nl2br($.trim(escapeHTML(str))));
-            }
+            return convertLinks(nl2br($.trim(escapeHTML(str))));
         } else {
             return str;
         }
