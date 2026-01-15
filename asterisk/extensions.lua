@@ -184,8 +184,6 @@ function mobileIntercom(flatId, flatNumber, domophoneId)
             end
 
             if flatVoipEnabled == 1 then
-                logDebug(device)
-
                 redis:incr("autoextension")
 
                 extension = tonumber(redis:get("autoextension"))
@@ -316,8 +314,6 @@ function handleCMSIntercom(context, extension)
 
     local flatId = tonumber(extension:sub(2))
     local flat = dm("flat", flatId)
-
-    logDebug(flat)
 
     if flat then
         local dest = ""
