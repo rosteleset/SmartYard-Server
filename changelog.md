@@ -11,7 +11,7 @@
 + dial to analog intercom by cms matrix (useAnalogNumber)
 ```
 
-## 2026-01-14 0.0.20
+## 2026-01-14 0.0.20 hotfix 8
 
 ```diff
 + simple kanban
