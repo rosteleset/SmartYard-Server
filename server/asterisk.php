@@ -358,7 +358,7 @@
 
                         foreach ($flat["entrances"] as $i => $e) {
                             if (@$domophoneModels[$e["domophoneModel"]]["useAnalogNumber"] && $e["cmsName"]) {
-                                $flat["entrances"][$i]["analog"] = ($e["cms"] * 100) + (($e["unit"] - 1) * 10) + $e["dozen"];
+                                $flat["entrances"][$i]["analog"] = ($e["cms"] * 100) + ($e["dozen"] * 10) + $e["unit"];
                             }
                         }
                     }
