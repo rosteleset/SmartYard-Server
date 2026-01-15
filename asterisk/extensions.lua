@@ -321,15 +321,19 @@ function handleCMSIntercom(context, extension)
 
     if flat then
         local dest = ""
+        local user
+
         for i, e in ipairs(flat.entrances) do
             if e.apartment > 0 and e.domophoneId > 0 and e.matrix > 0 then
                 if e.analog ~= cjson.null and e.analog ~= nil and e.analog ~= "" then
-                    dest = dest .. "&PJSIP/" .. e.analog
+                    user = e.analog
                 else
-                    dest = dest .. "&PJSIP/" .. string.format("%d@1%05d", e.apartment, e.domophoneId)
+                    user = e.apartment
                 end
+
+                dest = dest .. "&PJSIP/" .. string.format("%d@1%05d", user, e.domophoneId)
                 channel.CALLERID("name"):set(math.floor(e.apartment))
-                logDebug(channel.CALLERID("num"):get() .. " >>> " .. string.format("%d@1%05d", e.apartment, e.domophoneId))
+                logDebug(channel.CALLERID("num"):get() .. " >>> " .. string.format("%d@1%05d", user, e.domophoneId))
             end
         end
         if dest ~= "" then
