@@ -82,19 +82,33 @@
                         select
                             house_entrance_id,
                             house_domophone_id,
+                            model,
                             apartment,
+                            houses_entrances.cms as cms_name,
+                            houses_entrances_cmses.cms as cms,
+                            unit,
+                            dozen,
                             coalesce(houses_entrances_flats.cms_levels, houses_entrances.cms_levels, '') cms_levels,
                             (select count(*) from houses_entrances_cmses where houses_entrances_cmses.house_entrance_id = houses_entrances_flats.house_entrance_id and houses_entrances_cmses.apartment = houses_entrances_flats.apartment) matrix
                         from
                             houses_entrances_flats
                                 left join houses_entrances using (house_entrance_id)
-                        where house_flat_id = {$flat["flatId"]}
+                                left join houses_entrances_cmses using (house_entrance_id, apartment)
+                                left join houses_domophones using (house_domophone_id)
+                        where
+                            house_flat_id = {$flat["flatId"]}
                     ", false, [
                         "house_entrance_id" => "entranceId",
                         "apartment" => "apartment",
                         "cms_levels" => "apartmentLevels",
                         "house_domophone_id" => "domophoneId",
-                        "matrix" => "matrix"
+                        "model" => "domophoneModel",
+                        "matrix" => "matrix",
+                        "model" => "domophoneModel",
+                        "cms_name" => "cmsName",
+                        "cms" => "cms",
+                        "unit" => "unit",
+                        "dozen" => "dozen",
                     ]);
 
                     $flat["entrances"] = [];

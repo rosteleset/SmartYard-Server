@@ -348,8 +348,22 @@
 
                 case "flat":
                     $households = loadBackend("households");
+                    $configs = loadBackend("configs");
 
-                    echo json_encode($households->getFlat((int)$params));
+                    $flat = $households->getFlat((int)$params);
+
+                    if ($configs) {
+                        $domophoneModels = $configs->getDomophonesModels();
+                        // $cmses = $configs->getCMSes();
+
+                        foreach ($flat["entrances"] as $i => $e) {
+                            if (@$domophoneModels[$e["domophoneModel"]]["useAnalogNumber"] && $e["cmsName"]) {
+                                $flat["entrances"][$i]["analog"] = ($e["cms"] * 100) + (($e["unit"] - 1) * 10) + $e["dozen"];
+                            }
+                        }
+                    }
+
+                    echo json_encode($flat);
 
                     break;
 

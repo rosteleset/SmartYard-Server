@@ -323,7 +323,11 @@ function handleCMSIntercom(context, extension)
         local dest = ""
         for i, e in ipairs(flat.entrances) do
             if e.apartment > 0 and e.domophoneId > 0 and e.matrix > 0 then
-                dest = dest .. "&PJSIP/" .. string.format("%d@1%05d", e.apartment, e.domophoneId)
+                if e.analog ~= cjson.null and e.analog ~= nil and e.analog ~= "" then
+                    dest = dest .. "&PJSIP/" .. e.analog
+                else
+                    dest = dest .. "&PJSIP/" .. string.format("%d@1%05d", e.apartment, e.domophoneId)
+                end
                 channel.CALLERID("name"):set(math.floor(e.apartment))
                 logDebug(channel.CALLERID("num"):get() .. " >>> " .. string.format("%d@1%05d", e.apartment, e.domophoneId))
             end
