@@ -771,4 +771,9 @@ class sputnik extends domophone implements CmsLevelsInterface
             'digitalKeys' => $codesToBeCreated,
         ]);
     }
+
+    protected function initConnection(): void
+    {
+        // Empty implementation
+    }
 }

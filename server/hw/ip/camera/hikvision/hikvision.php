@@ -72,4 +72,9 @@ class hikvision extends camera
         // TODO: Implement getOsdText() method.
         return '';
     }
+
+    protected function initConnection(): void
+    {
+        // Empty implementation
+    }
 }

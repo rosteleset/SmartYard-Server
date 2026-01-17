@@ -14,13 +14,13 @@ use hw\ValueObject\HousePrefix;
 /**
  * Abstract class representing an BasIP intercom.
  */
-abstract class basip extends domophone implements
+class aa07bd extends domophone implements
     DbConfigUpdaterInterface,
     FreePassInterface,
     HousePrefixInterface,
     LanguageInterface
 {
-    use \hw\ip\common\basip\basip {
+    use \hw\ip\common\basip\aa07bd {
         transformDbConfig as protected commonTransformDbConfig;
     }
 
@@ -106,7 +106,7 @@ abstract class basip extends domophone implements
             'registration_interval' => 900, // Max allowed value
             'transport' => 'udp',
             'user' => $login,
-            'user_id' => $password, // Use this field to store password. The password field always says "WebPass".
+            'user_id' => $login, // Use this field to store password. The password field always says "WebPass".
             'stun' => [
                 'ip' => $stunEnabled ? $stunServer : self::DISABLED_STUN_ADDRESS,
                 'port' => $stunPort,
@@ -395,8 +395,13 @@ abstract class basip extends domophone implements
      */
     protected function addForward(int $apartmentNumber, array $sipNumbers): void
     {
+        //Must be a string array
+        foreach ($sipNumbers as &$number) {
+            $convertedSipNumbers[] = (string)$number;
+        }
+
         $forwardItem = [
-            'forward_entity_list' => $sipNumbers,
+            'forward_entity_list' => $convertedSipNumbers,
         ];
 
         $this->apiCall("/v1/forward/item/$apartmentNumber", 'POST', $forwardItem);
@@ -424,12 +429,12 @@ abstract class basip extends domophone implements
             'valid' => [
                 'passes' => [
                     'is_permanent' => true,
-                    'max_passes' => null,
-                    'time' => [
-                        'from' => null,
-                        'is_permanent' => true,
-                        'to' => null,
-                    ],
+                    'max_passes' => 0,
+                ],
+                'time' => [
+                     'from' => null,
+                     'is_permanent' => true,
+                     'to' => null
                 ],
             ],
         ];
@@ -497,10 +502,12 @@ abstract class basip extends domophone implements
     protected function fetchAllPages(string $endpoint, int $limit = 50): array
     {
         $result = [];
-
-        for ($pageNumber = 1; ; $pageNumber++) {
+        $totalPages = 1;
+        for ($pageNumber = 1; $pageNumber <= $totalPages; $pageNumber++) {
             $url = "$endpoint?limit=$limit&page_number=$pageNumber";
-            $items = $this->apiCall($url)['list_items'] ?? [];
+            $response = $this->apiCall($url);
+            $items = $response['list_items'] ?? [];
+            $totalPages = $response['list_option']['pagination']['total_pages'];
 
             if (!is_array($items) || $items === []) {
                 break;
@@ -732,9 +739,5 @@ abstract class basip extends domophone implements
         } else {
             $this->apiCall('/v1/device/mode/unit?building=1&unit=1&device=1', 'POST');
         }
-    }
-    protected function initConnection(): void
-    {
-        // Empty implementation
     }
 }

@@ -597,4 +597,9 @@ abstract class hikvision extends domophone implements FreePassInterface, Languag
         // TODO: Implement getSipConfig() method.
         return [];
     }
+
+    protected function initConnection(): void
+    {
+        // Empty implementation
+    }
 }

@@ -838,4 +838,9 @@ abstract class ufanet extends domophone implements
             $this->apiCall('/api/v1/rfids', 'PUT', $this->keys);
         }
     }
+
+    protected function initConnection(): void
+    {
+        // Empty implementation
+    }
 }
