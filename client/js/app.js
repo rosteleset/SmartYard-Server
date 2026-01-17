@@ -879,7 +879,7 @@ function moduleLoaded(module, object) {
 
     if (m.length === 1) {
         if (config && config.customSubModules && config.customSubModules[m[0]]) {
-            loadCustomSubModules(m[0], JSON.parse(JSON.stringify(config.customSubModules[m[0]])));
+            loadCustomSubModules(m[0], JSON.parse(JSON.stringify(config.customSubModules[m[0]])).filter((v, i, a) => a.indexOf(v) === i));
         } else {
             loadModule();
         }
