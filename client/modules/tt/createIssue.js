@@ -1,6 +1,6 @@
 ({
     init: function () {
-        if (AVAIL("tt", "issue", "POST") && modules.tt.menuItem) {
+        if (AVAIL("tt", "issue", "POST") && modules.tt.menuItem && !config.disableCreateIssue) {
             $("#" + leftSide("far fa-fw fa-plus-square", i18n("tt.createIssue"), navigateUrl("tt.createIssue", false, { exclude: [ "_" ]}), "tt")).
             after($("#" + modules.tt.menuItem));
         }

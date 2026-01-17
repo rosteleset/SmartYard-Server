@@ -721,7 +721,9 @@ function initAll() {
                             available = a.available;
                             if (config && config.modules) {
                                 for (let i in config.modules) {
-                                    moduleLoadQueue.push(config.modules[i]);
+                                    if (moduleLoadQueue.indexOf(config.modules[i]) < 0) {
+                                        moduleLoadQueue.push(config.modules[i]);
+                                    }
                                 }
                                 loadModule();
                             } else {
