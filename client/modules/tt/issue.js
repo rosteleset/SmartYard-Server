@@ -308,7 +308,7 @@
         h += "<div class='text-bold pt-1 pb-1'>";
         h += "<span class='mr-3'>";
         let url = new URL(window.location.href);
-        url = url.origin + url.pathname + "?#tt&issue=" + issue.issue["issueId"];
+        url = url.origin + url.pathname + "?#tt.issue&issue=" + issue.issue["issueId"];
         h += "<span class='cc hover pointer fas fa-fw fa-link mr-2' id='issueIssueIdUrl' data-clipboard-target='#issueIssueIdUrl' data-clipboard-text='" + url + "' title='" + i18n("tt.issueIdUrl") + "'></span>";
         h += "<span class='cc hover pointer' id='issueIssueIdText' data-clipboard-target='#issueIssueIdText' data-clipboard-text='" + issue.issue["issueId"] + "' title='" + i18n("tt.issueIdText") + "'>" + issue.issue["issueId"] + "</span>";
         if (!isEmpty(issue.actions)) {
@@ -529,7 +529,7 @@
             h += '<tbody>';
             for (let i in issue.issue.childrens.issues) {
                 h += "<tr>";
-                h += `<td nowrap><a class='pointer pl-2 pr-2 ildc' href='?#tt&issue=${issue.issue.childrens.issues[i].issueId}'>${issue.issue.childrens.issues[i].issueId}</a></td>`;
+                h += `<td nowrap><a class='pointer pl-2 pr-2 ildc' href='?#tt.issue&issue=${issue.issue.childrens.issues[i].issueId}'>${issue.issue.childrens.issues[i].issueId}</a></td>`;
                 h += `<td class='pl-2 pr-2 ildc' nowrap>${ttDate(issue.issue.childrens.issues[i].created, true)}</td>`;
                 h += `<td class='pl-2 pr-2 ildc' nowrap>${modules.tt.issueField2Html(issue.issue.childrens.issues[i], "author", undefined, "list")}</td>`;
                 h += `<td class='pl-2 pr-2 ildc' nowrap>${modules.tt.issueField2Html(issue.issue.childrens.issues[i], "status", undefined, "list")}</td>`;
@@ -569,7 +569,7 @@
 
             for (let i in issue.issue.linkedIssues.issues) {
                 h += "<tr>";
-                h += `<td nowrap><a class='pointer pl-2 pr-2 ildc' href='?#tt&issue=${issue.issue.linkedIssues.issues[i].issueId}'>${issue.issue.linkedIssues.issues[i].issueId}</a></td>`;
+                h += `<td nowrap><a class='pointer pl-2 pr-2 ildc' href='?#tt.issue&issue=${issue.issue.linkedIssues.issues[i].issueId}'>${issue.issue.linkedIssues.issues[i].issueId}</a></td>`;
                 h += `<td class='pl-2 pr-2 ildc' nowrap>${ttDate(issue.issue.linkedIssues.issues[i].created, true)}</td>`;
                 h += `<td class='pl-2 pr-2 ildc' nowrap>${modules.tt.issueField2Html(issue.issue.linkedIssues.issues[i], "author", undefined, "list")}</td>`;
                 h += `<td class='pl-2 pr-2 ildc' nowrap>${modules.tt.issueField2Html(issue.issue.linkedIssues.issues[i], "status", undefined, "list")}</td>`;
@@ -657,7 +657,7 @@
         }
 
         $(".ttIssue").off("click").on("click", function () {
-            // window.location.href = "?#tt&issue=" + encodeURIComponent($(this).text());
+            // window.location.href = "?#tt.issue&issue=" + encodeURIComponent($(this).text());
         });
 
         $(".ttJournal").off("click").on("click", () => {

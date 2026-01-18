@@ -1103,7 +1103,7 @@
                         break;
 
                     case "parent":
-                        val = `<span><a class='pointer text-bold' class='' href='?#tt&issue=${val}'>${val}</a></span>`;
+                        val = `<span><a class='pointer text-bold' class='' href='?#tt.issue&issue=${val}'>${val}</a></span>`;
                         break;
 
                     case "created":
@@ -1152,7 +1152,7 @@
                             for (let i in val) {
                                 let issueId = $.trim(val[i].split("[")[1].split("]")[0]);
                                 let subject = $.trim(val[i].substring(val[i].indexOf("]") + 1));
-                                t += `<a href="?#tt&issue=${encodeURIComponent(issueId)}" class="hoverable">[ ${issueId} ]: ${escapeHTML(subject)}</a><br />`;
+                                t += `<a href="?#tt.issue&issue=${encodeURIComponent(issueId)}" class="hoverable">[ ${issueId} ]: ${escapeHTML(subject)}</a><br />`;
                             }
 
                             val = t;

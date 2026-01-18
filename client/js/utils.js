@@ -299,7 +299,7 @@ function convertLinks(input) {
 
     if (modules.tt && modules.tt.issueRegExp) {
         return linkifyHtml(telify(input), options).replaceAll(modules.tt.issueRegExp, m => {
-            return `<a target='_blank' href='${navigateUrl('tt', { 'issue': m })}'>${m}</a>`;
+            return `<a target='_blank' href='${navigateUrl('tt.issue', { 'issue': m })}'>${m}</a>`;
         });
     } else {
         return linkifyHtml(telify(input), options);

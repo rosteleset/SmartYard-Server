@@ -351,7 +351,7 @@
             issue: issue,
         }).
         done(result => {
-            window.location.href = navigateUrl("tt", { issue: result.id });
+            window.location.href = navigateUrl("tt.issue", { issue: result.id });
         }).
         fail(FAIL).
         always(loadingDone);
