@@ -472,21 +472,21 @@
                                                     title = escapeHTML(r.issues.issues[i][modules.cs.currentSheet.sheet.fields.hint]);
                                                 }
                                                 if (modules.cs.highlight == r.issues.issues[i].issueId) {
-                                                    modules.cs.issuesInSheet[uid] += `<span class="nowrap border-no-shadow csIssueHighlight ${modules.cs.currentSheet.sheet.issueHighlightClass ? modules.cs.currentSheet.sheet.issueHighlightClass : "bg-orange"}"><a class="cs-issue-span pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a><span class="unhighlight"><i class="far fa-fw fa-times-circle" title="${i18n("cs.unhighlight")}"></i></span></span>`;
+                                                    modules.cs.issuesInSheet[uid] += `<span class="nowrap border-no-shadow csIssueHighlight ${modules.cs.currentSheet.sheet.issueHighlightClass ? modules.cs.currentSheet.sheet.issueHighlightClass : "bg-orange"}"><a class="cs-issue-span pointer pl-1 pr-1" href="?#tt.issue&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a><span class="unhighlight"><i class="far fa-fw fa-times-circle" title="${i18n("cs.unhighlight")}"></i></span></span>`;
                                                 } else
                                                 if (closed) {
-                                                    modules.cs.issuesInSheet[uid] += `<span class="nowrap border-no-shadow csIssueHighlight ${modules.cs.currentSheet.sheet.issueClosedClass}"><a class="cs-issue-span pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a></span>`;
+                                                    modules.cs.issuesInSheet[uid] += `<span class="nowrap border-no-shadow csIssueHighlight ${modules.cs.currentSheet.sheet.issueClosedClass}"><a class="cs-issue-span pointer pl-1 pr-1" href="?#tt.issue&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a></span>`;
                                                 } else
                                                 if (installers && installers.length && !done) {
-                                                    modules.cs.issuesInSheet[uid] += `<span class="nowrap border-no-shadow csIssueHighlight ${modules.cs.currentSheet.sheet.issueAssignedClass}"><a class="cs-issue-span pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a></span>`;
+                                                    modules.cs.issuesInSheet[uid] += `<span class="nowrap border-no-shadow csIssueHighlight ${modules.cs.currentSheet.sheet.issueAssignedClass}"><a class="cs-issue-span pointer pl-1 pr-1" href="?#tt.issue&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a></span>`;
                                                 } else
                                                 if ((!installers || !installers.length) && done) {
-                                                    modules.cs.issuesInSheet[uid] += `<span class="nowrap border-no-shadow csIssueHighlight ${modules.cs.currentSheet.sheet.issueDoneClass}"><a class="cs-issue-span pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a></span>`;
+                                                    modules.cs.issuesInSheet[uid] += `<span class="nowrap border-no-shadow csIssueHighlight ${modules.cs.currentSheet.sheet.issueDoneClass}"><a class="cs-issue-span pointer pl-1 pr-1" href="?#tt.issue&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a></span>`;
                                                 } else
                                                 if (installers && installers.length && done) {
-                                                    modules.cs.issuesInSheet[uid] += `<span class="nowrap border-no-shadow csIssueHighlight ${modules.cs.currentSheet.sheet.issueAssignedClass} ${modules.cs.currentSheet.sheet.issueDoneClass}"><a class="cs-issue-span pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a></span>`;
+                                                    modules.cs.issuesInSheet[uid] += `<span class="nowrap border-no-shadow csIssueHighlight ${modules.cs.currentSheet.sheet.issueAssignedClass} ${modules.cs.currentSheet.sheet.issueDoneClass}"><a class="cs-issue-span pointer pl-1 pr-1" href="?#tt.issue&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a></span>`;
                                                 } else {
-                                                    modules.cs.issuesInSheet[uid] += `<a class="nowrap border-no-shadow cs-issue-span pointer text-dark pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a>`;
+                                                    modules.cs.issuesInSheet[uid] += `<a class="nowrap border-no-shadow cs-issue-span pointer text-dark pl-1 pr-1" href="?#tt.issue&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a>`;
                                                 }
                                                 modules.cs.issuesInSheet[uid] += " ";
                                             }
@@ -1015,7 +1015,7 @@
                     for (let i in issues) {
                         h += '<tr>';
                         h += '<td nowrap class="pl-2 pr-2">' + issues[i][modules.cs.currentSheet.sheet.fields.row] + '</td>';
-                        h += '<td nowrap class="pl-2 pr-2"><a href="?#tt&issue=' + issues[i].issueId + '">' + issues[i].issueId + '</a></td>';
+                        h += '<td nowrap class="pl-2 pr-2"><a href="?#tt.issue&issue=' + issues[i].issueId + '">' + issues[i].issueId + '</a></td>';
                         if (typeof modules.cs.currentSheet.sheet.fields.list == "string") {
                             h += '<td style="width: 100%;" class="pl-2 pr-2">' + (issues[i][modules.cs.currentSheet.sheet.fields.list] ? issues[i][modules.cs.currentSheet.sheet.fields.list] : '?') + '</td>';
                         } else
