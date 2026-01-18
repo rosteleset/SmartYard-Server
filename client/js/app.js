@@ -220,7 +220,11 @@ function hashChange() {
 
             if (module) {
                 $("#pageError").hide();
-                $("#topMenuLeft").html(`<li id="topMenuLeftCaption" class="ml-3 mr-3 nav-item d-none d-sm-inline-block text-bold text-lg">${i18n(route.split('.')[0] + "." + route.split('.')[0])}</li>`);
+                let c = route.split('.')[0] + "." + route.split('.')[0];
+                if (i18n(c + ":short") != c + ":short") {
+                    c = c + ":short";
+                }
+                $("#topMenuLeft").html(`<li id="topMenuLeftCaption" class="ml-3 mr-3 nav-item d-none d-sm-inline-block text-bold text-lg">${i18n(c)}</li>`);
                 if (currentModule != module) {
                     $("#leftTopDynamic").html("");
                     $("#rightTopDynamic").html("");

@@ -1,5 +1,6 @@
 {
     "cs": "Coordination sheet",
+    "cs:short": "Coordination",
     "sheetSave": "Save",
     "sheetWasSaved": "The coordination sheet is preserved",
     "addSheet": "Add coordination sheet",
