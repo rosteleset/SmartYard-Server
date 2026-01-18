@@ -467,7 +467,6 @@
                                                 if (!modules.cs.issuesInSheet[uid]) {
                                                     modules.cs.issuesInSheet[uid] = "";
                                                 }
-                                                modules.cs.issuesInSheet[uid] += "<div>";
                                                 let title = "";
                                                 if (modules.cs.currentSheet.sheet.fields.hint && r.issues.issues[i][modules.cs.currentSheet.sheet.fields.hint]) {
                                                     title = escapeHTML(r.issues.issues[i][modules.cs.currentSheet.sheet.fields.hint]);
@@ -489,7 +488,6 @@
                                                 } else {
                                                     modules.cs.issuesInSheet[uid] += `<a class="nowrap border-no-shadow cs-issue-span pointer text-dark pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a>`;
                                                 }
-                                                modules.cs.issuesInSheet[uid] += "</div>";
                                             }
                                         }
                                     }
@@ -673,7 +671,9 @@
                                                 }
                                             }
                                             if (modules.cs.issuesInSheet[uid]) {
+                                                h += "<div>";
                                                 h += modules.cs.issuesInSheet[uid];
+                                                h += "</div>";
                                             }
                                             h += '<span class="cs-data-cellLogin" data-col="' + md5(modules.cs.cols[j]) + '" data-row="' + md5(modules.cs.rows[i]) + '" data-uid="' + uid + '"></span>';
                                             h += '</td>';
