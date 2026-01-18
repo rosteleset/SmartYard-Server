@@ -472,21 +472,21 @@
                                                     title = escapeHTML(r.issues.issues[i][modules.cs.currentSheet.sheet.fields.hint]);
                                                 }
                                                 if (modules.cs.highlight == r.issues.issues[i].issueId) {
-                                                    modules.cs.issuesInSheet[uid] += `<span class="csIssueHighlight ${modules.cs.currentSheet.sheet.issueHighlightClass ? modules.cs.currentSheet.sheet.issueHighlightClass : "bg-orange"}"><a class="cs-issue-span pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a><span class="unhighlight"><i class="far fa-fw fa-times-circle" title="${i18n("cs.unhighlight")}"></i></span></span><br />`;
+                                                    modules.cs.issuesInSheet[uid] += `<span class="border-no-shadow csIssueHighlight ${modules.cs.currentSheet.sheet.issueHighlightClass ? modules.cs.currentSheet.sheet.issueHighlightClass : "bg-orange"}"><a class="cs-issue-span pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a><span class="unhighlight"><i class="far fa-fw fa-times-circle" title="${i18n("cs.unhighlight")}"></i></span></span><br />`;
                                                 } else
                                                 if (closed) {
-                                                    modules.cs.issuesInSheet[uid] += `<span class="csIssueHighlight ${modules.cs.currentSheet.sheet.issueClosedClass}"><a class="cs-issue-span pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a></span><br />`;
+                                                    modules.cs.issuesInSheet[uid] += `<span class="border-no-shadow csIssueHighlight ${modules.cs.currentSheet.sheet.issueClosedClass}"><a class="cs-issue-span pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a></span><br />`;
                                                 } else
                                                 if (installers && installers.length && !done) {
-                                                    modules.cs.issuesInSheet[uid] += `<span class="csIssueHighlight ${modules.cs.currentSheet.sheet.issueAssignedClass}"><a class="cs-issue-span pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a></span><br />`;
+                                                    modules.cs.issuesInSheet[uid] += `<span class="border-no-shadow csIssueHighlight ${modules.cs.currentSheet.sheet.issueAssignedClass}"><a class="cs-issue-span pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a></span><br />`;
                                                 } else
                                                 if ((!installers || !installers.length) && done) {
-                                                    modules.cs.issuesInSheet[uid] += `<span class="csIssueHighlight ${modules.cs.currentSheet.sheet.issueDoneClass}"><a class="cs-issue-span pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a></span><br />`;
+                                                    modules.cs.issuesInSheet[uid] += `<span class="border-no-shadow csIssueHighlight ${modules.cs.currentSheet.sheet.issueDoneClass}"><a class="cs-issue-span pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a></span><br />`;
                                                 } else
                                                 if (installers && installers.length && done) {
-                                                    modules.cs.issuesInSheet[uid] += `<span class="csIssueHighlight ${modules.cs.currentSheet.sheet.issueAssignedClass} ${modules.cs.currentSheet.sheet.issueDoneClass}"><a class="cs-issue-span pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a></span><br />`;
+                                                    modules.cs.issuesInSheet[uid] += `<span class="border-no-shadow csIssueHighlight ${modules.cs.currentSheet.sheet.issueAssignedClass} ${modules.cs.currentSheet.sheet.issueDoneClass}"><a class="cs-issue-span pointer pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a></span><br />`;
                                                 } else {
-                                                    modules.cs.issuesInSheet[uid] += `<a class="cs-issue-span pointer text-dark pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a><br />`;
+                                                    modules.cs.issuesInSheet[uid] += `<a class="border-no-shadow cs-issue-span pointer text-dark pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a><br />`;
                                                 }
                                             }
                                         }
