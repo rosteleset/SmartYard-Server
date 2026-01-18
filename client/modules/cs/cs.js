@@ -18,7 +18,7 @@
     init: function () {
         if (parseInt(myself.uid) > 0) {
             if (AVAIL("cs", "sheets") && AVAIL("tt", "tt") && modules.mqtt) {
-                this.menuItem = leftSide("fas fa-fw fa-table", i18n("cs"), "?#cs", "tt");
+                this.menuItem = leftSide("fas fa-fw fa-table", i18n("cs.cs"), "?#cs", "tt");
             }
         }
 
@@ -1522,7 +1522,7 @@
         subTop();
         $("#altForm").hide();
 
-        document.title = i18n("windowTitle") + " :: " + i18n("cs");
+        document.title = i18n("windowTitle") + " :: " + i18n("cs.cs");
 
         modules.cs.sheet = params.sheet ? params.sheet : (lStore("csSheet") ? lStore("csSheet") : false);
         modules.cs.date = params.date ? params.date : (lStore("csDate") ? lStore("csDate") : false);
