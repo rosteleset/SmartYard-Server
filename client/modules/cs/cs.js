@@ -488,6 +488,7 @@
                                                 } else {
                                                     modules.cs.issuesInSheet[uid] += `<a class="nowrap border-no-shadow cs-issue-span pointer text-dark pl-1 pr-1" href="?#tt&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a>`;
                                                 }
+                                                modules.cs.issuesInSheet[uid] += " ";
                                             }
                                         }
                                     }
