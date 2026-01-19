@@ -90,6 +90,29 @@
             }
 
             /**
+             * set json
+             *
+             * @param
+             */
+
+            private function set($query, $json, $key = "_id") {
+                $db = $this->dbName;
+                $login = $this->login;
+
+                if (@$query) {
+                    array_walk_recursive($query, function (&$value, $key) {
+                        if ($key === '_id') {
+                            $value = new \MongoDB\BSON\ObjectID($value);
+                        }
+                    });
+
+                    return $this->mongo->$db->$login->updateMany($query, [ "set" => $json ]);
+                }
+
+                return false;
+            }
+
+            /**
              * count json
              */
 
@@ -223,8 +246,6 @@
                 if (!$exists) {
                     $this->createIndexes($this->login);
                 }
-
-                //    $collection->updateMany([ "_id" => $fileId ], [ '$set' => [ "email" => "mmikel@mail.ru" ] ]);
 
                 return $r;
             }
