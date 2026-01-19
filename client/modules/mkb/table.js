@@ -350,15 +350,10 @@
 
         if (parseInt(myself.uid) && AVAIL("mkb")) {
             $("#leftTopDynamic").html(`
-                <li class="nav-item d-none d-sm-inline-block pointer pl-3 pr-3 mkb" title="${i18n("mkb.mkb")}"><i class="fas fa-fw fa-layer-group text-primary"></i></li>
                 <li class="nav-item d-none d-sm-inline-block pointer pl-3 pr-3 cardsArchive" title="${i18n("mkb.cardsArchive")}"><i class="fas fa-fw fa-archive text-secondary"></i></li>
                 <li class="nav-item d-none d-sm-inline-block pointer pl-3 pr-3 cardsAll" title="${i18n("mkb.cardsAll")}"><i class="far fa-fw fa-list-alt text-secondary"></i></li>
             `);
         }
-
-        $(".mkb").off("click").on("click", () => {
-            navigateUrl("mkb", false, { run: true });
-        });
 
         $(".cardsArchive").off("click").on("click", () => {
             navigateUrl("mkb.table", { archive: true }, { run: true });

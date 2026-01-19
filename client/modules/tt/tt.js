@@ -40,7 +40,11 @@
                 this.menuItem = false;
             } else {
                 this.menuItem = leftSide("fas fa-fw fa-tasks", i18n("tt.tt"), "?#tt", "tt");
+                if (AVAIL("tt", "customFilter")) {
+                    leftSide("fas fa-fw fa-search-plus", i18n("tt.customSearch"), `?#tt&filter=empty&customSearch=yes`, "tt");
+                }
             }
+
             GET("tt", "tt", false, true).
             done(modules.tt.tt).
             done(() => {
@@ -1410,10 +1414,6 @@
                 rtd += '</select>';
             } else {
                 rtd += '</select></div></div></form>';
-            }
-
-            if (AVAIL("tt", "customFilter")) {
-                rtd += `<li class="nav-item nav-item-back-hover"><a href="?#tt&filter=empty&customSearch=yes&_=${Math.random()}" class="nav-link pointer" role="button" title="${i18n("tt.customSearch")}"><i class="fas fa-lg fa-fw fa-search-plus"></i></a></li>`;
             }
         }
 

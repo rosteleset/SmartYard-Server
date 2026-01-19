@@ -224,6 +224,8 @@
                     $this->createIndexes($this->login);
                 }
 
+                //    $collection->updateMany([ "_id" => $fileId ], [ '$set' => [ "email" => "mmikel@mail.ru" ] ]);
+
                 return $r;
             }
 

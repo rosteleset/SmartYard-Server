@@ -27,16 +27,15 @@ function menu(config) {
 
     h += `<div class="dropdown">`;
     h += `<div id="${xid}" class="contextMenusGlobalList pointer dropdown-toggle dropdown-toggle-no-icon" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" data-flip="false">`;
+
     if (config.icon) {
         h += `<i class="mr-1 fa-fw ${config.icon}"></i>`
     }
+
     if (config.text) {
-        if (config.noHover) {
-            h += `<div class="ml-1">${config.text}</div>`;
-        } else {
-            h += `<div class="hoverable ml-1">${config.text}</div>`;
-        }
+        h += `<div class="${config.noHover ? "" : "hoverable"} ${config.icon ? "ml-1" : ""}">${config.text}</div>`;
     }
+
     h += '</div>';
 
     if (config.right) {

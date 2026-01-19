@@ -29,6 +29,142 @@
         return f;
     },
 
+    menu: {
+        text: i18n("mkb.mkb"),
+        right: false,
+        noHover: true,
+        items: [
+            {
+                id: "mkbAddColumn",
+                icon: "far fa-plus-square",
+                text: i18n("mkb.addColumn"),
+            },
+            {   text: "-",
+            },
+            {
+                id: "mkbAddDesk",
+                icon: "far fa-plus-square",
+                text: i18n("mkb.addDesk"),
+            },
+            {
+                id: "mkbEditDesk",
+                icon: "far fa-edit",
+                text: i18n("mkb.editDesk"),
+            },
+            {
+                id: "mkbDeleteDesk",
+                icon: "far fa-minus-square",
+                text: i18n("mkb.deleteDesk"),
+            },
+        ],
+        click: (id) => {
+            switch (id) {
+                case "mkbAddColumn":
+                    modules.mkb.addColumn();
+                    break;
+
+                case "mkbAddDesk":
+                    modules.mkb.addDesk();
+                    break;
+
+                case "mkbEditDesk":
+                    modules.mkb.editDesk();
+                    break;
+
+                case "mkbDeleteDesk":
+                    modules.mkb.deleteDesk();
+                    break;
+            }
+        },
+    },
+
+    addColumn: function () {
+        cardForm({
+            title: i18n("mkb.addColumn"),
+            footer: true,
+            borderless: true,
+            topApply: true,
+            apply: i18n("add"),
+            fields: [
+                {
+                    id: "title",
+                    title: i18n("mkb.title"),
+                    type: "text",
+                    value: "",
+                    validate: a => {
+                        return !!$.trim(a);
+                    }
+                },
+                {
+                    id: "color",
+                    title: i18n("mkb.color"),
+                    type: "color",
+                    noEmpty: true,
+                },
+            ],
+            callback: r => {
+                let desk = modules.mkb.desk();
+
+                desk.columns.push({
+                    _id: guid(),
+                    title: r.title,
+                    color: r.color,
+                });
+
+                loadingStart();
+                POST("mkb", "desk", false, { desk }).
+                done(() => {
+                    modules.mkb.renderDesk();
+                }).
+                fail(FAIL).
+                fail(loadingDone);
+            }
+        });
+    },
+
+    addDesk: function () {
+        mPrompt(i18n("mkb.desk"), i18n("mkb.addDesk"), "", desk => {
+            if ($.trim(desk) && modules.mkb.deskNames.indexOf($.trim(desk)) < 0) {
+                loadingStart();
+                POST("mkb", "desk", false, { desk: { name: desk, columns: [] } }).
+                done(() => {
+                    lStore("mkbDesk", desk);
+                    modules.mkb.renderDesk();
+                }).
+                fail(FAIL).
+                fail(loadingDone);
+            }
+        });
+    },
+
+    editDesk: function () {
+        let desk = modules.mkb.desk();
+
+        mPrompt(i18n("mkb.desk"), i18n("mkb.renameDesk"), desk.name, newName => {
+            if ($.trim(newName)) {
+                loadingStart();
+                desk.name = newName;
+                POST("mkb", "desk", false, { desk }).
+                done(() => {
+                    lStore("mkbDesk", newName);
+                    modules.mkb.renderDesk();
+                }).
+                fail(FAIL).
+                fail(loadingDone);
+            }
+        });
+    },
+
+    deleteDesk: function () {
+        mConfirm(i18n("mkb.confirmDeleteDesk", lStore("mkbDesk")), i18n("confirm"), `danger:${i18n("delete")}`, () => {
+            loadingStart();
+            DELETE("mkb", "desk", lStore("mkbDesk")).
+            done(modules.mkb.renderDesk).
+            fail(FAIL).
+            fail(loadingDone);
+        });
+    },
+
     updateCard: function (id, busy) {
         if (busy) {
             modules.mkb.cardLoadingStart(id);
@@ -1047,93 +1183,6 @@
             modules.mkb.updateCard(id, true);
         });
 
-        $(".addDesk").off("click").on("click", () => {
-            mPrompt(i18n("mkb.desk"), i18n("mkb.addDesk"), "", desk => {
-                if ($.trim(desk) && modules.mkb.deskNames.indexOf($.trim(desk)) < 0) {
-                    loadingStart();
-                    POST("mkb", "desk", false, { desk: { name: desk, columns: [] } }).
-                    done(() => {
-                        lStore("mkbDesk", desk);
-                        modules.mkb.renderDesk();
-                    }).
-                    fail(FAIL).
-                    fail(loadingDone);
-                }
-            });
-        });
-
-        $(".editDesk").off("click").on("click", () => {
-            let desk = modules.mkb.desk();
-
-            mPrompt(i18n("mkb.desk"), i18n("mkb.renameDesk"), desk.name, newName => {
-                if ($.trim(newName)) {
-                    loadingStart();
-                    desk.name = newName;
-                    POST("mkb", "desk", false, { desk }).
-                    done(() => {
-                        lStore("mkbDesk", newName);
-                        modules.mkb.renderDesk();
-                    }).
-                    fail(FAIL).
-                    fail(loadingDone);
-                }
-            });
-        });
-
-        $(".deleteDesk").off("click").on("click", () => {
-            mConfirm(i18n("mkb.confirmDeleteDesk", lStore("mkbDesk")), i18n("confirm"), `danger:${i18n("delete")}`, () => {
-                loadingStart();
-                DELETE("mkb", "desk", lStore("mkbDesk")).
-                done(modules.mkb.renderDesk).
-                fail(FAIL).
-                fail(loadingDone);
-            });
-        });
-
-        $(".addColumn").off("click").on("click", () => {
-            cardForm({
-                title: i18n("mkb.addColumn"),
-                footer: true,
-                borderless: true,
-                topApply: true,
-                apply: i18n("add"),
-                fields: [
-                    {
-                        id: "title",
-                        title: i18n("mkb.title"),
-                        type: "text",
-                        value: "",
-                        validate: a => {
-                            return !!$.trim(a);
-                        }
-                    },
-                    {
-                        id: "color",
-                        title: i18n("mkb.color"),
-                        type: "color",
-                        noEmpty: true,
-                    },
-                ],
-                callback: r => {
-                    let desk = modules.mkb.desk();
-
-                    desk.columns.push({
-                        _id: guid(),
-                        title: r.title,
-                        color: r.color,
-                    });
-
-                    loadingStart();
-                    POST("mkb", "desk", false, { desk }).
-                    done(() => {
-                        modules.mkb.renderDesk();
-                    }).
-                    fail(FAIL).
-                    fail(loadingDone);
-                }
-            });
-        });
-
         $(".cardsArchive").off("click").on("click", () => {
             navigateUrl("mkb.table", { archive: true }, { run: true });
         });
@@ -1416,10 +1465,6 @@
 
             rtd += `<form autocomplete="off"><div class="form-inline ml-3 mr-3"><div class="input-group input-group-sm mt-1" title="${i18n("mkb.desks")}"><select id="mkbDesks" class="form-control select-arrow right-top-select top-input"></select></div></div></form>`;
 
-            rtd += `<li class="nav-item nav-item-back-hover"><span class="addDesk nav-link pointer" role="button" title="${i18n("mkb.addDesk")}"><i class="fas fa-lg fa-fw fa-plus-square"></i></span></li>`;
-            rtd += `<li class="nav-item nav-item-back-hover"><span class="editDesk nav-link pointer" role="button" title="${i18n("mkb.editDesk")}"><i class="fas fa-lg fa-fw fa-pen-square"></i></span></li>`;
-            rtd += `<li class="nav-item nav-item-back-hover"><span class="deleteDesk nav-link pointer" role="button" title="${i18n("mkb.deleteDesk")}"><i class="fas fa-lg fa-fw fa-minus-square"></i></span></li>`;
-
             $("#rightTopDynamic").html(rtd);
 
             $("#mkbDesks").off("change").on("change", () => {
@@ -1438,7 +1483,6 @@
 
             if (parseInt(myself.uid) && AVAIL("mkb")) {
                 $("#leftTopDynamic").html(`
-                    <li class="nav-item d-none d-sm-inline-block pointer pl-3 pr-3 addColumn" title="${i18n("mkb.addColumn")}"><i class="fas fa-fw fa-plus-circle text-primary"></i></li>
                     <li class="nav-item d-none d-sm-inline-block pointer pl-3 pr-3 cardsArchive" title="${i18n("mkb.cardsArchive")}"><i class="fas fa-fw fa-archive text-secondary"></i></li>
                     <li class="nav-item d-none d-sm-inline-block pointer pl-3 pr-3 cardsAll" title="${i18n("mkb.cardsAll")}"><i class="far fa-fw fa-list-alt text-secondary"></i></li>
                 `);
