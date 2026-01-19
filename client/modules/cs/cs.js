@@ -13,6 +13,8 @@
     menuItem: false,
     sheet: false,
     date: false,
+    sheets: false,
+    dates: false,
     highlight: false,
 
     init: function () {
@@ -28,6 +30,7 @@
             ], this);
         } else {
             moduleLoaded("cs", this);
+            this.menu = false;
         }
 
         modules.mqtt.subscribe("_connect", () => {
@@ -55,6 +58,159 @@
                 }
             });
         }, 1000);
+    },
+
+    menu: {
+        text: i18n("cs.cs:short"),
+        right: false,
+        noHover: true,
+        items: [
+            {
+                id: "csClone",
+                icon: "far fa-clone",
+                text: i18n("cs.cloneSheet"),
+            },
+            {
+                id: "csAdd",
+                icon: "far fa-plus-square",
+                text: i18n("cs.addSheet"),
+            },
+            {
+                id: "csModify",
+                icon: "far fa-edit",
+                text: i18n("cs.editSheet"),
+            },
+            {
+                id: "csDelete",
+                icon: "far fa-minus-square",
+                text: i18n("cs.deleteSheet"),
+            },
+        ],
+        click: (id) => {
+            switch (id) {
+                case "csClone":
+                    modules.cs.cloneCSsheet();
+                    break;
+
+                case "csAdd":
+                    modules.cs.addCSsheet();
+                    break;
+
+                case "csModify":
+                    modules.cs.editCSsheet();
+                    break;
+
+                case "csDelete":
+                    modules.cs.deleteCSsheet();
+                    break;
+            }
+        },
+    },
+
+    cloneCSsheet: function () {
+        cardForm({
+            title: i18n("cs.cloneSheet"),
+            footer: true,
+            borderless: true,
+            topApply: true,
+            fields: [
+                {
+                    id: "date",
+                    type: "date",
+                    title: i18n("cs.date"),
+                    return: "asis",
+                    placeholder: i18n("cs.date"),
+                    validate: v => {
+                        return $.trim(v) !== "";
+                    }
+                },
+            ],
+            callback: result => {
+                loadingStart();
+                modules.cs.currentSheet.sheet.date = result.date;
+                PUT("cs", "sheet", false, {
+                    "sheet": modules.cs.currentSheet.sheet.sheet,
+                    "date": modules.cs.currentSheet.sheet.date,
+                    "data": $.trim(JSON.stringify(modules.cs.currentSheet.sheet)),
+                }).
+                fail(FAIL).
+                done(() => {
+                    message(i18n("cs.sheetWasSaved"));
+                    navigateUrl("cs", { sheet: modules.cs.sheet, date: result.date, highlight: modules.cs.highlight }, { run: true });
+                }).
+                always(() => {
+                    loadingDone();
+                });
+            },
+        });
+    },
+
+    addCSsheet: function () {
+        let sheetsOptions = [];
+
+        for (let i in modules.cs.sheets) {
+            sheetsOptions.push({
+                id: modules.cs.sheets[i],
+                text: modules.cs.sheets[i],
+            });
+        }
+
+        cardForm({
+            title: i18n("cs.addSheet"),
+            footer: true,
+            borderless: true,
+            topApply: true,
+            fields: [
+                {
+                    id: "sheet",
+                    type: "select2",
+                    title: i18n("cs.sheet"),
+                    placeholder: i18n("cs.sheet"),
+                    tags: true,
+                    createTags: true,
+                    options: sheetsOptions,
+                    validate: v => {
+                        return $.trim(v) !== "";
+                    }
+                },
+                {
+                    id: "date",
+                    type: "date",
+                    title: i18n("cs.date"),
+                    return: "asis",
+                    placeholder: i18n("cs.date"),
+                    validate: v => {
+                        return $.trim(v) !== "";
+                    }
+                },
+            ],
+            callback: result => {
+                navigateUrl("cs.sheetEditor", { sheet: result.sheet, date: result.date, highlight: modules.cs.highlight }, { run: true });
+            },
+        });
+    },
+
+    editCSsheet: function () {
+        if ($("#csSheet").val() && $("#csDate").val()) {
+            navigateUrl("cs.sheetEditor", { sheet: $("#csSheet").val(),  date: $("#csDate").val(), highlight: modules.cs.highlight }, { run: true });
+        }
+    },
+
+    deleteCSsheet: function () {
+        if ($("#csSheet").val() && $("#csDate").val()) {
+            mConfirm(i18n("cs.confirmDeleteSheet", $("#csSheet").val(), $("#csDate").val()), i18n("confirm"), `danger:${i18n("delete")}`, () => {
+                loadingStart();
+                DELETE("cs", "sheet", false, {
+                    sheet: $("#csSheet").val(),
+                    date: $("#csDate").val(),
+                }).
+                fail(FAIL).
+                fail(loadingDone).
+                done(() => {
+                    navigateUrl("cs", { highlight: modules.cs.highlight }, { run: true });
+                });
+            })
+        }
     },
 
     csChanged: function () {
@@ -1231,6 +1387,9 @@
                         footer: true,
                         borderless: true,
                         topApply: true,
+                        noHover: true,
+                        noFocus: true,
+
                         fields: [
                             {
                                 id: "partCols",
@@ -1318,17 +1477,13 @@
                     }
                 }
 
+                modules.cs.sheets = sheets;
+                modules.cs.dates = sheets;
+
                 let rtd = "";
 
                 rtd += `<form autocomplete="off"><div class="form-inline ml-3 mr-3"><div class="input-group input-group-sm mt-1"><select id="csSheet" class="form-control select-arrow right-top-select top-input">${sheetsOptions}</select></div></div></form>`;
                 rtd += `<form autocomplete="off"><div class="form-inline ml-3 mr-3"><div class="input-group input-group-sm mt-1"><select id="csDate" class="form-control select-arrow right-top-select top-input">${datesOptions}</select></div></div></form>`;
-
-                if (AVAIL("cs", "sheet", "PUT")) {
-                    rtd += `<li class="nav-item nav-item-back-hover"><span id="cloneCSsheet" class="nav-link pointer" role="button" title="${i18n("cs.cloneSheet")}"><i class="fas fa-lg fa-fw fa-clone"></i></span></li>`;
-                    rtd += `<li class="nav-item nav-item-back-hover"><span id="addCSsheet" class="nav-link pointer" role="button" title="${i18n("cs.addSheet")}"><i class="fas fa-lg fa-fw fa-plus-square"></i></span></li>`;
-                    rtd += `<li class="nav-item nav-item-back-hover"><span id="editCSsheet" class="nav-link pointer" role="button" title="${i18n("cs.editSheet")}"><i class="fas fa-lg fa-fw fa-pen-square"></i></span></li>`;
-                    rtd += `<li class="nav-item nav-item-back-hover"><span id="deleteCSsheet" class="nav-link pointer" role="button" title="${i18n("cs.deleteSheet")}"><i class="fas fa-lg fa-fw fa-minus-square"></i></span></li>`;
-                }
 
                 $("#rightTopDynamic").html(rtd);
 
@@ -1343,112 +1498,6 @@
                 if (modules.cs.menuItem) {
                     $("#" + modules.cs.menuItem).children().first().attr("href", navigateUrl("cs", { sheet: modules.cs.sheet, date: modules.cs.date, highlight: modules.cs.highlight }));
                 }
-
-                $("#cloneCSsheet").off("click").on("click", () => {
-                    cardForm({
-                        title: i18n("cs.cloneSheet"),
-                        footer: true,
-                        borderless: true,
-                        topApply: true,
-                        fields: [
-                            {
-                                id: "date",
-                                type: "date",
-                                title: i18n("cs.date"),
-                                return: "asis",
-                                placeholder: i18n("cs.date"),
-                                validate: v => {
-                                    return $.trim(v) !== "";
-                                }
-                            },
-                        ],
-                        callback: result => {
-                            loadingStart();
-                            modules.cs.currentSheet.sheet.date = result.date;
-                            PUT("cs", "sheet", false, {
-                                "sheet": modules.cs.currentSheet.sheet.sheet,
-                                "date": modules.cs.currentSheet.sheet.date,
-                                "data": $.trim(JSON.stringify(modules.cs.currentSheet.sheet)),
-                            }).
-                            fail(FAIL).
-                            done(() => {
-                                message(i18n("cs.sheetWasSaved"));
-                                navigateUrl("cs", { sheet: modules.cs.sheet, date: result.date, highlight: modules.cs.highlight }, { run: true });
-                            }).
-                            always(() => {
-                                loadingDone();
-                            });
-                        },
-                    });
-                });
-
-                $("#addCSsheet").off("click").on("click", () => {
-                    let sheetsOptions = [];
-
-                    for (let i in sheets) {
-                        sheetsOptions.push({
-                            id: sheets[i],
-                            text: sheets[i],
-                        });
-                    }
-
-                    cardForm({
-                        title: i18n("cs.addSheet"),
-                        footer: true,
-                        borderless: true,
-                        topApply: true,
-                        fields: [
-                            {
-                                id: "sheet",
-                                type: "select2",
-                                title: i18n("cs.sheet"),
-                                placeholder: i18n("cs.sheet"),
-                                tags: true,
-                                createTags: true,
-                                options: sheetsOptions,
-                                validate: v => {
-                                    return $.trim(v) !== "";
-                                }
-                            },
-                            {
-                                id: "date",
-                                type: "date",
-                                title: i18n("cs.date"),
-                                return: "asis",
-                                placeholder: i18n("cs.date"),
-                                validate: v => {
-                                    return $.trim(v) !== "";
-                                }
-                            },
-                        ],
-                        callback: result => {
-                            navigateUrl("cs.sheetEditor", { sheet: result.sheet, date: result.date, highlight: modules.cs.highlight }, { run: true });
-                        },
-                    });
-                });
-
-                $("#editCSsheet").off("click").on("click", () => {
-                    if ($("#csSheet").val() && $("#csDate").val()) {
-                        navigateUrl("cs.sheetEditor", { sheet: $("#csSheet").val(),  date: $("#csDate").val(), highlight: modules.cs.highlight }, { run: true });
-                    }
-                });
-
-                $("#deleteCSsheet").off("click").on("click", () => {
-                    if ($("#csSheet").val() && $("#csDate").val()) {
-                        mConfirm(i18n("cs.confirmDeleteSheet", $("#csSheet").val(), $("#csDate").val()), i18n("confirm"), `danger:${i18n("delete")}`, () => {
-                            loadingStart();
-                            DELETE("cs", "sheet", false, {
-                                sheet: $("#csSheet").val(),
-                                date: $("#csDate").val(),
-                            }).
-                            fail(FAIL).
-                            fail(loadingDone).
-                            done(() => {
-                                navigateUrl("cs", { highlight: modules.cs.highlight }, { run: true });
-                            });
-                        })
-                    }
-                });
 
                 $("#csSheet").off("change").on("change", () => {
                     navigateUrl("cs", { sheet: $("#csSheet").val(), date: modules.cs.date, highlight: modules.cs.highlight }, { run: true });

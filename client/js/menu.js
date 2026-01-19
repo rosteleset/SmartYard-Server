@@ -23,17 +23,21 @@ function cleanupContextMenusGlobalList() {
 function menu(config) {
     let h = '';
 
-    let xid = guid();
+    let xid = "menu-" + md5(guid());
 
-    h += `<span class="dropdown">`;
-    h += `<span id="${xid}" class="contextMenusGlobalList pointer dropdown-toggle dropdown-toggle-no-icon" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" data-flip="false">`;
+    h += `<div class="dropdown">`;
+    h += `<div id="${xid}" class="contextMenusGlobalList pointer dropdown-toggle dropdown-toggle-no-icon" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" data-flip="false">`;
     if (config.icon) {
         h += `<i class="mr-1 fa-fw ${config.icon}"></i>`
     }
     if (config.text) {
-        h += `<span class="hoverable ml-1">${config.text}</span>`;
+        if (config.noHover) {
+            h += `<div class="ml-1">${config.text}</div>`;
+        } else {
+            h += `<div class="hoverable ml-1">${config.text}</div>`;
+        }
     }
-    h += '</span>';
+    h += '</div>';
 
     if (config.right) {
         h += `<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="${xid}" style="min-width: 250px!important;">`;
@@ -88,7 +92,7 @@ function menu(config) {
     }
 
     h += '</ul>';
-    h += '</span>';
+    h += '</div>';
 
     contextMenusGlobalList[xid] = config.click;
 

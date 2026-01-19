@@ -220,16 +220,25 @@ function hashChange() {
 
             if (module) {
                 $("#pageError").hide();
+
                 let c = route.split('.')[0] + "." + route.split('.')[0];
+
                 if (i18n(c + ":short") != c + ":short") {
                     c = c + ":short";
                 }
-                $("#topMenuLeft").html(`<li id="topMenuLeftCaption" class="cut-text ml-3 mr-3 nav-item d-none d-sm-inline-block text-bold text-lg">${i18n(c)}</li>`);
+
+                if (module.menu) {
+                    $("#topMenuLeft").html(`<li id="topMenuLeftCaption" class="ml-3 mr-3 nav-item d-none d-sm-inline-block text-bold text-lg">${menu(module.menu)}</li>`).removeClass("cut-text");
+                } else {
+                    $("#topMenuLeft").html(`<li id="topMenuLeftCaption" class="cut-text ml-3 mr-3 nav-item d-none d-sm-inline-block text-bold text-lg">${i18n(c)}</li>`).addClass("cut-text");
+                }
+
                 if (currentModule != module) {
                     $("#leftTopDynamic").html("");
                     $("#rightTopDynamic").html("");
                     currentModule = module;
                 }
+
                 if (typeof module.search === "function") {
                     $("#searchForm").show();
                     if (params.search) {
@@ -240,6 +249,7 @@ function hashChange() {
                 } else {
                     $("#searchForm").hide();
                 }
+
                 if (typeof module.route === "function") {
                     module.route(params);
                 } else {

@@ -597,10 +597,10 @@ function cardForm(params) {
                     `;
                 }
                 if (params.fields[i].allButtons !== false) {
-                    h += `<span style='position: absolute; right: 0px; top: 0px;'>`;
-                    h += `<span class="pointer checkAll" title="${i18n("checkAll")}"><i class="far fa-fw fa-check-square pr-3 text-primary"></i></span>`;
-                    h += `<span class="pointer unCheckAll" title="${i18n("unCheckAll")}"><i class="far fa-fw fa-square pr-2 text-primary"></i></span>`;
-                    h += `</span>`;
+                    h += `<div class="border-no-shadow bg-white" style="position: absolute; right: 4px; top: 0px;">`;
+                    h += `<span class="pointer checkAll" title="${i18n("checkAll")}"><i class="far fa-fw fa-check-square ml-1 mr-2 text-primary"></i></span>`;
+                    h += `<span class="pointer unCheckAll" title="${i18n("unCheckAll")}"><i class="far fa-fw fa-square mr-1 text-primary"></i></span>`;
+                    h += `</div>`;
                 }
                 h += `</div>`;
                 break;
