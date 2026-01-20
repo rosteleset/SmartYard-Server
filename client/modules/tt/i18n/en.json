@@ -254,7 +254,7 @@
     "customFilterDelete": "Delete custom filter",
     "projectFilterFile": "File",
     "search": "Search",
-    "customSearch": "Advanced search",
+    "customFilter": "Advanced search",
     "statusDelete": "Delete status",
     "addStatus": "Add status",
     "confirmStatusDelete": "Delete status \"#%S\"?",

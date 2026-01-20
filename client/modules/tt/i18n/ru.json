@@ -254,7 +254,7 @@
     "customFilterDelete": "Удалить пользовательский фильтр",
     "projectFilterFile": "Файл",
     "search": "Поиск",
-    "customSearch": "Расширенный поиск",
+    "customFilter": "Расширенный поиск",
     "statusDelete": "Удалить статус",
     "addStatus": "Добавить статус",
     "confirmStatusDelete": "Удалить статус \"#%s\"?",

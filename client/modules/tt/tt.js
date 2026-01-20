@@ -41,7 +41,7 @@
             } else {
                 this.menuItem = leftSide("fas fa-fw fa-tasks", i18n("tt.tt"), "?#tt", "tt");
                 if (AVAIL("tt", "customFilter")) {
-                    leftSide("fas fa-fw fa-search-plus", i18n("tt.customSearch"), `?#tt&filter=empty&customSearch=yes`, "tt");
+                    leftSide("fas fa-fw fa-search-plus", i18n("tt.customFilter"), `?#tt&filter=empty&customFilter=yes`, "tt");
                 }
             }
 
@@ -1633,6 +1633,11 @@
             let skip = parseInt(params.skip ? params.skip : 0);
             let limit = parseInt(params.limit ? params.limit : modules.tt.defaultIssuesPerPage);
 
+            if (params.customFilter && params.customFilter !== true) {
+                limit = 10;
+                skip = 0;
+            }
+
             let _ = Math.random();
 
             let query = {
@@ -1740,7 +1745,7 @@
 
                 let cs = '';
 
-                if (!target && params.customSearch && params.customSearch !== true) {
+                if (!target && params.customFilter && params.customFilter !== true) {
                     let height = 400;
                     cs += '<div>';
                     cs += `<div id='editorContainer' style='width: 100%; height: ${height}px;' data-fh="true">`;
@@ -1980,7 +1985,7 @@
 
                 let columns = [];
 
-                if ((modules && modules.tt && modules.tt.meta && modules.tt.meta.filters[filterName] && modules.tt.meta.filters[filterName].disableCustomSort) || (params.customSearch && params.customSearch !== true)) {
+                if ((modules && modules.tt && modules.tt.meta && modules.tt.meta.filters[filterName] && modules.tt.meta.filters[filterName].disableCustomSort) || (params.customFilter && params.customFilter !== true)) {
                     columns.push({
                         title: i18n("tt.issueIndx"),
                         nowrap: true,
@@ -2000,7 +2005,7 @@
                     });
                 };
 
-                if (params.customSearch && params.customSearch !== true) {
+                if (params.customFilter && params.customFilter !== true) {
                     let editor = ace.edit("filterEditor");
 
                     if (modules.darkmode && modules.darkmode.isDark()) {
@@ -2114,7 +2119,7 @@
                                     message(i18n("tt.filterWasSaved"));
                                     lStore("ttIssueFilter:" + currentProject, n);
                                     window.onbeforeunload = null;
-                                    navigateUrl("tt", { filter: n, customSearch: "yes", owner: myself.login }, { run: true })
+                                    navigateUrl("tt", { filter: n, customFilter: "yes", owner: myself.login }, { run: true })
                                 }).
                                 fail(FAIL).
                                 fail(loadingDone);
@@ -2160,7 +2165,11 @@
                 let currentIssuesList = [];
 
                 if (issues.issues) {
-                    $("#" + issuesListId + "-count").text("[" + filterName + "]: " + i18n("tt.showCounts", parseInt(issues.skip) ? (parseInt(issues.skip) + 1) : (issues.count ? '1' : '0'), parseInt(issues.skip) + issues.issues.length, issues.count)).addClass("small");
+                    if (params.customFilter && params.customFilter !== true) {
+                        $("#" + issuesListId + "-count").text(i18n("tt.showCounts", parseInt(issues.skip) ? (parseInt(issues.skip) + 1) : (issues.count ? '1' : '0'), parseInt(issues.skip) + issues.issues.length, issues.count)).addClass("small");
+                    } else {
+                        $("#" + issuesListId + "-count").text("[" + filterName + "]: " + i18n("tt.showCounts", parseInt(issues.skip) ? (parseInt(issues.skip) + 1) : (issues.count ? '1' : '0'), parseInt(issues.skip) + issues.issues.length, issues.count)).addClass("small");
+                    }
 
                     let menuItems = [];
 
@@ -2221,7 +2230,7 @@
                         text: i18n("tt.exportToCSV"),
                     });
 
-                    if (!target && !(params.customSearch && params.customSearch !== true)) {
+                    if (!target) {
                         menuItems.push({
                             text: "-",
                             hint: i18n("tt.issuesPerPage"),
@@ -2260,7 +2269,7 @@
                         id: "table-" + issuesListId,
                         columns: columns,
                         dropDownHeader: {
-                            menu: menu({
+                            menu: (params.customFilter && params.customFilter !== true) ? false : menu({
                                 icon: "fas fa-bars",
                                 right: true,
                                 items: menuItems,
@@ -2351,7 +2360,7 @@
                                         navigateUrl("tt", false, { run: true });
                                     }
                                     if (id == "customFilterEdit") {
-                                        navigateUrl("tt", { filter: filterName, customSearch: "yes" }, { run: true });
+                                        navigateUrl("tt", { filter: filterName, customFilter: "yes" }, { run: true });
                                     }
                                     if (id == "customFilterDelete") {
                                         mConfirm(i18n("tt.filterDelete", modules.tt.meta.filters[filterName].name), i18n("confirm"), `danger:${i18n("delete")}`, () => {
@@ -2463,7 +2472,7 @@
                     }
                 }
 
-                if (!params.customSearch || params.customSearch === true || !params.filter || params.filter === true || params.filter == "empty") {
+                if (!params.customFilter || params.customFilter === true || !params.filter || params.filter === true || params.filter == "empty") {
                     if (typeof callback === "undefined") {
                         loadingDone();
                     } else {
@@ -2696,13 +2705,13 @@
             if (params  && params.filter && params.filter[0] == "#") {
                 $("#" + modules.tt.menuItem).children().first().attr("href", navigateUrl("tt", false, {
                     exclude: [
-                        "customSearch"
+                        "customFilter"
                     ]
                 }));
             } else {
                 $("#" + modules.tt.menuItem).children().first().attr("href", refreshUrl({
                     exclude: [
-                        "customSearch",
+                        "customFilter",
                     ],
                     set: {
                         "noScroll": 1,
