@@ -91,7 +91,8 @@
                                 fields: fields,
                                 footer: true,
                                 borderless: true,
-                                size: "lg",
+                                noHover: true,
+                                size: "xl",
                                 timeout: timeout,
                                 callback: r => {
                                     loadingStart();
@@ -908,7 +909,8 @@
                 footer: true,
                 borderless: true,
                 topApply: true,
-                size: "lg",
+                size: "xl",
+                noHover: true,
                 fields: [
                     {
                         id: "issueId",
@@ -921,6 +923,9 @@
                     {
                         id: "comment",
                         type: "area",
+// TODO user.extSettings
+//                        type: "code",
+//                        language: "markdown",
                         title: i18n("tt.comment"),
                         placeholder: i18n("tt.comment"),
                         validate: v => {
@@ -953,7 +958,8 @@
                 footer: true,
                 borderless: true,
                 topApply: true,
-                size: "lg",
+                size: "xl",
+                noHover: true,
                 fields: [
                     {
                         id: "issueId",
@@ -974,6 +980,9 @@
                     {
                         id: "comment",
                         type: "area",
+// TODO user.extSettings
+//                        type: "code",
+//                        language: "markdown",
                         title: i18n("tt.comment"),
                         placeholder: i18n("tt.comment"),
                         value: issue.issue.comments[i].body,

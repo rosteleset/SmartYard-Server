@@ -434,6 +434,11 @@ function navigateUrl(route, params, options) {
         delete params["_"];
     }
 
+    route = $.trim(route);
+    while (route && (route.charAt(0) == "?" || route.charAt(0) == "#")) {
+        route = route.substring(1);
+    }
+
     if (options && options.run) {
         loadingStart();
         window.location.href = "?#" + route + "&" + $.param(params);

@@ -375,6 +375,9 @@
                     return {
                         id: "description",
                         type: "area",
+// TODO user.extSettings
+//                        type: "code",
+//                        language: "markdown",
                         title: title ? title: modules.tt.issueFieldTitle(field),
                         placeholder: modules.tt.issueFieldTitle(field),
                         value: (typeof prefferredValue !== "undefined") ? prefferredValue : ((issue && issue.description) ? issue.description : ""),
@@ -387,6 +390,9 @@
                     return {
                         id: "comment",
                         type: "area",
+// TODO user.extSettings
+//                        type: "code",
+//                        language: "markdown",
                         title: title ? title: modules.tt.issueFieldTitle(field),
                         placeholder: modules.tt.issueFieldTitle(field),
                         validate: v => {
@@ -398,6 +404,9 @@
                     return {
                         id: "comment",
                         type: "area",
+// TODO user.extSettings
+//                        type: "code",
+//                        language: "markdown",
                         title: title ? title: modules.tt.issueFieldTitle(field),
                         placeholder: modules.tt.issueFieldTitle(field),
                     };
@@ -2635,7 +2644,8 @@
                     fields: fields,
                     footer: true,
                     borderless: true,
-                    size: "lg",
+                    size: "xl",
+                    noHover: true,
                     callback: r => {
                         loadingStart();
                         PUT("tt", "bulkAction", false, {

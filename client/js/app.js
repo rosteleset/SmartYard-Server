@@ -438,6 +438,7 @@ function sudo() {
             then(() => {
                 setTimeout(() => {
                     window.onhashchange = hashChange;
+                    // navigateUrl(config.defaultRoute, false, { run: true });
                     window.location.reload();
                 }, 150);
             }).
@@ -453,6 +454,7 @@ function sudo() {
                 }).
                 done(r => {
                     window.onhashchange = hashChange;
+                    // navigateUrl(config.defaultRoute, false, { run: true });
                     window.location.reload();
                 }).
                 fail(FAIL).
@@ -466,6 +468,7 @@ function sudo() {
                 }).
                 done(r => {
                     window.onhashchange = hashChange;
+                    // navigateUrl(config.defaultRoute, false, { run: true });
                     window.location.reload();
                 }).
                 fail(FAIL).

@@ -860,12 +860,13 @@
                             if (!checkInt($entrances[$i])) {
                                 return false;
                             } else {
-                                $ap = $params["flat"];
+                                $ap = (int)$params["flat"];
                                 $lv = "";
+
                                 if ($apartmentsAndLevels && @$apartmentsAndLevels[$entrances[$i]]) {
                                     $ap = (int)$apartmentsAndLevels[$entrances[$i]]["apartment"];
                                     if (!$ap || $ap <= 0 || $ap > 9999) {
-                                        $ap = $params["flat"];
+                                        $ap = (int)$params["flat"];
                                     }
                                     $lv = @$apartmentsAndLevels[$entrances[$i]]["apartmentLevels"];
                                 }
