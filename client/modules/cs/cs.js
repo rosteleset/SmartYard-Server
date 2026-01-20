@@ -745,7 +745,15 @@
                 for (let p in parts) {
                     if (p != cp) {
                         if (parseInt(p) >= 0 || p) {
-                            h += "<tr><td nowrap style='width: 0%; border-top: none; border-left: none;'>&nbsp;</td><td style='border: none !important; font-weight: bold;' class='text-primary pl-0' colspan='" + maxCols.toString() + "'><span class='pointer csPart'>" + p + "</span></td></tr>";
+                            h += `
+                                <tr>
+                                    <td nowrap style='width: 0%; border-top: none; border-left: none;'>&nbsp;</td>
+                                    <td style='border: none !important;' class='pl-0' colspan='${maxCols.toString()}'>
+                                        <span class='text-bold text-primary pointer csPart'>${p}</span>
+                                        ${date("[D] d-m-Y", strtotime(modules.cs.date))}
+                                    </td>
+                                </tr>
+                            `;
                         }
                         cp = p;
                     }
@@ -1462,18 +1470,19 @@
                 sheetsOptions = "";
                 for (let i in sheets) {
                     if (sheets[i] == modules.cs.sheet) {
-                        sheetsOptions += "<option selected='selected' style='font-weight: bold;'>" + escapeHTML(sheets[i]) + "</option>";
+                        sheetsOptions += `<option selected="selected">${escapeHTML(sheets[i])}</option>`;
                     } else {
-                        sheetsOptions += "<option>" + escapeHTML(sheets[i]) + "</option>";
+                        sheetsOptions += `<option>${escapeHTML(sheets[i])}</option>`;
                     }
                 }
 
                 datesOptions = "";
                 for (let i in dates) {
+                    let c = ((dates[i] == date("Y-m-d")) ? "text-bold bg-info" : "") + (isWeekend(new Date(dates[i])) ? " text-danger" : "");
                     if (dates[i] == modules.cs.date) {
-                        datesOptions += "<option selected='selected' style='font-weight: bold;'>" + escapeHTML(dates[i]) + "</option>";
+                        datesOptions += `<option selected="selected" class="${c}">${escapeHTML(dates[i])}</option>`;
                     } else {
-                        datesOptions += "<option>" + escapeHTML(dates[i]) + "</option>";
+                        datesOptions += `<option class="${c}">${escapeHTML(dates[i])}</option>`;
                     }
                 }
 
@@ -1572,6 +1581,14 @@
         $("#altForm").hide();
 
         document.title = i18n("windowTitle") + " :: " + i18n("cs.cs");
+
+/*
+        $("#csDate").val(date("Y-m-d"))
+
+        $('#csDate option').filter(function() {
+            return $(this).text() === date("Y-m-d");
+        }).length
+*/
 
         modules.cs.sheet = params.sheet ? params.sheet : (lStore("csSheet") ? lStore("csSheet") : false);
         modules.cs.date = params.date ? params.date : (lStore("csDate") ? lStore("csDate") : false);

@@ -411,7 +411,7 @@ function str_replace(search, replace, subject, countObj) { // eslint-disable-lin
   return sa ? s : s[0]
 }
 
-function date(format, timestamp) {
+function date_en(format, timestamp) {
     //  discuss at: http://locutus.io/php/date/
     // original by: Carlos R. L. Rodrigues (http://www.jsfromhell.com)
     // original by: gettimeofday
@@ -476,7 +476,7 @@ function date(format, timestamp) {
     // Keep this here (works, but for code commented-out below for file size reasons)
     // var tal= [];
     var txtWords = [
-        'Sun', 'Mon', 'Tues', 'Wednes', 'Thurs', 'Fri', 'Satur',
+        'Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa',
         'January', 'February', 'March', 'April', 'May', 'June',
         'July', 'August', 'September', 'October', 'November', 'December'
     ]
@@ -793,7 +793,7 @@ function date_ru(format, timestamp) {
     // Keep this here (works, but for code commented-out below for file size reasons)
     // var tal= [];
     var txtWords = [
-        'Вск', 'Пнд', 'Втр', 'Срд', 'Чтв', 'Птн', 'Суб',
+        'Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб',
         'Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн',
         'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'
     ]

@@ -576,6 +576,26 @@ function mergeDeep(target, ...sources) {
     return mergeDeep(target, ...sources);
 }
 
+function isWeekend(date, localeSetting = navigator.language) {
+    let { weekend } = (new Intl.Locale(localeSetting)).getWeekInfo();
+
+    return weekend.includes(date.getDay() === 0 ? 7 : date.getDay());
+}
+
+function date(format, timestamp) {
+    let l = lang._code;
+    let d = {
+        "ru": date_ru,
+        "en": date_en,
+    };
+
+    if (!d[l]) {
+        d[l] = date_en;
+    }
+
+    return d[l](format, timestamp);
+}
+
 Object.defineProperty(Array.prototype, "assoc", {
     value: function (key, target, val) {
         let arr = this;
