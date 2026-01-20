@@ -338,6 +338,8 @@
                         fail(loadingDone);
                     });
                 } else {
+                    delete r.delete;
+
                     r.tags.sort();
                     r.done = !!parseInt(r.done);
 

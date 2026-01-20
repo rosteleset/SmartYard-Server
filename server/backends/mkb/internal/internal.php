@@ -106,7 +106,7 @@
                         }
                     });
 
-                    return $this->mongo->$db->$login->updateMany($query, [ "set" => $json ]);
+                    return $this->mongo->$db->$login->updateMany($query, [ "\$set" => $json ]);
                 }
 
                 return false;
@@ -239,12 +239,30 @@
             public function upsertDesk($desk) {
                 $desk["type"] = "desk";
 
+                $oldName = false;
+
+                if (@$desk["_id"]) {
+                    $oldName = "";
+
+                    $desks = $this->getDesks();
+
+                    foreach ($desks as $d) {
+                        if ($d["_id"] == $desk["_id"]) {
+                            $oldName = $d["name"];
+                        }
+                    }
+                }
+
                 $exists = $this->collectionExists($this->login);
 
                 $r = $this->put($desk);
 
                 if (!$exists) {
                     $this->createIndexes($this->login);
+                }
+
+                if ($oldName) {
+                    $r = $r && $this->set([ "type" => "card", "desk" => $oldName ], [ "desk" => $desk["name"] ]);
                 }
 
                 return $r;
