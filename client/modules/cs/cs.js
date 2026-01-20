@@ -24,7 +24,7 @@
             }
         }
 
-        if (AVAIL("cs", "sheet", "PUT") && AVAIL("tt", "tt")) {
+        if (AVAIL("cs", "sheet", "PUT")) {
             loadSubModules("cs", [
                 "sheetEditor",
             ], this);
@@ -133,14 +133,12 @@
                     "date": modules.cs.currentSheet.sheet.date,
                     "data": $.trim(JSON.stringify(modules.cs.currentSheet.sheet)),
                 }).
-                fail(FAIL).
                 done(() => {
                     message(i18n("cs.sheetWasSaved"));
                     navigateUrl("cs", { sheet: modules.cs.sheet, date: result.date, highlight: modules.cs.highlight }, { run: true });
                 }).
-                always(() => {
-                    loadingDone();
-                });
+                fail(FAIL).
+                fail(loadingDone);
             },
         });
     },
@@ -542,14 +540,16 @@
         let h = `<span class="dropdown">`;
         h += `<span id="${mid}" class="pointer dropdown-toggle dropdown-toggle-no-icon" data-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" style="margin-left: -4px;"><i class="far fa-fw fa-caret-square-down mr-1"></i>${col}</span>`;
         h += `<ul class="dropdown-menu" aria-labelledby="${mid}">`;
-        h += `<li class="pointer dropdown-item colMenuSetAssigners" data-col="${md5(col)}">${i18n("cs.setAssigners")}</li>`;
-        h += `<li class="dropdown-divider"></li>`;
-        h += `<li class="pointer dropdown-item colMenuAssignAll" data-col="${md5(col)}">${i18n("cs.assignAll")}</li>`;
-        h += `<li class="pointer dropdown-item colClearAssigners" data-col="${md5(col)}">${i18n("cs.clearAssigners")}</li>`;
-        h += `<li class="dropdown-divider"></li>`;
-        h += `<li class="pointer dropdown-item colSettings" data-col="${md5(col)}">${i18n("cs.colSettings")}</li>`;
-        if (modules.cs.currentSheet.sheet.fields.map || modules.cs.currentSheet.sheet.fields.list) {
+        if (AVAIL("cs", "sheet", "PUT")) {
+            h += `<li class="pointer dropdown-item colMenuSetAssigners" data-col="${md5(col)}">${i18n("cs.setAssigners")}</li>`;
             h += `<li class="dropdown-divider"></li>`;
+            h += `<li class="pointer dropdown-item colMenuAssignAll" data-col="${md5(col)}">${i18n("cs.assignAll")}</li>`;
+            h += `<li class="pointer dropdown-item colClearAssigners" data-col="${md5(col)}">${i18n("cs.clearAssigners")}</li>`;
+            h += `<li class="dropdown-divider"></li>`;
+            h += `<li class="pointer dropdown-item colSettings" data-col="${md5(col)}">${i18n("cs.colSettings")}</li>`;
+            if (modules.cs.currentSheet.sheet.fields.map || modules.cs.currentSheet.sheet.fields.list) {
+                h += `<li class="dropdown-divider"></li>`;
+            }
         }
         if (modules.cs.currentSheet.sheet.fields.list) {
             h += `<li class="pointer dropdown-item colListIssues" data-col="${md5(col)}">${i18n("cs.list")}</li>`;
@@ -745,15 +745,27 @@
                 for (let p in parts) {
                     if (p != cp) {
                         if (parseInt(p) >= 0 || p) {
-                            h += `
-                                <tr>
-                                    <td nowrap style='width: 0%; border-top: none; border-left: none;'>&nbsp;</td>
-                                    <td style='border: none !important;' class='pl-0' colspan='${maxCols.toString()}'>
-                                        <span class='text-bold text-primary pointer csPart'>${p}</span>
-                                        ${date("[D] d-m-Y", strtotime(modules.cs.date))}
-                                    </td>
-                                </tr>
-                            `;
+                            if (AVAIL("cs", "sheet", "PUT")) {
+                                h += `
+                                    <tr>
+                                        <td nowrap style='width: 0%; border-top: none; border-left: none;'>&nbsp;</td>
+                                        <td style='border: none !important;' class='pl-0' colspan='${maxCols.toString()}'>
+                                            <span class='text-bold text-primary pointer csPart'>${p}</span>
+                                            ${date("[D] d-m-Y", strtotime(modules.cs.date))}
+                                        </td>
+                                    </tr>
+                                `;
+                            } else {
+                                h += `
+                                    <tr>
+                                        <td nowrap style='width: 0%; border-top: none; border-left: none;'>&nbsp;</td>
+                                        <td style='border: none !important;' class='pl-0' colspan='${maxCols.toString()}'>
+                                            <span class='text-bold'>${p}</span>
+                                            ${date("[D] d-m-Y", strtotime(modules.cs.date))}
+                                        </td>
+                                    </tr>
+                                `;
+                            }
                         }
                         cp = p;
                     }
@@ -920,10 +932,11 @@
                                         "date": modules.cs.currentSheet.sheet.date,
                                         "data": $.trim(JSON.stringify(modules.cs.currentSheet.sheet, null, 4)),
                                     }).
-                                    fail(FAIL).
                                     done(() => {
                                         message(i18n("cs.sheetWasSaved"));
-                                    });
+                                    }).
+                                    fail(FAIL).
+                                    fail(loadingDone);
                                     break;
                                 }
                             }
@@ -1049,10 +1062,11 @@
                                         "date": modules.cs.currentSheet.sheet.date,
                                         "data": $.trim(JSON.stringify(modules.cs.currentSheet.sheet, null, 4)),
                                     }).
-                                    fail(FAIL).
                                     done(() => {
                                         message(i18n("cs.sheetWasSaved"));
-                                    });
+                                    }).
+                                    fail(FAIL).
+                                    fail(loadingDone);
                                     break;
                                 }
                             }
@@ -1421,10 +1435,11 @@
                                 "date": modules.cs.currentSheet.sheet.date,
                                 "data": $.trim(JSON.stringify(modules.cs.currentSheet.sheet, null, 4)),
                             }).
-                            fail(FAIL).
                             done(() => {
                                 message(i18n("cs.sheetWasSaved"));
-                            });
+                            }).
+                            fail(FAIL).
+                            fail(loadingDone);
                         },
                     });
                 });
