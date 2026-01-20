@@ -1761,11 +1761,11 @@
 
       if (offset !== false) {
         if (max === heights.controlSidebar) {
-          $contentSelector.css(this._config.panelAutoHeightMode, max + offset);
+          $contentSelector.css(this._config.panelAutoHeightMode, max + offset - 1);
         } else if (max === heights.window) {
-          $contentSelector.css(this._config.panelAutoHeightMode, max + offset - heights.header - heights.footer);
+          $contentSelector.css(this._config.panelAutoHeightMode, max + offset - heights.header - heights.footer - 1);
         } else {
-          $contentSelector.css(this._config.panelAutoHeightMode, max + offset - heights.header);
+          $contentSelector.css(this._config.panelAutoHeightMode, max + offset - heights.header - 1);
         }
 
         if (this._isFooterFixed()) {
