@@ -994,7 +994,7 @@
                         id: "commentPrivate",
                         type: "yesno",
                         title: i18n("tt.commentPrivate"),
-                        value: issue.issue.comments[i].private?"1":"0",
+                        value: issue.issue.comments[i].private ? "1" : "0",
                     },
                 ],
                 delete: i18n("tt.deleteComment"),
