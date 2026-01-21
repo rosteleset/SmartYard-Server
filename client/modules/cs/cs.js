@@ -16,6 +16,7 @@
     sheets: false,
     dates: false,
     highlight: false,
+    vg: false,
 
     init: function () {
         if (parseInt(myself.uid) > 0) {
@@ -661,7 +662,11 @@
                                                 } else {
                                                     modules.cs.issuesInSheet[uid] += `<a class="nowrap noselect border-no-shadow cs-issue-span pointer text-dark pl-1 pr-1" href="?#tt.issue&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a>`;
                                                 }
-                                                modules.cs.issuesInSheet[uid] += " ";
+                                                if (modules.cs.vg) {
+                                                    modules.cs.issuesInSheet[uid] += "<br />";
+                                                } else {
+                                                    modules.cs.issuesInSheet[uid] += " ";
+                                                }
                                             }
                                         }
                                     }
@@ -1614,13 +1619,11 @@
 
         document.title = i18n("windowTitle") + " :: " + i18n("cs.cs");
 
-/*
-        $("#csDate").val(date("Y-m-d"))
-
-        $('#csDate option').filter(function() {
-            return $(this).text() === date("Y-m-d");
-        }).length
-*/
+        try {
+            modules.cs.vg = myself.settings.cs.sheet.verticalGrowth;
+        } catch (e) {
+            modules.cs.vg = false;
+        }
 
         modules.cs.sheet = params.sheet ? params.sheet : (lStore("csSheet") ? lStore("csSheet") : false);
         modules.cs.date = params.date ? params.date : (lStore("csDate") ? lStore("csDate") : false);
