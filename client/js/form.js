@@ -205,7 +205,7 @@ function cardForm(params) {
     }
 
     for (let i in params.fields) {
-        if (params.fields[i].type == "jstree") {
+        if (params.fields[i].type == "jstree" || params.fields[i].type == "settings") {
             params.fields[i].noHover = true;
         }
 
@@ -727,6 +727,14 @@ function cardForm(params) {
                 }
                 break;
 
+            case "settings":
+                // TODO: Do something with this!!! (max-height)
+                h += `<div name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" class="overflow-y-auto p-2" style="max-height: 400px; min-height: 400px; height: 400px; overflow-y: auto!important; position: relative; border: solid thin lightgray; border-radius: 3px;"></div>`;
+                // TODO: Do something with this!!! (max-height)
+                h += `<div name="${_prefix}${params.fields[i].id}-hint" id="${_prefix}${params.fields[i].id}-hint" class="mt-2 pl-2 border-no-shadow">&nbsp;</div>`;
+                h += `<textarea name="${_prefix}${params.fields[i].id}-value" id="${_prefix}${params.fields[i].id}-value" rows="5" class="mt-2 form-control modalFormField overflow-auto" autocomplete="off" style="resize: vertical;" placeholder="${escapeHTML(params.fields[i].placeholder ? params.fields[i].placeholder : "")}"></textarea>`;
+                break;
+
             case "button":
                 h += `<input name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" type="${params.fields[i].type}" value="${params.fields[i].button.hint}" class="btn ${params.fields[i].button.class ? params.fields[i].button.class : 'btn-secondary'}" />`;
                 break;
@@ -1082,6 +1090,9 @@ function cardForm(params) {
                 }
 
                 return null;
+
+            case "settings":
+                return params.fields[i].return;
         }
     }
 
@@ -1809,6 +1820,172 @@ function cardForm(params) {
 
             $(`#${_prefix}${params.fields[i].id}`).off("ready.jstree").on("ready.jstree", (e, data) => {
                 jstreectl(data && data.selected && data.selected.length);
+            });
+        }
+
+        if (params.fields[i].type == "settings") {
+            let data = params.fields[i].tree;
+
+            params.fields[i].return = params.fields[i].value;
+
+            let pp;
+            let ct;
+
+            let types = {
+                boolean: "far fa-fw fa-edit",
+                text: "fas fa-fw fa-edit",
+                int: "fas fa-fw fa-edit",
+                float: "fas fa-fw fa-edit",
+            };
+
+            (function w(a) {
+                for (let i in a) {
+                    if (a[i].type && types[a[i].type]) {
+                        a[i].icon = types[a[i].type];
+                    }
+                    if (a[i].children && a[i].children.length > 0) {
+                        w(a[i].children);
+                    }
+                }
+            })(data);
+
+            let tree = {
+                core: {
+                    data: data,
+                    check_callback: true,
+                    animation: 0,
+                    multiple: false,
+                },
+                themes: {
+                    responsive: false,
+                },
+                types: {
+                    default: {
+                        icon: "far fa-fw fa-folder",
+                    },
+                    file: {
+                        icon: "far fa-fw fa-file",
+                    },
+                    folder: {
+                        icon: "far fa-fw fa-folder-open",
+                    },
+                },
+                plugins: [
+                    "sort",
+                    "types",
+                ],
+            };
+
+            $(`#${_prefix}${params.fields[i].id}`).jstree(tree);
+
+            $(`#${_prefix}${params.fields[i].id}-value`).val("");
+            $(`#${_prefix}${params.fields[i].id}-value`).attr("disabled", "disabled");
+            $(`#${_prefix}${params.fields[i].id}-hint`).html("&nbsp;");
+
+            $(`#${_prefix}${params.fields[i].id}-value`).off("keyup").on("keyup", () => {
+                let v = params.fields[i].return;
+
+                for (let j = 0; j < pp.length - 1; j++) {
+                    v = v[pp[j]];
+                }
+
+                let t = $.trim($(`#${_prefix}${params.fields[i].id}-value`).val());
+
+                switch (ct) {
+                    case "int":
+                        t = parseInt(t);
+                        if (!isNaN(t)) {
+                            v[pp[pp.length - 1]] = t;
+                            $(`#${_prefix}${params.fields[i].id}-value`).removeClass("is-invalid");
+                        } else {
+                            $(`#${_prefix}${params.fields[i].id}-value`).addClass("is-invalid");
+                        }
+                        break;
+
+                    case "float":
+                        t = parseFloat(t);
+                        if (!isNaN(t)) {
+                            v[pp[pp.length - 1]] = t;
+                            $(`#${_prefix}${params.fields[i].id}-value`).removeClass("is-invalid");
+                        } else {
+                            $(`#${_prefix}${params.fields[i].id}-value`).addClass("is-invalid");
+                        }
+                        break;
+
+                    case "boolean":
+                        if (t === "0" || t === "1") {
+                            v[pp[pp.length - 1]] = t === "1";
+                            $(`#${_prefix}${params.fields[i].id}-value`).removeClass("is-invalid");
+                        } else {
+                            $(`#${_prefix}${params.fields[i].id}-value`).addClass("is-invalid");
+                        }
+                        break;
+
+                    case "text":
+                        v[pp[pp.length - 1]] = t;
+                        break;
+                }
+            });
+
+            $(`#${_prefix}${params.fields[i].id}`).off("select_node.jstree").on("select_node.jstree", (e, d) => {
+                let path = JSON.parse(JSON.stringify(d.node.parents));
+
+                path = path.reverse();
+                path.shift();
+                path.push(d.node.id);
+
+                pp = JSON.parse(JSON.stringify(path));
+
+                function f(data, path) {
+                    let n = path.shift();
+
+                    for (let i in data) {
+                        if (data[i].id == n) {
+                            if (path.length == 0) {
+                                return data[i];
+                            } else {
+                                return f(data[i].children, path);
+                            }
+                        }
+                    }
+
+                    return false;
+                }
+
+                let n = f(data, path);
+
+                if (types[n.type]) {
+                    ct = n.type;
+
+                    let v = params.fields[i].return;
+                    for (let j = 0; j < pp.length - 1; j++) {
+                        if (!v[pp[j]]) {
+                            v[pp[j]] = {}
+                        }
+                        v = v[pp[j]];
+                    }
+
+                    v = v[pp[pp.length - 1]] ? v[pp[pp.length - 1]] : '';
+
+                    if (ct == "boolean") {
+                        v = v ? "1" : "0";
+                    }
+
+                    $(`#${_prefix}${params.fields[i].id}-value`).val(v);
+                    $(`#${_prefix}${params.fields[i].id}-value`).attr("disabled", false);
+                    $(`#${_prefix}${params.fields[i].id}-hint`).html(i18n("type" + n.type.charAt(0).toUpperCase() + n.type.substring(1)));
+                    $(`#${_prefix}${params.fields[i].id}-value`).focus();
+                } else {
+                    $(`#${_prefix}${params.fields[i].id}-value`).val("");
+                    $(`#${_prefix}${params.fields[i].id}-value`).attr("disabled", "disabled");
+                    $(`#${_prefix}${params.fields[i].id}-hint`).html("&nbsp;");
+                }
+            });
+
+            $(`#${_prefix}${params.fields[i].id}`).off("deselect_node.jstree").on("deselect_node.jstree", (e, data) => {
+                $(`#${_prefix}${params.fields[i].id}-value`).val("");
+                $(`#${_prefix}${params.fields[i].id}-value`).attr("disabled", "disabled");
+                $(`#${_prefix}${params.fields[i].id}-hint`).html("&nbsp;");
             });
         }
 

@@ -24,7 +24,7 @@ var lStoreEngine = false;
 var lStoreData = {};
 var availableFonts = [];
 var noGravatar = false;
-var reg = {};
+var reg = [];
 
 function lStore(key, val) {
     if (!lStoreEngine) {

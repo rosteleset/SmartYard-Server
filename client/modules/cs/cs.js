@@ -21,15 +21,22 @@
         if (parseInt(myself.uid) > 0) {
             if (AVAIL("cs", "sheets") && AVAIL("tt", "tt") && modules.mqtt) {
                 this.menuItem = leftSide("fas fa-fw fa-table", i18n("cs.cs"), "?#cs", "tt");
-                reg.cs = mergeDeep(reg.cs, {
-                    title: i18n("cs.cs"),
-                    sheet: {
-                        title: i18n("cs.sheet"),
-                        verticalGrowth: {
-                            title: i18n("cs.verticalGrowth"),
-                            type: "boolean",
+                reg.push({
+                    id: "cs",
+                    text: i18n("cs.cs"),
+                    children: [
+                        {
+                            id: "sheet",
+                            text: i18n("cs.sheet"),
+                            children: [
+                                {
+                                    id: "verticalGrowth",
+                                    text: i18n("cs.verticalGrowth"),
+                                    type: "boolean",
+                                },
+                            ],
                         },
-                    },
+                    ],
                 });
             }
         }

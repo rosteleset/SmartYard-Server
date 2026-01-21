@@ -643,7 +643,7 @@
 
             public function putSettings($settings) {
                 try {
-                    $settings = $this->db->modify("update core_users set settings = :settings where login = :login", [
+                    return $settings = $this->db->modify("update core_users set settings = :settings where login = :login", [
                         "login" => $this->login,
                         "settings" => json_encode($settings),
                     ]);

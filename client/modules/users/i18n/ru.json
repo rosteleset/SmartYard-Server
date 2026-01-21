@@ -60,6 +60,7 @@
     "serviceAccount": "Служебный аккаунт",
     "sudo": "Администратор",
     "wg": "WG",
+    "settings": "Доп. настройки",
     "errors": {
         "invalid2FACredentials": "Неверный код авторизации"
     },

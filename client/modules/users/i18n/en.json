@@ -60,6 +60,7 @@
     "serviceAccount": "Service account",
     "sudo": "Administrator",
     "wg": "WG",
+    "settings": "Ext. settings",
     "errors": {
         "invalid2FACredentials": "Invalid authentication code"
     },

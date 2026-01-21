@@ -117,6 +117,10 @@
     "download": "Download file",
     "rotateLeft": "Turn counterclockwise",
     "rotateRight": "Turn clockwise",
+    "typeText": "Any text",
+    "typeBoolean": "1/0",
+    "typeInt": "Integer",
+    "typeFloat": "Float",
     "errors": {
         "error": "Error",
         "404caption": "Oh! Page not found",

@@ -452,6 +452,15 @@
                         value: response.user.wg,
                         hidden: !response.user.wg,
                     },
+                    {
+                        id: "settings",
+                        type: "settings",
+                        title: false,
+                        tab: i18n("users.settings"),
+                        tree: reg,
+                        value: response.user.settings,
+                        singleColumn: true,
+                    }
                 ],
 
                 done: function (prefix) {

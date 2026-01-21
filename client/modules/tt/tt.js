@@ -43,15 +43,22 @@
                 if (AVAIL("tt", "customFilter")) {
                     leftSide("fas fa-fw fa-search-plus", i18n("tt.customFilter"), `?#tt&filter=empty&customFilter=yes`, "tt");
                 }
-                reg.tt = mergeDeep(reg.tt, {
-                    title: i18n("tt.tt"),
-                    issues: {
-                        title: i18n("tt.issues"),
-                        markdown: {
-                            title: i18n("tt.markdown"),
-                            type: "boolean",
+                reg.push({
+                    id: "tt",
+                    text: i18n("tt.tt"),
+                    children: [
+                        {
+                            id: "issues",
+                            text: i18n("tt.issues"),
+                            children: [
+                                {
+                                    id: "markdown",
+                                    text: i18n("tt.markdown"),
+                                    type: "boolean",
+                                }
+                            ]
                         },
-                    },
+                    ],
                 });
             }
 
