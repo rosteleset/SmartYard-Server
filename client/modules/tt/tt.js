@@ -5,6 +5,7 @@
     // how many PAGER buttons to show
     defaultPagerItemsCount: 10,
     menuItem: false,
+    markdown: false,
 
     specialActions: [
         "saAddComment",
@@ -60,6 +61,11 @@
                         },
                     ],
                 });
+                try {
+                    modules.tt.markdown = myself.settings.tt.issues.markdown;
+                } catch (e) {
+                    //
+                }
             }
 
             GET("tt", "tt", false, true).
@@ -223,6 +229,9 @@
 
                 case "commentBody":
                     return i18n("tt.commentBody");
+
+                case "commentMarkdown":
+                    return i18n("tt.commentMarkdown");
 
                 case "commentCreated":
                     return i18n("tt.commentCreated");
@@ -391,10 +400,8 @@
                 case "description":
                     return {
                         id: "description",
-                        type: "area",
-// TODO user.extSettings
-//                        type: "code",
-//                        language: "markdown",
+                        type: modules.tt.markdown ? "code" : "area",
+                        language: "markdown",
                         title: title ? title: modules.tt.issueFieldTitle(field),
                         placeholder: modules.tt.issueFieldTitle(field),
                         value: (typeof prefferredValue !== "undefined") ? prefferredValue : ((issue && issue.description) ? issue.description : ""),
@@ -406,10 +413,8 @@
                 case "comment":
                     return {
                         id: "comment",
-                        type: "area",
-// TODO user.extSettings
-//                        type: "code",
-//                        language: "markdown",
+                        type: modules.tt.markdown ? "code" : "area",
+                        language: "markdown",
                         title: title ? title: modules.tt.issueFieldTitle(field),
                         placeholder: modules.tt.issueFieldTitle(field),
                         validate: v => {
@@ -420,10 +425,8 @@
                 case "optionalComment":
                     return {
                         id: "comment",
-                        type: "area",
-// TODO user.extSettings
-//                        type: "code",
-//                        language: "markdown",
+                        type: modules.tt.markdown ? "code" : "area",
+                        language: "markdown",
                         title: title ? title: modules.tt.issueFieldTitle(field),
                         placeholder: modules.tt.issueFieldTitle(field),
                     };
@@ -1061,8 +1064,12 @@
             if (field.substring(0, 4) !== "_cf_") {
                 switch (field) {
                     case "description":
-                    case "subject":
+                        escaped = true;
+                        val = (issue.markdown && target != "journal") ? convertLinks(rbtMdRender($.trim((val)))) : modules.tt.issuesLinks(val);
+                        break;
+
                     case "commentBody":
+                    case "subject":
                         escaped = true;
                         val = modules.tt.issuesLinks(val);
                         break;
@@ -1090,6 +1097,10 @@
                         break;
 
                     case "commentPrivate":
+                        val = val ? i18n("yes") : i18n("no");
+                        break;
+
+                    case "commentMarkdown":
                         val = val ? i18n("yes") : i18n("no");
                         break;
 

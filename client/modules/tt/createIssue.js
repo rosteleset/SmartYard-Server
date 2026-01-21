@@ -125,6 +125,7 @@
             noHover: true,
             topApply: true,
             apply: "create",
+            noHover: true,
             fields: [
                 {
                     id: "project",
@@ -191,7 +192,6 @@
                 }
                 loadingStart();
                 navigateUrl("tt.createIssue", { project: result.project, workflow: result.workflow, catalog: result.catalog, parent: !!parent ? parent["issueId"] : false }, { run: true });
-                // modules.tt.createIssueForm(result.project, result.workflow, result.catalog, (!!parent) ? encodeURIComponent(parent["issueId"]) : "");
             },
             cancel: () => {
                 window.history.back();
@@ -316,6 +316,7 @@
                     target: "#mainForm",
                     apply: "create",
                     fields: fields,
+                    noHover: true,
                     callback: modules.tt.createIssue.doCreateIssue,
                     cancel: () => {
                         window.history.back();
@@ -346,6 +347,7 @@
         delete issue.projectName;
         delete issue.workflowName;
         issue.project = issue.projectAcronym;
+        issue.markdown = modules.tt.markdown;
         delete issue.projectAcronym;
         POST("tt", "issue", false, {
             issue: issue,

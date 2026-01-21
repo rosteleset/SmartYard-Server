@@ -1272,6 +1272,7 @@
                 $validFields[] = "links";
                 $validFields[] = "attachments";
                 $validFields[] = "comments";
+                $validFields[] = "markdown";
 
                 if (!@$issue["catalog"] || $issue["catalog"] == "-") {
                     unset($issue["catalog"]);
@@ -1444,22 +1445,24 @@
              * @param $private
              * @param $type
              * @param $silent
+             * @param $markdown
              *
              * @return mixed
              */
 
-            abstract public function addComment($issueId, $comment, $private, $type = false, $silent = false);
+            abstract public function addComment($issueId, $comment, $private, $type = false, $silent = false, $markdown = false);
 
             /**
              * @param $issueId
              * @param $commentIndex
              * @param $comment
              * @param $private
+             * @param $markdown
              *
              * @return mixed
              */
 
-            abstract public function modifyComment($issueId, $commentIndex, $comment, $private);
+            abstract public function modifyComment($issueId, $commentIndex, $comment, $private, $markdown = false);
 
             /**
              * @param $issueId

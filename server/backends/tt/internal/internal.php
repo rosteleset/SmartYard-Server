@@ -670,7 +670,7 @@
              * @inheritDoc
              */
 
-            public function addComment($issueId, $comment, $private, $type = false, $silent = false) {
+            public function addComment($issueId, $comment, $private, $type = false, $silent = false, $markdown = false) {
                 $db = $this->dbName;
                 $acr = explode("-", $issueId)[0];
 
@@ -691,9 +691,11 @@
                         "commentBody" => $comment,
                         "commentPrivate" => $private,
                         "commentType" => $type,
+                        "commentMarkdown" => $markdown,
                     ] : [
                         "commentBody" => $comment,
                         "commentPrivate" => $private,
+                        "commentMarkdown" => $markdown,
                     ],
                     false, $silent
                 );
@@ -711,6 +713,7 @@
                                 "author" => $this->login,
                                 "private" => $private,
                                 "type" => $type,
+                                "markdown" => $markdown,
                             ],
                         ],
                     ] : [
@@ -720,6 +723,7 @@
                                 "created" => time(),
                                 "author" => $this->login,
                                 "private" => $private,
+                                "markdown" => $markdown,
                             ],
                         ],
                     ]
@@ -740,7 +744,7 @@
              * @inheritDoc
              */
 
-            public function modifyComment($issueId, $commentIndex, $comment, $private) {
+            public function modifyComment($issueId, $commentIndex, $comment, $private, $markdown = false) {
                 $db = $this->dbName;
                 $acr = explode("-", $issueId)[0];
 
@@ -769,10 +773,12 @@
                     "commentAuthor" => $issue["comments"][$commentIndex]["author"],
                     "commentBody" => $issue["comments"][$commentIndex]["body"],
                     "commentPrivate" => $issue["comments"][$commentIndex]["private"],
+                    "commentMarkdown" => $issue["comments"][$commentIndex]["markdown"],
                 ], [
                     "commentAuthor" => $this->login,
                     "commentBody" => $comment,
                     "commentPrivate" => $private,
+                    "commentMarkdown" => $markdown,
                 ]);
 
                 if ($issue["comments"][$commentIndex]["author"] == $this->login || $roles[$acr] >= 70) {
@@ -832,6 +838,7 @@
                     "commentBody" => $issue["comments"][$commentIndex]["body"],
                     "commentPrivate" => $issue["comments"][$commentIndex]["private"],
                     "commentCreated" => $issue["comments"][$commentIndex]["created"],
+                    "commentMarkdown" => $issue["comments"][$commentIndex]["markdown"],
                 ], null);
 
                 if ($issue["comments"][$commentIndex]["author"] == $this->login || $roles[$acr] >= 70) {

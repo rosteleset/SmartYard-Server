@@ -634,7 +634,11 @@
                     }
                     h += "</div>";
                     h += "<div class='ml-2 mb-2 mt-1'>";
-                    h += modules.tt.issuesLinks(issue.issue.comments[i].body);
+                    if (issue.issue.comments[i].markdown) {
+                        h += convertLinks(rbtMdRender($.trim(issue.issue.comments[i].body)));
+                    } else {
+                        h += modules.tt.issuesLinks(issue.issue.comments[i].body);
+                    }
                     h += "</div>";
                     h += "</td>";
                     h += "</tr>";
@@ -923,9 +927,8 @@
                     {
                         id: "comment",
                         type: "area",
-// TODO user.extSettings
-//                        type: "code",
-//                        language: "markdown",
+                        type: modules.tt.markdown ? "code" : "area",
+                        language: "markdown",
                         title: i18n("tt.comment"),
                         placeholder: i18n("tt.comment"),
                         validate: v => {
@@ -940,6 +943,7 @@
                     },
                 ],
                 callback: function (result) {
+                    result.markdown = modules.tt.markdown;
                     loadingStart();
                     POST("tt", "comment", false, result).
                     fail(FAIL).
@@ -979,10 +983,8 @@
                     },
                     {
                         id: "comment",
-                        type: "area",
-// TODO user.extSettings
-//                        type: "code",
-//                        language: "markdown",
+                        type: issue.issue.comments[i].markdown ? "code" : "area",
+                        language: "markdown",
                         title: i18n("tt.comment"),
                         placeholder: i18n("tt.comment"),
                         value: issue.issue.comments[i].body,
@@ -1008,6 +1010,7 @@
                             window.location.href = refreshUrl();
                         });
                     } else {
+                        result.markdown = issue.issue.comments[i].markdown;
                         loadingStart();
                         PUT("tt", "comment", false, result).
                         fail(FAIL).

@@ -246,6 +246,7 @@
     "attachmentFilename": "Файл",
     "commentAuthor": "Автор комментария",
     "commentBody": "Комментарий",
+    "commentMarkdown": "Разметка",
     "commentCreated": "Создан",
     "catalog": "Каталог",
     "parent": "\"Родительская\" задача",

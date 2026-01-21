@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {put} /api/tt/comment add comment
+     * @api {post} /api/tt/comment add comment
      *
      * @apiVersion 1.0.0
      *
@@ -14,6 +14,7 @@
      * @apiBody {String} comment
      * @apiBody {Boolean} commentPrivate
      * @apiBody {String} type
+     * @apiBody {Boolean} markdown
      *
      * @apiSuccess {Boolean} operationResult
      */
@@ -32,6 +33,7 @@
      * @apiBody {Number} commentIndex
      * @apiBody {String} comment
      * @apiBody {Boolean} commentPrivate
+     * @apiBody {Boolean} markdown
      *
      * @apiSuccess {Boolean} operationResult
      */
@@ -73,7 +75,7 @@
                     return API::ERROR(500);
                 }
 
-                $success =  $tt->addComment($params["issueId"], $params["comment"], !!@$params["commentPrivate"], @$params["type"]);
+                $success =  $tt->addComment($params["issueId"], $params["comment"], !!@$params["commentPrivate"], @$params["type"], false, !!@$params["markdown"]);
 
                 return api::ANSWER($success, ($success !== false) ? false : "notAcceptable");
             }
@@ -85,7 +87,7 @@
                     return API::ERROR(500);
                 }
 
-                $success =  $tt->modifyComment($params["issueId"], $params["commentIndex"], $params["comment"], !!@$params["commentPrivate"]);
+                $success =  $tt->modifyComment($params["issueId"], $params["commentIndex"], $params["comment"], !!@$params["commentPrivate"], !!@$params["markdown"]);
 
                 return api::ANSWER($success, ($success !== false) ? false : "notAcceptable");
             }

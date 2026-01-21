@@ -246,6 +246,7 @@
     "attachmentFilename": "File",
     "commentAuthor": "Comment Author",
     "commentBody": "Comment",
+    "commentMarkdown": "Markdown",
     "commentCreated": "Created",
     "catalog": "Catalog",
     "parent": "Parent issue",
