@@ -106,7 +106,8 @@ class rodos extends domophone
     {
         $address = parse_url($this->url, PHP_URL_HOST);
         $socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
-        $msg = "admin $this->password k1=2";
+        $lockNumber += 1;
+        $msg = "admin $this->password k$lockNumber=2";
         socket_sendto($socket, $msg, strlen($msg), 0, $address, 8283);
     }
 
