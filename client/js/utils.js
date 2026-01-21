@@ -565,7 +565,12 @@ function isObject(item) {
 
 function mergeDeep(target, ...sources) {
     if (!sources.length) return target;
+
     const source = sources.shift();
+
+    if (!target) {
+        target = {}
+    }
 
     if (isObject(target) && isObject(source)) {
         for (const key in source) {
