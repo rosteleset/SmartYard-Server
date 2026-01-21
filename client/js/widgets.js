@@ -33,7 +33,7 @@ const systemColors = [
 
 function message(message, caption, timeout) {
     timeout = timeout ? timeout : 15;
-    toastr.info(message, caption?caption:i18n("message"), {
+    toastr.info(message, caption ? caption : i18n("message"), {
         "closeButton": true,
         "debug": false,
         "newestOnTop": true,
@@ -53,7 +53,7 @@ function message(message, caption, timeout) {
 
 function warning(message, caption, timeout) {
     timeout = timeout ? timeout : 15;
-    toastr.warning(message, caption?caption:i18n("warning"), {
+    toastr.warning(message, caption ? caption : i18n("warning"), {
         "closeButton": true,
         "debug": false,
         "newestOnTop": true,
@@ -73,7 +73,7 @@ function warning(message, caption, timeout) {
 
 function error(message, caption, timeout) {
     timeout = timeout ? timeout : 15;
-    toastr.error(message, caption?caption:i18n("error"), {
+    toastr.error(message, caption ? caption : i18n("error"), {
         "closeButton": true,
         "debug": false,
         "newestOnTop": true,
