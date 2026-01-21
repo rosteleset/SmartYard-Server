@@ -40,6 +40,7 @@
     "list": "List issues",
     "map": "Issues on map",
     "unhighlight": "Deselect",
+    "verticalGrowth": "Vertical growth",
     "methods": {
         "cs": {
             "_title": "Coordination sheet",

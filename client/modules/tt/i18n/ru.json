@@ -10,6 +10,7 @@
     "issueType": "Тип задачи",
     "issueId": "Задача",
     "issue": "Задача",
+    "issues": "Задачи",
     "comment": "Комментарий",
     "issueTypeProjects": "Проекты",
     "issueTypeDelete": "Удалить тип задач",
@@ -357,6 +358,7 @@
     "unselectAll": "Ничего",
     "attachFile": "Приложить файл к заявке?",
     "attach": "Приложить",
+    "markdown": "Использовать разметку",
     "methods": {
         "tt": {
             "_title": "Менеджер задач",

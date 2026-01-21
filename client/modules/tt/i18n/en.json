@@ -10,6 +10,7 @@
     "issueType": "Type of task",
     "issueId": "Issue",
     "issue": "Issue",
+    "issues": "Issues",
     "comment": "Comment",
     "issueTypeProjects": "Projects",
     "issueTypeDelete": "Delete Issue Type",
@@ -355,6 +356,7 @@
     "unselectAll": "Nothing",
     "attachFile": "Attach file to issue?",
     "attach": "Attach",
+    "markdown": "Use markdown",
     "methods": {
         "tt": {
             "_title": "Task manager",

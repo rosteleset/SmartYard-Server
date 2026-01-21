@@ -31,6 +31,7 @@
      * @apiBody {String} persistentToken persistent token
      * @apiBody {Object} avatar
      * @apiBody {String} password password
+     * @apiBody {String} settings settings
      *
      * @apiSuccess {Boolean} true
      */
@@ -52,14 +53,20 @@
             public static function GET($params) {
                 $user = $params["_backends"]["users"]->getUser($params["_realUid"], true, true);
 
+                $user["settings"] = $params["_backends"]["users"]->getSettings();
+
                 return api::ANSWER($user, ($user !== false) ? "user" : "notFound");
             }
 
             public static function PUT($params) {
                 $success = $params["_backends"]["users"]->userPersonal($params["_realUid"], $params["realName"], $params["eMail"], $params["phone"], $params["tg"], $params["notification"], $params["defaultRoute"], $params["persistentToken"]);
 
-                if (@$params["avatar"]) {
+                if (array_key_exists("avatar", $params)) {
                     $success = $success && $params["_backends"]["users"]->putAvatar($params["_realUid"], $params["avatar"]);
+                }
+
+                if (array_key_exists("settings", $params)) {
+                    $success = $success && $params["_backends"]["users"]->putSettings($params["settings"]);
                 }
 
                 if (@$params["password"] && (int)$params["_realUid"]) {
