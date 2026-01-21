@@ -777,7 +777,7 @@
                                     <tr>
                                         <td nowrap style='width: 0%; border-top: none; border-left: none;'>&nbsp;</td>
                                         <td style='border: none !important;' class='pl-0' colspan='${maxCols.toString()}'>
-                                            <span class='text-bold text-primary pointer csPart'>${p}</span>
+                                            <span class='noselect text-bold text-primary pointer csPart mr-3'>${p}</span>
                                             ${date("[D] d-m-Y", strtotime(modules.cs.date))}
                                         </td>
                                     </tr>
@@ -787,7 +787,7 @@
                                     <tr>
                                         <td nowrap style='width: 0%; border-top: none; border-left: none;'>&nbsp;</td>
                                         <td style='border: none !important;' class='pl-0' colspan='${maxCols.toString()}'>
-                                            <span class='text-bold'>${p}</span>
+                                            <span class='text-bold mr-3'>${p}</span>
                                             ${date("[D] d-m-Y", strtotime(modules.cs.date))}
                                         </td>
                                     </tr>

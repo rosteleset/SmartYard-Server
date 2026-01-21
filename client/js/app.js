@@ -229,7 +229,7 @@ function hashChange() {
                 }
 
                 if (module.menu) {
-                    $("#topMenuLeft").html(`<li id="topMenuLeftCaption" class="ml-3 mr-3 nav-item d-none d-sm-inline-block text-bold text-lg">${menu(module.menu)}</li>`).removeClass("cut-text");
+                    $("#topMenuLeft").html(`<li id="topMenuLeftCaption" class="noselect ml-3 mr-3 nav-item d-none d-sm-inline-block text-bold text-lg">${menu(module.menu)}</li>`).removeClass("cut-text");
                 } else {
                     $("#topMenuLeft").html(`<li id="topMenuLeftCaption" class="cut-text ml-3 mr-3 nav-item d-none d-sm-inline-block text-bold text-lg">${i18n(c)}</li>`).addClass("cut-text");
                 }

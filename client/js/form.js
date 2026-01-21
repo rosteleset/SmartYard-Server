@@ -1973,7 +1973,7 @@ function cardForm(params) {
 
                     $(`#${_prefix}${params.fields[i].id}-value`).val(v);
                     $(`#${_prefix}${params.fields[i].id}-value`).attr("disabled", false);
-                    $(`#${_prefix}${params.fields[i].id}-hint`).html(i18n("type" + n.type.charAt(0).toUpperCase() + n.type.substring(1)));
+                    $(`#${_prefix}${params.fields[i].id}-hint`).html(i18n("acceptableValues") + ": " + i18n("type" + n.type.charAt(0).toUpperCase() + n.type.substring(1)));
                     $(`#${_prefix}${params.fields[i].id}-value`).focus();
                 } else {
                     $(`#${_prefix}${params.fields[i].id}-value`).val("");
