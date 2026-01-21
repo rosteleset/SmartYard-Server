@@ -660,7 +660,12 @@
                                                 if (installers && installers.length && done) {
                                                     modules.cs.issuesInSheet[uid] += `<span class="nowrap noselect border-no-shadow csIssueHighlight ${modules.cs.currentSheet.sheet.issueAssignedClass} ${modules.cs.currentSheet.sheet.issueDoneClass}"><a class="cs-issue-span pointer pl-1 pr-1" href="?#tt.issue&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a></span>`;
                                                 } else {
-                                                    modules.cs.issuesInSheet[uid] += `<a class="nowrap noselect border-no-shadow cs-issue-span pointer text-dark pl-1 pr-1" href="?#tt.issue&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a>`;
+                                                    modules.cs.issuesInSheet[uid] += `<span class="nowrap noselect border-no-shadow"><a class="cs-issue-span pointer text-dark pl-1 pr-1" href="?#tt.issue&issue=${r.issues.issues[i].issueId}" title="${title}">${r.issues.issues[i].issueId}</a></span>`;
+                                                }
+                                                try {
+                                                    modules.cs.vg = myself.settings.cs.sheet.verticalGrowth;
+                                                } catch (e) {
+                                                    modules.cs.vg = false;
                                                 }
                                                 if (modules.cs.vg) {
                                                     modules.cs.issuesInSheet[uid] += "<br />";
@@ -1618,12 +1623,6 @@
         $("#altForm").hide();
 
         document.title = i18n("windowTitle") + " :: " + i18n("cs.cs");
-
-        try {
-            modules.cs.vg = myself.settings.cs.sheet.verticalGrowth;
-        } catch (e) {
-            modules.cs.vg = false;
-        }
 
         modules.cs.sheet = params.sheet ? params.sheet : (lStore("csSheet") ? lStore("csSheet") : false);
         modules.cs.date = params.date ? params.date : (lStore("csDate") ? lStore("csDate") : false);
