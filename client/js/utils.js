@@ -586,8 +586,32 @@ function mergeDeep(target, ...sources) {
     return mergeDeep(target, ...sources);
 }
 
-function isWeekend(date, localeSetting = navigator.language) {
-    let { weekend } = (new Intl.Locale(localeSetting)).getWeekInfo();
+function getSafeWeekInfo(localeCode = navigator.language) {
+    try {
+        let locale = new Intl.Locale(localeCode);
+
+        if (typeof locale.getWeekInfo === 'function') {
+            return locale.getWeekInfo();
+        }
+
+        if (locale.weekInfo) {
+            return locale.weekInfo;
+        }
+    } catch (e) {
+        //
+    }
+
+    console.warn(`getWeekInfo is not supported for ${localeCode}`);
+
+    return {
+        firstDay: 1,
+        weekend: [6, 7],
+        minimalDays: 1
+    };
+}
+
+function isWeekend(date, localeCode = navigator.language) {
+    let { weekend } =getSafeWeekInfo(localeCode);
 
     return weekend.includes(date.getDay() === 0 ? 7 : date.getDay());
 }
