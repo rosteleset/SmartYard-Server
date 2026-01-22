@@ -60,6 +60,16 @@ namespace backends\issueAdapter {
             self::API_COURIER => self::QR_DELIVERY_COURIER
         ];
 
+        protected $tt_url;
+        protected $tt_token;
+
+        public function __construct($config, $db, $redis, $login = false) {
+            parent::__construct($config, $db, $redis, $login);
+
+            $this->tt_url = $this->config['backends']['issueAdapter']['tt_url'];
+            $this->tt_token = $this->config['backends']['issueAdapter']['tt_token'];
+        }
+
         private function getGeo($address): ?array {
             $geocoder = loadBackend('geocoder');
             $queryResult = @$geocoder->suggestions($address)[0];
