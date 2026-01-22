@@ -640,7 +640,7 @@ function cardForm(params) {
                 h += `<div id="${_prefix}${params.fields[i].id}-div" style="position: relative;">`;
                 h += `<pre class="ace-editor form-control formField" id="${_prefix}${params.fields[i].id}"></pre>`;
                 if (params.fields[i].language == "markdown") {
-                    h += `<div id='${_prefix}${params.fields[i].id}-preview' style='text-wrap: wrap; display: none; border: solid thin #ced4da; border-radius: 0.25rem; overflow-y: auto; padding-left: 4px; padding-top: 4px;'></div>`;
+                    h += `<div id='${_prefix}${params.fields[i].id}-preview' style='text-wrap: wrap; display: none; border: solid thin #ced4da; border-radius: 0.25rem; overflow-y: auto; padding-left: 8px; padding-right: 8px; padding-top: 4px;'></div>`;
                     h += `<div class='markdown-preview pointer noselect' data-field='${i}' style='font-size: 0.8rem; position: absolute; right: 10px; top: -10px; border: solid thin #ced4da; border-radius: 0.25rem; background: white; padding-left: 4px; padding-right: 4px;'>${i18n("preview")}</div>`;
                 }
                 h += `</div>`;
