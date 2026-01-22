@@ -325,6 +325,7 @@
     "openIssueNewWindow": "Open issue in a new window",
     "actionNotAvailable": "Action not available",
     "commented": "commented",
+    "modified": "change comment",
     "addFavoriteFilter": "Add filter to favorites",
     "filterIcon": "Icon",
     "filterLeftSide": "Show at left sidebar",

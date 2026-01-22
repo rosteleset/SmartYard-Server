@@ -325,6 +325,7 @@
     "openIssueNewWindow": "Открыть задачу в новом окне",
     "actionNotAvailable": "Действие недоступно",
     "commented": "прокомментировал(а)",
+    "modified": "изменил(а) комментарий",
     "addFavoriteFilter": "Добавить фильтр в избранные",
     "filterIcon": "Иконка",
     "filterLeftSide": "Отображать слева",

@@ -792,6 +792,7 @@
                                 "comments.$commentIndex.created" => time(),
                                 "comments.$commentIndex.author" => $this->login,
                                 "comments.$commentIndex.private" => $private,
+                                "comments.$commentIndex.modified" => true,
                             ]
                         ]
                     ) && $this->mongo->$db->$acr->updateOne(

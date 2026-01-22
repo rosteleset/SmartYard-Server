@@ -85,7 +85,7 @@ function cardForm(params) {
         console.log(`Local font access not available: ${e.message}`);
     }
 
-    let _prefix = "modalForm-" + md5(guid()) + "-";
+    let _prefix = "form-" + md5(guid()) + "-";
 
     let h = `<form id="${_prefix}form" autocomplete="off" onsubmit="return false;" action="">`;
     h += `<input autocomplete="off" name="${_prefix}hiddenText" type="text" style="display: none;">`;
@@ -112,11 +112,11 @@ function cardForm(params) {
         h += `<div class="card-header pointer" id="modalHeader">`;
         h += `<h3 class="card-title text-bold">`;
         if (params.topApply) {
-            h += `<button class="btn btn-primary btn-xs btn-tool-rbt-left mr-2 modalFormOk" id="modalFormApply" title="${i18n(params.apply)}"><i class="fas fa-fw fa-check-circle"></i></button> `;
+            h += `<button class="btn btn-primary btn-xs btn-tool-rbt-left mr-2 formOk" data-prefix=${_prefix} id="formApply" title="${i18n(params.apply)}"><i class="fas fa-fw fa-check-circle"></i></button> `;
         }
         h += params.title;
         h += `</h3>`;
-        h += `<button type="button" class="btn btn-default btn-xs btn-tool-rbt-right ml-2 float-right modalFormCancel" data-dismiss="modal" title="${i18n("cancel")}"><i class="far fa-fw fa-times-circle"></i></button>`;
+        h += `<button type="button" class="btn btn-default btn-xs btn-tool-rbt-right ml-2 float-right formCancel" data-prefix=${_prefix} data-dismiss="modal" title="${i18n("cancel")}"><i class="far fa-fw fa-times-circle"></i></button>`;
         h += `</div>`;
     }
 
@@ -310,7 +310,7 @@ function cardForm(params) {
         }
 
         if (params.fields[i].id === "-") {
-            h += `<tr class='mt-0 mb-0 pt-0 pb-0 jsform-tabbed-item' data-tab-index='${tabs.indexOf(params.fields[i].tab)}'>`;
+            h += `<tr class='mt-0 mb-0 pt-0 pb-0 jsform-tabbed-item' data-prefix='${_prefix}' data-tab-index='${tabs.indexOf(params.fields[i].tab)}'>`;
             if (params.singleColumn) {
                 h += "<td class='mt-0 mb-0 pt-0 pb-0'>";
             } else {
@@ -348,9 +348,9 @@ function cardForm(params) {
             h += `<tr style="display: none;" name="${_prefix}${params.fields[i].id}-container" id="${_prefix}${params.fields[i].id}-container">`;
         } else
         if (params.fields[i].tabHidden) {
-            h += `<tr style="display: none;" class="jsform-tabbed-item ${params.fields[i].noHover ? 'nohover' : ''}" data-tab-index="${tabs.indexOf(params.fields[i].tab)}" name="${_prefix}${params.fields[i].id}-container" id="${_prefix}${params.fields[i].id}-container">`;
+            h += `<tr style="display: none;" class="jsform-tabbed-item ${params.fields[i].noHover ? 'nohover' : ''}" data-prefix='${_prefix}' data-tab-index="${tabs.indexOf(params.fields[i].tab)}" name="${_prefix}${params.fields[i].id}-container" id="${_prefix}${params.fields[i].id}-container">`;
         } else {
-            h += `<tr class="jsform-tabbed-item ${params.fields[i].noHover ? 'nohover' : ''}" data-tab-index="${tabs.indexOf(params.fields[i].tab)}" name="${_prefix}${params.fields[i].id}-container" id="${_prefix}${params.fields[i].id}-container">`;
+            h += `<tr class="jsform-tabbed-item ${params.fields[i].noHover ? 'nohover' : ''}" data-prefix='${_prefix}' data-tab-index="${tabs.indexOf(params.fields[i].tab)}" name="${_prefix}${params.fields[i].id}-container" id="${_prefix}${params.fields[i].id}-container">`;
         }
 
         params.fields[i].type = params.fields[i].type ? params.fields[i].type : "text";
@@ -409,7 +409,7 @@ function cardForm(params) {
         switch (params.fields[i].type) {
             case "select":
                 h += `<div class="input-group">`;
-                h += `<select name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" data-field-index="${i}" class="form-control modalFormField"`;
+                h += `<select name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" data-field-index="${i}" class="form-control formField"`;
                 if (params.fields[i].readonly) {
                     h += ` readonly="readonly"`;
                     h += ` disabled="disabled"`;
@@ -440,9 +440,9 @@ function cardForm(params) {
                     }
                     if (params.fields[i].type == "number") {
                         let float = params.fields[i].float ? params.fields[i].float : "any";
-                        h += `<input name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" type="${params.fields[i].type}" class="form-control modalFormField" style="cursor: text;" autocomplete="off" placeholder="${escapeHTML(params.fields[i].placeholder ? params.fields[i].placeholder : "")}" step="${float}"`;
+                        h += `<input name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" type="${params.fields[i].type}" class="form-control formField" style="cursor: text;" autocomplete="off" placeholder="${escapeHTML(params.fields[i].placeholder ? params.fields[i].placeholder : "")}" step="${float}"`;
                     } else {
-                        h += `<input name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" type="${params.fields[i].type}" class="form-control modalFormField" style="cursor: text;" autocomplete="off" placeholder="${escapeHTML(params.fields[i].placeholder ? params.fields[i].placeholder : "")}"`;
+                        h += `<input name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" type="${params.fields[i].type}" class="form-control formField" style="cursor: text;" autocomplete="off" placeholder="${escapeHTML(params.fields[i].placeholder ? params.fields[i].placeholder : "")}"`;
                     }
                     if (params.fields[i].readonly) {
                         h += ` readonly="readonly"`;
@@ -460,7 +460,7 @@ function cardForm(params) {
                     }
                 } else {
                     h += `<div class="input-group">`;
-                    h += `<input name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" type="${params.fields[i].type}" class="form-control modalFormField nopicker" style="cursor: text;" autocomplete="off" placeholder="${escapeHTML(params.fields[i].placeholder ? params.fields[i].placeholder : "")}"`;
+                    h += `<input name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" type="${params.fields[i].type}" class="form-control formField nopicker" style="cursor: text;" autocomplete="off" placeholder="${escapeHTML(params.fields[i].placeholder ? params.fields[i].placeholder : "")}"`;
                     if (params.fields[i].readonly) {
                         h += ` readonly="readonly"`;
                         h += ` disabled="disabled"`;
@@ -488,9 +488,9 @@ function cardForm(params) {
                     }
                     if (params.fields[i].type == "number") {
                         let float = params.fields[i].float ? params.fields[i].float : "any";
-                        h += `<input name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" type="${params.fields[i].type}" class="form-control modalFormField" style="cursor: text;" autocomplete="off" placeholder="${escapeHTML(params.fields[i].placeholder ? params.fields[i].placeholder : "")}" step="${float}"`;
+                        h += `<input name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" type="${params.fields[i].type}" class="form-control formField" style="cursor: text;" autocomplete="off" placeholder="${escapeHTML(params.fields[i].placeholder ? params.fields[i].placeholder : "")}" step="${float}"`;
                     } else {
-                        h += `<input name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" type="${params.fields[i].type}" class="form-control modalFormField" style="cursor: text;" autocomplete="off" placeholder="${escapeHTML(params.fields[i].placeholder ? params.fields[i].placeholder : "")}"`;
+                        h += `<input name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" type="${params.fields[i].type}" class="form-control formField" style="cursor: text;" autocomplete="off" placeholder="${escapeHTML(params.fields[i].placeholder ? params.fields[i].placeholder : "")}"`;
                     }
                     if (params.fields[i].readonly) {
                         h += ` readonly="readonly"`;
@@ -508,7 +508,7 @@ function cardForm(params) {
                     }
                 } else {
                     h += `<div class="input-group">`;
-                    h += `<input name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" type="${params.fields[i].type}" class="form-control modalFormField nopicker" style="cursor: text;" autocomplete="off" placeholder="${escapeHTML(params.fields[i].placeholder ? params.fields[i].placeholder : "")}"`;
+                    h += `<input name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" type="${params.fields[i].type}" class="form-control formField nopicker" style="cursor: text;" autocomplete="off" placeholder="${escapeHTML(params.fields[i].placeholder ? params.fields[i].placeholder : "")}"`;
                     if (params.fields[i].readonly) {
                         h += ` readonly="readonly"`;
                         h += ` disabled="disabled"`;
@@ -530,9 +530,9 @@ function cardForm(params) {
 
             case "select2":
                 if (params.fields[i].color) {
-                    h += `<div class="select2-${params.fields[i].color} modalFormField">`;
+                    h += `<div class="select2-${params.fields[i].color} formField">`;
                 } else {
-                    h += `<div class="select2-secondary modalFormField">`;
+                    h += `<div class="select2-secondary formField">`;
                 }
                 h += `<select name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" class="form-control select2`;
                 h += `"`;
@@ -562,7 +562,7 @@ function cardForm(params) {
             case "multiselect":
                 if (params.fields[i].filter) {
                     h += `<div class="input-group mb-2">`;
-                    h += `<input name="${_prefix}${params.fields[i].id}-filter" id="${_prefix}${params.fields[i].id}-filter" type="text" class="form-control modalFormField" style="cursor: text;" autocomplete="off" placeholder="${i18n("filter")}">`;
+                    h += `<input name="${_prefix}${params.fields[i].id}-filter" id="${_prefix}${params.fields[i].id}-filter" type="text" class="form-control formField" style="cursor: text;" autocomplete="off" placeholder="${i18n("filter")}">`;
                     h += `<div class="input-group-append">`;
                     h += `<span id="${_prefix}${params.fields[i].id}-filter-button" title="${i18n("filter")}" class="input-group-text pointer"><i class="fas fa-fw fa-filter"></i></span>`;
                     h += `</div>`;
@@ -618,7 +618,7 @@ function cardForm(params) {
                 break;
 
             case "area":
-                h += `<textarea name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" rows="5" class="form-control modalFormField overflow-auto" autocomplete="off" style="resize: vertical;" placeholder="${escapeHTML(params.fields[i].placeholder ? params.fields[i].placeholder : "")}"`;
+                h += `<textarea name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" rows="5" class="form-control formField overflow-auto" autocomplete="off" style="resize: vertical;" placeholder="${escapeHTML(params.fields[i].placeholder ? params.fields[i].placeholder : "")}"`;
                 if (params.fields[i].readonly) {
                     h += ` readonly="readonly"`;
                     h += ` disabled="disabled"`;
@@ -627,7 +627,7 @@ function cardForm(params) {
                 break;
 
             case "rich":
-                h += `<textarea name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" rows="5" class="form-control modalFormField overflow-auto" autocomplete="off" style="resize: vertical;" placeholder="${escapeHTML(params.fields[i].placeholder ? params.fields[i].placeholder : "")}"`;
+                h += `<textarea name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" rows="5" class="form-control formField overflow-auto" autocomplete="off" style="resize: vertical;" placeholder="${escapeHTML(params.fields[i].placeholder ? params.fields[i].placeholder : "")}"`;
                 if (params.fields[i].readonly) {
                     h += ` readonly="readonly"`;
                     h += ` disabled="disabled"`;
@@ -638,7 +638,7 @@ function cardForm(params) {
             case "code":
             case "json":
                 h += `<div id="${_prefix}${params.fields[i].id}-div" style="position: relative;">`;
-                h += `<pre class="ace-editor form-control modalFormField" id="${_prefix}${params.fields[i].id}"></pre>`;
+                h += `<pre class="ace-editor form-control formField" id="${_prefix}${params.fields[i].id}"></pre>`;
                 if (params.fields[i].language == "markdown") {
                     h += `<div id='${_prefix}${params.fields[i].id}-preview' style='display: none; border: solid thin #ced4da; border-radius: 0.25rem; overflow-y: auto; padding-left: 4px; padding-top: 4px;'></div>`;
                     h += `<div class='markdown-preview pointer noselect' data-field='${i}' style='font-size: 0.8rem; position: absolute; right: 10px; top: -10px; border: solid thin #ced4da; border-radius: 0.25rem; background: white; padding-left: 4px; padding-right: 4px;'>${i18n("preview")}</div>`;
@@ -656,9 +656,9 @@ function cardForm(params) {
                 }
                 if (params.fields[i].type == "number") {
                     let float = params.fields[i].float ? params.fields[i].float : "any";
-                    h += `<input name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" type="${params.fields[i].type}" class="form-control modalFormField" style="cursor: text;" autocomplete="off" placeholder="${escapeHTML(params.fields[i].placeholder ? params.fields[i].placeholder : "")}" step="${float}"`;
+                    h += `<input name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" type="${params.fields[i].type}" class="form-control formField" style="cursor: text;" autocomplete="off" placeholder="${escapeHTML(params.fields[i].placeholder ? params.fields[i].placeholder : "")}" step="${float}"`;
                 } else {
-                    h += `<input name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" type="${params.fields[i].type}" class="form-control modalFormField" style="cursor: text;" autocomplete="off" placeholder="${escapeHTML(params.fields[i].placeholder ? params.fields[i].placeholder : "")}"`;
+                    h += `<input name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" type="${params.fields[i].type}" class="form-control formField" style="cursor: text;" autocomplete="off" placeholder="${escapeHTML(params.fields[i].placeholder ? params.fields[i].placeholder : "")}"`;
                 }
                 if (params.fields[i].readonly) {
                     h += ` readonly="readonly"`;
@@ -693,7 +693,7 @@ function cardForm(params) {
             case "jstree":
                 if (params.fields[i].search) {
                     h += `<div class="input-group mb-2">`;
-                    h += `<input id="${_prefix}${params.fields[i].id}-search" id="${_prefix}${params.fields[i].id}-search" type="search" class="form-control modalFormField" style="cursor: text;" autocomplete="off" placeholder="${i18n("search")}" data-input-focus="${_prefix}${params.fields[i].id}">`;
+                    h += `<input id="${_prefix}${params.fields[i].id}-search" id="${_prefix}${params.fields[i].id}-search" type="search" class="form-control formField" style="cursor: text;" autocomplete="off" placeholder="${i18n("search")}" data-input-focus="${_prefix}${params.fields[i].id}">`;
                     h += `<div class="input-group-append">`;
                     h += `<span id="${_prefix}${params.fields[i].id}-search-button" title="${i18n("search")}" class="input-group-text pointer"><i class="fas fa-fw fa-search"></i></span>`;
                     h += `</div>`;
@@ -732,7 +732,7 @@ function cardForm(params) {
                 h += `<div name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" class="overflow-y-auto p-2" style="max-height: 400px; min-height: 400px; height: 400px; overflow-y: auto!important; position: relative; border: solid thin lightgray; border-radius: 3px;"></div>`;
                 // TODO: Do something with this!!! (max-height)
                 h += `<div name="${_prefix}${params.fields[i].id}-hint" id="${_prefix}${params.fields[i].id}-hint" class="mt-2 pl-2 border-no-shadow">&nbsp;</div>`;
-                h += `<textarea name="${_prefix}${params.fields[i].id}-value" id="${_prefix}${params.fields[i].id}-value" rows="5" class="mt-2 form-control modalFormField overflow-auto" autocomplete="off" style="resize: vertical;" placeholder="${escapeHTML(params.fields[i].placeholder ? params.fields[i].placeholder : "")}"></textarea>`;
+                h += `<textarea name="${_prefix}${params.fields[i].id}-value" id="${_prefix}${params.fields[i].id}-value" rows="5" class="mt-2 form-control formField overflow-auto" autocomplete="off" style="resize: vertical;" placeholder="${escapeHTML(params.fields[i].placeholder ? params.fields[i].placeholder : "")}"></textarea>`;
                 break;
 
             case "button":
@@ -766,12 +766,12 @@ function cardForm(params) {
         } else {
             h += `<td colspan="2">`;
         }
-        h += `<button type="button" class="btn btn-primary modalFormOk">${i18n(params.apply)}</button>`;
+        h += `<button type="button" class="btn btn-primary formOk" data-prefix=${_prefix}>${i18n(params.apply)}</button>`;
         if (typeof params.cancel === "function") {
-            h += `<button type="button" class="btn btn-default float-right modalFormCancel">${i18n("cancel")}</button>`;
+            h += `<button type="button" class="btn btn-default float-right formCancel" data-prefix=${_prefix}>${i18n("cancel")}</button>`;
         } else {
             if (params.delete) {
-                h += `<button type="button" class="btn btn-danger float-right modalFormDelete">${params.delete}</button>`;
+                h += `<button type="button" class="btn btn-danger float-right formDelete" data-prefix=${_prefix}>${params.delete}</button>`;
             }
         }
         h += `</td>`;
@@ -1098,7 +1098,7 @@ function cardForm(params) {
 
     function ok() {
         $("#modal").off("hidden.bs.modal");
-        $(".modalFormField").removeClass("is-invalid");
+        $(".formField").removeClass("is-invalid");
         $(".select2-invalid").removeClass("select2-invalid");
         $(".border-color-invalid").removeClass("border-color-invalid");
 
@@ -1263,9 +1263,9 @@ function cardForm(params) {
 
     $("#" + _prefix + "form").submit(function(e) { e.preventDefault(); });
 
-    $(".modalFormOk").off("click").on("click", ok);
-    $(".modalFormDelete").off("click").on("click", del);
-    $(".modalFormCancel").off("click").on("click", cancel);
+    $(`.formOk[data-prefix="${_prefix}"]`).off("click").on("click", ok);
+    $(`.formDelete[data-prefix="${_prefix}"]`).off("click").on("click", del);
+    $(`.formCancel[data-prefix="${_prefix}"]`).off("click").on("click", cancel);
 
     $("#modal").off("hidden.bs.modal").on("hidden.bs.modal", cancel);
 
@@ -2043,7 +2043,7 @@ function cardForm(params) {
 
     $(".jsform-tab-link").off("click").on("click", function () {
         let i = parseInt($(this).attr("data-tab-index"));
-        $(`.jsform-tabbed-item`).hide();
+        $(`.jsform-tabbed-item[data-prefix="${_prefix}"]`).hide();
         $(`.jsform-tabbed-item[data-tab-index="${i}"]`).show();
         $(`.jsform-tabbed-item[data-form-runtime-hide="1"]`).hide();
         $(`.jsform-nav-link`).removeClass("text-bold");

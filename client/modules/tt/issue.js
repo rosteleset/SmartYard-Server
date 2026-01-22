@@ -619,7 +619,7 @@
                     h += members[issue.issue.comments[i].author] ? members[issue.issue.comments[i].author] : issue.issue.comments[i].author;
                     h += "</span>";
                     h += "&nbsp;";
-                    h += i18n("tt.commented");
+                    h += issue.issue.comments[i].modified ? i18n("tt.modified") : i18n("tt.commented");
                     h += "&nbsp;";
                     h += ttDate(issue.issue.comments[i].created);
                     if (issue.issue.comments[i].private) {
