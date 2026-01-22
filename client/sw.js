@@ -6,6 +6,7 @@ const forceVersioningResources = [
     "form.js",
     "loader.js",
     "menu.js",
+    "phpjs.js",
     "table.js",
     "utils.js",
     "widgets.js",
