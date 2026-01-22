@@ -4,7 +4,7 @@ server {
 # IPv6
 #        listen [::]:80;
 
-        server_name m.example.com;
+        server_name qr.example.com;
 
         location /.well-known {
                 root /var/www/html;
@@ -24,7 +24,7 @@ server {
         ssl_certificate /etc/ssl/cert.pem;
         ssl_certificate_key /etc/ssl/key.pem;
 
-        server_name m.example.com;
+        server_name qr.example.com;
 
         client_max_body_size 100M;
 
@@ -33,7 +33,7 @@ server {
         error_page 404 = /index.html;
 
         location / {
-                root /opt/m;
+                root /opt/qr;
                 try_files $uri $uri/ =404;
         }
 
