@@ -190,7 +190,7 @@
                     lStore("ttProject", result.project);
                     lStore("ttWorkflow", result.workflow);
                 }
-                modules.tt.issue.createIssueForm(result.project, result.workflow, result.catalog, false);
+                modules.tt.createIssue.createIssueForm(result.project, result.workflow, result.catalog, false);
                 // loadingStart();
                 // navigateUrl("tt.createIssue", { project: result.project, workflow: result.workflow, catalog: result.catalog, parent: !!parent ? parent["issueId"] : false }, { run: true });
             },
