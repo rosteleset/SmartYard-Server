@@ -640,8 +640,8 @@ function cardForm(params) {
                 h += `<div id="${_prefix}${params.fields[i].id}-div" style="position: relative;">`;
                 h += `<pre class="ace-editor form-control formField" id="${_prefix}${params.fields[i].id}"></pre>`;
                 if (params.fields[i].language == "markdown") {
-                    h += `<div id='${_prefix}${params.fields[i].id}-preview' style='text-wrap: wrap; display: none; border: solid thin #ced4da; border-radius: 0.25rem; overflow-y: auto; padding-left: 8px; padding-right: 8px; padding-top: 4px;'></div>`;
-                    h += `<div class='markdown-preview pointer noselect' data-field='${i}' style='font-size: 0.8rem; position: absolute; right: 10px; top: -10px; border: solid thin #ced4da; border-radius: 0.25rem; background: white; padding-left: 4px; padding-right: 4px;'>${i18n("preview")}</div>`;
+                    h += `<div id='${_prefix}${params.fields[i].id}-preview' class='preview-content'></div>`;
+                    h += `<div class='markdownPreview pointer noselect preview-button' data-field='${i}'>${i18n("preview")}</div>`;
                 }
                 h += `</div>`;
                 break;
@@ -1502,7 +1502,7 @@ function cardForm(params) {
             }).observe($(`#${_prefix}${params.fields[i].id}`)[0]);
 
             if (params.fields[i].language == "markdown") {
-                $(".markdown-preview").off("click").on("click", function () {
+                $(".markdownPreview").off("click").on("click", function () {
                     let p = $(this);
                     let i = p.attr("data-field");
 

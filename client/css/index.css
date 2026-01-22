@@ -1091,3 +1091,25 @@ code {
 .cursor-wait {
   cursor: wait !important;
 }
+
+.preview-content {
+  text-wrap: wrap;
+  display: none;
+  border: solid thin #ced4da;
+  border-radius: 0.25rem;
+  overflow-y: auto;
+  padding-left: 8px;
+  padding-right: 8px;
+  padding-top: 4px;
+}
+
+.preview-button {
+  font-size: 0.8rem;
+  position: absolute;
+  right: 10px; top: -10px;
+  border: solid thin #ced4da;
+  border-radius: 0.25rem;
+  background: white;
+  padding-left: 4px;
+  padding-right: 4px;
+}

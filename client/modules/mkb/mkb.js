@@ -559,7 +559,7 @@
                 </div>
                 <div style='width: 100%; height: 200px; position: relative;'>
                     <pre class='ace-editor' id='mkbComment'></pre>
-                    <div id='mkbCommentPreview' style='display: none; border: solid thin #ced4da; border-radius: 0.25rem; overflow-y: auto; padding-left: 4px; padding-top: 4px;'></div>
+                    <div id='mkbCommentPreview' class='preview-content'></div>
                     <div id='mkbCommentPreviewToggle' class='pointer noselect bg-white pl-2 pr-2 border-no-shadow' style='font-size: 0.8rem; position: absolute; right: 10px; top: -10px;'>
                         ${i18n("preview")}
                     </div>
