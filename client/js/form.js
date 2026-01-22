@@ -1826,7 +1826,7 @@ function cardForm(params) {
         if (params.fields[i].type == "settings") {
             let data = params.fields[i].tree;
 
-            params.fields[i].return = params.fields[i].value;
+            params.fields[i].return = (params.fields[i].value && Object.prototype.toString.call(params.fields[i].value) === "[object Object]") ? params.fields[i].value : {};
 
             let pp;
             let ct;
