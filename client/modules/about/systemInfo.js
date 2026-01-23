@@ -23,10 +23,10 @@
 
             for (let i in r.systemInfo.disk) {
                 let c = "";
-                if (r.systemInfo.disk[i].Usage > "75%") {
+                if (parseInt(r.systemInfo.disk[i].Usage) > 50) {
                     c = "bg-warning";
                 }
-                if (r.systemInfo.disk[i].Usage > "90%") {
+                if (parseInt(r.systemInfo.disk[i].Usage) > 90) {
                     c = "bg-danger";
                 }
                 disk += `

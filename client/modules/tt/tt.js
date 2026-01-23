@@ -401,6 +401,7 @@
                     return {
                         id: "description",
                         type: modules.tt.markdown ? "code" : "area",
+                        height: 250,
                         language: "markdown",
                         title: title ? title: modules.tt.issueFieldTitle(field),
                         placeholder: modules.tt.issueFieldTitle(field),
@@ -414,6 +415,7 @@
                     return {
                         id: "comment",
                         type: modules.tt.markdown ? "code" : "area",
+                        height: 250,
                         language: "markdown",
                         title: title ? title: modules.tt.issueFieldTitle(field),
                         placeholder: modules.tt.issueFieldTitle(field),
