@@ -1105,7 +1105,7 @@
                     tab: i18n("addresses.primary"),
                     placeholder: i18n("addresses.openCodeTemplate"),
                     validate: v => {
-                        return ((parseInt(v) >= 10001 && parseInt(v) <= 99999) || v === '') ? true : i18n("addresses.openCodeError");
+                        return ((parseInt(v) >= 10001 && parseInt(v) <= 99999) || v === '' || v === '00000') ? true : i18n("addresses.openCodeError");
                     },
                     button: {
                         "class": "fas fa-magic",
@@ -2410,7 +2410,7 @@
                         placeholder: i18n("addresses.openCodeTemplate"),
                         value: flat.openCode,
                         validate: v => {
-                            return ((parseInt(v) >= 10001 && parseInt(v) <= 99999) || v === '') ? true : i18n("addresses.openCodeError");
+                            return ((parseInt(v) >= 10001 && parseInt(v) <= 99999) || v === '' || v === '00000') ? true : i18n("addresses.openCodeError");
                         },
                         tab: i18n("addresses.primary"),
                         button: {

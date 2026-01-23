@@ -656,6 +656,10 @@
                         $openCode = 11000 + rand(0, 88999);
                     }
 
+                    if ($openCode == "00000") {
+                        $openCode = false;
+                    }
+
                     $flatId = $this->db->insert("insert into houses_flats (address_house_id, floor, flat, code, manual_block, admin_block, open_code, plog, auto_open, white_rabbit, sip_enabled, sip_password, cms_enabled, sip_alt) values (:address_house_id, :floor, :flat, :code, :manual_block, :admin_block, :open_code, :plog, :auto_open, :white_rabbit, :sip_enabled, :sip_password, 1, :sip_alt)", [
                         ":address_house_id" => $houseId,
                         ":floor" => (int)$floor,
@@ -768,6 +772,10 @@
                     if (@$params["openCode"] == "!") {
                         // TODO add unique check !!!
                         $params["openCode"] = 11000 + rand(0, 88999);
+                    }
+
+                    if ($openCode == "00000") {
+                        $openCode = false;
                     }
 
                     $params["openCode"] = $params["openCode"] ?: '';
