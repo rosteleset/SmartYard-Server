@@ -3428,7 +3428,7 @@
                                 apartmentsAndLevels: false,
                                 manualBlock: result.manualBlock,
                                 adminBlock: result.adminBlock,
-                                openCode: parseInt(result.openCode) ? "!" : "00000",
+                                openCode: parseInt(result.openCode) ? "!" : "",
                                 plog: result.plog,
                                 autoOpen: result.autoOpen,
                                 whiteRabbit: result.whiteRabbit,
