@@ -310,6 +310,8 @@
     "lastSeen": "Last seen",
     "autoconfigureDomophone": "Configure domophone",
     "autoconfigureDomophoneFirstTime": "Configure domophone (first time)",
+    "devices":"Devices",
+    "device":"Device",
     "taskQueued": "Task was added to queue",
     "autoBlock": "Autoblocked",
     "status": "Status",
