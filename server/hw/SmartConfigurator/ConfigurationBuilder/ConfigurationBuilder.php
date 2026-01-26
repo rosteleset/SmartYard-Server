@@ -16,9 +16,9 @@ abstract class ConfigurationBuilder
      * Add an event server to the configuration.
      *
      * @param string $url Event server URL.
-     * @return self
+     * @return static
      */
-    public function addEventServer(string $url): self
+    public function addEventServer(string $url): static
     {
         $this->config['eventServer'] = $url;
         return $this;
@@ -30,9 +30,9 @@ abstract class ConfigurationBuilder
      * @param string $server The NTP server's address.
      * @param int $port The NTP server's port number.
      * @param string $timezone The timezone identifier.
-     * @return self
+     * @return static
      */
-    public function addNtp(string $server, int $port, string $timezone): self
+    public function addNtp(string $server, int $port, string $timezone): static
     {
         $this->config['ntp'] = compact('server', 'port', 'timezone');
         return $this;
