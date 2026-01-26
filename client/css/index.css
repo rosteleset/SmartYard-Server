@@ -621,6 +621,7 @@ select {
   min-width: 12.5rem;
   -webkit-box-shadow: 1px 1px 2px #696969;
   box-shadow: 1px 1px 1px #696969;
+  max-width: 350px;
 }
 
 .sticky .caption {

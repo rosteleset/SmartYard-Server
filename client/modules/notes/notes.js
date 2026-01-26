@@ -207,7 +207,7 @@
             newSticky += "<hr style='opacity: 50%;' />";
         }
 
-        newSticky += `<div data-id=${id} class='body${parseInt(fyeo) ? ' fyeo' : ''}'${$.trim(font) ? " style='font-family: ${font}'" : ''}>`;
+        newSticky += `<div data-id=${id} class='cut-text body${parseInt(fyeo) ? ' fyeo' : ''}'${$.trim(font) ? " style='font-family: ${font}'" : ''}>`;
 
         switch (type) {
             case "checks":
