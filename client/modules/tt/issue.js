@@ -445,7 +445,7 @@
         }
 
         h += "<tr>";
-        h += "<td style='vertical-align: top; width: 100%;'>";
+        h += "<td style='vertical-align: top; width: 100%;' class='pr-3'>";
         h += "<table style='width: 100%;'>";
         for (let i in issue.fields) {
             if (!rightFields.includes(issue.fields[i])) {
