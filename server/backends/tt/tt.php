@@ -308,6 +308,79 @@
                         },
                     ]);
 
+                    $sandbox->registerLibrary("api", [
+                        "call" => function ($http, $api, $method, $refresh = false, $data = false) {
+                            global $params, $auth, $backends, $redis;
+
+                            $params["_path"] = [
+                                "api" => $api,
+                                "method" => $method,
+                            ];
+
+                            $params["_request_method"] = $http;
+
+                            if (file_exists(__DIR__ . "/../../api/$api/$method.php")) {
+                                if ($backends["authorization"]->allow($params)) {
+                                    $cache = false;
+                                    if ($params["_request_method"] === "GET") {
+                                        try {
+                                            $cache = json_decode($redis->get("CACHE:FRONT:" . strtoupper($params["_md5"])) . ":" . $auth["uid"], true);
+                                        } catch (Exception $e) {
+                                            error_log(print_r($e, true));
+                                        }
+                                    }
+                                    if ($cache && !$refresh) {
+                                        header("X-Api-Data-Source: cache");
+                                        $code = array_key_first($cache);
+                                        return false;
+                                    } else {
+                                        header("X-Api-Data-Source: db");
+                                        if ($clearCache) {
+                                            clearCache($auth["uid"]);
+                                        }
+                                        if (file_exists(__DIR__ . "/../../api/$api/custom/$method.php")) {
+                                            $file = __DIR__ . "/../../api/$api/custom/$method.php";
+                                            $class = "\\api\\$api\\custom\\$method";
+                                        } else {
+                                            $file = __DIR__ . "/../../api/$api/$method.php";
+                                            $class = "\\api\\$api\\$method";
+                                        }
+                                        require_once $file;
+                                        if (class_exists($class)) {
+                                            try {
+                                                $result = call_user_func([$class, $params["_request_method"]], $params);
+                                                $code = array_key_first($result);
+                                                if ((int)$code) {
+                                                    if ($params["_request_method"] == "GET" && (int)$code === 200) {
+                                                        $ttl = (array_key_exists("cache", $result)) ? ((int)$cache) : $redis_cache_ttl;
+                                                        if ((int)$auth["uid"] > 0) {
+                                                            $redis->setex("CACHE:FRONT:" . strtoupper($params["_md5"]) . ":" . $auth["uid"], $ttl, json_encode($result));
+                                                        }
+                                                    }
+                                                    if ($code == 200) {
+                                                        return $result[200];
+                                                    }
+                                                    return $code;
+                                                } else {
+                                                    return false;
+                                                }
+                                            } catch (Exception $e) {
+                                                error_log(print_r($e, true));
+                                                return false;
+                                            }
+                                        } else {
+                                            return false;
+                                        }
+                                    }
+                                } else {
+                                    return false;
+                                }
+                            } else {
+                                return false;
+                            }
+                        },
+                    ]);
+
                     $this->workflows[$workflow] = new \tt\workflow\workflow($this->config, $this->db, $this->redis, $this, $workflow, $sandbox);
 
                     return $this->workflows[$workflow];

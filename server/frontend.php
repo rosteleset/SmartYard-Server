@@ -348,7 +348,7 @@
                         $code = array_key_first($result);
                         if ((int)$code) {
                             if ($params["_request_method"] == "GET" && (int)$code === 200) {
-                                $ttl = (array_key_exists("cache", $result))?((int)$cache):$redis_cache_ttl;
+                                $ttl = (array_key_exists("cache", $result)) ? ((int)$cache) : $redis_cache_ttl;
                                 if ((int)$auth["uid"] > 0) {
                                     $redis->setex("CACHE:FRONT:" . strtoupper($params["_md5"]) . ":" . $auth["uid"], $ttl, json_encode($result));
                                 }
