@@ -1114,3 +1114,7 @@ code {
   padding-left: 4px;
   padding-right: 4px;
 }
+
+.width32 {
+  width: 32px !important;
+}
