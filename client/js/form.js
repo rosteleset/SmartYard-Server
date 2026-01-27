@@ -798,7 +798,7 @@ function cardForm(params) {
         }
 
         if (item.element && item.element.dataset && item.element.dataset.icon && item.element.dataset.icon !== "undefined") {
-            return $(`<span class="${c}" style="display: grid; align-items: center; justify-content: start;"><span style="grid-column: 1; width: fit-content;"><i class="${item.element.dataset.icon} mr-2"></i></span><span style="grid-column: 2; ${f}">${item.text}</span></span>`);
+            return $(`<span class="${c}" style="display: grid; align-items: center; justify-content: start;"><span style="grid-column: 1; width: fit-content;"><i class="${item.element.dataset.icon} mr-2 fa-fw width32"></i></span><span style="grid-column: 2; ${f}">${item.text}</span></span>`);
         } else {
             return $(`<span class="${c}" style="${f}">${item.text}</span>`);
         }
@@ -817,7 +817,7 @@ function cardForm(params) {
         }
 
         if (item.element && item.element.dataset && item.element.dataset.icon && item.element.dataset.icon !== "undefined") {
-            return $(`<span class="${c}" style="display: grid; align-items: top; justify-content: start;"><span style="grid-column: 1; width: fit-content;"><i class="${item.element.dataset.icon} mr-2"></i></span><span style="grid-column: 2; $f">${item.text}</span></span>`);
+            return $(`<span class="${c}" style="display: grid; align-items: top; justify-content: start;"><span style="grid-column: 1; width: fit-content;"><i class="${item.element.dataset.icon} mr-2 fa-fw width32"></i></span><span style="grid-column: 2; $f">${item.text}</span></span>`);
         } else {
             return $(`<span class="${c}" style="${f}">${item.text}</span>`);
         }
