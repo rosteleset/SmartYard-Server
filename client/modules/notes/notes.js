@@ -192,7 +192,7 @@
     },
 
     renderNote: function (id, subject, body, type, color, icon, font, remind, z, fyeo) {
-        let newSticky = `<div id='${id}' class='drag sticky sticky-bg-color-${color}' style='z-index: ${z};'>`;
+        let newSticky = `<div id='${id}' class='sticky sticky-bg-color-${color}' style='z-index: ${z};'>`;
 
         // TODO: box-shadow: 2px 2px 7px {shadow-color};
 
@@ -385,12 +385,14 @@
                 let w = parseInt(window.getComputedStyle(document.getElementById(id)).getPropertyValue("width"))
                 let h = parseInt(window.getComputedStyle(document.getElementById(id)).getPropertyValue("height"))
 
+/*
                 sticky.css({
                     left: x + 'px',
                     top: y + 'px',
                     width: ((Math.floor(w / modules.notes.gridSize) + 1) * modules.notes.gridSize) + 'px',
                     height: ((Math.floor(h / modules.notes.gridSize) + 1) * modules.notes.gridSize) + 'px',
                 });
+*/
 
                 $(".editSticky").off("click").on("click", modules.notes.modifySticky);
                 $(".showFyeo").off("click").on("click", modules.notes.showFyeo);
@@ -644,13 +646,14 @@
                     let w = parseInt(window.getComputedStyle(document.getElementById(id)).getPropertyValue("width"))
                     let h = parseInt(window.getComputedStyle(document.getElementById(id)).getPropertyValue("height"))
 
+/*
                     sticky.css({
                         left: x + 'px',
                         top: y + 'px',
                         width: ((Math.floor(w / modules.notes.gridSize) + 1) * modules.notes.gridSize) + 'px',
                         height: ((Math.floor(h / modules.notes.gridSize) + 1) * modules.notes.gridSize) + 'px',
                     });
-
+*/
                     $(".editSticky").off("click").on("click", modules.notes.modifySticky);
                     $(".showFyeo").off("click").on("click", modules.notes.showFyeo);
                     $(".noteCheckbox").off("click").on("click", modules.notes.stickyCheckbox);
@@ -756,13 +759,14 @@
 
                 let w = parseInt(window.getComputedStyle(document.getElementById(id)).getPropertyValue("width"))
                 let h = parseInt(window.getComputedStyle(document.getElementById(id)).getPropertyValue("height"))
-
+/*
                 sticky.css({
                     left: modules.notes.notes[id].x + 'px',
                     top: modules.notes.notes[id].y + 'px',
                     width: ((Math.floor(w / modules.notes.gridSize) + 1) * modules.notes.gridSize) + 'px',
                     height: ((Math.floor(h / modules.notes.gridSize) + 1) * modules.notes.gridSize) + 'px',
                 });
+*/
             }
         }
 
@@ -791,43 +795,10 @@
             modules.notes.createNote();
         });
 
-/*
-        $("#mainForm").html(`
-            <div id="grid" class="row">
-                <div id="gridDemo" class="col">
-                    <div class="grid-square">Item 1</div>
-                    <div class="grid-square">Item 2</div>
-                    <div class="grid-square">Item 3</div>
-                    <div class="grid-square">Item 4</div>
-                    <div class="grid-square">Item 5</div>
-                    <div class="grid-square">Item 6</div>
-                    <div class="grid-square">Item 7</div>
-                    <div class="grid-square">Item 8</div>
-                    <div class="grid-square">Item 9</div>
-                    <div class="grid-square">Item 10</div>
-                    <div class="grid-square">Item 11</div>
-                    <div class="grid-square">Item 12</div>
-                    <div class="grid-square">Item 13</div>
-                    <div class="grid-square">Item 14</div>
-                    <div class="grid-square">Item 15</div>
-                    <div class="grid-square">Item 16</div>
-                    <div class="grid-square">Item 17</div>
-                    <div class="grid-square">Item 18</div>
-                    <div class="grid-square">Item 19</div>
-                    <div class="grid-square">Item 20</div>
-                </div>
-            </div>
-        `);
-
-        loadingDone();
-
-        return;
-*/
-
         $("#mainForm").html(`
             <div id='stickiesTable'>
-                <div style='overflow-x: auto; overflow-y: hidden;' class='p-0 m-0 mt-2 pb-2 stickies-container-scroller'>
-                    <div id='stickiesContainer' style='position: relative;' class='p-0 m-0 resizable mouseEvents dots'></div>
+                <div class='p-0 mt-2 ml-0 mb-1 mr-0 row'>
+                    <div id='stickiesContainer' class='col p-0 m-0 resizable mouseEvents dots d-flex flex-wrap align-content-start align-items-start' style='gap: 8px;'></div>
                 </div>
             </div>
         `);

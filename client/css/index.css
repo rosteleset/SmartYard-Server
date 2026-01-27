@@ -1077,7 +1077,7 @@ code {
   border: solid thin rgb(192, 192, 192);
   display: inline-block;
   padding: 1rem;
-  position: absolute;
+  position: relative;
   min-width: 12.5rem;
   -webkit-box-shadow: 1px 1px 2px #696969;
   box-shadow: 1px 1px 1px #696969;
@@ -1138,14 +1138,4 @@ code {
   height: 32px;
   padding-top: 7px;
   padding-left: 3px;
-}
-
-.grid-square {
-	width: 100px;
-	height: 100px;
-	display: inline-block;
-	background-color: #fff;
-	border: solid 1px rgb(0,0,0,0.2);
-	padding: 10px;
-	margin: 12px;
 }
