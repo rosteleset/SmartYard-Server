@@ -439,7 +439,7 @@
 
         $("#stickiesContainer").css({
             width: Math.max(mw + 4, $("#stickiesTable").width()) + "px",
-            height: Math.max(mh + 4, $(window).height() - mainFormTop - 8) + "px",
+            height: Math.max(mh + 4, $(window).height() - mainFormTop - 5) + "px",
         });
     },
 
@@ -791,7 +791,13 @@
             modules.notes.createNote();
         });
 
-        $("#mainForm").html("<div id='stickiesTable'><div style='overflow-x: auto; overflow-y: hidden;' class='p-0 m-0 mt-2 mb-1'><div id='stickiesContainer' style='position: relative;' class='p-0 m-0 resizable mouseEvents dots'></div></div></div>");
+        $("#mainForm").html(`
+            <div id='stickiesTable'>
+                <div style='overflow-x: auto; overflow-y: hidden;' class='p-0 m-0 mt-2 pb-2 stickies-container-scroller'>
+                    <div id='stickiesContainer' style='position: relative;' class='p-0 m-0 resizable mouseEvents dots'></div>
+                </div>
+            </div>
+        `);
 
         let s = $("#stickiesContainer");
 
