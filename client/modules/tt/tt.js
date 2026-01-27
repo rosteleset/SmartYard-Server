@@ -354,8 +354,10 @@
         }
 
         let tags = [];
+        let tagss = {};
         for (let i in modules.tt.meta.tags) {
             if (modules.tt.meta.tags[i].projectId == projectId) {
+                tagss[modules.tt.meta.tags[i].tag] = modules.tt.meta.tags[i];
                 tags.push({
                     id: modules.tt.meta.tags[i].tag,
                     text: modules.tt.meta.tags[i].tag,
@@ -484,6 +486,10 @@
                         placeholder: modules.tt.issueFieldTitle(field),
                         options: select2Filter(tags, filter),
                         value: (typeof prefferredValue !== "undefined") ? prefferredValue : ((issue && issue.tags) ? Object.values(issue.tags) : []),
+                        colorizeTags: (item, container) => {
+                            container.addClass("bg-" + tagss[item.text].color);
+                            return $(`<span class="bg-${tagss[item.text].color}">${item.text}</span>`);
+                        }
                     };
 
                 case "assigned":

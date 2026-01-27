@@ -1381,7 +1381,7 @@ function cardForm(params) {
             }
 
             if (params.fields[i].colorizeTags === true) {
-                s2p.templateSelection = function(item, container) {
+                s2p.templateSelection = (item, container) => {
                     container.addClass("bg-" + systemColor(item.text));
                     return $(`<span class="bg-${systemColor(item.text)}">${item.text}</span>`);
                 }

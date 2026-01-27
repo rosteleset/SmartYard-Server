@@ -437,7 +437,11 @@
             h += "<td style='vertical-align: top; width: 100%;' colspan='2'>";
             h += "<div class='pt-1 pb-1 small'>";
             for (let i in issue.issue.tags) {
-                h += `<span class="mr-1 text-bold ${(tags[issue.issue.tags[i]] && tags[issue.issue.tags[i]].color) ? ("bg-" + tags[issue.issue.tags[i]].color) : ""}" style='border: solid thin #cbccce; padding-left: 6px; padding-right: 5px; padding-top: 2px; padding-bottom: 2px; border-radius: 8px;'><i class="fas fa-tag mr-2"></i>${escapeHTML(issue.issue.tags[i])}</span>`;
+                h +=`
+                    <span class="badge ${(tags[issue.issue.tags[i]] && tags[issue.issue.tags[i]].color) ? ("bg-" + tags[issue.issue.tags[i]].color) : ""} kanban-badge pr-2 pl-2 mt-1 noselect" style="border: solid thin #60686f" title="${$.trim(escapeHTML(issue.issue.tags[i]))}">
+                        ${$.trim(escapeHTML(issue.issue.tags[i]))}
+                    </span>
+                `;
             }
             h += "</div>";
             h += "</td>";
