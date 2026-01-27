@@ -1,19 +1,5 @@
 @charset "UTF-8";
 
-::-webkit-scrollbar {
-  background: lightgray;
-  height: 6px;
-  width: 6px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #94a3b8;
-}
-
-::-webkit-scrollbar-track {
-  background: lightgray;
-}
-
 body {
   overflow: -moz-scrollbars-vertical;
   overflow-y: scroll !important;
@@ -22,8 +8,17 @@ body {
 }
 
 body::-webkit-scrollbar {
-  width: 6px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
+  background: #dcdfe3;
+}
+
+body::-webkit-scrollbar-thumb {
+  background: #749398;
+}
+
+body::-webkit-scrollbar-track {
+  background: #dcdfe3;
 }
 
 body:not(.dark-mode) .nodec:link {
