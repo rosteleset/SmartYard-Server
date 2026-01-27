@@ -6,6 +6,8 @@
     defaultPagerItemsCount: 10,
     menuItem: false,
     markdown: false,
+    defaultProject: false,
+    defaultFilter: false,
 
     specialActions: [
         "saAddComment",
@@ -41,9 +43,11 @@
                 this.menuItem = false;
             } else {
                 this.menuItem = leftSide("fas fa-fw fa-tasks", i18n("tt.tt"), "?#tt", "tt");
+
                 if (AVAIL("tt", "customFilter")) {
                     leftSide("fas fa-fw fa-search-plus", i18n("tt.customFilter"), `?#tt&filter=empty&customFilter=yes`, "tt");
                 }
+
                 reg.push({
                     id: "tt",
                     text: i18n("tt.tt"),
@@ -59,10 +63,33 @@
                                 }
                             ]
                         },
+                        {
+                            id: "filters",
+                            text: i18n("tt.filters"),
+                            children: [
+                                {
+                                    id: "default",
+                                    text: i18n("default"),
+                                    type: "string",
+                                    hint: i18n("tt.projectThenFilter"),
+                                }
+                            ]
+                        },
                     ],
                 });
+
                 try {
                     modules.tt.markdown = myself.settings.tt.issues.markdown;
+                } catch (e) {
+                    //
+                }
+
+                try {
+                    let t = myself.settings.tt.filters.default.split(",");
+                    if (t.length == 2) {
+                        modules.tt.defaultProject = $.trim(t[0]);
+                        modules.tt.defaultFilter = $.trim(t[1]);
+                    }
                 } catch (e) {
                     //
                 }
@@ -1488,13 +1515,13 @@
 
         if (target) {
             try {
-                filterName = params["filter"];
+                filterName = params.filter;
             } catch (_) {
                 //
             }
         } else {
             try {
-                filterName = params["filter"] ? params["filter"] : lStore("ttIssueFilter:" + currentProject);
+                filterName = (params.filter && (params.filter != "empty" || params.customFilter == "yes")) ? params.filter : lStore("ttIssueFilter:" + currentProject);
             } catch (_) {
                 //
             }
@@ -2444,6 +2471,7 @@
                                             filter: filterName ? filterName : "",
                                             search: ($.trim(params.search) && params.search !== true) ? $.trim(params.search) : "",
                                         }),
+                                        class: "text-center",
                                     }
                                 ];
 
@@ -2559,7 +2587,7 @@
                             lStore("ttIssueFilter:" + $("#ttProjectSelect").val(), null);
                             lStore("ttIssueFilter:" + lStore("ttProject"), null);
                             lStore("ttProject", null);
-                            if (params["_"] != _) {
+                            if (params._ != _) {
                                 navigateUrl("tt", { _ }, { run: true });
                             }
                         }
@@ -2593,7 +2621,7 @@
                         lStore("ttIssueFilter:" + $("#ttProjectSelect").val(), null);
                         lStore("ttIssueFilter:" + lStore("ttProject"), null);
                         lStore("ttProject", null);
-                        if (params["_"] != _) {
+                        if (params._ != _) {
                             navigateUrl("tt", { _ }, { run: true });
                         }
                     }
@@ -2740,7 +2768,7 @@
             return;
         }
 
-        if (params["issue"]) {
+        if (params.issue) {
             navigateUrl("tt.issue", params, { run: true });
             return;
         }

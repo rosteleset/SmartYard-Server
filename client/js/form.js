@@ -529,11 +529,7 @@ function cardForm(params) {
                 break;
 
             case "select2":
-                if (params.fields[i].color) {
-                    h += `<div class="select2-${params.fields[i].color} formField">`;
-                } else {
-                    h += `<div class="select2-secondary formField">`;
-                }
+                h += `<div class="${params.fields[i].color ? ("select2-" + params.fields[i].color) : ""} formField ${params.fields[i].multiple ? "input-group" : ""}">`;
                 h += `<select name="${_prefix}${params.fields[i].id}" id="${_prefix}${params.fields[i].id}" class="form-control select2`;
                 h += `"`;
                 if (params.fields[i].readonly) {
@@ -556,6 +552,15 @@ function cardForm(params) {
                     h += params.fields[i].options;
                 }
                 h += `</select>`;
+                if (params.fields[i].multiple) {
+                    h += `<div class="input-group-append">`;
+                    if (params.fields[i].readonly) {
+                        h += `<span class="input-group-text disabled" disabled="disabled"><i class="fas fa-fw fa-window-close"></i></span>`;
+                    } else {
+                        h += `<span class="input-group-text pointer select2Clear" data-for="${_prefix}${params.fields[i].id}"><i class="fas fa-fw fa-window-close"></i></span>`;
+                    }
+                    h += `</div>`;
+                }
                 h += `</div>`;
                 break;
 
@@ -1418,6 +1423,10 @@ function cardForm(params) {
             }
 
             $(`#${_prefix}${params.fields[i].id}`).next().css("width", "100%");
+
+            $(".select2Clear").off("click").on("click", function () {
+                $(`#${$(this).attr("data-for")}`).val(null).trigger('change');
+            });
         }
 
         if (params.fields[i].type == "rich") {
@@ -1834,6 +1843,7 @@ function cardForm(params) {
             let types = {
                 boolean: "far fa-fw fa-edit",
                 text: "fas fa-fw fa-edit",
+                string: "fas fa-fw fa-edit",
                 int: "fas fa-fw fa-edit",
                 float: "fas fa-fw fa-edit",
             };
@@ -1924,6 +1934,15 @@ function cardForm(params) {
                     case "text":
                         v[pp[pp.length - 1]] = t;
                         break;
+
+                    case "string":
+                        if (t.split("\n").length == 1) {
+                            v[pp[pp.length - 1]] = t;
+                            $(`#${_prefix}${params.fields[i].id}-value`).removeClass("is-invalid");
+                        } else {
+                            $(`#${_prefix}${params.fields[i].id}-value`).addClass("is-invalid");
+                        }
+                        break;
                 }
             });
 
@@ -1973,7 +1992,7 @@ function cardForm(params) {
 
                     $(`#${_prefix}${params.fields[i].id}-value`).val(v);
                     $(`#${_prefix}${params.fields[i].id}-value`).attr("disabled", false);
-                    $(`#${_prefix}${params.fields[i].id}-hint`).html(i18n("acceptableValues") + ": " + i18n("type" + n.type.charAt(0).toUpperCase() + n.type.substring(1)));
+                    $(`#${_prefix}${params.fields[i].id}-hint`).html(i18n("acceptableValues") + ": " + i18n("type" + n.type.charAt(0).toUpperCase() + n.type.substring(1)) + (n.hint ? ` [${n.hint}]` : ""));
                     $(`#${_prefix}${params.fields[i].id}-value`).focus();
                 } else {
                     $(`#${_prefix}${params.fields[i].id}-value`).val("");

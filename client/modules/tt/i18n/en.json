@@ -359,6 +359,7 @@
     "attachFile": "Attach file to issue?",
     "attach": "Attach",
     "markdown": "Use markdown",
+    "projectThenFilter": "project,filter",
     "methods": {
         "tt": {
             "_title": "Task manager",

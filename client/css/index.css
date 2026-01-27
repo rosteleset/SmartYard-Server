@@ -1118,3 +1118,13 @@ code {
 .width32 {
   width: 32px !important;
 }
+
+.input-group > .select2-container--default {
+    flex: 1 1 auto;
+    width: 1% !important;
+}
+
+.input-group > .select2-container--default .select2-selection--single {
+    height: 100%;
+    border-radius: 0;
+}

@@ -122,6 +122,7 @@
     "typeBoolean": "only 1 or 0",
     "typeInt": "only integer",
     "typeFloat": "any number",
+    "typeString": "single string",
     "errors": {
         "error": "Error",
         "404caption": "Oh! Page not found",
