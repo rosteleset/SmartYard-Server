@@ -608,74 +608,6 @@ select {
   user-select: none;
 }
 
-.sticky {
-  border-radius: 5px;
-  border: solid thin rgb(192, 192, 192);
-  display: inline-block;
-  padding: 1rem;
-  position: absolute;
-  min-width: 12.5rem;
-  -webkit-box-shadow: 1px 1px 2px #696969;
-  box-shadow: 1px 1px 1px #696969;
-  max-width: 350px;
-}
-
-.sticky .caption {
-  pointer-events: none;
-}
-
-.sticky .body {
-  margin: 0;
-  min-height: 9rem;
-  overflow-y: auto;
-  max-height: 400px;
-  pointer-events: all;
-  -webkit-touch-callout: unset;
-  -webkit-user-select: text;
-  -khtml-user-select: text;
-  -moz-user-select: text;
-  -ms-user-select: text;
-  user-select: text;
-}
-
-.sticky .body a {
-  pointer-events: all;
-}
-
-.sticky .editSticky {
-  cursor: pointer;
-  font-size: 16px;
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
-  padding-top: 7px;
-  padding-left: 3px;
-}
-
-.sticky .reminder {
-  font-size: 0.75rem;
-  position: absolute;
-  right: 0.25rem;
-  top: 0.35rem;
-  pointer-events: none;
-}
-
-.sticky .showFyeo {
-  cursor: pointer;
-  font-size: 16px;
-  position: absolute;
-  right: 0;
-  bottom: 24px;
-  border-radius: 50%;
-  width: 35px;
-  height: 32px;
-  padding-top: 7px;
-  padding-left: 3px;
-}
-
 .sticky-bg-color-white {
   background-color: rgb(255, 255, 255);
 }
@@ -1138,4 +1070,82 @@ code {
 
 .stickies-container-scroller::-webkit-scrollbar-track {
   background: #dcdfe3;
+}
+
+.sticky {
+  border-radius: 5px;
+  border: solid thin rgb(192, 192, 192);
+  display: inline-block;
+  padding: 1rem;
+  position: absolute;
+  min-width: 12.5rem;
+  -webkit-box-shadow: 1px 1px 2px #696969;
+  box-shadow: 1px 1px 1px #696969;
+  max-width: 350px;
+}
+
+.sticky .caption {
+  pointer-events: none;
+}
+
+.sticky .body {
+  margin: 0;
+  min-height: 9rem;
+  overflow-y: auto;
+  max-height: 400px;
+  pointer-events: all;
+  -webkit-touch-callout: unset;
+  -webkit-user-select: text;
+  -khtml-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+.sticky .body a {
+  pointer-events: all;
+}
+
+.sticky .editSticky {
+  cursor: pointer;
+  font-size: 16px;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  padding-top: 7px;
+  padding-left: 3px;
+}
+
+.sticky .reminder {
+  font-size: 0.75rem;
+  position: absolute;
+  right: 0.25rem;
+  top: 0.35rem;
+  pointer-events: none;
+}
+
+.sticky .showFyeo {
+  cursor: pointer;
+  font-size: 16px;
+  position: absolute;
+  right: 0;
+  bottom: 24px;
+  border-radius: 50%;
+  width: 35px;
+  height: 32px;
+  padding-top: 7px;
+  padding-left: 3px;
+}
+
+.grid-square {
+	width: 100px;
+	height: 100px;
+	display: inline-block;
+	background-color: #fff;
+	border: solid 1px rgb(0,0,0,0.2);
+	padding: 10px;
+	margin: 12px;
 }
