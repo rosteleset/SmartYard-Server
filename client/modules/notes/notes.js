@@ -460,6 +460,7 @@
 
                     if (r.category != lStore("notesCategory")) {
                         lStore("notesCategory", r.category);
+                        modules.notes.notes[id].weight = 100500;
                         modules.notes.renderNotes();
                     } else {
                         let newSticky = modules.notes.renderNote(
@@ -559,7 +560,22 @@
 
         stickyArea.html("");
 
+        let order = [];
+
         for (let id in modules.notes.notes) {
+            order.push({
+                id,
+                weight: modules.notes.notes[id].weight,
+            });
+        }
+
+        order.sort((a, b) => {
+            return a.weight - b.weight;
+        });
+
+        for (let i in order) {
+            let id = order[i].id;
+
             if (modules.notes.notes[id].category == category) {
                 let newSticky = modules.notes.renderNote(
                     id,
@@ -584,8 +600,13 @@
 
     reorder: function () {
         let newOrder = [];
+        let w = 0;
+
         $("#stickiesContainer").children().each(function () {
-            newOrder.push($(this).attr("id").split("-")[1]);
+            let id = $(this).attr("id");
+            newOrder.push(id.split("-")[1]);
+            modules.notes.notes[id].weight = w;
+            w++;
         });
 
         PUT("notes", "reorder", false, { newOrder }).
