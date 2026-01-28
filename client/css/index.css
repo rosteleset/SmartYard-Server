@@ -1,25 +1,25 @@
 @charset "UTF-8";
 
-body {
-  overflow: -moz-scrollbars-vertical;
-  overflow-y: scroll !important;
-  background-color: #f4f6f9 !important;
-  min-width: 1024px !important;
-}
-
-body::-webkit-scrollbar {
+::-webkit-scrollbar {
   width: 6px;
   height: 6px;
   background: #dcdfe3;
 }
 
-body::-webkit-scrollbar-thumb {
+::-webkit-scrollbar-thumb {
   border-radius: 3px;
   background: #749398;
 }
 
-body::-webkit-scrollbar-track {
+::-webkit-scrollbar-track {
   background: #dcdfe3;
+}
+
+body {
+  overflow: -moz-scrollbars-vertical;
+  overflow-y: scroll !important;
+  background-color: #f4f6f9 !important;
+  min-width: 1024px !important;
 }
 
 body:not(.dark-mode) .nodec:link {
@@ -1057,31 +1057,15 @@ code {
     border-radius: 0;
 }
 
-.stickies-container-scroller::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-  background: #dcdfe3;
-}
-
-.stickies-container-scroller::-webkit-scrollbar-thumb {
-  border-radius: 3px;
-  background: #749398;
-}
-
-.stickies-container-scroller::-webkit-scrollbar-track {
-  background: #dcdfe3;
-}
-
 .sticky {
   border-radius: 5px;
   border: solid thin rgb(192, 192, 192);
   display: inline-block;
   padding: 1rem;
   position: relative;
-  min-width: 12.5rem;
-  -webkit-box-shadow: 1px 1px 2px #696969;
-  box-shadow: 1px 1px 1px #696969;
+  min-width: 200px;
   max-width: 350px;
+  box-shadow: 1px 1px 1px #696969;
 }
 
 .sticky .caption {
@@ -1092,7 +1076,7 @@ code {
   margin: 0;
   min-height: 9rem;
   overflow-y: auto;
-  max-height: 400px;
+  max-height: 350px;
   pointer-events: all;
   -webkit-touch-callout: unset;
   -webkit-user-select: text;
