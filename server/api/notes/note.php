@@ -18,16 +18,13 @@
      * @apiBody {String} icon
      * @apiBody {String} font
      * @apiBody {String} color
-     * @apiBody {Number} x
-     * @apiBody {Number} y
-     * @apiBody {Number} z
      * @apiBody {Number} fyeo
      *
      * @apiSuccess {Object} Note
      */
 
     /**
-     * @api {put} /api/notes/note/:noteId create note
+     * @api {put} /api/notes/note/:noteId modify note
      *
      * @apiVersion 1.0.0
      *
@@ -45,9 +42,6 @@
      * @apiBody {String} icon
      * @apiBody {String} font
      * @apiBody {String} color
-     * @apiBody {Number} x
-     * @apiBody {Number} y
-     * @apiBody {Number} z
      * @apiBody {Number} fyeo
      *
      * @apiSuccess {Boolean} operationResult
@@ -86,7 +80,7 @@
                 $notes = loadBackend("notes");
 
                 if ($notes) {
-                    $note = $notes->addNote(@$params["subject"], @$params["body"], @$params["type"], @$params["category"], @$params["remind"], @$params["icon"], @$params["font"], @$params["color"], @$params["x"], @$params["y"], @$params["z"], @$params["fyeo"]);
+                    $note = $notes->addNote(@$params["subject"], @$params["body"], @$params["type"], @$params["category"], @$params["remind"], @$params["icon"], @$params["font"], @$params["color"], @$params["fyeo"]);
                 }
 
                 return api::ANSWER($note, ($note !== false) ? "note" : "error");
@@ -96,7 +90,7 @@
                 $notes = loadBackend("notes");
 
                 if ($notes) {
-                    $success = $notes->modifyNote(@$params["_id"], @$params["subject"], @$params["body"], @$params["type"], @$params["category"], @$params["remind"], @$params["icon"], @$params["font"], @$params["color"], @$params["x"], @$params["y"], @$params["z"], @$params["fyeo"]);
+                    $success = $notes->modifyNote(@$params["_id"], @$params["subject"], @$params["body"], @$params["type"], @$params["category"], @$params["remind"], @$params["icon"], @$params["font"], @$params["color"], @$params["fyeo"]);
                 }
 
                 return api::ANSWER($success);

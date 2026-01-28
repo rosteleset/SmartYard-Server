@@ -1,17 +1,6 @@
 ({
     menuItem: false,
 
-    initialHeight: 0,
-
-    isDragging: false,
-    dragTarget: undefined,
-    gridSize: 10,
-
-    lastOffsetX: 0,
-    lastOffsetY: 0,
-    lastLeft: 0,
-    lastTop: 0,
-
     notes: {},
     categories: [],
 
@@ -84,106 +73,6 @@
         if (parseInt(myself.uid) && AVAIL("notes")) {
             this.menuItem = leftSide("fas fa-fw fa-thumbtack", i18n("notes.notes"), "?#notes", "productivity");
         }
-
-        $(window).on("mousedown", e => {
-            let target = $(e.target);
-
-            if (e.button !== 0) return;
-
-            if (target.hasClass('drag')) {
-                let z = 1;
-
-                $(".sticky").each(function () {
-                    z = Math.max(z, parseInt($(this).css("z-index")));
-                });
-
-                target.css({
-                    "z-index": z + 1,
-                    "cursor": "grab",
-                });
-
-                modules.notes.dragTarget = target;
-
-                modules.notes.lastOffsetX = e.offsetX;
-                modules.notes.lastOffsetY = e.offsetY;
-
-                modules.notes.isDragging = 1;
-
-                return;
-            }
-
-            if (target.attr("id") == "stickiesContainer") {
-                target.css("cursor", "grab");
-
-                modules.notes.dragTarget = target;
-
-                modules.notes.lastLeft = target.parent().scrollLeft();
-                modules.notes.lastTop = $("html").scrollTop();
-                modules.notes.lastOffsetX = e.clientX;
-                modules.notes.lastOffsetY = e.clientY;
-
-                modules.notes.isDragging = 2;
-
-                return;
-            }
-        });
-
-        $(window).on("mousemove", e => {
-            if (!modules.notes.isDragging) return;
-
-            let cont = $("#stickiesContainer");
-
-            if (modules.notes.isDragging == 1) {
-                let off = cont.offset();
-
-                let newX = Math.max(-off.left + e.clientX - modules.notes.lastOffsetX, 0);
-                let newY = Math.max($("html").scrollTop() - off.top + e.clientY - modules.notes.lastOffsetY, 0);
-
-                newX = Math.round(newX / modules.notes.gridSize) * modules.notes.gridSize;
-                newY = Math.round(newY / modules.notes.gridSize) * modules.notes.gridSize;
-
-                modules.notes.dragTarget.css({
-                    left: newX + 'px',
-                    top: newY + 'px',
-                });
-            }
-
-            if (modules.notes.isDragging == 2) {
-                let dx = e.clientX - modules.notes.lastOffsetX;
-                let dy = e.clientY - modules.notes.lastOffsetY;
-
-                cont.parent().scrollLeft(modules.notes.lastLeft - dx);
-                $("html").scrollTop(modules.notes.lastTop - dy);
-            }
-        });
-
-        $(window).on("mouseup", e => {
-            if (!modules.notes.isDragging) return;
-
-            modules.notes.adjustStickiesContainer();
-
-            modules.notes.dragTarget.css({
-                "cursor": "",
-            });
-
-            if (modules.notes.dragTarget.hasClass('drag')) {
-                let id = modules.notes.dragTarget.attr("id");
-
-                modules.notes.notes[id].x = parseFloat(modules.notes.dragTarget.css("left"));
-                modules.notes.notes[id].y = parseFloat(modules.notes.dragTarget.css("top"));
-                modules.notes.notes[id].z = parseInt(modules.notes.dragTarget.css("z-index"));
-
-                PUT("notes", "xyz", modules.notes.notes[id].id, {
-                    x: parseFloat(modules.notes.dragTarget.css("left")),
-                    y: parseFloat(modules.notes.dragTarget.css("top")),
-                    z: parseInt(modules.notes.dragTarget.css("z-index")),
-                }).
-                fail(FAIL);
-            }
-
-            return modules.notes.isDragging = false;
-        });
-
         moduleLoaded("notes", this);
     },
 
@@ -191,8 +80,8 @@
         //
     },
 
-    renderNote: function (id, subject, body, type, color, icon, font, remind, z, fyeo) {
-        let newSticky = `<div id='${id}' class='sticky sticky-bg-color-${color}' style='z-index: ${z};'>`;
+    renderNote: function (id, subject, body, type, color, icon, font, remind, fyeo) {
+        let newSticky = `<div id='${id}' class='sticky sticky-bg-color-${color}'>`;
 
         // TODO: box-shadow: 2px 2px 7px {shadow-color};
 
@@ -347,12 +236,6 @@
 
                 let id = md5(guid());
 
-                let z = 1;
-
-                $(".sticky").each(function () {
-                    z = Math.max(z, parseInt($(this).css("z-index")));
-                });
-
                 if (r.type == "checks") {
                     r.body = r.body.split("\n");
                     for (let i in r.body) {
@@ -372,7 +255,6 @@
                     r.icon,
                     r.font,
                     parseInt(r.remind) > (new Date()).getTime() / 1000,
-                    z + 1,
                     r.fyeo,
                 );
 
@@ -380,25 +262,9 @@
 
                 let sticky = $("#" + id);
 
-                let x = window.innerWidth / 2 - sticky.outerWidth(true) / 2 + (-100 + Math.round(Math.random() * 50));
-                let y = window.innerHeight / 2 - sticky.outerHeight(true) / 2 + (-100 + Math.round(Math.random() * 50));
-                let w = parseInt(window.getComputedStyle(document.getElementById(id)).getPropertyValue("width"))
-                let h = parseInt(window.getComputedStyle(document.getElementById(id)).getPropertyValue("height"))
-
-/*
-                sticky.css({
-                    left: x + 'px',
-                    top: y + 'px',
-                    width: ((Math.floor(w / modules.notes.gridSize) + 1) * modules.notes.gridSize) + 'px',
-                    height: ((Math.floor(h / modules.notes.gridSize) + 1) * modules.notes.gridSize) + 'px',
-                });
-*/
-
                 $(".editSticky").off("click").on("click", modules.notes.modifySticky);
                 $(".showFyeo").off("click").on("click", modules.notes.showFyeo);
                 $(".noteCheckbox").off("click").on("click", modules.notes.stickyCheckbox);
-
-                modules.notes.adjustStickiesContainer();
 
                 loadingStart();
 
@@ -411,9 +277,6 @@
                     icon: r.icon,
                     font: r.font,
                     color: r.color,
-                    x: parseFloat(x),
-                    y: parseFloat(y),
-                    z: parseInt(z),
                     fyeo: parseInt(r.fyeo),
                 }).
                 done(r => {
@@ -422,26 +285,12 @@
                         sticky.attr("id", newId);
                         $(`.sticky .body[data-id="${id}"]`).attr("data-id", newId);
                         modules.notes.notes[newId] = r.note;
+                        modules.notes.reorder();
                     }
                 }).
                 fail(FAIL).
                 always(loadingDone);
             },
-        });
-    },
-
-    adjustStickiesContainer: function () {
-        let mw = 0, mh = 0;
-
-        $(".sticky").each(function () {
-            let s = $(this);
-            mw = Math.max(mw, s.position().left + s.outerWidth(true));
-            mh = Math.max(mh, s.position().top + s.outerHeight(true));
-        });
-
-        $("#stickiesContainer").css({
-            width: Math.max(mw + 4, $("#stickiesTable").width()) + "px",
-            height: Math.max(mh + 4, $(window).height() - mainFormTop - 5) + "px",
         });
     },
 
@@ -594,21 +443,10 @@
                         always(loadingDone);
                     });
                 } else {
-                    $("#" + id).remove();
-
                     if (modules.notes.categories.indexOf(r.category) < 0) {
                         modules.notes.categories.push(r.category);
                         modules.notes.categories.sort();
                     }
-
-                    if (r.category != lStore("notesCategory")) {
-                        lStore("notesCategory", r.category);
-                        modules.notes.renderNotes();
-                    }
-
-                    let x = modules.notes.notes[id].x;
-                    let y = modules.notes.notes[id].y;
-                    let z = modules.notes.notes[id].z;
 
                     modules.notes.notes[id].subject = r.subject;
                     modules.notes.notes[id].body = r.body;
@@ -620,40 +458,25 @@
                     modules.notes.notes[id].color = r.color;
                     modules.notes.notes[id].fyeo = r.fyeo;
 
-                    modules.notes.notes[id].x = parseFloat(x);
-                    modules.notes.notes[id].y = parseFloat(y);
-                    modules.notes.notes[id].z = parseInt(z);
+                    if (r.category != lStore("notesCategory")) {
+                        lStore("notesCategory", r.category);
+                        modules.notes.renderNotes();
+                    } else {
+                        let newSticky = modules.notes.renderNote(
+                            id,
+                            r.subject,
+                            r.body,
+                            r.type,
+                            r.color,
+                            r.icon,
+                            r.font,
+                            parseInt(r.remind) > (new Date()).getTime() / 1000,
+                            r.fyeo
+                        );
 
-                    let stickyArea = $('#stickiesContainer');
+                        $(`#${id}`).replaceWith(newSticky);
+                    }
 
-                    let newSticky = modules.notes.renderNote(
-                        id,
-                        r.subject,
-                        r.body,
-                        r.type,
-                        r.color,
-                        r.icon,
-                        r.font,
-                        parseInt(r.remind) > (new Date()).getTime() / 1000,
-                        z,
-                        r.fyeo
-                    );
-
-                    stickyArea.append(newSticky);
-
-                    let sticky = $("#" + id);
-
-                    let w = parseInt(window.getComputedStyle(document.getElementById(id)).getPropertyValue("width"))
-                    let h = parseInt(window.getComputedStyle(document.getElementById(id)).getPropertyValue("height"))
-
-/*
-                    sticky.css({
-                        left: x + 'px',
-                        top: y + 'px',
-                        width: ((Math.floor(w / modules.notes.gridSize) + 1) * modules.notes.gridSize) + 'px',
-                        height: ((Math.floor(h / modules.notes.gridSize) + 1) * modules.notes.gridSize) + 'px',
-                    });
-*/
                     $(".editSticky").off("click").on("click", modules.notes.modifySticky);
                     $(".showFyeo").off("click").on("click", modules.notes.showFyeo);
                     $(".noteCheckbox").off("click").on("click", modules.notes.stickyCheckbox);
@@ -669,16 +492,14 @@
                         icon: r.icon,
                         font: r.font,
                         color: r.color,
-                        x: parseFloat(x),
-                        y: parseFloat(y),
-                        z: parseInt(z),
                         fyeo: parseInt(r.fyeo),
                     }).
                     fail(FAIL).
+                    done(() => {
+                        modules.notes.reorder();
+                    }).
                     always(loadingDone);
                 }
-
-                modules.notes.adjustStickiesContainer();
             },
         });
     },
@@ -749,32 +570,26 @@
                     modules.notes.notes[id].icon,
                     modules.notes.notes[id].font,
                     parseInt(modules.notes.notes[id].remind) > (new Date()).getTime() / 1000 && !modules.notes.notes[id].reminded,
-                    modules.notes.notes[id].z,
                     modules.notes.notes[id].fyeo,
                 );
 
                 stickyArea.append(newSticky);
-
-                let sticky = $("#" + id);
-
-                let w = parseInt(window.getComputedStyle(document.getElementById(id)).getPropertyValue("width"))
-                let h = parseInt(window.getComputedStyle(document.getElementById(id)).getPropertyValue("height"))
-/*
-                sticky.css({
-                    left: modules.notes.notes[id].x + 'px',
-                    top: modules.notes.notes[id].y + 'px',
-                    width: ((Math.floor(w / modules.notes.gridSize) + 1) * modules.notes.gridSize) + 'px',
-                    height: ((Math.floor(h / modules.notes.gridSize) + 1) * modules.notes.gridSize) + 'px',
-                });
-*/
             }
         }
 
         $(".editSticky").off("click").on("click", modules.notes.modifySticky);
         $(".showFyeo").off("click").on("click", modules.notes.showFyeo);
         $(".noteCheckbox").off("click").on("click", modules.notes.stickyCheckbox);
+    },
 
-        modules.notes.adjustStickiesContainer();
+    reorder: function () {
+        let newOrder = [];
+        $("#stickiesContainer").children().each(function () {
+            newOrder.push($(this).attr("id").split("-")[1]);
+        });
+
+        PUT("notes", "reorder", false, { newOrder }).
+        fail(FAIL);
     },
 
     route: function () {
@@ -798,19 +613,17 @@
         $("#mainForm").html(`
             <div id='stickiesTable'>
                 <div class='p-0 mt-2 ml-0 mb-1 mr-0 row'>
-                    <div id='stickiesContainer' class='col p-0 m-0 resizable mouseEvents dots d-flex flex-wrap align-content-start align-items-start' style='gap: 8px;'></div>
+                    <div id='stickiesContainer' class='col p-0 m-0 dots d-flex flex-wrap align-content-start align-items-start' style='gap: 8px;'></div>
                 </div>
             </div>
         `);
 
-        let s = $("#stickiesContainer");
+        new Sortable(document.getElementById("stickiesContainer"), {
+            animation: 150,
 
-        modules.notes.initialHeight = s.parent().height();
-
-        modules.notes.adjustStickiesContainer();
-
-        $("#stickiesContainer").off("windowResized").on("windowResized", () => {
-            modules.notes.adjustStickiesContainer();
+            onEnd: () => {
+                modules.notes.reorder();
+            }
         });
 
         let rtd = '';

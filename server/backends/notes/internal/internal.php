@@ -17,7 +17,7 @@
              */
 
             public function getNotes() {
-                return $notes = $this->db->get("select * from notes where owner = :owner order by position_order", [
+                return $notes = $this->db->get("select * from notes where owner = :owner order by weight", [
                     "owner" => $this->login,
                 ], [
                     "note_id" => "id",
@@ -30,10 +30,8 @@
                     "icon" => "icon",
                     "font" => "font",
                     "color" => "color",
-                    "position_left" => "x",
-                    "position_top" => "y",
-                    "position_order" => "z",
                     "fyeo" => "fyeo",
+                    "weight" => "weight",
                 ]);
             }
 
@@ -41,7 +39,7 @@
              * @inheritDoc
              */
 
-            public function addNote($subject, $body, $type, $category, $remind, $icon, $font, $color, $x, $y, $z, $fyeo) {
+            public function addNote($subject, $body, $type, $category, $remind, $icon, $font, $color, $fyeo) {
                 $body = trim($body);
 
                 if (!$body) {
@@ -54,7 +52,7 @@
                     return false;
                 }
 
-                $id = $this->db->insert("insert into notes (create_date, owner, note_subject, note_body, note_type, category, remind, reminded, icon, font, color, position_left, position_top, position_order, fyeo) values (:create_date, :owner, :note_subject, :note_body, :note_type, :category, :remind, :reminded, :icon, :font, :color, :position_left, :position_top, :position_order, :fyeo)", [
+                $id = $this->db->insert("insert into notes (create_date, owner, note_subject, note_body, note_type, category, remind, reminded, icon, font, color, fyeo) values (:create_date, :owner, :note_subject, :note_body, :note_type, :category, :remind, :reminded, :icon, :font, :color, :fyeo)", [
                     "create_date" => time(),
                     "owner" => $this->login,
                     "note_subject" => $subject ?: null,
@@ -66,9 +64,6 @@
                     "icon" => $icon ?: null,
                     "font" => $font ?: null,
                     "color" => $color ?: null,
-                    "position_left" => $x,
-                    "position_top" => $y,
-                    "position_order" => $z,
                     "fyeo" => $fyeo,
                 ]);
 
@@ -86,9 +81,7 @@
                     "icon" => "icon",
                     "font" => "font",
                     "color" => "color",
-                    "position_left" => "x",
-                    "position_top" => "y",
-                    "position_order" => "z",
+                    "weight" => "weight",
                     "fyeo" => "fyeo",
                 ], [
                     "singlify",
@@ -99,7 +92,7 @@
              * @inheritDoc
              */
 
-            public function modifyNote13($id, $subject, $body, $type, $category, $remind, $icon, $font, $color, $x, $y, $z, $fyeo) {
+            public function modifyNote10($id, $subject, $body, $type, $category, $remind, $icon, $font, $color, $fyeo) {
                 $body = trim($body);
 
                 if (!$body || !checkInt($id)) {
@@ -112,7 +105,7 @@
                     return false;
                 }
 
-                return $this->db->modify("update notes set note_subject = :note_subject, note_body = :note_body, note_type = :note_type, category = :category, remind = :remind, reminded = :reminded, icon = :icon, font = :font, color = :color, position_left = :position_left, position_top = :position_top, position_order = :position_order, fyeo = :fyeo where note_id = :note_id and owner = :owner", [
+                return $this->db->modify("update notes set note_subject = :note_subject, note_body = :note_body, note_type = :note_type, category = :category, remind = :remind, reminded = :reminded, icon = :icon, font = :font, color = :color, fyeo = :fyeo where note_id = :note_id and owner = :owner", [
                     "note_id" => $id,
                     "owner" => $this->login,
                     "note_subject" => $subject ?: null,
@@ -124,29 +117,7 @@
                     "icon" => $icon ?: null,
                     "font" => $font ?: null,
                     "color" => $color ?: null,
-                    "position_left" => $x,
-                    "position_top" => $y,
-                    "position_order" => $z,
                     "fyeo" => $fyeo,
-                ]);
-            }
-
-            /**
-             * @inheritDoc
-             */
-
-            public function modifyNote4($id, $x, $y, $z) {
-                if (!checkInt($id)) {
-                    setLastError("invalidParams");
-                    return false;
-                }
-
-                return $this->db->modify("update notes set position_left = :position_left, position_top = :position_top, position_order = :position_order where note_id = :note_id and owner = :owner", [
-                    "note_id" => $id,
-                    "owner" => $this->login,
-                    "position_left" => $x,
-                    "position_top" => $y,
-                    "position_order" => $z,
                 ]);
             }
 
@@ -200,18 +171,34 @@
 
             public function __call($method, $arguments) {
                 if ($method == 'modifyNote') {
-                    if (count($arguments) == 13) {
-                        return call_user_func_array([ $this, 'modifyNote13' ], $arguments);
-                    }
-                    else
-                    if (count($arguments) == 4) {
-                        return call_user_func_array([ $this, 'modifyNote4' ], $arguments);
+                    if (count($arguments) == 10) {
+                        return call_user_func_array([ $this, 'modifyNote10' ], $arguments);
                     }
                     else
                     if (count($arguments) == 3) {
                         return call_user_func_array([ $this, 'modifyNote3' ], $arguments);
                     }
                 }
+            }
+
+            /**
+             * @inheritDoc
+             */
+
+            public function reorder($newOrder) {
+                $w = 0;
+
+                foreach ($newOrder as $node_id) {
+                    $this->db->modify("update notes set weight = :weight where note_id = :note_id and owner = :owner", [
+                        "note_id" => (int)$node_id,
+                        "owner" => $this->login,
+                        "weight" => $w,
+                    ]);
+
+                    $w++;
+                }
+
+                return true;
             }
 
             /**

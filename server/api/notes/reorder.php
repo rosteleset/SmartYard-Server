@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * @api {put} /api/notes/xyz/:noteId move note
+     * @api {put} /api/notes/reorder reorder notes
      *
      * @apiVersion 1.0.0
      *
@@ -10,10 +10,7 @@
      *
      * @apiHeader {String} Authorization authentication token
      *
-     * @apiParam {Number} noteId
-     * @apiBody {Number} x
-     * @apiBody {Number} y
-     * @apiBody {Number} z
+     * @apiBody {Array} newOrder
      *
      * @apiSuccess {Boolean} operationResult
      */
@@ -27,16 +24,16 @@
         use api\api;
 
         /**
-         * xyz method
+         * reorder method
          */
 
-        class xyz extends api {
+        class reorder extends api {
 
             public static function PUT($params) {
                 $notes = loadBackend("notes");
 
                 if ($notes) {
-                    $success = $notes->modifyNote(@$params["_id"], @$params["x"], @$params["y"], @$params["z"]);
+                    $success = $notes->reorder(@$params["newOrder"]);
                 }
 
                 return api::ANSWER($success);
