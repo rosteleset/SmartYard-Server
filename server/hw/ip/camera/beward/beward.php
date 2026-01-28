@@ -110,4 +110,9 @@ class beward extends camera
     {
         return $this->getParams('videocoding_cgi')['Resolution1'] ?? '1280*720';
     }
+
+    protected function initConnection(): void
+    {
+        // Empty implementation
+    }
 }

@@ -1068,4 +1068,9 @@ abstract class qtech extends domophone implements
 
         $this->personalCodes[$name] = $data;
     }
+
+    protected function initConnection(): void
+    {
+        // Empty implementation
+    }
 }
