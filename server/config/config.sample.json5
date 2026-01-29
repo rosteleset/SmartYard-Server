@@ -352,7 +352,12 @@
             "file_rights": "777",
             "ttl_max_upload": "1day",
             "ttl_max_download": "1week"
-        }
+        },
+
+        "git": {
+            "local": "/opt/rbt/server/data/git",
+            "push": false,
+        },
     },
 
     "email": {

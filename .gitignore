@@ -69,6 +69,8 @@ server/cli/custom/**
 server/cli/custom/*
 server/data/files/*
 server/data/files/**
+server/data/git/*
+server/data/git/**
 server/db/backup/*
 server/db/internal.db
 server/config/config.json
