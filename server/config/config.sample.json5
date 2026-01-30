@@ -315,7 +315,7 @@
         },
 
         "mkb": {
-            "backend": "mongo",
+            "backend": "internal",
         },
 
         "tmpfs": {
@@ -347,7 +347,7 @@
 
         "ud363": {
             "backend": "internal",
-            "path": "/tmp/tmpfs",
+            "path": "/tmp/ud363",
             "path_rights": "777",
             "file_rights": "777",
             "ttl_max_upload": "1day",
