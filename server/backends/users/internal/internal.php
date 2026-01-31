@@ -559,7 +559,7 @@
                 }
 
                 if (@$this->logins[$uid]) {
-                    return $this->logins[$uid] = $login;
+                    return $this->logins[$uid];
                 }
 
                 $login = $this->db->get("select login from core_users where uid = :uid",
@@ -573,6 +573,8 @@
                 );
 
                 $this->logins[$uid] = $login;
+
+                return $login;
             }
 
             /**
