@@ -437,7 +437,7 @@
             }
         }
 
-        $db->modify("delete from core_running_processes where done is not null and coalesce(expire, 0) < " . time());
+        $db->modify("delete from core_running_processes where done is not null and coalesce(expire, 0) < " . time(), false, [ "silent" ]);
     } catch (\Exception $e) {
         error_log(print_r($e, true));
     }
