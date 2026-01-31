@@ -1749,8 +1749,16 @@ function cardForm(params) {
                 }
             });
 
+            let renamed_debounce = false;
             if (params.fields[i].renamed) {
-                $(`#${_prefix}${params.fields[i].id}`).off("set_text.jstree").on("set_text.jstree", params.fields[i].renamed);
+                $(`#${_prefix}${params.fields[i].id}`).off("set_text.jstree").on("set_text.jstree", () => {
+                    if (renamed_debounce) {
+                        clearTimeout(renamed_debounce);
+                    }
+                    renamed_debounce = setTimeout(() => {
+                        params.fields[i].renamed();
+                    }, 100);
+                });
             }
 
             $(`#${_prefix}${params.fields[i].id}-search`).off("keypress").on("keypress", e => {
