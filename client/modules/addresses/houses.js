@@ -2122,7 +2122,6 @@
 
                         renamed: function (e, data) {
                             if (data && data.obj && data.obj.id && data.text && data.text != modules.addresses.houses.pathNodes[data.obj.id]) {
-                                console.log(data.text);
                                 PUT("houses", "path", data.obj.id, {
                                     text: data.text,
                                 }).
