@@ -295,7 +295,7 @@
                     type: "noyes",
                     title: i18n("addresses.webrtc"),
                     placeholder: i18n("addresses.webrtc"),
-                    tab: i18n("addresses.webrtc"),
+                    tab: i18n("addresses.secondary"),
                 },
                 {
                     id: "comments",

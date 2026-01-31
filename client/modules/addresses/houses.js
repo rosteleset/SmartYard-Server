@@ -2037,7 +2037,6 @@
                     tree: treeName,
                 } : null).
                 done(result => {
-                    debugger;
                     if (result && result.tree) {
                         cb(result.tree);
                     } else {

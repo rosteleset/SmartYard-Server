@@ -1811,24 +1811,29 @@ function cardForm(params) {
                 }
             }
 
-            $(`#${_prefix}${params.fields[i].id}`).off("select_node.jstree").on("select_node.jstree", (e, data) => {
-                jstreectl(data && data.selected && data.selected.length);
+            $(`#${_prefix}${params.fields[i].id}`).off("select_node.jstree").on("select_node.jstree", () => {
+                let node = $(`#${_prefix}${params.fields[i].id}`).jstree().get_selected();
+                jstreectl(node && node.length);
             });
 
-            $(`#${_prefix}${params.fields[i].id}`).off("deselect_node.jstree").on("deselect_node.jstree", (e, data) => {
-                jstreectl(data && data.selected && data.selected.length);
+            $(`#${_prefix}${params.fields[i].id}`).off("deselect_node.jstree").on("deselect_node.jstree", () => {
+                let node = $(`#${_prefix}${params.fields[i].id}`).jstree().get_selected();
+                jstreectl(node && node.length);
             });
 
-            $(`#${_prefix}${params.fields[i].id}`).off("changed.jstree").on("changed.jstree", (e, data) => {
-                jstreectl(data && data.selected && data.selected.length);
+            $(`#${_prefix}${params.fields[i].id}`).off("changed.jstree").on("changed.jstree", () => {
+                let node = $(`#${_prefix}${params.fields[i].id}`).jstree().get_selected();
+                jstreectl(node && node.length);
             });
 
-            $(`#${_prefix}${params.fields[i].id}`).off("loaded.jstree").on("loaded.jstree", (e, data) => {
-                jstreectl(data && data.selected && data.selected.length);
+            $(`#${_prefix}${params.fields[i].id}`).off("loaded.jstree").on("loaded.jstree", () => {
+                let node = $(`#${_prefix}${params.fields[i].id}`).jstree().get_selected();
+                jstreectl(node && node.length);
             });
 
-            $(`#${_prefix}${params.fields[i].id}`).off("ready.jstree").on("ready.jstree", (e, data) => {
-                jstreectl(data && data.selected && data.selected.length);
+            $(`#${_prefix}${params.fields[i].id}`).off("ready.jstree").on("ready.jstree", () => {
+                let node = $(`#${_prefix}${params.fields[i].id}`).jstree().get_selected();
+                jstreectl(node && node.length);
             });
         }
 
