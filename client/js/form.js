@@ -1751,12 +1751,12 @@ function cardForm(params) {
 
             let renamed_debounce = false;
             if (params.fields[i].renamed) {
-                $(`#${_prefix}${params.fields[i].id}`).off("set_text.jstree").on("set_text.jstree", () => {
+                $(`#${_prefix}${params.fields[i].id}`).off("set_text.jstree").on("set_text.jstree", (e, data) => {
                     if (renamed_debounce) {
                         clearTimeout(renamed_debounce);
                     }
                     renamed_debounce = setTimeout(() => {
-                        params.fields[i].renamed();
+                        params.fields[i].renamed(data);
                     }, 100);
                 });
             }

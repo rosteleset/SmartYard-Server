@@ -2120,13 +2120,13 @@
                             }
                         },
 
-                        renamed: function (e, data) {
-                            if (data && data.obj && data.obj.id && data.text && data.text != modules.addresses.houses.pathNodes[data.obj.id]) {
-                                PUT("houses", "path", data.obj.id, {
-                                    text: data.text,
+                        renamed: function (node) {
+                            if (node && node.obj && node.obj.id && node.text && node.text != modules.addresses.houses.pathNodes[node.obj.id]) {
+                                PUT("houses", "path", node.obj.id, {
+                                    text: node.text,
                                 }).
                                 done(() => {
-                                    modules.addresses.houses.pathNodes[data.obj.id] = data.text;
+                                    modules.addresses.houses.pathNodes[node.obj.id] = node.text;
                                 }).
                                 fail(FAIL);
                             }
