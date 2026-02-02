@@ -12,7 +12,7 @@ use hw\ip\domophone\domophone;
 use hw\ValueObject\HousePrefix;
 
 /**
- * Abstract class representing an BasIP intercom.
+ * Abstract base class for BasIP intercoms.
  */
 abstract class basip extends domophone implements
     DbConfigUpdaterInterface,
