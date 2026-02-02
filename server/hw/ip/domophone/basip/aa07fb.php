@@ -2,9 +2,16 @@
 
 namespace hw\ip\domophone\basip;
 
+use hw\ip\common\basip\HttpClient\BasicHttpClient;
+
 /**
  * Represents an BasIP AA-07FB intercom.
  */
 class aa07fb extends basip
 {
+    public function __construct(string $url, string $password, bool $firstTime = false)
+    {
+        $this->client = new BasicHttpClient($url, $password);
+        parent::__construct($url, $password, $firstTime);
+    }
 }
