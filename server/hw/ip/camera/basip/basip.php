@@ -3,15 +3,18 @@
 namespace hw\ip\camera\basip;
 
 use hw\ip\camera\camera;
+use hw\ip\common\basip\HttpClient\HttpClientInterface;
 
 /**
- * Class representing a BASIP camera.
+ * Abstract base class for BasIP cameras.
  */
 class basip extends camera
 {
     use \hw\ip\common\basip\basip {
         transformDbConfig as protected commonTransformDbConfig;
     }
+
+    protected HttpClientInterface $client;
 
     public function configureMotionDetection(array $detectionZones): void
     {
@@ -20,8 +23,8 @@ class basip extends camera
 
     public function getCamshot(): string
     {
-        // TODO: too slow (~2 sec)
-        return $this->apiCall('/v1/photo/file', 'GET', [], 5);
+        // TODO: too slow (~2 sec with basic auth, ~4 sec with bearer auth)
+        return $this->client->call('/v1/photo/file', 'GET', [], 5);
     }
 
     public function setOsdText(string $text = ''): void

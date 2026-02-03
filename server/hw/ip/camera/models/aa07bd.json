@@ -1,0 +1,9 @@
+{
+    "title": "BASIP AA-07BD",
+    "vendor": "BASIP",
+    "model": "AA-07BD",
+    "version": false,
+    "eventServer": "basip",
+    "class": "aa07bd",
+    "useSmartConfigurator": true
+}
