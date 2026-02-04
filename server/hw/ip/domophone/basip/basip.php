@@ -32,6 +32,13 @@ abstract class basip extends domophone implements
     protected ?array $identifiers = null;
     protected ?array $forwards = null;
 
+    /**
+     * Returns the default "valid" field value for a new identifier.
+     *
+     * @return array An associative array representing the default "valid" field value.
+     */
+    abstract protected static function getIdentifierValidDefaultValue(): array;
+
     public function addRfid(string $code, int $apartment = 0): void
     {
         $formattedCode = implode('-', str_split($code, 2)); // 0000001A2B3C4D => 00-00-00-1A-2B-3C-4D
@@ -399,7 +406,7 @@ abstract class basip extends domophone implements
     protected function addForward(int $apartmentNumber, array $sipNumbers): void
     {
         $forwardItem = [
-            'forward_entity_list' => $sipNumbers,
+            'forward_entity_list' => array_map('strval', $sipNumbers), // TODO: check with AA-07FB
         ];
 
         $this->client->call("/v1/forward/item/$apartmentNumber", 'POST', $forwardItem);
@@ -424,17 +431,7 @@ abstract class basip extends domophone implements
             ],
             'identifier_type' => $identifierType->value,
             'lock' => 'first',
-            'valid' => [
-                'passes' => [
-                    'is_permanent' => true,
-                    'max_passes' => null,
-                    'time' => [
-                        'from' => null,
-                        'is_permanent' => true,
-                        'to' => null,
-                    ],
-                ],
-            ],
+            'valid' => static::getIdentifierValidDefaultValue(),
         ];
 
         $uid = $this->client->call('/v1/access/identifier', 'POST', $identifierItem);
